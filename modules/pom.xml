@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>app.packed</groupId>
+    <artifactId>packed-root</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>packed-modules</artifactId>
+  <packaging>pom</packaging>
+  <name>Packed-Modules</name>
+  <description>Packed Modules POM</description>
+  
+  <!-- ==================================================================== -->
+  <modules>
+    <module>packed-base</module>
+  </modules>
+  
+  
+  <properties>
+
+    <!-- Locate the root directory of the multi-module build -->
+    <root.dir>${project.basedir}/..</root.dir>
+
+    <!-- Versions -->
+    <assertj.version>3.11.1</assertj.version>
+    <junit.version>5.3.1</junit.version>
+
+    <!-- Compiler version -->
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+
+  </properties>
+</project>
