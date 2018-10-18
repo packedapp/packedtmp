@@ -25,5 +25,6 @@ public class HelloPackedTest {
     @Test
     public void foo() {
         assertEquals(3, HelloPacked.add(1, 2));
+        assertEquals(5, HelloPacked.add(3, 2));
     }
 }
