@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed;
+package app.packed.inject;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 /**
- *
+ * An abstract base class for both {@link TypeLiteral} and {@link Key}. This is typically used in places that can take
+ * either a key or a type literal.
  */
-public class HelloPackedTest {
+public abstract class TypeLiteralOrKey<T> {
 
-    @Test
-    public void foo() {
-        assertEquals(3, HelloPacked.add(1, 2));
-        assertEquals(5, HelloPacked.add(3, 2));
-    }
-    
-    public static void main(String[] args) {
-        
-    }
+    /** Package private constructor */
+    TypeLiteralOrKey() {}
+
+    public abstract Class<? super T> getRawType();
+
+    public abstract Key<T> toKey();
 }

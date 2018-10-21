@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed;
+package packed;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-/**
- *
- */
-public class HelloPackedTest {
+/** An exception thrown whenever an internal error is encountered.. */
+public final class InternalErrorException extends RuntimeException {
 
-    @Test
-    public void foo() {
-        assertEquals(3, HelloPacked.add(1, 2));
-        assertEquals(5, HelloPacked.add(3, 2));
+    /** serialVersionUID. */
+    private static final long serialVersionUID = 1L;
+
+    public InternalErrorException(String paramName, Object param) {
+        super("InternalError, " + paramName + " = " + param);
     }
-    
-    public static void main(String[] args) {
-        
+
+    public InternalErrorException(String paramName, Object param, Throwable cause) {
+        super("InternalError, " + paramName + " = " + param, cause);
     }
+
 }
