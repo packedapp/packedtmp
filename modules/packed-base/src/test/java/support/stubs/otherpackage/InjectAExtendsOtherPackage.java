@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stubs.otherpackage;
+package support.stubs.otherpackage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import app.packed.inject.Inject;
-import stubs.Injectables.InjectA;
-import stubs.Letters.A;
+import support.stubs.Injectables.InjectA;
+import support.stubs.Letters.A;
 
 /**
  * Tests that package private methods are not overridden for classes in other packages

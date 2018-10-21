@@ -15,11 +15,11 @@
  */
 package app.packed.inject;
 
-import static assertj.app.packed.inject.DependencyAssert.assertThat;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static support.assertj.app.packed.inject.DependencyAssert.assertThat;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

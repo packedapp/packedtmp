@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stubs;
+package support.stubs.annotation;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import app.packed.inject.Qualifier;
 
+@Retention(RUNTIME)
 /**
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
 @Qualifier
-public @interface CharQualifier {
-    char value() default '?';
+@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
+public @interface SystemProperty {
+    String value();
 }

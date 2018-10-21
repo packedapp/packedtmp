@@ -16,10 +16,10 @@
 package app.packed.inject;
 
 import static app.packed.inject.Factory0.of;
-import static assertj.app.packed.Assertions.assertThatFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static support.assertj.app.packed.Assertions.assertThatFactory;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -30,7 +30,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import stubs.annotation.SystemProperty;
+import support.stubs.annotation.SystemProperty;
 
 /** Tests {@link Factory0}. */
 public class Factory0Test {

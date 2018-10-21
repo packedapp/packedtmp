@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package assertj.app.packed.inject;
+package support.assertj.app.packed.inject;
 
 import org.assertj.core.api.AbstractAssert;
 

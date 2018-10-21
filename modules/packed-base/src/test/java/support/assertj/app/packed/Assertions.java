@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stubs.annotation;
+package support.assertj.app.packed;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import app.packed.inject.Qualifier;
+import app.packed.inject.Factory;
+import support.assertj.app.packed.inject.FactoryAssert;
 
 /**
- * An annotation with a single string value, used for testing.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-public @interface StringValueQualifier {
-    String value() default "";
+public class Assertions {
+
+    public static <T> FactoryAssert<T> assertThatFactory(Factory<T> factory) {
+        return new FactoryAssert<>(factory);
+    }
+
 }

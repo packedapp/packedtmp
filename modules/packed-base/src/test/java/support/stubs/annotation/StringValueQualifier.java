@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stubs.annotation;
+package support.stubs.annotation;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 import app.packed.inject.Qualifier;
-import stubs.Letters;
 
 /**
+ * An annotation with a single string value, used for testing.
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Qualifier
-@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
-public @interface LetterStringAnnotation {
-    Class<? extends Letters> letter() default Letters.class;
-
-    String string() default "";
+public @interface StringValueQualifier {
+    String value() default "";
 }

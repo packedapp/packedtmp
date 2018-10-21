@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package assertj.app.packed;
+package support.stubs;
 
-import app.packed.inject.Factory;
-import assertj.app.packed.inject.FactoryAssert;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import app.packed.inject.Qualifier;
 
 /**
  *
  */
-public class Assertions {
-
-    public static <T> FactoryAssert<T> assertThatFactory(Factory<T> factory) {
-        return new FactoryAssert<>(factory);
-    }
-
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface CharQualifier {
+    char value() default '?';
 }

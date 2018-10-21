@@ -15,9 +15,9 @@
  */
 package app.packed.inject;
 
-import static assertj.app.packed.Assertions.assertThatFactory;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+import static support.assertj.app.packed.Assertions.assertThatFactory;
 
 import java.lang.annotation.Retention;
 import java.util.function.BiConsumer;

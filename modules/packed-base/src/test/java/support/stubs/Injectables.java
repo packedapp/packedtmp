@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stubs;
+package support.stubs;
 
 import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Optional;
 
 import app.packed.inject.Inject;
-import stubs.Letters.A;
+import support.stubs.Letters.A;
 
 /**
  *
