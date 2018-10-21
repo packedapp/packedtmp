@@ -15,11 +15,8 @@
  */
 package packed.util;
 
-/**
- * Various annotation utility methods.
- *
- */
-public class ClassUtil {
+/** Various class utility methods. */
+public final class ClassUtil {
 
     /**
      * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it

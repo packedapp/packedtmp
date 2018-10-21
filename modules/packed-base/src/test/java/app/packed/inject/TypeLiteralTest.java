@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed;
+package app.packed.inject;
 
-/** An exception thrown whenever an internal error is encountered.. */
-public final class InternalErrorException extends RuntimeException {
-
-    /** serialVersionUID. */
-    private static final long serialVersionUID = 1L;
-
-    public InternalErrorException(String paramName, Object param) {
-        super("InternalError, " + paramName + " = " + param);
-    }
-
-    public InternalErrorException(String paramName, Object param, Throwable cause) {
-        super("InternalError, " + paramName + " = " + param, cause);
-    }
+/**
+ *
+ */
+public class TypeLiteralTest {
 
 }

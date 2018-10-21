@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.inject.Inject;
 import app.packed.inject.InjectionException;
-import packed.inject.InjectionSupport;
+import packed.inject.JavaXInjectSupport;
 import packed.util.ThrowableUtil;
 import packed.util.descriptor.InternalConstructorDescriptor;
 
@@ -83,7 +83,7 @@ public class ConstructorInvoker<T> extends ExecutableInvoker {
         // Look for a single constructor annotated with @Inject
         ConstructorInvoker<T> injectable = null;
         for (ConstructorInvoker<T> cm : constructors) {
-            if (InjectionSupport.isInjectAnnotationPresent(cm.descriptor())) {
+            if (JavaXInjectSupport.isInjectAnnotationPresent(cm.descriptor())) {
                 if (injectable != null) {
                     throw new IllegalArgumentException("Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class "
                             + format(constructors[0].descriptor().getDeclaringClass()));

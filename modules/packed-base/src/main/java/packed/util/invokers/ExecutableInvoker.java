@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import packed.inject.InjectionSupport;
+import packed.inject.JavaXInjectSupport;
 import packed.util.descriptor.AbstractExecutableDescriptor;
 
 /**
@@ -51,7 +51,7 @@ public abstract class ExecutableInvoker {
         }
         Method method = null;
         for (Method m : type.getDeclaredMethods()) {
-            if (Modifier.isStatic(m.getModifiers()) && InjectionSupport.isInjectAnnotationPresent(m)) {
+            if (Modifier.isStatic(m.getModifiers()) && JavaXInjectSupport.isInjectAnnotationPresent(m)) {
                 if (method != null) {
                     throw new IllegalArgumentException("There are multiple static methods annotated with @Inject on " + format(type));
                 }
@@ -65,7 +65,7 @@ public abstract class ExecutableInvoker {
         if (method.getReturnType() == void.class /* || returnType == Void.class */) {
             throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
                     + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
-        } else if (InjectionSupport.isOptionalType(method.getReturnType())) {
+        } else if (JavaXInjectSupport.isOptionalType(method.getReturnType())) {
             throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
                     + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
         }

@@ -66,7 +66,7 @@ public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElemen
      */
     public final Dependency toDependency() {
         Dependency dependency = this.dependency;
-        return dependency == null ? this.dependency = InjectAPI.injectNewDependency(this) : dependency;
+        return dependency == null ? this.dependency = InjectAPI.toDependency(this) : dependency;
     }
 
     /**

@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed;
+package app.packed.inject;
 
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 /**
  *
  */
-public class HelloPackedTest {
+public class Factory1Test {
 
-    @Test
-    public void foo() {
-        assertEquals(3, HelloPacked.add(1, 2));
-        assertEquals(5, HelloPacked.add(3, 2));
-    }
-    
-    public static void main(String[] args) {
-        
-    }
 }

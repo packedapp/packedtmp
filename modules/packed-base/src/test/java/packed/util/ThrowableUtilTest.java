@@ -15,35 +15,60 @@
  */
 package packed.util;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
 
-import packed.util.ThrowableUtil;
 import support.stubs.Throwables.Error1;
 import support.stubs.Throwables.Exception1;
 import support.stubs.Throwables.RuntimeException1;
+import support.stubs.Throwables.Throwable1;
 
 /** Tests {@link ThrowableUtil}. */
 public class ThrowableUtilTest {
 
+    /** Tests {@link ThrowableUtil#fromCompletionFuture(CompletableFuture)}. */
+    @Test
+    public void fromCompletionFuture() {
+        assertThat(ThrowableUtil.fromCompletionFuture(new CompletableFuture<>())).isNull();
+
+        CompletableFuture<String> cf = new CompletableFuture<>();
+        cf.complete("foo");
+        assertThat(ThrowableUtil.fromCompletionFuture(cf)).isNull();
+
+        cf = new CompletableFuture<>();
+        cf.completeExceptionally(Throwable1.INSTANCE);
+        assertThat(ThrowableUtil.fromCompletionFuture(cf)).isEqualTo(Throwable1.INSTANCE);
+
+        cf = new CompletableFuture<>();
+        cf.cancel(true);       
+        assertThat(ThrowableUtil.fromCompletionFuture(cf)).isInstanceOf(CancellationException.class);
+    }
+
+    /** Tests {@link ThrowableUtil#rethrowErrorOrRuntimeException(Throwable)}. */
+    @Test
+    public void rethrowErrorOrException() {
+        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
+        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
+        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
+        assertThat(ThrowableUtil.rethrowErrorOrRuntimeException(Throwable1.INSTANCE)).isSameAs(Throwable1.INSTANCE);
+    }
+
+    /** Tests {@link ThrowableUtil#rethrowErrorOrRuntimeException(Throwable)}. */
     @Test
     public void rethrowErrorOrRuntimeException() {
-        try {
-            ThrowableUtil.rethrowErrorOrRuntimeException(Error1.INSTANCE);
-            fail("Oops");
-        } catch (Error ok) {
-            assertSame(Error1.INSTANCE, ok);
-        }
+        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrRuntimeException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
+        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrRuntimeException(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
+        assertThat(ThrowableUtil.rethrowErrorOrRuntimeException(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
+    }
 
-        try {
-            ThrowableUtil.rethrowErrorOrRuntimeException(RuntimeException1.INSTANCE);
-            fail("Oops");
-        } catch (RuntimeException ok) {
-            assertSame(RuntimeException1.INSTANCE, ok);
-        }
-
-        assertSame(Exception1.INSTANCE, ThrowableUtil.rethrowErrorOrRuntimeException(Exception1.INSTANCE));
+    /** Tests {@link ThrowableUtil#throwAny(Throwable)}. */
+    @Test
+    public void throwAny() {
+        assertThatThrownBy(() -> ThrowableUtil.throwAny(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
     }
 }

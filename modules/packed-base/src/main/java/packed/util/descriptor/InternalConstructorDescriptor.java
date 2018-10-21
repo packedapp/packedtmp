@@ -24,7 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 import app.packed.util.ConstructorDescriptor;
-import packed.InternalErrorException;
+import packed.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */
 public final class InternalConstructorDescriptor<T> extends AbstractExecutableDescriptor implements ConstructorDescriptor<T> {

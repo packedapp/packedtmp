@@ -28,7 +28,7 @@ import app.packed.inject.Qualifier;
 
 /** Limited support for javax.inject classes. */
 @SuppressWarnings("unchecked")
-public final class InjectionSupport {
+public final class JavaXInjectSupport {
 
     /** The available qualifier annotations. */
     private static final Class<? extends Annotation>[] INJECT_ANNOTATIONS = JavaxInjectSupport.isPresent()
@@ -45,7 +45,7 @@ public final class InjectionSupport {
             : new Class[] { Qualifier.class };
 
     public static boolean checkQualifierAnnotationPresent(AnnotatedElement e) {
-        for (Class<? extends Annotation> a : InjectionSupport.QUALIFIER_ANNOTATIONS) {
+        for (Class<? extends Annotation> a : JavaXInjectSupport.QUALIFIER_ANNOTATIONS) {
             if (e.isAnnotationPresent(a)) {
                 throw new IllegalArgumentException("@" + a.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
             }
@@ -55,7 +55,7 @@ public final class InjectionSupport {
 
     public static void checkQualifierAnnotationPresent(Annotation e) {
         Class<?> annotationType = e.annotationType();
-        for (Class<? extends Annotation> a : InjectionSupport.QUALIFIER_ANNOTATIONS) {
+        for (Class<? extends Annotation> a : JavaXInjectSupport.QUALIFIER_ANNOTATIONS) {
             if (annotationType.isAnnotationPresent(a)) {
                 return;
             }
@@ -65,7 +65,7 @@ public final class InjectionSupport {
     }
 
     public static boolean isInjectAnnotationPresent(AnnotatedElement e) {
-        for (Class<? extends Annotation> a : InjectionSupport.INJECT_ANNOTATIONS) {
+        for (Class<? extends Annotation> a : JavaXInjectSupport.INJECT_ANNOTATIONS) {
             if (e.isAnnotationPresent(a)) {
                 return true;
             }
@@ -78,7 +78,7 @@ public final class InjectionSupport {
     }
 
     public static boolean isQualifierAnnotationPresent(AnnotatedElement e) {
-        for (Class<? extends Annotation> a : InjectionSupport.QUALIFIER_ANNOTATIONS) {
+        for (Class<? extends Annotation> a : JavaXInjectSupport.QUALIFIER_ANNOTATIONS) {
             if (e.isAnnotationPresent(a)) {
                 return true;
             }

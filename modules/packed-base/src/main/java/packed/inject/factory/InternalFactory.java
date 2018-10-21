@@ -136,7 +136,7 @@ public abstract class InternalFactory<T> {
 
     public static <T> InternalFactory<T> from(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return InjectAPI.fromFactory(factory);
+        return InjectAPI.toInternalFactory(factory);
     }
 
     static class CachedFactoryDefinition {

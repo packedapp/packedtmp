@@ -32,7 +32,7 @@ import java.util.OptionalLong;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.VariableDescriptor;
 import packed.inject.InjectAPI;
-import packed.inject.InjectionSupport;
+import packed.inject.JavaXInjectSupport;
 import packed.inject.InjectAPI.SupportInject;
 import packed.inject.factory.InternalFactory;
 import packed.util.ClassUtil;
@@ -57,12 +57,12 @@ public final class Dependency {
         InjectAPI.SupportInject.init(new SupportInject() {
 
             @Override
-            protected Dependency newDependency(AbstractVariableDescriptor variable) {
+            protected Dependency toDependency(AbstractVariableDescriptor variable) {
                 return new Dependency(variable);
             }
 
             @Override
-            protected <T> InternalFactory<T> fromFactory(Factory<T> factory) {
+            protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
                 return factory.factory;
             }
         });
@@ -260,7 +260,7 @@ public final class Dependency {
         Annotation qa = null;
         if (annotations.length > 0) {
             for (Annotation a : annotations) {
-                if (InjectionSupport.isQualifierAnnotationPresent(a.annotationType())) {
+                if (JavaXInjectSupport.isQualifierAnnotationPresent(a.annotationType())) {
                     if (qa != null) {
                         throw new IllegalArgumentException("More than 1 qualifier on " + actualClass);
                     }

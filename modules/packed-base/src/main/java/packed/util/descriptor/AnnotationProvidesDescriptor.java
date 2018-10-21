@@ -27,7 +27,7 @@ import app.packed.inject.BindMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
-import packed.inject.InjectionSupport;
+import packed.inject.JavaXInjectSupport;
 
 /**
  *
@@ -76,7 +76,7 @@ public final class AnnotationProvidesDescriptor {
 
     private static AnnotationProvidesDescriptor read(InternalMethodDescriptor method, Provides provides) {
         // Cannot have @Inject and @Provides on the same method
-        if (InjectionSupport.isInjectAnnotationPresent(method)) {
+        if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
             throw new InjectionException("Cannot place both @Inject and @" + Provides.class.getSimpleName() + " on the same method, method = " + method);
         }
 

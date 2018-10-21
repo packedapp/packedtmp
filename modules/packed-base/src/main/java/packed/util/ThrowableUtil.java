@@ -15,18 +15,50 @@
  */
 package packed.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-/**
- * Various {@link Exception} and {@link Throwable} utility methods.
- *
- */
-public class ThrowableUtil {
+/** Various {@link Exception} and {@link Throwable} utility methods. */
+public final class ThrowableUtil {
+
+    /**
+     * If the specified future has returned exceptionally, returns the cause. Otherwise returns null.
+     * 
+     * @param future
+     *            the completable future
+     * @return any throwable the specified future has been completed with, or null if it has not been completed or has
+     *         completed normally.
+     */
+    public static Throwable fromCompletionFuture(CompletableFuture<?> future) {
+        if (future.isCompletedExceptionally()) {
+            try {
+                future.getNow(null);
+            } catch (CancellationException e) {
+                return e;
+            } catch (CompletionException e) {
+                return e.getCause();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Throws the specified throwable if it is an {@link Error} or a {@link Exception}. Otherwise returns the specified
+     * throwable.
+     *
+     * @param throwable
+     *            the throwable
+     * @return the specified throwable if it not an Error or a Exception
+     */
+    public static <T extends Throwable> T rethrowErrorOrException(T throwable) throws Exception {
+        if (throwable instanceof Error) {
+            throw (Error) throwable;
+        } else if (throwable instanceof Exception) {
+            throw (Exception) throwable;
+        }
+        return throwable;
+    }
 
     /**
      * Throws the specified throwable if it is an {@link Error} or a {@link RuntimeException}. Otherwise returns the
@@ -45,61 +77,26 @@ public class ThrowableUtil {
         return throwable;
     }
 
-    public static <T extends Throwable> T rethrowErrorOrException(T throwable) throws Exception {
-        if (throwable instanceof Error) {
-            throw (Error) throwable;
-        } else if (throwable instanceof Exception) {
-            throw (Exception) throwable;
-        }
-        return throwable;
+    /**
+     * Throws the specified throwable ignore whatever type it has
+     * 
+     * @param throwable
+     *            the throwable to throw
+     */
+    public static void throwAny(Throwable throwable) {
+        ThrowableUtil.<RuntimeException>throwAny0(throwable);
     }
 
-    public static <T extends Throwable> T stripLastInvocation(T t, String className, String methodName) {
-        StackTraceElement[] elements = t.getStackTrace();
-        int last = -1;
-        for (int i = 0; i < elements.length; i++) {
-            StackTraceElement ste = elements[i];
-            if (ste.getClassName().equals(className) && ste.getMethodName().equals(methodName)) {
-                last = i;
-            }
-        }
-        if (last > 0) {
-            t.setStackTrace(Arrays.copyOfRange(elements, last + 1, elements.length));
-        }
-        return t;
-    }
-
-    public static Throwable fromCompletionFuture(CompletableFuture<?> cf) {
-        if (cf.isCompletedExceptionally()) {
-            try {
-                cf.getNow(null);
-            } catch (CancellationException e) {
-                return e;
-            } catch (CompletionException e) {
-                return e.getCause();
-            }
-        }
-        return null;
-    }
-
-    public static void throwAny(Throwable e) {
-        ThrowableUtil.<RuntimeException>doThrow0(e);
-    }
-
+    /**
+     * Throws the specified throwable.
+     * 
+     * @param throwable
+     *            throwable to throw
+     * @throws E
+     *             the throwable to throw
+     */
     @SuppressWarnings("unchecked")
-    private static <E extends Throwable> void doThrow0(Throwable e) throws E {
-        throw (E) e;
-    }
-
-    public static String format(Throwable thrown) {
-        if (thrown == null) {
-            return "";
-        }
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        pw.println();
-        thrown.printStackTrace(pw);
-        pw.close();
-        return sw.toString();
+    private static <E extends Throwable> void throwAny0(Throwable throwable) throws E {
+        throw (E) throwable;
     }
 }

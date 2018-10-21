@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import app.packed.util.MethodDescriptor;
-import packed.InternalErrorException;
+import packed.util.InternalErrorException;
 
 /** The default implementation of {@link MethodDescriptor}. */
 public final class InternalMethodDescriptor extends AbstractExecutableDescriptor implements MethodDescriptor {

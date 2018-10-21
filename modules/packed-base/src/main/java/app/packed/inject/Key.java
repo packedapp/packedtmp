@@ -24,7 +24,7 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-import packed.inject.InjectionSupport;
+import packed.inject.JavaXInjectSupport;
 import packed.util.ClassUtil;
 import packed.util.Types;
 
@@ -81,7 +81,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
         Annotation qa = null;
         if (annotations.length > 0) {
             for (Annotation a : annotations) {
-                if (InjectionSupport.isQualifierAnnotationPresent(a.annotationType())) {
+                if (JavaXInjectSupport.isQualifierAnnotationPresent(a.annotationType())) {
                     if (qa != null) {
                         throw new IllegalArgumentException("More than 1 qualifier on " + getClass());
                     }
@@ -245,7 +245,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
         Annotation qa = null;
         if (annotations.length > 0) {
             for (Annotation a : annotations) {
-                if (InjectionSupport.isQualifierAnnotationPresent(a.annotationType())) {
+                if (JavaXInjectSupport.isQualifierAnnotationPresent(a.annotationType())) {
                     if (qa != null) {
                         throw new IllegalArgumentException("More than 1 qualifier on " + format(subClass));
                     }
@@ -288,7 +288,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
         Key<T> withAnnotation = of(type);
         requireNonNull(qualifier, "qualifier is null");
-        InjectionSupport.checkQualifierAnnotationPresent(qualifier);
+        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
         return new Key<>(qualifier, withAnnotation.typeLiteral) {};
     }
 
@@ -320,7 +320,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     public static <T> Key<T> of(Type type, Annotation qualifier) {
         requireNonNull(type, "type is null");
         requireNonNull(qualifier, "qualifier is null");
-        InjectionSupport.checkQualifierAnnotationPresent(qualifier);
+        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
         return new Key<T>(type, qualifier, null) {};
     }
 

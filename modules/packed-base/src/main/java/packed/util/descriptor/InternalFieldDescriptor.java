@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
-import packed.InternalErrorException;
+import packed.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
 public final class InternalFieldDescriptor extends AbstractVariableDescriptor implements FieldDescriptor {

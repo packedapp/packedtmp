@@ -32,7 +32,7 @@ import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.util.StringJoiner;
 
-import packed.inject.InjectionSupport;
+import packed.inject.JavaXInjectSupport;
 import packed.util.Types;
 import packed.util.Types.GenericArrayTypeImpl;
 
@@ -282,7 +282,7 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
 
     public Key<T> toKey(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        InjectionSupport.checkQualifierAnnotationPresent(qualifier);
+        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
         return new Key<T>(this, qualifier) {};
     }
 

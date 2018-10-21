@@ -25,7 +25,7 @@ import java.lang.reflect.ParameterizedType;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.ParameterDescriptor;
-import packed.InternalErrorException;
+import packed.util.InternalErrorException;
 
 /** The default implementation of {@link ParameterDescriptor}. */
 public final class InternalParameterDescriptor extends AbstractVariableDescriptor implements ParameterDescriptor {

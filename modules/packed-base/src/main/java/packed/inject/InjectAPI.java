@@ -22,44 +22,78 @@ import app.packed.inject.Factory;
 import packed.inject.factory.InternalFactory;
 import packed.util.descriptor.AbstractVariableDescriptor;
 
-/**
- *
- */
-public class InjectAPI {
+/** A support class for calling package private methods in the app.packed.inject package. */
+public final class InjectAPI {
 
-    public static <T> InternalFactory<T> fromFactory(Factory<T> factory) {
-        return InjectHolder.INJECT.fromFactory(factory);
+    /**
+     * Converts the specified variable descriptor to a dependency.
+     * 
+     * @param variable
+     *            the variable to convert
+     * @return a new dependency
+     */
+    public static Dependency toDependency(AbstractVariableDescriptor variable) {
+        return SingletonHolder.SINGLETON.toDependency(variable);
     }
 
-    public static Dependency injectNewDependency(AbstractVariableDescriptor variable) {
-        return InjectHolder.INJECT.newDependency(variable);
+    /**
+     * Converts the specified factory to an internal factory.
+     * 
+     * @param factory
+     *            the factory to convert
+     * @return the internal factory
+     */
+    public static <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
+        return SingletonHolder.SINGLETON.toInternalFactory(factory);
     }
 
-    static class InjectHolder {
-        static final SupportInject INJECT;
+    /** Holder of the singleton. */
+    static class SingletonHolder {
+
+        /** The singleton instance. */
+        static final SupportInject SINGLETON;
 
         static {
-            Factory.find(Object.class);
-            INJECT = requireNonNull(SupportInject.SUPPORT, "internal error");
+            Factory.find(Object.class); // Initializes Factory, which in turn will call SupportInject#init
+            SINGLETON = requireNonNull(SupportInject.SUPPORT, "internal error");
         }
     }
 
+    /** An abstract class that must be implemented by a class in app.packed.inject. */
     public static abstract class SupportInject {
 
         /** Used for invoking package private InjectorBuilder constructor. */
         private static SupportInject SUPPORT;
 
-        protected abstract <T> InternalFactory<T> fromFactory(Factory<T> factory);
+        /**
+         * Converts the specified variable descriptor to a dependency.
+         * 
+         * @param variable
+         *            the variable to convert
+         * @return a new dependency
+         */
+        protected abstract Dependency toDependency(AbstractVariableDescriptor variable);
 
-        protected abstract Dependency newDependency(AbstractVariableDescriptor variable);
+        /**
+         * Converts the specified factory to an internal factory.
+         * 
+         * @param factory
+         *            the factory to convert
+         * @return the internal factory
+         */
+        protected abstract <T> InternalFactory<T> toInternalFactory(Factory<T> factory);
 
-        // protected abstract InjectorBuilder newBuilderSupport(InternalInjectorBuilder builder);
-
-        public static void init(SupportInject ss) {
+        /**
+         * Initializes this class.
+         * 
+         * @param support
+         *            an implementation of this class
+         */
+        public static void init(SupportInject support) {
             if (SUPPORT != null) {
                 throw new Error("Already initialized");
             }
-            SUPPORT = requireNonNull(ss);
+            SUPPORT = requireNonNull(support);
         }
     }
 }
