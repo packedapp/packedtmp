@@ -48,6 +48,11 @@ public final class BindableFactory<T> extends Factory<T> implements Bindable {
         this.arguments = new Object[factory.getDependencies().size()];
     }
 
+    @Override
+    public <S> BindableFactory<T> bind(Class<S> type, S argument) {
+        return this;
+    }
+
     BindableFactory(InternalFactory<T> factory, Object[] arguments) {
         super(factory);
         this.arguments = arguments;
@@ -55,7 +60,7 @@ public final class BindableFactory<T> extends Factory<T> implements Bindable {
 
     /** {@inheritDoc} */
     @Override
-    BindableFactory<T> mutableCopyOf() {
+    public BindableFactory<T> bindable() {
         Object[] newArguments = new Object[arguments.length];
         System.arraycopy(arguments, 0, newArguments, 0, arguments.length);
         return new BindableFactory<>(factory, newArguments);
@@ -85,7 +90,7 @@ public final class BindableFactory<T> extends Factory<T> implements Bindable {
      *             if the specified implementation is null
      */
     public static <T> BindableFactory<T> find(Class<T> implementation) {
-        return Factory.find(implementation).mutableCopyOf();
+        return Factory.find(implementation).bindable();
     }
     // The same methods as Factory, except for instance
 

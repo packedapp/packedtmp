@@ -57,7 +57,7 @@ public interface Dependant {
     }
 
     /**
-     * Returns an immutable snapshot of the unfulfilled dependencies of this instance. TODO mention something about you can
+     * Returns an immutable list of the unfulfilled dependencies of this instance. TODO mention something about you can
      * change it in a for loop with it being effected.
      *
      * @return an immutable snapshot of the unfulfilled dependencies of this instance

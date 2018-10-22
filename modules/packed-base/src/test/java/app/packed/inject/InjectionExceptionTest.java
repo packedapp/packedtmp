@@ -25,11 +25,11 @@ import support.stubs.Throwables.Exception1;
 /** Tests {@link InjectionException}. */
 public class InjectionExceptionTest {
 
+    /** Tests the various constructors.  */
     @Test
     public void test() {
         assertThat(new InjectionException("foo")).hasNoCause();
         assertThat(new InjectionException("foo")).hasMessage("foo");
-
         assertThat(new InjectionException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
         assertThat(new InjectionException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }

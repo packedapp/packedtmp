@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.util.invokers;
+package packed.util;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+
+import packed.inject.factory.InternalFactory;
+import packed.inject.factory.InternalFactoryExecutable;
 
 /**
  *
@@ -39,6 +42,21 @@ public final class LookupAccessor {
         return new LookupAccessor(lookup);
     }
 
+    public <T> InternalFactory<T> readable(InternalFactory<T> factory) {
+        if (factory instanceof InternalFactoryExecutable) {
+            InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory;
+            if (!e.hasMethodHandle()) {
+                //try {
+                    return e.withMethodLookup(lookup);
+                    //e.executable.unreflect(lookup);
+//                } catch (IllegalAccessException e1) {
+//                    throw new IllegalArgumentException(e1.getMessage());
+//                }
+            }
+            
+        }
+        return factory;
+    }
     // install as component class
     // install as component instance
     // install as mixin class

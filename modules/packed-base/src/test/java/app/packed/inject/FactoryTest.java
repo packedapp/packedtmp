@@ -16,30 +16,16 @@
 package app.packed.inject;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
-import static support.assertj.app.packed.Assertions.assertThatFactory;
+import static support.assertj.Assertions.npe;
 
 import java.lang.annotation.Retention;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Key;
-import app.packed.inject.Qualifier;
-
 /** Test of {@link Factory}. */
 public class FactoryTest {
 
-    public static void npe(Consumer<?> c, String name) {
-        assertThatNullPointerException().isThrownBy(() -> c.accept(null)).withMessage(name + " is null").withNoCause();
-    }
-
-    public static <T, U> void npe(BiConsumer<? super T, ? super U> c, T t, U u, String nameT, String nameU) {
-        assertThatNullPointerException().isThrownBy(() -> c.accept(null, u)).withMessage(nameT + " is null").withNoCause();
-        assertThatNullPointerException().isThrownBy(() -> c.accept(t, null)).withMessage(nameU + " is null").withNoCause();
-    }
 
     public static class ForInstance {
 
@@ -49,7 +35,7 @@ public class FactoryTest {
             npe(Factory::ofInstance, 123, Integer.class, "instance", "type");
             npe(Factory::ofInstance, 123, Key.of(Integer.class), "instance", "typeLiteralOrKey");
 
-            assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
+         //   assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
         }
     }
 

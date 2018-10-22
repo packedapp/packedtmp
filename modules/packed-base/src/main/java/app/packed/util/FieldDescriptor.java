@@ -17,6 +17,7 @@ package app.packed.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 
 import packed.util.descriptor.InternalFieldDescriptor;
 
@@ -28,14 +29,23 @@ import packed.util.descriptor.InternalFieldDescriptor;
 public interface FieldDescriptor extends VariableDescriptor, Member {
 
     /**
-     * Returns a new field with the {@link Field#setAccessible(boolean)} set to the default value.
+     * Returns whether or not this field is a static field.
      *
-     * @return a new field with the {@link Field#setAccessible(boolean)} set to the default value
+     * @return whether or not this field is a static field
+     * @see Modifier#isStatic(int)
      */
-    Field newField();
+    default boolean isStatic() {
+        return Modifier.isStatic(getModifiers());
+    }
 
     /**
-     * Creates a new field descriptor from the field with the specified declaring class and name.
+     * Creates a new {@link Field} corresponding to this descriptor.
+     *
+     * @return a new field
+     */
+    Field newField();
+    /**
+     * Creates a new descriptor by finding a field with the specified declaring class and name.
      *
      * @param type
      *            the type that declares the field
@@ -46,18 +56,18 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
      *             if a field with the specified name is not declared by the specified type
      * @see Class#getDeclaredField(String)
      */
-    public static FieldDescriptor of(Class<?> type, String fieldName) {
+    static FieldDescriptor of(Class<?> type, String fieldName) {
         return InternalFieldDescriptor.of(type, fieldName);
     }
 
     /**
-     * Returns a new field descriptor from the specified field.
+     * Returns a descriptor from the specified field.
      *
      * @param field
-     *            the field to return a descriptor from
-     * @return the new field descriptor
+     *            the field to return a descriptor for
+     * @return a descriptor from the specified field
      */
-    public static FieldDescriptor of(Field field) {
+    static FieldDescriptor of(Field field) {
         return of(field.getDeclaringClass(), field.getName());
     }
 }

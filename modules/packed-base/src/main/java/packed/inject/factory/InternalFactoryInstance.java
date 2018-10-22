@@ -25,21 +25,20 @@ import app.packed.inject.Key;
 import app.packed.inject.TypeLiteralOrKey;
 
 /** A factory that returns the same instance on every invocation. */
-public final class InternalFactoryOfInstance<T> extends InternalFactory<T> {
+public final class InternalFactoryInstance<T> extends InternalFactory<T> {
 
     /** The instance that is returned every time. */
     private final T instance;
 
-    private InternalFactoryOfInstance(TypeLiteralOrKey<T> typeLiteralOrKey, T instance, Class<?> actualType) {
+    private InternalFactoryInstance(TypeLiteralOrKey<T> typeLiteralOrKey, T instance, Class<?> actualType) {
         super(typeLiteralOrKey, actualType);
         this.instance = instance;
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
-    public Class<T> forScanning() {
-        return (Class<T>) instance.getClass();
+    public Class<?> getLowerBound() {
+        return instance.getClass();
     }
 
     /** {@inheritDoc} */
@@ -68,7 +67,7 @@ public final class InternalFactoryOfInstance<T> extends InternalFactory<T> {
     public static <T> InternalFactory<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
-        return new InternalFactoryOfInstance<T>((Key<T>) Key.of(type), instance, type);
+        return new InternalFactoryInstance<T>((Key<T>) Key.of(type), instance, type);
     }
 
     /**
@@ -87,7 +86,7 @@ public final class InternalFactoryOfInstance<T> extends InternalFactory<T> {
         requireNonNull(instance, "instance is null");
         requireNonNull(type, "type is null");
         // TODO validate Class<T>, when we write a test
-        return new InternalFactoryOfInstance<T>(Key.of(type), instance, instance.getClass());
+        return new InternalFactoryInstance<T>(Key.of(type), instance, instance.getClass());
     }
 
     /**
@@ -105,6 +104,6 @@ public final class InternalFactoryOfInstance<T> extends InternalFactory<T> {
     public static <T> InternalFactory<T> of(T instance, TypeLiteralOrKey<T> typeLiteralOrKey) {
         requireNonNull(instance, "instance is null");
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        return new InternalFactoryOfInstance<T>(typeLiteralOrKey, instance, instance.getClass());
+        return new InternalFactoryInstance<T>(typeLiteralOrKey, instance, instance.getClass());
     }
 }

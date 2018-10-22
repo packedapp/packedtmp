@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.Executable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -32,11 +31,10 @@ import java.util.OptionalLong;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.VariableDescriptor;
 import packed.inject.InjectAPI;
-import packed.inject.JavaXInjectSupport;
 import packed.inject.InjectAPI.SupportInject;
+import packed.inject.JavaXInjectSupport;
 import packed.inject.factory.InternalFactory;
 import packed.util.ClassUtil;
-import packed.util.descriptor.AbstractExecutableDescriptor;
 import packed.util.descriptor.AbstractVariableDescriptor;
 import packed.util.descriptor.InternalFieldDescriptor;
 
@@ -51,6 +49,11 @@ import packed.util.descriptor.InternalFieldDescriptor;
 
 // OptionalInt != Optional<Integer> <- key is identical, but dependencies are not
 // Also the way we need to things are different
+
+
+/**
+ *
+ */
 public final class Dependency {
 
     static {
@@ -67,40 +70,21 @@ public final class Dependency {
             }
         });
     }
-    /** The index of the dependency. */
+    
+    /** The index of this dependency. */
     private final int index;
 
-    /** The key of the dependency. */
+    /** The key of this dependency. */
     private final Key<?> key;
 
     /**
-     * Null if mandatory, or one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong}, {@link OptionalDouble} or
-     * Optional annotation
+     * Null if a non-optional dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong}, {@link OptionalDouble} or
+     * (soon-to-be-added) Optional annotation.
      */
     private final Class<?> optionalType;
 
-    final VariableDescriptor variable;
-
-    Dependency(Key<?> key, Class<?> optionalType) {
-        this.key = requireNonNull(key, "key is null");
-        this.optionalType = optionalType;
-        this.index = 0;
-        this.variable = null;
-    }
-
-    public Dependency(Key<?> key, Class<?> optionalType, int index) {
-        this.key = requireNonNull(key, "key is null");
-        this.optionalType = optionalType;
-        this.index = index;
-        this.variable = null;
-    }
-
-    Dependency(Key<?> key, Class<?> optionalType, int index, VariableDescriptor variable) {
-        this.key = requireNonNull(key, "key is null");
-        this.optionalType = optionalType;
-        this.index = index;
-        this.variable = variable;
-    }
+    /** The variable of this dependency. */
+    private final VariableDescriptor variable;
 
     Dependency(AbstractVariableDescriptor variable) {
         this.variable = requireNonNull(variable);
@@ -133,6 +117,27 @@ public final class Dependency {
         }
     }
 
+    Dependency(Key<?> key, Class<?> optionalType) {
+        this.key = requireNonNull(key, "key is null");
+        this.optionalType = optionalType;
+        this.index = 0;
+        this.variable = null;
+    }
+
+    public Dependency(Key<?> key, Class<?> optionalType, int index) {
+        this.key = requireNonNull(key, "key is null");
+        this.optionalType = optionalType;
+        this.index = index;
+        this.variable = null;
+    }
+
+    Dependency(Key<?> key, Class<?> optionalType, int index, VariableDescriptor variable) {
+        this.key = requireNonNull(key, "key is null");
+        this.optionalType = optionalType;
+        this.index = index;
+        this.variable = variable;
+    }
+
     public final Object emptyOptional() {
         if (optionalType == Optional.class) {
             return Optional.empty();
@@ -153,7 +158,6 @@ public final class Dependency {
      * @return the index of the dependency
      */
     public int getIndex() {
-        // maybe variable instanceof Parameter ? parameter.getIndex() : -1;
         return index;
     }
 
@@ -187,12 +191,7 @@ public final class Dependency {
         return optionalType != null;
     }
 
-    // public boolean isProvider() {
-    // return false;
-    // // Are we wrapped in Provider???
-    //
-    // }
-
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -317,17 +316,6 @@ public final class Dependency {
             return new Dependency(Key.of(Double.class), OptionalDouble.class);
         }
         return of(Key.of(type));
-    }
-
-    /**
-     * Returns a list of dependencies matching the parameters of the specified executable.
-     *
-     * @param executable
-     *            the executable to return a list of dependencies for
-     * @return a list of dependencies for the specified executable.
-     */
-    public static List<Dependency> listOf(Executable executable) {
-        return AbstractExecutableDescriptor.of(executable).toDependencyList();
     }
 
     public static <T> Dependency of(FieldDescriptor field) {

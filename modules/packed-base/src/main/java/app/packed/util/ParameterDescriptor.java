@@ -28,9 +28,9 @@ import packed.util.descriptor.InternalParameterDescriptor;
 public interface ParameterDescriptor extends VariableDescriptor {
 
     /**
-     * Return the descriptor of the executable declaring the parameter of this descriptor.
+     * Return a descriptor of the executable declaring this parameter.
      *
-     * @return the descriptor of the executable declaring the parameter of this descriptor
+     * @return a descriptor of the executable declaring this parameter
      * @see Parameter#getDeclaringExecutable()
      */
     ExecutableDescriptor getDeclaringExecutable();
@@ -51,7 +51,7 @@ public interface ParameterDescriptor extends VariableDescriptor {
     boolean isVarArgs();
 
     /**
-     * Creates a new {@link Parameter} corresponding to underlying parameter.
+     * Creates a new {@link Parameter} corresponding to this descriptor.
      * <p>
      * This method always creates a new parameter to avoid giving access to the underlying mutable {@link Executable
      * Parameter#getDeclaringExecutable()}.
@@ -61,22 +61,13 @@ public interface ParameterDescriptor extends VariableDescriptor {
     Parameter newParameter();
 
     /**
-     * Creates a new parameter mirror from the specified parameter.
+     * Returns a descriptor from the specified parameter.
      *
      * @param parameter
-     *            the parameter to create a parameter mirror from
-     * @return a parameter mirror from the specified parameter
+     *            the parameter to return a descriptor for 
+     * @return a descriptor from the specified parameter
      */
     static ParameterDescriptor of(Parameter parameter) {
         return InternalParameterDescriptor.of(parameter);
     }
 }
-
-//// Create a new instance and reset assessible????
-// static ParameterMirror copyOf(Parameter parameter) {
-// // Do we clone it, what about any invokable flags that have been set by the user????
-// // Rename to create???
-// return MirrorOfParameter.from(parameter);
-// }
-// public TypeLiterable getDeclaringType()
-// public Class<?> getDeclaringClass();

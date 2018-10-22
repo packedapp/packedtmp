@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import app.packed.util.MethodDescriptor;
+import packed.inject.JavaXInjectSupport;
 import packed.util.InternalErrorException;
 
 /** The default implementation of {@link MethodDescriptor}. */
@@ -164,5 +165,34 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
      */
     public static InternalMethodDescriptor of(Method method) {
         return new InternalMethodDescriptor(method);
+    }
+    
+    public static InternalMethodDescriptor getDefaultFactoryFindStaticMethodx(Class<?> type) {
+        if (type.isArray()) {
+            throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
+        } else if (type.isAnnotation()) {
+            throw new IllegalArgumentException("The specified type (" + format(type) + ") is an annotation");
+        }
+        Method method = null;
+        for (Method m : type.getDeclaredMethods()) {
+            if (Modifier.isStatic(m.getModifiers()) && JavaXInjectSupport.isInjectAnnotationPresent(m)) {
+                if (method != null) {
+                    throw new IllegalArgumentException("There are multiple static methods annotated with @Inject on " + format(type));
+                }
+                method = m;
+            }
+        }
+        if (method == null) {
+            return null;
+        }
+
+        if (method.getReturnType() == void.class /* || returnType == Void.class */) {
+            throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
+                    + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
+        } else if (JavaXInjectSupport.isOptionalType(method.getReturnType())) {
+            throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
+                    + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
+        }
+        return InternalMethodDescriptor.of(method);
     }
 }

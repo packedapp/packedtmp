@@ -37,6 +37,10 @@ import packed.util.Types;
 import packed.util.Types.GenericArrayTypeImpl;
 
 /**
+ * A TypeLiteral represents a generic type {@code T}.
+ * 
+ * 
+ * 
  * Supports inline instantiation of objects that represent parameterized types with actual type parameters.
  *
  * An object that represents any parameterized type may be obtained by subclassing TypeLiteral.

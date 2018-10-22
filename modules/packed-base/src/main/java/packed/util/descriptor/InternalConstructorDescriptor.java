@@ -23,7 +23,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
+import app.packed.inject.Inject;
 import app.packed.util.ConstructorDescriptor;
+import packed.inject.JavaXInjectSupport;
 import packed.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */
@@ -121,5 +123,50 @@ public final class InternalConstructorDescriptor<T> extends AbstractExecutableDe
      */
     public static <T> InternalConstructorDescriptor<T> of(Constructor<T> constructor) {
         return new InternalConstructorDescriptor<T>(constructor);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> InternalConstructorDescriptor<T> findDefaultForInject(Class<T> clazz) {
+        int maxParameters = 0;
+        Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
+        InternalConstructorDescriptor<T>[] constructors = new InternalConstructorDescriptor[declaredConstructors.length];
+        for (int i = 0; i < declaredConstructors.length; i++) {
+            constructors[i] = (InternalConstructorDescriptor<T>) InternalConstructorDescriptor.of(declaredConstructors[i]);
+            maxParameters = Math.max(maxParameters, constructors[i].getParameterCount());
+        }
+        // See if we only have one constructor, in which case we keep it for later
+        if (constructors.length == 1) {
+            // one = constructors[0];
+        }
+
+        // Look for a single constructor annotated with @Inject
+        InternalConstructorDescriptor<T> injectable = null;
+        for (InternalConstructorDescriptor<T> cm : constructors) {
+            if (JavaXInjectSupport.isInjectAnnotationPresent(cm)) {
+                if (injectable != null) {
+                    throw new IllegalArgumentException("Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class "
+                            + format(constructors[0].getDeclaringClass()));
+                }
+                injectable = cm;
+            }
+        }
+
+        // Look for a single constructor with the maximum number of parameters
+        if (injectable == null) {
+            for (InternalConstructorDescriptor<T> cm : constructors) {
+                if (cm.getParameterCount() == maxParameters) {
+                    if (injectable != null) {
+                        throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
+                                + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class "
+                                + format(constructors[0].getDeclaringClass()));
+                    }
+                    injectable = cm;
+                }
+            }
+        }
+        if (injectable == null) {
+            throw new IllegalArgumentException("Did not find anything");
+        }
+        return injectable;
     }
 }

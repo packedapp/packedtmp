@@ -28,9 +28,15 @@ import packed.inject.JavaXInjectSupport;
 import packed.util.ClassUtil;
 import packed.util.Types;
 
-//Key is abstract otherwise Eclipse does not suggest it.
+/**
+ *
+ *
+ * Unlike TypeLiteral, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their
+ * corresponding wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types
+ * when keys are created. This means that, for example, {@code Key.of(int.class) equals Key.of(Integer.class)}
+ */
 public abstract class Key<T> extends TypeLiteralOrKey<T> {
-
+    
     /** A cache of keys created from a {@link Class}. */
     private static final ClassValue<Key<?>> CACHE = new ClassValue<>() {
 

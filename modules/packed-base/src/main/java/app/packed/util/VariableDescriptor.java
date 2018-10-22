@@ -57,22 +57,25 @@ public interface VariableDescriptor extends AnnotatedElement {
     String getName();
 
     /**
-     * Returns a {@code Class} object that identifies the declared type for the parameter mirror represented by this
-     * {@code ParameterMirror} object.
+     * Returns a class that identifies the type of the variable.
      *
-     * @return a {@code Class} object identifying the declared type of the parameter mirror represented by this object
+     * @return a class that identifies the type of the variable
      * @see Parameter#getType()
+     * @see Field#getType()
      */
     Class<?> getType();
 
     TypeLiteral<?> getTypeLiteral();
 
     /**
-     * Returns true if the variable has a name. This is always true for field variables. And for parameters it depends on
-     * {@link Parameter#isNamePresent()}.
+     * Returns true if the variable has a name.
+     * <p>
+     * This is always true for field variables. For parameter variables it depends on {@link Parameter#isNamePresent()}.
      *
      * @return true if and only if the parameter has a name.
      * @see Parameter#isNamePresent()
+     * @see Parameter#getName()
+     * @see Field#getName()
      */
     boolean isNamePresent();
 

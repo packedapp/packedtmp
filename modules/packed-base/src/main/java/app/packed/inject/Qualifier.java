@@ -30,12 +30,3 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface Qualifier {}
-// String value default "";
-// If value starts with "/....." -> ComponentPath
-// otherwise ordinary
-// # topics, / <- component path + .. ./
-// Why not also on Inject("xxxx") = Qualifier("xxxx");
-// @Inject("/fff") = @Inject @Qualifier("/fff") = @Inject @Named("/fff")
-// All qualifiers that does not start with an alphanumeric character are reserved.
-// ascii characters that are not in the range of 0-9a-zA-Z are reserved for internal usage.
-// And components cannot define qualifiers with it.

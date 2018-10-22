@@ -13,18 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.assertj.app.packed;
+package packed.inject.factory;
 
-import app.packed.inject.Factory;
-import support.assertj.app.packed.inject.FactoryAssert;
+/** Tests {@link InternalFactory0}. */
+public class InternalFactory0Test {
 
-/**
- *
- */
-public class Assertions {
-
-    public static <T> FactoryAssert<T> assertThatFactory(Factory<T> factory) {
-        return new FactoryAssert<>(factory);
-    }
 
 }

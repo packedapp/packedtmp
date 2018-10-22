@@ -48,8 +48,8 @@ public class InternalFactory2<T, U, R> extends InternalFactory<R> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<R> forScanning() {
-        return null;
+    public Class<?> getLowerBound() {
+        return Object.class; //The raw bifunction return objects
     }
 
     /** {@inheritDoc} */

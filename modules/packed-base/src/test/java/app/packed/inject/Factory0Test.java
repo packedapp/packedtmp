@@ -19,11 +19,12 @@ import static app.packed.inject.Factory0.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static support.assertj.app.packed.Assertions.assertThatFactory;
+import static support.assertj.Assertions.assertThatFactory;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Factory;
@@ -47,6 +48,7 @@ public class Factory0Test {
 
         /** Tests {@link Factory0#of(Supplier, TypeLiteral)} */
         @Test
+        @Disabled
         public void typeLiteralParameter() {
             assertThatFactory(of(() -> List.of(1), new Key<@SystemProperty("fff") List<Integer>>() {})).is(new Key<List<Integer>>() {});
 

@@ -62,9 +62,10 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<R> forScanning() {
-        throw new UnsupportedOperationException();
+    public Class<?> getLowerBound() {
+        return Object.class; //The raw function return objects
     }
+
 
     @Override
     public List<Dependency> getDependencies() {
@@ -86,5 +87,17 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
 
     public static <T> InternalFactory<T> of(Function<?, ? extends T> supplier, Class<?> factory1Type) {
         throw new UnsupportedOperationException();
+    }
+    
+
+    static class CachedFactoryDefinition {
+        final List<Dependency> dependencies;
+
+        final TypeLiteral<?> objectType;
+
+        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
+            this.objectType = requireNonNull(objectType);
+            this.dependencies = requireNonNull(dependencies);
+        }
     }
 }

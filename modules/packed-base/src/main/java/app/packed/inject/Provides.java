@@ -43,7 +43,7 @@ public @interface Provides {
      * The bind mode of the provided method, the default is to eagerly create a new instance.
      */
     // Make caching mode plays well together if we allow null returns to indicate look in parent container
-    BindMode bindMode() default BindMode.EAGER;
+    BindMode bindMode() default BindMode.EAGER_SINGLETON;
 
     // Default is return type for methods or field type, on field bla bla.
     // skal maaske baade have real type og exposedType

@@ -15,38 +15,30 @@
  */
 package app.packed.inject;
 
-/** A caching mode can be used for */
-// At some point we might have a caching framework that will also have a CachingMode
-// So might call it something else
-// can always cache things in component.store()
-// ServiceCachingMode??? Or just ServiceCaching <--
-
-// Per Component, giver jo ogsaa kun mening, hvis jeg producere noget lokalt til en komponent.
-// Eller f.eks. en logger
-
-// Skal vi supportere noget der ikke bliver nedarvet til andre injectore.
-// Maaske skal de overhoved ikke vaere hirachiske injectore.
-// Kun containerene, men ikke de enkelte komponenters
-
-// Det her er foranledigt af at vi gode vil have et ActorSystem til ting der er annoteret med
-// @Actor... Qualifier???? Nej, fordi qualifier-> Skal mappe til en.
-// @Actor er mere end slags marker. Det kunne ogsaa @Job, eller en speciel metode...
-// Basalt set
+/**
+ *
+ */
 public enum BindMode {
 
     /**
-     * A single instance is created together with the injector where it created. This is the default used throughout this
-     * library.
+     * A single instance is created as soon as possible. This is the default mode used throughout the framework.
      */
-    EAGER,
+    EAGER_SINGLETON,
 
-    /** A single instance is created on demand. Calls by other threads while constructing the value will block. */
-    LAZY,
+    /**
+     * A single instance is created on demand. Concurrent calls by other threads while constructing the value will block.
+     */
+    LAZY_SINGLETON,
 
-    /** Instances are created every time a value is requested. */
-    NEVER;
+    /** A new instances is created for every request. */
+    PROTOTYPE;
 
+    /**
+     * Returns whether or not mode is {@link #EAGER_SINGLETON} or {@link #LAZY_SINGLETON}.
+     * 
+     * @return whether or not mode is {@link #EAGER_SINGLETON} or {@link #LAZY_SINGLETON}
+     */
     public boolean isSingleton() {
-        return this != NEVER;
+        return this != PROTOTYPE;
     }
 }

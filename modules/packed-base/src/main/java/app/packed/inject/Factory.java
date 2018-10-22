@@ -18,23 +18,21 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.BaseStream;
 
 import app.packed.util.ConstructorDescriptor;
 import packed.inject.factory.InternalFactory;
 import packed.inject.factory.InternalFactory0;
 import packed.inject.factory.InternalFactory1;
 import packed.inject.factory.InternalFactory2;
-import packed.inject.factory.InternalFactoryOfExecutable;
-import packed.inject.factory.InternalFactoryOfInstance;
-import packed.inject.factory.InternalFactoryOfIteratorOrStream;
+import packed.inject.factory.InternalFactoryExecutable;
+import packed.inject.factory.InternalFactoryInstance;
 
 /**
  * Factories are used for creating new instances of a particular type.
@@ -55,7 +53,7 @@ public class Factory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> type) {
-            return new Factory(InternalFactoryOfExecutable.from(type));
+            return new Factory(InternalFactoryExecutable.from(type));
         }
     };
 
@@ -152,16 +150,24 @@ public class Factory<T> {
     }
 
     /**
-     *
-     * @return
+     * Returns a new bindable factory.
+     * @return a new bindable factory
      */
     // bindable
     // newBindable
     // toBindable()
-    BindableFactory<T> mutableCopyOf() {
+    public BindableFactory<T> bindable() {
         return new BindableFactory<>(factory);
     }
 
+    public final boolean isAccessibleWith(Lookup lookup) {
+        return factory.isAccessibleWith(lookup);
+    }
+    
+    public final void checkAccessWith(Lookup lookup) {
+        
+    }
+    
     /**
      * Returns a new factory that caches the value produced the first time. If multiple attempts to create a value the rest
      * blocks
@@ -345,7 +351,7 @@ public class Factory<T> {
      * @see #ofInstance(Object, TypeLiteralOrKey)
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(InternalFactoryOfInstance.of(instance));
+        return new Factory<>(InternalFactoryInstance.of(instance));
     }
 
     /**
@@ -362,7 +368,7 @@ public class Factory<T> {
      * @see #ofInstance(Object, TypeLiteralOrKey)
      */
     public static <T> Factory<T> ofInstance(T instance, Class<T> type) {
-        return new Factory<>(InternalFactoryOfInstance.of(instance, type));
+        return new Factory<>(InternalFactoryInstance.of(instance, type));
     }
 
     /**
@@ -377,25 +383,7 @@ public class Factory<T> {
      * @see #ofInstance(Object, TypeLiteralOrKey)
      */
     public static <T> Factory<T> ofInstance(T instance, TypeLiteralOrKey<T> typeLiteralOrKey) {
-        return new Factory<>(InternalFactoryOfInstance.of(instance, typeLiteralOrKey));
-    }
-
-    public static <T> Factory<T> ofIterator(Iterator<? extends T> iterator, Class<T> type) {
-        return new Factory<>(InternalFactoryOfIteratorOrStream.ofIterator(iterator, type));
-    }
-
-    /**
-     * Creates a new factory that returns the specified constructor on every invocation.
-     *
-     * @param instance
-     *            the instance to return on every invocation
-     * @param type
-     *            a type literal
-     * @return the new factory
-     * @see #ofConstructor(Constructor)
-     */
-    public static <T> Factory<T> ofIterator(Iterator<? extends T> iterator, TypeLiteralOrKey<T> type) {
-        return new Factory<T>(new InternalFactoryOfIteratorOrStream<>(type, iterator));
+        return new Factory<>(InternalFactoryInstance.of(instance, typeLiteralOrKey));
     }
 
     // How we skal have
@@ -442,23 +430,6 @@ public class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> ofStream(BaseStream<? extends T, ? extends BaseStream<T, ?>> stream, Class<T> type) {
-        return new Factory<>(InternalFactoryOfIteratorOrStream.ofStream(stream, type));
-    }
-
-    /**
-     * Creates a new factory that returns the specified constructor on every invocation.
-     *
-     * @param instance
-     *            the instance to return on every invocation
-     * @param type
-     *            a type literal
-     * @return the new factory
-     * @see #ofConstructor(Constructor)
-     */
-    public static <T> Factory<T> ofStream(BaseStream<? extends T, ? extends BaseStream<T, ?>> stream, TypeLiteralOrKey<T> type) {
-        return new Factory<>(InternalFactoryOfIteratorOrStream.ofStream(stream, type));
-    }
 }
 
 // If we add withDependency, which I think we should. It should be reflected in the available keys

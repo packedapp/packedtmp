@@ -28,18 +28,18 @@ import packed.util.descriptor.InternalMethodDescriptor;
 public interface MethodDescriptor extends ExecutableDescriptor {
 
     /**
-     * Returns a {@code Class} object that represents the formal return type of the underlying method represented by this
-     * descriptor.
+     * Returns a {@code Class} object that represents the formal return type of this method .
      *
-     * @return the return type of the underlying method represented by this
+     * @return the return type of this method
      * @see Method#getReturnType()
      */
     Class<?> getReturnType();
 
     /**
-     * Returns whether or not this method is static.
+     * Returns whether or not this method is a static method.
      *
-     * @return whether or not this method is static
+     * @return whether or not this method is a static method
+     * @see Modifier#isStatic(int)
      */
     default boolean isStatic() {
         return Modifier.isStatic(getModifiers());

@@ -15,12 +15,20 @@
  */
 package packed.util;
 
-/** An exception thrown whenever an internal error is encountered.. */
+/** An exception thrown whenever an internal error of some kind occurs. */
 public final class InternalErrorException extends RuntimeException {
 
     /** serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 
+     * 
+     * @param paramName
+     *            the name of the parameter
+     * @param param
+     *            the value of the parameter
+     */
     public InternalErrorException(String paramName, Object param) {
         super("InternalError, " + paramName + " = " + param);
     }

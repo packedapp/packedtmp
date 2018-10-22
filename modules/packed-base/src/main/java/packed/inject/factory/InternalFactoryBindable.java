@@ -36,7 +36,7 @@ public class InternalFactoryBindable<T> extends InternalFactory<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<T> forScanning() {
+    public Class<T> getLowerBound() {
         return null;
     }
 

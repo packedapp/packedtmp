@@ -60,10 +60,8 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
     }
 
     @Override
-    public Class<T> forScanning() {
-        // THIS IS NOT RIGHT WAY TO DO IT
-        // return (MirrorOfClass<T>) MirrorOfClass.fromImplementation(factory.getRawType());
-        throw new UnsupportedOperationException();
+    public Class<?> getLowerBound() {
+        return Object.class; //The raw supplier generate objects
     }
 
     static class CachedFactoryDefinition {

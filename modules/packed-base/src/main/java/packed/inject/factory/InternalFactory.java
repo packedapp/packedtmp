@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static packed.util.Formatter.format;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
 import app.packed.inject.Dependency;
@@ -30,7 +31,7 @@ import app.packed.inject.TypeLiteralOrKey;
 import packed.inject.InjectAPI;
 
 /**
- * An internal factory.
+ * The internal version of the {@link Factory} class.
  * <p>
  * Instances of this this class are <b>never</b> exposed to users.
  */
@@ -46,14 +47,16 @@ public abstract class InternalFactory<T> {
         Dependency.of(String.class);// Initializes InternalApis for InternalFactory
     }
 
-    /** The type of objects this factory creates. */
-    private final TypeLiteral<T> typeLiteral;
-
-    private final Key<T> key;
-    private final Class<? super T> type;
-
     // Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
     final Class<?> actualType;
+
+    /** The key that this factory will be registered under by default with an injector. */
+    private final Key<T> key;
+    
+    private final Class<? super T> type;
+
+    /** The type of objects this factory creates. */
+    private final TypeLiteral<T> typeLiteral;
 
     public InternalFactory(TypeLiteralOrKey<T> typeLiteralOrKey) {
         this(typeLiteralOrKey, typeLiteralOrKey.getRawType());
@@ -74,23 +77,21 @@ public abstract class InternalFactory<T> {
 
     }
 
-    public abstract Class<T> forScanning();
-
-    public InternalFactory<T> withMethodLookup(MethodHandles.Lookup l) {
-        throw new UnsupportedOperationException("This method is only supported by factories that was created using a Constructor, Method or MethodHandler");
+    protected T checkLowerbound(T instance) {
+        if (!type.isInstance(instance)) {
+            throw new InjectionException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
+        }
+        return instance;
     }
+
 
     /**
-     * @return the dependencies
+     * Returns the key that this factory will be made available under if registering with an injector.
+     * 
+     * @return the key that this factory will be made available under if registering with an injector
      */
-    public abstract List<Dependency> getDependencies();
-
-    public Key<T> getKey() {
+    public final Key<T> getKey() {
         return key;
-    }
-
-    public int getNumberOfUnresolvedDependencies() {
-        return getDependencies().size();
     }
 
     /**
@@ -101,7 +102,6 @@ public abstract class InternalFactory<T> {
     public final Class<? super T> getRawType() {
         return type;
     }
-
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
      * {@link org.cakeframework.lifecycle.OnStart} and {@link app.packed.inject.Provides}. This might differ from the
@@ -121,32 +121,55 @@ public abstract class InternalFactory<T> {
         return typeLiteral;
     }
 
+    
+
     /**
+     * Returns a list of all of this factory's dependencies.
+     * 
+     * @return a list of all of this factory's dependencies
+     */
+    public abstract List<Dependency> getDependencies();
+    
+    public abstract Class<?> getLowerBound();
+
+
+    /**
+     * Instantiates a new object using the specified parameters
+     * 
      * @param params
-     * @return
+     *            the parameters to use
+     * @return the new instance
      */
     public abstract T instantiate(Object[] params);
 
-    protected T checkLowerbound(T instance) {
-        if (!type.isInstance(instance)) {
-            throw new InjectionException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
-        }
-        return instance;
+    /**
+     * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
+     * 
+     * @param lookup
+     *            the lookup object to use
+     * @return a new internal factory that uses the specified lookup object
+     */
+    public InternalFactory<T> withMethodLookup(MethodHandles.Lookup lookup) {
+        throw new UnsupportedOperationException("This method is only supported by factories that was created using a Constructor or Method");
     }
 
+    /**
+     * Converts the specified factory to an internal factory
+     * 
+     * @param factory
+     *            the factory convert
+     * @return the converted factory
+     */
     public static <T> InternalFactory<T> from(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         return InjectAPI.toInternalFactory(factory);
     }
 
-    static class CachedFactoryDefinition {
-        final List<Dependency> dependencies;
-
-        final TypeLiteral<?> objectType;
-
-        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
-            this.objectType = requireNonNull(objectType);
-            this.dependencies = requireNonNull(dependencies);
-        }
+    /**
+     * @param lookup
+     * @return
+     */
+    public boolean isAccessibleWith(Lookup lookup) {
+        return true;
     }
 }

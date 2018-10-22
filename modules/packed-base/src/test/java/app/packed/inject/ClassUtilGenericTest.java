@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,6 +39,7 @@ public class ClassUtilGenericTest {
     }
 
     @Test
+    @Disabled
     public void test() {
         assertNull(getTypeOfArgument(A.class, AA1.class, 0));
         assertSame(Integer.class, getTypeOfArgument(A.class, AA2.class, 0));
