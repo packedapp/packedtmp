@@ -26,6 +26,7 @@ import java.util.Objects;
 
 import packed.inject.JavaXInjectSupport;
 import packed.util.ClassUtil;
+import packed.util.GenericsUtil;
 import packed.util.Types;
 
 /**
@@ -243,7 +244,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     }
 
     public static <T> Key<T> getKeyOfArgument(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
-        TypeLiteral<T> t = TypeLiteral.getTypeOfArgument(superClass, parameterIndex, subClass);
+        TypeLiteral<T> t = GenericsUtil.getTypeOfArgument(superClass, parameterIndex, subClass);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();

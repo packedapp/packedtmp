@@ -143,30 +143,6 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
         return lookup.unreflect(method);
     }
 
-    /**
-     * Returns true if a overrides b. Assumes signatures of a and b are the same and a's declaring class is a subclass of
-     * b's declaring class.
-     */
-    private static boolean methodOverrides(Method sub, Method supeer) {
-        int modifiers = supeer.getModifiers();
-        if (Modifier.isPrivate(modifiers)) {
-            return false;
-        }
-        return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers)
-                || sub.getDeclaringClass().getPackage().equals(supeer.getDeclaringClass().getPackage());
-    }
-
-    /**
-     * Creates a new descriptor from the specified method.
-     *
-     * @param method
-     *            the method to wrap
-     * @return a new method descriptor
-     */
-    public static InternalMethodDescriptor of(Method method) {
-        return new InternalMethodDescriptor(method);
-    }
-    
     public static InternalMethodDescriptor getDefaultFactoryFindStaticMethodx(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
@@ -194,5 +170,29 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
                     + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
         }
         return InternalMethodDescriptor.of(method);
+    }
+
+    /**
+     * Returns true if a overrides b. Assumes signatures of a and b are the same and a's declaring class is a subclass of
+     * b's declaring class.
+     */
+    private static boolean methodOverrides(Method sub, Method supeer) {
+        int modifiers = supeer.getModifiers();
+        if (Modifier.isPrivate(modifiers)) {
+            return false;
+        }
+        return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers)
+                || sub.getDeclaringClass().getPackage().equals(supeer.getDeclaringClass().getPackage());
+    }
+    
+    /**
+     * Creates a new descriptor from the specified method.
+     *
+     * @param method
+     *            the method to wrap
+     * @return a new method descriptor
+     */
+    public static InternalMethodDescriptor of(Method method) {
+        return new InternalMethodDescriptor(method);
     }
 }

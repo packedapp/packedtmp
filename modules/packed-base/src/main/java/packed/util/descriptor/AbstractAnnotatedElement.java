@@ -66,6 +66,30 @@ public abstract class AbstractAnnotatedElement implements AnnotatedElement {
     public abstract String descriptorName();
 
     /**
+     * Attempts to find a qualifier annotation on this element.
+     *
+     * @return a optional qualifier
+     * @throws InjectionException
+     *             if more than one qualifier are present on the element
+     */
+    public final Optional<Annotation> findQualifiedAnnotation() {
+        Annotation qualifier = null;
+        for (Annotation a : annotations) {
+            Class<? extends Annotation> annotationType = a.annotationType();
+            if (JavaXInjectSupport.isQualifierAnnotationPresent(annotationType)) {
+                AnnotationUtil.validateRuntimeRetentionPolicy(a.annotationType());
+                if (qualifier != null) {
+                    List<Class<? extends Annotation>> annotations = List.of(element.getAnnotations()).stream().map(Annotation::annotationType)
+                            .filter(JavaXInjectSupport::isQualifierAnnotationPresent).collect(Collectors.toList());
+                    throw new InjectionException("Multiple qualifiers found on element '" + element + "', qualifiers = " + annotations);
+                }
+                qualifier = a;
+            }
+        }
+        return Optional.ofNullable(qualifier);
+    }
+
+    /**
      * Invokes the specified action for each annotation present on this element.
      *
      * @param action
@@ -142,29 +166,5 @@ public abstract class AbstractAnnotatedElement implements AnnotatedElement {
             }
         }
         return false;
-    }
-
-    /**
-     * Attempts to find a qualifier on this element.
-     *
-     * @return a optional qualifier
-     * @throws InjectionException
-     *             if more than one qualifier are present on the element
-     */
-    public final Optional<Annotation> findQualifiedAnnotation() {
-        Annotation qualifier = null;
-        for (Annotation a : annotations) {
-            Class<? extends Annotation> annotationType = a.annotationType();
-            if (JavaXInjectSupport.isQualifierAnnotationPresent(annotationType)) {
-                AnnotationUtil.validateRuntimeRetentionPolicy(a.annotationType());
-                if (qualifier != null) {
-                    List<Class<? extends Annotation>> annotations = List.of(element.getAnnotations()).stream().map(Annotation::annotationType)
-                            .filter(JavaXInjectSupport::isQualifierAnnotationPresent).collect(Collectors.toList());
-                    throw new InjectionException("Multiple qualifiers found on element '" + element + "', qualifiers = " + annotations);
-                }
-                qualifier = a;
-            }
-        }
-        return Optional.ofNullable(qualifier);
     }
 }

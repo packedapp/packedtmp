@@ -35,6 +35,7 @@ import packed.inject.InjectAPI.SupportInject;
 import packed.inject.JavaXInjectSupport;
 import packed.inject.factory.InternalFactory;
 import packed.util.ClassUtil;
+import packed.util.GenericsUtil;
 import packed.util.descriptor.AbstractVariableDescriptor;
 import packed.util.descriptor.InternalFieldDescriptor;
 
@@ -67,6 +68,11 @@ public final class Dependency {
             @Override
             protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
                 return factory.factory;
+            }
+
+            @Override
+            protected TypeLiteral<?> toTypeLiteral(Type type) {
+                return TypeLiteral.of(type);
             }
         });
     }

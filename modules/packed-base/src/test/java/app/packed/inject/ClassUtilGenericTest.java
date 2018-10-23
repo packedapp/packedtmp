@@ -15,9 +15,9 @@
  */
 package app.packed.inject;
 
-import static app.packed.inject.GenericsUtil.getTypeOfArgument;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static packed.util.GenericsUtil.getTypeOfArgument;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,11 +32,6 @@ import org.junit.jupiter.api.Test;
  */
 @SuppressWarnings("rawtypes")
 public class ClassUtilGenericTest {
-
-    @Test
-    public void getClasz() {
-        assertSame(A.class, GenericsUtil.getClass(A.class));
-    }
 
     @Test
     @Disabled

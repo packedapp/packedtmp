@@ -114,17 +114,6 @@ public final class InternalConstructorDescriptor<T> extends AbstractExecutableDe
         return lookup.unreflectConstructor(constructor);
     }
 
-    /**
-     * Creates a new descriptor from the specified constructor.
-     *
-     * @param constructor
-     *            the constructor to wrap
-     * @return a new constructor descriptor
-     */
-    public static <T> InternalConstructorDescriptor<T> of(Constructor<T> constructor) {
-        return new InternalConstructorDescriptor<T>(constructor);
-    }
-    
     @SuppressWarnings("unchecked")
     public static <T> InternalConstructorDescriptor<T> findDefaultForInject(Class<T> clazz) {
         int maxParameters = 0;
@@ -168,5 +157,16 @@ public final class InternalConstructorDescriptor<T> extends AbstractExecutableDe
             throw new IllegalArgumentException("Did not find anything");
         }
         return injectable;
+    }
+    
+    /**
+     * Creates a new descriptor from the specified constructor.
+     *
+     * @param constructor
+     *            the constructor to wrap
+     * @return a new constructor descriptor
+     */
+    public static <T> InternalConstructorDescriptor<T> of(Constructor<T> constructor) {
+        return new InternalConstructorDescriptor<T>(constructor);
     }
 }

@@ -63,8 +63,6 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
         this.parameterTypes = executable.getParameterTypes();
     }
 
-    public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
-
     /**
      * Returns the declaring class of the executable.
      *
@@ -156,6 +154,8 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
         }
         return this.dependencies = dependencies;
     }
+
+    public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     /**
      * Creates a new executable descriptor from a method or constructor.

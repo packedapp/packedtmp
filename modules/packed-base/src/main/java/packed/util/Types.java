@@ -37,6 +37,7 @@ import java.util.Set;
 
 import app.packed.inject.Provider;
 import app.packed.inject.TypeLiteral;
+import packed.inject.InjectAPI;
 
 /**
  * Static methods for working with types that we aren't publishing in the public {@code Types} API.
@@ -107,7 +108,7 @@ public class Types {
             // the following casts are generally unsafe, but org.cakeframework.reflect.Provider extends
             // javax.inject.Provider and is covariant
             @SuppressWarnings("unchecked")
-            TypeLiteral<T> guiceProviderType = (TypeLiteral<T>) TypeLiteral.of(createProviderOf(parameterizedType.getActualTypeArguments()[0]));
+            TypeLiteral<T> guiceProviderType = (TypeLiteral<T>) InjectAPI.toTypeLiteral(createProviderOf(parameterizedType.getActualTypeArguments()[0]));
             return guiceProviderType;
         }
 
@@ -125,7 +126,7 @@ public class Types {
         // recreate the TypeLiteral to avoid anonymous TypeLiterals from holding refs to their
         // surrounding classes.
         @SuppressWarnings("unchecked")
-        TypeLiteral<T> recreated = (TypeLiteral<T>) TypeLiteral.of(typeLiteral.getType());
+        TypeLiteral<T> recreated = (TypeLiteral<T>) InjectAPI.toTypeLiteral(typeLiteral.getType());
         return recreated;
     }
 

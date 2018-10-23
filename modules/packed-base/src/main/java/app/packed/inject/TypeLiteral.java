@@ -17,24 +17,14 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
-import static packed.util.Formatter.format;
-import static packed.util.Types.canonicalize;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.List;
-import java.util.StringJoiner;
 
 import packed.inject.JavaXInjectSupport;
-import packed.util.Types;
-import packed.util.Types.GenericArrayTypeImpl;
+import packed.util.GenericsUtil;
+import packed.util.TypeUtil;
 
 /**
  * A TypeLiteral represents a generic type {@code T}.
@@ -45,18 +35,18 @@ import packed.util.Types.GenericArrayTypeImpl;
  *
  * An object that represents any parameterized type may be obtained by subclassing TypeLiteral.
  *
- * <pre>
- *     &#64;TypeLiteral<List<String>> list = new TypeLiteral<List<String>>() {};
+ * <pre> {@code
+ * TypeLiteral<Integer> list = new TypeLiteral<Integer>() {};
+ * TypeLiteral<List<String>> list = new TypeLiteral<List<String>>() {};}
  * </pre>
  */
 public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
 
     /**
-     * We cache the hashCode of the type field, as most Type implementations calculates it every time. See, for example,
+     * We cache the hash code of the type, as most Type implementations calculates it every time. See, for example,
      * https://github.com/frohoff/jdk8u-jdk/blob/master/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
      */
-    /** Cache the hash code for the string */
-    private final int hash; // Default to 0
+    private int hash;
 
     /** The raw type. */
     private final Class<? super T> rawType;
@@ -73,60 +63,26 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      */
     @SuppressWarnings("unchecked")
     protected TypeLiteral() {
-        this.type = Types.getSuperclassTypeParameter(getClass());
-        this.rawType = (Class<? super T>) Types.findRawType(type);
-        this.hash = type.hashCode();
+        this.type = (Type) GenericsUtil.getTypeOfArgumentX(TypeLiteral.class, 0, getClass());
+        this.rawType = (Class<? super T>) TypeUtil.findRawType(type);
     }
 
-    /** Unsafe. Constructs a type literal manually. */
+    /**
+     * Constructs a type literal from a specific type.
+     * 
+     * @param type
+     *            the type to create a type literal from
+     */
     @SuppressWarnings("unchecked")
-    TypeLiteral(Type type) {
-        this.type = canonicalize(requireNonNull(type, "type is null"));
-        this.rawType = (Class<? super T>) Types.findRawType(this.type);
-        this.hash = this.type.hashCode();
+    private TypeLiteral(Type type) {
+        this.type = requireNonNull(type, "type is null");
+        this.rawType = (Class<? super T>) TypeUtil.findRawType(this.type);
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {
-        return obj instanceof TypeLiteral && Types.equals(type, ((TypeLiteral<?>) obj).type);
-    }
-
-    /**
-     * Returns the resolved generic exception types thrown by {@code constructor}.
-     *
-     * @param executable
-     *            an executable defined by this or any of its super types.
-     */
-    public final List<TypeLiteral<?>> getExceptionTypes(Executable executable) {
-        return resolveMultiple(executable, executable.getGenericExceptionTypes());
-    }
-
-    /**
-     * Returns the resolved generic type of the specified {@code field}.
-     *
-     * @param field
-     *            a field defined by this, or any or its superclasses
-     * @throws IllegalArgumentException
-     *             if the specified field is not defined by this, or any or its superclasses
-     */
-    public final TypeLiteral<?> getFieldType(Field field) {
-        if (!field.getDeclaringClass().isAssignableFrom(rawType)) {
-            throw new IllegalArgumentException(format(field) + " is not defined by a supertype of " + type);
-        }
-        return of(resolveType(field.getGenericType()));
-    }
-
-    /**
-     * Returns the resolved generic parameter types of the specified {@code executable}.
-     *
-     * @param executable
-     *            a executable defined by this, or any or its super types
-     * @throws IllegalArgumentException
-     *             if the specified executable is not defined by this, or any of its super types
-     */
-    public final List<TypeLiteral<?>> getParameterTypes(Executable executable) {
-        return resolveMultiple(executable, executable.getGenericParameterTypes());
+        return obj instanceof TypeLiteral && type.equals(((TypeLiteral<?>) obj).type);
     }
 
     /**
@@ -137,44 +93,6 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     @Override
     public final Class<? super T> getRawType() {
         return rawType;
-    }
-
-    /**
-     * Returns the resolved generic return type of the specified {@code method}.
-     *
-     * @param method
-     *            a method defined by this, or any or its super types
-     * @throws IllegalArgumentException
-     *             if the specified method is not defined by this, or any of its super types
-     */
-
-    // class Stuff<T> {
-    // @Provides T create();
-    // }
-    // .install(new TypeLiteral<Stuff<Integer>>).. Provides makes lists of ints..
-
-    public final TypeLiteral<?> getReturnType(Method method) {
-        if (!method.getDeclaringClass().isAssignableFrom(rawType)) {
-            throw new IllegalArgumentException(format(method) + " is not defined by " + format(getRawType()) + " or any of its supertypes");
-        }
-        return of(resolveType(method.getGenericReturnType()));
-    }
-
-    /**
-     * Returns the generic form of {@code supertype}. For example, if this is {@code
-     * ArrayList<String>}, this returns {@code Iterable<String>} given the input {@code
-     * Iterable.class}.
-     *
-     * @param supertype
-     *            a superclass of, or interface implemented by, this.
-     * @since 2.0
-     */
-    public final TypeLiteral<?> getSupertype(Class<?> supertype) {
-        if (!supertype.isAssignableFrom(rawType)) {
-            throw new IllegalArgumentException(supertype + " is not a supertype of " + type);
-        }
-
-        return of(resolveType(Types.getGenericSupertype(type, rawType, supertype)));
     }
 
     /**
@@ -189,102 +107,20 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return hash;
-    }
-
-    /** Returns an immutable list of the resolved types. */
-    private List<TypeLiteral<?>> resolveMultiple(Executable executable, Type[] types) {
-        if (!executable.getDeclaringClass().isAssignableFrom(rawType)) {
-            if (executable instanceof Method) {
-                throw new IllegalArgumentException(executable + " is not defined by a supertype of " + type);
-            } else {
-                throw new IllegalArgumentException(executable + " does not construct a supertype of " + type);
-            }
+        int h = hash;
+        if (h != 0) {
+            return h;
         }
-        TypeLiteral<?>[] result = new TypeLiteral<?>[types.length];
-        for (int t = 0; t < types.length; t++) {
-            result[t] = of(resolveType(types[t]));
-        }
-        return List.of(result);
+        return hash = type.hashCode();
     }
 
-    Type resolveType(Type type) {
-        // this implementation is made a little more complicated in an attempt to avoid object-creation
-        Type toResolve = type;
-        while (true) {
-            if (toResolve instanceof TypeVariable) {
-                TypeVariable<?> original = (TypeVariable<?>) toResolve;
-                toResolve = Types.resolveTypeVariable(type, rawType, original);
-                if (toResolve == original) {
-                    return toResolve;
-                }
-
-            } else if (toResolve instanceof GenericArrayType) {
-                GenericArrayType original = (GenericArrayType) toResolve;
-                Type componentType = original.getGenericComponentType();
-                Type newComponentType = resolveType(componentType);
-                return componentType == newComponentType ? original : new GenericArrayTypeImpl(componentType);
-
-            } else if (toResolve instanceof ParameterizedType) {
-                ParameterizedType original = (ParameterizedType) toResolve;
-                Type ownerType = original.getOwnerType();
-                Type newOwnerType = resolveType(ownerType);
-                boolean changed = newOwnerType != ownerType;
-
-                Type[] args = original.getActualTypeArguments();
-                for (int t = 0, length = args.length; t < length; t++) {
-                    Type resolvedTypeArgument = resolveType(args[t]);
-                    if (resolvedTypeArgument != args[t]) {
-                        if (!changed) {
-                            args = args.clone();
-                            changed = true;
-                        }
-                        args[t] = resolvedTypeArgument;
-                    }
-                }
-
-                return changed ? Types.createNewParameterizedTypeWithOwner(newOwnerType, original.getRawType(), args) : original;
-
-            } else if (toResolve instanceof WildcardType) {
-                WildcardType original = (WildcardType) toResolve;
-                Type[] originalLowerBound = original.getLowerBounds();
-                Type[] originalUpperBound = original.getUpperBounds();
-
-                if (originalLowerBound.length == 1) {
-                    Type lowerBound = resolveType(originalLowerBound[0]);
-                    if (lowerBound != originalLowerBound[0]) {
-                        return Types.createSupertypeOf(lowerBound);
-                    }
-                } else if (originalUpperBound.length == 1) {
-                    Type upperBound = resolveType(originalUpperBound[0]);
-                    if (upperBound != originalUpperBound[0]) {
-                        return Types.createSubtypeOf(upperBound);
-                    }
-                }
-                return original;
-
-            } else {
-                return toResolve;
-            }
-        }
-    }
-
-    /**
-     * Returns a canonical representation of this type literal. This method works indentical to {@link String#intern()}.
-     *
-     * @return a type literal that has the same contents as this type literal, but is guaranteed to be from a pool of unique
-     *         type literal.
-     */
-    final TypeLiteral<T> intern() {
-        throw new UnsupportedOperationException();
-    }
-
+    /** {@inheritDoc} */
     @Override
-    public Key<T> toKey() {
+    public final Key<T> toKey() {
         return new Key<T>(this, null) {};
     }
 
-    public Key<T> toKey(Annotation qualifier) {
+    public final Key<T> toKey(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
         return new Key<T>(this, qualifier) {};
@@ -293,7 +129,10 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        return Types.typeToString(type);
+        if (type instanceof Class) {
+            return ((Class<?>) type).getCanonicalName(); // strip 'class/interface' from it
+        }
+        return type.toString();
     }
 
     /**
@@ -311,48 +150,19 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     /**
      * Returns a type literal from the specified type.
      *
+     * @apiNote this method is not available publically because you can really pass anything in like a Type. Since there are
+     *          no standard way to create hash codes for something like {@link ParameterizedType}, we need to make a copy of
+     *          every specified type to make sure different implementations calculates the same hash code. For example,
+     *          {@code BlueParameterizedType<String>} can have a different hashCode then
+     *          {@code GreenParameterizedType<String>} because {@link ParameterizedType} does not specify how the hash code
+     *          is calculated. As a result we need to transform them both into instances of the same
+     *          InternalParameterizedType.
      * @param type
      *            the class instance to return a type literal for
      * @return a type literal from the specified type
      * @see #of(Class)
      */
-    public static TypeLiteral<?> of(Type type) {
+    static TypeLiteral<?> of(Type type) {
         return new TypeLiteral<>(type);
     }
-
-    @SuppressWarnings("unchecked")
-    public static <T> TypeLiteral<T> getTypeOfArgument(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
-        Type t = GenericsUtil.getTypeOfArgument(superClass, subClass, parameterIndex);
-        if (t instanceof TypeVariable) {
-            Class<?> component = subClass.getSuperclass();
-            StringBuilder sb = new StringBuilder();
-            TypeVariable<?>[] typeparms = component.getTypeParameters();
-            if (typeparms.length > 0) {
-                StringJoiner sj = new StringJoiner(",", "<", ">");
-                for (TypeVariable<?> typeparm : typeparms) {
-                    sj.add(typeparm.getTypeName());
-                }
-                sb.append(sj.toString());
-            }
-            throw new IllegalArgumentException(
-                    "Could not determine the type variable <" + t + "> of " + component.getSimpleName() + sb + " for " + format(subClass));
-        }
-        return (TypeLiteral<T>) TypeLiteral.of(t);
-    }
-    //
-    // public static TypeLiteral<?> fromTypeVariable(Class<?> superClass, int index, Class<?> subClass) {
-    // if (subClass.getSuperclass() != superClass) {
-    // throw new IllegalArgumentException(
-    // format(subClass) + " must extend " + format(superClass) + " directly, extended " + format(subClass.getSuperclass()) +
-    // " instead");
-    // }
-    //
-    // Type superclass = subClass.getGenericSuperclass();
-    // if (!(superclass instanceof ParameterizedType)) {
-    // throw new IllegalArgumentException(format(subClass) + " does not specify any type parameters");
-    // }
-    // // TODO fail if we have @XXX, cannot use annotations on TypeLiterals
-    // Type t = Types.canonicalize(((ParameterizedType) superclass).getActualTypeArguments()[index]);
-    // return of(t);
-    // }
 }

@@ -23,6 +23,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import packed.util.GenericsUtil;
+
 /**
  *
  */
@@ -35,7 +37,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected CachedFactoryDefinition computeValue(Class<?> type) {
-            TypeLiteral<?> tl = TypeLiteral.getTypeOfArgument(Factory.class, 0, (Class) type);
+            TypeLiteral<?> tl = GenericsUtil.getTypeOfArgument(Factory.class, 0, (Class) type);
             Key<?> d1 = Key.getKeyOfArgument(Factory2.class, 0, (Class) getClass());
             Key<?> d2 = Key.getKeyOfArgument(Factory2.class, 1, (Class) getClass());
             return new CachedFactoryDefinition(tl, List.of(new Dependency(d1, null, 0), new Dependency(d2, null, 1)));

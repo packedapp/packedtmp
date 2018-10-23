@@ -17,8 +17,11 @@ package packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Type;
+
 import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
+import app.packed.inject.TypeLiteral;
 import packed.inject.factory.InternalFactory;
 import packed.util.descriptor.AbstractVariableDescriptor;
 
@@ -36,6 +39,17 @@ public final class InjectAPI {
         return SingletonHolder.SINGLETON.toDependency(variable);
     }
 
+    /**
+     * Converts the specified factory to an internal factory.
+     * 
+     * @param factory
+     *            the factory to convert
+     * @return the internal factory
+     */
+    public static TypeLiteral<?> toTypeLiteral(Type type) {
+        return SingletonHolder.SINGLETON.toTypeLiteral(type);
+    }
+    
     /**
      * Converts the specified factory to an internal factory.
      * 
@@ -82,7 +96,16 @@ public final class InjectAPI {
          * @return the internal factory
          */
         protected abstract <T> InternalFactory<T> toInternalFactory(Factory<T> factory);
-
+        
+        /**
+         * Converts the type to a type literal.
+         * 
+         * @param type
+         *            the type to convert
+         * @return the type literal
+         */
+        protected abstract TypeLiteral<?> toTypeLiteral(Type type);
+        
         /**
          * Initializes this class.
          * 
