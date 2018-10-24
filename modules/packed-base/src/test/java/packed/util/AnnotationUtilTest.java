@@ -24,9 +24,14 @@ import org.junit.jupiter.api.Test;
 
 /** Tests {@link AnnotationUtil}. */
 public class AnnotationUtilTest {
+    
+    @Test
+    public void ahh() {
+        
+    }
 
     /** Tests {@link AnnotationUtil#validateRuntimeRetentionPolicy(Class)}. */
-    public static class ValidateRuntimeRetentionPolicy {
+    public static class ValidateRuntimeRetentionPolicyTest {
 
         /** Tests {@link AnnotationUtil#validateRuntimeRetentionPolicy(Class)}. */
         @Test
