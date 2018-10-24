@@ -47,10 +47,4 @@ public class KeyTest {
 
     // Se ogsaa
     // https://github.com/leangen/geantyref/blob/master/src/main/java/io/leangen/geantyref/AnnotationInvocationHandler.java
-    public static void main(String[] args) {
-        Key<String> k = new Key<@Name("foo") String>() {};
-
-        System.out.println(k);
-        System.out.println(k.getQualifier());
-    }
 }

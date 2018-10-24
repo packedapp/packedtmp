@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.util;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -26,7 +26,6 @@ import java.util.SortedSet;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
 /**
  *
  */
@@ -34,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public class ClassUtilGenericTest {
 
     @Test
-    @Disabled
+    @Disabled("Not Working")
     public void test() {
         assertNull(getTypeOfArgument(A.class, AA1.class, 0));
         assertSame(Integer.class, getTypeOfArgument(A.class, AA2.class, 0));
@@ -74,8 +73,4 @@ public class ClassUtilGenericTest {
     class B4 extends AA7<String> {}
 
     class C1 extends B3<SortedSet> {}
-
-    public static void main(String[] args) {
-
-    }
 }

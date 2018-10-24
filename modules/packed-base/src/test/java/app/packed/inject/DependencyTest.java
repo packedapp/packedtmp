@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  */
 public class DependencyTest {
-    static final Key<?> KEY_QA_INT = new Key<@Q("A") Integer>() {};
+    static final Key<?> KEY_QA_INT = new Key< /*@Q("A")*/ Integer>() {};
 
     @Nested
     public class OptionalsOf {
