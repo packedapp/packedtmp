@@ -17,27 +17,16 @@ package packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
+import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 import packed.inject.factory.InternalFactory;
-import packed.util.descriptor.AbstractVariableDescriptor;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class InjectAPI {
-
-    /**
-     * Converts the specified variable descriptor to a dependency.
-     * 
-     * @param variable
-     *            the variable to convert
-     * @return a new dependency
-     */
-    public static Dependency toDependency(AbstractVariableDescriptor variable) {
-        return SingletonHolder.SINGLETON.toDependency(variable);
-    }
 
     /**
      * Converts the specified factory to an internal factory.
@@ -49,6 +38,11 @@ public final class InjectAPI {
     public static TypeLiteral<?> toTypeLiteral(Type type) {
         return SingletonHolder.SINGLETON.toTypeLiteral(type);
     }
+
+    public static Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
+        return SingletonHolder.SINGLETON.toKeyNullableQualifier(type, qualifier);
+    }
+    
     
     /**
      * Converts the specified factory to an internal factory.
@@ -80,15 +74,6 @@ public final class InjectAPI {
         private static SupportInject SUPPORT;
 
         /**
-         * Converts the specified variable descriptor to a dependency.
-         * 
-         * @param variable
-         *            the variable to convert
-         * @return a new dependency
-         */
-        protected abstract Dependency toDependency(AbstractVariableDescriptor variable);
-
-        /**
          * Converts the specified factory to an internal factory.
          * 
          * @param factory
@@ -96,6 +81,11 @@ public final class InjectAPI {
          * @return the internal factory
          */
         protected abstract <T> InternalFactory<T> toInternalFactory(Factory<T> factory);
+        
+        
+        //Take a Source??? For example, a method to use for error message.
+        // When creating the key
+        protected abstract Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
         
         /**
          * Converts the type to a type literal.

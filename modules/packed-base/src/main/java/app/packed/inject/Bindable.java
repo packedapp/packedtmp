@@ -16,8 +16,10 @@
 package app.packed.inject;
 
 /**
- * A bindable object allows for the dynamic bindings of a set of dependencies.
+ * A bindable object allows for dynamic bindings of its dependencies.
  * 
+ * <p>
+ * A frequent operation is to let an Injector bind all the dependencies that is can.
  * An interface that allows an object to bound
  * 
  * object or factories that will

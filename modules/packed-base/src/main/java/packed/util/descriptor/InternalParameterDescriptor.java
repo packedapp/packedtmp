@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 
+import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.ParameterDescriptor;
@@ -157,6 +158,12 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
 
     /** {@inheritDoc} */
     @Override
+    protected Dependency toDependency0() {
+        return Dependency.of(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString() {
         return parameter.toString();
     }
@@ -190,7 +197,7 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
         }
         throw new InternalErrorException("parameter", parameter);// We should never get to here
     }
-
+    
     /**
      * If the specified descriptor is an instance of this class. This method casts and returns the specified descriptor.
      * Otherwise creates a new descriptor.

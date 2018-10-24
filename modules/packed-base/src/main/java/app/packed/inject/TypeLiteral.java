@@ -23,6 +23,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import packed.inject.JavaXInjectSupport;
+import packed.util.ClassUtil;
 import packed.util.GenericsUtil;
 import packed.util.TypeUtil;
 
@@ -36,11 +37,11 @@ import packed.util.TypeUtil;
  * TypeLiteral<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
  * </pre>
  */
-//TODO test this from other packages....
-//concrete class, public constructor -> People can instantiate
-//concrete class, protected constructor
-//abstract class, public constructor
-//abstract class, protected constructor
+// TODO test this from other packages....
+// concrete class, public constructor -> People can instantiate
+// concrete class, protected constructor
+// abstract class, public constructor
+// abstract class, protected constructor
 public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
 
     /**
@@ -77,6 +78,18 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     TypeLiteral(Type type) {
         this.type = requireNonNull(type, "type is null");
         this.rawType = (Class<? super T>) TypeUtil.findRawType(this.type);
+    }
+
+    /**
+     * If this type literal is a private type, returns the boxed version. Otherwise returns this.
+     * 
+     * @return if this type literal is a primitive returns the boxed version, otherwise returns this
+     */
+    public final TypeLiteral<T> box() {
+        if (getRawType().isPrimitive()) {
+          return new TypeLiteral<>(ClassUtil.boxClass(getRawType()));
+        }
+        return this;
     }
 
     /** {@inheritDoc} */

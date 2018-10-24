@@ -33,17 +33,42 @@ import packed.util.GenericsUtil;
 import packed.util.TypeUtil;
 
 /**
+ * A key is unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal and an
+ * optional annotation called a qualifier. It does so by requiring user to create a subclass of this class which enables
+ * retrieval of the type information even at runtime. Some examples of non qualified keys are:
+ *
+ * <pre> {@code
+ * Key<List<String>> list = new Key<List<String>>() {};
+ * Key<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
+ * </pre>
+ * 
+ * Given a custom defined qualifier:
+ * <pre> {@code
+ * @Qualifier
+ * public @interface Name {
+ *    String value() default "noname";
+ * }}
+ * </pre> 
+ * Some examples of qualified keys 
+ * <pre> {@code
+ * Key<List<String>> list = new Key<@Name("foo") List<String>>() {};
+ * Key<List<String>> list = new Key<@Name List<String>>() {}; //uses default value}
+ * </pre>
+ * 
+ * In order for a key to be valid, it must:
  * <ul>
- * <li><b>Not an optional type.<b> The key cannot be of type {@link Optional}, {@link OptionalInt}, {@link OptionalLong}
+ * <li><b>Not an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt}, {@link OptionalLong}
  * or {@link OptionalDouble} as they are reserved.</li>
- * <li><b>0 or 1 qualifier.<b> A valid key cannot have more than 1 annotations whose type is annotated with
+ * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
  * {@link Qualifier}</li>
- * <li></li>
  * </ul>
  * Furthermore, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding
  * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
  * This means that, for example, {@code Key.of(int.class) equals Key.of(Integer.class)}.
  */
+
+//Create a valid key for @Provides
+//Extract 
 public abstract class Key<T> extends TypeLiteralOrKey<T> {
 
     /** The lazily computed hash code. */

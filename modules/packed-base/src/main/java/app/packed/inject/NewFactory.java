@@ -15,8 +15,6 @@
  */
 package app.packed.inject;
 
-import support.stubs.annotation.SystemProperty;
-
 /**
  *
  */
@@ -29,7 +27,7 @@ public class NewFactory<T> {
 
 //        NewFactory<CharSequence> f = fromInstance("doo").as(CharSequence.class);
 
-        fromInstance("doo").as(new Key<@SystemProperty("hejhej") CharSequence>() {});
+       // fromInstance("doo").as(new Key<@SystemProperty("hejhej") CharSequence>() {});
         
         Factory<String> ff=null;
         

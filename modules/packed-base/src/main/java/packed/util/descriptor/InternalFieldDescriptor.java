@@ -23,6 +23,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
 import packed.inject.InjectAPI;
@@ -203,5 +204,11 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
      */
     public static InternalFieldDescriptor of(FieldDescriptor descriptor) {
         return descriptor instanceof InternalFieldDescriptor ? (InternalFieldDescriptor) descriptor : of(descriptor.newField());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected Dependency toDependency0() {
+        return Dependency.of(this);
     }
 }

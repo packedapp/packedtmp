@@ -35,7 +35,6 @@ import packed.inject.InjectAPI;
 import packed.inject.InjectAPI.SupportInject;
 import packed.inject.JavaXInjectSupport;
 import packed.inject.factory.InternalFactory;
-import packed.util.ClassUtil;
 import packed.util.GenericsUtil;
 import packed.util.descriptor.AbstractVariableDescriptor;
 import packed.util.descriptor.InternalFieldDescriptor;
@@ -65,11 +64,6 @@ public final class Dependency {
         InjectAPI.SupportInject.init(new SupportInject() {
 
             @Override
-            protected Dependency toDependency(AbstractVariableDescriptor variable) {
-                return new Dependency(variable);
-            }
-
-            @Override
             protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
                 return factory.factory;
             }
@@ -77,6 +71,11 @@ public final class Dependency {
             @Override
             protected TypeLiteral<?> toTypeLiteral(Type type) {
                 return TypeLiteral.of(type);
+            }
+
+            @Override
+            protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
+                return null;
             }
         });
     }
@@ -96,42 +95,18 @@ public final class Dependency {
     /** The variable of this dependency. */
     private final VariableDescriptor variable;
 
-    /**
-     * Create a dependency from the specified variable
-     * 
-     * @param variable
-     *            from the specified variable
-     */
-    Dependency(AbstractVariableDescriptor variable) {
-        this.variable = variable;
+    Dependency(Key<?> key, AbstractVariableDescriptor variable, Class<?> optionalType) {
+        this.key = requireNonNull(key);
         this.index = variable.getIndex();
+        this.optionalType = optionalType;
+        this.variable = variable;
+    }
 
-        variable.getTypeLiteral();
-        Class<?> rawType = variable.getType();
-        Class<?> injectableType;
-        if (rawType == Optional.class) {
-            // injectableType = (Class) variable.getParameterizedType().getActualTypeArguments()[0];
-            // optionalType = Optional.class;
-            throw new UnsupportedOperationException();
-        } else if (rawType == OptionalLong.class) {
-            injectableType = Long.class;
-            optionalType = OptionalLong.class;
-        } else if (rawType == OptionalInt.class) {
-            injectableType = Integer.class;
-            optionalType = OptionalInt.class;
-        } else if (rawType == OptionalDouble.class) {
-            injectableType = Double.class;
-            optionalType = OptionalDouble.class;
-        } else {
-            injectableType = ClassUtil.boxClass(rawType);
-            optionalType = null;
-        }
-        Optional<Annotation> q = variable.findQualifiedAnnotation();
-        if (q != null) {
-            this.key = Key.of(injectableType, q.get());
-        } else {
-            this.key = Key.of(injectableType);
-        }
+    Dependency(Key<?> key, int index, Class<?> optionalType) {
+        this.key = requireNonNull(key);
+        this.index = index;
+        this.optionalType = optionalType;
+        this.variable = null;
     }
 
     Dependency(Key<?> key, Class<?> optionalType) {
@@ -146,13 +121,6 @@ public final class Dependency {
         this.optionalType = optionalType;
         this.index = index;
         this.variable = null;
-    }
-
-    Dependency(Key<?> key, Class<?> optionalType, int index, VariableDescriptor variable) {
-        this.key = requireNonNull(key, "key is null");
-        this.optionalType = optionalType;
-        this.index = index;
-        this.variable = variable;
     }
 
     /**
@@ -237,20 +205,20 @@ public final class Dependency {
     public VariableDescriptor variable() {
         return variable;
     }
-
-    /**
-     * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
-     * specified index.
-     *
-     * @param index
-     *            the index of the returned variable
-     * @return a new dependency with the specified index
-     * @throws IllegalArgumentException
-     *             if the index is negative ({@literal <}0
-     */
-    public Dependency withIndex(int index) {
-        throw new UnsupportedOperationException();
-    }
+//
+//    /**
+//     * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
+//     * specified index.
+//     *
+//     * @param index
+//     *            the index of the returned variable
+//     * @return a new dependency with the specified index
+//     * @throws IllegalArgumentException
+//     *             if the index is negative ({@literal <}0
+//     */
+//    public Dependency withIndex(int index) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns the specified object if not optional, or a the specified object in an optional type (either {@link Optional},
@@ -343,11 +311,45 @@ public final class Dependency {
     }
 
     public static <T> Dependency of(FieldDescriptor field) {
-        return new Dependency(InternalFieldDescriptor.of(field));
+        return of((AbstractVariableDescriptor) InternalFieldDescriptor.of(field));
     }
 
     public static <T> Dependency of(ParameterDescriptor parameter) {
-        return new Dependency(InternalParameterDescriptor.of(parameter));
+        return of((AbstractVariableDescriptor) InternalParameterDescriptor.of(parameter));
+    }
+
+    private static Dependency of(AbstractVariableDescriptor variable) {
+        TypeLiteral<?> tl = variable.getTypeLiteral();
+
+        Optional<Annotation> q = variable.findQualifiedAnnotation();
+
+        Class<?> optionalType = null;
+        Class<?> rawType = tl.getRawType();
+        if (rawType.isPrimitive()) {
+            tl = tl.box();
+        } else if (rawType == Optional.class) {
+            // injectableType = (Class) variable.getParameterizedType().getActualTypeArguments()[0];
+            // optionalType = Optional.class;
+            // Kan ikke have Optional<OptionalDouble>
+            throw new UnsupportedOperationException();
+        } else if (rawType == OptionalLong.class) {
+            optionalType = OptionalLong.class;
+            tl = TypeLiteral.of(Long.class);
+        } else if (rawType == OptionalInt.class) {
+            optionalType = OptionalInt.class;
+            tl = TypeLiteral.of(Integer.class);
+        } else if (rawType == OptionalDouble.class) {
+            optionalType = OptionalDouble.class;
+            tl = TypeLiteral.of(Double.class);
+        }
+
+        Key<?> key;
+        if (q.isPresent()) {
+            key = tl.toKey(q.get());
+        } else {
+            key = tl.toKey();
+        }
+        return new Dependency(key, variable, optionalType);
     }
 
     public static <T> Dependency of(Key<?> key) {

@@ -25,7 +25,6 @@ import app.packed.inject.Dependency;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.inject.InjectAPI;
 
 /** The default abstract implementation of {@link VariableDescriptor}. */
 public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElement implements VariableDescriptor {
@@ -64,10 +63,12 @@ public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElemen
      *
      * @return this variable as a dependency
      */
-    public final Dependency toDependency() {
+    public Dependency toDependency()    {
         Dependency dependency = this.dependency;
-        return dependency == null ? this.dependency = InjectAPI.toDependency(this) : dependency;
+        return dependency == null ? this.dependency = toDependency0() : dependency;
     }
+
+    protected abstract Dependency toDependency0();
 
     /**
      * Tries to convert the specified value descriptor to an abstract value descriptor.
