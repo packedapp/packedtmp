@@ -23,64 +23,48 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import packed.inject.JavaXInjectSupport;
-import packed.util.ClassUtil;
 import packed.util.GenericsUtil;
-import packed.util.Types;
+import packed.util.TypeUtil;
 
 /**
- *
- *
- * Unlike TypeLiteral, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their
- * corresponding wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types
- * when keys are created. This means that, for example, {@code Key.of(int.class) equals Key.of(Integer.class)}
+ * <ul>
+ * <li><b>Not an optional type.<b> The key cannot be of type {@link Optional}, {@link OptionalInt}, {@link OptionalLong}
+ * or {@link OptionalDouble} as they are reserved.</li>
+ * <li><b>0 or 1 qualifier.<b> A valid key cannot have more than 1 annotations whose type is annotated with
+ * {@link Qualifier}</li>
+ * <li></li>
+ * </ul>
+ * Furthermore, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding
+ * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
+ * This means that, for example, {@code Key.of(int.class) equals Key.of(Integer.class)}.
  */
 public abstract class Key<T> extends TypeLiteralOrKey<T> {
-    
-    /** A cache of keys created from a {@link Class}. */
-    private static final ClassValue<Key<?>> CACHE = new ClassValue<>() {
 
-        /** {@inheritDoc} */
-        @Override
-        protected Key<?> computeValue(Class<?> type) {
-            return new Key<>(type, null, null) {};
-        }
-    };
+    /** The lazily computed hash code. */
+    private int hash;
 
-    /** The precomputed hash code. */
-    private final int hashCode;
-
-    /** Any qualifier that might be present on the key. */
+    /** An (optional) qualifier of this key. */
     private final Annotation qualifier;
 
-    /** The (lazily computed) string representation of this key. */
-    private String toString;
-
+    /** The generic type of this key. */
     private final TypeLiteral<T> typeLiteral;
-
-    final Class<?> wildcardAnnotation;
 
     /**
      * Constructs a new key. Derives the type from this class's type parameter.
-     *
-     * <p>
-     * Clients create an empty anonymous subclass. Doing so embeds the type parameter in the anonymous class's type
-     * hierarchy so we can reconstitute it at runtime despite erasure.
-     *
-     * <p>
-     * Example usage for a binding of type {@code Foo}:
-     *
-     * <p>
-     * {@code new Key<Foo>() {}}.
      */
-    @SuppressWarnings("unchecked")
     protected Key() {
-        // Get Type Literal
-        TypeLiteral<?> t = TypeLiteral.of(Types.getSuperclassTypeParameter(getClass()));
-        this.typeLiteral = Types.canonicalizeForKey((TypeLiteral<T>) t);
-
-        // TODO check not Optional, OptionalLong, OptionalDouble, OptionalInteger
+        Type tt = (Type) GenericsUtil.getTypeOfArgumentX(Key.class, 0, getClass());
+        typeLiteral = new TypeLiteral<>(tt);
+        if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
+            // cannot be parameterized with Optional
+            throw new IllegalArgumentException();
+        }
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) getClass().getAnnotatedSuperclass();
@@ -97,59 +81,31 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
             }
         }
         this.qualifier = qa;
-
-        // AnnotatedType[] annotatedActualTypeArguments = pta.getAnnotatedActualTypeArguments();
-
-        this.hashCode = computeHashCode();
-        this.wildcardAnnotation = null;
     }
 
-    /** Unsafe. Constructs a key from a manually specified type. */
-    @SuppressWarnings("unchecked")
-    Key(Type type, Annotation qualifier, Class<? extends Annotation> wildcardAnnotation) {
-        this.qualifier = qualifier;
-        this.typeLiteral = Types.canonicalizeForKey((TypeLiteral<T>) TypeLiteral.of(type));
-        this.hashCode = computeHashCode();
-        this.wildcardAnnotation = wildcardAnnotation;
-    }
-
-    /** Constructs a key from a manually specified type. */
-    Key(TypeLiteral<T> typeLiteral, Annotation qualifier) {
-        this.qualifier = qualifier;
-        this.typeLiteral = Types.canonicalizeForKey(typeLiteral);
-        this.hashCode = computeHashCode();
-        this.wildcardAnnotation = null;
-    }
-
+    /**
+     * Creates a new key.
+     * 
+     * @param qualifier
+     *            the qualifier
+     * @param typeLiteral
+     *            the generic type
+     */
     Key(Annotation qualifier, TypeLiteral<T> typeLiteral) {
         this.qualifier = qualifier;
-        this.typeLiteral = typeLiteral;
-        this.hashCode = computeHashCode();
-        this.wildcardAnnotation = null;
+        this.typeLiteral = requireNonNull(typeLiteral, "typeLiteral is null");
     }
 
-    /** Computes the hash code for this key. */
-    private int computeHashCode() {
-        return (typeLiteral.hashCode() * 31 + Objects.hashCode(qualifier)) * 31 + Objects.hashCode(wildcardAnnotation);
-    }
-
+    /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (!(obj instanceof Key<?>)) {
+        } else if (!(obj instanceof Key)) {
             return false;
         }
         Key<?> other = (Key<?>) obj;
-        return Objects.equals(qualifier, other.qualifier) && Objects.equals(wildcardAnnotation, other.wildcardAnnotation)
-                && typeLiteral.equals(other.typeLiteral);
-    }
-
-    public <S> Key<?> fromTypeVariable(Class<S> baseClass, Class<? extends S> actualClass, int baseTypeVariableIndex) {
-        Type t = GenericsUtil.getTypeOfArgument(baseClass, actualClass, baseTypeVariableIndex);
-        // Check not Optional?????
-        // TODO check that there are no qualifier annotations on the type.
-        return Key.of(t);
+        return Objects.equals(qualifier, other.qualifier) && typeLiteral.equals(other.typeLiteral);
     }
 
     /**
@@ -162,9 +118,9 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     }
 
     /**
-     * Returns the type of any qualifier this key might have, or null if this key has no qualifier.
+     * Returns the type of qualifier this key have, or null if this key has no qualifier.
      *
-     * @return the type of any qualifier this key might have, or null if this key has no qualifier
+     * @return the type of qualifier this key have, or null if this key has no qualifier
      */
     public final Class<? extends Annotation> getQualifierType() {
         return qualifier == null ? null : qualifier.annotationType();
@@ -175,7 +131,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
         return typeLiteral.getRawType();
     }
 
-    /** Gets the key type. */
+    /** Returns the genetic type of this key. */
     public final TypeLiteral<T> getTypeLiteral() {
         return typeLiteral;
     }
@@ -183,22 +139,20 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return hashCode;
+        int h = hash;
+        if (h != 0) {
+            return h;
+        }
+        return hash = Objects.hashCode(qualifier) ^ typeLiteral.hashCode();
     }
 
-    public boolean isWildcard() {
-        return wildcardAnnotation != null;
-    }
-
-    boolean matches(Class<?> other) {
-        return matches(Key.of(other));
-    }
-
-    boolean matches(Key<?> other) {
-        // The name needs to be pretty bong on... So we do not end in a situation like Class.isAssignableFrom
-
-        // bindableFrom <- Still needs to think
-        return true;
+    /**
+     * Returns whether or not this key has a qualifier.
+     * 
+     * @return whether or not this key has a qualifier
+     */
+    public final boolean hasQualifier() {
+        return qualifier != null;
     }
 
     @Override
@@ -206,41 +160,41 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
         return this;
     }
 
+    public final String toShortString() {
+        return "foo";
+    }
+
     @Override
     public final String toString() {
         return toString(true);
     }
 
-    public final String toStringNoKey() {
-        return toString(false);
+    final String toString(boolean appendKey) {
+        StringBuilder sb = new StringBuilder();
+        if (appendKey) {
+            sb.append("Key<");
+        }
+        if (qualifier != null) {
+            Class<? extends Annotation> annotationType = qualifier.annotationType();
+            if (annotationType != null) {
+                String shortDescription = qualifier.toString().replace(annotationType.getPackageName() + ".", "");
+                sb.append(shortDescription);
+                // sb.append("@");
+                // sb.append(annotationType.getSimpleName());
+                // System.out.println(Annotations.nameOf(this));
+                // System.out.println(qualifier);
+                sb.append(" ");
+            }
+        }
+        sb.append(typeLiteral);
+        if (appendKey) {
+            sb.append('>');
+        }
+        return sb.toString();
     }
 
-    final String toString(boolean appendKey) {
-        String toString = this.toString;
-        if (toString == null) {
-            StringBuilder sb = new StringBuilder();
-            if (appendKey) {
-                sb.append("Key<");
-            }
-            if (qualifier != null) {
-                Class<? extends Annotation> annotationType = qualifier.annotationType();
-                if (annotationType != null) {
-                    String shortDescription = qualifier.toString().replace(annotationType.getPackageName() + ".", "");
-                    sb.append(shortDescription);
-                    // sb.append("@");
-                    // sb.append(annotationType.getSimpleName());
-                    // System.out.println(Annotations.nameOf(this));
-                    // System.out.println(qualifier);
-                    sb.append(" ");
-                }
-            }
-            sb.append(typeLiteral);
-            if (appendKey) {
-                sb.append('>');
-            }
-            return this.toString = sb.toString();
-        }
-        return toString;
+    public final String toStringNoKey() {
+        return toString(false);
     }
 
     public static <T> Key<T> getKeyOfArgument(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
@@ -277,10 +231,9 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
      *            the type to return a key for
      * @return a key matching the specified type
      */
-    @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
-        return (Key<T>) CACHE.get(ClassUtil.boxClass(type));
+        return new Key<>(null, TypeLiteral.of(type)) {};
     }
 
     /**
@@ -306,13 +259,13 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
      *            the type to return a key for
      * @return a key matching the specified type
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Key<T> of(Type type) {
         requireNonNull(type, "type is null");
         if (type instanceof Class) {
             return of((Class<T>) type);
         }
-        return new Key<T>(type, null, null) {};
+        return new Key(null, TypeLiteral.of(type)) {};
     }
 
     /**
@@ -324,14 +277,11 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
      *            the qualifier of the key
      * @return a key matching the specified type and qualifier
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> Key<T> of(Type type, Annotation qualifier) {
         requireNonNull(type, "type is null");
         requireNonNull(qualifier, "qualifier is null");
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
-        return new Key<T>(type, qualifier, null) {};
-    }
-
-    public static Key<Object> ofWildcardAnnotation(Class<? extends Annotation> wildcardAnnotationType) {
-        throw new UnsupportedOperationException();
+        return new Key(qualifier, TypeLiteral.of(type)) {};
     }
 }

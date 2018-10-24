@@ -23,6 +23,8 @@ import java.util.function.Consumer;
 /**
  * An object with 0 or more dependencies.
  */
+//Hvor skal man bruge den???? Eller skal vi bare smide den ind paa Bindable.
+//Ellers skal Factory jo overskrive den.
 public interface Dependant {
 
     /**

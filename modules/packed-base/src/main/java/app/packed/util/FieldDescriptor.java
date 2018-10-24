@@ -70,4 +70,5 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
     static FieldDescriptor of(Field field) {
         return of(field.getDeclaringClass(), field.getName());
     }
+
 }

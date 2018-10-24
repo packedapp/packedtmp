@@ -27,19 +27,20 @@ import packed.util.GenericsUtil;
 import packed.util.TypeUtil;
 
 /**
- * A TypeLiteral represents a generic type {@code T}.
- * 
- * 
- * 
- * Supports inline instantiation of objects that represent parameterized types with actual type parameters.
- *
- * An object that represents any parameterized type may be obtained by subclassing TypeLiteral.
+ * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
+ * not provide a way to represent generic types. It does so by requiring user to create a subclass of this class which
+ * enables retrieval of the type information even at runtime. Usage:
  *
  * <pre> {@code
- * TypeLiteral<Integer> list = new TypeLiteral<Integer>() {};
  * TypeLiteral<List<String>> list = new TypeLiteral<List<String>>() {};}
+ * TypeLiteral<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
  * </pre>
  */
+//TODO test this from other packages....
+//concrete class, public constructor -> People can instantiate
+//concrete class, protected constructor
+//abstract class, public constructor
+//abstract class, protected constructor
 public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
 
     /**
@@ -55,11 +56,10 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     private final Type type;
 
     /**
-     * Constructs a new type literal. Derives represented class from type parameter.
-     *
-     * <p>
-     * Clients create an empty anonymous subclass. Doing so embeds the type parameter in the anonymous class's type
-     * hierarchy so we can reconstitute it at runtime despite erasure.
+     * Constructs a new type literal by deriving the actual type from the type parameter.
+     * 
+     * @throws IllegalArgumentException
+     *             if the type parameter could not decided
      */
     @SuppressWarnings("unchecked")
     protected TypeLiteral() {
@@ -74,7 +74,7 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      *            the type to create a type literal from
      */
     @SuppressWarnings("unchecked")
-    private TypeLiteral(Type type) {
+    TypeLiteral(Type type) {
         this.type = requireNonNull(type, "type is null");
         this.rawType = (Class<? super T>) TypeUtil.findRawType(this.type);
     }
@@ -117,13 +117,23 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     /** {@inheritDoc} */
     @Override
     public final Key<T> toKey() {
-        return new Key<T>(this, null) {};
+        return new Key<T>(null, this) {};
     }
 
     public final Key<T> toKey(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
-        return new Key<T>(this, qualifier) {};
+        return new Key<T>(qualifier, this) {};
+    }
+
+    /**
+     * Returns a string where all the class names are not fully specified. For example this method will return
+     * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as the {@link #toString()} method does.
+     * 
+     * @return a short string
+     */
+    public final String toShortString() {
+        return TypeUtil.toShortString(type);
     }
 
     /** {@inheritDoc} */
@@ -141,7 +151,6 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      * @param type
      *            the class instance to return a type literal for
      * @return a type literal from the specified class
-     * @see #of(Type)
      */
     public static <T> TypeLiteral<T> of(Class<T> type) {
         return new TypeLiteral<>(type);
@@ -155,10 +164,10 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      *          every specified type to make sure different implementations calculates the same hash code. For example,
      *          {@code BlueParameterizedType<String>} can have a different hashCode then
      *          {@code GreenParameterizedType<String>} because {@link ParameterizedType} does not specify how the hash code
-     *          is calculated. As a result we need to transform them both into instances of the same
-     *          InternalParameterizedType.
+     *          is calculated. As a result we need to transform both of them into instances of the same
+     *          InternalParameterizedType. While this is not impossible, it is just a lot of work, and has some overhead.
      * @param type
-     *            the class instance to return a type literal for
+     *            the type to return a type literal for
      * @return a type literal from the specified type
      * @see #of(Class)
      */

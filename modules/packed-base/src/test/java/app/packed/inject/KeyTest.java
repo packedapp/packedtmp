@@ -19,15 +19,25 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import app.packed.inject.Key;
-import app.packed.inject.Qualifier;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  */
 public class KeyTest {
+    static final Key<Integer> TL_INT_OF = Key.of(int.class);
+    static final Key<Integer> TL_INTEGER = new Key<Integer>() {};
+    static final Key<Integer> TL_INTEGER_OF = Key.of(Integer.class);
+    static final Key<?> TL_INTEGER_OFTYPE = Key.of((Type) Integer.class);
 
+    static final Key<String> TL_STRING = new Key<String>() {};
+    static final Key<List<String>> TL_LIST_STRING = new Key<List<String>>() {};
+    static final Key<List<?>> TL_LIST_WILDCARD = new Key<List<?>>() {};
+    
+    static final Key<Map<? extends String, ?>> TL_MAP = new Key<Map<? extends String, ?>>() {};
+    
     @Retention(RetentionPolicy.RUNTIME)
     @Target(value = { ElementType.TYPE_USE })
     @Qualifier
@@ -40,6 +50,7 @@ public class KeyTest {
     public static void main(String[] args) {
         Key<String> k = new Key<@Name("foo") String>() {};
 
+        System.out.println(k);
         System.out.println(k.getQualifier());
     }
 }

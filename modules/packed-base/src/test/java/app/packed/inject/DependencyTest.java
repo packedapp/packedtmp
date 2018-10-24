@@ -32,11 +32,6 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Dependency;
-import app.packed.inject.Key;
-import app.packed.inject.Qualifier;
-import app.packed.inject.TypeLiteral;
-
 /**
  *
  */

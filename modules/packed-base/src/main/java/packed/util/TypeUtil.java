@@ -68,4 +68,51 @@ public class TypeUtil {
             throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
         }
     }
+
+    public static String toShortString(Type type) {
+        StringBuilder sb = new StringBuilder();
+        toShortString(type, sb);
+        return sb.toString();
+    }
+
+    private static void toShortString(Type type, StringBuilder sb) {
+        if (type instanceof Class<?>) {
+            sb.append(((Class<?>) type).getSimpleName());
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            sb.append(toShortString(pt.getRawType()));
+            Type[] actualTypeArguments = pt.getActualTypeArguments();
+            if (actualTypeArguments.length > 0) {
+                sb.append("<");
+                toShortString(actualTypeArguments[0], sb);
+                for (int i = 1; i < actualTypeArguments.length; i++) {
+                    sb.append(", ");
+                    toShortString(actualTypeArguments[i], sb);
+                }
+                sb.append(">");
+            }
+        } else if (type instanceof GenericArrayType) {
+            toShortString(((GenericArrayType) type).getGenericComponentType(), sb);
+            sb.append("[]");
+        } else if (type instanceof TypeVariable) {
+            //Hmm
+            throw new UnsupportedOperationException();
+        } else if (type instanceof WildcardType) {
+            WildcardType wt = (WildcardType) type;
+            Type[] lowerBounds = wt.getLowerBounds();
+            if (lowerBounds.length == 1) {
+                sb.append("? super ");
+                toShortString(lowerBounds[0], sb);
+            }
+            Type[] upperBounds = wt.getUpperBounds();
+            if (upperBounds[0] == Object.class) {
+                sb.append("?");
+            } else {
+                sb.append("? extends ");
+                toShortString(upperBounds[0], sb);
+            }
+        } else {
+            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
+        }
+    }
 }

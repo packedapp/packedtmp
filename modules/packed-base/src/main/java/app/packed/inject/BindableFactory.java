@@ -15,8 +15,6 @@
  */
 package app.packed.inject;
 
-import java.util.List;
-
 import packed.inject.factory.InternalFactory;
 
 /**
@@ -109,12 +107,6 @@ public final class BindableFactory<T> extends Factory<T> implements Bindable {
     /** {@inheritDoc} */
     @Override
     public Bindable bindPrototype(Dependency dependency, Factory<?> factory) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Dependency> getBindableDependencies() {
         return null;
     }
 }

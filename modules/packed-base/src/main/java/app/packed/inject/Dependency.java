@@ -29,6 +29,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.util.FieldDescriptor;
+import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
 import packed.inject.InjectAPI;
 import packed.inject.InjectAPI.SupportInject;
@@ -38,6 +39,7 @@ import packed.util.ClassUtil;
 import packed.util.GenericsUtil;
 import packed.util.descriptor.AbstractVariableDescriptor;
 import packed.util.descriptor.InternalFieldDescriptor;
+import packed.util.descriptor.InternalParameterDescriptor;
 
 /**
  * A dependency Annotations are take from the field or parameter
@@ -51,9 +53,11 @@ import packed.util.descriptor.InternalFieldDescriptor;
 // OptionalInt != Optional<Integer> <- key is identical, but dependencies are not
 // Also the way we need to things are different
 
-
 /**
- *
+ * A dependency object. This is typically created from a parameter on a constructor or method. In which case the
+ * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable}. It can also be
+ * a field, in which case {@link #variable} returns an instance of {@link ParameterDescriptor}. Dependencies can be
+ * optional in which case {@link #isOptional()} returns true.
  */
 public final class Dependency {
 
@@ -76,7 +80,7 @@ public final class Dependency {
             }
         });
     }
-    
+
     /** The index of this dependency. */
     private final int index;
 
@@ -84,18 +88,25 @@ public final class Dependency {
     private final Key<?> key;
 
     /**
-     * Null if a non-optional dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong}, {@link OptionalDouble} or
-     * (soon-to-be-added) Optional annotation.
+     * Null if a non-optional dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
+     * {@link OptionalDouble} or (soon-to-be-added) Optional annotation.
      */
     private final Class<?> optionalType;
 
     /** The variable of this dependency. */
     private final VariableDescriptor variable;
 
+    /**
+     * Create a dependency from the specified variable
+     * 
+     * @param variable
+     *            from the specified variable
+     */
     Dependency(AbstractVariableDescriptor variable) {
-        this.variable = requireNonNull(variable);
+        this.variable = variable;
         this.index = variable.getIndex();
 
+        variable.getTypeLiteral();
         Class<?> rawType = variable.getType();
         Class<?> injectableType;
         if (rawType == Optional.class) {
@@ -144,7 +155,12 @@ public final class Dependency {
         this.variable = variable;
     }
 
-    public final Object emptyOptional() {
+    /**
+     * @return a matching optional type
+     * @throws UnsupportedOperationException
+     *             if this dependency is not optional
+     */
+    public Object emptyOptional() {
         if (optionalType == Optional.class) {
             return Optional.empty();
         } else if (optionalType == OptionalLong.class) {
@@ -155,11 +171,13 @@ public final class Dependency {
             return OptionalDouble.empty();
         }
         // else if (optionalType== OptionalAnnotation)
+        // return null
         throw new UnsupportedOperationException("Not a valid optional: " + key.getRawType());
     }
 
     /**
-     * Returns the index of the dependency.
+     * Returns the index of the dependency. If the dependency is created from a method or constructor, the index refers to
+     * index of the parameter. If the dependency is created from a field, this method return 0.
      *
      * @return the index of the dependency
      */
@@ -256,7 +274,7 @@ public final class Dependency {
         }
     }
 
-    public static <T> Dependency fromTypeVariable(Class<T> baseClass, Class<? extends T> actualClass, int baseTypeVariableIndex) {
+    static <T> Dependency fromTypeVariable(Class<T> baseClass, Class<? extends T> actualClass, int baseTypeVariableIndex) {
         Type type = GenericsUtil.getTypeOfArgument(baseClass, actualClass, baseTypeVariableIndex);
 
         // Find any qualifier annotation that might be present
@@ -295,7 +313,7 @@ public final class Dependency {
         return new Dependency(Key.internalOf(type, qa), optionalType);
     }
 
-    public static <T> List<Dependency> fromTypeVariables(Class<T> baseClass, Class<? extends T> actualClass, int... baseTypeVariableIndexes) {
+    static <T> List<Dependency> fromTypeVariables(Class<T> baseClass, Class<? extends T> actualClass, int... baseTypeVariableIndexes) {
         ArrayList<Dependency> result = new ArrayList<>();
         for (int i = 0; i < baseTypeVariableIndexes.length; i++) {
             result.add(fromTypeVariable(baseClass, actualClass, baseTypeVariableIndexes[i]));
@@ -325,7 +343,11 @@ public final class Dependency {
     }
 
     public static <T> Dependency of(FieldDescriptor field) {
-        return InternalFieldDescriptor.of(field).toDependency();
+        return new Dependency(InternalFieldDescriptor.of(field));
+    }
+
+    public static <T> Dependency of(ParameterDescriptor parameter) {
+        return new Dependency(InternalParameterDescriptor.of(parameter));
     }
 
     public static <T> Dependency of(Key<?> key) {

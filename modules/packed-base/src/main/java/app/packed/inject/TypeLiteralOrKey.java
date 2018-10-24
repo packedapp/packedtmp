@@ -16,8 +16,8 @@
 package app.packed.inject;
 
 /**
- * An abstract base class for both {@link TypeLiteral} and {@link Key}. This is typically used in places that can take
- * either a key or a type literal.
+ * An abstract base class for both {@link TypeLiteral} and {@link Key}. This is typically used in places where a method
+ * can receive either a key or a type literal.
  */
 public abstract class TypeLiteralOrKey<T> {
 

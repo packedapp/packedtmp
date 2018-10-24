@@ -65,6 +65,13 @@ public interface VariableDescriptor extends AnnotatedElement {
      */
     Class<?> getType();
 
+    /**
+     * Returns a type literal that identifies the generic type of the variable.
+     *
+     * @return a type literal that identifies the generic type of the variable
+     * @see Parameter#getParameterizedType()
+     * @see Field#getGenericType()
+     */
     TypeLiteral<?> getTypeLiteral();
 
     /**

@@ -28,55 +28,106 @@ import org.junit.jupiter.api.Test;
 /** Tests {@link TypeLiteral}. */
 public class TypeLiteralTest {
 
+    static final TypeLiteral<Integer> TL_INT_OF = TypeLiteral.of(int.class);
+    static final TypeLiteral<Integer> TL_INTEGER = new TypeLiteral<Integer>() {};
+    static final TypeLiteral<Integer> TL_INTEGER_OF = TypeLiteral.of(Integer.class);
+    static final TypeLiteral<?> TL_INTEGER_OFTYPE = TypeLiteral.of((Type) Integer.class);
+
+    static final TypeLiteral<String> TL_STRING = new TypeLiteral<String>() {};
+    static final TypeLiteral<List<String>> TL_LIST_STRING = new TypeLiteral<List<String>>() {};
+    static final TypeLiteral<List<?>> TL_LIST_WILDCARD = new TypeLiteral<List<?>>() {};
+    
+    static final TypeLiteral<Map<? extends String, ?>> TL_MAP = new TypeLiteral<Map<? extends String, ?>>() {};
+
+    /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
+    @Test
+    public void extendTypeLiterable() {
+
+        /** A custom type literal to check that T is passed down to super classes. */
+        class MyTypeLiteral<T> extends TypeLiteral<T> {}
+
+        MyTypeLiteral<Integer> integer = new MyTypeLiteral<Integer>() {};
+
+        // Type + Raw Type
+        assertThat(integer.getType()).isSameAs(TL_INTEGER.getType()).isSameAs(Integer.class);
+        assertThat(integer.getRawType()).isSameAs(TL_INTEGER.getRawType()).isSameAs(Integer.class);
+
+        // equals
+        assertThat(integer).isEqualTo(TL_INTEGER);
+
+        // Hashcode
+        assertThat(integer).hasSameHashCodeAs(TL_INTEGER);
+
+        // ToString
+        assertThat(integer).hasToString("java.lang.Integer");
+        assertThat(TL_INTEGER).hasToString("java.lang.Integer");
+    }
+
+    /** Tests {@link TypeLiteral#getRawType()} */
+    @Test
+    public void getRawType() {
+        assertThat(TL_INT_OF.getRawType()).isSameAs(int.class);
+        assertThat(TL_INTEGER.getRawType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER_OF.getRawType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER_OFTYPE.getRawType()).isSameAs(Integer.class);
+        assertThat(TL_STRING.getRawType()).isSameAs(String.class);
+        assertThat(TL_LIST_STRING.getRawType()).isSameAs(List.class);
+        assertThat(TL_LIST_WILDCARD.getRawType()).isSameAs(List.class);
+        assertThat(TL_MAP.getRawType()).isSameAs(Map.class);
+    }
+    
+    /** Tests {@link TypeLiteral#getType()} */
+    @Test
+    public void getType() throws Exception {
+        assertThat(TL_INT_OF.getType()).isSameAs(int.class);
+        assertThat(TL_INTEGER.getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER_OF.getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER_OFTYPE.getType()).isSameAs(Integer.class);
+        assertThat(TL_STRING.getType()).isSameAs(String.class);
+        
+        @SuppressWarnings("unused")
+        class Tmp {
+            List<String> listString;
+            List<?> listWildcard;
+            Map<? extends String, ?> map;
+        }
+        
+        assertThat(TL_LIST_STRING.getType()).isEqualTo(Tmp.class.getDeclaredField("listString").getGenericType());
+        assertThat(TL_LIST_WILDCARD.getType()).isEqualTo(Tmp.class.getDeclaredField("listWildcard").getGenericType());
+        assertThat(TL_MAP.getType()).isEqualTo(Tmp.class.getDeclaredField("map").getGenericType());
+    }
+
     /** Tests type literals made from integers */
     @Test
     public void integer() {
-        TypeLiteral<Integer> intOf = TypeLiteral.of(int.class);
-        TypeLiteral<Integer> integer = new TypeLiteral<Integer>() {};
-        TypeLiteral<Integer> integerOf = TypeLiteral.of(Integer.class);
-        TypeLiteral<?> integerOfType = TypeLiteral.of((Type) Integer.class);
-
-        // Type
-        assertThat(intOf.getType()).isSameAs(int.class);
-        assertThat(integer.getType()).isSameAs(integerOf.getType()).isSameAs(integerOfType.getType()).isSameAs(Integer.class);
-
-        // Type + Raw type
-        assertThat(intOf.getType()).isSameAs((intOf.getRawType())).isSameAs(int.class);
-        assertThat(integer.getType()).isSameAs((integer.getRawType())).isSameAs(Integer.class);
-        assertThat(integerOf.getType()).isSameAs((integerOf.getRawType())).isSameAs(Integer.class);
-        assertThat(integerOfType.getType()).isSameAs((integerOfType.getRawType())).isSameAs(Integer.class);
-
         // equals
-        assertThat(intOf).isNotEqualTo(integer).isNotEqualTo(integerOf).isNotEqualTo(integerOfType);
-        assertThat(integer).isEqualTo(integerOf).isEqualTo(integerOfType);
-        assertThat(integerOf).isEqualTo(integerOfType);
+        assertThat(TL_INT_OF).isNotEqualTo(TL_INTEGER).isNotEqualTo(TL_INTEGER_OF).isNotEqualTo(TL_INTEGER_OFTYPE);
+        assertThat(TL_INTEGER).isEqualTo(TL_INTEGER_OF).isEqualTo(TL_INTEGER_OFTYPE);
+        assertThat(TL_INTEGER_OF).isEqualTo(TL_INTEGER_OFTYPE);
 
         // Hashcode
-        assertThat(integer).hasSameHashCodeAs(integerOf).hasSameHashCodeAs(integerOfType);
-        assertThat(integerOf).hasSameHashCodeAs(integerOfType);
+        assertThat(TL_INTEGER).hasSameHashCodeAs(TL_INTEGER_OF).hasSameHashCodeAs(TL_INTEGER_OFTYPE);
+        assertThat(TL_INTEGER_OF).hasSameHashCodeAs(TL_INTEGER_OFTYPE);
 
-        // ToString
-        assertThat(intOf).hasToString("int");
-        assertThat(integer).hasToString("java.lang.Integer");
-        assertThat(integerOf).hasToString("java.lang.Integer");
-        assertThat(integerOfType).hasToString("java.lang.Integer");
     }
 
     @Test
-    public void integerNoCapture() {
+    public void UnknownTypeVariable() {
         assertThatThrownBy(() -> new TypeLiteral<Integer>()).hasNoCause();
         assertThatThrownBy(() -> new TypeLiteral<Integer>()).isExactlyInstanceOf(IllegalArgumentException.class);
-        //assertThatThrownBy(() -> new TypeLiteral<Integer>()).hasMessage(message)
-        //Could not determine the type variable <T> of TypeLiteralOrKey<T> for app.packed.inject.TypeLiteral
-        //TODO FIX this message
+
+        // new TypeLiteral<>() {}; Is this legal????? Its object but you know...
+        assertThatThrownBy(() -> new TypeLiteral<>());
+        // assertThatThrownBy(() -> new TypeLiteral<Integer>()).hasMessage(message)
+        // Could not determine the type variable <T> of TypeLiteralOrKey<T> for app.packed.inject.TypeLiteral
+        // TODO FIX this message
     }
 
     @Test
     public void listOfString() throws Exception {
-        TypeLiteral<List<String>> los = new TypeLiteral<>() {};
 
         // RawType
-        assertThat(los.getRawType()).isSameAs(List.class);
+        assertThat(TL_LIST_STRING.getRawType()).isSameAs(List.class);
 
         // Type
         class Tmp {
@@ -84,49 +135,41 @@ public class TypeLiteralTest {
             List<String> f;
         }
         Type fGenericType = Tmp.class.getDeclaredField("f").getGenericType();
-        assertThat(los.getType()).isEqualTo(fGenericType);
+        assertThat(TL_LIST_STRING.getType()).isEqualTo(fGenericType);
 
         // HashCode + Equals
-        assertThat(los).isEqualTo(TypeLiteral.of(fGenericType)).hasSameHashCodeAs(TypeLiteral.of(fGenericType));
-
-        assertThat(los).hasToString("java.util.List<java.lang.String>");
+        assertThat(TL_LIST_STRING).isEqualTo(TypeLiteral.of(fGenericType)).hasSameHashCodeAs(TypeLiteral.of(fGenericType));
     }
 
+    /** Tests {@link TypeLiteral#toString()}. */
     @Test
-    public void toStrings() throws Exception {
-        assertThat(new TypeLiteral<String>() {}).hasToString("java.lang.String");
-        assertThat(new TypeLiteral<List<?>>() {}).hasToString("java.util.List<?>");
-        assertThat(new TypeLiteral<Map<? extends String, ?>>() {}).hasToString("java.util.Map<? extends java.lang.String, ?>");
+    public void tooString() {
+        assertThat(TL_INT_OF).hasToString("int");
+        assertThat(TL_INTEGER).hasToString("java.lang.Integer");
+        assertThat(TL_INTEGER_OF).hasToString("java.lang.Integer");
+        assertThat(TL_INTEGER_OFTYPE).hasToString("java.lang.Integer");
+        assertThat(TL_STRING).hasToString("java.lang.String");
+        assertThat(TL_LIST_STRING).hasToString("java.util.List<java.lang.String>");
+        assertThat(TL_LIST_WILDCARD).hasToString("java.util.List<?>");
+        assertThat(TL_MAP).hasToString("java.util.Map<? extends java.lang.String, ?>");
+    }
+    /** Tests {@link TypeLiteral#toString()}. */
+    @Test
+    public void toShortString() {
+        assertThat(TL_INT_OF.toShortString()).isEqualTo("int");
+        assertThat(TL_INTEGER.toShortString()).isEqualTo("Integer");
+        assertThat(TL_INTEGER_OF.toShortString()).isEqualTo("Integer");
+        assertThat(TL_INTEGER_OFTYPE.toShortString()).isEqualTo("Integer");
+        assertThat(TL_STRING.toShortString()).isEqualTo("String");
+        assertThat(TL_LIST_STRING.toShortString()).isEqualTo("List<String>");
+        assertThat(TL_LIST_WILDCARD.toShortString()).isEqualTo("List<?>");
+        assertThat(TL_MAP.toShortString()).isEqualTo("Map<? extends String, ?>");
     }
 
     @Test
     public void toStringsX() throws Exception {
-        assertEquals("java.lang.String", new TypeLiteral<String>() {}.toString());
+        assertEquals("java.lang.String", TL_STRING.toString());
         assertEquals("java.util.List<?>", new TypeLiteral<List<?>>() {}.toString());
         assertEquals("java.util.Map<? extends java.lang.String, ?>", new TypeLiteral<Map<? extends String, ?>>() {}.toString());
     }
-
-    /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
-    @Test
-    public void extendAnotherLiterable() {
-        TypeLiteral<Integer> myInteger = new TypeLiteral<Integer>() {};
-        MyTypeLiteral<Integer> integer = new MyTypeLiteral<Integer>() {};
-
-        // Type + Raw Type
-        assertThat(integer.getType()).isSameAs(myInteger.getType()).isSameAs(Integer.class);
-        assertThat(integer.getRawType()).isSameAs(myInteger.getRawType()).isSameAs(Integer.class);
-
-        // equals
-        assertThat(integer).isEqualTo(myInteger);
-
-        // Hashcode
-        assertThat(integer).hasSameHashCodeAs(myInteger);
-
-        // ToString
-        assertThat(integer).hasToString("java.lang.Integer");
-        assertThat(myInteger).hasToString("java.lang.Integer");
-    }
-
-    /** A custom type literal to check that T is passed down to super classes. */
-    static class MyTypeLiteral<T> extends TypeLiteral<T> {}
 }

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -155,6 +156,17 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
         return this.dependencies = dependencies;
     }
 
+    /**
+     * Unreflects this executable.
+     * 
+     * @param lookup
+     *            the lookup object to use for unreflecting this executable
+     * @return a MethodHandle corresponding to this executable
+     * @throws IllegalAccessException
+     *             if the lookup object does not have access to the executable
+     * @see Lookup#unreflect(Method)
+     * @see Lookup#unreflectConstructor(Constructor)
+     */
     public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     /**

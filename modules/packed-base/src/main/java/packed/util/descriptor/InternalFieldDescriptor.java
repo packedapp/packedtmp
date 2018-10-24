@@ -18,6 +18,8 @@ package packed.util.descriptor;
 import static java.util.Objects.requireNonNull;
 import static packed.util.Formatter.format;
 
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
@@ -143,6 +145,21 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
     @Override
     public String toString() {
         return format(field);
+    }
+
+    /**
+     * Unreflects this field.
+     * 
+     * @param lookup
+     *            the lookup object to use for unreflecting this field
+     * @return a VarHandle corresponding to this field
+     * @throws IllegalAccessException
+     *             if the lookup object does not have access to the field
+     * @see Lookup#unreflectVarHandle(Field)
+     */
+    public VarHandle unreflect(Lookup lookup) throws IllegalAccessException {
+        requireNonNull(lookup, "lookup is null");
+        return lookup.unreflectVarHandle(field);
     }
 
     /**

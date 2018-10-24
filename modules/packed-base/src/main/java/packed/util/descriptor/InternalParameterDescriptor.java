@@ -190,4 +190,16 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
         }
         throw new InternalErrorException("parameter", parameter);// We should never get to here
     }
+
+    /**
+     * If the specified descriptor is an instance of this class. This method casts and returns the specified descriptor.
+     * Otherwise creates a new descriptor.
+     *
+     * @param descriptor
+     *            the descriptor to copy or return
+     * @return a parameter descriptor
+     */
+    public static InternalParameterDescriptor of(ParameterDescriptor descriptor) {
+        return descriptor instanceof InternalParameterDescriptor ? (InternalParameterDescriptor) descriptor : of(descriptor.newParameter());
+    }
 }

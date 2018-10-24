@@ -61,6 +61,16 @@ import java.util.function.Function;
  */
 public abstract class Factory1<T, R> extends Factory<R> {
 
+    /**
+     * Creates a new factory.
+     *
+     * @param function
+     *            the function to use for creating new instances
+     * @throws NullPointerException
+     *             if the specified function is null
+     * @throws IllegalArgumentException
+     *             if the type variable T or R could not be determined
+     */
     protected Factory1(Function<? super T, ? extends R> function) {
         super(function);
     }

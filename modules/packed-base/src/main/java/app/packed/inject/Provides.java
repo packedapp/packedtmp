@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Fields and Methods are <b>not</b< automatically injected when returned by methods annotated with {@link Provides}.
  * {@link Injector#injectMembers(Object)} can be used to inject members if needed.
@@ -30,25 +29,21 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+//Can only expose final fields otherwise throw IAE
 public @interface Provides {
 
     /**
-     * Returns a description of the service provided by this method.
+     * Returns a description of the service provided by this member.
      *
-     * @return a description of the service provided by this method
+     * @return a description of the service provided by this member
      */
     String description() default "";
 
     /**
      * The bind mode of the provided method, the default is to eagerly create a new instance.
      */
-    // Make caching mode plays well together if we allow null returns to indicate look in parent container
+    // Null is only a valid result, if the dependency is optional. Otherwise it is a failure
     BindMode bindMode() default BindMode.EAGER_SINGLETON;
-
-    // Default is return type for methods or field type, on field bla bla.
-    // skal maaske baade have real type og exposedType
-    // Maaske have en exposedAs type ogsaa
-    Class<?> type() default Class.class;
 
     /**
      * The default value is {@link Qualifier} which indicates that it ignores any annotations
@@ -63,6 +58,12 @@ public @interface Provides {
     // Key.wildcardAnnotation(Class<? extends Annotation>)
     Class<?> wildcardType() default Class.class;
 }
+
+// Default is return type for methods or field type, on field bla bla.
+// skal maaske baade have real type og exposedType
+// Maaske have en exposedAs type ogsaa
+// Class<?> type() default Class.class;
+
 /// **
 // * A single instance is created for each container on demand. Concurrent calls will block.
 // * <p>
@@ -80,7 +81,7 @@ public @interface Provides {
 // PER_COMPONENT,
 
 /** The default value for {@link Provides#wildcardQualifier()} */
-@interface ProvidesQualifierNone {}
+//@interface ProvidesQualifierNone {}
 // int priority() default 1;
 
 // Class<? extends Annotation>[] ifAnyMethodAnnotatedWith() default {};

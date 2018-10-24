@@ -116,7 +116,7 @@ public class GenericsUtil {
             while (resolvedTypes.containsKey(baseType)) {
                 baseType = resolvedTypes.get(baseType);
             }
-            typeArgumentsAsClasses.add(Types.canonicalize(baseType));
+            typeArgumentsAsClasses.add(baseType /*canonicalize(baseType)*/);
         }
         return typeArgumentsAsClasses;
     }

@@ -27,10 +27,6 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Factory0;
-import app.packed.inject.Key;
-import app.packed.inject.TypeLiteral;
 import support.stubs.annotation.SystemProperty;
 
 /** Tests {@link Factory0}. */
