@@ -22,6 +22,9 @@ import java.util.concurrent.CompletionException;
 /** Various {@link Exception} and {@link Throwable} utility methods. */
 public final class ThrowableUtil {
 
+    /** Cannot instantiate. */
+    private ThrowableUtil() {}
+    
     /**
      * If the specified future has returned exceptionally, returns the cause. Otherwise returns null.
      * 

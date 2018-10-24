@@ -22,6 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 /** A utility class for various functionality regarding annotations. */
 public final class AnnotationUtil {
 
+    /** Cannot instantiate. */
+    private AnnotationUtil() {}
+    
     /**
      * Validates that the specified annotation type has retention policy runtime.
      * 

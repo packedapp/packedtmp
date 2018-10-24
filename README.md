@@ -3,6 +3,9 @@ Packed
 [![Build Status](https://api.travis-ci.org/packedapp/packedtmp.svg?branch=master)](https://travis-ci.org/packedapp/packedtmp) [![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 
+[![GitHub issues](https://img.shields.io/github/issues/badges/shields.svg)](asdasdasdasd)
+
+
 
 Building Packed
 ---------------

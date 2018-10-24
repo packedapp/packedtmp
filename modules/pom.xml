@@ -46,25 +46,7 @@
     </plugin>
     </plugins>
   </build>
-  
 
-  <!--
-  <build>
-    <plugins>
-   
-      <plugin>
-        <groupId>org.openclover</groupId>
-          <artifactId>clover-maven-plugin</artifactId>
-          <version>4.3.1</version>
-          <configuration>
-  <excludes>
-    <exclude>**/*Clover*.java</exclude>
-  </excludes>
-</configuration>
-        </plugin>
-      </plugins>
-    </build>
-    --> 
   <properties>
 
     <!-- Locate the root directory of the multi-module build -->

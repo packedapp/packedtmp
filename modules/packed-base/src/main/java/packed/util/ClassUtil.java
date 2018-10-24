@@ -18,6 +18,9 @@ package packed.util;
 /** Various class utility methods. */
 public final class ClassUtil {
 
+    /** Cannot instantiate. */
+    private ClassUtil() {}
+
     /**
      * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
      * is not a primitive class.
@@ -43,7 +46,7 @@ public final class ClassUtil {
                 return (Class<T>) Integer.class;
             } else if (type == long.class) {
                 return (Class<T>) Long.class;
-            } else if (type == short.class) {
+            } else { /* if (type == short.class) */ 
                 return (Class<T>) Short.class;
             }
         }

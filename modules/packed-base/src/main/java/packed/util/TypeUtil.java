@@ -31,6 +31,9 @@ import java.util.OptionalLong;
  */
 public class TypeUtil {
 
+    /** Cannot instantiate. */
+    private TypeUtil() {}
+    
     /**
      * Tests if the class is an optional type.
      * 

@@ -97,20 +97,28 @@ public class TypeLiteralTest {
         assertThat(TL_MAP.getType()).isEqualTo(Tmp.class.getDeclaredField("map").getGenericType());
     }
 
+    @Test
+    public void box() {
+        assertThat(TL_INT_OF.box().getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.box().getType()).isSameAs(Integer.class);
+    }
+    
     /** Tests type literals made from integers */
     @Test
-    public void integer() {
+    public void hashcode() {
+        // Hashcode
+        assertThat(TL_INTEGER).hasSameHashCodeAs(TL_INTEGER_OF).hasSameHashCodeAs(TL_INTEGER_OFTYPE);
+        assertThat(TL_INTEGER_OF).hasSameHashCodeAs(TL_INTEGER_OFTYPE);
+    }
+
+    @Test
+    public void equalsTest() {
         // equals
         assertThat(TL_INT_OF).isNotEqualTo(TL_INTEGER).isNotEqualTo(TL_INTEGER_OF).isNotEqualTo(TL_INTEGER_OFTYPE);
         assertThat(TL_INTEGER).isEqualTo(TL_INTEGER_OF).isEqualTo(TL_INTEGER_OFTYPE);
         assertThat(TL_INTEGER_OF).isEqualTo(TL_INTEGER_OFTYPE);
-
-        // Hashcode
-        assertThat(TL_INTEGER).hasSameHashCodeAs(TL_INTEGER_OF).hasSameHashCodeAs(TL_INTEGER_OFTYPE);
-        assertThat(TL_INTEGER_OF).hasSameHashCodeAs(TL_INTEGER_OFTYPE);
-
+        assertThat(TL_INT_OF).isNotEqualTo(Long.class);
     }
-
     @Test
     public void UnknownTypeVariable() {
         assertThatThrownBy(() -> new TypeLiteral<Integer>()).hasNoCause();

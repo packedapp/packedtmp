@@ -32,8 +32,11 @@ import packed.inject.InjectAPI;
  *
  */
 // Based on this post http://www.artima.com/weblogs/viewpost.jsp?thread=208860
-public class GenericsUtil {
+public final class GenericsUtil {
 
+    /** Cannot instantiate. */
+    private GenericsUtil() {}
+    
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Type getTypeOfArgumentX(Class<?> superClass, int parameterIndex, Class<? > subClass) {
         Type t = GenericsUtil.getTypeOfArgument((Class) superClass, subClass, parameterIndex);

@@ -24,6 +24,9 @@ import java.util.StringJoiner;
 /** A utility class with various formatting routines. */
 public final class Formatter {
 
+    /** Cannot instantiate. */
+    private Formatter() {}
+    
     /**
      * Formats the specified class.
      *
