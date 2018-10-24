@@ -37,7 +37,9 @@ public class TypeLiteralTest {
     static final TypeLiteral<List<String>> TL_LIST_STRING = new TypeLiteral<List<String>>() {};
     static final TypeLiteral<List<?>> TL_LIST_WILDCARD = new TypeLiteral<List<?>>() {};
     
-    static final TypeLiteral<Map<? extends String, ?>> TL_MAP = new TypeLiteral<Map<? extends String, ?>>() {};
+    static final TypeLiteral<Integer[]> TL_INTEGER_ARRAY = TypeLiteral.of(Integer[].class);
+    static final TypeLiteral<List<String>[]> TL_ARRAY_LIST_STRING = new TypeLiteral<List<String>[]>() {};
+    static final TypeLiteral<Map<? extends String, ? super Integer>> TL_MAP = new TypeLiteral<Map<? extends String, ? super Integer>>() {};
 
     /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
     @Test
@@ -73,6 +75,8 @@ public class TypeLiteralTest {
         assertThat(TL_STRING.getRawType()).isSameAs(String.class);
         assertThat(TL_LIST_STRING.getRawType()).isSameAs(List.class);
         assertThat(TL_LIST_WILDCARD.getRawType()).isSameAs(List.class);
+        assertThat(TL_INTEGER_ARRAY.getRawType()).isSameAs(Integer[].class);
+        assertThat(TL_ARRAY_LIST_STRING.getRawType()).isSameAs(List[].class);
         assertThat(TL_MAP.getRawType()).isSameAs(Map.class);
     }
     
@@ -89,11 +93,17 @@ public class TypeLiteralTest {
         class Tmp {
             List<String> listString;
             List<?> listWildcard;
-            Map<? extends String, ?> map;
+            Map<? extends String, ? super Integer> map;
+            Integer[] intArray;
+            List<String>[] listStringArray;
         }
         
         assertThat(TL_LIST_STRING.getType()).isEqualTo(Tmp.class.getDeclaredField("listString").getGenericType());
         assertThat(TL_LIST_WILDCARD.getType()).isEqualTo(Tmp.class.getDeclaredField("listWildcard").getGenericType());
+        
+        assertThat(TL_INTEGER_ARRAY.getType()).isEqualTo(Tmp.class.getDeclaredField("intArray").getGenericType());
+        assertThat(TL_ARRAY_LIST_STRING.getType()).isEqualTo(Tmp.class.getDeclaredField("listStringArray").getGenericType());
+
         assertThat(TL_MAP.getType()).isEqualTo(Tmp.class.getDeclaredField("map").getGenericType());
     }
 
@@ -159,7 +169,11 @@ public class TypeLiteralTest {
         assertThat(TL_STRING).hasToString("java.lang.String");
         assertThat(TL_LIST_STRING).hasToString("java.util.List<java.lang.String>");
         assertThat(TL_LIST_WILDCARD).hasToString("java.util.List<?>");
-        assertThat(TL_MAP).hasToString("java.util.Map<? extends java.lang.String, ?>");
+        
+        assertThat(TL_INTEGER_ARRAY).hasToString("java.lang.Integer[]");
+        assertThat(TL_ARRAY_LIST_STRING).hasToString("java.util.List<java.lang.String>[]");
+        
+        assertThat(TL_MAP).hasToString("java.util.Map<? extends java.lang.String, ? super java.lang.Integer>");
     }
     /** Tests {@link TypeLiteral#toString()}. */
     @Test
@@ -171,7 +185,11 @@ public class TypeLiteralTest {
         assertThat(TL_STRING.toShortString()).isEqualTo("String");
         assertThat(TL_LIST_STRING.toShortString()).isEqualTo("List<String>");
         assertThat(TL_LIST_WILDCARD.toShortString()).isEqualTo("List<?>");
-        assertThat(TL_MAP.toShortString()).isEqualTo("Map<? extends String, ?>");
+
+        assertThat(TL_INTEGER_ARRAY.toShortString()).isEqualTo("Integer[]");
+        assertThat(TL_ARRAY_LIST_STRING.toShortString()).isEqualTo("List<String>[]");
+
+        assertThat(TL_MAP.toShortString()).isEqualTo("Map<? extends String, ? super Integer>");
     }
 
     @Test

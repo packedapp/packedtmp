@@ -33,7 +33,7 @@ public class TypeUtil {
 
     /** Cannot instantiate. */
     private TypeUtil() {}
-    
+
     /**
      * Tests if the class is an optional type.
      * 
@@ -98,7 +98,7 @@ public class TypeUtil {
             toShortString(((GenericArrayType) type).getGenericComponentType(), sb);
             sb.append("[]");
         } else if (type instanceof TypeVariable) {
-            //Hmm
+            // Hmm
             throw new UnsupportedOperationException();
         } else if (type instanceof WildcardType) {
             WildcardType wt = (WildcardType) type;
@@ -106,13 +106,14 @@ public class TypeUtil {
             if (lowerBounds.length == 1) {
                 sb.append("? super ");
                 toShortString(lowerBounds[0], sb);
-            }
-            Type[] upperBounds = wt.getUpperBounds();
-            if (upperBounds[0] == Object.class) {
-                sb.append("?");
             } else {
-                sb.append("? extends ");
-                toShortString(upperBounds[0], sb);
+                Type[] upperBounds = wt.getUpperBounds();
+                if (upperBounds[0] == Object.class) {
+                    sb.append("?");
+                } else {
+                    sb.append("? extends ");
+                    toShortString(upperBounds[0], sb);
+                }
             }
         } else {
             throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
