@@ -88,7 +88,7 @@ public final class BindableFactory<T> extends Factory<T> implements Bindable {
      *             if the specified implementation is null
      */
     public static <T> BindableFactory<T> find(Class<T> implementation) {
-        return Factory.find(implementation).bindable();
+        return Factory.findInjectable(implementation).bindable();
     }
     // The same methods as Factory, except for instance
 

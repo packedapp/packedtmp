@@ -17,6 +17,8 @@ package packed.inject;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -84,6 +86,15 @@ public final class JavaXInjectSupport {
             }
         }
         return false;
+    }
+
+    public static List<AnnotatedElement> getAllQualifierAnnotationPresent(AnnotatedElement e) {
+        ArrayList<AnnotatedElement> result = new ArrayList<>();
+        if (isQualifierAnnotationPresent(e)) {
+            result.add(e);
+        }
+       
+        return result;
     }
 
     /**

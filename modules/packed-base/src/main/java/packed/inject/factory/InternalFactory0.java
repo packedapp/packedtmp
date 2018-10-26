@@ -27,7 +27,6 @@ import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.inject.TypeLiteralOrKey;
-import packed.util.GenericsUtil;
 
 /** An internal factory for {@link Factory0}. */
 public final class InternalFactory0<T> extends InternalFactory<T> {
@@ -39,7 +38,7 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected TypeLiteral<?> computeValue(Class<?> type) {
-            return GenericsUtil.getTypeOfArgument(Factory.class, 0, (Class) type);
+            return TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
         }
     };
 

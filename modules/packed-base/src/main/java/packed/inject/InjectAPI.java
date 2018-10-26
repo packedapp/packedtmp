@@ -62,7 +62,7 @@ public final class InjectAPI {
         static final SupportInject SINGLETON;
 
         static {
-            Factory.find(Object.class); // Initializes Factory, which in turn will call SupportInject#init
+            Factory.findInjectable(Object.class); // Initializes Factory, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(SupportInject.SUPPORT, "internal error");
         }
     }

@@ -28,6 +28,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.util.ExecutableDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
@@ -35,7 +36,7 @@ import packed.inject.InjectAPI;
 import packed.inject.InjectAPI.SupportInject;
 import packed.inject.JavaXInjectSupport;
 import packed.inject.factory.InternalFactory;
-import packed.util.GenericsUtil;
+import packed.util.TypeVariableExtractorUtil;
 import packed.util.descriptor.AbstractVariableDescriptor;
 import packed.util.descriptor.InternalFieldDescriptor;
 import packed.util.descriptor.InternalParameterDescriptor;
@@ -70,7 +71,7 @@ public final class Dependency {
 
             @Override
             protected TypeLiteral<?> toTypeLiteral(Type type) {
-                return TypeLiteral.of(type);
+                return TypeLiteral.fromJavaImplementationType(type);
             }
 
             @Override
@@ -205,20 +206,20 @@ public final class Dependency {
     public VariableDescriptor variable() {
         return variable;
     }
-//
-//    /**
-//     * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
-//     * specified index.
-//     *
-//     * @param index
-//     *            the index of the returned variable
-//     * @return a new dependency with the specified index
-//     * @throws IllegalArgumentException
-//     *             if the index is negative ({@literal <}0
-//     */
-//    public Dependency withIndex(int index) {
-//        throw new UnsupportedOperationException();
-//    }
+    //
+    // /**
+    // * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
+    // * specified index.
+    // *
+    // * @param index
+    // * the index of the returned variable
+    // * @return a new dependency with the specified index
+    // * @throws IllegalArgumentException
+    // * if the index is negative ({@literal <}0
+    // */
+    // public Dependency withIndex(int index) {
+    // throw new UnsupportedOperationException();
+    // }
 
     /**
      * Returns the specified object if not optional, or a the specified object in an optional type (either {@link Optional},
@@ -243,7 +244,7 @@ public final class Dependency {
     }
 
     static <T> Dependency fromTypeVariable(Class<T> baseClass, Class<? extends T> actualClass, int baseTypeVariableIndex) {
-        Type type = GenericsUtil.getTypeOfArgument(baseClass, actualClass, baseTypeVariableIndex);
+        Type type = TypeVariableExtractorUtil.extractTypeVariableFrom(baseClass, baseTypeVariableIndex, actualClass);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
@@ -310,6 +311,10 @@ public final class Dependency {
         return of(Key.of(type));
     }
 
+    public static List<Dependency> listOf(ExecutableDescriptor executable) {
+        return executable.toDependencyList();
+    }
+
     public static <T> Dependency of(FieldDescriptor field) {
         return of((AbstractVariableDescriptor) InternalFieldDescriptor.of(field));
     }
@@ -356,6 +361,7 @@ public final class Dependency {
         return new Dependency(key, null);
     }
 
+    //ofOptional istedet for tror jeg
     public static <T> Dependency optionalOf(Key<T> key, T defaultValue) {
         throw new UnsupportedOperationException();
     }

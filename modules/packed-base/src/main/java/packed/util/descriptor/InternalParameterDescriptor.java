@@ -26,7 +26,6 @@ import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.ParameterDescriptor;
-import packed.inject.InjectAPI;
 import packed.util.InternalErrorException;
 
 /** The default implementation of {@link ParameterDescriptor}. */
@@ -121,7 +120,7 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
     /** {@inheritDoc} */
     @Override
     public TypeLiteral<?> getTypeLiteral() {
-        return InjectAPI.toTypeLiteral(parameter.getParameterizedType());
+        return TypeLiteral.fromParameter(parameter);
     }
 
     /** {@inheritDoc} */

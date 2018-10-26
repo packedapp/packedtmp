@@ -226,7 +226,7 @@ public class Factory<T> {
      * @return a factory for the specified implementation type
      */
     @SuppressWarnings("unchecked")
-    public static <T> Factory<T> find(Class<T> implementation) {
+    public static <T> Factory<T> findInjectable(Class<T> implementation) {
         return (Factory<T>) CACHE_FROM_CLASS.get(implementation);
     }
 
@@ -237,7 +237,7 @@ public class Factory<T> {
      *            the implementation type
      * @return a factory for the specified implementation type
      */
-    public static <T> Factory<T> find(TypeLiteralOrKey<T> implementation) {
+    public static <T> Factory<T> findInjectable(TypeLiteralOrKey<T> implementation) {
         // Does not really work, because getType() is not valid...
         // return (Factory<T>) MirrorOfClass.fromImplementation(implementation.getRawType()).getDefaultFactory();
         throw new UnsupportedOperationException();

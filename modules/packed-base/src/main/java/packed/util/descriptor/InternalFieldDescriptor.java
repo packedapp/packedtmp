@@ -26,7 +26,6 @@ import java.lang.reflect.Type;
 import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
-import packed.inject.InjectAPI;
 import packed.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -104,7 +103,7 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
     /** {@inheritDoc} */
     @Override
     public TypeLiteral<?> getTypeLiteral() {
-        return InjectAPI.toTypeLiteral(field.getGenericType());
+        return TypeLiteral.fromField(field);
     }
 
     /** {@inheritDoc} */

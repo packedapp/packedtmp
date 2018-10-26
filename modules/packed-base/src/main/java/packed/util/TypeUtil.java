@@ -15,40 +15,97 @@
  */
 package packed.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.Set;
 
 /**
  *
  */
-public class TypeUtil {
+public final class TypeUtil {
 
     /** Cannot instantiate. */
     private TypeUtil() {}
 
+
     /**
-     * Tests if the class is an optional type.
-     * 
+     * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
+     * is not a primitive class.
+     *
      * @param type
-     *            the type to test
-     * @return whether or not the specified is an optional type
-     * @see Optional
-     * @see OptionalLong
-     * @see OptionalDouble
-     * @see OptionalInt
+     *            the class to convert
+     * @return the converted class
      */
-    public static boolean isOptionalType(Class<?> type) {
-        return (type == Optional.class || type == OptionalLong.class || type == OptionalDouble.class || type == OptionalInt.class);
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> boxClass(Class<T> type) {
+        if (type.isPrimitive()) {
+            if (type == boolean.class) {
+                return (Class<T>) Boolean.class;
+            } else if (type == byte.class) {
+                return (Class<T>) Byte.class;
+            } else if (type == char.class) {
+                return (Class<T>) Character.class;
+            } else if (type == double.class) {
+                return (Class<T>) Double.class;
+            } else if (type == float.class) {
+                return (Class<T>) Float.class;
+            } else if (type == int.class) {
+                return (Class<T>) Integer.class;
+            } else if (type == long.class) {
+                return (Class<T>) Long.class;
+            } else if (type == short.class) {
+                return (Class<T>) Short.class;
+            } else { /* if (type == void.class) */
+                return (Class<T>) Void.class;
+            }
+        }
+        return type;
+
     }
 
+    /**
+     * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
+     * if it is not a primitive wrapper class.
+     *
+     * @param type
+     *            the class to convert
+     * @return the converted class
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> unboxClass(Class<T> type) {
+        if (type == Boolean.class) {
+            return (Class<T>) boolean.class;
+        } else if (type == Byte.class) {
+            return (Class<T>) byte.class;
+        } else if (type == Character.class) {
+            return (Class<T>) char.class;
+        } else if (type == Double.class) {
+            return (Class<T>) double.class;
+        } else if (type == Float.class) {
+            return (Class<T>) float.class;
+        } else if (type == Integer.class) {
+            return (Class<T>) int.class;
+        } else if (type == Long.class) {
+            return (Class<T>) long.class;
+        } else if (type == Short.class) {
+            return (Class<T>) short.class;
+        } else if (type == Void.class) {
+            return (Class<T>) void.class;
+        }
+        return type;
+    }
+    
     /**
      * Finds the raw class type for the specified type
      *
@@ -72,12 +129,124 @@ public class TypeUtil {
         }
     }
 
+    /**
+     * Returns a set of all type variable names that occurs in the specified type
+     * 
+     * @param type
+     *            the type to check
+     * @return a set of all type variable names that occurs in the specified type
+     * @see TypeVariable#getName()
+     */
+    public static Set<String> findTypeVariableNames(Type type) {
+        requireNonNull(type, "type is null");
+        LinkedHashSet<String> addTo = new LinkedHashSet<>();
+        findTypeVariableNames0(addTo, type);
+        return addTo;
+    }
+
+    private static void findTypeVariableNames0(LinkedHashSet<String> addTo, Type type) {
+        if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            findTypeVariableNames0(addTo, pt.getOwnerType());
+            for (Type t : pt.getActualTypeArguments()) {
+                findTypeVariableNames0(addTo, t);
+            }
+            findTypeVariableNames0(addTo, pt.getRawType());
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType gat = (GenericArrayType) type;
+            findTypeVariableNames0(addTo, gat.getGenericComponentType());
+        } else if (type instanceof TypeVariable) {
+            addTo.add(((TypeVariable<?>) type).getName());
+        } else if (type instanceof WildcardType) {
+            WildcardType wt = (WildcardType) type;
+            if (wt.getLowerBounds().length > 0) {
+                findTypeVariableNames0(addTo, wt.getLowerBounds()[0]);
+            }
+            findTypeVariableNames0(addTo, wt.getUpperBounds()[0]);
+        }
+    }
+
+    /**
+     * Returns true if the specified {@code type} is free from type variables, otherwise false. For example,
+     * {@code List<Map<String, ? extends Integer>} is free from type variables. {@code List<Map<String, ? extends T>} is
+     * not.
+     * 
+     * @param type
+     *            the type to check
+     * @return true is the specified type is free from type variable, otherwise false
+     */
+    public static boolean isFreeFromTypeVariables(Type type) {
+        requireNonNull(type, "type is null");
+        if (type instanceof Class<?>) {
+            return true;
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            if (pt.getOwnerType() != null && !isFreeFromTypeVariables(pt.getOwnerType())) {
+                return false;
+            }
+            for (Type t : pt.getActualTypeArguments()) {
+                if (!isFreeFromTypeVariables(t)) {
+                    return false;
+                }
+            }
+            // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
+            // something else
+            return isFreeFromTypeVariables(pt.getRawType()); //
+        } else if (type instanceof GenericArrayType) {
+            GenericArrayType gat = (GenericArrayType) type;
+            return isFreeFromTypeVariables(gat.getGenericComponentType());
+        } else if (type instanceof TypeVariable) {
+            return false;
+        } else if (type instanceof WildcardType) {
+            WildcardType wt = (WildcardType) type;
+            if (wt.getLowerBounds().length > 0 && !isFreeFromTypeVariables(wt.getLowerBounds()[0])) {
+                return false;
+            }
+            return isFreeFromTypeVariables(wt.getUpperBounds()[0]);// upperBound always defines, as a minimum Object
+        } else {
+            throw new IllegalArgumentException("Unknown type: " + type);
+        }
+    }
+
+    /**
+     * Tests if the class is an optional type.
+     * 
+     * @param type
+     *            the type to test
+     * @return whether or not the specified is an optional type
+     * @see Optional
+     * @see OptionalLong
+     * @see OptionalDouble
+     * @see OptionalInt
+     */
+    public static boolean isOptionalType(Class<?> type) {
+        return (type == Optional.class || type == OptionalLong.class || type == OptionalDouble.class || type == OptionalInt.class);
+    }
+
+    /**
+     * Creates a short string representation of the specified type. Basically this method uses {@link Class#getSimpleName()}
+     * instead of {@link Class#getCanonicalName()}. Which results in short string such as {@code List<String>} instead of
+     * {@code java.util.List<java.lang.String>}.
+     * 
+     * @param type
+     *            the type to create a short representation of
+     * @return the representation
+     */
     public static String toShortString(Type type) {
+        requireNonNull(type, "type is null");
         StringBuilder sb = new StringBuilder();
         toShortString(type, sb);
         return sb.toString();
     }
 
+    /**
+     * Helper method for {@link #toShortString(Type)}.
+     * 
+     * @param type
+     *            the type to process
+     * @param sb
+     *            the string builder
+     */
     private static void toShortString(Type type, StringBuilder sb) {
         if (type instanceof Class<?>) {
             sb.append(((Class<?>) type).getSimpleName());
@@ -98,8 +267,8 @@ public class TypeUtil {
             toShortString(((GenericArrayType) type).getGenericComponentType(), sb);
             sb.append("[]");
         } else if (type instanceof TypeVariable) {
-            // Hmm
-            throw new UnsupportedOperationException();
+            TypeVariable<?> tv = (TypeVariable<?>) type;
+            sb.append(tv.getName());
         } else if (type instanceof WildcardType) {
             WildcardType wt = (WildcardType) type;
             Type[] lowerBounds = wt.getLowerBounds();

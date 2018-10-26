@@ -19,13 +19,15 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import packed.inject.JavaXInjectSupport;
-import packed.util.ClassUtil;
-import packed.util.GenericsUtil;
 import packed.util.TypeUtil;
+import packed.util.TypeVariableExtractorUtil;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
@@ -64,7 +66,8 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      */
     @SuppressWarnings("unchecked")
     protected TypeLiteral() {
-        this.type = (Type) GenericsUtil.getTypeOfArgumentX(TypeLiteral.class, 0, getClass());
+        // this.type = (Type) OldTypeVariableExtractorUtil.getTypeOfArgumentX(TypeLiteral.class, 0, getClass());
+        this.type = TypeVariableExtractorUtil.extractTypeVariableFrom(TypeLiteral.class, 0, getClass());
         this.rawType = (Class<? super T>) TypeUtil.findRawType(type);
     }
 
@@ -75,7 +78,7 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      *            the type to create a type literal from
      */
     @SuppressWarnings("unchecked")
-    TypeLiteral(Type type) {
+    private TypeLiteral(Type type) {
         this.type = requireNonNull(type, "type is null");
         this.rawType = (Class<? super T>) TypeUtil.findRawType(this.type);
     }
@@ -85,9 +88,10 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      * 
      * @return if this type literal is a primitive returns the boxed version, otherwise returns this
      */
+    @SuppressWarnings("unchecked")
     public final TypeLiteral<T> box() {
         if (getRawType().isPrimitive()) {
-          return new TypeLiteral<>(ClassUtil.boxClass(getRawType()));
+            return (TypeLiteral<T>) of(TypeUtil.boxClass(getRawType()));
         }
         return this;
     }
@@ -130,13 +134,30 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     /** {@inheritDoc} */
     @Override
     public final Key<T> toKey() {
-        return new Key<T>(null, this) {};
+        return toKeyNullableAnnotation(null);
     }
 
     public final Key<T> toKey(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
-        return new Key<T>(qualifier, this) {};
+        return toKeyNullableAnnotation(qualifier);
+    }
+
+    private Key<T> toKeyNullableAnnotation(Annotation qualifier) {
+        if (TypeUtil.isOptionalType(rawType)) {
+            throw new UnsupportedOperationException("Cannot convert an optional type (" + toShortString() + ") to a Key, as keys cannot be optional");
+        } else if (!TypeUtil.isFreeFromTypeVariables(type)) {
+            throw new UnsupportedOperationException("Can only convert type literals that are free from type variables to a Key, however '" + toShortString()
+                    + "' defined: " + TypeUtil.findTypeVariableNames(type));
+        }
+        TypeLiteral<T> tl = this;
+        // We So we do not inadvertely hold on to the class that defines the anonumous.
+        // To avoid inadvertely holding on to the class that defines a anonymous class, we cananolize the this type literal.
+        // When creating the key
+        if (this.getClass() != TypeLiteral.class) {
+            tl = new TypeLiteral<>(type);
+        }
+        return Key.fromCheckedTypeAndCheckedNullableAnnotation(tl, qualifier);
     }
 
     /**
@@ -159,18 +180,8 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
     }
 
     /**
-     * Returns a type literal from the specified class.
-     *
-     * @param type
-     *            the class instance to return a type literal for
-     * @return a type literal from the specified class
-     */
-    public static <T> TypeLiteral<T> of(Class<T> type) {
-        return new TypeLiteral<>(type);
-    }
-
-    /**
-     * Returns a type literal from the specified type.
+     * Returns a type literal from the specified type. By checked type, we mean a type an internal JDK type, that is known
+     * to be intra-comparable.
      *
      * @apiNote this method is not available publically because you can really pass anything in like a Type. Since there are
      *          no standard way to create hash codes for something like {@link ParameterizedType}, we need to make a copy of
@@ -184,7 +195,72 @@ public class TypeLiteral<T> extends TypeLiteralOrKey<T> {
      * @return a type literal from the specified type
      * @see #of(Class)
      */
-    static TypeLiteral<?> of(Type type) {
+    static TypeLiteral<?> fromJavaImplementationType(Type type) {
         return new TypeLiteral<>(type);
+    }
+
+    /**
+     * @param superClass
+     * @param parameterIndex
+     *            the index in the signature of superClass of the type variable to extract
+     * @param subClass
+     * @return a type literal matching
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> TypeLiteral<T> fromTypeVariable(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
+        Type t = TypeVariableExtractorUtil.extractTypeVariableFrom(superClass, parameterIndex, subClass);
+        return (TypeLiteral<T>) fromJavaImplementationType(t);
+    }
+
+    /**
+     * Returns a type literal from the specified class.
+     *
+     * @param type
+     *            the class instance to return a type literal for
+     * @return a type literal from the specified class
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> TypeLiteral<T> of(Class<T> type) {
+        requireNonNull(type, "type is null");
+        return (TypeLiteral<T>) fromJavaImplementationType(type);
+    }
+
+    /**
+     * Returns the type of the specified field as a type literal.
+     * 
+     * @param field
+     *            the field to return a type literal for
+     * @return the type literal for the field
+     * @see Field#getGenericType()
+     */
+    public static TypeLiteral<?> fromField(Field field) {
+        requireNonNull(field, "field is null");
+        return fromJavaImplementationType(field.getGenericType());
+    }
+
+    /**
+     * Returns the type of the specified parameter as a type literal.
+     * 
+     * @param parameter
+     *            the parameter to return a type literal for
+     * @return the type literal for the parameter
+     * @see Parameter#getParameterizedType()
+     */
+    public static TypeLiteral<?> fromParameter(Parameter parameter) {
+        requireNonNull(parameter, "parameter is null");
+        return fromJavaImplementationType(parameter.getParameterizedType());
+    }
+
+    /**
+     * Returns the type of the specified method's return type as a type literal.
+     * 
+     * @param method
+     *            the method whose return type to return a type literal for
+     * @return the type literal for the return type of the specified method
+     * @see Method#getGenericReturnType()
+     */
+    public static TypeLiteral<?> fromMethodReturnType(Method method) {
+        requireNonNull(method, "Method is null");
+        return fromJavaImplementationType(method.getGenericReturnType());
     }
 }

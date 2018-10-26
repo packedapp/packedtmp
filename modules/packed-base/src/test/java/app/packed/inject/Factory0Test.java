@@ -81,13 +81,11 @@ public class Factory0Test {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Test
         public void typeParameterMissing() {
-            String expectedMsg = "Could not determine the type variable <T> of " + Factory0.class.getSimpleName() + "<T> for "
-                    + Factory0Test.class.getCanonicalName();
             assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
-                    .withMessageStartingWith(expectedMsg);
+                    .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.");
 
-            expectedMsg = "Could not determine the type variable <T> of " + X.class.getSimpleName() + "<S,T,R> for " + Factory0Test.class.getCanonicalName();
-            assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new X(() -> 1) {}).withNoCause().withMessageStartingWith(expectedMsg);
+            assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new X(() -> 1) {}).withNoCause()
+                    .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
         }
 
         @Test

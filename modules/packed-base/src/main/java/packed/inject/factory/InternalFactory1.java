@@ -27,7 +27,6 @@ import app.packed.inject.Factory1;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import packed.util.GenericsUtil;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFactory<R> {
@@ -39,7 +38,7 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected CachedFactoryDefinition computeValue(Class<?> type) {
-            TypeLiteral<?> tl = GenericsUtil.getTypeOfArgument(Factory.class, 0, (Class) type);
+            TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
             Key<?> dep = Key.getKeyOfArgument(Factory1.class, 0, (Class) getClass());
             return new CachedFactoryDefinition(tl, List.of(new Dependency(dep, null, 0)));
         }
@@ -64,9 +63,8 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
     /** {@inheritDoc} */
     @Override
     public Class<?> getLowerBound() {
-        return Object.class; //The raw function return objects
+        return Object.class; // The raw function return objects
     }
-
 
     @Override
     public List<Dependency> getDependencies() {
@@ -89,7 +87,6 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
     public static <T> InternalFactory<T> of(Function<?, ? extends T> supplier, Class<?> factory1Type) {
         throw new UnsupportedOperationException();
     }
-    
 
     static class CachedFactoryDefinition {
         final List<Dependency> dependencies;

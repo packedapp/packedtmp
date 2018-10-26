@@ -29,4 +29,8 @@ import java.lang.annotation.Target;
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
+// String[] ignoreAttributesForComparison() default {};
+// f.eks. @Qualifier(ignoreAttribtues("comment"));
+//@Qualifier(Class<? extends Equivalent> equivalent);
+//Equivalence must have two methods isEquals(a,b) and hash(a)
 public @interface Qualifier {}

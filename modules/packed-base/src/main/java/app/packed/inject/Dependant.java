@@ -25,6 +25,9 @@ import java.util.function.Consumer;
  */
 //Hvor skal man bruge den???? Eller skal vi bare smide den ind paa Bindable.
 //Ellers skal Factory jo overskrive den.
+
+//Tror bare vi smider den ind i Bindable....
+//Basalt set det jo bare bygget op og en liste, Factory kan jo sagtens implementere nogle af de her metoder...
 public interface Dependant {
 
     /**
