@@ -29,7 +29,11 @@ import support.assertj.packed.inject.factory.InternalFactoryAssert;
  *
  */
 public class Assertions {
-    
+
+    public static void npe(Runnable r, String name) {
+        assertThatNullPointerException().isThrownBy(() -> r.run()).withMessage(name + " is null").withNoCause();
+    }
+
     public static void npe(Consumer<?> c, String name) {
         assertThatNullPointerException().isThrownBy(() -> c.accept(null)).withMessage(name + " is null").withNoCause();
     }

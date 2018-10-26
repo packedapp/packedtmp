@@ -59,17 +59,6 @@ public class TypeVariableExtractorUtil {
         return findTypeArgument(baseClass, typeVariableIndexOnBaseClass, childClass);
     }
 
-    static <T> Type findFromImmediateParent(Class<T> baseClass, int typeVariableIndexOnBaseClass, Class<? extends T> childClass) {
-        Type genericSuperclass = childClass.getGenericSuperclass();
-        if (genericSuperclass instanceof ParameterizedType) {
-            ParameterizedType pt = ((ParameterizedType) genericSuperclass);
-            return pt.getActualTypeArguments()[typeVariableIndexOnBaseClass];
-        }
-        TypeVariable<Class<T>> tv = baseClass.getTypeParameters()[typeVariableIndexOnBaseClass];
-        throw new IllegalArgumentException(
-                "Cannot determine type variable <" + tv.getName() + "> for " + classWithTypeParameters(baseClass) + " on class " + format(childClass));
-    }
-
     static String classWithTypeParameters(Class<?> c) {
         StringJoiner sj = new StringJoiner(", ", c.getSimpleName() + "<", ">");
         for (Type t : c.getTypeParameters()) {

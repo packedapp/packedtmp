@@ -24,11 +24,6 @@ import org.junit.jupiter.api.Test;
 
 /** Tests {@link AnnotationUtil}. */
 public class AnnotationUtilTest {
-    
-    @Test
-    public void ahh() {
-        
-    }
 
     /** Tests {@link AnnotationUtil#validateRuntimeRetentionPolicy(Class)}. */
     public static class ValidateRuntimeRetentionPolicyTest {
@@ -45,9 +40,10 @@ public class AnnotationUtilTest {
             assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicySource.class)).hasMessage(
                     "The annotation type @RetentionPolicySource must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was SOURCE")
                     .hasNoCause().isInstanceOf(IllegalArgumentException.class);
-            
-            assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicyClass.class)).hasMessage(
-                    "The annotation type @RetentionPolicyClass must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was CLASS")
+
+            assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicyClass.class))
+                    .hasMessage(
+                            "The annotation type @RetentionPolicyClass must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was CLASS")
                     .hasNoCause().isInstanceOf(IllegalArgumentException.class);
         }
 

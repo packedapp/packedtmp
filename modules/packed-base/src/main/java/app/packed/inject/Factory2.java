@@ -17,7 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -28,20 +27,6 @@ import java.util.function.Supplier;
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 
-    /** A cache of function factory definitions. */
-    static final ClassValue<CachedFactoryDefinition> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected CachedFactoryDefinition computeValue(Class<?> type) {
-            TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
-            Key<?> d1 = Key.getKeyOfArgument(Factory2.class, 0, (Class) type);
-            Key<?> d2 = Key.getKeyOfArgument(Factory2.class, 1, (Class) type);
-            return new CachedFactoryDefinition(tl, List.of(new Dependency(d1, null, 0), new Dependency(d2, null, 1)));
-        }
-    };
-
     /** The supplier to delegate to */
     final BiFunction<? super T, ? super U, ? extends R> function;
 
@@ -51,14 +36,6 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
         this.function = requireNonNull(function, "function is null");
     }
 
-    // @Override
-    // @SuppressWarnings("unchecked")
-    // protected final R create(Object[] args) {
-    // T p = (T) args[0];
-    // U u = (U) args[1];
-    // return function.apply(p, u);
-    // }
-
     public static <T, R> Factory<R> ofOptional(Function<Optional<? super T>, ? extends R> function, Class<T> dependencyType, Class<R> objectType) {
         throw new UnsupportedOperationException();
     }
@@ -67,16 +44,4 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
             Class<R> objectType) {
         throw new UnsupportedOperationException();
     }
-
-    static class CachedFactoryDefinition {
-        final List<Dependency> dependencies;
-
-        final TypeLiteral<?> objectType;
-
-        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
-            this.objectType = requireNonNull(objectType);
-            this.dependencies = requireNonNull(dependencies);
-        }
-    }
-
 }

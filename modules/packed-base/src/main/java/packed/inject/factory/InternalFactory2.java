@@ -22,13 +22,30 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import app.packed.inject.Dependency;
+import app.packed.inject.Factory;
+import app.packed.inject.Factory2;
 import app.packed.inject.InjectionException;
+import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 
 /**
  *
  */
 public class InternalFactory2<T, U, R> extends InternalFactory<R> {
+
+    /** A cache of function factory definitions. */
+    static final ClassValue<CachedFactoryDefinition> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected CachedFactoryDefinition computeValue(Class<?> type) {
+            TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
+            Key<?> d1 = Key.getKeyOfArgument(Factory2.class, 0, (Class) type);
+            Key<?> d2 = Key.getKeyOfArgument(Factory2.class, 1, (Class) type);
+            return new CachedFactoryDefinition(tl, List.of(new Dependency(d1, null, 0), new Dependency(d2, null, 1)));
+        }
+    };
 
     private final List<Dependency> dependencies;
 
@@ -75,5 +92,17 @@ public class InternalFactory2<T, U, R> extends InternalFactory<R> {
 
     public static <T> InternalFactory<T> of(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
         throw new UnsupportedOperationException();
+    }
+    
+
+    static class CachedFactoryDefinition {
+        final List<Dependency> dependencies;
+
+        final TypeLiteral<?> objectType;
+
+        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
+            this.objectType = requireNonNull(objectType);
+            this.dependencies = requireNonNull(dependencies);
+        }
     }
 }

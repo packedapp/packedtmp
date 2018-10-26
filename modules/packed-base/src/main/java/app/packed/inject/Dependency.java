@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -28,8 +29,10 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.util.ConstructorDescriptor;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
 import packed.inject.InjectAPI;
@@ -152,6 +155,24 @@ public final class Dependency {
      */
     public int getIndex() {
         return index;
+    }
+    
+    public TypeLiteral<?> getTypeLiteral() {
+        return key.getTypeLiteral();
+    }
+    
+    /**
+     * Returns a {@link FieldDescriptor} in case of field injection, A {@link MethodDescriptor} in case of method parameter
+     * injection or a {@link ConstructorDescriptor} in case of constructor parameter injection.
+     * 
+     * @return the member that requested injection
+     */
+    public Member getMember() {
+        if (variable instanceof FieldDescriptor) {
+            return ((FieldDescriptor) variable);
+        } else {
+            return ((ParameterDescriptor) variable).getDeclaringExecutable();
+        }
     }
 
     /**
@@ -361,7 +382,7 @@ public final class Dependency {
         return new Dependency(key, null);
     }
 
-    //ofOptional istedet for tror jeg
+    // ofOptional istedet for tror jeg
     public static <T> Dependency optionalOf(Key<T> key, T defaultValue) {
         throw new UnsupportedOperationException();
     }

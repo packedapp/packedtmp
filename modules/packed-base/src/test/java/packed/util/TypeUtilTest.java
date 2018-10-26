@@ -16,6 +16,16 @@
 package packed.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static support.assertj.Assertions.npe;
+import static support.stubs.TypeStubs.LIST_STRING;
+import static support.stubs.TypeStubs.LIST_STRING_ARRAY;
+import static support.stubs.TypeStubs.LIST_STRING_ARRAY_ARRAY;
+import static support.stubs.TypeStubs.LIST_WILDCARD;
+import static support.stubs.TypeStubs.MAP_EXTENDSSTRING_SUPERINTEGER;
+import static support.stubs.TypeStubs.MAP_STRING_INTEGER;
+
+import java.lang.reflect.Type;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +60,29 @@ public class TypeUtilTest {
         assertThat(TypeUtil.unboxClass(Long.class)).isSameAs(long.class);
         assertThat(TypeUtil.unboxClass(Short.class)).isSameAs(short.class);
         assertThat(TypeUtil.unboxClass(Void.class)).isSameAs(void.class);
-
     }
+
+    /** Tests {@link TypeUtil#toShortString(java.lang.reflect.Type)}. */
+    @Test
+    public void toShortString() {
+        npe(() -> TypeUtil.toShortString(null), "type");
+        assertThat(TypeUtil.toShortString(String.class)).isEqualTo("String");
+        assertThat(TypeUtil.toShortString(LIST_STRING)).isEqualTo("List<String>");
+        assertThat(TypeUtil.toShortString(LIST_STRING_ARRAY)).isEqualTo("List<String>[]");
+        assertThat(TypeUtil.toShortString(LIST_STRING_ARRAY_ARRAY)).isEqualTo("List<String>[][]");
+        assertThat(TypeUtil.toShortString(MAP_STRING_INTEGER)).isEqualTo("Map<String, Integer>");
+
+        class Y<T> {}
+        assertThat(TypeUtil.toShortString(Y.class.getTypeParameters()[0])).isEqualTo("T");
+        assertThat(TypeUtil.toShortString(LIST_WILDCARD)).isEqualTo("List<?>");
+        assertThat(TypeUtil.toShortString(MAP_EXTENDSSTRING_SUPERINTEGER)).isEqualTo("Map<? extends String, ? super Integer>");
+
+        assertThatThrownBy(() -> TypeUtil.toShortString(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    class D<T> {
+
+        class X {}
+    }
+
 }

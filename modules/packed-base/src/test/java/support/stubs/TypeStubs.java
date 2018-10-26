@@ -13,29 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.util;
+package support.stubs;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  */
 public class TypeStubs {
+    /** A type representing {@code List<String>} */
     public static final ParameterizedType LIST_STRING = fromField("LIST_STRING$");
+
+    /** A type representing {@code List<String>} */
+    public static final GenericArrayType LIST_STRING_ARRAY = fromField("LIST_STRING_ARRAY$");
+
+    /** A type representing {@code List<String>} */
+    public static final GenericArrayType LIST_STRING_ARRAY_ARRAY = fromField("lIST_STRING_ARRAY_ARRAY$");
+
+    @SuppressWarnings("unused")
+    private static List<String>[][] lIST_STRING_ARRAY_ARRAY$;
+
+    @SuppressWarnings("unused")
+    private static List<String>[] LIST_STRING_ARRAY$;
 
     @SuppressWarnings("unused")
     private static List<String> LIST_STRING$;
 
+    /** A type representing {@code List<?>} */
     public static final ParameterizedType LIST_WILDCARD = fromField("LIST_WILDCARD$");
-    
+
     @SuppressWarnings("unused")
     private static List<?> LIST_WILDCARD$;
 
-    public static void main(String[] args) {
-        System.out.println(LIST_STRING);
-    }
+    /** A type representing {@code List<String>} */
+    public static final ParameterizedType MAP_STRING_INTEGER = fromField("MAP_STRING_INTEGER$");
+
+    @SuppressWarnings("unused")
+    private static Map<String, Integer> MAP_STRING_INTEGER$;
+
+    /** A type representing {@code List<String>} */
+    public static final ParameterizedType MAP_EXTENDSSTRING_SUPERINTEGER = fromField("MAP_EXTENDSSTRING_SUPERINTEGER$");
+
+    @SuppressWarnings("unused")
+    private static Map<? extends String, ? super Integer> MAP_EXTENDSSTRING_SUPERINTEGER$;
+
     @SuppressWarnings("unchecked")
     private static <T extends Type> T fromField(String name) {
         try {
@@ -43,5 +68,9 @@ public class TypeStubs {
         } catch (NoSuchFieldException e) {
             throw new Error(e);
         }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(LIST_STRING);
     }
 }

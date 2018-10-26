@@ -16,16 +16,16 @@
 package app.packed.inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static support.assertj.Assertions.npe;
+import static support.stubs.TypeStubs.LIST_STRING;
+import static support.stubs.TypeStubs.LIST_WILDCARD;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
@@ -179,50 +179,38 @@ public class TypeLiteralTest {
     @Test
     public void tl_ListString() throws Exception {
         TypeLiteral<List<String>> listStringNew = new TypeLiteral<List<String>>() {};
-        // Type
-        class Tmpx {
-            @SuppressWarnings("unused")
-            List<String> f;
-        }
-        Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
 
-        assertThat(listStringNew.box().getType()).isEqualTo(fGenericType);
+        assertThat(listStringNew.box().getType()).isEqualTo(LIST_STRING);
 
         assertThat(listStringNew.getRawType()).isSameAs(List.class);
 
-        assertThat(listStringNew.getType()).isEqualTo(fGenericType);
+        assertThat(listStringNew.getType()).isEqualTo(LIST_STRING);
 
-        assertThat(listStringNew).hasSameHashCodeAs(fGenericType);
-        assertThat(listStringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(fGenericType).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(LIST_STRING);
+        assertThat(listStringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(LIST_STRING).hashCode());
 
-        assertThat(listStringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(fGenericType));
+        assertThat(listStringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(LIST_STRING));
         assertThat(listStringNew).isNotEqualTo(List.class);
 
         assertThat(listStringNew).hasToString("java.util.List<java.lang.String>");
         assertThat(listStringNew.toShortString()).isEqualTo("List<String>");
     }
 
-    /** Tests {@code List<String>}. */
+    /** Tests {@code List<?>}. */
     @Test
     public void tl_ListWildcard() throws Exception {
         TypeLiteral<List<?>> listWildcardNew = new TypeLiteral<List<?>>() {};
-        // Type
-        class Tmpx {
-            @SuppressWarnings("unused")
-            List<?> f;
-        }
-        Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
 
-        assertThat(listWildcardNew.box().getType()).isEqualTo(fGenericType);
+        assertThat(listWildcardNew.box().getType()).isEqualTo(LIST_WILDCARD);
 
         assertThat(listWildcardNew.getRawType()).isSameAs(List.class);
 
-        assertThat(listWildcardNew.getType()).isEqualTo(fGenericType);
+        assertThat(listWildcardNew.getType()).isEqualTo(LIST_WILDCARD);
 
-        assertThat(listWildcardNew).hasSameHashCodeAs(fGenericType);
-        assertThat(listWildcardNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(fGenericType).hashCode());
+        assertThat(listWildcardNew).hasSameHashCodeAs(LIST_WILDCARD);
+        assertThat(listWildcardNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(LIST_WILDCARD).hashCode());
 
-        assertThat(listWildcardNew).isEqualTo(TypeLiteral.fromJavaImplementationType(fGenericType));
+        assertThat(listWildcardNew).isEqualTo(TypeLiteral.fromJavaImplementationType(LIST_WILDCARD));
         assertThat(listWildcardNew).isNotEqualTo(List.class);
 
         assertThat(listWildcardNew).hasToString("java.util.List<?>");
@@ -361,18 +349,10 @@ public class TypeLiteralTest {
             @SuppressWarnings("unused")
             Tmpx(Integer f) {}
         }
-        //Tmpx is a non-static class so first parameter is TypeLiteralTest
+        // Tmpx is a non-static class so first parameter is TypeLiteralTest
         Parameter p = Tmpx.class.getDeclaredConstructors()[0].getParameters()[1];
 
         npe(TypeLiteral::fromParameter, p, "parameter");
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromParameter(p));
-    }
-
-    public static <T> void npex(Class<T> cl, Consumer<T> c, String name) {
-        assertThatNullPointerException().isThrownBy(() -> c.accept(null)).withMessage(name + " is null").withNoCause();
-    }
-
-    public static void npe2(Consumer<?> c, String name) {
-        assertThatNullPointerException().isThrownBy(() -> c.accept(null)).withMessage(name + " is null").withNoCause();
     }
 }

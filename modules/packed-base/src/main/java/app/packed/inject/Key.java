@@ -21,6 +21,7 @@ import static packed.util.Formatter.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
@@ -319,6 +320,19 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
 
     static <T> Key<T> fromCheckedTypeAndCheckedNullableAnnotation(TypeLiteral<T> typeLiteral, Annotation qualifier) {
         return new Key<T>(typeLiteral, qualifier) {};
+    }
+
+    /**
+     * Returns the type of the specified field as a key.
+     * 
+     * @param field
+     *            the field to return a type literal for
+     * @return the type literal for the field
+     * @see Field#getGenericType()
+     */
+    public static Key<?> fromField(Field field) {
+        requireNonNull(field, "field is null");
+        throw new UnsupportedOperationException();// Removes optional
     }
 
     /**

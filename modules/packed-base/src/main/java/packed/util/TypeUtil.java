@@ -30,14 +30,11 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Set;
 
-/**
- *
- */
+/** Various utility methods for working {@link Type types}. */
 public final class TypeUtil {
 
     /** Cannot instantiate. */
     private TypeUtil() {}
-
 
     /**
      * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
@@ -75,38 +72,6 @@ public final class TypeUtil {
     }
 
     /**
-     * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
-     * if it is not a primitive wrapper class.
-     *
-     * @param type
-     *            the class to convert
-     * @return the converted class
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Class<T> unboxClass(Class<T> type) {
-        if (type == Boolean.class) {
-            return (Class<T>) boolean.class;
-        } else if (type == Byte.class) {
-            return (Class<T>) byte.class;
-        } else if (type == Character.class) {
-            return (Class<T>) char.class;
-        } else if (type == Double.class) {
-            return (Class<T>) double.class;
-        } else if (type == Float.class) {
-            return (Class<T>) float.class;
-        } else if (type == Integer.class) {
-            return (Class<T>) int.class;
-        } else if (type == Long.class) {
-            return (Class<T>) long.class;
-        } else if (type == Short.class) {
-            return (Class<T>) short.class;
-        } else if (type == Void.class) {
-            return (Class<T>) void.class;
-        }
-        return type;
-    }
-    
-    /**
      * Finds the raw class type for the specified type
      *
      * @param type
@@ -123,7 +88,7 @@ public final class TypeUtil {
         } else if (type instanceof GenericArrayType) {
             return Array.newInstance(findRawType(((GenericArrayType) type).getGenericComponentType()), 0).getClass();
         } else if (type instanceof TypeVariable || type instanceof WildcardType) {
-            return Object.class;// Probably the best we can do, maybe just fail??
+            return Object.class;
         } else {
             throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
         }
@@ -233,9 +198,8 @@ public final class TypeUtil {
      * @return the representation
      */
     public static String toShortString(Type type) {
-        requireNonNull(type, "type is null");
         StringBuilder sb = new StringBuilder();
-        toShortString(type, sb);
+        toShortString0(type, sb);
         return sb.toString();
     }
 
@@ -247,24 +211,26 @@ public final class TypeUtil {
      * @param sb
      *            the string builder
      */
-    private static void toShortString(Type type, StringBuilder sb) {
+    private static void toShortString0(Type type, StringBuilder sb) {
+        requireNonNull(type, "type is null");
         if (type instanceof Class<?>) {
             sb.append(((Class<?>) type).getSimpleName());
         } else if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
-            sb.append(toShortString(pt.getRawType()));
+            toShortString0(pt.getRawType(), sb);
             Type[] actualTypeArguments = pt.getActualTypeArguments();
+            // The array can be empty according to #ParameterizedType.getActualTypeArguments()
             if (actualTypeArguments.length > 0) {
                 sb.append("<");
-                toShortString(actualTypeArguments[0], sb);
+                toShortString0(actualTypeArguments[0], sb);
                 for (int i = 1; i < actualTypeArguments.length; i++) {
                     sb.append(", ");
-                    toShortString(actualTypeArguments[i], sb);
+                    toShortString0(actualTypeArguments[i], sb);
                 }
                 sb.append(">");
             }
         } else if (type instanceof GenericArrayType) {
-            toShortString(((GenericArrayType) type).getGenericComponentType(), sb);
+            toShortString0(((GenericArrayType) type).getGenericComponentType(), sb);
             sb.append("[]");
         } else if (type instanceof TypeVariable) {
             TypeVariable<?> tv = (TypeVariable<?>) type;
@@ -274,18 +240,50 @@ public final class TypeUtil {
             Type[] lowerBounds = wt.getLowerBounds();
             if (lowerBounds.length == 1) {
                 sb.append("? super ");
-                toShortString(lowerBounds[0], sb);
+                toShortString0(lowerBounds[0], sb);
             } else {
                 Type[] upperBounds = wt.getUpperBounds();
                 if (upperBounds[0] == Object.class) {
                     sb.append("?");
                 } else {
                     sb.append("? extends ");
-                    toShortString(upperBounds[0], sb);
+                    toShortString0(upperBounds[0], sb);
                 }
             }
         } else {
-            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
+            throw new IllegalArgumentException("Don't know how to process type '" + type + "' of type: " + type.getClass().getName());
         }
+    }
+
+    /**
+     * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
+     * if it is not a primitive wrapper class.
+     *
+     * @param type
+     *            the class to convert
+     * @return the converted class
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> unboxClass(Class<T> type) {
+        if (type == Boolean.class) {
+            return (Class<T>) boolean.class;
+        } else if (type == Byte.class) {
+            return (Class<T>) byte.class;
+        } else if (type == Character.class) {
+            return (Class<T>) char.class;
+        } else if (type == Double.class) {
+            return (Class<T>) double.class;
+        } else if (type == Float.class) {
+            return (Class<T>) float.class;
+        } else if (type == Integer.class) {
+            return (Class<T>) int.class;
+        } else if (type == Long.class) {
+            return (Class<T>) long.class;
+        } else if (type == Short.class) {
+            return (Class<T>) short.class;
+        } else if (type == Void.class) {
+            return (Class<T>) void.class;
+        }
+        return type;
     }
 }
