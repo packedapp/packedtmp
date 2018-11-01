@@ -30,6 +30,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import packed.inject.JavaXInjectSupport;
+import packed.util.AnnotationUtil;
 import packed.util.TypeUtil;
 import packed.util.TypeVariableExtractorUtil;
 
@@ -67,7 +68,7 @@ import packed.util.TypeVariableExtractorUtil;
 
 // Create a valid key for @Provides
 // Extract
-public abstract class Key<T> extends TypeLiteralOrKey<T> {
+public abstract class Key<T> {
 
     /** The lazily computed hash code. */
     private int hash;
@@ -83,7 +84,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
      */
     @SuppressWarnings("unchecked")
     protected Key() {
-        Type tt = (Type) TypeVariableExtractorUtil.findTypeArgument(Key.class, 0, getClass());
+        Type tt = TypeVariableExtractorUtil.findTypeArgument(Key.class, 0, getClass());
         typeLiteral = (TypeLiteral<T>) TypeLiteral.fromJavaImplementationType(tt);
         if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
             // cannot be parameterized with Optional
@@ -151,8 +152,6 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
         return qualifier == null ? null : qualifier.annotationType();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final Class<? super T> getRawType() {
         return typeLiteral.getRawType();
     }
@@ -181,9 +180,16 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
         return qualifier != null;
     }
 
-    @Override
-    public final Key<T> toKey() {
-        return this;
+    /**
+     * Returns whether or not this key has a qualifier of the specified type.
+     * 
+     * @param qualifierType
+     *            the type of qualifier
+     * @return whether or not this key has a qualifier of the specified type
+     */
+    public final boolean isQualifiedWith(Class<? extends Annotation> qualifierType) {
+        requireNonNull(qualifierType, "qualifierType is null");
+        return qualifier != null && qualifier.annotationType() == qualifierType;
     }
 
     public final String toShortString() {
@@ -201,25 +207,16 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
             sb.append("Key<");
         }
         if (qualifier != null) {
-            Class<? extends Annotation> annotationType = qualifier.annotationType();
-            if (annotationType != null) {
-                String shortDescription = qualifier.toString().replace(annotationType.getPackageName() + ".", "");
-                sb.append(shortDescription);
-                // sb.append("@");
-                // sb.append(annotationType.getSimpleName());
-                // System.out.println(Annotations.nameOf(this));
-                // System.out.println(qualifier);
-                sb.append(" ");
-            }
+            sb.append(AnnotationUtil.toShortString(qualifier)).append(" ");
         }
-        sb.append(typeLiteral);
+        sb.append(typeLiteral.toShortString());
         if (appendKey) {
             sb.append('>');
         }
         return sb.toString();
     }
 
-    // An easy way to create annotations with one value
+    // An easy way to create annotations with one value, or maybe put it on TypeLiteral
     // withNamedAnnotations(type, String name, Object value)
     // withNamedAnnotations(type, String name1, Object value1, String name2, Object value2)
     // withNamedAnnotations(type, String name1, Object value1, String name2, Object value2, String name3, Object value3);
@@ -233,7 +230,7 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     }
 
     public static <T> Key<T> getKeyOfArgument(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
-        TypeLiteral<T> t = TypeLiteral.fromTypeVariable(superClass, parameterIndex, subClass);
+        TypeLiteral<T> t = TypeLiteral.fromTypeVariable(subClass, superClass, parameterIndex);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
@@ -260,11 +257,11 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     }
 
     /**
-     * Returns a key matching the specified type.
+     * Returns a key matching the specified type with no qualifiers.
      *
      * @param type
      *            the type to return a key for
-     * @return a key matching the specified type
+     * @return a key matching the specified type with no qualifiers
      */
     public static <T> Key<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
@@ -272,13 +269,13 @@ public abstract class Key<T> extends TypeLiteralOrKey<T> {
     }
 
     /**
-     * Returns a key matching the specified type and qualifier.
+     * Returns a key of the specified type and with the specified qualifier.
      *
      * @param type
      *            the type to return a key for
      * @param qualifier
      *            the qualifier of the key
-     * @return a key matching the specified type and qualifier
+     * @return a key of the specified type wuth the specified qualifier
      */
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
         requireNonNull(type, "type is null");

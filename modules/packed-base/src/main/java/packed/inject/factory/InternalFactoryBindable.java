@@ -15,9 +15,6 @@
  */
 package packed.inject.factory;
 
-import java.util.List;
-
-import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 
 /**
@@ -31,18 +28,12 @@ public class InternalFactoryBindable<T> extends InternalFactory<T> {
      * @param typeLiteral
      */
     public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral);
+        super(typeLiteral, null);
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<T> getLowerBound() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Dependency> getDependencies() {
         return null;
     }
 

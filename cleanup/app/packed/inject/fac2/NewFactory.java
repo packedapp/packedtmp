@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.inject.fac2;
+
+import app.packed.inject.Factory;
+import app.packed.inject.Key;
 
 /**
  *
@@ -21,18 +24,18 @@ package app.packed.inject;
 public class NewFactory<T> {
 
     public static void main(String[] args) {
-        NewFactory<String> as = fromInstance("doo").as(new Key<String>() {});
+        NewFactory<String> as = fromInstance("doo").as(new Key<CharSequence>() {});
 
-        Factory.ofInstance("String", CharSequence.class);
+        Factory.ofInstance("String");// .as(CharSequence.class);
 
-//        NewFactory<CharSequence> f = fromInstance("doo").as(CharSequence.class);
+        // NewFactory<CharSequence> f = fromInstance("doo").as(CharSequence.class);
 
-       // fromInstance("doo").as(new Key<@SystemProperty("hejhej") CharSequence>() {});
-        
-        Factory<String> ff=null;
-        
+        // fromInstance("doo").as(new Key<@SystemProperty("hejhej") CharSequence>() {});
+
+        Factory<String> ff = null;
+
         Factory<CharSequence> exposeAs = exposeAs(ff, CharSequence.class);
-        
+
         System.out.println(as);
         System.out.println(exposeAs);
     }

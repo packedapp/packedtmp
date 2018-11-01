@@ -25,7 +25,11 @@ import static support.stubs.TypeStubs.LIST_WILDCARD;
 import static support.stubs.TypeStubs.MAP_EXTENDSSTRING_SUPERINTEGER;
 import static support.stubs.TypeStubs.MAP_STRING_INTEGER;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -80,9 +84,32 @@ public class TypeUtilTest {
         assertThatThrownBy(() -> TypeUtil.toShortString(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
-    class D<T> {
+    /** Tests {@link TypeUtil#isFreeFromTypeVariables(Type)}. */
+    @Test
+    public void isFreeFromTypeVariables() {
+        npe(() -> TypeUtil.isFreeFromTypeVariables(null), "type");
 
-        class X {}
+        @SuppressWarnings("unused")
+        class C<T> {
+            public String f1;
+            public String[] f2;
+            public List<String> f3;
+            public Map<? extends String, ? super Integer> f4;
+            public int[] f5;
+
+            public T[] n1;
+            public List<T> n2;
+            public List<T>[] n3;
+            public List<? extends T> n4;
+            public List<? super Collection<? extends T>> n5;
+        }
+
+        for (Field f : C.class.getDeclaredFields()) {
+            if (!f.isSynthetic()) {// Anonymous class capture this test class
+                assertThat(TypeUtil.isFreeFromTypeVariables(f.getGenericType())).isEqualTo(f.getName().startsWith("f")).withFailMessage(f.getName());
+            }
+        }
+        assertThatThrownBy(() -> TypeUtil.isFreeFromTypeVariables(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
+
     }
-
 }

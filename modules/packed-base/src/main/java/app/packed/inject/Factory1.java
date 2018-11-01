@@ -19,8 +19,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * A {@link Factory} type that wraps a single {@link Function} to create new instances. The input to the function being
- * a single dependency.
+ * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input
+ * to the function being the single dependency.
  * <p>
  * Is typically used like this:
  *

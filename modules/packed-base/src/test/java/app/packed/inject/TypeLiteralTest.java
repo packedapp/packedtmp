@@ -332,14 +332,17 @@ public class TypeLiteralTest {
     /** Tests {@link TypeLiteral#fromField(Field)}. */
     @Test
     public void fromField() throws Exception {
+        @SuppressWarnings("unused")
         class Tmpx<T> {
-            @SuppressWarnings("unused")
             Integer f;
+            List<?> fq;
         }
         Field f = Tmpx.class.getDeclaredField("f");
-
         npe(TypeLiteral::fromField, f, "field");
+
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromField(f));
+
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(Tmpx.class.getDeclaredField("fq")).getType());
     }
 
     /** Tests {@link TypeLiteral#fromParameter(Parameter)}. */
@@ -347,12 +350,13 @@ public class TypeLiteralTest {
     public void fromParameter() throws Exception {
         class Tmpx<T> {
             @SuppressWarnings("unused")
-            Tmpx(Integer f) {}
+            Tmpx(Integer f, List<?> l) {}
         }
         // Tmpx is a non-static class so first parameter is TypeLiteralTest
         Parameter p = Tmpx.class.getDeclaredConstructors()[0].getParameters()[1];
 
         npe(TypeLiteral::fromParameter, p, "parameter");
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromParameter(p));
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[2]).getType());
     }
 }

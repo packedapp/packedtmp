@@ -19,10 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
-import app.packed.inject.Key;
-import app.packed.inject.TypeLiteralOrKey;
+import app.packed.inject.TypeLiteral;
 
 /** A factory that returns the same instance on every invocation. */
 public final class InternalFactoryInstance<T> extends InternalFactory<T> {
@@ -30,8 +28,8 @@ public final class InternalFactoryInstance<T> extends InternalFactory<T> {
     /** The instance that is returned every time. */
     private final T instance;
 
-    private InternalFactoryInstance(TypeLiteralOrKey<T> typeLiteralOrKey, T instance, Class<?> actualType) {
-        super(typeLiteralOrKey, actualType);
+    private InternalFactoryInstance(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
+        super(typeLiteralOrKey, List.of(), actualType);
         this.instance = instance;
     }
 
@@ -39,12 +37,6 @@ public final class InternalFactoryInstance<T> extends InternalFactory<T> {
     @Override
     public Class<?> getLowerBound() {
         return instance.getClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Dependency> getDependencies() {
-        return List.of();
     }
 
     /** {@inheritDoc} */
@@ -67,43 +59,6 @@ public final class InternalFactoryInstance<T> extends InternalFactory<T> {
     public static <T> InternalFactory<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
-        return new InternalFactoryInstance<T>((Key<T>) Key.of(type), instance, type);
-    }
-
-    /**
-     * Creates a new instance factory from the specified instance.
-     *
-     * @param <T>
-     *            the type of instance
-     * @param instance
-     *            the instance
-     * @param type
-     *            the default type to expose the factory as
-     * @return a new instance factory
-     * @see Factory#ofInstance(Object)
-     */
-    public static <T> InternalFactory<T> of(T instance, Class<T> type) {
-        requireNonNull(instance, "instance is null");
-        requireNonNull(type, "type is null");
-        // TODO validate Class<T>, when we write a test
-        return new InternalFactoryInstance<T>(Key.of(type), instance, instance.getClass());
-    }
-
-    /**
-     * Creates a new instance factory from the specified instance.
-     *
-     * @param <T>
-     *            the type of instance
-     * @param instance
-     *            the instance
-     * @param type
-     *            the default type or key to expose the factory as
-     * @return a new instance factory
-     * @see Factory#ofInstance(Object)
-     */
-    public static <T> InternalFactory<T> of(T instance, TypeLiteralOrKey<T> typeLiteralOrKey) {
-        requireNonNull(instance, "instance is null");
-        requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        return new InternalFactoryInstance<T>(typeLiteralOrKey, instance, instance.getClass());
+        return new InternalFactoryInstance<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
     }
 }

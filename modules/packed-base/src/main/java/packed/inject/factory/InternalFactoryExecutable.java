@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Key;
+import app.packed.inject.TypeLiteral;
 import packed.util.ThrowableUtil;
 import packed.util.descriptor.AbstractExecutableDescriptor;
 import packed.util.descriptor.InternalConstructorDescriptor;
@@ -40,8 +40,6 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
      */
     final boolean checkLowerBound;
 
-    private final List<Dependency> dependencies;
-
     public final AbstractExecutableDescriptor executable;
 
     /** A special method handle that should for this factory. */
@@ -49,28 +47,17 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
 
     private final int numberOfMissingDependencies;
 
-    InternalFactoryExecutable(Key<T> key, AbstractExecutableDescriptor executable) {
+    InternalFactoryExecutable(TypeLiteral<T> key, AbstractExecutableDescriptor executable) {
         this(key, executable, executable.toDependencyList(), executable.getParameterCount(), null);
     }
 
-    InternalFactoryExecutable(Key<T> key, AbstractExecutableDescriptor executable, List<Dependency> dependencies, int numberOfMissingDependencies,
+    InternalFactoryExecutable(TypeLiteral<T> key, AbstractExecutableDescriptor executable, List<Dependency> dependencies, int numberOfMissingDependencies,
             MethodHandle methodHandle) {
-        super(key);
+        super(key, dependencies);
         this.executable = executable;
         this.numberOfMissingDependencies = numberOfMissingDependencies;
-        this.dependencies = dependencies;
         this.methodHandle = methodHandle;
         this.checkLowerBound = false;
-    }
-
-    /** {@inheritDoc} */
-    protected T create(Object[] args) {
-        return null;
-    }
-
-    @Override
-    public List<Dependency> getDependencies() {
-        return dependencies;
     }
 
     /** {@inheritDoc} */
@@ -111,16 +98,17 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
         try {
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("No access to the " + executable.descriptorName() + " " + executable+ ", use lookup(MethodHandles.Lookup) to give access");
+            throw new IllegalArgumentException(
+                    "No access to the " + executable.descriptorName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access");
         }
-        return new InternalFactoryExecutable<>(getKey(), executable, dependencies, numberOfMissingDependencies, handle);
+        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);
     }
 
     public static <T> InternalFactory<T> from(Class<T> type) {
-        AbstractExecutableDescriptor executable  = InternalMethodDescriptor.getDefaultFactoryFindStaticMethodx(type);
+        AbstractExecutableDescriptor executable = InternalMethodDescriptor.getDefaultFactoryFindStaticMethodx(type);
         if (executable == null) {
             executable = InternalConstructorDescriptor.findDefaultForInject(type);// moc.constructors().findInjectable();
         }
-        return new InternalFactoryExecutable<>(Key.of(type), executable);
+        return new InternalFactoryExecutable<>(TypeLiteral.of(type), executable);
     }
 }

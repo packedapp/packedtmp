@@ -25,50 +25,35 @@ import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFactory<R> {
 
     /** A cache of function factory definitions. */
-    static final ClassValue<CachedFactoryDefinition> TYPE_PARAMETERS = new ClassValue<>() {
+    static final ClassValue<FunctionalSignature> TYPE_PARAMETERS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected CachedFactoryDefinition computeValue(Class<?> type) {
-            TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
-            Key<?> dep = Key.getKeyOfArgument(Factory1.class, 0, (Class) getClass());
-            return new CachedFactoryDefinition(tl, List.of(new Dependency(dep, null, 0)));
+        protected FunctionalSignature computeValue(Class<?> type) {
+            return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
+                    Dependency.fromTypeVariables(Factory1.class, (Class) type, 0));
         }
     };
-
-    private final List<Dependency> dependencies;
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    /**
-     * @param factory
-     * @param typeLiteral
-     * @param dependencies
-     */
     public InternalFactory1(Function<? super T, ? extends R> function, TypeLiteral<R> typeLiteral, List<Dependency> dependencies) {
-        super(typeLiteral);
+        super(typeLiteral, dependencies);
         this.function = requireNonNull(function);
-        this.dependencies = requireNonNull(dependencies);
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getLowerBound() {
         return Object.class; // The raw function return objects
-    }
-
-    @Override
-    public List<Dependency> getDependencies() {
-        return dependencies;
     }
 
     @SuppressWarnings("unchecked")
@@ -88,14 +73,4 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         throw new UnsupportedOperationException();
     }
 
-    static class CachedFactoryDefinition {
-        final List<Dependency> dependencies;
-
-        final TypeLiteral<?> objectType;
-
-        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
-            this.objectType = requireNonNull(objectType);
-            this.dependencies = requireNonNull(dependencies);
-        }
-    }
 }

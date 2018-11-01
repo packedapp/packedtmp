@@ -18,7 +18,7 @@ package app.packed.inject;
 /**
  *
  */
-public enum BindMode {
+public enum BindingMode {
 
     /**
      * A single instance is created as soon as possible. This is the default mode used throughout the framework.

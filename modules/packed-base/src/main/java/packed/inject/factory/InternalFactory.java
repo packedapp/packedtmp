@@ -27,7 +27,6 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import app.packed.inject.TypeLiteralOrKey;
 import packed.inject.InjectAPI;
 
 /**
@@ -50,28 +49,26 @@ public abstract class InternalFactory<T> {
     // Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
     final Class<?> actualType;
 
+    private final List<Dependency> dependencies;
+
     /** The key that this factory will be registered under by default with an injector. */
     private final Key<T> key;
-    
+
     private final Class<? super T> type;
 
     /** The type of objects this factory creates. */
     private final TypeLiteral<T> typeLiteral;
 
-    public InternalFactory(TypeLiteralOrKey<T> typeLiteralOrKey) {
-        this(typeLiteralOrKey, typeLiteralOrKey.getRawType());
+    public InternalFactory(TypeLiteral<T> typeLiteralOrKey, List<Dependency> dependencies) {
+        this(typeLiteralOrKey, dependencies, typeLiteralOrKey.getRawType());
     }
 
     /** Creates a factory with no dependencies. */
-    public InternalFactory(TypeLiteralOrKey<T> typeLiteralOrKey, Class<?> actualType) {
+    public InternalFactory(TypeLiteral<T> typeLiteralOrKey, List<Dependency> dependencies, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        if (typeLiteralOrKey instanceof Key) {
-            this.key = (Key<T>) typeLiteralOrKey;
-            this.typeLiteral = key.getTypeLiteral();
-        } else {
-            this.key = typeLiteralOrKey.toKey();
-            this.typeLiteral = (TypeLiteral<T>) typeLiteralOrKey;
-        }
+        this.dependencies = requireNonNull(dependencies);
+        this.key = typeLiteralOrKey.toKey();
+        this.typeLiteral = typeLiteralOrKey;
         this.type = typeLiteral.getRawType();
         this.actualType = requireNonNull(actualType);
 
@@ -84,6 +81,14 @@ public abstract class InternalFactory<T> {
         return instance;
     }
 
+    /**
+     * Returns a list of all of this factory's dependencies.
+     * 
+     * @return a list of all of this factory's dependencies
+     */
+    public final List<Dependency> getDependencies() {
+        return dependencies;
+    }
 
     /**
      * Returns the key that this factory will be made available under if registering with an injector.
@@ -94,6 +99,8 @@ public abstract class InternalFactory<T> {
         return key;
     }
 
+    public abstract Class<?> getLowerBound();
+
     /**
      * Returns the raw type of objects this factory creates.
      *
@@ -102,6 +109,7 @@ public abstract class InternalFactory<T> {
     public final Class<? super T> getRawType() {
         return type;
     }
+
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
      * {@link org.cakeframework.lifecycle.OnStart} and {@link app.packed.inject.Provides}. This might differ from the
@@ -121,18 +129,6 @@ public abstract class InternalFactory<T> {
         return typeLiteral;
     }
 
-    
-
-    /**
-     * Returns a list of all of this factory's dependencies.
-     * 
-     * @return a list of all of this factory's dependencies
-     */
-    public abstract List<Dependency> getDependencies();
-    
-    public abstract Class<?> getLowerBound();
-
-
     /**
      * Instantiates a new object using the specified parameters
      * 
@@ -141,6 +137,15 @@ public abstract class InternalFactory<T> {
      * @return the new instance
      */
     public abstract T instantiate(Object[] params);
+
+    /**
+     * @param lookup
+     *            the lookup object to test against
+     * @return whether or not the this factory can create using the specified lookup object
+     */
+    public boolean isAccessibleWith(Lookup lookup) {
+        return true;
+    }
 
     /**
      * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
@@ -165,11 +170,16 @@ public abstract class InternalFactory<T> {
         return InjectAPI.toInternalFactory(factory);
     }
 
-    /**
-     * @param lookup
-     * @return
-     */
-    public boolean isAccessibleWith(Lookup lookup) {
-        return true;
+    static class FunctionalSignature {
+
+        final List<Dependency> dependencies;
+
+        final TypeLiteral<?> objectType;
+
+        FunctionalSignature(TypeLiteral<?> objectType, List<Dependency> dependencies) {
+            this.objectType = requireNonNull(objectType);
+            this.dependencies = requireNonNull(dependencies);
+        }
     }
+
 }

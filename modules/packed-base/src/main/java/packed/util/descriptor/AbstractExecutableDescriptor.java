@@ -25,12 +25,11 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.util.ExecutableDescriptor;
-import app.packed.util.ParameterDescriptor;
 
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
 public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElement implements ExecutableDescriptor {
@@ -39,13 +38,13 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
     private volatile List<Dependency> dependencies;
 
     /** The executable */
-    private final Executable executable;
+    final Executable executable;
 
     /** An array of the parameter descriptor for this executable */
     private final InternalParameterDescriptor[] parameters;
 
     /** The parameter types of the executable. */
-    private final Class<?>[] parameterTypes;
+    final Class<?>[] parameterTypes;
 
     /**
      * Creates a new ExecutableMirror from the specified executable.
@@ -101,21 +100,8 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
         return parameters;
     }
 
-    /**
-     * Returns the parameter types of the executable.
-     *
-     * @return the parameter types of the executable
-     */
-    // TODO unsafe arrays
-    public final Class<?>[] getParameterTypes() {
-        return parameterTypes;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public final Iterator<ParameterDescriptor> iterator() {
-        return (Iterator) List.of(parameters).iterator();
+    public final boolean matchesParameters(Class<?>[] parameterTypes) {
+        return Arrays.equals(this.parameterTypes, parameterTypes);
     }
 
     /**
@@ -126,34 +112,31 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
     public abstract Executable newExecutable();
 
     /**
-     * Returns a list of dependencies matching the the parameters of this executable.
+     * Returns a list of dependencies matching the parameters of this executable.
      *
      * @return a dependency list
      */
+    @Override
     public final List<Dependency> toDependencyList() {
-        List<Dependency> dependencies = this.dependencies;
-        if (dependencies != null) {
-            return dependencies;
+        List<Dependency> d = this.dependencies;
+        if (d != null) {
+            return d;
         }
 
         switch (parameters.length) {
         case 0:
-            dependencies = List.of();
-            break;
+            return dependencies = List.of();
         case 1:
-            dependencies = List.of(parameters[0].toDependency());
-            break;
+            return dependencies = List.of(parameters[0].toDependency());
         case 2:
-            dependencies = List.of(parameters[0].toDependency(), parameters[1].toDependency());
-            break;
+            return dependencies = List.of(parameters[0].toDependency(), parameters[1].toDependency());
         default:
             ArrayList<Dependency> list = new ArrayList<>(parameters.length);
             for (int i = 0; i < parameters.length; i++) {
                 list.add(parameters[i].toDependency());
             }
-            dependencies = List.copyOf(list);
+            return dependencies = List.copyOf(list);
         }
-        return this.dependencies = dependencies;
     }
 
     /**
@@ -170,11 +153,11 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
     public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     /**
-     * Creates a new executable descriptor from a method or constructor.
+     * Creates a new descriptor from a method or constructor.
      *
      * @param executable
      *            the executable to create a descriptor for
-     * @return a new executable descriptor
+     * @return a new descriptor
      */
     public static AbstractExecutableDescriptor of(Executable executable) {
         requireNonNull(executable, "executable is null");

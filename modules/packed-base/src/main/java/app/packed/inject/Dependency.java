@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -33,6 +35,7 @@ import app.packed.util.ConstructorDescriptor;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
+import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
 import packed.inject.InjectAPI;
@@ -73,13 +76,13 @@ public final class Dependency {
             }
 
             @Override
-            protected TypeLiteral<?> toTypeLiteral(Type type) {
-                return TypeLiteral.fromJavaImplementationType(type);
+            protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
+                return null;
             }
 
             @Override
-            protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
-                return null;
+            protected TypeLiteral<?> toTypeLiteral(Type type) {
+                return TypeLiteral.fromJavaImplementationType(type);
             }
         });
     }
@@ -92,7 +95,7 @@ public final class Dependency {
 
     /**
      * Null if a non-optional dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
-     * {@link OptionalDouble} or (soon-to-be-added) Optional annotation.
+     * {@link OptionalDouble} or {@link Nullable} annotation.
      */
     private final Class<?> optionalType;
 
@@ -106,13 +109,6 @@ public final class Dependency {
         this.variable = variable;
     }
 
-    Dependency(Key<?> key, int index, Class<?> optionalType) {
-        this.key = requireNonNull(key);
-        this.index = index;
-        this.optionalType = optionalType;
-        this.variable = null;
-    }
-
     Dependency(Key<?> key, Class<?> optionalType) {
         this.key = requireNonNull(key, "key is null");
         this.optionalType = optionalType;
@@ -120,19 +116,24 @@ public final class Dependency {
         this.variable = null;
     }
 
-    public Dependency(Key<?> key, Class<?> optionalType, int index) {
-        this.key = requireNonNull(key, "key is null");
-        this.optionalType = optionalType;
-        this.index = index;
-        this.variable = null;
-    }
-
     /**
+     * Returns the object indicating that an optional dependency could not be fulfilled. For example, this method will
+     * return {@link Optional#empty()} if the dependency was created from an {@link Optional} object. And {@code null} if a
+     * parameter is annotated with {@link Nullable}.
+     * <p>
+     * If this dependency is not optional this method throws an {@link UnsupportedOperationException}.
+     * 
      * @return a matching optional type
      * @throws UnsupportedOperationException
      *             if this dependency is not optional
+     * @see Nullable
+     * @see Optional#empty()
+     * @see OptionalLong#empty()
+     * @see OptionalInt#empty()
+     * @see OptionalDouble#empty()
      */
-    public Object emptyOptional() {
+    @Nullable
+    public Object unresolvedValue() {
         if (optionalType == Optional.class) {
             return Optional.empty();
         } else if (optionalType == OptionalLong.class) {
@@ -141,9 +142,9 @@ public final class Dependency {
             return OptionalInt.empty();
         } else if (optionalType == OptionalDouble.class) {
             return OptionalDouble.empty();
+        } else if (optionalType == Nullable.class) {
+            return null;
         }
-        // else if (optionalType== OptionalAnnotation)
-        // return null
         throw new UnsupportedOperationException("Not a valid optional: " + key.getRawType());
     }
 
@@ -156,24 +157,6 @@ public final class Dependency {
     public int getIndex() {
         return index;
     }
-    
-    public TypeLiteral<?> getTypeLiteral() {
-        return key.getTypeLiteral();
-    }
-    
-    /**
-     * Returns a {@link FieldDescriptor} in case of field injection, A {@link MethodDescriptor} in case of method parameter
-     * injection or a {@link ConstructorDescriptor} in case of constructor parameter injection.
-     * 
-     * @return the member that requested injection
-     */
-    public Member getMember() {
-        if (variable instanceof FieldDescriptor) {
-            return ((FieldDescriptor) variable);
-        } else {
-            return ((ParameterDescriptor) variable).getDeclaringExecutable();
-        }
-    }
 
     /**
      * Returns the key of this dependency.
@@ -185,6 +168,20 @@ public final class Dependency {
     }
 
     /**
+     * Returns a {@link FieldDescriptor} in case of field injection, A {@link MethodDescriptor} in case of method injection
+     * or a {@link ConstructorDescriptor} in case of constructor injection.
+     * 
+     * @return the member that is being injected
+     */
+    public Member getMember() {
+        if (variable instanceof FieldDescriptor) {
+            return ((FieldDescriptor) variable);
+        } else {
+            return ((ParameterDescriptor) variable).getDeclaringExecutable();
+        }
+    }
+
+    /**
      * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble} or
      * {@link OptionalLong}) that was used to create this dependency or {@code null} if this dependency is not optional.
      *
@@ -193,6 +190,10 @@ public final class Dependency {
      */
     public Class<?> getOptionalContainerType() {
         return optionalType;
+    }
+
+    public TypeLiteral<?> getTypeLiteral() {
+        return key.getTypeLiteral();
     }
 
     /**
@@ -223,49 +224,71 @@ public final class Dependency {
         return sb.toString();
     }
 
-    // // What if class???
+    /**
+     * Returns a {@link FieldDescriptor} in case of field injection, or a {@link ParameterDescriptor} in case of method or
+     * constructor injection.
+     * 
+     * @return the variable that is being injected
+     */
     public VariableDescriptor variable() {
         return variable;
     }
-    //
-    // /**
-    // * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
-    // * specified index.
-    // *
-    // * @param index
-    // * the index of the returned variable
-    // * @return a new dependency with the specified index
-    // * @throws IllegalArgumentException
-    // * if the index is negative ({@literal <}0
-    // */
-    // public Dependency withIndex(int index) {
-    // throw new UnsupportedOperationException();
-    // }
 
     /**
-     * Returns the specified object if not optional, or a the specified object in an optional type (either {@link Optional},
-     * {@link OptionalDouble}, {@link OptionalInt} or {@link OptionalLong}) if optional.
+     * TODO add nullable... Returns the specified object if not optional, or a the specified object in an optional type
+     * (either {@link Optional}, {@link OptionalDouble}, {@link OptionalInt} or {@link OptionalLong}) if optional.
      *
      * @param o
      *            the object to potentially wrap in an optional type
      * @return the specified object if not optional, or a the specified object in an optional type if optional.
+     * 
+     * @throws ClassCastException
+     *             if this dependency is an optional type and type of this dependency does not match the specified object.
      */
     public Object wrapIfOptional(Object o) {
-        if (!isOptional()) {
-            return o;
-        } else if (optionalType == Optional.class) {
+        if (optionalType == Optional.class) {
             return Optional.of(o);
         } else if (optionalType == OptionalLong.class) {
             return OptionalLong.of((Long) o);
         } else if (optionalType == OptionalInt.class) {
             return OptionalInt.of((Integer) o);
-        } else /* if (realType == OptionalDouble.class) */ {
+        } else if (optionalType == OptionalDouble.class) {
             return OptionalDouble.of((Double) o);
         }
+        return o;
     }
 
-    static <T> Dependency fromTypeVariable(Class<T> baseClass, Class<? extends T> actualClass, int baseTypeVariableIndex) {
-        Type type = TypeVariableExtractorUtil.extractTypeVariableFrom(baseClass, baseTypeVariableIndex, actualClass);
+    /**
+     * Returns a list of dependencies from the specified executable
+     * 
+     * @param executable
+     *            the executable to return a list of dependencies for
+     * @return a list of dependencies from the specified executable
+     */
+    public static List<Dependency> fromExecutable(Executable executable) {
+        requireNonNull(executable, "executable is null");
+        throw new UnsupportedOperationException();
+    }
+
+    public static List<Dependency> fromExecutable(ExecutableDescriptor executable) {
+        return executable.toDependencyList();
+    }
+
+    /**
+     * Returns the type of the specified field as a key.
+     * 
+     * @param field
+     *            the field to return a type literal for
+     * @return the type literal for the field
+     * @see Field#getGenericType()
+     */
+    public static Dependency fromField(Field field) {
+        requireNonNull(field, "field is null");
+        return ofVariable(InternalFieldDescriptor.of(field));
+    }
+
+    public static <T> Dependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+        Type type = TypeVariableExtractorUtil.extractTypeVariableFrom(baseClass, baseClassTypeVariableIndex, actualClass);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
@@ -303,10 +326,10 @@ public final class Dependency {
         return new Dependency(Key.internalOf(type, qa), optionalType);
     }
 
-    static <T> List<Dependency> fromTypeVariables(Class<T> baseClass, Class<? extends T> actualClass, int... baseTypeVariableIndexes) {
+    public static <T> List<Dependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
         ArrayList<Dependency> result = new ArrayList<>();
-        for (int i = 0; i < baseTypeVariableIndexes.length; i++) {
-            result.add(fromTypeVariable(baseClass, actualClass, baseTypeVariableIndexes[i]));
+        for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
+            result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
         }
         return List.copyOf(result);
     }
@@ -332,19 +355,19 @@ public final class Dependency {
         return of(Key.of(type));
     }
 
-    public static List<Dependency> listOf(ExecutableDescriptor executable) {
-        return executable.toDependencyList();
+    public static <T> Dependency of(FieldDescriptor field) {
+        return ofVariable(InternalFieldDescriptor.of(field));
     }
 
-    public static <T> Dependency of(FieldDescriptor field) {
-        return of((AbstractVariableDescriptor) InternalFieldDescriptor.of(field));
+    public static <T> Dependency of(Key<?> key) {
+        return new Dependency(key, null);
     }
 
     public static <T> Dependency of(ParameterDescriptor parameter) {
-        return of((AbstractVariableDescriptor) InternalParameterDescriptor.of(parameter));
+        return ofVariable(InternalParameterDescriptor.of(parameter));
     }
 
-    private static Dependency of(AbstractVariableDescriptor variable) {
+    private static Dependency ofVariable(AbstractVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
 
         Optional<Annotation> q = variable.findQualifiedAnnotation();
@@ -378,10 +401,6 @@ public final class Dependency {
         return new Dependency(key, variable, optionalType);
     }
 
-    public static <T> Dependency of(Key<?> key) {
-        return new Dependency(key, null);
-    }
-
     // ofOptional istedet for tror jeg
     public static <T> Dependency optionalOf(Key<T> key, T defaultValue) {
         throw new UnsupportedOperationException();
@@ -391,3 +410,17 @@ public final class Dependency {
         throw new UnsupportedOperationException();
     }
 }
+//
+// /**
+// * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
+// * specified index.
+// *
+// * @param index
+// * the index of the returned variable
+// * @return a new dependency with the specified index
+// * @throws IllegalArgumentException
+// * if the index is negative ({@literal <}0
+// */
+// public Dependency withIndex(int index) {
+// throw new UnsupportedOperationException();
+// }

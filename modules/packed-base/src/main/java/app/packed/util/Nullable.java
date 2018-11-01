@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.util;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Qualifiers are used to distinguish different objects of the same type.
+ * A type is said to be nullable if it can be assigned a value or can be assigned null , which means the type has no
+ * value whatsoever.
  * 
+ * A general applicable annotation that indicates that type can be null...
  * 
- * <p>
- * This annotation basically works identical to the Qualifier annotation in javax.inject. And both of them can be used
- * interchangeable.
+ * Can also be used with the dependency injection framework to indicate that a Dependency is optional.
+ * 
  */
-@Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE_USE })
 @Documented
-public @interface Qualifier {}
-// Allow multiple Qualifiers
-// Allow ignoring attributes? String[] ignoreAttributesForComparison() default {};
+public @interface Nullable {}

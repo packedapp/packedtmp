@@ -24,10 +24,12 @@ public final class AnnotationUtil {
 
     /** Cannot instantiate. */
     private AnnotationUtil() {}
-    
+
     /**
      * Validates that the specified annotation type has retention policy runtime.
      * 
+     * @param <T>
+     *            the type of annotation to validate
      * @param annotationType
      *            the annotation type on which the retention policy should be present.
      * @return the specified annotation type
@@ -45,5 +47,10 @@ public final class AnnotationUtil {
                     + " must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was " + r.value());
         }
         return annotationType;
+    }
+
+    public static String toShortString(Annotation annotation) {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        return annotation.toString().replace(annotationType.getPackageName() + ".", "");
     }
 }

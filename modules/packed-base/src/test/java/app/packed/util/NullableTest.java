@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.util;
+
+import app.packed.inject.TypeLiteral;
 
 /**
- * An abstract base class for both {@link TypeLiteral} and {@link Key}. This is typically used in places where a method
- * can receive either a key or a type literal.
+ * This test just tests that {@link Nullable} can be placed everywhere we need it.
  */
-public abstract class TypeLiteralOrKey<T> {
+public class NullableTest {
 
-    /** Package private constructor */
-    TypeLiteralOrKey() {}
+    @Nullable
+    String nullableField;
 
-    public abstract Class<? super T> getRawType();
+    @Nullable // no way to disable this, and then allow for type variable usage
+    public NullableTest() {}
 
-    public abstract Key<T> toKey();
+    public NullableTest(@Nullable String parame) {}
+
+    @Nullable
+    public void nullableReturnType(@Nullable String parame) {
+        new TypeLiteral<@Nullable String>() {};
+    }
 }

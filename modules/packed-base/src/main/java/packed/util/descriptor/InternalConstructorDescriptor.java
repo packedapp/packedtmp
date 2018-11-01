@@ -89,7 +89,7 @@ public final class InternalConstructorDescriptor<T> extends AbstractExecutableDe
     public Constructor<T> newConstructor() {
         Class<?> declaringClass = constructor.getDeclaringClass();
         try {
-            return (Constructor<T>) declaringClass.getConstructor(getParameterTypes());
+            return (Constructor<T>) declaringClass.getConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new InternalErrorException("constructor", constructor, e);// We should never get to here
         }
@@ -158,10 +158,13 @@ public final class InternalConstructorDescriptor<T> extends AbstractExecutableDe
         }
         return injectable;
     }
-    
+
     /**
      * Creates a new descriptor from the specified constructor.
      *
+     *
+     * @param <T>
+     *            the class in which the constructor is declared
      * @param constructor
      *            the constructor to wrap
      * @return a new constructor descriptor

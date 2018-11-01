@@ -23,13 +23,22 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Fields and Methods are <b>not</b< automatically injected when returned by methods annotated with {@link Provides}.
- * {@link Injector#injectMembers(Object)} can be used to inject members if needed.
+ * 
+ * Or a final field.
+ * 
+ * Using this annotation on non-final fields are not supported. Eller.... hvad er forskellen paa at expose en metode der
+ * return non-final-field;.... Maaske skriv noget med volatile og multiple threads
+ * 
+ * 
+ * Fields and Methods are <b>not</b> automatically injected when returned by methods annotated with {@link Provides}.
+ * {@link Injector#injectMembers(Object)} can be used to inject members if needed. // Null is only a valid result, if
+ * the dependency is optional. Otherwise it is a failure
+ * 
  */
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-//Can only expose final fields otherwise throw IAE
+// Can only expose final fields otherwise throw IAE
 public @interface Provides {
 
     /**
@@ -42,8 +51,7 @@ public @interface Provides {
     /**
      * The bind mode of the provided method, the default is to eagerly create a new instance.
      */
-    // Null is only a valid result, if the dependency is optional. Otherwise it is a failure
-    BindMode bindMode() default BindMode.EAGER_SINGLETON;
+    BindingMode bindMode() default BindingMode.EAGER_SINGLETON;
 
     /**
      * The default value is {@link Qualifier} which indicates that it ignores any annotations
@@ -81,7 +89,7 @@ public @interface Provides {
 // PER_COMPONENT,
 
 /** The default value for {@link Provides#wildcardQualifier()} */
-//@interface ProvidesQualifierNone {}
+// @interface ProvidesQualifierNone {}
 // int priority() default 1;
 
 // Class<? extends Annotation>[] ifAnyMethodAnnotatedWith() default {};

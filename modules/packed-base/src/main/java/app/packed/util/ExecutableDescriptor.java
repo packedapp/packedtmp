@@ -29,7 +29,7 @@ import app.packed.inject.Dependency;
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public interface ExecutableDescriptor extends Member, AnnotatedElement, Iterable<ParameterDescriptor> {
+public interface ExecutableDescriptor extends Member, AnnotatedElement {
 
     /**
      * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the

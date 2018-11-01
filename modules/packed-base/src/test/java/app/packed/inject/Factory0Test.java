@@ -27,8 +27,6 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import support.stubs.annotation.SystemProperty;
-
 /** Tests {@link Factory0}. */
 public class Factory0Test {
 
@@ -46,7 +44,7 @@ public class Factory0Test {
         @Test
         @Disabled
         public void typeLiteralParameter() {
-            assertThatFactory(of(() -> List.of(1), new Key<@SystemProperty("fff") List<Integer>>() {})).is(new Key<List<Integer>>() {});
+            assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
 
             assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
             assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Number>>() {})).is(new Key<List<Number>>() {});

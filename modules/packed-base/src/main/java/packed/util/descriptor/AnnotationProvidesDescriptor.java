@@ -23,7 +23,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.inject.BindMode;
+import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
@@ -35,14 +35,14 @@ import packed.inject.JavaXInjectSupport;
 public final class AnnotationProvidesDescriptor {
 
     /** The bind mode from {@link Provides#bindMode()}. */
-    private final BindMode bindMode;
+    private final BindingMode bindMode;
 
     /** An (optional) description from {@link Provides#description()}. */
     private final String description;
 
     private final Key<?> key;
 
-    AnnotationProvidesDescriptor(Key<?> key, BindMode bindMode, String description) {
+    AnnotationProvidesDescriptor(Key<?> key, BindingMode bindMode, String description) {
         this.key = requireNonNull(key);
         this.bindMode = requireNonNull(bindMode);
         this.description = description;
@@ -53,7 +53,7 @@ public final class AnnotationProvidesDescriptor {
      *
      * @return the bind mode
      */
-    public BindMode getBindMode() {
+    public BindingMode getBindMode() {
         return bindMode;
     }
 

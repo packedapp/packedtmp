@@ -115,7 +115,7 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
     public Method newMethod() {
         Class<?> declaringClass = method.getDeclaringClass();
         try {
-            return declaringClass.getDeclaredMethod(method.getName(), getParameterTypes());
+            return declaringClass.getDeclaredMethod(method.getName(), parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new InternalErrorException("method", method, e);// We should never get to here
         }
@@ -124,7 +124,7 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
     public boolean overrides(InternalMethodDescriptor supeer) {
         if (methodOverrides(this.method, supeer.method)) {
             if (getName().equals(supeer.getName())) {
-                return Arrays.equals(super.getParameterTypes(), supeer.getParameterTypes());
+                return Arrays.equals(parameterTypes, supeer.parameterTypes);
             }
         }
         return false;
@@ -184,7 +184,7 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
         return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers)
                 || sub.getDeclaringClass().getPackage().equals(supeer.getDeclaringClass().getPackage());
     }
-    
+
     /**
      * Creates a new descriptor from the specified method.
      *

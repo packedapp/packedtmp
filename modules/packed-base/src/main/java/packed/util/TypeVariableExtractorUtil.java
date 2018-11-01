@@ -59,14 +59,6 @@ public class TypeVariableExtractorUtil {
         return findTypeArgument(baseClass, typeVariableIndexOnBaseClass, childClass);
     }
 
-    static String classWithTypeParameters(Class<?> c) {
-        StringJoiner sj = new StringJoiner(", ", c.getSimpleName() + "<", ">");
-        for (Type t : c.getTypeParameters()) {
-            sj.add(TypeUtil.toShortString(t));
-        }
-        return sj.toString();
-    }
-
     public static Type findTypeArgument(Class<?> baseClass, int typeVariableIndexOnBaseClass, Class<?> childClass) {
         // This method works by first recursively calling all the way down to the first class that extends baseClass.
         // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
@@ -89,8 +81,11 @@ public class TypeVariableExtractorUtil {
         Type t = superClass.getGenericSuperclass();
         if (!(t instanceof ParameterizedType)) {
             String name = superClass.getSuperclass().getTypeParameters()[index].getName();
-            throw new IllegalArgumentException(
-                    "Cannot determine type variable <" + name + "> for " + classWithTypeParameters(baseClass) + " on class " + format(superClass));
+            StringJoiner sj = new StringJoiner(", ", baseClass.getSimpleName() + "<", ">");
+            for (Type ty : baseClass.getTypeParameters()) {
+                sj.add(TypeUtil.toShortString(ty));
+            }
+            throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
         }
         ParameterizedType pt = (ParameterizedType) t;
         return pt.getActualTypeArguments()[index];

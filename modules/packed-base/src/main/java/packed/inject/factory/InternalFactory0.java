@@ -21,58 +21,36 @@ import static packed.util.Formatter.format;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
-import app.packed.inject.TypeLiteralOrKey;
 
 /** An internal factory for {@link Factory0}. */
 public final class InternalFactory0<T> extends InternalFactory<T> {
 
-    /** A cache of the type literal of classes extending {@link Factory0}. */
-    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETER = new ClassValue<>() {
+    /** A cache of function factory definitions. */
+    static final ClassValue<TypeLiteral<?>> TYPE_PARAMETERS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected TypeLiteral<?> computeValue(Class<?> type) {
-            return TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
+            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
         }
     };
 
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;
 
-    /**
-     * @param typeLiteralOrKey
-     * @param dependencies
-     */
-    public InternalFactory0(Supplier<? extends T> supplier, TypeLiteralOrKey<T> typeLiteralOrKey) {
-        super(typeLiteralOrKey);
+    public InternalFactory0(Supplier<? extends T> supplier, TypeLiteral<T> typeLiteralOrKey) {
+        super(typeLiteralOrKey, List.of());
         this.supplier = requireNonNull(supplier, "supplier is null");
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> InternalFactory<T> of(Supplier<? extends T> supplier, Class<?> factory0Type) {
-        return new InternalFactory0<>(supplier, (TypeLiteral<T>) TYPE_PARAMETER.get(factory0Type));
     }
 
     @Override
     public Class<?> getLowerBound() {
-        return Object.class; //The raw supplier generate objects
-    }
-
-    static class CachedFactoryDefinition {
-        final List<Dependency> dependencies;
-
-        final TypeLiteral<?> objectType;
-
-        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
-            this.objectType = requireNonNull(objectType);
-            this.dependencies = requireNonNull(dependencies);
-        }
+        return Object.class; // The raw supplier generate objects
     }
 
     /** {@inheritDoc} */
@@ -87,9 +65,8 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
         return instance;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public List<Dependency> getDependencies() {
-        return List.of();
+    @SuppressWarnings("unchecked")
+    public static <T> InternalFactory<T> of(Supplier<? extends T> supplier, Class<?> factory0Type) {
+        return new InternalFactory0<>(supplier, (TypeLiteral<T>) TYPE_PARAMETERS.get(factory0Type));
     }
 }

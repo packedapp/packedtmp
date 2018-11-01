@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.inject.fac2;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.function.Consumer;
 
+import app.packed.inject.Dependency;
+
 /**
  * An object with 0 or more dependencies.
  */
-//Hvor skal man bruge den???? Eller skal vi bare smide den ind paa Bindable.
-//Ellers skal Factory jo overskrive den.
+// Hvor skal man bruge den???? Eller skal vi bare smide den ind paa Bindable.
+// Ellers skal Factory jo overskrive den.
 
-//Tror bare vi smider den ind i Bindable....
-//Basalt set det jo bare bygget op og en liste, Factory kan jo sagtens implementere nogle af de her metoder...
+// Tror bare vi smider den ind i Bindable....
+// Basalt set det jo bare bygget op og en liste, Factory kan jo sagtens implementere nogle af de her metoder...
 public interface Dependant {
 
     /**

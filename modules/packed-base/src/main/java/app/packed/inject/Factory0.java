@@ -28,17 +28,22 @@ import packed.inject.factory.InternalFactory0;
  * Is typically used like this:
  *
  * <pre> {@code
- * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {}).setDescription("Startup Time");}</pre>
+ * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
  * <p>
- * Note that we create a new class inheriting from Factory0 is done in order to information about the type variable.
- *
- * As an alternative to using the constructor of this class, one of the static factory methods can be used:
+ * Note that we create a new class inheriting from Factory0 is order to capture information about the type variable (in
+ * this case {@code Long}).
+ * <p>
+ * As an alternative to extending this class, one of the static factory methods can be used:
  *
  * <pre> {@code
- * Factory<Long> f = Factory0.of(System::currentTimeMillis, Long.class)).setDescription("Startup Time")}</pre>
+ * Factory<Long> f = Factory0.of(System::currentTimeMillis, Long.class);}</pre>
  *
  * The factory created in the last example is functionally equivalent to the factory created in the first example.
  *
+ * <p>
+ * Passing a {@code null} argument to any method or constructor in this class will cause a {@link NullPointerException}
+ * to be thrown.
+ * 
  * @param <T>
  *            the type of objects this factory constructs
  * @see Factory1
@@ -47,14 +52,13 @@ import packed.inject.factory.InternalFactory0;
 public abstract class Factory0<T> extends Factory<T> {
 
     /**
-     * Creates a new factory.
+     * Creates a new factory, that uses the specified supplier to create new instances.
      *
      * @param supplier
      *            the supplier to use for creating new instances
-     * @throws NullPointerException
-     *             if the specified supplier is null
      * @throws IllegalArgumentException
-     *             if the type variable T could not be determined. Or if T is an invalid value, for example, {@link Optional}
+     *             if the type variable T could not be determined. Or if T is an invalid value, for example,
+     *             {@link Optional}
      */
     protected Factory0(Supplier<? extends T> supplier) {
         super(supplier);
@@ -70,8 +74,6 @@ public abstract class Factory0<T> extends Factory<T> {
      * @param objectType
      *            the type of objects the supplier creates
      * @return a factory that uses the specified supplier to create new instances
-     * @throws NullPointerException
-     *             if the specified supplier or object type is null
      */
     public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> objectType) {
         return of(supplier, TypeLiteral.of(requireNonNull(objectType, "objectType is null")));
@@ -84,13 +86,11 @@ public abstract class Factory0<T> extends Factory<T> {
      *            the type of objects the factory will create
      * @param supplier
      *            the supplier to use for creating new instances
-     * @param objectType
+     * @param typeLiteralOrKey
      *            the type of objects the supplier creates
      * @return a factory that uses the specified supplier to create new instances
-     * @throws NullPointerException
-     *             if the specified supplier or object type is null
      */
-    public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteralOrKey<T> typeLiteralOrKey) {
+    public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> typeLiteralOrKey) {
         return new Factory<>(new InternalFactory0<>(supplier, typeLiteralOrKey));
     }
 }

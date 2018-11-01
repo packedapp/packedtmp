@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -37,9 +38,22 @@ public final class TypeUtil {
     private TypeUtil() {}
 
     /**
+     * Tests if the specified class is an inner class.
+     * 
+     * @param clazz
+     *            the class to test
+     * @return whether or not the specified class is an inner class
+     */
+    public static boolean isInnerOrLocalClass(Class<?> clazz) {
+        return clazz.isLocalClass() || (clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers()));
+    }
+
+    /**
      * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
      * is not a primitive class.
      *
+     * @param <T>
+     *            the type to box
      * @param type
      *            the class to convert
      * @return the converted class
@@ -109,6 +123,14 @@ public final class TypeUtil {
         return addTo;
     }
 
+    /**
+     * Helper method for {@link #findTypeVariableNames(Type)}.
+     * 
+     * @param addTo
+     *            the set to add each variable to
+     * @param type
+     *            the type to analyze
+     */
     private static void findTypeVariableNames0(LinkedHashSet<String> addTo, Type type) {
         if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
@@ -156,7 +178,7 @@ public final class TypeUtil {
             }
             // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
             // something else
-            return isFreeFromTypeVariables(pt.getRawType()); //
+            return isFreeFromTypeVariables(pt.getRawType());
         } else if (type instanceof GenericArrayType) {
             GenericArrayType gat = (GenericArrayType) type;
             return isFreeFromTypeVariables(gat.getGenericComponentType());
@@ -258,7 +280,9 @@ public final class TypeUtil {
     /**
      * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
      * if it is not a primitive wrapper class.
-     *
+     * 
+     * @param <T>
+     *            the type to unbox
      * @param type
      *            the class to convert
      * @return the converted class

@@ -15,18 +15,80 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.List;
+import java.util.function.Consumer;
+
 /**
- * A bindable object allows for dynamic bindings of its dependencies.
+ * A bindable object allows for explicit bindings of each of its dependencies.
  * 
  * <p>
- * A frequent operation is to let an Injector bind all the dependencies that is can.
- * An interface that allows an object to bound
+ * A frequent operation is to let an Injector bind all the dependencies that is can. An interface that allows an object
+ * to bound
  * 
  * object or factories that will
  * 
  * Injector#bind (im afraid people will forget this.
  */
-public interface Bindable extends Dependant {
+public interface Bindable {
+
+    /**
+     * Checks that this instance has no unfulfilled, or throws an {@link IllegalStateException} if there are unbound
+     * dependencies.
+     *
+     * @return this dependent
+     * @throws IllegalStateException
+     *             if there are unbound dependencies
+     */
+    default Bindable checkNoDependencies() {
+        if (hasDependencies()) {
+            List<Dependency> unbound = getDependencies();
+            throw new IllegalStateException("Unbound dependecies + " + unbound);
+        }
+        return this;
+    }
+
+    /**
+     * Performs the given action for each dependency.
+     * <p>
+     * Any exception thrown by the specified action is relayed to the caller.
+     *
+     * @param action
+     *            the action to perform
+     * @throws NullPointerException
+     *             if the specified action is null
+     */
+    default void forEachDependency(Consumer<? super Dependency> action) {
+        requireNonNull(action, "action is null");
+        getDependencies().forEach(action);
+    }
+
+    /**
+     * Returns an immutable list of the unfulfilled dependencies of this instance. TODO mention something about you can
+     * change it in a for loop with it being effected.
+     *
+     * @return an immutable snapshot of the unfulfilled dependencies of this instance
+     */
+    List<Dependency> getDependencies();
+
+    /**
+     * Returns the number of unfulfilled dependencies of this instance.
+     *
+     * @return the number of unfulfilled dependencies of this instance
+     */
+    default int getNumberOfDependencies() {
+        return getDependencies().size();
+    }
+
+    /**
+     * Returns the whether or not this instance has any unfulfilled dependencies.
+     *
+     * @return the whether or not this instance has any unfulfilled dependencies
+     */
+    default boolean hasDependencies() {
+        return getNumberOfDependencies() > 0;
+    }
 
     /**
      * Binds the specified instances to every dependency with an <b>exact</b> matching type (including any qualifier
@@ -109,22 +171,22 @@ public interface Bindable extends Dependant {
      */
     Bindable bind(Dependency dependency, Object instance);
 
+    default Bindable bind(int index, Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
     // Does not support binding factories with dependencies??????
     // Jo det kan man godt, de bliver instantierede som newInstance()....
     // Vi skal checke access her.
 
     // Hvad med Provider?????Taenker vi ogsaa kunne bruge saadan en.
 
-    default Bindable bindLazy(Dependency dependency, Provider<?> factory) {
-        //Tag et factory, saa vi kan verificere typen????
-        return this;
-    }
-
-    default Bindable bindPrototype(Dependency dependency, Provider<?> factory) {
-        return this;
-    }
-
     Bindable bindLazy(Dependency dependency, Factory<?> factory);
+
+    default Bindable bindLazy(Dependency dependency, Provider<?> factory) {
+        // Tag et factory, saa vi kan verificere typen????
+        return this;
+    }
 
     /**
      * Binds the specified factory to the argument that matches the specified dependency. If an argument for the specified
@@ -149,16 +211,21 @@ public interface Bindable extends Dependant {
      *             if the specified argument is null and the type of the dependency is is not optional, or a primitive type
      */
     Bindable bindPrototype(Dependency dependency, Factory<?> factory);
-    //
-    // /**
-    // * Returns a list of dependencies that are bindable for this object. Unlike {@link #getDependencies()} this method
-    // * returns the same list of dependencies for the lifetime of this object. {@link #getDependencies()} only includes the
-    // * parameters that have not already been bound.
-    // *
-    // * @return a list of dependencies that are bindable for this instance
-    // */
-    // List<Dependency> getBindableDependencies();
+
+    default Bindable bindPrototype(Dependency dependency, Provider<?> factory) {
+        return this;
+    }
 }
+//
+// /**
+// * Returns a list of dependencies that are bindable for this object. Unlike {@link #getDependencies()} this method
+// * returns the same list of dependencies for the lifetime of this object. {@link #getDependencies()} only includes the
+// * parameters that have not already been bound.
+// *
+// * @return a list of dependencies that are bindable for this instance
+// */
+// List<Dependency> getBindableDependencies();
+
 // * @param index
 // * the index of the dependency
 // * @param argument

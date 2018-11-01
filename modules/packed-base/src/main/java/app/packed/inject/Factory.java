@@ -151,6 +151,7 @@ public class Factory<T> {
 
     /**
      * Returns a new bindable factory.
+     * 
      * @return a new bindable factory
      */
     // bindable
@@ -163,20 +164,9 @@ public class Factory<T> {
     public final boolean isAccessibleWith(Lookup lookup) {
         return factory.isAccessibleWith(lookup);
     }
-    
+
     public final void checkAccessWith(Lookup lookup) {
-        
-    }
-    
-    /**
-     * Returns a new factory that caches the value produced the first time. If multiple attempts to create a value the rest
-     * blocks
-     *
-     * @return a new factory that caches the value produced the first time
-     */
-    Factory<T> singleton() {
-        // Naahh taenker folk bare bliver forvirret.
-        throw new UnsupportedOperationException();
+
     }
 
     /**
@@ -237,7 +227,7 @@ public class Factory<T> {
      *            the implementation type
      * @return a factory for the specified implementation type
      */
-    public static <T> Factory<T> findInjectable(TypeLiteralOrKey<T> implementation) {
+    public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         // Does not really work, because getType() is not valid...
         // return (Factory<T>) MirrorOfClass.fromImplementation(implementation.getRawType()).getDefaultFactory();
         throw new UnsupportedOperationException();
@@ -327,10 +317,10 @@ public class Factory<T> {
      * Factory<String> factory = fromConstructor(String.class, StringBuilder.class);
      * </pre>
      *
-     * @param implementation
-     *            the type that contains the constructor
-     * @param parameterTypes
-     *            the parameter types of the constructor
+     * @param constructor
+     *            the constructor
+     * @param key
+     *            the keft to register under
      * @return the new factory
      * @throws IllegalArgumentException
      *             if a constructor with the specified parameter types does not exist on the specified type
@@ -347,43 +337,9 @@ public class Factory<T> {
      * @param instance
      *            the instance to return on every invocation
      * @return the factory
-     * @see #ofInstance(Object, Class)
-     * @see #ofInstance(Object, TypeLiteralOrKey)
      */
     public static <T> Factory<T> ofInstance(T instance) {
         return new Factory<>(InternalFactoryInstance.of(instance));
-    }
-
-    /**
-     * Returns a factory that returns the specified instance on every invocation.
-     *
-     * @param <T>
-     *            the type of instances the factory will create
-     * @param instance
-     *            the instance to return on every invocation
-     * @param type
-     *            if using this factory to bind
-     * @return the factory
-     * @see #ofInstance(Object)
-     * @see #ofInstance(Object, TypeLiteralOrKey)
-     */
-    public static <T> Factory<T> ofInstance(T instance, Class<T> type) {
-        return new Factory<>(InternalFactoryInstance.of(instance, type));
-    }
-
-    /**
-     * Returns a factory that returns the specified instance on every invocation.
-     *
-     * @param <T>
-     *            the type of instances the factory will create
-     * @param instance
-     *            the instance to return on every invocation
-     * @return the factory
-     * @see #ofInstance(Object, Class)
-     * @see #ofInstance(Object, TypeLiteralOrKey)
-     */
-    public static <T> Factory<T> ofInstance(T instance, TypeLiteralOrKey<T> typeLiteralOrKey) {
-        return new Factory<>(InternalFactoryInstance.of(instance, typeLiteralOrKey));
     }
 
     // How we skal have
@@ -422,6 +378,7 @@ public class Factory<T> {
     }
 
     public static <T> Factory<T> ofMethodStatic(Method method, TypeLiteral<T> returnType) {
+
         requireNonNull(method, "method is null");
         requireNonNull(returnType, "returnType is null");
         // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());

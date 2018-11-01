@@ -24,7 +24,7 @@ public final class ThrowableUtil {
 
     /** Cannot instantiate. */
     private ThrowableUtil() {}
-    
+
     /**
      * If the specified future has returned exceptionally, returns the cause. Otherwise returns null.
      * 
@@ -50,9 +50,13 @@ public final class ThrowableUtil {
      * Throws the specified throwable if it is an {@link Error} or a {@link Exception}. Otherwise returns the specified
      * throwable.
      *
+     * @param <T>
+     *            the type of throwable
      * @param throwable
      *            the throwable
      * @return the specified throwable if it not an Error or a Exception
+     * @throws Exception
+     *             if the specified throwable is a checked exception
      */
     public static <T extends Throwable> T rethrowErrorOrException(T throwable) throws Exception {
         if (throwable instanceof Error) {
@@ -67,6 +71,8 @@ public final class ThrowableUtil {
      * Throws the specified throwable if it is an {@link Error} or a {@link RuntimeException}. Otherwise returns the
      * specified throwable.
      *
+     * @param <T>
+     *            the type of throwable
      * @param throwable
      *            the throwable
      * @return the specified throwable if it not an Error or a RuntimeException
@@ -93,6 +99,8 @@ public final class ThrowableUtil {
     /**
      * Throws the specified throwable.
      * 
+     * @param <E>
+     *            the type of throwable to throw
      * @param throwable
      *            throwable to throw
      * @throws E

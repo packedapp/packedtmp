@@ -45,17 +45,17 @@ public class ThrowableUtilTest {
         assertThat(ThrowableUtil.fromCompletionFuture(cf)).isEqualTo(Throwable1.INSTANCE);
 
         cf = new CompletableFuture<>();
-        cf.cancel(true);       
+        cf.cancel(true);
         assertThat(ThrowableUtil.fromCompletionFuture(cf)).isInstanceOf(CancellationException.class);
     }
 
     /** Tests {@link ThrowableUtil#rethrowErrorOrRuntimeException(Throwable)}. */
     @Test
-    public void rethrowErrorOrException() {
+    public void rethrowErrorOrException() throws Exception {
         assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
         assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
         assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
-        assertThat(ThrowableUtil.rethrowErrorOrRuntimeException(Throwable1.INSTANCE)).isSameAs(Throwable1.INSTANCE);
+        assertThat(ThrowableUtil.rethrowErrorOrException(Throwable1.INSTANCE)).isSameAs(Throwable1.INSTANCE);
     }
 
     /** Tests {@link ThrowableUtil#rethrowErrorOrRuntimeException(Throwable)}. */

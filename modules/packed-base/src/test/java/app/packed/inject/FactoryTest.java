@@ -26,16 +26,13 @@ import org.junit.jupiter.api.Test;
 /** Test of {@link Factory}. */
 public class FactoryTest {
 
-
     public static class ForInstance {
 
         @Test
         public void testNpe() {
             npe(Factory::ofInstance, "instance");
-            npe(Factory::ofInstance, 123, Integer.class, "instance", "type");
-            npe(Factory::ofInstance, 123, Key.of(Integer.class), "instance", "typeLiteralOrKey");
 
-         //   assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
+            // assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
         }
     }
 

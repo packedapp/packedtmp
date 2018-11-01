@@ -25,7 +25,6 @@ import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 
 /**
@@ -34,45 +33,29 @@ import app.packed.inject.TypeLiteral;
 public class InternalFactory2<T, U, R> extends InternalFactory<R> {
 
     /** A cache of function factory definitions. */
-    static final ClassValue<CachedFactoryDefinition> CACHE = new ClassValue<>() {
+    static final ClassValue<FunctionalSignature> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected CachedFactoryDefinition computeValue(Class<?> type) {
-            TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(Factory.class, 0, (Class) type);
-            Key<?> d1 = Key.getKeyOfArgument(Factory2.class, 0, (Class) type);
-            Key<?> d2 = Key.getKeyOfArgument(Factory2.class, 1, (Class) type);
-            return new CachedFactoryDefinition(tl, List.of(new Dependency(d1, null, 0), new Dependency(d2, null, 1)));
+        protected FunctionalSignature computeValue(Class<?> type) {
+            return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
+                    Dependency.fromTypeVariables(Factory2.class, (Class) type, 0, 1));
         }
     };
 
-    private final List<Dependency> dependencies;
-
-    /** The function that creates the actual objects. */
+    /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    /**
-     * @param factory
-     * @param typeLiteral
-     * @param dependencies
-     */
     public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral, List<Dependency> dependencies) {
-        super(typeLiteral);
+        super(typeLiteral, dependencies);
         this.function = requireNonNull(function);
-        this.dependencies = requireNonNull(dependencies);
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> getLowerBound() {
-        return Object.class; //The raw bifunction return objects
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<Dependency> getDependencies() {
-        return dependencies;
+        return Object.class; // The raw bifunction return objects
     }
 
     /** {@inheritDoc} */
@@ -92,17 +75,5 @@ public class InternalFactory2<T, U, R> extends InternalFactory<R> {
 
     public static <T> InternalFactory<T> of(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
         throw new UnsupportedOperationException();
-    }
-    
-
-    static class CachedFactoryDefinition {
-        final List<Dependency> dependencies;
-
-        final TypeLiteral<?> objectType;
-
-        CachedFactoryDefinition(TypeLiteral<?> objectType, List<Dependency> dependencies) {
-            this.objectType = requireNonNull(objectType);
-            this.dependencies = requireNonNull(dependencies);
-        }
     }
 }

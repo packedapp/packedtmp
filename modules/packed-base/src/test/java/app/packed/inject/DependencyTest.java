@@ -36,14 +36,14 @@ import org.junit.jupiter.api.Test;
  *
  */
 public class DependencyTest {
-    static final Key<?> KEY_QA_INT = new Key< /*@Q("A")*/ Integer>() {};
+    static final Key<?> KEY_QA_INT = new Key< /* @Q("A") */ Integer>() {};
 
     @Nested
     public class OptionalsOf {
 
         @Test
         public void fromTypeAttribute() {
-            Dependency opString = Dependency.fromTypeVariable(TypeLiteral.class, new TypeLiteral<Optional<String>>() {}.getClass(), 0);
+            Dependency opString = Dependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -58,7 +58,7 @@ public class DependencyTest {
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            Dependency opInt = Dependency.fromTypeVariable(TypeLiteral.class, new TypeLiteral<OptionalInt>() {}.getClass(), 0);
+            Dependency opInt = Dependency.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated
