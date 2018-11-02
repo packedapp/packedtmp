@@ -106,7 +106,7 @@ public class TypeUtilTest {
 
         for (Field f : C.class.getDeclaredFields()) {
             if (!f.isSynthetic()) {// Anonymous class capture this test class
-                assertThat(TypeUtil.isFreeFromTypeVariables(f.getGenericType())).isEqualTo(f.getName().startsWith("f")).withFailMessage(f.getName());
+                assertThat(TypeUtil.isFreeFromTypeVariables(f.getGenericType())).isEqualTo(f.getName().startsWith("f"));
             }
         }
         assertThatThrownBy(() -> TypeUtil.isFreeFromTypeVariables(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);

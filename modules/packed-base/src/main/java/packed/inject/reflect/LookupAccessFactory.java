@@ -13,18 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
-
-import java.util.function.BiFunction;
+package packed.inject.reflect;
 
 /**
- * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
- * to the bi-function being the two dependencies.
- * <p>
+ *
  */
-public abstract class Factory2<T, U, R> extends Factory<R> {
+final class LookupAccessFactory {
 
-    protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
-        super(function);
-    }
+    // private static volatile X[] INFOS = new X[10];
+    //
+    // VarHandle[] fieldHandles;
+    //
+    // MethodHandle[] methodHandles;
+    //
+    // public static LookupAccessor get(MethodHandles.Lookup l) {
+    // X x = INFOS[l.lookupModes()];
+    //
+    // return x.get(l.lookupClass());
+    // }
+    //
+    // static class X extends ClassValue<LookupAccessor> {
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // protected LookupAccessor computeValue(Class<?> type) {
+    // return null;
+    // }
+    // }
 }

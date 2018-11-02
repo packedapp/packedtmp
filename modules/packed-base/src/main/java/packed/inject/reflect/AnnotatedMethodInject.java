@@ -13,34 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.util;
+package packed.inject.reflect;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Collection;
+
+import packed.util.descriptor.InternalMethodDescriptor;
 
 /**
  *
  */
-public class LookupAccessFactory {
-    private static volatile X[] INFOS = new X[10];
+public class AnnotatedMethodInject extends AnnotatedMethod {
 
-    VarHandle[] fieldHandles;
-
-    MethodHandle[] methodHandles;
-
-    public static LookupAccessor get(MethodHandles.Lookup l) {
-        X x = INFOS[l.lookupModes()];
-
-        return x.get(l.lookupClass());
+    /**
+     * @param descriptor
+     * @param handle
+     */
+    AnnotatedMethodInject(InternalMethodDescriptor descriptor, MethodHandle handle) {
+        super(descriptor, handle);
     }
 
-    static class X extends ClassValue<LookupAccessor> {
-
-        /** {@inheritDoc} */
-        @Override
-        protected LookupAccessor computeValue(Class<?> type) {
-            return null;
-        }
+    static Collection<AnnotatedMethodInject> findInjectableMethods(Class<?> clazz, Lookup lookup) {
+        return null;
     }
 }

@@ -15,6 +15,8 @@
  */
 package packed.inject.factory;
 
+import java.util.List;
+
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 
@@ -29,7 +31,7 @@ public class InternalFactoryBindable<T> extends InternalFactory<T> {
      * @param typeLiteral
      */
     public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral, null);
+        super(typeLiteral, List.of());
     }
 
     /** {@inheritDoc} */

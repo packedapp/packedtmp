@@ -15,11 +15,10 @@
  */
 package app.packed.util;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
@@ -31,7 +30,7 @@ import java.lang.annotation.Target;
  * Can also be used with the dependency injection framework to indicate that a Dependency is optional.
  * 
  */
-@Retention(RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE_USE })
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
 @Documented
 public @interface Nullable {}

@@ -56,7 +56,7 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof InternalConstructorDescriptor) {
+        } else if (obj instanceof InternalFieldDescriptor) {
             return ((InternalFieldDescriptor) obj).field.equals(field);
         } else if (obj instanceof FieldDescriptor) {
             return ((FieldDescriptor) obj).newField().equals(field);

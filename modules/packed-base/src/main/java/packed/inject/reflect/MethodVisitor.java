@@ -13,18 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.inject.reflect;
 
-import java.util.function.BiFunction;
+import java.lang.reflect.Method;
 
 /**
- * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
- * to the bi-function being the two dependencies.
- * <p>
+ *
  */
-public abstract class Factory2<T, U, R> extends Factory<R> {
+public abstract class MethodVisitor {
 
-    protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
-        super(function);
-    }
+    public abstract void handle(Method method);
 }

@@ -299,7 +299,6 @@ public final class Dependency {
         } else if (type == OptionalDouble.class) {
             optionalType = OptionalDouble.class;
             type = Double.class;
-            return new Dependency(Key.of(Double.class, qa), OptionalDouble.class);
         }
         // TODO check that there are no qualifier annotations on the type.
         return new Dependency(Key.internalOf(type, qa), optionalType);
@@ -356,10 +355,10 @@ public final class Dependency {
         if (rawType.isPrimitive()) {
             tl = tl.box();
         } else if (rawType == Optional.class) {
-            // injectableType = (Class) variable.getParameterizedType().getActualTypeArguments()[0];
-            // optionalType = Optional.class;
-            // Kan ikke have Optional<OptionalDouble>
-            throw new UnsupportedOperationException();
+            optionalType = Optional.class;
+            // TODO proper error msg
+            Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
+            tl = TypeLiteral.fromJavaImplementationType(cl);
         } else if (rawType == OptionalLong.class) {
             optionalType = OptionalLong.class;
             tl = TypeLiteral.of(Long.class);
@@ -369,6 +368,13 @@ public final class Dependency {
         } else if (rawType == OptionalDouble.class) {
             optionalType = OptionalDouble.class;
             tl = TypeLiteral.of(Double.class);
+        }
+        if (variable.isAnnotationPresent(Nullable.class)) {
+
+            if (optionalType != null) {
+                // Cannot use both nullable and optional
+            }
+            optionalType = Nullable.class;
         }
 
         Key<?> key;

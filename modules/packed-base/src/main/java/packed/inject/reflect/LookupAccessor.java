@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.util;
+package packed.inject.reflect;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import packed.inject.factory.InternalFactory;
@@ -30,11 +29,20 @@ public final class LookupAccessor {
 
     public static final LookupAccessor PUBLIC = new LookupAccessor(MethodHandles.publicLookup());
 
-    final MethodHandles.Lookup lookup;
+    /** The lookup object */
+    private final MethodHandles.Lookup lookup;
 
-    MethodHandle[] methodHandles;
+    final ClassValue<ServiceClassDescriptor<?>> serviceClassCache = new ClassValue<>() {
 
-    LookupAccessor(MethodHandles.Lookup lookup) {
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected ServiceClassDescriptor<?> computeValue(Class<?> type) {
+            return new ServiceClassDescriptor(type, lookup);
+        }
+    };
+
+    private LookupAccessor(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup);
     }
 
@@ -42,18 +50,30 @@ public final class LookupAccessor {
         return new LookupAccessor(lookup);
     }
 
+    /**
+     * Returns a class mirror for the specified implementation.
+     *
+     * @param implementation
+     *            the class to return a mirror from
+     * @return a class mirror for the specified class
+     */
+    @SuppressWarnings("unchecked")
+    public <T> ServiceClassDescriptor<T> getServiceDescriptor(Class<T> implementation) {
+        return (ServiceClassDescriptor<T>) serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
+    }
+
     public <T> InternalFactory<T> readable(InternalFactory<T> factory) {
         if (factory instanceof InternalFactoryExecutable) {
             InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory;
             if (!e.hasMethodHandle()) {
-                //try {
-                    return e.withMethodLookup(lookup);
-                    //e.executable.unreflect(lookup);
-//                } catch (IllegalAccessException e1) {
-//                    throw new IllegalArgumentException(e1.getMessage());
-//                }
+                // try {
+                return e.withMethodLookup(lookup);
+                // e.executable.unreflect(lookup);
+                // } catch (IllegalAccessException e1) {
+                // throw new IllegalArgumentException(e1.getMessage());
+                // }
             }
-            
+
         }
         return factory;
     }
