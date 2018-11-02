@@ -1,6 +1,6 @@
 Packed
 ======
-[![Build Status](https://api.travis-ci.org/packedapp/packedtmp.svg?branch=master)](https://travis-ci.org/packedapp/packedtmp) [![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Build Status](https://api.travis-ci.org/packedapp/packedtmp.svg?branch=master)](https://travis-ci.org/packedapp/packedtmp) [![License](http://img.shields.io/:license-apache-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Coverage Status](https://coveralls.io/repos/github/packedapp/packedtmp/badge.svg)](https://coveralls.io/github/packedapp/packedtmp)
 
 Building Packed
 ---------------
