@@ -71,8 +71,8 @@ public final class FieldHolder {
      * Grunden til at have den her, er saa vi kan undgaa at iterere 2 gange
      */
     static class ComponentClassDescriptorBuilder {
-        private Collection<AnnotatedFieldInject> injectableFields;
-        private Collection<AnnotatedFieldListenTo> listenerFields;
+        Collection<AnnotatedFieldInject> injectableFields;
+        Collection<AnnotatedFieldListenTo> listenerFields;
     }
 
     public void scanFields(ComponentClassDescriptorBuilder builder) {

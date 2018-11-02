@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.inject.Inject;
 
 /**
- *
+ * A service class descriptor contains information about injectable fields and methods.
  */
 public class ServiceClassDescriptor<T> {
 

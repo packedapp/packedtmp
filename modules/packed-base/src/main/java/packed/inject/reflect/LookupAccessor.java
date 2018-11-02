@@ -23,7 +23,7 @@ import packed.inject.factory.InternalFactory;
 import packed.inject.factory.InternalFactoryExecutable;
 
 /**
- *
+ * 
  */
 public final class LookupAccessor {
 
@@ -32,6 +32,7 @@ public final class LookupAccessor {
     /** The lookup object */
     private final MethodHandles.Lookup lookup;
 
+    /** A cache of service class descriptors. */
     final ClassValue<ServiceClassDescriptor<?>> serviceClassCache = new ClassValue<>() {
 
         /** {@inheritDoc} */

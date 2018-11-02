@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>app.packed</groupId>
-    <artifactId>packed-modules</artifactId>
+    <groupId>org.cakeframework</groupId>
+    <artifactId>cked-modules</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>packed-base</artifactId>
+  <artifactId>cked-base</artifactId>
   <packaging>jar</packaging>
-  <name>Packed-Base</name>
-  <description>Packed Base</description>
+  <name>Cked-Base</name>
+  <description>Cked Base</description>
   
   <!-- ==================================================================== -->
 
