@@ -3,4 +3,5 @@ jdk:
   - openjdk11
 
 after_success:
+  - cd modules
   - mvn clean test org.jacoco:jacoco-maven-plugin:report org.eluder.coveralls:coveralls-maven-plugin:report

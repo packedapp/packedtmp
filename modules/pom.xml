@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>app.packed</groupId>
     <artifactId>packed-root</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-
   <artifactId>packed-modules</artifactId>
   <packaging>pom</packaging>
   <name>Packed-Modules</name>
   <description>Packed Modules POM</description>
-  
   <!-- ==================================================================== -->
   <modules>
     <module>packed-base</module>
   </modules>
-  
-  
   <build>
     <plugins>
-          <plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
@@ -47,25 +42,22 @@
         <!-- Surefire does not pickup static test classes, unless we have these excludes, see https://github.com/junit-team/junit5/issues/1377 -->
         <configuration>
           <excludes>
-            <exclude/>
+            <exclude />
           </excludes>
         </configuration>
       </plugin>
-      
-    <plugin>
-    <groupId>org.eluder.coveralls</groupId>
-    <artifactId>coveralls-maven-plugin</artifactId>
-    <version>4.3.0</version>
-    
-    <dependencies>
-     <dependency>
-       <groupId>javax.xml.bind</groupId>
-       <artifactId>jaxb-api</artifactId>
-    <version>2.2.3</version>
-</dependency>
-     </dependencies>
-     </plugin>
-
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>4.3.0</version>
+            <dependencies>
+              <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.3.0</version>
+              </dependency>
+            </dependencies>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -84,8 +76,29 @@
             </goals>
           </execution>
         </executions>
+                    <dependencies>
+              <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>2.43.0</version>
+              </dependency>
+              <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>2.3.0</version>
+              </dependency>
+              <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>2.3.0</version>
+              </dependency>
+              <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>javax.activation-api</artifactId>
+                <version>1.2.0</version>
+              </dependency>
+            </dependencies>
       </plugin>
-      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -97,20 +110,14 @@
       </plugin>
     </plugins>
   </build>
-
   <properties>
-
     <!-- Locate the root directory of the multi-module build -->
     <root.dir>${project.basedir}/..</root.dir>
-
     <!-- Versions -->
     <assertj.version>3.11.1</assertj.version>
     <junit.version>5.3.1</junit.version>
-
     <!-- Compiler version -->
     <maven.compiler.target>10</maven.compiler.target>
     <maven.compiler.source>10</maven.compiler.source>
-
   </properties>
-
 </project>
