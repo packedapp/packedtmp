@@ -18,7 +18,10 @@ package app.packed.inject;
 /**
  * Thrown when trying to access a field, method, or constructor for which the client does not have sufficient access to.
  */
-public class NoAccessException extends RuntimeException {
+// AccessDeniedException
+// IllegalAccessRuntimeException
+// NotAccessibleException (my fav so far)
+public class NotAccessibleException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -31,7 +34,7 @@ public class NoAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public NoAccessException(String message) {
+    public NotAccessibleException(String message) {
         super(message);
     }
 
@@ -45,7 +48,7 @@ public class NoAccessException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public NoAccessException(String message, Throwable cause) {
+    public NotAccessibleException(String message, Throwable cause) {
         super(message, cause);
     }
 }

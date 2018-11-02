@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.inject.NoAccessException;
+import app.packed.inject.NotAccessibleException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.util.ThrowableUtil;
@@ -105,7 +105,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
         try {
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
-            throw new NoAccessException(
+            throw new NotAccessibleException(
                     "No access to the " + executable.descriptorName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access");
         }
         return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);

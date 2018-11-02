@@ -171,7 +171,7 @@ public class Factory<T> {
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when invoke the underlying method or constructor
-     * @throws NoAccessException
+     * @throws NotAccessibleException
      *             if the specified lookup object does not give access to the underlying constructor or method
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a constructor or method.
