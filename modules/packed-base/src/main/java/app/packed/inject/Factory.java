@@ -203,9 +203,11 @@ public class Factory<T> {
      *
      * //A single static method annotated with @Inject return the same type as the specified class //Look for a single
      * constructor on the class, return it //If multiple constructor, look for one annotated with Inject (if more than 1
-     * annotated with Inject->fail) //if one constructor has more parameters than any other constructor return that. // Else
-     * fail with Illegal Argument Exception
-     *
+     * annotated with Inject to fail) //if one constructor has more parameters than any other constructor return that. //
+     * Else fail with Illegal Argument Exception
+     * 
+     * @param <T>
+     *            the implementation type
      * @param implementation
      *            the implementation type
      * @return a factory for the specified implementation type
@@ -216,8 +218,10 @@ public class Factory<T> {
     }
 
     /**
-     * This method is equivalent to {@link #find(Class)} except that it takes a type literal or key.
+     * This method is equivalent to {@link #findInjectable(Class)} except that it takes a type literal or key.
      *
+     * @param <T>
+     *            the implementation type
      * @param implementation
      *            the implementation type
      * @return a factory for the specified implementation type

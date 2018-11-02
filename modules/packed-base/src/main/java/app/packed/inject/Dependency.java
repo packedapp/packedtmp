@@ -315,7 +315,7 @@ public final class Dependency {
     /**
      * Returns a dependency on the specified class
      *
-     * @param clazz
+     * @param type
      *            the class to return a dependency for
      * @return a dependency for the specified class
      */

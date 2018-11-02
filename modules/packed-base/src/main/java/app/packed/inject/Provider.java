@@ -29,6 +29,7 @@ public interface Provider<T> {
     /**
      * Provides an instance of type {@code T}.
      *
+     * @return the provided value
      * @throws RuntimeException
      *             if an exception is encountered while providing an instance
      */

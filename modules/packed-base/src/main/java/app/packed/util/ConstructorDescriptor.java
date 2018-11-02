@@ -50,6 +50,8 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
     /**
      * Returns a descriptor from the specified constructor.
      *
+     * @param <T>
+     *            the class in which the constructor is declared
      * @param constructor
      *            the constructor to return a descriptor for
      * @return a descriptor from the specified constructor
@@ -61,7 +63,9 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
     /**
      * Creates a new descriptor by finding a constructor on the specified declaring class with the specified parameter
      * types.
-     *
+     * 
+     * @param <T>
+     *            the class in which the constructor is declared
      * @param declaringClass
      *            the class that declares the constructor
      * @param parameterTypes
@@ -76,7 +80,7 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
     }
 
     static <T> ConstructorDescriptor<T> of(TypeLiteral<T> declaringClass, Class<?>... parameterTypes) {
-        //HMM supportere vi overhoved constructors via type literals
+        // HMM supportere vi overhoved constructors via type literals
         throw new UnsupportedOperationException();
     }
 }

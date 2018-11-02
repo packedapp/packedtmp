@@ -34,7 +34,7 @@ import packed.inject.JavaXInjectSupport;
  */
 public final class AnnotationProvidesDescriptor {
 
-    /** The bind mode from {@link Provides#bindMode()}. */
+    /** The bind mode from {@link Provides#bindingMode()}. */
     private final BindingMode bindMode;
 
     /** An (optional) description from {@link Provides#description()}. */
@@ -49,7 +49,7 @@ public final class AnnotationProvidesDescriptor {
     }
 
     /**
-     * Return the bind mode as defined on {@link Provides#bindMode()}.
+     * Return the bind mode as defined on {@link Provides#bindingMode()}.
      *
      * @return the bind mode
      */
@@ -96,6 +96,6 @@ public final class AnnotationProvidesDescriptor {
             key = Key.of(method.getGenericReturnType());
         }
 
-        return new AnnotationProvidesDescriptor(key, provides.bindMode(), provides.description().length() == 0 ? null : provides.description());
+        return new AnnotationProvidesDescriptor(key, provides.bindingMode(), provides.description().length() == 0 ? null : provides.description());
     }
 }

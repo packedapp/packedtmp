@@ -20,7 +20,6 @@ import java.util.function.BiFunction;
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
  * to the bi-function being the two dependencies.
- * <p>
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 

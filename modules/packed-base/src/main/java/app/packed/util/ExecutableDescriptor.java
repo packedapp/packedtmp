@@ -36,7 +36,6 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * underlying executable.
      *
      * @return The number of formal parameters for the method this object represents
-     * @return
      *
      * @see Executable#getParameterCount()
      * @see Method#getParameterCount()

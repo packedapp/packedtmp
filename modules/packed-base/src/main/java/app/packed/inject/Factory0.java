@@ -74,6 +74,7 @@ public abstract class Factory0<T> extends Factory<T> {
      * @param type
      *            the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
      *            instances
+     * @return the new factory
      */
     // Don't know if we want to keep them... They are problematic on Factory0
     public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> type) {
@@ -91,8 +92,8 @@ public abstract class Factory0<T> extends Factory<T> {
      * @param type
      *            the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
      *            instances
+     * @return the new factory
      */
-
     public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> type) {
         return new Factory<>(new InternalFactory0<>(supplier, type));
     }

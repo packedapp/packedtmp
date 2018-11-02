@@ -263,11 +263,15 @@ public class TypeLiteral<T> {
 
     /**
      * Creates a new type literal by reading extracting information for a type variable.
-     * 
+     *
+     * @param <T>
+     *            the base type to read the type variables from
+     * @param subClass
+     *            the sub class
      * @param superClass
+     *            the base class that defines the type
      * @param parameterIndex
      *            the index in the signature of superClass of the type variable to extract
-     * @param subClass
      * @return a type literal matching the type variable
      */
     @SuppressWarnings("unchecked")
@@ -279,6 +283,8 @@ public class TypeLiteral<T> {
     /**
      * Returns a type literal of the specified class type.
      *
+     * @param <T>
+     *            the type
      * @param type
      *            the class instance to return a type literal of
      * @return a type literal of the specified class type

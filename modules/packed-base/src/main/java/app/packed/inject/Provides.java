@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
  * 
  * 
  * Fields and Methods are <b>not</b> automatically injected when returned by methods annotated with {@link Provides}.
- * {@link Injector#injectMembers(Object)} can be used to inject members if needed. // Null is only a valid result, if
- * the dependency is optional. Otherwise it is a failure
+ * inject members can be used to inject members if needed. // Null is only a valid result, if the dependency is
+ * optional. Otherwise it is a failure
  * 
  */
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -50,13 +50,15 @@ public @interface Provides {
 
     /**
      * The bind mode of the provided method, the default is to eagerly create a new instance.
+     * 
+     * @return the binding mode
      */
-    BindingMode bindMode() default BindingMode.EAGER_SINGLETON;
+    BindingMode bindingMode() default BindingMode.EAGER_SINGLETON;
 
     /**
      * The default value is {@link Qualifier} which indicates that it ignores any annotations
      *
-     * @return
+     * @return a wildcard annotation
      */
     Class<? extends Annotation> wildcardQualifier() default Qualifier.class;
 

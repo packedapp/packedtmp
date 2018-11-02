@@ -37,11 +37,10 @@ import java.util.function.Function;
  * </pre>
  *
  * <p>
- * You can also depend on a {@link org.cakeframework.inject.InjectionSite} to get greater detail about the client
- * requesting the service. For example, there we return a different logger to each component that requests a logger,
- * based on the components full path. For example, if a component with the path {@code /jobs/MyJob} requests a logger, a
- * logger with the name {@code jobs.MyJob} is returned. If it is not a component that requests the logger, an anonymous
- * logger is returned.
+ * You can also depend on a InjectionSite to get greater detail about the client requesting the service. For example,
+ * there we return a different logger to each component that requests a logger, based on the components full path. For
+ * example, if a component with the path {@code /jobs/MyJob} requests a logger, a logger with the name
+ * {@code jobs.MyJob} is returned. If it is not a component that requests the logger, an anonymous logger is returned.
  *
  *
  *

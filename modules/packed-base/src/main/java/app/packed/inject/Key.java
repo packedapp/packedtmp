@@ -159,7 +159,11 @@ public abstract class Key<T> {
         return typeLiteral.getRawType();
     }
 
-    /** Returns the generic type of this key. */
+    /**
+     * Returns the generic type of this key.
+     * 
+     * @return the generic type of this key
+     */
     public final TypeLiteral<T> getTypeLiteral() {
         return typeLiteral;
     }
@@ -262,6 +266,8 @@ public abstract class Key<T> {
     /**
      * Returns a key matching the specified type with no qualifiers.
      *
+     * @param <T>
+     *            the type to return a key for
      * @param type
      *            the type to return a key for
      * @return a key matching the specified type with no qualifiers
@@ -274,6 +280,8 @@ public abstract class Key<T> {
     /**
      * Returns a key of the specified type and with the specified qualifier.
      *
+     * @param <T>
+     *            the type to return a key for
      * @param type
      *            the type to return a key for
      * @param qualifier
@@ -288,6 +296,8 @@ public abstract class Key<T> {
     /**
      * Returns a key matching the specified type.
      *
+     * @param <T>
+     *            the type to return a key for
      * @param type
      *            the type to return a key for
      * @return a key matching the specified type
@@ -304,6 +314,8 @@ public abstract class Key<T> {
     /**
      * Returns a key matching the specified type and qualifier.
      *
+     * @param <T>
+     *            the type to return a key for
      * @param type
      *            the type to return a key for
      * @param qualifier
