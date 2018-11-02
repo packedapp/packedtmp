@@ -100,16 +100,16 @@ public class Factory<T> {
     Factory(Supplier<? extends T> supplier) {
         this.factory = InternalFactory0.fromTypeVariable(supplier, getClass());
     }
-
-    /**
-     * Returns a new bindable factory.
-     * 
-     * @return a new bindable factory
-     */
-    public BindableFactory<T> bindable() {
-        // bindable, newBindable, toBindable()
-        return new BindableFactory<>(factory);
-    }
+    //
+    // /**
+    // * Returns a new bindable factory.
+    // *
+    // * @return a new bindable factory
+    // */
+    // public BindableFactory<T> bindable() {
+    // // bindable, newBindable, toBindable()
+    // return new BindableFactory<>(factory);
+    // }
 
     /**
      * Returns a list of this factory's dependencies. Returns the empty list if this factory does not have any dependencies.

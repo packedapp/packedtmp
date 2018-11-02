@@ -16,6 +16,7 @@
 package packed.inject.factory;
 
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 
 /**
  *
@@ -39,6 +40,7 @@ public class InternalFactoryBindable<T> extends InternalFactory<T> {
 
     /** {@inheritDoc} */
     @Override
+    @Nullable
     public T instantiate(Object[] params) {
         return null;
     }

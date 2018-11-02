@@ -29,6 +29,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.util.Nullable;
 import packed.inject.JavaXInjectSupport;
 import packed.util.AnnotationUtil;
 import packed.util.TypeUtil;
@@ -139,6 +140,7 @@ public abstract class Key<T> {
      *
      * @return any qualifier this key might have, or null if this key has no qualifier
      */
+    @Nullable
     public final Annotation getQualifier() {
         return qualifier;
     }
@@ -148,6 +150,7 @@ public abstract class Key<T> {
      *
      * @return the type of qualifier this key have, or null if this key has no qualifier
      */
+    @Nullable
     public final Class<? extends Annotation> getQualifierType() {
         return qualifier == null ? null : qualifier.annotationType();
     }

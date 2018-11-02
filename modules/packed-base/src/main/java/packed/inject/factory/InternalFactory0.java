@@ -25,6 +25,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 
 /** An internal factory for {@link Factory0}. */
 public final class InternalFactory0<T> extends InternalFactory<T> {
@@ -55,6 +56,7 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
 
     /** {@inheritDoc} */
     @Override
+    @Nullable
     public T instantiate(Object[] ignore) {
         T instance = supplier.get();
         if (!getRawType().isInstance(instance)) {

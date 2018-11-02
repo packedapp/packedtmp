@@ -26,6 +26,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.NoAccessException;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 import packed.util.ThrowableUtil;
 import packed.util.descriptor.AbstractExecutableDescriptor;
 
@@ -67,6 +68,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Nullable
     public T instantiate(Object[] params) {
         requireNonNull(methodHandle, "internal error");
         try {
@@ -108,5 +110,4 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
         }
         return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);
     }
-
 }

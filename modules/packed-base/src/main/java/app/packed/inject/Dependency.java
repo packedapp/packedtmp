@@ -165,6 +165,7 @@ public final class Dependency {
      * @return the optional container type
      * @see #isOptional()
      */
+    @Nullable
     public Class<?> getOptionalContainerType() {
         return optionalType;
     }
@@ -222,6 +223,7 @@ public final class Dependency {
      * @throws ClassCastException
      *             if this dependency is an optional type and type of this dependency does not match the specified object.
      */
+    @Nullable
     public Object wrapIfOptional(Object o) {
         if (optionalType == Optional.class) {
             return Optional.of(o);

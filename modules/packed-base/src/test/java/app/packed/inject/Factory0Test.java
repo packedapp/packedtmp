@@ -15,43 +15,40 @@
  */
 package app.packed.inject;
 
-import static app.packed.inject.Factory0.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static support.assertj.Assertions.assertThatFactory;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /** Tests {@link Factory0}. */
 public class Factory0Test {
 
-    /** Tests the static methods. */
-    public static class StaticMethods {
-
-        /** Tests {@link Factory0#of(Supplier, Class)} */
-        @Test
-        public void classParameter() {
-            assertThatFactory(of(() -> 1, Number.class)).is(Number.class);
-            assertThatFactory(of(() -> 1, Integer.class)).is(Integer.class);
-        }
-
-        /** Tests {@link Factory0#of(Supplier, TypeLiteral)} */
-        @Test
-        @Disabled
-        public void typeLiteralParameter() {
-            assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
-
-            assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
-            assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Number>>() {})).is(new Key<List<Number>>() {});
-            assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<?>>() {})).is(new Key<List<?>>() {});
-
-        }
-    }
+    // /** Tests the static methods. */
+    // public static class StaticMethods {
+    //
+    // /** Tests {@link Factory0#of(Supplier, Class)} */
+    // @Test
+    // public void classParameter() {
+    // assertThatFactory(of(() -> 1, Number.class)).is(Number.class);
+    // assertThatFactory(of(() -> 1, Integer.class)).is(Integer.class);
+    // }
+    //
+    // /** Tests {@link Factory0#of(Supplier, TypeLiteral)} */
+    // @Test
+    // @Disabled
+    // public void typeLiteralParameter() {
+    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
+    //
+    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
+    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Number>>() {})).is(new Key<List<Number>>() {});
+    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<?>>() {})).is(new Key<List<?>>() {});
+    //
+    // }
+    // }
 
     /** Tests parsing of type parameter (<T>) info */
     public static class TypeParameterRead {

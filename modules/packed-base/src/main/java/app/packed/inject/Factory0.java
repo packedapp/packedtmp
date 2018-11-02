@@ -64,32 +64,35 @@ public abstract class Factory0<T> extends Factory<T> {
         super(supplier);
     }
 
-    /**
-     * Returns a factory that uses the specified supplier to create new instances.
-     *
+    /***
+     * Returns a factory that uses the specified supplier to create new instances.**
+     * 
      * @param <T>
-     *            the type of objects the factory will create
+     *            the type of objects the factory will create*
      * @param supplier
-     *            the supplier to use for creating new instances
+     *            the supplier to use for creating new instances*
      * @param type
-     *            the type of objects the supplier creates
-     * @return a factory that uses the specified supplier to create new instances
+     *            the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
+     *            instances
      */
+    // Don't know if we want to keep them... They are problematic on Factory0
     public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> type) {
         return of(supplier, TypeLiteral.of(requireNonNull(type, "type is null")));
     }
 
-    /**
-     * Returns a factory that uses the specified supplier to create new instances.
-     *
+    /***
+     * 
+     * Returns a factory that uses the specified supplier to create new instances.**
+     * 
      * @param <T>
-     *            the type of objects the factory will create
+     *            the type of objects the factory will create*
      * @param supplier
-     *            the supplier to use for creating new instances
+     *            the supplier to use for creating new instances*
      * @param type
-     *            the type of objects the supplier creates
-     * @return a factory that uses the specified supplier to create new instances
+     *            the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
+     *            instances
      */
+
     public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> type) {
         return new Factory<>(new InternalFactory0<>(supplier, type));
     }

@@ -26,6 +26,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 import packed.inject.InjectSupport;
 
 /**
@@ -41,13 +42,14 @@ public abstract class InternalFactory<T> {
     // Rest, unknown all
     // Bindable -> has no effect..
 
-    static {
-        Dependency.of(String.class);// Initializes InternalApis for InternalFactory
-    }
+    // static {
+    // Dependency.of(String.class);// Initializes InternalApis for InternalFactory
+    // }
 
     // Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
     final Class<?> actualType;
 
+    /** The dependencies for this factory. */
     private final List<Dependency> dependencies;
 
     /** The key that this factory will be registered under by default with an injector. */
@@ -135,6 +137,7 @@ public abstract class InternalFactory<T> {
      *            the parameters to use
      * @return the new instance
      */
+    @Nullable
     public abstract T instantiate(Object[] params);
 
     /**

@@ -15,11 +15,7 @@
  */
 package app.packed.inject;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -29,21 +25,8 @@ import java.util.function.Supplier;
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 
-    /** The supplier to delegate to */
-    final BiFunction<? super T, ? super U, ? extends R> function;
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         super((Supplier) null);
-        this.function = requireNonNull(function, "function is null");
-    }
-
-    public static <T, R> Factory<R> ofOptional(Function<Optional<? super T>, ? extends R> function, Class<T> dependencyType, Class<R> objectType) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T, U, R> Factory<R> ofOptionalBoth(BiFunction<Optional<? super T>, Optional<? super U>, ? extends R> function, Class<T> dependencyType,
-            Class<R> objectType) {
-        throw new UnsupportedOperationException();
     }
 }

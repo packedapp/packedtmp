@@ -26,10 +26,9 @@ import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 
-/**
- *
- */
+/** An internal factory for {@link Factory2}. */
 public class InternalFactory2<T, U, R> extends InternalFactory<R> {
 
     /** A cache of function factory definitions. */
@@ -61,6 +60,7 @@ public class InternalFactory2<T, U, R> extends InternalFactory<R> {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
+    @Nullable
     public R instantiate(Object[] params) {
         T t = (T) params[0];
         U u = (U) params[1];

@@ -26,6 +26,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFactory<R> {
@@ -58,6 +59,7 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
 
     @SuppressWarnings("unchecked")
     @Override
+    @Nullable
     public R instantiate(Object[] params) {
         T t = (T) params[0];
         R instance = function.apply(t);

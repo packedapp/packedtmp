@@ -15,7 +15,6 @@
  */
 package app.packed.inject;
 
-import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -69,32 +68,9 @@ public abstract class Factory1<T, R> extends Factory<R> {
      * @throws NullPointerException
      *             if the specified function is null
      * @throws IllegalArgumentException
-     *             if the type variable T or R could not be determined
+     *             if the type variable T or R could not be determined. Or if T does not represent a proper dependency
      */
     protected Factory1(Function<? super T, ? extends R> function) {
         super(function);
-    }
-
-    /**
-     * Creates a new factory that uses the specified function mapping existing instances of a specific type to new
-     * instances.
-     *
-     * @param function
-     *            the function mapping 1 type of dependencies to a new instances
-     * @param objectType
-     *            the type of objects the supplier creates
-     * @return the new factory
-     * @throws NullPointerException
-     *             if the specified function, dependency type, or object type is null
-     */
-
-    // HMMMMMMMMM, Hvad gør vi med dependency????? Dependency<Optional<Foo>> kan jo aldrig match Foo....
-    public static <T, R> Factory<R> of(Function<? super T, ? extends R> function, Class<T> dependencyType, Class<R> objectType) {
-        throw new UnsupportedOperationException();
-        // return new Factory1<>(Key.of(dependencyType), TypeLiteral.of(objectType), function) {};
-    }
-
-    public static <T, R> Factory<R> ofOptional(Function<Optional<? super T>, ? extends R> function, Class<T> dependencyType, Class<R> objectType) {
-        throw new UnsupportedOperationException();
     }
 }
