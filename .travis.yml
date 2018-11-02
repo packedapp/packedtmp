@@ -2,6 +2,7 @@ language: java
 jdk:
   - openjdk11
 
+# we need to cd modules, because the coveralls plugin is defined in modules/pom.xml, with a depdency on jaxb
 after_success:
   - cd modules
   - mvn clean test org.jacoco:jacoco-maven-plugin:report org.eluder.coveralls:coveralls-maven-plugin:report
