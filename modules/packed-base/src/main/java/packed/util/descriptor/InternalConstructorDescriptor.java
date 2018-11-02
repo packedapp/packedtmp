@@ -78,12 +78,6 @@ public final class InternalConstructorDescriptor<T> extends AbstractExecutableDe
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean isSynthetic() {
-        return constructor.isSynthetic();
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public Constructor<T> newConstructor() {

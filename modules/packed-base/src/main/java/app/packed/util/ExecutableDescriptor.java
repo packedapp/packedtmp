@@ -45,6 +45,16 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
     int getParameterCount();
 
     /**
+     * Returns true if the takes a variable number of arguments, otherwise false.
+     *
+     * @return true if the takes a variable number of arguments, otherwise false.
+     * 
+     * @see Method#isVarArgs()
+     * @see Constructor#isVarArgs()
+     */
+    boolean isVarArgs();
+
+    /**
      * Returns a list of dependencies matching the parameters of this executable.
      *
      * @return a dependency list

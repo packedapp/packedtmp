@@ -100,12 +100,6 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
-    public boolean isSynthetic() {
-        return method.isSynthetic();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Executable newExecutable() {
         return newMethod();
     }

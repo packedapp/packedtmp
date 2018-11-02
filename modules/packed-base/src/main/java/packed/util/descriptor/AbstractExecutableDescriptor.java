@@ -63,12 +63,7 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
         this.parameterTypes = executable.getParameterTypes();
     }
 
-    /**
-     * Returns the declaring class of the executable.
-     *
-     * @return the declaring class of the executable
-     * @see Executable#getDeclaringClass()
-     */
+    /** {@inheritDoc} */
     @Override
     public final Class<?> getDeclaringClass() {
         return executable.getDeclaringClass();
@@ -80,11 +75,7 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
         return executable.getModifiers();
     }
 
-    /**
-     * Returns the number of parameters for the executable
-     *
-     * @return the number of parameters to the executable
-     */
+    /** {@inheritDoc} */
     @Override
     public final int getParameterCount() {
         return parameters.length;
@@ -98,6 +89,18 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
     // TODO unsafe arrays
     public final InternalParameterDescriptor[] getParameters() {
         return parameters;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isSynthetic() {
+        return executable.isSynthetic();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isVarArgs() {
+        return executable.isVarArgs();
     }
 
     public final boolean matchesParameters(Class<?>[] parameterTypes) {
