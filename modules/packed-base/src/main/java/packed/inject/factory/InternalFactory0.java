@@ -29,8 +29,8 @@ import app.packed.inject.TypeLiteral;
 /** An internal factory for {@link Factory0}. */
 public final class InternalFactory0<T> extends InternalFactory<T> {
 
-    /** A cache of function factory definitions. */
-    static final ClassValue<TypeLiteral<?>> TYPE_PARAMETERS = new ClassValue<>() {
+    /** A cache of extracted type variables. */
+    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETERS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -65,8 +65,17 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
         return instance;
     }
 
+    /**
+     * Create
+     * 
+     * @param supplier
+     *            the supplier that creates the actual values
+     * @param extractFrom
+     *            the class to extract the type variable from
+     * @return the new factory
+     */
     @SuppressWarnings("unchecked")
-    public static <T> InternalFactory<T> of(Supplier<? extends T> supplier, Class<?> factory0Type) {
-        return new InternalFactory0<>(supplier, (TypeLiteral<T>) TYPE_PARAMETERS.get(factory0Type));
+    public static <T> InternalFactory<T> fromTypeVariable(Supplier<? extends T> supplier, Class<?> extractFrom) {
+        return new InternalFactory0<>(supplier, (TypeLiteral<T>) TYPE_PARAMETERS.get(extractFrom));
     }
 }

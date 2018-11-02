@@ -71,12 +71,12 @@ public abstract class Factory0<T> extends Factory<T> {
      *            the type of objects the factory will create
      * @param supplier
      *            the supplier to use for creating new instances
-     * @param objectType
+     * @param type
      *            the type of objects the supplier creates
      * @return a factory that uses the specified supplier to create new instances
      */
-    public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> objectType) {
-        return of(supplier, TypeLiteral.of(requireNonNull(objectType, "objectType is null")));
+    public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> type) {
+        return of(supplier, TypeLiteral.of(requireNonNull(type, "type is null")));
     }
 
     /**
@@ -86,11 +86,11 @@ public abstract class Factory0<T> extends Factory<T> {
      *            the type of objects the factory will create
      * @param supplier
      *            the supplier to use for creating new instances
-     * @param typeLiteralOrKey
+     * @param type
      *            the type of objects the supplier creates
      * @return a factory that uses the specified supplier to create new instances
      */
-    public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> typeLiteralOrKey) {
-        return new Factory<>(new InternalFactory0<>(supplier, typeLiteralOrKey));
+    public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> type) {
+        return new Factory<>(new InternalFactory0<>(supplier, type));
     }
 }

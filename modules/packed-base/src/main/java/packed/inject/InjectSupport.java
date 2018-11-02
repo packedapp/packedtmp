@@ -26,7 +26,22 @@ import app.packed.inject.TypeLiteral;
 import packed.inject.factory.InternalFactory;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
-public final class InjectAPI {
+public final class InjectSupport {
+
+    /**
+     * Extracts the internal factory from the specified factory
+     * 
+     * @param factory
+     *            the factory to extract from
+     * @return the internal factory
+     */
+    public static <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
+        return SingletonHolder.SINGLETON.toInternalFactory(factory);
+    }
+
+    public static Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
+        return SingletonHolder.SINGLETON.toKeyNullableQualifier(type, qualifier);
+    }
 
     /**
      * Converts the specified factory to an internal factory.
@@ -39,54 +54,37 @@ public final class InjectAPI {
         return SingletonHolder.SINGLETON.toTypeLiteral(type);
     }
 
-    public static Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
-        return SingletonHolder.SINGLETON.toKeyNullableQualifier(type, qualifier);
-    }
-    
-    
-    /**
-     * Converts the specified factory to an internal factory.
-     * 
-     * @param factory
-     *            the factory to convert
-     * @return the internal factory
-     */
-    public static <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
-        return SingletonHolder.SINGLETON.toInternalFactory(factory);
-    }
-
     /** Holder of the singleton. */
     static class SingletonHolder {
 
         /** The singleton instance. */
-        static final SupportInject SINGLETON;
+        static final Helper SINGLETON;
 
         static {
-            Factory.findInjectable(Object.class); // Initializes Factory, which in turn will call SupportInject#init
-            SINGLETON = requireNonNull(SupportInject.SUPPORT, "internal error");
+            TypeLiteral.of(Object.class); // Initializes TypeLiteral, which in turn will call SupportInject#init
+            SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }
 
     /** An abstract class that must be implemented by a class in app.packed.inject. */
-    public static abstract class SupportInject {
+    public static abstract class Helper {
 
-        /** Used for invoking package private InjectorBuilder constructor. */
-        private static SupportInject SUPPORT;
+        /** An instance of the single implementation of this class. */
+        private static Helper SUPPORT;
 
         /**
-         * Converts the specified factory to an internal factory.
+         * Extracts the internal factory from the specified factory
          * 
          * @param factory
-         *            the factory to convert
+         *            the factory to extract from
          * @return the internal factory
          */
         protected abstract <T> InternalFactory<T> toInternalFactory(Factory<T> factory);
-        
-        
-        //Take a Source??? For example, a method to use for error message.
+
+        // Take a Source??? For example, a method to use for error message.
         // When creating the key
         protected abstract Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
-        
+
         /**
          * Converts the type to a type literal.
          * 
@@ -95,16 +93,16 @@ public final class InjectAPI {
          * @return the type literal
          */
         protected abstract TypeLiteral<?> toTypeLiteral(Type type);
-        
+
         /**
          * Initializes this class.
          * 
          * @param support
          *            an implementation of this class
          */
-        public static void init(SupportInject support) {
+        public static void init(Helper support) {
             if (SUPPORT != null) {
-                throw new Error("Already initialized");
+                throw new Error("Can only be initialized ince");
             }
             SUPPORT = requireNonNull(support);
         }

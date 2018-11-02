@@ -69,7 +69,7 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         return instance;
     }
 
-    public static <T> InternalFactory<T> of(Function<?, ? extends T> supplier, Class<?> factory1Type) {
+    public static <T> InternalFactory<T> fromTypeVariables(Function<?, ? extends T> supplier, Class<?> factory1Type) {
         throw new UnsupportedOperationException();
     }
 

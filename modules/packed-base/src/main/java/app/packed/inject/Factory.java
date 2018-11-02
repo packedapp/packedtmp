@@ -27,6 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.util.ConstructorDescriptor;
+import packed.inject.factory.FindInjectable;
 import packed.inject.factory.InternalFactory;
 import packed.inject.factory.InternalFactory0;
 import packed.inject.factory.InternalFactory1;
@@ -36,24 +37,21 @@ import packed.inject.factory.InternalFactoryInstance;
 
 /**
  * Factories are used for creating new instances of a particular type.
- *
  * <p>
  * This class currently does not publically expose any methods that actually creates new instances. This is all hidden
- * in internal classes. This might change in the future, but for now factories are created by a user and can only be
- * consumed the the internals of Packed.
+ * in internal classes. This might change in the future, but for now factories are created by the user and only the
+ * internals of this framework can use them to create new object instances.
  */
-// Finde metoder paa statisk vs instance....
-// Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
 public class Factory<T> {
 
-    /** A cache of supplier factory definitions. */
-    static final ClassValue<Factory<?>> CACHE_FROM_CLASS = new ClassValue<>() {
+    /** A cache of factories used by {@link #findInjectable(Class)}. */
+    static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected Factory<?> computeValue(Class<?> type) {
-            return new Factory(InternalFactoryExecutable.from(type));
+        protected Factory<?> computeValue(Class<?> implementation) {
+            return new Factory(FindInjectable.find(implementation));
         }
     };
 
@@ -68,7 +66,7 @@ public class Factory<T> {
      *            the function
      */
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = InternalFactory2.of(function, getClass());
+        this.factory = InternalFactory2.fromTypeVariables(function, getClass());
     }
 
     /**
@@ -79,14 +77,14 @@ public class Factory<T> {
      *            the function
      */
     Factory(Function<?, ? extends T> function) {
-        this.factory = InternalFactory1.of(function, getClass());
+        this.factory = InternalFactory1.fromTypeVariables(function, getClass());
     }
 
     /**
-     * The default constructor.
+     * Creates a new factory by wrapping an internal factory.
      *
-     * @param function
-     *            the function
+     * @param factory
+     *            the internal factory to wrap.
      */
     Factory(InternalFactory<T> factory) {
         this.factory = requireNonNull(factory);
@@ -100,7 +98,17 @@ public class Factory<T> {
      *            the supplier
      */
     Factory(Supplier<? extends T> supplier) {
-        this.factory = InternalFactory0.of(supplier, getClass());
+        this.factory = InternalFactory0.fromTypeVariable(supplier, getClass());
+    }
+
+    /**
+     * Returns a new bindable factory.
+     * 
+     * @return a new bindable factory
+     */
+    public BindableFactory<T> bindable() {
+        // bindable, newBindable, toBindable()
+        return new BindableFactory<>(factory);
     }
 
     /**
@@ -113,9 +121,9 @@ public class Factory<T> {
     }
 
     /**
-     * This is the key under which a factory will
+     * Returns the default key under which this factory will be registered.
      *
-     * @return
+     * @return the default key under which this factory will be registered
      */
     public final Key<T> getKey() {
         return factory.getKey();
@@ -149,30 +157,13 @@ public class Factory<T> {
         return factory.getType();
     }
 
-    /**
-     * Returns a new bindable factory.
-     * 
-     * @return a new bindable factory
-     */
-    // bindable
-    // newBindable
-    // toBindable()
-    public BindableFactory<T> bindable() {
-        return new BindableFactory<>(factory);
-    }
-
     public final boolean isAccessibleWith(Lookup lookup) {
         return factory.isAccessibleWith(lookup);
     }
 
-    public final void checkAccessWith(Lookup lookup) {
-
-    }
-
     /**
-     * If this factory has been created from a Constructor or Method. This method returns a new factory that uses the
-     * specified lookup object to access the underlying constructor or method whenever the factory needs to generate a new
-     * value.
+     * If this factory was created from a constructor or method, this method returns a new factory that uses the specified
+     * lookup object to access the underlying constructor or method whenever the factory needs to create a new object.
      * <p>
      * Normally, the accessors method this is not needed if configuring a module. This can be useful, for example, to share
      * a factory instance that has a package private constructor.
@@ -180,13 +171,17 @@ public class Factory<T> {
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when invoke the underlying method or constructor
-     * @throws IllegalArgumentException
+     * @throws NoAccessException
      *             if the specified lookup object does not give access to the underlying constructor or method
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a constructor or method.
      */
-    public Factory<T> withLookup(MethodHandles.Lookup lookup) {
-        return new Factory<>(factory.withMethodLookup(lookup));
+    public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
+        if (factory instanceof InternalFactoryExecutable) {
+            return new Factory<>(((InternalFactoryExecutable<T>) factory).withMethodLookup(lookup));
+        } else {
+            throw new UnsupportedOperationException("This method is only supported by factories that was created using a Constructor or Method");
+        }
     }
 
     public Factory<T> withType(Class<? extends T> type) {
@@ -217,22 +212,37 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(Class<T> implementation) {
-        return (Factory<T>) CACHE_FROM_CLASS.get(implementation);
+        return (Factory<T>) FIND_INJECTABLE_CACHE.get(requireNonNull(implementation, "implementation is null"));
     }
 
     /**
-     * This method is equivalent to {@link #from(Class)} except that it takes a type literal or key.
+     * This method is equivalent to {@link #find(Class)} except that it takes a type literal or key.
      *
      * @param implementation
      *            the implementation type
      * @return a factory for the specified implementation type
      */
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
-        // Does not really work, because getType() is not valid...
-        // return (Factory<T>) MirrorOfClass.fromImplementation(implementation.getRawType()).getDefaultFactory();
-        throw new UnsupportedOperationException();
+        return new Factory<>(FindInjectable.find(implementation));
     }
 
+    /**
+     * Returns a factory that returns the specified instance every time a new instance is requested.
+     *
+     * @param <T>
+     *            the type of instances created by the factory
+     * @param instance
+     *            the instance to return every time a new instance is requested
+     * @return the factory
+     */
+    public static <T> Factory<T> ofInstance(T instance) {
+        return new Factory<>(InternalFactoryInstance.of(instance));
+    }
+}
+
+// Finde metoder paa statisk vs instance....
+// Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
+class XFac2 {
     // either one annotated with inject, or just one method, for example lambda..
     static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
         throw new UnsupportedOperationException();
@@ -329,19 +339,6 @@ public class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a factory that returns the specified instance on every invocation.
-     *
-     * @param <T>
-     *            the type of instances the factory will create
-     * @param instance
-     *            the instance to return on every invocation
-     * @return the factory
-     */
-    public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(InternalFactoryInstance.of(instance));
-    }
-
     // How we skal have
     public static <T> Factory<T> ofMethodInstance(Object onInstance, Method method, Class<T> returnType) {
         requireNonNull(returnType, "returnType is null");
@@ -386,7 +383,6 @@ public class Factory<T> {
         // Map.of(), new MethodMirror(method)));
         throw new UnsupportedOperationException();
     }
-
 }
 
 // If we add withDependency, which I think we should. It should be reflected in the available keys

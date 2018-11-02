@@ -18,8 +18,9 @@ package app.packed.inject;
 import packed.inject.factory.InternalFactory;
 
 /**
- * A {@link Factory} that allows for initial binding of some of the parameters before dependency injection is performed.
- * This is typically used
+ * A special {@link Factory} that allows for explicitly binding one of more of its dependencies.
+ * <p>
+ * of some of the parameters before dependency injection is performed. This is typically used
  *
  * All externally available methods that takes a Factory as a parameter in Packed will make an internal copy of the
  * argument list that have been on this class. There binding or unbinding on a factory has no effect after a method
@@ -34,6 +35,7 @@ import packed.inject.factory.InternalFactory;
 
 // Kan man nogensinde lave et BindableFactory der ikke er en executable?????????????
 // Ja man kunne jo lave en fra->til Factory. Men som udgangs
+// Har vi of metoder eller alt gennem bindable()?
 public final class BindableFactory<T> extends Factory<T> implements Bindable {
 
     /** The bindable arguments */
@@ -70,6 +72,7 @@ public final class BindableFactory<T> extends Factory<T> implements Bindable {
      * @return an immutable copy of this factory
      */
     public Factory<T> immutableCopyOf() {
+        // We could also just call it freeze...
         throw new UnsupportedOperationException();
     }
 

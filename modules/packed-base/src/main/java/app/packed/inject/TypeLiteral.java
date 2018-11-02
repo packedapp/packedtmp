@@ -25,7 +25,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import packed.inject.InjectSupport;
 import packed.inject.JavaXInjectSupport;
+import packed.inject.factory.InternalFactory;
 import packed.util.TypeUtil;
 import packed.util.TypeVariableExtractorUtil;
 import packed.util.descriptor.InternalParameterDescriptor;
@@ -40,12 +42,30 @@ import packed.util.descriptor.InternalParameterDescriptor;
  * TypeLiteral<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
  * </pre>
  */
-// TODO test this from other packages....
-// concrete class, public constructor -> People can instantiate
-// concrete class, protected constructor
-// abstract class, public constructor
-// abstract class, protected constructor
 public class TypeLiteral<T> {
+
+    static {
+        InjectSupport.Helper.init(new InjectSupport.Helper() {
+
+            /** {@inheritDoc} */
+            @Override
+            protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
+                return factory.factory;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
+                return null;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            protected TypeLiteral<?> toTypeLiteral(Type type) {
+                return TypeLiteral.fromJavaImplementationType(type);
+            }
+        });
+    }
 
     /**
      * We cache the hash code of the type, as most Type implementations calculates it every time. See, for example,
@@ -196,7 +216,7 @@ public class TypeLiteral<T> {
     }
 
     /**
-     * Returns a type literal from a type that is specified by a class in java.base, as there are known to be
+     * Returns a type literal from a type that is implemented by a class located in java.base, as these are known to be
      * intra-comparable.
      *
      * @apiNote this method is not available publically because you can really pass anything in like a Type. Since there are

@@ -38,10 +38,7 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.inject.InjectAPI;
-import packed.inject.InjectAPI.SupportInject;
 import packed.inject.JavaXInjectSupport;
-import packed.inject.factory.InternalFactory;
 import packed.util.TypeVariableExtractorUtil;
 import packed.util.descriptor.AbstractVariableDescriptor;
 import packed.util.descriptor.InternalFieldDescriptor;
@@ -66,26 +63,6 @@ import packed.util.descriptor.InternalParameterDescriptor;
  * optional in which case {@link #isOptional()} returns true.
  */
 public final class Dependency {
-
-    static {
-        InjectAPI.SupportInject.init(new SupportInject() {
-
-            @Override
-            protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
-                return factory.factory;
-            }
-
-            @Override
-            protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
-                return null;
-            }
-
-            @Override
-            protected TypeLiteral<?> toTypeLiteral(Type type) {
-                return TypeLiteral.fromJavaImplementationType(type);
-            }
-        });
-    }
 
     /** The index of this dependency. */
     private final int index;

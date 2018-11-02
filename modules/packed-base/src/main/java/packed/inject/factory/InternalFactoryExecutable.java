@@ -24,11 +24,10 @@ import java.util.List;
 import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
+import app.packed.inject.NoAccessException;
 import app.packed.inject.TypeLiteral;
 import packed.util.ThrowableUtil;
 import packed.util.descriptor.AbstractExecutableDescriptor;
-import packed.util.descriptor.InternalConstructorDescriptor;
-import packed.util.descriptor.InternalMethodDescriptor;
 
 /** The backing class of {@link Factory}. */
 public class InternalFactoryExecutable<T> extends InternalFactory<T> {
@@ -92,23 +91,22 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
         return methodHandle != null;
     }
 
-    @Override
+    /**
+     * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
+     * 
+     * @param lookup
+     *            the lookup object to use
+     * @return a new internal factory that uses the specified lookup object
+     */
     public InternalFactory<T> withMethodLookup(Lookup lookup) {
-        final MethodHandle handle;
+        MethodHandle handle;
         try {
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException(
+            throw new NoAccessException(
                     "No access to the " + executable.descriptorName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access");
         }
         return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);
     }
 
-    public static <T> InternalFactory<T> from(Class<T> type) {
-        AbstractExecutableDescriptor executable = InternalMethodDescriptor.getDefaultFactoryFindStaticMethodx(type);
-        if (executable == null) {
-            executable = InternalConstructorDescriptor.findDefaultForInject(type);// moc.constructors().findInjectable();
-        }
-        return new InternalFactoryExecutable<>(TypeLiteral.of(type), executable);
-    }
 }

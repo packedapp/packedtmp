@@ -18,7 +18,6 @@ package packed.inject.factory;
 import static java.util.Objects.requireNonNull;
 import static packed.util.Formatter.format;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
@@ -27,7 +26,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import packed.inject.InjectAPI;
+import packed.inject.InjectSupport;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -148,17 +147,6 @@ public abstract class InternalFactory<T> {
     }
 
     /**
-     * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
-     * 
-     * @param lookup
-     *            the lookup object to use
-     * @return a new internal factory that uses the specified lookup object
-     */
-    public InternalFactory<T> withMethodLookup(MethodHandles.Lookup lookup) {
-        throw new UnsupportedOperationException("This method is only supported by factories that was created using a Constructor or Method");
-    }
-
-    /**
      * Converts the specified factory to an internal factory
      * 
      * @param factory
@@ -167,7 +155,7 @@ public abstract class InternalFactory<T> {
      */
     public static <T> InternalFactory<T> from(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return InjectAPI.toInternalFactory(factory);
+        return InjectSupport.toInternalFactory(factory);
     }
 
     static class FunctionalSignature {

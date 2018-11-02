@@ -215,4 +215,5 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
     public static InternalParameterDescriptor of(ParameterDescriptor descriptor) {
         return descriptor instanceof InternalParameterDescriptor ? (InternalParameterDescriptor) descriptor : of(descriptor.newParameter());
     }
+
 }
