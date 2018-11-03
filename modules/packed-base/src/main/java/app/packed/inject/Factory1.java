@@ -60,7 +60,7 @@ import java.util.function.Function;
 public abstract class Factory1<T, R> extends Factory<R> {
 
     /**
-     * Creates a new factory.<><><><>2 '
+     * Creates a new factory.
      *
      * @param function
      *            the function to use for creating new instances
