@@ -15,12 +15,10 @@
  */
 package app.packed.inject;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import packed.inject.factory.InternalFactory0;
+import pckd.internals.inject.factory.InternalFactory0;
 
 /**
  * A {@link Factory} type that uses a {@link Supplier} to create new instances.
@@ -40,6 +38,9 @@ import packed.inject.factory.InternalFactory0;
  *
  * The factory created in the last example is functionally equivalent to the factory created in the first example.
  *
+ * <p>
+ * The supplier must only return null for optional dependencies.
+ * 
  * <p>
  * Passing a {@code null} argument to any method or constructor in this class will cause a {@link NullPointerException}
  * to be thrown.
@@ -78,7 +79,7 @@ public abstract class Factory0<T> extends Factory<T> {
      */
     // Don't know if we want to keep them... They are problematic on Factory0
     public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> type) {
-        return of(supplier, TypeLiteral.of(requireNonNull(type, "type is null")));
+        return of(supplier, TypeLiteral.of(type));
     }
 
     /***

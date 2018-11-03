@@ -18,22 +18,23 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.util.ConstructorDescriptor;
-import packed.inject.factory.FindInjectable;
-import packed.inject.factory.InternalFactory;
-import packed.inject.factory.InternalFactory0;
-import packed.inject.factory.InternalFactory1;
-import packed.inject.factory.InternalFactory2;
-import packed.inject.factory.InternalFactoryExecutable;
-import packed.inject.factory.InternalFactoryInstance;
+import pckd.internals.inject.factory.FindInjectable;
+import pckd.internals.inject.factory.InternalFactory;
+import pckd.internals.inject.factory.InternalFactory0;
+import pckd.internals.inject.factory.InternalFactory1;
+import pckd.internals.inject.factory.InternalFactory2;
+import pckd.internals.inject.factory.InternalFactoryExecutable;
+import pckd.internals.inject.factory.InternalFactoryInstance;
+import pckd.internals.util.TypeVariableExtractorUtil;
 
 /**
  * Factories are used for creating new instances of a particular type.
@@ -45,13 +46,27 @@ import packed.inject.factory.InternalFactoryInstance;
 public class Factory<T> {
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
-    static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             return new Factory(FindInjectable.find(implementation));
+        }
+    };
+    /**
+     * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only by subclasses of TypeLiteral,
+     * never literals that are manually constructed.
+     */
+    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected Factory<?> computeValue(Class<?> implementation) {
+            Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
+            return new Factory(FindInjectable.find(TypeLiteral.fromJavaImplementationType(t)));
         }
     };
 
@@ -100,16 +115,6 @@ public class Factory<T> {
     Factory(Supplier<? extends T> supplier) {
         this.factory = InternalFactory0.fromTypeVariable(supplier, getClass());
     }
-    //
-    // /**
-    // * Returns a new bindable factory.
-    // *
-    // * @return a new bindable factory
-    // */
-    // public BindableFactory<T> bindable() {
-    // // bindable, newBindable, toBindable()
-    // return new BindableFactory<>(factory);
-    // }
 
     /**
      * Returns a list of this factory's dependencies. Returns the empty list if this factory does not have any dependencies.
@@ -157,10 +162,6 @@ public class Factory<T> {
         return factory.getType();
     }
 
-    public final boolean isAccessibleWith(Lookup lookup) {
-        return factory.isAccessibleWith(lookup);
-    }
-
     /**
      * If this factory was created from a constructor or method, this method returns a new factory that uses the specified
      * lookup object to access the underlying constructor or method whenever the factory needs to create a new object.
@@ -177,11 +178,16 @@ public class Factory<T> {
      *             if this factory was not created from either a constructor or method.
      */
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
-        if (factory instanceof InternalFactoryExecutable) {
-            return new Factory<>(((InternalFactoryExecutable<T>) factory).withMethodLookup(lookup));
-        } else {
+        requireNonNull(lookup, "lookup is null");
+        if (!(factory instanceof InternalFactoryExecutable)) {
             throw new UnsupportedOperationException("This method is only supported by factories that was created using a Constructor or Method");
         }
+
+        return new Factory<>(((InternalFactoryExecutable<T>) factory).withMethodLookup(lookup));
+    }
+
+    public final Factory<T> withKey(Key<? super T> key) {
+        throw new UnsupportedOperationException();
     }
 
     public Factory<T> withType(Class<? extends T> type) {
@@ -214,11 +220,12 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(Class<T> implementation) {
-        return (Factory<T>) FIND_INJECTABLE_CACHE.get(requireNonNull(implementation, "implementation is null"));
+        requireNonNull(implementation, "implementation is null");
+        return (Factory<T>) FIND_INJECTABLE_FROM_CLASS_CACHE.get(implementation);
     }
 
     /**
-     * This method is equivalent to {@link #findInjectable(Class)} except that it takes a type literal or key.
+     * This method is equivalent to {@link #findInjectable(Class)} except that it takes a type literal.
      *
      * @param <T>
      *            the implementation type
@@ -226,8 +233,14 @@ public class Factory<T> {
      *            the implementation type
      * @return a factory for the specified implementation type
      */
+    @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
-        return new Factory<>(FindInjectable.find(implementation));
+        requireNonNull(implementation, "implementation is null");
+        if (implementation.getClass() != TypeLiteral.class) {
+            return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
+        } else {
+            return new Factory<>(FindInjectable.find(implementation));
+        }
     }
 
     /**
@@ -243,6 +256,16 @@ public class Factory<T> {
         return new Factory<>(InternalFactoryInstance.of(instance));
     }
 }
+//
+// /**
+// * Returns a new bindable factory.
+// *
+// * @return a new bindable factory
+// */
+// public BindableFactory<T> bindable() {
+// // bindable, newBindable, toBindable()
+// return new BindableFactory<>(factory);
+// }
 
 // Finde metoder paa statisk vs instance....
 // Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..

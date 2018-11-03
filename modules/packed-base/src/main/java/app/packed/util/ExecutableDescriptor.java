@@ -15,6 +15,9 @@
  */
 package app.packed.util;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -30,6 +33,13 @@ import app.packed.inject.Dependency;
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
 public interface ExecutableDescriptor extends Member, AnnotatedElement {
+
+    /**
+     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
+     *
+     * @return the descriptor type
+     */
+    String descriptorTypeName();
 
     /**
      * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
@@ -61,4 +71,17 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      *             if a dependency list could not be created. For example, if there are two qualifiers on a parameter.
      */
     List<Dependency> toDependencyList();
+
+    /**
+     * Unreflects this executable.
+     * 
+     * @param lookup
+     *            the lookup object to use for unreflecting this executable
+     * @return a MethodHandle corresponding to this executable
+     * @throws IllegalAccessException
+     *             if the lookup object does not have access to the executable
+     * @see Lookup#unreflect(Method)
+     * @see Lookup#unreflectConstructor(Constructor)
+     */
+    abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 }

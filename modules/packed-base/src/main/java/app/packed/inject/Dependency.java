@@ -38,11 +38,11 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.inject.JavaXInjectSupport;
-import packed.util.TypeVariableExtractorUtil;
-import packed.util.descriptor.AbstractVariableDescriptor;
-import packed.util.descriptor.InternalFieldDescriptor;
-import packed.util.descriptor.InternalParameterDescriptor;
+import pckd.internals.inject.JavaXInjectSupport;
+import pckd.internals.util.TypeVariableExtractorUtil;
+import pckd.internals.util.descriptor.AbstractVariableDescriptor;
+import pckd.internals.util.descriptor.InternalFieldDescriptor;
+import pckd.internals.util.descriptor.InternalParameterDescriptor;
 
 /**
  * A dependency Annotations are take from the field or parameter
@@ -267,7 +267,7 @@ public final class Dependency {
     }
 
     public static <T> Dependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
-        Type type = TypeVariableExtractorUtil.extractTypeVariableFrom(baseClass, baseClassTypeVariableIndex, actualClass);
+        Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(actualClass, baseClass, baseClassTypeVariableIndex);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();

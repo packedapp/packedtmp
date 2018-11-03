@@ -17,7 +17,7 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
-import static packed.util.Formatter.format;
+import static pckd.internals.util.Formatter.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -30,10 +30,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.util.Nullable;
-import packed.inject.JavaXInjectSupport;
-import packed.util.AnnotationUtil;
-import packed.util.TypeUtil;
-import packed.util.TypeVariableExtractorUtil;
+import pckd.internals.inject.JavaXInjectSupport;
+import pckd.internals.util.AnnotationUtil;
+import pckd.internals.util.TypeUtil;
+import pckd.internals.util.TypeVariableExtractorUtil;
 
 /**
  * A key is unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal and an
@@ -85,7 +85,7 @@ public abstract class Key<T> {
      */
     @SuppressWarnings("unchecked")
     protected Key() {
-        Type tt = TypeVariableExtractorUtil.findTypeArgument(Key.class, 0, getClass());
+        Type tt = TypeVariableExtractorUtil.findTypeParameterFromSuperClass(getClass(), Key.class, 0);
         typeLiteral = (TypeLiteral<T>) TypeLiteral.fromJavaImplementationType(tt);
         if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
             // cannot be parameterized with Optional

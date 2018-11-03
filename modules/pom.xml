@@ -82,7 +82,7 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.0.1</version>
         <configuration>
-          <excludePackageNames>packed.*:*.internal.*:*.test.*:*.examples.*:</excludePackageNames>
+          <excludePackageNames>packed.*:*.internals.*:*.test.*:*.examples.*:</excludePackageNames>
           <additionalOptions>--frames</additionalOptions>
         </configuration>
       </plugin>

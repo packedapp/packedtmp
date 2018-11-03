@@ -21,14 +21,28 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.inject.Dependency;
+import app.packed.inject.Factory1;
+import app.packed.inject.Factory2;
+
 /**
- * A type is said to be nullable if it can be assigned a value or can be assigned null , which means the type has no
- * value whatsoever.
- * 
- * A general applicable annotation that indicates that type can be null...
- * 
- * Can also be used with the dependency injection framework to indicate that a Dependency is optional.
- * 
+ * This annotation indicates that the annotated element may be null under some circumstances.
+ * <p>
+ * Packed uses this annotation on every method in this framework that potentially returns {@code null}. It also uses
+ * this annotation on every parameter where {@code null} is a valid argument.
+ * <p>
+ * This annotation is also frequently used in regards to dependency injection.
+ * <ul>
+ * <li><b>On a parameter,</b> to indicate that injection of the parameter is optional, and {@code null} should be
+ * injected in case the dependency can not be resolved.</li>
+ * <li><b>On a field,</b> to indicate that field should not be injected if the dependency could not be
+ * resolved.<b>NOTE:</b>If the injection of a field is optional and the dependency could not be resolved. The initial
+ * value of the field is never changed. This is useful, for example, to declare a default value in case the dependency
+ * is missing.</li>
+ * <li><b>On a type parameter,</b> {@link Dependency#fromTypeVariable(Class, Class, int)} and
+ * {@link Dependency#fromTypeVariables(Class, Class, int...)} will acknowledges the annotation and mark the dependency
+ * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
+ * </ul>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })

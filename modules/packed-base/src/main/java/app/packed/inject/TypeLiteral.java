@@ -25,12 +25,12 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import packed.inject.InjectSupport;
-import packed.inject.JavaXInjectSupport;
-import packed.inject.factory.InternalFactory;
-import packed.util.TypeUtil;
-import packed.util.TypeVariableExtractorUtil;
-import packed.util.descriptor.InternalParameterDescriptor;
+import pckd.internals.inject.InjectSupport;
+import pckd.internals.inject.JavaXInjectSupport;
+import pckd.internals.inject.factory.InternalFactory;
+import pckd.internals.util.TypeUtil;
+import pckd.internals.util.TypeVariableExtractorUtil;
+import pckd.internals.util.descriptor.InternalParameterDescriptor;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
@@ -87,7 +87,7 @@ public class TypeLiteral<T> {
      */
     @SuppressWarnings("unchecked")
     protected TypeLiteral() {
-        this.type = TypeVariableExtractorUtil.extractTypeVariableFrom(TypeLiteral.class, 0, getClass());
+        this.type = TypeVariableExtractorUtil.findTypeParameterFromSuperClass(getClass(), TypeLiteral.class, 0);
         this.rawType = (Class<? super T>) TypeUtil.findRawType(type);
     }
 
@@ -276,7 +276,7 @@ public class TypeLiteral<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> TypeLiteral<T> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        Type t = TypeVariableExtractorUtil.extractTypeVariableFrom(superClass, parameterIndex, subClass);
+        Type t = TypeVariableExtractorUtil.findTypeParameterUnsafe(subClass, superClass, parameterIndex);
         return (TypeLiteral<T>) fromJavaImplementationType(t);
     }
 
