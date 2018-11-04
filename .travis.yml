@@ -3,7 +3,7 @@ jdk:
   - openjdk11
 
 before_install: "curl --create-dirs -o target/travis/settings.xml https://gist.githubusercontent.com/kaspernielsen/aea57d79c5e59a04bd96d5ce6bed65db/raw/68eeeddee9c790fbc4ffd9c5d27ddea2a72e98dd/settings.xml"
-script: "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
+script: "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && mvn clean javadoc:jar source:jar deploy --settings target/travis/settings.xml || mvn clean verify --settings target/travis/settings.xml"
 
 # whitelist
 branches:
