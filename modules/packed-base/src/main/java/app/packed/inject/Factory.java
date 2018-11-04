@@ -27,14 +27,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.util.ConstructorDescriptor;
-import pckd.internals.inject.factory.FindInjectable;
-import pckd.internals.inject.factory.InternalFactory;
-import pckd.internals.inject.factory.InternalFactory0;
-import pckd.internals.inject.factory.InternalFactory1;
-import pckd.internals.inject.factory.InternalFactory2;
-import pckd.internals.inject.factory.InternalFactoryExecutable;
-import pckd.internals.inject.factory.InternalFactoryInstance;
-import pckd.internals.util.TypeVariableExtractorUtil;
+import pckd.internal.inject.factory.FindInjectable;
+import pckd.internal.inject.factory.InternalFactory;
+import pckd.internal.inject.factory.InternalFactory0;
+import pckd.internal.inject.factory.InternalFactory1;
+import pckd.internal.inject.factory.InternalFactory2;
+import pckd.internal.inject.factory.InternalFactoryExecutable;
+import pckd.internal.inject.factory.InternalFactoryInstance;
+import pckd.internal.util.TypeVariableExtractorUtil;
 
 /**
  * Factories are used for creating new instances of a particular type.

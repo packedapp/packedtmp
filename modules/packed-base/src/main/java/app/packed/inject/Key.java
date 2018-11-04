@@ -17,7 +17,7 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
-import static pckd.internals.util.Formatter.format;
+import static pckd.internal.util.Formatter.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
@@ -30,10 +30,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.util.Nullable;
-import pckd.internals.inject.JavaXInjectSupport;
-import pckd.internals.util.AnnotationUtil;
-import pckd.internals.util.TypeUtil;
-import pckd.internals.util.TypeVariableExtractorUtil;
+import pckd.internal.inject.JavaXInjectSupport;
+import pckd.internal.util.AnnotationUtil;
+import pckd.internal.util.TypeUtil;
+import pckd.internal.util.TypeVariableExtractorUtil;
 
 /**
  * A key is unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal and an

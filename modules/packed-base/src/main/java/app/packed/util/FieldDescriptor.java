@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
-import pckd.internals.util.descriptor.InternalFieldDescriptor;
+import pckd.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
  * A field descriptor.

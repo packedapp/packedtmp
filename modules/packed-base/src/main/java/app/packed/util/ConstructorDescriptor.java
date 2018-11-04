@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 
 import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
-import pckd.internals.util.descriptor.InternalConstructorDescriptor;
+import pckd.internal.util.descriptor.InternalConstructorDescriptor;
 
 /**
  * A constructor descriptor.

@@ -38,11 +38,11 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import pckd.internals.inject.JavaXInjectSupport;
-import pckd.internals.util.TypeVariableExtractorUtil;
-import pckd.internals.util.descriptor.AbstractVariableDescriptor;
-import pckd.internals.util.descriptor.InternalFieldDescriptor;
-import pckd.internals.util.descriptor.InternalParameterDescriptor;
+import pckd.internal.inject.JavaXInjectSupport;
+import pckd.internal.util.TypeVariableExtractorUtil;
+import pckd.internal.util.descriptor.AbstractVariableDescriptor;
+import pckd.internal.util.descriptor.InternalFieldDescriptor;
+import pckd.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
  * A dependency Annotations are take from the field or parameter
