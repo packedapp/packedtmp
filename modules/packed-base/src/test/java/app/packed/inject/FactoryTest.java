@@ -26,6 +26,11 @@ import org.junit.jupiter.api.Test;
 /** Test of {@link Factory}. */
 public class FactoryTest {
 
+    @Test
+    public void rre() {
+
+    }
+
     public static class ForInstance {
 
         @Test

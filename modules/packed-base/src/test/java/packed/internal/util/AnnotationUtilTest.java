@@ -22,42 +22,37 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.util.AnnotationUtil;
-
 /** Tests {@link AnnotationUtil}. */
 public class AnnotationUtilTest {
 
     /** Tests {@link AnnotationUtil#validateRuntimeRetentionPolicy(Class)}. */
-    public static class ValidateRuntimeRetentionPolicyTest {
+    @Test
+    public void validateRuntimeRetentionPolicy() {
+        AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicyRuntime.class);
 
-        /** Tests {@link AnnotationUtil#validateRuntimeRetentionPolicy(Class)}. */
-        @Test
-        public void validateRuntimeRetentionPolicy() {
-            AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicyRuntime.class);
+        assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(NoRetentionPolicy.class)).hasMessage(
+                "The annotation type @NoRetentionPolicy must have a runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but did not have any retention policy")
+                .hasNoCause().isInstanceOf(IllegalArgumentException.class);
 
-            assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(NoRetentionPolicy.class)).hasMessage(
-                    "The annotation type @NoRetentionPolicy must have a runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but did not have any retention policy")
-                    .hasNoCause().isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicySource.class))
+                .hasMessage(
+                        "The annotation type @RetentionPolicySource must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was SOURCE")
+                .hasNoCause().isInstanceOf(IllegalArgumentException.class);
 
-            assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicySource.class)).hasMessage(
-                    "The annotation type @RetentionPolicySource must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was SOURCE")
-                    .hasNoCause().isInstanceOf(IllegalArgumentException.class);
-
-            assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicyClass.class))
-                    .hasMessage(
-                            "The annotation type @RetentionPolicyClass must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was CLASS")
-                    .hasNoCause().isInstanceOf(IllegalArgumentException.class);
-        }
-
-        static @interface NoRetentionPolicy {}
-
-        @Retention(RetentionPolicy.SOURCE)
-        static @interface RetentionPolicySource {}
-
-        @Retention(RetentionPolicy.CLASS)
-        static @interface RetentionPolicyClass {}
-
-        @Retention(RetentionPolicy.RUNTIME)
-        static @interface RetentionPolicyRuntime {}
+        assertThatThrownBy(() -> AnnotationUtil.validateRuntimeRetentionPolicy(RetentionPolicyClass.class))
+                .hasMessage("The annotation type @RetentionPolicyClass must have runtime retention policy (@Retention(RetentionPolicy.RUNTIME), but was CLASS")
+                .hasNoCause().isInstanceOf(IllegalArgumentException.class);
     }
+
+    static @interface NoRetentionPolicy {}
+
+    @Retention(RetentionPolicy.SOURCE)
+    static @interface RetentionPolicySource {}
+
+    @Retention(RetentionPolicy.CLASS)
+    static @interface RetentionPolicyClass {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    static @interface RetentionPolicyRuntime {}
+
 }

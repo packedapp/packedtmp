@@ -366,7 +366,7 @@ public abstract class Key<T> {
      * @return the new key
      */
     // Nullable qualifier???
-    public Key<T> withAnnotation(Annotation qualifier) {
+    public final Key<T> withAnnotation(Annotation qualifier) {
         return null;
     }
 }

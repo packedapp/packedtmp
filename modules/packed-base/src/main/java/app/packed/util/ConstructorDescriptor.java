@@ -16,6 +16,7 @@
 package app.packed.util;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.reflect.Constructor;
 
@@ -35,7 +36,7 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
      *
      * @return a new constructor
      */
-    Constructor<?> newConstructor();
+    Constructor<T> newConstructor();
 
     /**
      * Returns a new factory from this constructor. Taking all of this constructor's parameters as dependencies.
@@ -70,7 +71,8 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
         try {
             constructor = declaringClass.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("A constructor with the specified parameter types does not exist", e);
+            throw new IllegalArgumentException("A constructor with the specified signature does not exist, signature: " + declaringClass.getSimpleName() + "("
+                    + formatSimple(parameterTypes) + ")");
         }
         return of(constructor);
     }

@@ -27,72 +27,45 @@ import org.junit.jupiter.api.Test;
 /** Tests {@link Factory0}. */
 public class Factory0Test {
 
-    // /** Tests the static methods. */
-    // public static class StaticMethods {
-    //
-    // /** Tests {@link Factory0#of(Supplier, Class)} */
-    // @Test
-    // public void classParameter() {
-    // assertThatFactory(of(() -> 1, Number.class)).is(Number.class);
-    // assertThatFactory(of(() -> 1, Integer.class)).is(Integer.class);
-    // }
-    //
-    // /** Tests {@link Factory0#of(Supplier, TypeLiteral)} */
-    // @Test
-    // @Disabled
-    // public void typeLiteralParameter() {
-    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
-    //
-    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Integer>>() {})).is(new Key<List<Integer>>() {});
-    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<Number>>() {})).is(new Key<List<Number>>() {});
-    // assertThatFactory(of(() -> List.of(1), new TypeLiteral<List<?>>() {})).is(new Key<List<?>>() {});
-    //
-    // }
-    // }
+    @Test
+    public void typeParameter() {
+        Factory<Integer> f = new Factory0<>(() -> 1) {};
+        assertEquals(TypeLiteral.of(Integer.class), new Factory0<>(() -> 1) {}.getTypeLiteral());
+        assertEquals(Integer.class, f.getRawType());
+        assertThat(f.getDependencies()).isEmpty();
 
-    /** Tests parsing of type parameter (<T>) info */
-    public static class TypeParameterRead {
+        assertEquals(new TypeLiteral<Integer>() {}, new X<String, Integer, Long>(() -> 123) {}.getTypeLiteral());
+    }
 
-        @Test
-        public void typeParameter() {
-            Factory<Integer> f = new Factory0<>(() -> 1) {};
-            assertEquals(TypeLiteral.of(Integer.class), new Factory0<>(() -> 1) {}.getTypeLiteral());
-            assertEquals(Integer.class, f.getRawType());
-            assertThat(f.getDependencies()).isEmpty();
+    @Test
+    public void typeParameterListInteger() {
+        Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
+        assertEquals(new TypeLiteral<List<Integer>>() {}, f.getTypeLiteral());
+        assertEquals(List.class, f.getRawType());
+        assertThat(f.getDependencies()).isEmpty();
 
-            assertEquals(new TypeLiteral<Integer>() {}, new X<String, Integer, Long>(() -> 123) {}.getTypeLiteral());
-        }
+        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.getTypeLiteral());
+    }
 
-        @Test
-        public void typeParameterListInteger() {
-            Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
-            assertEquals(new TypeLiteral<List<Integer>>() {}, f.getTypeLiteral());
-            assertEquals(List.class, f.getRawType());
-            assertThat(f.getDependencies()).isEmpty();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Test
+    public void typeParameterMissing() {
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
+                .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.");
 
-            assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.getTypeLiteral());
-        }
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new X(() -> 1) {}).withNoCause()
+                .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
+    }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Test
-        public void typeParameterMissing() {
-            assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
-                    .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.");
+    @Test
+    public void typeParameterVarious() {
+        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.getTypeLiteral());
+    }
 
-            assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new X(() -> 1) {}).withNoCause()
-                    .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
-        }
-
-        @Test
-        public void typeParameterVarious() {
-            assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.getTypeLiteral());
-        }
-
-        /** Check that we can have an intermediate abstract class. */
-        abstract class X<S, T, R> extends Factory0<T> {
-            protected X(Supplier<T> supplier) {
-                super(supplier);
-            }
+    /** Check that we can have an intermediate abstract class. */
+    static abstract class X<S, T, R> extends Factory0<T> {
+        protected X(Supplier<T> supplier) {
+            super(supplier);
         }
     }
 }

@@ -40,10 +40,6 @@ public class StringFormatterTest {
         String localClassName = LocalClass.class.getName();
         formatClass0(LocalClass.class, localClassName);
 
-        System.out.println(Integer[][].class.getSimpleName());
-        System.out.println(StaticInnerClass[][].class.getSimpleName());
-        System.out.println(LocalClass[][].class.getSimpleName());
-
         // Anonymous class
         // Class<?> anonymous = new Object() {}.getClass();
         // TODO test anonoymous

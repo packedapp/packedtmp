@@ -42,7 +42,7 @@
         <!-- Surefire does not pickup static test classes, unless we have these excludes, see https://github.com/junit-team/junit5/issues/1377 -->
         <configuration>
           <excludes>
-            <exclude />
+            <exclude/>
           </excludes>
         </configuration>
       </plugin>
