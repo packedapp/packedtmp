@@ -18,7 +18,7 @@ package app.packed.util;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 
-import pckd.internal.util.descriptor.InternalParameterDescriptor;
+import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
  * A parameter descriptor.

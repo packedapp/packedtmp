@@ -19,7 +19,7 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import pckd.internal.inject.factory.InternalFactory;
+import packed.internal.inject.factory.InternalFactory;
 
 /**
  *

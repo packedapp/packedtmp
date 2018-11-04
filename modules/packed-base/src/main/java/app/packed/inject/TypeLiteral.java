@@ -25,12 +25,12 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import pckd.internal.inject.InjectSupport;
-import pckd.internal.inject.JavaXInjectSupport;
-import pckd.internal.inject.factory.InternalFactory;
-import pckd.internal.util.TypeUtil;
-import pckd.internal.util.TypeVariableExtractorUtil;
-import pckd.internal.util.descriptor.InternalParameterDescriptor;
+import packed.internal.inject.InjectSupport;
+import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.inject.factory.InternalFactory;
+import packed.internal.util.TypeUtil;
+import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does

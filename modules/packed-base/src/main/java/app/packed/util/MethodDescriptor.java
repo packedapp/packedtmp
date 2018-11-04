@@ -18,7 +18,7 @@ package app.packed.util;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import pckd.internal.util.descriptor.InternalMethodDescriptor;
+import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * A method descriptor.

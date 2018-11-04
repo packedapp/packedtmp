@@ -34,15 +34,18 @@ import java.util.OptionalLong;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import pckd.internal.inject.JavaXInjectSupport;
-import pckd.internal.util.TypeVariableExtractorUtil;
-import pckd.internal.util.descriptor.AbstractVariableDescriptor;
-import pckd.internal.util.descriptor.InternalFieldDescriptor;
-import pckd.internal.util.descriptor.InternalParameterDescriptor;
+import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.util.ErrorMessageBuilder;
+import packed.internal.util.InternalErrorException;
+import packed.internal.util.TypeUtil;
+import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.descriptor.AbstractVariableDescriptor;
+import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
  * A dependency Annotations are take from the field or parameter
@@ -100,7 +103,7 @@ public final class Dependency {
      * <p>
      * If this dependency is not optional this method throws an {@link UnsupportedOperationException}.
      * 
-     * @return a matching optional type
+     * @return a matching optional empty type. Or null if the variable is annotated with {@link Nullable}.
      * @throws UnsupportedOperationException
      *             if this dependency is not optional
      * @see Nullable
@@ -110,7 +113,7 @@ public final class Dependency {
      * @see OptionalDouble#empty()
      */
     @Nullable
-    public Object unresolvedValue() {
+    public Object emptyValue() {
         if (optionalType == Optional.class) {
             return Optional.empty();
         } else if (optionalType == OptionalLong.class) {
@@ -122,7 +125,7 @@ public final class Dependency {
         } else if (optionalType == Nullable.class) {
             return null;
         }
-        throw new UnsupportedOperationException("Not a valid optional: " + key.getRawType());
+        throw new UnsupportedOperationException("This dependency is not optional, dependency = " + this);
     }
 
     /**
@@ -150,6 +153,7 @@ public final class Dependency {
      * 
      * @return the member that is being injected
      */
+    @Nullable
     public Member getMember() {
         if (variable instanceof FieldDescriptor) {
             return ((FieldDescriptor) variable);
@@ -166,6 +170,7 @@ public final class Dependency {
      * @see #isOptional()
      */
     @Nullable
+    // TODO do we want to keep this method???
     public Class<?> getOptionalContainerType() {
         return optionalType;
     }
@@ -208,6 +213,7 @@ public final class Dependency {
      * 
      * @return the variable that is being injected
      */
+    @Nullable
     public VariableDescriptor variable() {
         return variable;
     }
@@ -216,25 +222,27 @@ public final class Dependency {
      * TODO add nullable... Returns the specified object if not optional, or a the specified object in an optional type
      * (either {@link Optional}, {@link OptionalDouble}, {@link OptionalInt} or {@link OptionalLong}) if optional.
      *
-     * @param o
-     *            the object to potentially wrap in an optional type
-     * @return the specified object if not optional, or a the specified object in an optional type if optional.
+     * @param object
+     *            the object to potentially wrap in an optional type @return the specified object if not optional, or a the
+     *            specified object in an optional type if optional.
      * 
      * @throws ClassCastException
      *             if this dependency is an optional type and type of this dependency does not match the specified object.
      */
-    @Nullable
-    public Object wrapIfOptional(Object o) {
-        if (optionalType == Optional.class) {
-            return Optional.of(o);
+    public Object wrapIfOptional(Object object) {
+        requireNonNull(object, "object is null");
+        if (optionalType == null || optionalType == Nullable.class) {
+            return object;
+        } else if (optionalType == Optional.class) {
+            return Optional.of(object);
         } else if (optionalType == OptionalLong.class) {
-            return OptionalLong.of((Long) o);
+            return OptionalLong.of((Long) object);
         } else if (optionalType == OptionalInt.class) {
-            return OptionalInt.of((Integer) o);
+            return OptionalInt.of((Integer) object);
         } else if (optionalType == OptionalDouble.class) {
-            return OptionalDouble.of((Double) o);
+            return OptionalDouble.of((Double) object);
         }
-        return o;
+        throw new InternalErrorException("object", object);
     }
 
     /**
@@ -333,32 +341,33 @@ public final class Dependency {
         return of(Key.of(type));
     }
 
-    public static <T> Dependency of(FieldDescriptor field) {
-        return ofVariable(InternalFieldDescriptor.of(field));
-    }
-
     public static <T> Dependency of(Key<?> key) {
         return new Dependency(key, null);
     }
 
-    public static <T> Dependency of(ParameterDescriptor parameter) {
-        return ofVariable(InternalParameterDescriptor.of(parameter));
+    public static <T> Dependency of(VariableDescriptor variable) {
+        requireNonNull(variable, "variable is null");
+        return ofVariable(AbstractVariableDescriptor.unwrap(variable));
     }
 
     private static Dependency ofVariable(AbstractVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
-
         Optional<Annotation> q = variable.findQualifiedAnnotation();
 
+        // Illegal
+        // Optional<Optional*>
         Class<?> optionalType = null;
         Class<?> rawType = tl.getRawType();
+
         if (rawType.isPrimitive()) {
             tl = tl.box();
         } else if (rawType == Optional.class) {
             optionalType = Optional.class;
-            // TODO proper error msg
             Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
             tl = TypeLiteral.fromJavaImplementationType(cl);
+            if (TypeUtil.isOptionalType(tl.getRawType())) {
+                throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
+            }
         } else if (rawType == OptionalLong.class) {
             optionalType = OptionalLong.class;
             tl = TypeLiteral.of(Long.class);
@@ -369,14 +378,17 @@ public final class Dependency {
             optionalType = OptionalDouble.class;
             tl = TypeLiteral.of(Double.class);
         }
-        if (variable.isAnnotationPresent(Nullable.class)) {
 
+        if (variable.isAnnotationPresent(Nullable.class)) {
             if (optionalType != null) {
-                // Cannot use both nullable and optional
+                throw new InvalidDeclarationException(
+                        ErrorMessageBuilder.of(variable).cannot("both be of type " + optionalType.getSimpleName() + " and annotated with @Nullable")
+                                .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
             }
             optionalType = Nullable.class;
         }
 
+        // TL is free from Optional
         Key<?> key;
         if (q.isPresent()) {
             key = tl.toKey(q.get());
@@ -385,16 +397,16 @@ public final class Dependency {
         }
         return new Dependency(key, variable, optionalType);
     }
-
-    // ofOptional istedet for tror jeg
-    public static <T> Dependency optionalOf(Key<T> key, T defaultValue) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Dependency optionalOfInt(int defaultValue) {
-        throw new UnsupportedOperationException();
-    }
 }
+
+//// ofOptional istedet for tror jeg
+// public static <T> Dependency optionalOf(Key<T> key, T defaultValue) {
+// throw new UnsupportedOperationException();
+// }
+//
+// public static Dependency optionalOfInt(int defaultValue) {
+// throw new UnsupportedOperationException();
+// }
 //
 // /**
 // * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the

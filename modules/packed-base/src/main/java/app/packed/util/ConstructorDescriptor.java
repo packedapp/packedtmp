@@ -15,11 +15,13 @@
  */
 package app.packed.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.reflect.Constructor;
 
 import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
-import pckd.internal.util.descriptor.InternalConstructorDescriptor;
+import packed.internal.util.descriptor.InternalConstructorDescriptor;
 
 /**
  * A constructor descriptor.
@@ -48,6 +50,32 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
     }
 
     /**
+     * Creates a new descriptor by finding a constructor on the specified declaring class with the specified parameter
+     * types.
+     * 
+     * @param <T>
+     *            the class in which the constructor is declared
+     * @param declaringClass
+     *            the class that declares the constructor
+     * @param parameterTypes
+     *            the parameter types of the constructor
+     * @return a new constructor descriptor
+     * @throws IllegalArgumentException
+     *             if a constructor with the specified parameter types does not exist on the specified type
+     * @see Class#getDeclaredConstructor(Class...)
+     */
+    static <T> ConstructorDescriptor<T> of(Class<T> declaringClass, Class<?>... parameterTypes) {
+        requireNonNull(declaringClass, "declaringClass is null");
+        Constructor<T> constructor;
+        try {
+            constructor = declaringClass.getDeclaredConstructor(parameterTypes);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("A constructor with the specified parameter types does not exist", e);
+        }
+        return of(constructor);
+    }
+
+    /**
      * Returns a descriptor from the specified constructor.
      *
      * @param <T>
@@ -60,27 +88,9 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
         return InternalConstructorDescriptor.of(constructor);
     }
 
-    /**
-     * Creates a new descriptor by finding a constructor on the specified declaring class with the specified parameter
-     * types.
-     * 
-     * @param <T>
-     *            the class in which the constructor is declared
-     * @param declaringClass
-     *            the class that declares the constructor
-     * @param parameterTypes
-     *            the parameter types of the constructor
-     * @return a new constructor descriptor
-     * @throws IllegalArgumentException
-     *             if a constructor with the specified parameter type does not exist on the specified declaring class
-     * @see Class#getConstructor(Class...)
-     */
-    static <T> ConstructorDescriptor<T> of(Class<T> declaringClass, Class<?>... parameterTypes) {
-        throw new UnsupportedOperationException();
-    }
-
+    @SuppressWarnings("unchecked")
     static <T> ConstructorDescriptor<T> of(TypeLiteral<T> declaringClass, Class<?>... parameterTypes) {
-        // HMM supportere vi overhoved constructors via type literals
-        throw new UnsupportedOperationException();
+        requireNonNull(declaringClass, "declaringClass is null");
+        return (ConstructorDescriptor<T>) of(declaringClass.getRawType(), parameterTypes);
     }
 }

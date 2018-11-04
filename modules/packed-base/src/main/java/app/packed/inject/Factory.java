@@ -27,14 +27,14 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.util.ConstructorDescriptor;
-import pckd.internal.inject.factory.FindInjectable;
-import pckd.internal.inject.factory.InternalFactory;
-import pckd.internal.inject.factory.InternalFactory0;
-import pckd.internal.inject.factory.InternalFactory1;
-import pckd.internal.inject.factory.InternalFactory2;
-import pckd.internal.inject.factory.InternalFactoryExecutable;
-import pckd.internal.inject.factory.InternalFactoryInstance;
-import pckd.internal.util.TypeVariableExtractorUtil;
+import packed.internal.inject.factory.FindInjectable;
+import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.factory.InternalFactory0;
+import packed.internal.inject.factory.InternalFactory1;
+import packed.internal.inject.factory.InternalFactory2;
+import packed.internal.inject.factory.InternalFactoryExecutable;
+import packed.internal.inject.factory.InternalFactoryInstance;
+import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
  * Factories are used for creating new instances of a particular type.
@@ -172,7 +172,7 @@ public class Factory<T> {
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when invoke the underlying method or constructor
-     * @throws NotAccessibleException
+     * @throws IllegalAccessRuntimeException
      *             if the specified lookup object does not give access to the underlying constructor or method
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a constructor or method.
@@ -180,9 +180,8 @@ public class Factory<T> {
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (!(factory instanceof InternalFactoryExecutable)) {
-            throw new UnsupportedOperationException("This method is only supported by factories that was created using a Constructor or Method");
+            throw new UnsupportedOperationException("This method is only supported by factories that was created from a constructor or a method");
         }
-
         return new Factory<>(((InternalFactoryExecutable<T>) factory).withMethodLookup(lookup));
     }
 
@@ -411,77 +410,3 @@ class XFac2 {
         throw new UnsupportedOperationException();
     }
 }
-
-// If we add withDependency, which I think we should. It should be reflected in the available keys
-// Dependencies added here are only for construction. Not for injecting
-// withSuppliedDependency(K key, Supplier<K> dependencySupplier)
-// If the class is instantiated multiple times. the specified supplier will be called each time.
-// withIndexedDependency()
-
-// public int[] getMissingIndexes() {
-// // returns the missing indexes
-// throw new UnsupportedOperationException();
-// }
-//
-// /**
-// * Returns the number of unresolved dependencies this factory have.
-// * <p>
-// * Dependencies that have been added via {@link #withBinding(int, Object)} are not counted as a missing dependency.
-// For
-// * example:
-// *
-// * <pre>
-// * Factory<String> f = fromConstructor(String.class, StringBuffer.class);
-// * f.getNumberOfUnresolvedDependencies(); // Will return 1
-// * f.withDependency(0, new StringBuffer()).getNumberOfUnresolvedDependencies(); // Will return 0
-// * </pre>
-// *
-// * @return the number of unresolved dependencies this factory have.
-// */
-// public int getNumberOfUnresolvedDependencies() {
-// return factory.getNumberOfUnresolvedDependencies();
-// }
-//
-// /**
-// * If there are no unresolved indexes. This method returns an empty array.
-// *
-// * @return
-// */
-// // Why would anyone want this???. Would be nice if we could have a Listener that could add a dependency to a factory
-// // Hmm, I don't know if that would be a good idea.
-// // void resolveMissingDependencies(Function<Factory<?>, Factory<?>);, hmmm cannot come up with any usecases.
-// // Other than we can add dependencies at runtime!!! But only instantiation
-//
-// // Instantiate, Component not exposed as Service, Component Exposed as Service, Service no Component, None of the
-// above
-// // (newInstance()). I think take both as a
-// // parameter then
-// public int[] getUnresolvedIndexes() {
-// throw new UnsupportedOperationException();
-// }
-
-// /**
-// * @param instance
-// * sd
-// * @return a new factory
-// * @throws IllegalArgumentException
-// * if no parameters or more than 1 parameter found which fit the index
-// */
-// public Factory<T> withBinding(Object instance) {
-// // Problem if it is named identical. But function in a differen way than component.addDependency
-// // Here I'm thinking about the retainment
-//
-// // Add some variations <T> addDependency(Class<T> key, T instance)
-// // someMethod(Number i, Object value)
-// // addDependency(1) will fail because 1 match both parameters
-// // addDependency(Number.class, 1) <- will success because it only matches Number
-//
-// // someMethod(List<String> l1, List<Number> numbers);
-// // addDependency(List.class, someList) <- will fail because it matches both parameters
-// // addDependency(new TypeLiteral<List<String>>, someList) <- will success because it only matches one parameter.
-//
-// // Finally
-// // someMethod(@Name("x") String s1, @Name("y") String s2)
-// // addDependency(Key.of(String.class, Name("x")) will success
-// // Idk if the two last are needed, when we can specify an index?
-// throw new UnsupportedOperationException();

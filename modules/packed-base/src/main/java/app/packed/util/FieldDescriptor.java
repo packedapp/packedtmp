@@ -15,11 +15,13 @@
  */
 package app.packed.util;
 
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
-import pckd.internal.util.descriptor.InternalFieldDescriptor;
+import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
  * A field descriptor.
@@ -44,6 +46,7 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
      * @return a new field
      */
     Field newField();
+
     /**
      * Creates a new descriptor by finding a field with the specified declaring class and name.
      *
@@ -70,4 +73,17 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
     static FieldDescriptor of(Field field) {
         return of(field.getDeclaringClass(), field.getName());
     }
+
+    /**
+     * Unreflects this field.
+     * 
+     * @param lookup
+     *            the lookup object to use for unreflecting this field
+     * @return a VarHandle corresponding to this field
+     * @throws IllegalAccessException
+     *             if the lookup object does not have access to the field
+     * @see Lookup#unreflectVarHandle(Field)
+     */
+    // TODO not sure I want this on an interface?????? Maybe put back on internal class again...
+    VarHandle unreflect(Lookup lookup) throws IllegalAccessException;
 }

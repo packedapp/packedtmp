@@ -18,7 +18,7 @@ package app.packed.inject;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import pckd.internal.inject.factory.InternalFactory0;
+import packed.internal.inject.factory.InternalFactory0;
 
 /**
  * A {@link Factory} type that uses a {@link Supplier} to create new instances.

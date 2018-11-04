@@ -17,11 +17,12 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
-import static pckd.internal.util.Formatter.format;
+import static packed.internal.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
@@ -30,10 +31,10 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.util.Nullable;
-import pckd.internal.inject.JavaXInjectSupport;
-import pckd.internal.util.AnnotationUtil;
-import pckd.internal.util.TypeUtil;
-import pckd.internal.util.TypeVariableExtractorUtil;
+import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.util.AnnotationUtil;
+import packed.internal.util.TypeUtil;
+import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
  * A key is unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal and an
@@ -347,6 +348,16 @@ public abstract class Key<T> {
         throw new UnsupportedOperationException();// Removes optional
     }
 
+    public static Key<?> fromMethodReturnType(Method method) {
+        requireNonNull(method, "method is null");
+        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method);
+
+        if (method.getReturnType() == void.class || method.getReturnType() == Void.class) {
+            throw new IllegalArgumentException("@Provides method " + method + " cannot have void return type");
+        }
+        return tl.toKey();
+    }
+
     /**
      * Returns a new key that maintains its type but with {@link #getQualifier()} returning the specified qualifier
      * 
@@ -359,3 +370,69 @@ public abstract class Key<T> {
         return null;
     }
 }
+
+// private Class<?> getReturnTypeIgnoringOptionalBoxed() {
+// InternalMethodDescriptor method = this.descriptor();
+// Class<?> type = method.getReturnType();
+// if (type == Optional.class) {
+// return (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
+// } else if (type == OptionalLong.class) {
+// return Long.class;
+// } else if (type == OptionalInt.class) {
+// return Integer.class;
+// } else if (type == OptionalDouble.class) {
+// return Double.class;
+// } else {
+// return TypeUtil.boxClass(type);
+// }
+// }
+
+//// @Provides method cannot have void return type.
+// if (descriptor().getReturnType() == void.class) {
+// throw new IllegalArgumentException("@Provides method " + description + " cannot have void return type");
+// }
+//
+//// TODO check not reserved return types
+//
+//// TODO check return type is not optional
+//// Or maybe they can.
+//// If a Provides wants to provide null to someone the return type of the method should be Optional<XXXXX>
+//// Null indicates look in next injector...
+//
+/// ****************** SERVICEKEY ******************/
+//
+//// Optional<Annotation> qualifier = method.findQualifiedAnnotation();
+////
+//// Class<? extends Annotation> qualifierAttribute = p.wildcardQualifier() == Qualifier.class ? null :
+//// p.wildcardQualifier();
+//// // Make we do not both have a qualifying annotation and qualifying attribute
+//// if (qualifier.isPresent() && qualifierAttribute != null) {
+//// throw new InjectionException(provideHasBothQualifierAnnotationAndQualifierAttribute(this, qualifier.get(),
+//// qualifierAttribute));
+//// }
+// if (qualifierAttribute != null) {
+// AnnotationUtil.validateRuntimeRetentionPolicy(qualifierAttribute);
+// JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierAttribute);
+// // ????? Here we previously used a type
+// // TODO fik support for wildcards...
+// // key = Key.ofWildcardAnnotation(qualifierAttribute);
+// throw new UnsupportedOperationException("Wilcard annotation not currently supported");
+// // key = Key.of(method.getReturnTypeIgnoringOptionalBoxed(), qualifier.getAnnotation());
+// } else if (qualifier.isPresent()) {
+// key = Key.of(getReturnTypeIgnoringOptionalBoxed(), qualifier.get());
+// } else {
+// key = Key.of(getReturnTypeIgnoringOptionalBoxed());
+// }
+//
+//// After we have specific bindings it should not be a problem
+//// if (qualifier == null && getReturnTypeIgnoringOptionalBoxed() == Object.class) {
+//// throw new IllegalArgumentException("The return type of " + this + " cannot be Object, unless a qualifying
+//// annotation
+//// is specified");
+//// }
+////
+//// Well if we support chaining it could
+//// if (qualifier == Name.class) {
+//// throw new IllegalArgumentException("The annotation type cannot be @" + Name.class.getSimpleName() + ", as it is
+//// reserved for other use");
+//// }
