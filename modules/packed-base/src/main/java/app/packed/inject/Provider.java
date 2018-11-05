@@ -15,11 +15,6 @@
  */
 package app.packed.inject;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.IntSupplier;
-import java.util.stream.Stream;
-
 /**
  *
  */
@@ -35,30 +30,30 @@ public interface Provider<T> {
      */
     T get();
 
-    default Stream<T> toStream() {
-        // getProvide(UUID.class).limit(50).collect(Collectors.toList());
-        return Stream.generate(() -> get());
-    }
-
-    // Super advanced
-    static Provider<Integer> of(IntSupplier i) {
-        return new ProviderToIntWrapper(i);
-    }
+    // default Stream<T> toStream() {
+    // // getProvide(UUID.class).limit(50).collect(Collectors.toList());
+    // return Stream.generate(() -> get());
+    // }
+    //
+    // // Super advanced
+    // static Provider<Integer> of(IntSupplier i) {
+    // return new ProviderToIntWrapper(i);
+    // }
 }
 
-class ProviderToIntWrapper implements Provider<Integer> {
-    final IntSupplier s;
-
-    ProviderToIntWrapper(IntSupplier s) {
-        this.s = requireNonNull(s);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Integer get() {
-        return s.getAsInt();
-    }
-}
+// class ProviderToIntWrapper implements Provider<Integer> {
+// final IntSupplier s;
+//
+// ProviderToIntWrapper(IntSupplier s) {
+// this.s = requireNonNull(s);
+// }
+//
+// /** {@inheritDoc} */
+// @Override
+// public Integer get() {
+// return s.getAsInt();
+// }
+// }
 
 // Ideen er at vi kan returnere en special provider type som frameworket kender.
 // Og som vi kan unwrappe supplieren i, og undgaa boxing. Se f.eks.
