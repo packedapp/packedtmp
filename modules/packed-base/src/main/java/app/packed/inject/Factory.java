@@ -55,6 +55,7 @@ public class Factory<T> {
             return new Factory(FindInjectable.find(implementation));
         }
     };
+
     /**
      * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only by subclasses of TypeLiteral,
      * never literals that are manually constructed.

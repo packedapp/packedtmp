@@ -64,6 +64,7 @@ public class TypeVariableExtractorUtil {
     public static <T> Type findTypeParameterFromSuperClass(Class<? extends T> childClass, Class<T> baseClass, int typeVariableIndexOnBaseClass) {
         // This method works by first recursively calling all the way down to the first class that extends baseClass.
         // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
+
         if (baseClass == childClass.getSuperclass()) {
             return findTypeParameterFromSuperClass0(baseClass, childClass, typeVariableIndexOnBaseClass);
         }
@@ -97,7 +98,7 @@ public class TypeVariableExtractorUtil {
             String name = superClass.getSuperclass().getTypeParameters()[index].getName();
             StringJoiner sj = new StringJoiner(", ", baseClass.getSimpleName() + "<", ">");
             for (Type ty : baseClass.getTypeParameters()) {
-                sj.add(TypeUtil.toShortString(ty));
+                sj.add(TypeUtil.toSimpleString(ty));
             }
             throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
         }

@@ -17,20 +17,91 @@ package app.packed.inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 import static support.assertj.Assertions.npe;
 import static support.stubs.TypeStubs.LIST_STRING;
 import static support.stubs.TypeStubs.LIST_WILDCARD;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.util.InvalidDeclarationException;
+import support.stubs.annotation.AnnotationInstances;
+
 /** Tests {@link TypeLiteral}. */
 public class TypeLiteralTest {
+
+    @Test
+    public <S> void toKey() {
+        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
+        TypeLiteral<Integer> tl2 = new TypeLiteral<Integer>() {};
+
+        Key<Integer> k1 = tl1.toKey();
+        Key<Integer> k2 = tl2.toKey();
+
+        assertThat(k1.getTypeLiteral()).isSameAs(tl1);
+        assertThat(k2.getTypeLiteral()).isEqualTo(tl2);
+        assertThat(k2.getTypeLiteral()).isNotSameAs(tl2);
+
+        assertThat(k1.hasQualifier()).isFalse();
+        assertThat(k2.hasQualifier()).isFalse();
+
+        // Optional
+        assertThatThrownBy(() -> new TypeLiteral<Optional<Integer>>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> new TypeLiteral<OptionalInt>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> new TypeLiteral<OptionalLong>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> new TypeLiteral<OptionalDouble>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
+
+        // We need to use this old fashion way because of
+        try {
+            new TypeLiteral<List<S>>() {}.toKey();
+            fail("should have failed");
+        } catch (InvalidDeclarationException e) {
+            assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
+        }
+    }
+
+    @Test
+    public <S> void toKeyAnnotation() {
+        TypeLiteral<Integer> tl = new TypeLiteral<Integer>() {};
+        npe(() -> tl.toKey(null), "qualifier");
+
+        Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
+                .getAnnotations()[0];
+        assertThatThrownBy(() -> tl.toKey(nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
+
+        Key<Integer> key = tl.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
+        assertThat(key.getTypeLiteral()).isEqualTo(tl);
+        assertThat(key.getQualifier()).isSameAs(AnnotationInstances.NO_VALUE_QUALIFIER);
+    }
+
+    @Test
+    public void canonicalize() {
+        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
+        TypeLiteral<Integer> tl2 = new TypeLiteral<Integer>() {};
+
+        assertThat(tl1).isEqualTo(tl2);
+
+        assertThat(tl1).isSameAs(tl1.canonicalize());
+        assertThat(tl2).isNotSameAs(tl2.canonicalize());
+    }
 
     /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
     @Test
@@ -51,13 +122,15 @@ public class TypeLiteralTest {
         assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer.class).hashCode());
 
         assertThat(integerNew).isEqualTo(TypeLiteral.of(Integer.class));
+        assertThat(integerNew).isEqualTo(integerNew.canonicalize());
+        assertThat(integerNew).isNotSameAs(integerNew.canonicalize());
         assertThat(integerNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer.class));
 
         assertThat(integerNew).isNotEqualTo(Integer.class);
         assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long.class));
 
         assertThat(integerNew).hasToString("java.lang.Integer");
-        assertThat(integerNew.toShortString()).isEqualTo("Integer");
+        assertThat(integerNew.toSimpleString()).isEqualTo("Integer");
     }
 
     /** Tests an primitive int type literal. */
@@ -74,12 +147,13 @@ public class TypeLiteralTest {
         assertThat(intOf).hasSameHashCodeAs(TypeLiteral.of(int.class).hashCode());
 
         assertThat(intOf).isEqualTo(TypeLiteral.of(int.class));
+        assertThat(intOf).isEqualTo(intOf.canonicalize());
 
         assertThat(intOf).isNotEqualTo(int.class);
         assertThat(intOf).isNotEqualTo(TypeLiteral.of(long.class));
 
         assertThat(intOf).hasToString("int");
-        assertThat(intOf.toShortString()).isEqualTo("int");
+        assertThat(intOf.toSimpleString()).isEqualTo("int");
     }
 
     /** Tests {@code int[]} as a type literal. */
@@ -96,12 +170,13 @@ public class TypeLiteralTest {
         assertThat(intArrayOf).hasSameHashCodeAs(TypeLiteral.of(int[].class).hashCode());
 
         assertThat(intArrayOf).isEqualTo(TypeLiteral.of(int[].class));
+        assertThat(intArrayOf).isEqualTo(intArrayOf.canonicalize());
 
         assertThat(intArrayOf).isNotEqualTo(int[].class);
         assertThat(intArrayOf).isNotEqualTo(TypeLiteral.of(long[].class));
 
         assertThat(intArrayOf).hasToString("int[]");
-        assertThat(intArrayOf.toShortString()).isEqualTo("int[]");
+        assertThat(intArrayOf.toSimpleString()).isEqualTo("int[]");
     }
 
     /** Tests an primitive int type literal. */
@@ -120,12 +195,13 @@ public class TypeLiteralTest {
 
         assertThat(integerNew).isEqualTo(TypeLiteral.of(Integer.class));
         assertThat(integerNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer.class));
+        assertThat(integerNew).isEqualTo(integerNew.canonicalize());
 
         assertThat(integerNew).isNotEqualTo(Integer.class);
         assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long.class));
 
         assertThat(integerNew).hasToString("java.lang.Integer");
-        assertThat(integerNew.toShortString()).isEqualTo("Integer");
+        assertThat(integerNew.toSimpleString()).isEqualTo("Integer");
     }
 
     /** Tests an primitive int type literal. */
@@ -144,12 +220,13 @@ public class TypeLiteralTest {
 
         assertThat(integerNew).isEqualTo(TypeLiteral.of(Integer[].class));
         assertThat(integerNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer[].class));
+        assertThat(integerNew).isEqualTo(integerNew.canonicalize());
 
         assertThat(integerNew).isNotEqualTo(Integer[].class);
         assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long[].class));
 
         assertThat(integerNew).hasToString("java.lang.Integer[]");
-        assertThat(integerNew.toShortString()).isEqualTo("Integer[]");
+        assertThat(integerNew.toSimpleString()).isEqualTo("Integer[]");
     }
 
     /** Tests an primitive int type literal. */
@@ -168,11 +245,12 @@ public class TypeLiteralTest {
 
         assertThat(integerArrayArrayNew).isEqualTo(TypeLiteral.of(Integer[][].class));
         assertThat(integerArrayArrayNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer[][].class));
+        assertThat(integerArrayArrayNew).isEqualTo(integerArrayArrayNew.canonicalize());
 
         assertThat(integerArrayArrayNew).isNotEqualTo(Integer[][].class);
 
         assertThat(integerArrayArrayNew).hasToString("java.lang.Integer[][]");
-        assertThat(integerArrayArrayNew.toShortString()).isEqualTo("Integer[][]");
+        assertThat(integerArrayArrayNew.toSimpleString()).isEqualTo("Integer[][]");
     }
 
     /** Tests {@code List<String>}. */
@@ -191,9 +269,10 @@ public class TypeLiteralTest {
 
         assertThat(listStringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(LIST_STRING));
         assertThat(listStringNew).isNotEqualTo(List.class);
+        assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
 
         assertThat(listStringNew).hasToString("java.util.List<java.lang.String>");
-        assertThat(listStringNew.toShortString()).isEqualTo("List<String>");
+        assertThat(listStringNew.toSimpleString()).isEqualTo("List<String>");
     }
 
     /** Tests {@code List<?>}. */
@@ -212,9 +291,10 @@ public class TypeLiteralTest {
 
         assertThat(listWildcardNew).isEqualTo(TypeLiteral.fromJavaImplementationType(LIST_WILDCARD));
         assertThat(listWildcardNew).isNotEqualTo(List.class);
+        assertThat(listWildcardNew).isEqualTo(listWildcardNew.canonicalize());
 
         assertThat(listWildcardNew).hasToString("java.util.List<?>");
-        assertThat(listWildcardNew.toShortString()).isEqualTo("List<?>");
+        assertThat(listWildcardNew.toSimpleString()).isEqualTo("List<?>");
     }
 
     /** Tests {@code Map<? extends String, ? super Integer>}. */
@@ -238,10 +318,11 @@ public class TypeLiteralTest {
         assertThat(listStringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(fGenericType).hashCode());
 
         assertThat(listStringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(fGenericType));
+        assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
         assertThat(listStringNew).isNotEqualTo(Map.class);
 
         assertThat(listStringNew).hasToString("java.util.Map<? extends java.lang.String, ? super java.lang.Integer>");
-        assertThat(listStringNew.toShortString()).isEqualTo("Map<? extends String, ? super Integer>");
+        assertThat(listStringNew.toSimpleString()).isEqualTo("Map<? extends String, ? super Integer>");
     }
 
     /** Tests an primitive int type literal. */
@@ -258,35 +339,37 @@ public class TypeLiteralTest {
         assertThat(stringNew).hasSameHashCodeAs(TypeLiteral.of(String.class).hashCode());
         assertThat(stringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(String.class).hashCode());
 
+        assertThat(stringNew).isEqualTo(stringNew.canonicalize());
         assertThat(stringNew).isEqualTo(TypeLiteral.of(String.class));
         assertThat(stringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(String.class));
 
         assertThat(stringNew).isNotEqualTo(String.class);
 
         assertThat(stringNew).hasToString("java.lang.String");
-        assertThat(stringNew.toShortString()).isEqualTo("String");
+        assertThat(stringNew.toSimpleString()).isEqualTo("String");
     }
 
     /** Tests an primitive int type literal. */
     @Test
     public void tl_void() {
-        TypeLiteral<Void> intOf = TypeLiteral.of(void.class);
+        TypeLiteral<Void> voidOf = TypeLiteral.of(void.class);
 
-        assertThat(intOf.box().getType()).isSameAs(Void.class);
+        assertThat(voidOf.box().getType()).isSameAs(Void.class);
 
-        assertThat(intOf.getRawType()).isSameAs(void.class);
-        assertThat(intOf.getType()).isSameAs(void.class);
+        assertThat(voidOf.getRawType()).isSameAs(void.class);
+        assertThat(voidOf.getType()).isSameAs(void.class);
 
-        assertThat(intOf).hasSameHashCodeAs(void.class);
-        assertThat(intOf).hasSameHashCodeAs(TypeLiteral.of(void.class).hashCode());
+        assertThat(voidOf).hasSameHashCodeAs(void.class);
+        assertThat(voidOf).hasSameHashCodeAs(TypeLiteral.of(void.class).hashCode());
 
-        assertThat(intOf).isEqualTo(TypeLiteral.of(void.class));
+        assertThat(voidOf).isEqualTo(TypeLiteral.of(void.class));
+        assertThat(voidOf).isEqualTo(voidOf.canonicalize());
 
-        assertThat(intOf).isNotEqualTo(void.class);
-        assertThat(intOf).isNotEqualTo(TypeLiteral.of(long.class));
+        assertThat(voidOf).isNotEqualTo(void.class);
+        assertThat(voidOf).isNotEqualTo(TypeLiteral.of(long.class));
 
-        assertThat(intOf).hasToString("void");
-        assertThat(intOf.toShortString()).isEqualTo("void");
+        assertThat(voidOf).hasToString("void");
+        assertThat(voidOf.toSimpleString()).isEqualTo("void");
     }
 
     /** Tests a type literal with a type variable (T) */
@@ -308,10 +391,11 @@ public class TypeLiteralTest {
 
         assertThat(typeVariable).hasSameHashCodeAs(fGenericType);
 
+        assertThat(typeVariable).isEqualTo(typeVariable.canonicalize());
         assertThat(typeVariable).isNotEqualTo(Map.class);
 
         assertThat(typeVariable).hasToString("java.util.Map<T, ?>");
-        assertThat(typeVariable.toShortString()).isEqualTo("Map<T, ?>");
+        assertThat(typeVariable.toSimpleString()).isEqualTo("Map<T, ?>");
     }
 
     @SuppressWarnings("rawtypes")
@@ -358,5 +442,19 @@ public class TypeLiteralTest {
         npe(TypeLiteral::fromParameter, p, "parameter");
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromParameter(p));
         assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[2]).getType());
+    }
+
+    /** Tests {@link TypeLiteral#fromMethodReturnType(Method)}. */
+    @Test
+    public void fromMethodReturnType() throws Exception {
+        class Tmpx<T> {
+            @SuppressWarnings("unused")
+            public List<?> foo() {
+                throw new UnsupportedOperationException();
+            }
+        }
+        Method m = Tmpx.class.getMethod("foo");
+        npe(TypeLiteral::fromMethodReturnType, m, "method");
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromMethodReturnType(m).getType());
     }
 }

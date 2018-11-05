@@ -15,6 +15,8 @@
  */
 package packed.internal.inject;
 
+import static packed.internal.util.StringFormatter.format;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.OptionalLong;
 import app.packed.inject.Inject;
 import app.packed.inject.Provider;
 import app.packed.inject.Qualifier;
+import app.packed.util.InvalidDeclarationException;
 
 /** Limited support for javax.inject classes. */
 @SuppressWarnings("unchecked")
@@ -62,8 +65,7 @@ public final class JavaXInjectSupport {
                 return;
             }
         }
-        throw new IllegalArgumentException(
-                "@" + annotationType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        throw new InvalidDeclarationException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 
     public static boolean isInjectAnnotationPresent(AnnotatedElement e) {
@@ -93,7 +95,7 @@ public final class JavaXInjectSupport {
         if (isQualifierAnnotationPresent(e)) {
             result.add(e);
         }
-       
+
         return result;
     }
 

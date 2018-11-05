@@ -68,22 +68,22 @@ public class TypeUtilTest {
         assertThat(TypeUtil.unboxClass(Void.class)).isSameAs(void.class);
     }
 
-    /** Tests {@link TypeUtil#toShortString(java.lang.reflect.Type)}. */
+    /** Tests {@link TypeUtil#toSimpleString(java.lang.reflect.Type)}. */
     @Test
     public void toShortString() {
-        npe(() -> TypeUtil.toShortString(null), "type");
-        assertThat(TypeUtil.toShortString(String.class)).isEqualTo("String");
-        assertThat(TypeUtil.toShortString(LIST_STRING)).isEqualTo("List<String>");
-        assertThat(TypeUtil.toShortString(LIST_STRING_ARRAY)).isEqualTo("List<String>[]");
-        assertThat(TypeUtil.toShortString(LIST_STRING_ARRAY_ARRAY)).isEqualTo("List<String>[][]");
-        assertThat(TypeUtil.toShortString(MAP_STRING_INTEGER)).isEqualTo("Map<String, Integer>");
+        npe(() -> TypeUtil.toSimpleString(null), "type");
+        assertThat(TypeUtil.toSimpleString(String.class)).isEqualTo("String");
+        assertThat(TypeUtil.toSimpleString(LIST_STRING)).isEqualTo("List<String>");
+        assertThat(TypeUtil.toSimpleString(LIST_STRING_ARRAY)).isEqualTo("List<String>[]");
+        assertThat(TypeUtil.toSimpleString(LIST_STRING_ARRAY_ARRAY)).isEqualTo("List<String>[][]");
+        assertThat(TypeUtil.toSimpleString(MAP_STRING_INTEGER)).isEqualTo("Map<String, Integer>");
 
         class Y<T> {}
-        assertThat(TypeUtil.toShortString(Y.class.getTypeParameters()[0])).isEqualTo("T");
-        assertThat(TypeUtil.toShortString(LIST_WILDCARD)).isEqualTo("List<?>");
-        assertThat(TypeUtil.toShortString(MAP_EXTENDSSTRING_SUPERINTEGER)).isEqualTo("Map<? extends String, ? super Integer>");
+        assertThat(TypeUtil.toSimpleString(Y.class.getTypeParameters()[0])).isEqualTo("T");
+        assertThat(TypeUtil.toSimpleString(LIST_WILDCARD)).isEqualTo("List<?>");
+        assertThat(TypeUtil.toSimpleString(MAP_EXTENDSSTRING_SUPERINTEGER)).isEqualTo("Map<? extends String, ? super Integer>");
 
-        assertThatThrownBy(() -> TypeUtil.toShortString(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> TypeUtil.toSimpleString(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     /** Tests {@link TypeUtil#isFreeFromTypeVariables(Type)}. */

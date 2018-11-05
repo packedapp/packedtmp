@@ -30,6 +30,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.AnnotationUtil;
@@ -79,7 +80,7 @@ public abstract class Key<T> {
     private final Annotation qualifier;
 
     /** The generic type of this key. */
-    private final TypeLiteral<T> typeLiteral;
+    private final CanonicalizedTypeLiteral<T> typeLiteral;
 
     /**
      * Constructs a new key. Derives the type from this class's type parameter.
@@ -87,7 +88,7 @@ public abstract class Key<T> {
     @SuppressWarnings("unchecked")
     protected Key() {
         Type tt = TypeVariableExtractorUtil.findTypeParameterFromSuperClass(getClass(), Key.class, 0);
-        typeLiteral = (TypeLiteral<T>) TypeLiteral.fromJavaImplementationType(tt);
+        typeLiteral = (CanonicalizedTypeLiteral<T>) TypeLiteral.fromJavaImplementationType(tt);
         if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
             // cannot be parameterized with Optional
             throw new IllegalArgumentException();
@@ -119,9 +120,22 @@ public abstract class Key<T> {
      * @param qualifier
      *            the (optional) qualifier
      */
-    private Key(TypeLiteral<T> typeLiteral, Annotation qualifier) {
+    Key(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
         this.typeLiteral = requireNonNull(typeLiteral, "typeLiteral is null");
         this.qualifier = qualifier;
+    }
+
+    /**
+     * To avoid inadvertently holding on to the instance that defines an anonymous class, this method creates a new instance
+     * without any reference to the instance that defined the anonymous class.
+     * 
+     * @return the key
+     */
+    CanonicalizedKey<T> canonicalize() {
+        if (getClass() == CanonicalizedKey.class) {
+            return (CanonicalizedKey<T>) this;
+        }
+        return new CanonicalizedKey<>(typeLiteral, qualifier);
     }
 
     /** {@inheritDoc} */
@@ -217,28 +231,58 @@ public abstract class Key<T> {
         if (qualifier != null) {
             sb.append(AnnotationUtil.toShortString(qualifier)).append(" ");
         }
-        sb.append(typeLiteral.toShortString());
+        sb.append(typeLiteral.toSimpleString());
         if (appendKey) {
             sb.append('>');
         }
         return sb.toString();
     }
 
-    // An easy way to create annotations with one value, or maybe put it on TypeLiteral
-    // withNamedAnnotations(type, String name, Object value)
-    // withNamedAnnotations(type, String name1, Object value1, String name2, Object value2)
-    // withNamedAnnotations(type, String name1, Object value1, String name2, Object value2, String name3, Object value3);
-    // public static <T> Key<T> withAnnotation(Type type, Class<? extends Annotation> cl, Object value) {
-    // withAnnotation(Integer.class, Named.class, "left");
-    // throw new UnsupportedOperationException();
-    // }
-
     public final String toStringNoKey() {
         return toString(false);
     }
 
-    public static <T> Key<T> getKeyOfArgument(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
-        TypeLiteral<T> t = TypeLiteral.fromTypeVariable(subClass, superClass, parameterIndex);
+    /**
+     * Returns a new key that maintains its type but with {@link #getQualifier()} returning the specified qualifier
+     * 
+     * @param qualifier
+     *            the new key's qualifier
+     * @return the new key
+     */
+    // Nullable qualifier???
+    public final Key<T> withAnnotation(Annotation qualifier) {
+        return null;
+    }
+
+    static <T> Key<T> fromCheckedTypeAndCheckedNullableAnnotation(CanonicalizedTypeLiteral<T> typeLiteral, Annotation qualifier) {
+        return new CanonicalizedKey<T>(typeLiteral, qualifier);
+    }
+
+    /**
+     * Returns the type of the specified field as a key.
+     * 
+     * @param field
+     *            the field to return a type literal for
+     * @return the type literal for the field
+     * @see Field#getGenericType()
+     */
+    public static Key<?> fromField(Field field) {
+        requireNonNull(field, "field is null");
+        throw new UnsupportedOperationException();// Removes optional
+    }
+
+    public static Key<?> fromMethodReturnType(Method method) {
+        requireNonNull(method, "method is null");
+        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method);
+
+        if (method.getReturnType() == void.class || method.getReturnType() == Void.class) {
+            throw new IllegalArgumentException("@Provides method " + method + " cannot have void return type");
+        }
+        return tl.toKey();
+    }
+
+    public static <T> Key<?> getKeyOfArgument(Class<T> superClass, int parameterIndex, Class<? extends T> subClass) {
+        TypeLiteral<?> t = TypeLiteral.fromTypeVariable(subClass, superClass, parameterIndex);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
@@ -331,46 +375,21 @@ public abstract class Key<T> {
         return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(TypeLiteral.fromJavaImplementationType(type), qualifier);
     }
 
-    static <T> Key<T> fromCheckedTypeAndCheckedNullableAnnotation(TypeLiteral<T> typeLiteral, Annotation qualifier) {
-        return new Key<T>(typeLiteral, qualifier) {};
-    }
-
-    /**
-     * Returns the type of the specified field as a key.
-     * 
-     * @param field
-     *            the field to return a type literal for
-     * @return the type literal for the field
-     * @see Field#getGenericType()
-     */
-    public static Key<?> fromField(Field field) {
-        requireNonNull(field, "field is null");
-        throw new UnsupportedOperationException();// Removes optional
-    }
-
-    public static Key<?> fromMethodReturnType(Method method) {
-        requireNonNull(method, "method is null");
-        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method);
-
-        if (method.getReturnType() == void.class || method.getReturnType() == Void.class) {
-            throw new IllegalArgumentException("@Provides method " + method + " cannot have void return type");
+    static final class CanonicalizedKey<T> extends Key<T> {
+        CanonicalizedKey(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
+            super(typeLiteral, qualifier);
         }
-        return tl.toKey();
-    }
-
-    /**
-     * Returns a new key that maintains its type but with {@link #getQualifier()} returning the specified qualifier
-     * 
-     * @param qualifier
-     *            the new key's qualifier
-     * @return the new key
-     */
-    // Nullable qualifier???
-    public final Key<T> withAnnotation(Annotation qualifier) {
-        return null;
     }
 }
 
+// An easy way to create annotations with one value, or maybe put it on TypeLiteral
+// withNamedAnnotations(type, String name, Object value)
+// withNamedAnnotations(type, String name1, Object value1, String name2, Object value2)
+// withNamedAnnotations(type, String name1, Object value1, String name2, Object value2, String name3, Object value3);
+// public static <T> Key<T> withAnnotation(Type type, Class<? extends Annotation> cl, Object value) {
+// withAnnotation(Integer.class, Named.class, "left");
+// throw new UnsupportedOperationException();
+// }
 // private Class<?> getReturnTypeIgnoringOptionalBoxed() {
 // InternalMethodDescriptor method = this.descriptor();
 // Class<?> type = method.getReturnType();

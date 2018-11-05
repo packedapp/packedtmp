@@ -99,6 +99,7 @@ public final class TypeUtil {
      *             if the raw type could not be found
      */
     public static Class<?> findRawType(Type type) {
+        requireNonNull(type, "type is null");
         if (type instanceof Class<?>) {
             return (Class<?>) type;
         } else if (type instanceof ParameterizedType) {
@@ -223,40 +224,40 @@ public final class TypeUtil {
      *            the type to create a short representation of
      * @return the representation
      */
-    public static String toShortString(Type type) {
+    public static String toSimpleString(Type type) {
         StringBuilder sb = new StringBuilder();
-        toShortString0(type, sb);
+        toSimpleString0(type, sb);
         return sb.toString();
     }
 
     /**
-     * Helper method for {@link #toShortString(Type)}.
+     * Helper method for {@link #toSimpleString(Type)}.
      * 
      * @param type
      *            the type to process
      * @param sb
      *            the string builder
      */
-    private static void toShortString0(Type type, StringBuilder sb) {
+    private static void toSimpleString0(Type type, StringBuilder sb) {
         requireNonNull(type, "type is null");
         if (type instanceof Class<?>) {
             sb.append(((Class<?>) type).getSimpleName());
         } else if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
-            toShortString0(pt.getRawType(), sb);
+            toSimpleString0(pt.getRawType(), sb);
             Type[] actualTypeArguments = pt.getActualTypeArguments();
             // The array can be empty according to #ParameterizedType.getActualTypeArguments()
             if (actualTypeArguments.length > 0) {
                 sb.append("<");
-                toShortString0(actualTypeArguments[0], sb);
+                toSimpleString0(actualTypeArguments[0], sb);
                 for (int i = 1; i < actualTypeArguments.length; i++) {
                     sb.append(", ");
-                    toShortString0(actualTypeArguments[i], sb);
+                    toSimpleString0(actualTypeArguments[i], sb);
                 }
                 sb.append(">");
             }
         } else if (type instanceof GenericArrayType) {
-            toShortString0(((GenericArrayType) type).getGenericComponentType(), sb);
+            toSimpleString0(((GenericArrayType) type).getGenericComponentType(), sb);
             sb.append("[]");
         } else if (type instanceof TypeVariable) {
             TypeVariable<?> tv = (TypeVariable<?>) type;
@@ -266,14 +267,14 @@ public final class TypeUtil {
             Type[] lowerBounds = wt.getLowerBounds();
             if (lowerBounds.length == 1) {
                 sb.append("? super ");
-                toShortString0(lowerBounds[0], sb);
+                toSimpleString0(lowerBounds[0], sb);
             } else {
                 Type[] upperBounds = wt.getUpperBounds();
                 if (upperBounds[0] == Object.class) {
                     sb.append("?");
                 } else {
                     sb.append("? extends ");
-                    toShortString0(upperBounds[0], sb);
+                    toSimpleString0(upperBounds[0], sb);
                 }
             }
         } else {

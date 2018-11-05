@@ -32,7 +32,7 @@ public class MethodInvoker {
 
     final MethodHandle handle;
 
-    MethodInvoker(InternalMethodDescriptor descriptor, Lookup lookup) {
+    protected MethodInvoker(InternalMethodDescriptor descriptor, Lookup lookup) {
         this.descriptor = descriptor;
         try {
             this.handle = descriptor.unreflect(lookup);
