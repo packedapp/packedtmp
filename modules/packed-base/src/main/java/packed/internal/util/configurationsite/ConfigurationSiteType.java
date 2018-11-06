@@ -17,25 +17,28 @@ package packed.internal.util.configurationsite;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.StackFrame;
-import java.util.Optional;
-
-import app.packed.util.ConfigurationSite;
-
 /**
  *
  */
-public class ProgrammaticConfigurationSite extends AbstractConfigurationSite {
+public enum ConfigurationSiteType {
 
-    Optional<StackFrame> caller;
+    /** */
+    INJECTOR_OF("Injector.of"),
 
-    /**
-     * @param parent
-     * @param operation
-     */
-    ProgrammaticConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Optional<StackFrame> caller) {
-        super(parent, operation);
-        this.caller = requireNonNull(caller);
+    /** */
+    INJECTOR_BIND("Injector.bind"),
+
+    /** */
+    INJECTOR_IMPORT_FROM("Injector.importFrom");
+
+    ConfigurationSiteType(String f) {
+        this.f = requireNonNull(f);
     }
 
+    final String f;
+
+    @Override
+    public String toString() {
+        return f;
+    }
 }

@@ -25,6 +25,7 @@ import java.util.Map;
  *
  */
 public class TypeStubs {
+
     /** A type representing {@code List<String>} */
     public static final ParameterizedType LIST_STRING = fromField("LIST_STRING$");
 

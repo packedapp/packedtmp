@@ -17,6 +17,7 @@ package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
+import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -98,7 +99,7 @@ public class TypeVariableExtractorUtil {
             String name = superClass.getSuperclass().getTypeParameters()[index].getName();
             StringJoiner sj = new StringJoiner(", ", baseClass.getSimpleName() + "<", ">");
             for (Type ty : baseClass.getTypeParameters()) {
-                sj.add(TypeUtil.toSimpleString(ty));
+                sj.add(formatSimple(ty));
             }
             throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
         }

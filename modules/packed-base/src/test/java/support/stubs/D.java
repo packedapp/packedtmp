@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package support.stubs;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.StackWalker.StackFrame;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Optional;
-
-import app.packed.util.ConfigurationSite;
 
 /**
  *
  */
-public class ProgrammaticConfigurationSite extends AbstractConfigurationSite {
+public class D {
+    public static void main(String[] args) {
+        Optional<Field> findFirst = Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("X")).findFirst();
+        System.out.println(findFirst.get().getAnnotations().length);
 
-    Optional<StackFrame> caller;
-
-    /**
-     * @param parent
-     * @param operation
-     */
-    ProgrammaticConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Optional<StackFrame> caller) {
-        super(parent, operation);
-        this.caller = requireNonNull(caller);
+        Object o = Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("X")).findFirst().get().getAnnotations()[0];
+        System.out.println(o);
     }
-
 }

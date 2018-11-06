@@ -30,11 +30,11 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
     private final MethodDescriptor method;
 
     final Annotation annotation;
-    
-    AnnotatedMethodConfigurationSite(ConfigurationSite parent, String operation, MethodDescriptor method, Annotation annotation) {
+
+    AnnotatedMethodConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
         super(parent, operation);
         this.method = requireNonNull(method);
-        this.annotation=requireNonNull(annotation);
+        this.annotation = requireNonNull(annotation);
     }
 
     public MethodDescriptor getAnnotatedMethod() {

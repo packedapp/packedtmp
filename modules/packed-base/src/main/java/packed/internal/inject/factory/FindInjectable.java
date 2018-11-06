@@ -25,6 +25,7 @@ import java.lang.reflect.Modifier;
 import app.packed.inject.Inject;
 import app.packed.inject.TypeLiteral;
 import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.util.TypeUtil;
 import packed.internal.util.descriptor.AbstractExecutableDescriptor;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -115,7 +116,7 @@ public class FindInjectable {
         if (method.getReturnType() == void.class /* || returnType == Void.class */) {
             throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
                     + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
-        } else if (JavaXInjectSupport.isOptionalType(method.getReturnType())) {
+        } else if (TypeUtil.isOptionalType(method.getReturnType())) {
             throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
                     + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
         }

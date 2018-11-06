@@ -52,10 +52,6 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
         if (!typeLiteral.equals(key.getTypeLiteral())) {
             failWithMessage("\nExpecting TypeLiteral of type '%s' but was '%s'", key.getTypeLiteral(), typeLiteral);
         }
-        Class<?> clazz = actual.getRawType();
-        if (!clazz.equals(key.getRawType())) {
-            failWithMessage("\nExpecting Class of type '%s' but was '%s'", key.getRawType(), clazz);
-        }
         return this;
     }
 

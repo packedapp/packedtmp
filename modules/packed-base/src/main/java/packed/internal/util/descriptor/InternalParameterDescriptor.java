@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
+import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import packed.internal.util.InternalErrorException;
 
@@ -66,7 +67,7 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         } else if (obj instanceof InternalParameterDescriptor) {

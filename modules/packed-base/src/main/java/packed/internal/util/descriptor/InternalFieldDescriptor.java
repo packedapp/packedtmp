@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.Nullable;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -53,7 +54,7 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         } else if (obj instanceof InternalFieldDescriptor) {
@@ -157,6 +158,7 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
      *             if the lookup object does not have access to the field
      * @see Lookup#unreflectVarHandle(Field)
      */
+    @Override
     public VarHandle unreflect(Lookup lookup) throws IllegalAccessException {
         requireNonNull(lookup, "lookup is null");
         return lookup.unreflectVarHandle(field);

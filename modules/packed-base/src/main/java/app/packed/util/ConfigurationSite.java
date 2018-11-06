@@ -17,18 +17,22 @@ package app.packed.util;
 
 import java.util.Optional;
 
-/**
- * A configuration site is the location where an object or parts of it was configured
- */
+/** A configuration site is the location where an object or parts of it was configured. */
 public interface ConfigurationSite {
 
-    /**
-     * 
-     * @return
-     */
-    // Open file
-    // Read line
-    Optional<ConfigurationSite> getParent();
+    /** A registration point that contains no information. */
+    ConfigurationSite NO_INFO = new ConfigurationSite() {
+
+        @Override
+        public String operation() {
+            return "NOP";
+        }
+
+        @Override
+        public Optional<ConfigurationSite> parent() {
+            return Optional.empty();
+        }
+    };
 
     /**
      * Returns whether or not this site has a parent.
@@ -36,7 +40,7 @@ public interface ConfigurationSite {
      * @return whether or not this site has a parent
      */
     default boolean hasParent() {
-        return getParent().isPresent();
+        return parent().isPresent();
     }
 
     /**
@@ -45,4 +49,6 @@ public interface ConfigurationSite {
      * @return the operation that was performed when configuring the object
      */
     String operation();
+
+    Optional<ConfigurationSite> parent();
 }

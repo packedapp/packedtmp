@@ -15,9 +15,17 @@
  */
 package packed.internal.util;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -28,15 +36,85 @@ public final class StringFormatter {
     private StringFormatter() {}
 
     /**
+     * Creates a short string representation of the specified type. Basically this method uses {@link Class#getSimpleName()}
+     * instead of {@link Class#getCanonicalName()}. Which results in short string such as {@code List<String>} instead of
+     * {@code java.util.List<java.lang.String>}.
+     * 
+     * @param type
+     *            the type to create a short representation of
+     * @return the representation
+     */
+    public static String formatSimple(Type type) {
+        StringBuilder sb = new StringBuilder();
+        formatSimple(type, sb);
+        return sb.toString();
+    }
+
+    /**
+     * Helper method for {@link #formatSimple(Type)}.
+     * 
+     * @param type
+     *            the type to process
+     * @param sb
+     *            the string builder
+     */
+    private static void formatSimple(Type type, StringBuilder sb) {
+        requireNonNull(type, "type is null");
+        if (type instanceof Class<?>) {
+            sb.append(((Class<?>) type).getSimpleName());
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+            formatSimple(pt.getRawType(), sb);
+            Type[] actualTypeArguments = pt.getActualTypeArguments();
+            // The array can be empty according to #ParameterizedType.getActualTypeArguments()
+            if (actualTypeArguments.length > 0) {
+                sb.append("<");
+                formatSimple(actualTypeArguments[0], sb);
+                for (int i = 1; i < actualTypeArguments.length; i++) {
+                    sb.append(", ");
+                    formatSimple(actualTypeArguments[i], sb);
+                }
+                sb.append(">");
+            }
+        } else if (type instanceof GenericArrayType) {
+            formatSimple(((GenericArrayType) type).getGenericComponentType(), sb);
+            sb.append("[]");
+        } else if (type instanceof TypeVariable) {
+            TypeVariable<?> tv = (TypeVariable<?>) type;
+            sb.append(tv.getName());
+        } else if (type instanceof WildcardType) {
+            WildcardType wt = (WildcardType) type;
+            Type[] lowerBounds = wt.getLowerBounds();
+            if (lowerBounds.length == 1) {
+                sb.append("? super ");
+                formatSimple(lowerBounds[0], sb);
+            } else {
+                Type[] upperBounds = wt.getUpperBounds();
+                if (upperBounds[0] == Object.class) {
+                    sb.append("?");
+                } else {
+                    sb.append("? extends ");
+                    formatSimple(upperBounds[0], sb);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Don't know how to process type '" + type + "' of type: " + type.getClass().getName());
+        }
+    }
+
+    /**
      * Formats the specified class.
      *
      * @param clazz
      *            the class to to format
      * @return the string representation of the specified class
      */
-    public static String format(Class<?> clazz) {
+    public static String format(Type type) {
+        if (!(type instanceof Class)) {
+            return type.toString();
+        }
         int dimensions = 0;
-        Class<?> c = clazz;
+        Class<?> c = (Class<?>) type;
         while (c.isArray()) {
             dimensions++;
             c = c.getComponentType();
@@ -63,6 +141,15 @@ public final class StringFormatter {
 
     public static String format(Constructor<?> constructor) {
         return format(constructor.getDeclaringClass()) + "(" + format(constructor.getParameterTypes()) + ")";
+    }
+
+    public static String format(Annotation annotation) {
+        return annotation.toString();
+    }
+
+    public static String formatSimple(Annotation annotation) {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        return annotation.toString().replace(annotationType.getPackageName() + ".", "");
     }
 
     public static String format(Field field) {

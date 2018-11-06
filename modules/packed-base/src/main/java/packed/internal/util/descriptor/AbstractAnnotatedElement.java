@@ -19,14 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import app.packed.inject.InjectionException;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.util.AnnotationUtil;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
 public abstract class AbstractAnnotatedElement implements AnnotatedElement {
@@ -64,30 +60,6 @@ public abstract class AbstractAnnotatedElement implements AnnotatedElement {
      * @return the type of element
      */
     public abstract String descriptorTypeName();
-
-    /**
-     * Attempts to find a qualifier annotation on this element.
-     *
-     * @return a optional qualifier
-     * @throws InjectionException
-     *             if more than one qualifier are present on the element
-     */
-    public final Optional<Annotation> findQualifiedAnnotation() {
-        Annotation qualifier = null;
-        for (Annotation a : annotations) {
-            Class<? extends Annotation> annotationType = a.annotationType();
-            if (JavaXInjectSupport.isQualifierAnnotationPresent(annotationType)) {
-                AnnotationUtil.validateRuntimeRetentionPolicy(a.annotationType());
-                if (qualifier != null) {
-                    List<Class<? extends Annotation>> annotations = List.of(element.getAnnotations()).stream().map(Annotation::annotationType)
-                            .filter(JavaXInjectSupport::isQualifierAnnotationPresent).collect(Collectors.toList());
-                    throw new InjectionException("Multiple qualifiers found on element '" + element + "', qualifiers = " + annotations);
-                }
-                qualifier = a;
-            }
-        }
-        return Optional.ofNullable(qualifier);
-    }
 
     /**
      * Invokes the specified action for each annotation present on this element.
@@ -154,6 +126,17 @@ public abstract class AbstractAnnotatedElement implements AnnotatedElement {
      */
     public final boolean isAnnotated() {
         return annotations.length > 0;
+    }
+
+    /**
+     * Attempts to find a qualifier annotation on this element.
+     *
+     * @return a optional qualifier
+     * @throws InjectionException
+     *             if more than one qualifier are present on the element
+     */
+    public final Annotation findQualifiedAnnotation() {
+        return JavaXInjectSupport.findQualifier(element, annotations);
     }
 
     /** {@inheritDoc} */

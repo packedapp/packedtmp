@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package packed.internal.util.descriptor.methods;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,6 +28,7 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  *
@@ -65,7 +66,7 @@ public final class AnnotationProvidesDescriptor {
         return key;
     }
 
-    static Optional<AnnotationProvidesDescriptor> find(InternalMethodDescriptor method) {
+    public static Optional<AnnotationProvidesDescriptor> find(InternalMethodDescriptor method) {
         for (Annotation a : method.annotations) {
             if (a.annotationType() == Provides.class) {
                 return Optional.of(read(method, (Provides) a));
@@ -88,13 +89,13 @@ public final class AnnotationProvidesDescriptor {
 
         // If factory, class, TypeLiteral, Provider, we need special handling
 
-        Key<?> key;
-        Optional<Annotation> qualifier = method.findQualifiedAnnotation();
-        if (qualifier.isPresent()) {
-            key = Key.of(method.getGenericReturnType(), qualifier.get());
-        } else {
-            key = Key.of(method.getGenericReturnType());
-        }
+        Key<?> key = null;
+        // Optional<Annotation> qualifier = method.findQualifiedAnnotation();
+        // if (qualifier.isPresent()) {
+        // key = Key.of(method.getGenericReturnType(), qualifier.get());
+        // } else {
+        // key = Key.of(method.getGenericReturnType());
+        // }
 
         return new AnnotationProvidesDescriptor(key, provides.bindingMode(), provides.description().length() == 0 ? null : provides.description());
     }

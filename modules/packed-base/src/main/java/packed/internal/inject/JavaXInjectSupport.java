@@ -19,17 +19,15 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Provider;
 import app.packed.inject.Qualifier;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Nullable;
+import packed.internal.util.AnnotationUtil;
 
 /** Limited support for javax.inject classes. */
 @SuppressWarnings("unchecked")
@@ -68,6 +66,24 @@ public final class JavaXInjectSupport {
         throw new InvalidDeclarationException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 
+    @Nullable
+    public static Annotation findQualifier(AnnotatedElement element, Annotation[] annotations) {
+        Annotation qualifier = null;
+        for (Annotation a : annotations) {
+            Class<? extends Annotation> annotationType = a.annotationType();
+            if (isQualifierAnnotationPresent(annotationType)) {
+                AnnotationUtil.validateRuntimeRetentionPolicy(a.annotationType());// Well we found it???
+                if (qualifier != null) {
+                    List<Class<? extends Annotation>> all = List.of(annotations).stream().map(Annotation::annotationType)
+                            .filter(JavaXInjectSupport::isQualifierAnnotationPresent).collect(Collectors.toList());
+                    throw new InvalidDeclarationException("Multiple qualifiers found on element '" + element + "', qualifiers = " + all);
+                }
+                qualifier = a;
+            }
+        }
+        return qualifier;
+    }
+
     public static boolean isInjectAnnotationPresent(AnnotatedElement e) {
         for (Class<? extends Annotation> a : JavaXInjectSupport.INJECT_ANNOTATIONS) {
             if (e.isAnnotationPresent(a)) {
@@ -77,26 +93,13 @@ public final class JavaXInjectSupport {
         return false;
     }
 
-    public static boolean isOptionalType(Class<?> type) {
-        return type == Optional.class || type == OptionalLong.class || type == OptionalInt.class || type == OptionalDouble.class;
-    }
-
-    public static boolean isQualifierAnnotationPresent(AnnotatedElement e) {
+    private static boolean isQualifierAnnotationPresent(AnnotatedElement e) {
         for (Class<? extends Annotation> a : JavaXInjectSupport.QUALIFIER_ANNOTATIONS) {
             if (e.isAnnotationPresent(a)) {
                 return true;
             }
         }
         return false;
-    }
-
-    public static List<AnnotatedElement> getAllQualifierAnnotationPresent(AnnotatedElement e) {
-        ArrayList<AnnotatedElement> result = new ArrayList<>();
-        if (isQualifierAnnotationPresent(e)) {
-            result.add(e);
-        }
-
-        return result;
     }
 
     /**

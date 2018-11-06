@@ -17,6 +17,8 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.format;
+import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -38,7 +40,9 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
  * not provide a way to represent generic types. It does so by requiring user to create a subclass of this class which
- * enables retrieval of the type information even at runtime. Usage:
+ * enables retrieval of the type information even at runtime.
+ * <p>
+ * Sample usage:
  *
  * <pre> {@code
  * TypeLiteral<List<String>> list = new TypeLiteral<List<String>>() {};
@@ -46,6 +50,17 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
  * </pre>
  */
 public abstract class TypeLiteral<T> {
+
+    /** A cache of factories used by {@link #findInjectable(Class)}. */
+    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETER_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected TypeLiteral<?> computeValue(Class<?> implementation) {
+            return fromTypeVariable((Class) implementation, TypeLiteral.class, 0);
+        }
+    };
 
     static {
         InjectSupport.Helper.init(new InjectSupport.Helper() {
@@ -90,8 +105,9 @@ public abstract class TypeLiteral<T> {
      */
     @SuppressWarnings("unchecked")
     protected TypeLiteral() {
-        this.type = requireNonNull(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(getClass(), TypeLiteral.class, 0));
-        this.rawType = (Class<? super T>) TypeUtil.findRawType(type);
+        TypeLiteral<?> tl = TYPE_PARAMETER_CACHE.get(getClass());
+        this.type = tl.type;
+        this.rawType = (Class<? super T>) tl.rawType;
     }
 
     /**
@@ -134,7 +150,7 @@ public abstract class TypeLiteral<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object obj) {
+    public final boolean equals(@Nullable Object obj) {
         return obj instanceof TypeLiteral && type.equals(((TypeLiteral<?>) obj).type);
     }
 
@@ -201,33 +217,30 @@ public abstract class TypeLiteral<T> {
      *            the checked qualifier or null if no qualifier
      * @return the new key
      */
-    private Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
+    Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
         if (TypeUtil.isOptionalType(rawType)) {
-            throw new InvalidDeclarationException("Cannot convert an optional type (" + toSimpleString() + ") to a Key, as keys cannot be optional");
+            throw new InvalidDeclarationException("Cannot convert an optional type (" + toStringSimple() + ") to a Key, as keys cannot be optional");
         } else if (!TypeUtil.isFreeFromTypeVariables(type)) {
             throw new InvalidDeclarationException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
-                    + toSimpleString() + "> defined: " + TypeUtil.findTypeVariableNames(type));
+                    + toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(type));
         }
         return Key.fromCheckedTypeAndCheckedNullableAnnotation(canonicalize(), qualifier);
-    }
-
-    /**
-     * Returns a string where all the class names are replaced by their simple names. For example this method will return
-     * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as the {@link #toString()} does.
-     * 
-     * @return a simple string
-     */
-    public final String toSimpleString() {
-        return TypeUtil.toSimpleString(type);
     }
 
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        if (type instanceof Class) {
-            return ((Class<?>) type).getCanonicalName(); // strip 'class/interface' from it
-        }
-        return type.toString();
+        return format(type);
+    }
+
+    /**
+     * Returns a string where all the class names are replaced by their simple names. For example this method will return
+     * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as {@link #toString()} does.
+     * 
+     * @return a simple string represenation of this type
+     */
+    public final String toStringSimple() {
+        return formatSimple(type);
     }
 
     /**
@@ -339,7 +352,7 @@ public abstract class TypeLiteral<T> {
 
     /**
      * The default implementation of TypeLiteral. This is also the type we normally maintain a reference to internally. As
-     * it is guaranteed to not retain any references to, for example, an instante that defined an anonymous class.
+     * it is guaranteed to not retain any references to, for example, an instance that defined an anonymous class.
      */
     static final class CanonicalizedTypeLiteral<T> extends TypeLiteral<T> {
 

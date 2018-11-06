@@ -43,17 +43,18 @@ import support.stubs.annotation.AnnotationInstances;
 /** Tests {@link TypeLiteral}. */
 public class TypeLiteralTest {
 
+    static final TypeLiteral<Integer> TL_INTEGER = new TypeLiteral<Integer>() {};
+
     @Test
     public <S> void toKey() {
         TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
-        TypeLiteral<Integer> tl2 = new TypeLiteral<Integer>() {};
 
         Key<Integer> k1 = tl1.toKey();
-        Key<Integer> k2 = tl2.toKey();
+        Key<Integer> k2 = TL_INTEGER.toKey();
 
         assertThat(k1.getTypeLiteral()).isSameAs(tl1);
-        assertThat(k2.getTypeLiteral()).isEqualTo(tl2);
-        assertThat(k2.getTypeLiteral()).isNotSameAs(tl2);
+        assertThat(k2.getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(k2.getTypeLiteral()).isNotSameAs(TL_INTEGER);
 
         assertThat(k1.hasQualifier()).isFalse();
         assertThat(k2.hasQualifier()).isFalse();
@@ -79,28 +80,26 @@ public class TypeLiteralTest {
 
     @Test
     public <S> void toKeyAnnotation() {
-        TypeLiteral<Integer> tl = new TypeLiteral<Integer>() {};
-        npe(() -> tl.toKey(null), "qualifier");
+        npe(() -> TL_INTEGER.toKey(null), "qualifier");
 
         Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
                 .getAnnotations()[0];
-        assertThatThrownBy(() -> tl.toKey(nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> TL_INTEGER.toKey(nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
                 .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
 
-        Key<Integer> key = tl.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
-        assertThat(key.getTypeLiteral()).isEqualTo(tl);
-        assertThat(key.getQualifier()).isSameAs(AnnotationInstances.NO_VALUE_QUALIFIER);
+        Key<Integer> key = TL_INTEGER.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
+        assertThat(key.getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(key.getQualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
     }
 
     @Test
     public void canonicalize() {
         TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
-        TypeLiteral<Integer> tl2 = new TypeLiteral<Integer>() {};
 
-        assertThat(tl1).isEqualTo(tl2);
+        assertThat(tl1).isEqualTo(TL_INTEGER);
 
         assertThat(tl1).isSameAs(tl1.canonicalize());
-        assertThat(tl2).isNotSameAs(tl2.canonicalize());
+        assertThat(TL_INTEGER).isNotSameAs(TL_INTEGER.canonicalize());
     }
 
     /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
@@ -130,7 +129,7 @@ public class TypeLiteralTest {
         assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long.class));
 
         assertThat(integerNew).hasToString("java.lang.Integer");
-        assertThat(integerNew.toSimpleString()).isEqualTo("Integer");
+        assertThat(integerNew.toStringSimple()).isEqualTo("Integer");
     }
 
     /** Tests an primitive int type literal. */
@@ -153,7 +152,7 @@ public class TypeLiteralTest {
         assertThat(intOf).isNotEqualTo(TypeLiteral.of(long.class));
 
         assertThat(intOf).hasToString("int");
-        assertThat(intOf.toSimpleString()).isEqualTo("int");
+        assertThat(intOf.toStringSimple()).isEqualTo("int");
     }
 
     /** Tests {@code int[]} as a type literal. */
@@ -176,32 +175,30 @@ public class TypeLiteralTest {
         assertThat(intArrayOf).isNotEqualTo(TypeLiteral.of(long[].class));
 
         assertThat(intArrayOf).hasToString("int[]");
-        assertThat(intArrayOf.toSimpleString()).isEqualTo("int[]");
+        assertThat(intArrayOf.toStringSimple()).isEqualTo("int[]");
     }
 
     /** Tests an primitive int type literal. */
     @Test
     public void tl_Integer() {
-        TypeLiteral<Integer> integerNew = new TypeLiteral<Integer>() {};
+        assertThat(TL_INTEGER.box().getType()).isSameAs(Integer.class);
 
-        assertThat(integerNew.box().getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.getRawType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.getType()).isSameAs(Integer.class);
 
-        assertThat(integerNew.getRawType()).isSameAs(Integer.class);
-        assertThat(integerNew.getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER).hasSameHashCodeAs(Integer.class);
+        assertThat(TL_INTEGER).hasSameHashCodeAs(TypeLiteral.of(Integer.class).hashCode());
+        assertThat(TL_INTEGER).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer.class).hashCode());
 
-        assertThat(integerNew).hasSameHashCodeAs(Integer.class);
-        assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.of(Integer.class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer.class).hashCode());
+        assertThat(TL_INTEGER).isEqualTo(TypeLiteral.of(Integer.class));
+        assertThat(TL_INTEGER).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer.class));
+        assertThat(TL_INTEGER).isEqualTo(TL_INTEGER.canonicalize());
 
-        assertThat(integerNew).isEqualTo(TypeLiteral.of(Integer.class));
-        assertThat(integerNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer.class));
-        assertThat(integerNew).isEqualTo(integerNew.canonicalize());
+        assertThat(TL_INTEGER).isNotEqualTo(Integer.class);
+        assertThat(TL_INTEGER).isNotEqualTo(TypeLiteral.of(Long.class));
 
-        assertThat(integerNew).isNotEqualTo(Integer.class);
-        assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long.class));
-
-        assertThat(integerNew).hasToString("java.lang.Integer");
-        assertThat(integerNew.toSimpleString()).isEqualTo("Integer");
+        assertThat(TL_INTEGER).hasToString("java.lang.Integer");
+        assertThat(TL_INTEGER.toStringSimple()).isEqualTo("Integer");
     }
 
     /** Tests an primitive int type literal. */
@@ -226,7 +223,7 @@ public class TypeLiteralTest {
         assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long[].class));
 
         assertThat(integerNew).hasToString("java.lang.Integer[]");
-        assertThat(integerNew.toSimpleString()).isEqualTo("Integer[]");
+        assertThat(integerNew.toStringSimple()).isEqualTo("Integer[]");
     }
 
     /** Tests an primitive int type literal. */
@@ -250,7 +247,7 @@ public class TypeLiteralTest {
         assertThat(integerArrayArrayNew).isNotEqualTo(Integer[][].class);
 
         assertThat(integerArrayArrayNew).hasToString("java.lang.Integer[][]");
-        assertThat(integerArrayArrayNew.toSimpleString()).isEqualTo("Integer[][]");
+        assertThat(integerArrayArrayNew.toStringSimple()).isEqualTo("Integer[][]");
     }
 
     /** Tests {@code List<String>}. */
@@ -272,7 +269,7 @@ public class TypeLiteralTest {
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
 
         assertThat(listStringNew).hasToString("java.util.List<java.lang.String>");
-        assertThat(listStringNew.toSimpleString()).isEqualTo("List<String>");
+        assertThat(listStringNew.toStringSimple()).isEqualTo("List<String>");
     }
 
     /** Tests {@code List<?>}. */
@@ -294,7 +291,7 @@ public class TypeLiteralTest {
         assertThat(listWildcardNew).isEqualTo(listWildcardNew.canonicalize());
 
         assertThat(listWildcardNew).hasToString("java.util.List<?>");
-        assertThat(listWildcardNew.toSimpleString()).isEqualTo("List<?>");
+        assertThat(listWildcardNew.toStringSimple()).isEqualTo("List<?>");
     }
 
     /** Tests {@code Map<? extends String, ? super Integer>}. */
@@ -322,7 +319,7 @@ public class TypeLiteralTest {
         assertThat(listStringNew).isNotEqualTo(Map.class);
 
         assertThat(listStringNew).hasToString("java.util.Map<? extends java.lang.String, ? super java.lang.Integer>");
-        assertThat(listStringNew.toSimpleString()).isEqualTo("Map<? extends String, ? super Integer>");
+        assertThat(listStringNew.toStringSimple()).isEqualTo("Map<? extends String, ? super Integer>");
     }
 
     /** Tests an primitive int type literal. */
@@ -346,7 +343,7 @@ public class TypeLiteralTest {
         assertThat(stringNew).isNotEqualTo(String.class);
 
         assertThat(stringNew).hasToString("java.lang.String");
-        assertThat(stringNew.toSimpleString()).isEqualTo("String");
+        assertThat(stringNew.toStringSimple()).isEqualTo("String");
     }
 
     /** Tests an primitive int type literal. */
@@ -369,7 +366,7 @@ public class TypeLiteralTest {
         assertThat(voidOf).isNotEqualTo(TypeLiteral.of(long.class));
 
         assertThat(voidOf).hasToString("void");
-        assertThat(voidOf.toSimpleString()).isEqualTo("void");
+        assertThat(voidOf.toStringSimple()).isEqualTo("void");
     }
 
     /** Tests a type literal with a type variable (T) */
@@ -395,7 +392,7 @@ public class TypeLiteralTest {
         assertThat(typeVariable).isNotEqualTo(Map.class);
 
         assertThat(typeVariable).hasToString("java.util.Map<T, ?>");
-        assertThat(typeVariable.toSimpleString()).isEqualTo("Map<T, ?>");
+        assertThat(typeVariable.toStringSimple()).isEqualTo("Map<T, ?>");
     }
 
     @SuppressWarnings("rawtypes")

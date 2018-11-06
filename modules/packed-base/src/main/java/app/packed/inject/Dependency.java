@@ -280,17 +280,8 @@ public final class Dependency {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
-        Annotation qa = null;
-        if (annotations.length > 0) {
-            for (Annotation a : annotations) {
-                if (JavaXInjectSupport.isQualifierAnnotationPresent(a.annotationType())) {
-                    if (qa != null) {
-                        throw new IllegalArgumentException("More than 1 qualifier on " + actualClass);
-                    }
-                    qa = a;
-                }
-            }
-        }
+        Annotation qa = JavaXInjectSupport.findQualifier(pta, annotations);
+
         Class<?> optionalType = null;
         if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Optional.class) {
             type = ((ParameterizedType) type).getActualTypeArguments()[0];
@@ -352,7 +343,7 @@ public final class Dependency {
 
     private static Dependency ofVariable(AbstractVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
-        Optional<Annotation> q = variable.findQualifiedAnnotation();
+        Annotation a = variable.findQualifiedAnnotation();
 
         // Illegal
         // Optional<Optional*>
@@ -389,12 +380,7 @@ public final class Dependency {
         }
 
         // TL is free from Optional
-        Key<?> key;
-        if (q.isPresent()) {
-            key = tl.toKey(q.get());
-        } else {
-            key = tl.toKey();
-        }
+        Key<?> key = tl.toKeyNullableAnnotation(a);
         return new Dependency(key, variable, optionalType);
     }
 }

@@ -27,13 +27,13 @@ import app.packed.util.MethodDescriptor;
 /**
  *
  */
-public abstract class AbstractConfigurationSite implements ConfigurationSite {
+public abstract class AbstractConfigurationSite implements InternalConfigurationSite {
 
-    private final String operation;
+    private final ConfigurationSiteType operation;
 
     private final ConfigurationSite parent;
 
-    AbstractConfigurationSite(ConfigurationSite parent, String operation) {
+    AbstractConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation) {
         this.parent = parent;
         this.operation = requireNonNull(operation);
     }
@@ -41,11 +41,11 @@ public abstract class AbstractConfigurationSite implements ConfigurationSite {
     /** {@inheritDoc} */
     @Override
     public String operation() {
-        return operation;
+        return operation.name();
     }
 
     @Override
-    public Optional<ConfigurationSite> getParent() {
+    public Optional<ConfigurationSite> parent() {
         return Optional.ofNullable(parent);
     }
 
@@ -54,12 +54,12 @@ public abstract class AbstractConfigurationSite implements ConfigurationSite {
         return super.toString();
     }
 
-    public ConfigurationSite spawnOnAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
+    public ConfigurationSite spawnOnAnnotatedField(ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
         return new AnnotatedFieldConfigurationSite(this, operation, field, annotation);
     }
 
-    public ConfigurationSite spawnOnAnnotatedMethod(String operation, MethodDescriptor method, Annotation annotation) {
+    public ConfigurationSite spawnOnAnnotatedMethod(ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
         return new AnnotatedMethodConfigurationSite(this, operation, method, annotation);
     }
-    
+
 }

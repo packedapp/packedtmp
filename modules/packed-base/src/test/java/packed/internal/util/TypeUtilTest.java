@@ -18,12 +18,6 @@ package packed.internal.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static support.assertj.Assertions.npe;
-import static support.stubs.TypeStubs.LIST_STRING;
-import static support.stubs.TypeStubs.LIST_STRING_ARRAY;
-import static support.stubs.TypeStubs.LIST_STRING_ARRAY_ARRAY;
-import static support.stubs.TypeStubs.LIST_WILDCARD;
-import static support.stubs.TypeStubs.MAP_EXTENDSSTRING_SUPERINTEGER;
-import static support.stubs.TypeStubs.MAP_STRING_INTEGER;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -32,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-
-import packed.internal.util.TypeUtil;
 
 /** Tests {@link TypeUtil}. */
 public class TypeUtilTest {
@@ -66,24 +58,6 @@ public class TypeUtilTest {
         assertThat(TypeUtil.unboxClass(Long.class)).isSameAs(long.class);
         assertThat(TypeUtil.unboxClass(Short.class)).isSameAs(short.class);
         assertThat(TypeUtil.unboxClass(Void.class)).isSameAs(void.class);
-    }
-
-    /** Tests {@link TypeUtil#toSimpleString(java.lang.reflect.Type)}. */
-    @Test
-    public void toShortString() {
-        npe(() -> TypeUtil.toSimpleString(null), "type");
-        assertThat(TypeUtil.toSimpleString(String.class)).isEqualTo("String");
-        assertThat(TypeUtil.toSimpleString(LIST_STRING)).isEqualTo("List<String>");
-        assertThat(TypeUtil.toSimpleString(LIST_STRING_ARRAY)).isEqualTo("List<String>[]");
-        assertThat(TypeUtil.toSimpleString(LIST_STRING_ARRAY_ARRAY)).isEqualTo("List<String>[][]");
-        assertThat(TypeUtil.toSimpleString(MAP_STRING_INTEGER)).isEqualTo("Map<String, Integer>");
-
-        class Y<T> {}
-        assertThat(TypeUtil.toSimpleString(Y.class.getTypeParameters()[0])).isEqualTo("T");
-        assertThat(TypeUtil.toSimpleString(LIST_WILDCARD)).isEqualTo("List<?>");
-        assertThat(TypeUtil.toSimpleString(MAP_EXTENDSSTRING_SUPERINTEGER)).isEqualTo("Map<? extends String, ? super Integer>");
-
-        assertThatThrownBy(() -> TypeUtil.toSimpleString(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     /** Tests {@link TypeUtil#isFreeFromTypeVariables(Type)}. */

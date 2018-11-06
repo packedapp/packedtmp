@@ -13,29 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package support.stubs;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.StackWalker.StackFrame;
-import java.util.Optional;
-
-import app.packed.util.ConfigurationSite;
+import java.util.Arrays;
 
 /**
  *
  */
-public class ProgrammaticConfigurationSite extends AbstractConfigurationSite {
+public class CharQualifiers {
 
-    Optional<StackFrame> caller;
+    @CharQualifier('X')
+    public static final CharQualifier X = (CharQualifier) Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("X"))
+            .findFirst().get().getAnnotations()[0];
 
-    /**
-     * @param parent
-     * @param operation
-     */
-    ProgrammaticConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Optional<StackFrame> caller) {
-        super(parent, operation);
-        this.caller = requireNonNull(caller);
-    }
-
+    @CharQualifier('Y')
+    public static final CharQualifier Y = (CharQualifier) Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("Y"))
+            .findFirst().get().getAnnotations()[0];
 }

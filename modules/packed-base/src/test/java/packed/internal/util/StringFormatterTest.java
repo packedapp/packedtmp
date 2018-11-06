@@ -16,9 +16,18 @@
 package packed.internal.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static packed.internal.util.StringFormatter.format;
+import static support.assertj.Assertions.npe;
+import static support.stubs.TypeStubs.LIST_STRING;
+import static support.stubs.TypeStubs.LIST_STRING_ARRAY;
+import static support.stubs.TypeStubs.LIST_STRING_ARRAY_ARRAY;
+import static support.stubs.TypeStubs.LIST_WILDCARD;
+import static support.stubs.TypeStubs.MAP_EXTENDSSTRING_SUPERINTEGER;
+import static support.stubs.TypeStubs.MAP_STRING_INTEGER;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +60,24 @@ public class StringFormatterTest {
         assertThat(format(a)).isEqualTo(expectedName + "[]");
         Class<?> b = Array.newInstance(a, 0).getClass();
         assertThat(format(b)).isEqualTo(expectedName + "[][]");
+    }
+
+    /** Tests {@link TypeUtil#formatSimple(java.lang.reflect.Type)}. */
+    @Test
+    public void toShortString() {
+        npe(() -> StringFormatter.formatSimple((Type) null), "type");
+        assertThat(StringFormatter.formatSimple(String.class)).isEqualTo("String");
+        assertThat(StringFormatter.formatSimple(LIST_STRING)).isEqualTo("List<String>");
+        assertThat(StringFormatter.formatSimple(LIST_STRING_ARRAY)).isEqualTo("List<String>[]");
+        assertThat(StringFormatter.formatSimple(LIST_STRING_ARRAY_ARRAY)).isEqualTo("List<String>[][]");
+        assertThat(StringFormatter.formatSimple(MAP_STRING_INTEGER)).isEqualTo("Map<String, Integer>");
+
+        class Y<T> {}
+        assertThat(StringFormatter.formatSimple(Y.class.getTypeParameters()[0])).isEqualTo("T");
+        assertThat(StringFormatter.formatSimple(LIST_WILDCARD)).isEqualTo("List<?>");
+        assertThat(StringFormatter.formatSimple(MAP_EXTENDSSTRING_SUPERINTEGER)).isEqualTo("Map<? extends String, ? super Integer>");
+
+        assertThatThrownBy(() -> StringFormatter.formatSimple(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     public static class StaticInnerClass {}

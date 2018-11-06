@@ -13,29 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package app.packed.inject;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.StackWalker.StackFrame;
-import java.util.Optional;
-
-import app.packed.util.ConfigurationSite;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  */
-public class ProgrammaticConfigurationSite extends AbstractConfigurationSite {
+public class TestClass {
 
-    Optional<StackFrame> caller;
+    @X
+    @Y
+    String s;
 
-    /**
-     * @param parent
-     * @param operation
-     */
-    ProgrammaticConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Optional<StackFrame> caller) {
-        super(parent, operation);
-        this.caller = requireNonNull(caller);
+    public static void main(String[] args) throws Exception {
+        System.out.println(TestClass.class.getDeclaredField("s").getAnnotations().length);
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE_USE)
+    @interface X {}
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @interface Y {}
 }

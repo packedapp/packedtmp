@@ -37,10 +37,6 @@ public final class TypeUtil {
     /** Cannot instantiate. */
     private TypeUtil() {}
 
-    public static String toString(Type t) {
-        return "";
-    }
-
     /**
      * Tests if the specified class is an inner class.
      * 
@@ -212,74 +208,7 @@ public final class TypeUtil {
      * @see OptionalInt
      */
     public static boolean isOptionalType(Class<?> type) {
-        return (type == Optional.class || type == OptionalLong.class || type == OptionalDouble.class || type == OptionalInt.class);
-    }
-
-    /**
-     * Creates a short string representation of the specified type. Basically this method uses {@link Class#getSimpleName()}
-     * instead of {@link Class#getCanonicalName()}. Which results in short string such as {@code List<String>} instead of
-     * {@code java.util.List<java.lang.String>}.
-     * 
-     * @param type
-     *            the type to create a short representation of
-     * @return the representation
-     */
-    public static String toSimpleString(Type type) {
-        StringBuilder sb = new StringBuilder();
-        toSimpleString0(type, sb);
-        return sb.toString();
-    }
-
-    /**
-     * Helper method for {@link #toSimpleString(Type)}.
-     * 
-     * @param type
-     *            the type to process
-     * @param sb
-     *            the string builder
-     */
-    private static void toSimpleString0(Type type, StringBuilder sb) {
-        requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            sb.append(((Class<?>) type).getSimpleName());
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            toSimpleString0(pt.getRawType(), sb);
-            Type[] actualTypeArguments = pt.getActualTypeArguments();
-            // The array can be empty according to #ParameterizedType.getActualTypeArguments()
-            if (actualTypeArguments.length > 0) {
-                sb.append("<");
-                toSimpleString0(actualTypeArguments[0], sb);
-                for (int i = 1; i < actualTypeArguments.length; i++) {
-                    sb.append(", ");
-                    toSimpleString0(actualTypeArguments[i], sb);
-                }
-                sb.append(">");
-            }
-        } else if (type instanceof GenericArrayType) {
-            toSimpleString0(((GenericArrayType) type).getGenericComponentType(), sb);
-            sb.append("[]");
-        } else if (type instanceof TypeVariable) {
-            TypeVariable<?> tv = (TypeVariable<?>) type;
-            sb.append(tv.getName());
-        } else if (type instanceof WildcardType) {
-            WildcardType wt = (WildcardType) type;
-            Type[] lowerBounds = wt.getLowerBounds();
-            if (lowerBounds.length == 1) {
-                sb.append("? super ");
-                toSimpleString0(lowerBounds[0], sb);
-            } else {
-                Type[] upperBounds = wt.getUpperBounds();
-                if (upperBounds[0] == Object.class) {
-                    sb.append("?");
-                } else {
-                    sb.append("? extends ");
-                    toSimpleString0(upperBounds[0], sb);
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("Don't know how to process type '" + type + "' of type: " + type.getClass().getName());
-        }
+        return (type == Optional.class || type == OptionalLong.class || type == OptionalInt.class || type == OptionalDouble.class);
     }
 
     /**

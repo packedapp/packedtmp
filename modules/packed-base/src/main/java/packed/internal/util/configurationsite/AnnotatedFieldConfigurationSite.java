@@ -31,7 +31,7 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
     /** The field. */
     final FieldDescriptor field;
 
-    AnnotatedFieldConfigurationSite(ConfigurationSite parent, String operation, FieldDescriptor field, Annotation annotation) {
+    AnnotatedFieldConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
         super(parent, operation);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);

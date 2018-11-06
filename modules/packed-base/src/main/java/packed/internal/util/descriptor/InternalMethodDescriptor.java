@@ -24,10 +24,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Optional;
 
 import app.packed.inject.Key;
 import app.packed.util.MethodDescriptor;
+import app.packed.util.Nullable;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link MethodDescriptor}. */
@@ -55,7 +55,7 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         } else if (obj instanceof InternalMethodDescriptor) {
@@ -64,10 +64,6 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
             return ((MethodDescriptor) obj).newMethod().equals(method);
         }
         return false;
-    }
-
-    public final Optional<AnnotationProvidesDescriptor> findProvidesDescriptor() {
-        return AnnotationProvidesDescriptor.find(this);
     }
 
     public Key<?> fromMethodReturnType() {

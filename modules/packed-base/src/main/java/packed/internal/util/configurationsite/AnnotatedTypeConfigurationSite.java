@@ -30,7 +30,7 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
 
     final Annotation annotation;
 
-    AnnotatedTypeConfigurationSite(ConfigurationSite parent, String operation, Class<?> clazz, Annotation annotation) {
+    AnnotatedTypeConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Class<?> clazz, Annotation annotation) {
         super(parent, operation);
         this.clazz = requireNonNull(clazz);
         this.annotation = requireNonNull(annotation);

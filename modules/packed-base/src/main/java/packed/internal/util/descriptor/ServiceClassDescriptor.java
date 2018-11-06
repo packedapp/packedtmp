@@ -19,12 +19,14 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 
 import app.packed.inject.Inject;
+import app.packed.inject.Key;
 import packed.internal.util.descriptor.fields.FieldInvokerAtInject;
 import packed.internal.util.descriptor.methods.MethodInvokerAtInject;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
  */
+// Qualifier, default key...
 public class ServiceClassDescriptor<T> {
 
     /** The class this descriptor is created from. */
@@ -44,6 +46,17 @@ public class ServiceClassDescriptor<T> {
         this.simpleName = clazz.getSimpleName();
         this.injectableFields = FieldInvokerAtInject.findInjectableFields(clazz, lookup);
         this.injectableMethods = MethodInvokerAtInject.findInjectableMethods(clazz, lookup);
+    }
+
+    /** The default key that this service will be made available, unless explicitly bound to another key. */
+    volatile Key<T> defaultKey;
+
+    public Key<T> getDefaultKey() {
+        // Hmmmm, this does not play well with Factory.of(SomeQualifiedServiceClass.class) <- Which ignores the qualifier....
+        // skal virke baade paa bind(Class) + bind(instance)
+        // Static @Inject method
+
+        return defaultKey;
     }
 
     public boolean hasInjectableFields() {

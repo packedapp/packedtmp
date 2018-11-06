@@ -15,8 +15,7 @@
  */
 package packed.internal.util.configurationsite;
 
-import static java.util.Objects.requireNonNull;
-
+import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.Optional;
 
@@ -25,17 +24,18 @@ import app.packed.util.ConfigurationSite;
 /**
  *
  */
-public class ProgrammaticConfigurationSite extends AbstractConfigurationSite {
+public interface InternalConfigurationSite extends ConfigurationSite {
 
-    Optional<StackFrame> caller;
+    default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
+                .walk(e -> e.filter(f -> !f.getClassName().startsWith("app.packed")).findFirst());
+        return new ProgrammaticConfigurationSite(this, cst, sf);
+    }
 
-    /**
-     * @param parent
-     * @param operation
-     */
-    ProgrammaticConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Optional<StackFrame> caller) {
-        super(parent, operation);
-        this.caller = requireNonNull(caller);
+    static InternalConfigurationSite ofStack(ConfigurationSiteType cst) {
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
+                .walk(e -> e.filter(f -> !f.getClassName().startsWith("app.packed")).findFirst());
+        return new ProgrammaticConfigurationSite(null, cst, sf);
     }
 
 }

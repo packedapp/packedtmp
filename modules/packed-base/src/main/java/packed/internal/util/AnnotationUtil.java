@@ -49,8 +49,4 @@ public final class AnnotationUtil {
         return annotationType;
     }
 
-    public static String toShortString(Annotation annotation) {
-        Class<? extends Annotation> annotationType = annotation.annotationType();
-        return annotation.toString().replace(annotationType.getPackageName() + ".", "");
-    }
 }
