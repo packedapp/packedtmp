@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.descriptor;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,9 +25,9 @@ import packed.internal.inject.factory.InternalFactoryExecutable;
 /**
  * 
  */
-public final class LookupAccessor {
+public final class LookupDescriptorAccessor {
 
-    public static final LookupAccessor PUBLIC = new LookupAccessor(MethodHandles.publicLookup());
+    public static final LookupDescriptorAccessor PUBLIC = new LookupDescriptorAccessor(MethodHandles.publicLookup());
 
     /** The lookup object */
     private final MethodHandles.Lookup lookup;
@@ -42,13 +42,23 @@ public final class LookupAccessor {
             return new ServiceClassDescriptor(type, lookup);
         }
     };
+    /** A cache of service class descriptors. */
+    final ClassValue<ComponentClassDescriptor<?>> componentClassCache = new ClassValue<>() {
 
-    private LookupAccessor(MethodHandles.Lookup lookup) {
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected ComponentClassDescriptor<?> computeValue(Class<?> type) {
+            return new ComponentClassDescriptor(type, lookup);
+        }
+    };
+
+    private LookupDescriptorAccessor(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup);
     }
 
-    public static LookupAccessor get(MethodHandles.Lookup lookup) {
-        return new LookupAccessor(lookup);// Right now we do not cache.
+    public static LookupDescriptorAccessor get(MethodHandles.Lookup lookup) {
+        return new LookupDescriptorAccessor(lookup);// Right now we do not cache.
     }
 
     /**
@@ -63,6 +73,11 @@ public final class LookupAccessor {
     @SuppressWarnings("unchecked")
     public <T> ServiceClassDescriptor<T> getServiceDescriptor(Class<T> implementation) {
         return (ServiceClassDescriptor<T>) serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> ComponentClassDescriptor<T> getComponentDescriptor(Class<T> implementation) {
+        return (ComponentClassDescriptor<T>) componentClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 
     public <T> InternalFactory<T> readable(InternalFactory<T> factory) {

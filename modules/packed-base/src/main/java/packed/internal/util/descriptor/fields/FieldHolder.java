@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.descriptor.fields;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,11 +26,11 @@ import java.util.List;
  */
 public final class FieldHolder {
 
-    private final List<FieldInjectInvoker> fieldsAnnotatedWithInject;
+    private final List<FieldInvokerAtInject> fieldsAnnotatedWithInject;
 
-    private final List<AnnotatedFieldListenTo> fieldsAnnotatedWithListener;
+    private final List<FieldInvokerAtListenTo> fieldsAnnotatedWithListener;
 
-    private FieldHolder(List<FieldInjectInvoker> fieldsAnnotatedWithInject, List<AnnotatedFieldListenTo> fieldsAnnotatedWithListener) {
+    private FieldHolder(List<FieldInvokerAtInject> fieldsAnnotatedWithInject, List<FieldInvokerAtListenTo> fieldsAnnotatedWithListener) {
         this.fieldsAnnotatedWithInject = requireNonNull(fieldsAnnotatedWithInject);
         this.fieldsAnnotatedWithListener = requireNonNull(fieldsAnnotatedWithListener);
     }
@@ -40,7 +40,7 @@ public final class FieldHolder {
      *
      * @return a list of all fields annotated with inject
      */
-    public List<FieldInjectInvoker> fieldsAnnotatedWithInject() {
+    public List<FieldInvokerAtInject> fieldsAnnotatedWithInject() {
         return fieldsAnnotatedWithInject;
     }
 
@@ -49,7 +49,7 @@ public final class FieldHolder {
      *
      * @return a list of all fields annotated with listen to
      */
-    public List<AnnotatedFieldListenTo> fieldsAnnotatedWithListener() {
+    public List<FieldInvokerAtListenTo> fieldsAnnotatedWithListener() {
         return fieldsAnnotatedWithListener;
     }
 
@@ -69,8 +69,8 @@ public final class FieldHolder {
      * Grunden til at have den her, er saa vi kan undgaa at iterere 2 gange
      */
     static class ComponentClassDescriptorBuilder {
-        Collection<FieldInjectInvoker> injectableFields;
-        Collection<AnnotatedFieldListenTo> listenerFields;
+        Collection<FieldInvokerAtInject> injectableFields;
+        Collection<FieldInvokerAtListenTo> listenerFields;
     }
 
     public void scanFields(ComponentClassDescriptorBuilder builder) {

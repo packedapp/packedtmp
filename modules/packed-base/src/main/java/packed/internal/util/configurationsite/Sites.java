@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.configurationsite;
 
 /**
  *
  */
-public class AnnotatedFieldListenTo {
+// Small letters vs Big Letters
 
+// Vi kan ogsaa lave den til en enum, nu naar vi kun er inter
+public class Sites {
+
+    // Injector.Bind (factory, prototype-> nahhhh)
 }

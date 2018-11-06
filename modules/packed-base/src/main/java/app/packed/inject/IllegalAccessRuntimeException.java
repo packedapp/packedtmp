@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-/** Equivalent to {@link IllegalAccessException} except this exception is a runtime exception. */
+/** A runtime exception semantically identical to {@link IllegalAccessException}. */
 public class IllegalAccessRuntimeException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

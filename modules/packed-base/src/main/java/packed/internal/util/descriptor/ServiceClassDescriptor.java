@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.descriptor;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 
 import app.packed.inject.Inject;
+import packed.internal.util.descriptor.fields.FieldInvokerAtInject;
+import packed.internal.util.descriptor.methods.MethodInvokerAtInject;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
@@ -29,10 +31,10 @@ public class ServiceClassDescriptor<T> {
     private final Class<T> clazz;
 
     /** All fields annotated with {@link Inject}. */
-    private final Collection<FieldInjectInvoker> injectableFields;
+    private final Collection<FieldInvokerAtInject> injectableFields;
 
     /** All methods annotated with {@link Inject}. */
-    private final Collection<AnnotatedMethodInject> injectableMethods;
+    private final Collection<MethodInvokerAtInject> injectableMethods;
 
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
     private final String simpleName;
@@ -40,8 +42,8 @@ public class ServiceClassDescriptor<T> {
     protected ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup) {
         this.clazz = clazz;
         this.simpleName = clazz.getSimpleName();
-        this.injectableFields = FieldInjectInvoker.findInjectableFields(clazz, lookup);
-        this.injectableMethods = AnnotatedMethodInject.findInjectableMethods(clazz, lookup);
+        this.injectableFields = FieldInvokerAtInject.findInjectableFields(clazz, lookup);
+        this.injectableMethods = MethodInvokerAtInject.findInjectableMethods(clazz, lookup);
     }
 
     public boolean hasInjectableFields() {
@@ -76,7 +78,7 @@ public class ServiceClassDescriptor<T> {
      * 
      * @return all injectable fields on this type
      */
-    public final Collection<FieldInjectInvoker> injectableFields() {
+    public final Collection<FieldInvokerAtInject> injectableFields() {
         return injectableFields;
     }
 
@@ -85,7 +87,7 @@ public class ServiceClassDescriptor<T> {
      * 
      * @return all injectable methods on this type
      */
-    public final Collection<AnnotatedMethodInject> injectableMethods() {
+    public final Collection<MethodInvokerAtInject> injectableMethods() {
         return injectableMethods;
     }
 
@@ -101,6 +103,6 @@ public class ServiceClassDescriptor<T> {
      * @return a service class descriptor for the specified lookup and type
      */
     public static <T> ServiceClassDescriptor<T> from(MethodHandles.Lookup lookup, Class<T> type) {
-        return LookupAccessor.get(lookup).getServiceDescriptor(type);
+        return LookupDescriptorAccessor.get(lookup).getServiceDescriptor(type);
     }
 }

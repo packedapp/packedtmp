@@ -13,28 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Collection;
-
-import packed.internal.util.descriptor.InternalMethodDescriptor;
+package packed.internal.util.descriptor.fields;
 
 /**
  *
  */
-public class AnnotatedMethodInject extends MethodInvoker {
+public class FieldInvokerAtListenTo {
 
-    /**
-     * @param descriptor
-     * @param handle
-     */
-    AnnotatedMethodInject(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup) {
-        super(descriptor, lookup);
-    }
-
-    static Collection<AnnotatedMethodInject> findInjectableMethods(Class<?> clazz, Lookup lookup) {
-        return null;
-    }
 }

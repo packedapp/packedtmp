@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.descriptor.methods;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;

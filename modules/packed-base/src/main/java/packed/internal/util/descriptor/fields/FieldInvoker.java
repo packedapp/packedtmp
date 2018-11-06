@@ -13,44 +13,67 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.descriptor.fields;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.lang.reflect.Modifier;
 
 import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.InvalidDeclarationException;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
-/**
- *
- */
+/** A field invoker extends a field descriptor with functionality for getting and setting the value of the field. */
 public abstract class FieldInvoker {
 
     /** The fields descriptor. */
     private final InternalFieldDescriptor descriptor;
 
-    private final VarHandle handle;
+    /** The var handle of the field. */
+    private final VarHandle varHandle;
 
-    FieldInvoker(InternalFieldDescriptor descriptor, Lookup lookup) {
+    /**
+     * Creates a new field invoker.
+     * 
+     * @param descriptor
+     *            the field descriptor
+     * @param lookup
+     *            the lookup object to use for access
+     */
+    public FieldInvoker(InternalFieldDescriptor descriptor, Lookup lookup) {
         this.descriptor = descriptor;
         try {
-            this.handle = descriptor.unreflect(lookup);
+            this.varHandle = descriptor.unreflect(lookup);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("Field " + descriptor + " is not accessible for lookup object " + lookup, e);
         }
     }
 
-    public FieldDescriptor descriptor() {
+    /**
+     * Returns the descriptor of the field.
+     * 
+     * @return the descriptor of the field
+     */
+    public final FieldDescriptor descriptor() {
         return descriptor;
     }
 
-    protected void setField(Object instance, Object value) {
-        handle.set(instance, value);
+    /**
+     * Sets the value of the field
+     * 
+     * @param instance
+     *            the instance for which to set the value
+     * @param value
+     *            the value to set
+     * @see VarHandle#set(Object...)
+     */
+    protected final void setField(Object instance, Object value) {
+        varHandle.set(instance, value);
     }
 
-    static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
+    protected static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
             Class<? extends Annotation> annotationType2) {
         return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
                 + ", to resolve remove one of the annotations.";
@@ -65,9 +88,23 @@ public abstract class FieldInvoker {
      *            the annotation
      * @return the error message
      */
-    static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    protected static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
                 + " or make the field non-final";
+    }
+
+    protected static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+        if ((Modifier.isStatic(field.getModifiers()))) {
+            throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field + ", to resolve remove @"
+                    + annotationType.getSimpleName() + " or make the field non-static");
+        }
+    }
+
+    protected static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+        if ((Modifier.isStatic(field.getModifiers()))) {
+            throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field
+                    + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
+        }
     }
 
     /**
@@ -79,7 +116,7 @@ public abstract class FieldInvoker {
      *            the annotation
      * @return the error message
      */
-    static String fieldWithAnnotationCannotBeStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    protected static String fieldWithAnnotationCannotBeStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         return "Cannot use @" + annotationType.getSimpleName() + " on static field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
                 + " or make the field non-static";
     }
@@ -93,7 +130,7 @@ public abstract class FieldInvoker {
      *            the annotation
      * @return the error message
      */
-    static String fieldWithAnnotationMustBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    protected static String fieldWithAnnotationMustBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         return "Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field + ", to resolve remove @"
                 + annotationType.getSimpleName() + " or make the field final";
     }

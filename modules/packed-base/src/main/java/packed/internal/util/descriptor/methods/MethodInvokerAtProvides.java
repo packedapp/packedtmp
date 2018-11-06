@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.reflect;
+package packed.internal.util.descriptor.methods;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -29,7 +29,7 @@ import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** This class represents a method annotated with the {@link Provider} annotation. */
-public final class AnnotatedMethodProvides extends MethodInvoker {
+public final class MethodInvokerAtProvides extends MethodInvoker {
 
     /** The caching mode of this node. */
     private final BindingMode cachingMode;
@@ -40,7 +40,7 @@ public final class AnnotatedMethodProvides extends MethodInvoker {
     /** The key. */
     private final Key<?> key;
 
-    AnnotatedMethodProvides(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup, Method method, Provides provides) {
+    MethodInvokerAtProvides(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup, Method method, Provides provides) {
         super(descriptor, lookup);
 
         // @Provides method cannot also have @Inject annotation
