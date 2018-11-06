@@ -62,4 +62,24 @@ public abstract class AbstractConfigurationSite implements InternalConfiguration
         return new AnnotatedMethodConfigurationSite(this, operation, method, annotation);
     }
 
+    // @Override
+    // public String toString() {
+    // if (!caller.isPresent()) {
+    // return "<No Info>";
+    // }
+    // StringBuilder sb = new StringBuilder();
+    // int i = 0;
+    // ARegistrationPoint a = this;
+    // while (a != null) {
+    // for (int j = 0; j < i; j++) {
+    // sb.append(" ");
+    // }
+    // sb.append(a.captureType.toString()).append(" -> ");
+    // // sb.append(a.getCaller().get());
+    // a = a.parent;
+    // sb.append("\n");
+    // }
+    // return sb.toString();
+    // }
+
 }

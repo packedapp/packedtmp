@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** A field invoker extends a field descriptor with functionality for getting and setting the value of the field. */
@@ -93,45 +94,38 @@ public abstract class FieldInvoker {
                 + " or make the field non-final";
     }
 
+    /**
+     * Checks that an annotated field is not static.
+     * 
+     * @param field
+     *            the field to check
+     * @param annotationType
+     *            the type of annotation that forced the check
+     */
     protected static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         if ((Modifier.isStatic(field.getModifiers()))) {
-            throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field + ", to resolve remove @"
-                    + annotationType.getSimpleName() + " or make the field non-static");
+            throw new InvalidDeclarationException(
+                    ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
+                            .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
+            //
+            // throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field
+            // + ", to resolve remove @"
+            // + annotationType.getSimpleName() + " or make the field non-static");
         }
     }
 
+    /**
+     * Checks that an annotated field is not final.
+     * 
+     * @param field
+     *            the field to check
+     * @param annotationType
+     *            the type of annotation that forced the check
+     */
     protected static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         if ((Modifier.isStatic(field.getModifiers()))) {
             throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field
                     + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
         }
-    }
-
-    /**
-     * Creates an error message for using an annotation on a static field.
-     *
-     * @param field
-     *            the field
-     * @param annotationType
-     *            the annotation
-     * @return the error message
-     */
-    protected static String fieldWithAnnotationCannotBeStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        return "Cannot use @" + annotationType.getSimpleName() + " on static field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
-                + " or make the field non-static";
-    }
-
-    /**
-     * Creates an error message for using an annotation on a field that is not final.
-     *
-     * @param field
-     *            the field
-     * @param annotationType
-     *            the annotation
-     * @return the error message
-     */
-    protected static String fieldWithAnnotationMustBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        return "Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field + ", to resolve remove @"
-                + annotationType.getSimpleName() + " or make the field final";
     }
 }

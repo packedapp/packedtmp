@@ -41,7 +41,7 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
         return annotation;
     }
 
-    public FieldDescriptor getField() {
+    public FieldDescriptor field() {
         return field;
     }
 

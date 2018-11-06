@@ -39,3 +39,13 @@ public interface InternalConfigurationSite extends ConfigurationSite {
     }
 
 }
+// 5 different types
+//
+// AnnotatedField : FieldDescriptor + Annotation
+// AnnotatedMethod : MethodDescriptor + Annotation
+// AnnotatedClass : Class + Annotation
+// Programmatically: StackFrame (class, method, linenumber)
+// FromFile : DocumentInfo URI + LineNumber + Maybe line number + column, settings.xml:333:12? L333:C12
+//
+// Vi har en unik
+// operation

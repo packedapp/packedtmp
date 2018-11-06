@@ -51,10 +51,18 @@ public final class FieldInvokerAtInject extends FieldInvoker {
      *
      * @return the dependency representing the field
      */
-    public Dependency getDependency() {
+    public Dependency dependency() {
         return dependency;
     }
 
+    /**
+     * Injects the specified value into the specified instance. Wrapping any value in optional if needed.
+     * 
+     * @param instance
+     *            the instance for which to inject
+     * @param value
+     *            the value to inject
+     */
     public void injectInstance(Object instance, Object value) {
         setField(instance, dependency.wrapIfOptional(value));
     }

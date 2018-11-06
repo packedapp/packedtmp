@@ -256,41 +256,7 @@ public abstract class Key<T> {
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
         Annotation qa = JavaXInjectSupport.findQualifier(pta, annotations);
-        // if (annotations.length > 0) {
-        // for (Annotation a : annotations) {
-        // if (JavaXInjectSupport.isQualifierAnnotationPresent(a.annotationType())) {
-        // if (qa != null) {
-        // throw new IllegalArgumentException("More than 1 qualifier on " + format(subClass));
-        // }
-        // qa = a;
-        // }
-        // }
-        // }
 
-        // Type tt = TypeVariableExtractorUtil.findTypeParameterFromSuperClass(getClass(), Key.class, 0);
-        // typeLiteral = (CanonicalizedTypeLiteral<T>) TypeLiteral.fromJavaImplementationType(tt);
-        // if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
-        // // cannot be parameterized with Optional
-        // throw new IllegalArgumentException();
-        // }
-        //
-        // // Find any qualifier annotation that might be present
-        // AnnotatedParameterizedType pta = (AnnotatedParameterizedType) getClass().getAnnotatedSuperclass();
-        // Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
-        // Annotation qa = null;
-        // if (annotations.length > 0) {
-        // for (Annotation a : annotations) {
-        // if (JavaXInjectSupport.isQualifierAnnotationPresent(a.annotationType())) {
-        // if (qa != null) {
-        // throw new IllegalArgumentException("A key cannot define more than 1 qualifier, however '" + getClass() + "' defined
-        // multiple: "
-        // + JavaXInjectSupport.getAllQualifierAnnotationPresent(pta.getAnnotatedActualTypeArguments()[0]));
-        // }
-        // qa = a;
-        // }
-        // }
-        // }
-        // this.qualifier = qa;
         return t.toKeyNullableAnnotation(qa);
     }
 
