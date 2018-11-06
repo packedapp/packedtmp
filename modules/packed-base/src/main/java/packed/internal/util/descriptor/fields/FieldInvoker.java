@@ -74,6 +74,10 @@ public abstract class FieldInvoker {
         varHandle.set(instance, value);
     }
 
+    protected final Object getField(Object instance) {
+        return varHandle.get(instance);
+    }
+
     protected static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
             Class<? extends Annotation> annotationType2) {
         return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field

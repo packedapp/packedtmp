@@ -124,7 +124,7 @@ public abstract class Key<T> {
      * 
      * @return the key
      */
-    CanonicalizedKey<T> canonicalize() {
+    final CanonicalizedKey<T> canonicalize() {
         if (getClass() == CanonicalizedKey.class) {
             return (CanonicalizedKey<T>) this;
         }

@@ -17,12 +17,23 @@ package app.packed.inject;
 
 import java.util.function.BiFunction;
 
+import app.packed.util.InvalidDeclarationException;
+
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
  * to the bi-function being the two dependencies.
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 
+    /**
+     * Creates a new factory.
+     *
+     * @param function
+     *            the function to use for creating new instances
+     * @throws InvalidDeclarationException
+     *             if the type variable T, U or R could not be determined. Or if T or U does not represent a proper
+     *             dependency, or R does not represent a proper key
+     */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         super(function);
     }

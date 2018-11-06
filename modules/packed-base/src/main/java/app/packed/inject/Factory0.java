@@ -18,6 +18,7 @@ package app.packed.inject;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import app.packed.util.InvalidDeclarationException;
 import packed.internal.inject.factory.InternalFactory0;
 
 /**
@@ -45,23 +46,23 @@ import packed.internal.inject.factory.InternalFactory0;
  * Passing a {@code null} argument to any method or constructor in this class will cause a {@link NullPointerException}
  * to be thrown.
  * 
- * @param <T>
+ * @param <R>
  *            the type of objects this factory constructs
  * @see Factory1
  * @see Factory2
  */
-public abstract class Factory0<T> extends Factory<T> {
+public abstract class Factory0<R> extends Factory<R> {
 
     /**
      * Creates a new factory, that uses the specified supplier to create new instances.
      *
      * @param supplier
      *            the supplier to use for creating new instances
-     * @throws IllegalArgumentException
-     *             if the type variable T could not be determined. Or if T is an invalid value, for example,
+     * @throws InvalidDeclarationException
+     *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */
-    protected Factory0(Supplier<? extends T> supplier) {
+    protected Factory0(Supplier<? extends R> supplier) {
         super(supplier);
     }
 

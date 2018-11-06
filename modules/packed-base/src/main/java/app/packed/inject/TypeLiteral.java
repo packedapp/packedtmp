@@ -141,7 +141,7 @@ public abstract class TypeLiteral<T> {
      * 
      * @return the type literal
      */
-    CanonicalizedTypeLiteral<T> canonicalize() {
+    final CanonicalizedTypeLiteral<T> canonicalize() {
         if (getClass() == CanonicalizedTypeLiteral.class) {
             return (CanonicalizedTypeLiteral<T>) this;
         }
@@ -217,7 +217,7 @@ public abstract class TypeLiteral<T> {
      *            the checked qualifier or null if no qualifier
      * @return the new key
      */
-    Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
+    final Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
         if (TypeUtil.isOptionalType(rawType)) {
             throw new InvalidDeclarationException("Cannot convert an optional type (" + toStringSimple() + ") to a Key, as keys cannot be optional");
         } else if (!TypeUtil.isFreeFromTypeVariables(type)) {

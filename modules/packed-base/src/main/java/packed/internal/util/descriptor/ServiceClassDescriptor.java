@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Key;
+import packed.internal.util.descriptor.fields.ComponentClassFieldsBuilder;
 import packed.internal.util.descriptor.fields.FieldInvokerAtInject;
 import packed.internal.util.descriptor.methods.MethodInvokerAtInject;
 
@@ -41,10 +42,17 @@ public class ServiceClassDescriptor<T> {
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
     private final String simpleName;
 
-    protected ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup) {
+    ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup) {
         this.clazz = clazz;
         this.simpleName = clazz.getSimpleName();
         this.injectableFields = FieldInvokerAtInject.findInjectableFields(clazz, lookup);
+        this.injectableMethods = MethodInvokerAtInject.findInjectableMethods(clazz, lookup);
+    }
+
+    protected ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup, ComponentClassFieldsBuilder fields) {
+        this.clazz = clazz;
+        this.simpleName = clazz.getSimpleName();
+        this.injectableFields = fields.injectableFields();
         this.injectableMethods = MethodInvokerAtInject.findInjectableMethods(clazz, lookup);
     }
 

@@ -15,12 +15,19 @@
  */
 package packed.internal.util.descriptor;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
  */
 public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
+
+    private List<InternalFieldDescriptor> allAnnotatedFields;
+
+    private final ConcurrentHashMap<Class<? extends Annotation>, List<InternalFieldDescriptor>> annotatedFields = new ConcurrentHashMap<>();
 
     /**
      * @param clazz

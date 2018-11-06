@@ -17,6 +17,8 @@ package app.packed.inject;
 
 import java.util.function.Function;
 
+import app.packed.util.InvalidDeclarationException;
+
 /**
  * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input
  * to the function being the single dependency.
@@ -64,10 +66,9 @@ public abstract class Factory1<T, R> extends Factory<R> {
      *
      * @param function
      *            the function to use for creating new instances
-     * @throws NullPointerException
-     *             if the specified function is null
-     * @throws IllegalArgumentException
-     *             if the type variable T or R could not be determined. Or if T does not represent a proper dependency
+     * @throws InvalidDeclarationException
+     *             if the type variable T or R could not be determined. Or if T does not represent a proper dependency, or R
+     *             does not represent a proper key
      */
     protected Factory1(Function<? super T, ? extends R> function) {
         super(function);
