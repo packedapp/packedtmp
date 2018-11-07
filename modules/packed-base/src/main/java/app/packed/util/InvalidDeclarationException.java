@@ -15,10 +15,12 @@
  */
 package app.packed.util;
 
+import app.packed.inject.Inject;
+
 /**
- * Throw when a member (field, method or constructor) is not valid
+ * A runtime exception that is typically thrown when the runtime encounters a structural problems on an implementation.
+ * For example, a final field annotated with {@link Inject}.
  */
-// Nah det kan og
 public class InvalidDeclarationException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

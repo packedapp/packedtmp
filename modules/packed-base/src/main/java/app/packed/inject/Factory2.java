@@ -22,6 +22,9 @@ import app.packed.util.InvalidDeclarationException;
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
  * to the bi-function being the two dependencies.
+ * 
+ * @see Factory0
+ * @see Factory1
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 

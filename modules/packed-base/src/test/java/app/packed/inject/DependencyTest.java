@@ -32,6 +32,8 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import packed.internal.inject.InternalDependency;
+
 /**
  *
  */
@@ -43,7 +45,7 @@ public class DependencyTest {
 
         @Test
         public void fromTypeAttribute() {
-            Dependency opString = Dependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
+            InternalDependency opString = InternalDependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -53,12 +55,12 @@ public class DependencyTest {
 
         @Test
         public void fromTypeParameter() {
-            assertThat(Dependency.of(OptionalInt.class)).isOptionalInt();
+            assertThat(InternalDependency.of(OptionalInt.class)).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            Dependency opInt = Dependency.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
+            InternalDependency opInt = InternalDependency.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated
@@ -68,16 +70,16 @@ public class DependencyTest {
 
     @Test
     public void ofClass() {
-        assertThatNullPointerException().isThrownBy(() -> Dependency.of((Class<?>) null));
+        assertThatNullPointerException().isThrownBy(() -> InternalDependency.of((Class<?>) null));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> Dependency.of(Optional.class))
+        assertThatIllegalArgumentException().isThrownBy(() -> InternalDependency.of(Optional.class))
                 .withMessage("Cannot determine type variable <T> for type Optional<T>");
 
-        Dependency opLong = Dependency.of(OptionalLong.class);
+        InternalDependency opLong = InternalDependency.of(OptionalLong.class);
         assertThat(opLong).isOptional(OptionalLong.class);
         assertThat(opLong).keyIs(Long.class);
 
-        Dependency opDouble = Dependency.of(OptionalDouble.class);
+        InternalDependency opDouble = InternalDependency.of(OptionalDouble.class);
         assertThat(opDouble).isOptional(OptionalDouble.class);
         assertThat(opDouble).keyIs(Double.class);
     }

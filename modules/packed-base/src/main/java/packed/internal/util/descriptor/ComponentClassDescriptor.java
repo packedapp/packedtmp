@@ -25,9 +25,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
 
-    private List<InternalFieldDescriptor> allAnnotatedFields;
+    List<InternalFieldDescriptor> allAnnotatedFields;
 
-    private final ConcurrentHashMap<Class<? extends Annotation>, List<InternalFieldDescriptor>> annotatedFields = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<Class<? extends Annotation>, List<InternalFieldDescriptor>> annotatedFields = new ConcurrentHashMap<>();
 
     /**
      * @param clazz

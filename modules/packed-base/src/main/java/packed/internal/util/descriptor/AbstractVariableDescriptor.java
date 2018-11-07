@@ -21,16 +21,16 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
-import app.packed.inject.Dependency;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
+import packed.internal.inject.InternalDependency;
 
 /** The default abstract implementation of {@link VariableDescriptor}. */
 public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElement implements VariableDescriptor {
 
     /** The variable as a dependency, lazy calculated. */
-    private volatile Dependency dependency;
+    private volatile InternalDependency dependency;
 
     /**
      * Creates a new AbstractVariableDescriptor.
@@ -43,7 +43,7 @@ public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElemen
     }
 
     /**
-     * The index of the variable, used when creating {@link Dependency} instances.
+     * The index of the variable, used when creating {@link InternalDependency} instances.
      *
      * @return index of the variable.
      */
@@ -61,12 +61,12 @@ public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElemen
      *
      * @return this variable as a dependency
      */
-    public Dependency toDependency() {
-        Dependency dependency = this.dependency;
+    public InternalDependency toDependency() {
+        InternalDependency dependency = this.dependency;
         return dependency == null ? this.dependency = toDependency0() : dependency;
     }
 
-    protected abstract Dependency toDependency0();
+    protected abstract InternalDependency toDependency0();
 
     /**
      * Tries to convert the specified value descriptor to an abstract value descriptor.

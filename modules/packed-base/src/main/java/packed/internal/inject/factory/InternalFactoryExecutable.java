@@ -21,13 +21,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
@@ -48,7 +48,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
 
     private final int numberOfMissingDependencies;
 
-    InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<Dependency> dependencies, int numberOfMissingDependencies,
+    InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies, int numberOfMissingDependencies,
             MethodHandle methodHandle) {
         super(key, dependencies);
         this.executable = executable;

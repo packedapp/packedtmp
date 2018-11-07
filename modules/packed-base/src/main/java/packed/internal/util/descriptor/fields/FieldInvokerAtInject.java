@@ -24,6 +24,7 @@ import java.util.List;
 import app.packed.inject.Dependency;
 import app.packed.inject.Inject;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
@@ -31,7 +32,7 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
 public final class FieldInvokerAtInject extends FieldInvoker {
 
     /** The field represented as a dependency */
-    private final Dependency dependency;
+    private final InternalDependency dependency;
 
     /**
      * Creates a new invoker.
@@ -43,7 +44,7 @@ public final class FieldInvokerAtInject extends FieldInvoker {
      */
     private FieldInvokerAtInject(InternalFieldDescriptor descriptor, Lookup lookup) {
         super(descriptor, lookup);
-        this.dependency = Dependency.of(descriptor);
+        this.dependency = InternalDependency.of(descriptor);
     }
 
     /**

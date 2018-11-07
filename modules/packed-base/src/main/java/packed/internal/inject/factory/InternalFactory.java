@@ -21,13 +21,13 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
+import packed.internal.inject.InternalDependency;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -56,7 +56,7 @@ public abstract class InternalFactory<T> {
     final Class<?> actualType;
 
     /** The dependencies for this factory. */
-    private final List<Dependency> dependencies;
+    private final List<InternalDependency> dependencies;
 
     /** The key that this factory will be registered under by default with an injector. */
     private final Key<T> key;
@@ -66,11 +66,11 @@ public abstract class InternalFactory<T> {
     /** The type of objects this factory creates. */
     private final TypeLiteral<T> typeLiteral;
 
-    public InternalFactory(TypeLiteral<T> typeLiteralOrKey, List<Dependency> dependencies) {
+    public InternalFactory(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies) {
         this(typeLiteralOrKey, dependencies, typeLiteralOrKey.getRawType());
     }
 
-    public InternalFactory(TypeLiteral<T> typeLiteralOrKey, List<Dependency> dependencies, Class<?> actualType) {
+    public InternalFactory(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.dependencies = requireNonNull(dependencies);
         this.key = typeLiteralOrKey.toKey();
@@ -92,7 +92,7 @@ public abstract class InternalFactory<T> {
      * 
      * @return a list of all of this factory's dependencies
      */
-    public final List<Dependency> getDependencies() {
+    public final List<InternalDependency> getDependencies() {
         return dependencies;
     }
 
@@ -170,11 +170,11 @@ public abstract class InternalFactory<T> {
 
     static class FunctionalSignature {
 
-        final List<Dependency> dependencies;
+        final List<InternalDependency> dependencies;
 
         final TypeLiteral<?> objectType;
 
-        FunctionalSignature(TypeLiteral<?> objectType, List<Dependency> dependencies) {
+        FunctionalSignature(TypeLiteral<?> objectType, List<InternalDependency> dependencies) {
             this.objectType = requireNonNull(objectType);
             this.dependencies = requireNonNull(dependencies);
         }

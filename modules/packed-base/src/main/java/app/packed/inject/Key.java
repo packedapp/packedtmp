@@ -260,7 +260,7 @@ public abstract class Key<T> {
         return t.toKeyNullableAnnotation(qa);
     }
 
-    static Key<?> internalOf(Type type, Annotation optionalQualifier) {
+    public static Key<?> internalOf(Type type, Annotation optionalQualifier) {
         if (optionalQualifier == null) {
             return of(type);
         }
@@ -276,6 +276,7 @@ public abstract class Key<T> {
      *            the type to return a key for
      * @return a key matching the specified type with no qualifiers
      */
+    // TODO rename type to key?????
     public static <T> Key<T> of(Class<T> type) {
         return TypeLiteral.of(type).box().toKey();
     }

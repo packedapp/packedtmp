@@ -23,11 +23,11 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
+import packed.internal.inject.InternalDependency;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ParameterDescriptor}. */
@@ -165,8 +165,8 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
 
     /** {@inheritDoc} */
     @Override
-    protected Dependency toDependency0() {
-        return Dependency.of(this);
+    protected InternalDependency toDependency0() {
+        return InternalDependency.of(this);
     }
 
     /** {@inheritDoc} */

@@ -122,8 +122,9 @@ public class Factory<T> {
      *
      * @return a list of this factory's dependencies
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public final List<Dependency> getDependencies() {
-        return factory.getDependencies();
+        return (List) factory.getDependencies();
     }
 
     /**

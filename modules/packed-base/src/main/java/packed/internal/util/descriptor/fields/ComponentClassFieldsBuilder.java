@@ -39,7 +39,8 @@ public class ComponentClassFieldsBuilder {
 
         for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
             for (Field field : c.getDeclaredFields()) {
-
+                System.out.println(field);
+                System.out.println(result);
             }
         }
         return null;
@@ -50,15 +51,16 @@ public class ComponentClassFieldsBuilder {
 
         for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
             for (Field field : c.getDeclaredFields()) {
-                // Extract valid annotations
-                // First check for @Inject
-                FieldInvokerAtInject i = null;// tryCreate(field, lookup);
-                if (i != null) {
-                    if (result == null) {
-                        result = new ArrayList<>(2);
-                    }
-                    result.add(i);
-                }
+                System.out.println(field);
+                // // Extract valid annotations
+                // // First check for @Inject
+                // FieldInvokerAtInject i = null;// tryCreate(field, lookup);
+                // if (i != null) {
+                // if (result == null) {
+                // result = new ArrayList<>(2);
+                // }
+                // result.add(i);
+                // }
             }
         }
         return result == null ? List.of() : List.copyOf(result);

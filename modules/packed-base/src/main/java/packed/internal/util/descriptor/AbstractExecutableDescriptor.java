@@ -27,12 +27,13 @@ import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.util.ExecutableDescriptor;
+import packed.internal.inject.InternalDependency;
 
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
 public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElement implements ExecutableDescriptor {
 
     /** A cached list of this dependencies matching the parameters of the executable. */
-    private volatile List<Dependency> dependencies;
+    private volatile List<InternalDependency> dependencies;
 
     /** The executable */
     final Executable executable;
@@ -116,26 +117,27 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
      *
      * @return a dependency list
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public final List<Dependency> toDependencyList() {
-        List<Dependency> d = this.dependencies;
+        List<InternalDependency> d = this.dependencies;
         if (d != null) {
-            return d;
+            return (List) d;
         }
 
         switch (parameters.length) {
         case 0:
-            return dependencies = List.of();
+            return (List) (dependencies = List.of());
         case 1:
-            return dependencies = List.of(parameters[0].toDependency());
+            return (List) (dependencies = List.of(parameters[0].toDependency()));
         case 2:
-            return dependencies = List.of(parameters[0].toDependency(), parameters[1].toDependency());
+            return (List) (dependencies = List.of(parameters[0].toDependency(), parameters[1].toDependency()));
         default:
-            ArrayList<Dependency> list = new ArrayList<>(parameters.length);
+            ArrayList<InternalDependency> list = new ArrayList<>(parameters.length);
             for (int i = 0; i < parameters.length; i++) {
                 list.add(parameters[i].toDependency());
             }
-            return dependencies = List.copyOf(list);
+            return (List) (dependencies = List.copyOf(list));
         }
     }
 

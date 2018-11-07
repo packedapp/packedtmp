@@ -21,6 +21,7 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import app.packed.inject.Inject;
 import app.packed.inject.TypeLiteral;
@@ -35,12 +36,14 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  */
 public class FindInjectable {
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> InternalFactory<T> find(Class<T> implementation) {
         AbstractExecutableDescriptor executable = findMethod(implementation);
         if (executable == null) {
             executable = findConstructor(implementation);// moc.constructors().findInjectable();
         }
-        return new InternalFactoryExecutable<>(TypeLiteral.of(implementation), executable, executable.toDependencyList(), executable.getParameterCount(), null);
+        return new InternalFactoryExecutable<>(TypeLiteral.of(implementation), executable, (List) executable.toDependencyList(), executable.getParameterCount(),
+                null);
     }
 
     @SuppressWarnings("unchecked")

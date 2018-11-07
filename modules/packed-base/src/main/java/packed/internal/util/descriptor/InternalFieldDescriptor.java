@@ -23,10 +23,10 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -209,7 +209,7 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
-    protected Dependency toDependency0() {
-        return Dependency.of(this);
+    protected InternalDependency toDependency0() {
+        return InternalDependency.of(this);
     }
 }

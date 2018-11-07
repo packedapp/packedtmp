@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// Can only expose final fields otherwise throw IAE
+// Can only expose final fields otherwise throw IAE,
 public @interface Provides {
 
     /**

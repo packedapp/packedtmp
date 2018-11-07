@@ -217,7 +217,7 @@ public abstract class TypeLiteral<T> {
      *            the checked qualifier or null if no qualifier
      * @return the new key
      */
-    final Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
+    public final Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
         if (TypeUtil.isOptionalType(rawType)) {
             throw new InvalidDeclarationException("Cannot convert an optional type (" + toStringSimple() + ") to a Key, as keys cannot be optional");
         } else if (!TypeUtil.isFreeFromTypeVariables(type)) {
@@ -259,20 +259,21 @@ public abstract class TypeLiteral<T> {
     /**
      * Returns a type literal from a type that is implemented by a class located in java.base, as these are known to be
      * intra-comparable.
-     *
-     * @apiNote this method is not available publically because you can really pass anything in like a Type. Since there are
-     *          no standard way to create hash codes for something like {@link ParameterizedType}, we need to make a copy of
-     *          every specified type to make sure different implementations calculates the same hash code. For example,
-     *          {@code BlueParameterizedType<String>} can have a different hashCode then
-     *          {@code GreenParameterizedType<String>} because {@link ParameterizedType} does not specify how the hash code
-     *          is calculated. As a result we need to transform both of them into instances of the same
-     *          InternalParameterizedType. While this is not impossible, it is just a lot of work, and has some overhead.
+     * <p>
+     * This method is not available publically because you can really pass anything in like a Type. Since there are no
+     * standard way to create hash codes for something like {@link ParameterizedType}, we need to make a copy of every
+     * specified type to make sure different implementations calculates the same hash code. For example,
+     * {@code BlueParameterizedType<String>} can have a different hashCode then {@code GreenParameterizedType<String>}
+     * because {@link ParameterizedType} does not specify how the hash code is calculated. As a result we need to transform
+     * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
+     * work, and has some overhead.
+     * 
      * @param type
      *            the type to return a type literal for
      * @return a type literal from the specified type
      * @see #of(Class)
      */
-    static CanonicalizedTypeLiteral<?> fromJavaImplementationType(Type type) {
+    public static CanonicalizedTypeLiteral<?> fromJavaImplementationType(Type type) {
         return new CanonicalizedTypeLiteral<>(type);
     }
 

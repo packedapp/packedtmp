@@ -21,12 +21,12 @@ import static packed.internal.util.StringFormatter.format;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
 
 /** An internal factory for {@link Factory2}. */
 public class InternalFactory2<T, U, R> extends InternalFactory<R> {
@@ -39,14 +39,14 @@ public class InternalFactory2<T, U, R> extends InternalFactory<R> {
         @Override
         protected FunctionalSignature computeValue(Class<?> type) {
             return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    Dependency.fromTypeVariables(Factory2.class, (Class) type, 0, 1));
+                    InternalDependency.fromTypeVariables(Factory2.class, (Class) type, 0, 1));
         }
     };
 
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral, List<Dependency> dependencies) {
+    public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral, List<InternalDependency> dependencies) {
         super(typeLiteral, dependencies);
         this.function = requireNonNull(function);
     }

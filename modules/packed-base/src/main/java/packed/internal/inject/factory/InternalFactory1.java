@@ -21,12 +21,12 @@ import static packed.internal.util.StringFormatter.format;
 import java.util.List;
 import java.util.function.Function;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFactory<R> {
@@ -39,14 +39,14 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         @Override
         protected FunctionalSignature computeValue(Class<?> type) {
             return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    Dependency.fromTypeVariables(Factory1.class, (Class) type, 0));
+                    InternalDependency.fromTypeVariables(Factory1.class, (Class) type, 0));
         }
     };
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    public InternalFactory1(Function<? super T, ? extends R> function, TypeLiteral<R> typeLiteral, List<Dependency> dependencies) {
+    public InternalFactory1(Function<? super T, ? extends R> function, TypeLiteral<R> typeLiteral, List<InternalDependency> dependencies) {
         super(typeLiteral, dependencies);
         this.function = requireNonNull(function);
     }
