@@ -23,6 +23,7 @@
         <configuration>
           <source>11</source>
           <target>11</target>
+          <!--
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
             <arg>-Xplugin:ErrorProne</arg>
@@ -34,6 +35,7 @@
               <version>2.3.2</version>
             </path>
           </annotationProcessorPaths>
+          -->
         </configuration>
       </plugin>
       <plugin>
@@ -46,6 +48,7 @@
           </excludes>
         </configuration>
       </plugin>
+      <!--
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
         <artifactId>coveralls-maven-plugin</artifactId>
@@ -77,6 +80,7 @@
           </execution>
         </executions>
       </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>

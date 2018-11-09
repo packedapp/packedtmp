@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
-import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /** Tests {@link InternalParameterDescriptor}. */
 public class InternalParameterDescriptorTest {

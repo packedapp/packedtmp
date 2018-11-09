@@ -13,10 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package xackedinject;
 
-/** Tests {@link InternalFactory0}. */
-public class InternalFactory0Test {
+import java.lang.invoke.MethodHandles;
 
+import app.packed.inject.Injector;
 
+/**
+ *
+ */
+public class Example {
+
+    Example() {}
+
+    public static void main(String[] args) {
+        Injector i = Injector.of(e -> {
+            e.lookup(MethodHandles.lookup());
+            e.bind(Example.class);
+            e.bind("foxxxx");
+        });
+
+        System.out.println(i.with(String.class));
+        System.out.println(i.with(Example.class));
+    }
 }

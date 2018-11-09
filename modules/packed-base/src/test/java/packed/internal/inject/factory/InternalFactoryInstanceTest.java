@@ -20,8 +20,6 @@ import static support.assertj.Assertions.assertThatInternalFactory;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Key;
-import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactoryInstance;
 
 /** Tests {@link InternalFactoryInstance} */
 public class InternalFactoryInstanceTest {

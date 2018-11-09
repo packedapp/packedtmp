@@ -56,7 +56,7 @@ public class InternalInjectionSites {
 
     /**
      * An implementation of injection site used, when requesting a service directly through an injector, for example, via
-     * {@link Injector#get(Class)}.
+     * {@link Injector#with(Class)}.
      */
     static class InjectionSiteForDependency implements InjectionSite {
 
@@ -122,7 +122,7 @@ public class InternalInjectionSites {
 
     /**
      * An implementation of injection site used, when requesting a service directly through an injector, for example, via
-     * {@link Injector#get(Class)}.
+     * {@link Injector#with(Class)}.
      */
     static class InjectionSiteForKey implements InjectionSite {
 

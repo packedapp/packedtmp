@@ -66,7 +66,7 @@ public final class FieldInvokerAtInject extends FieldInvoker {
         setValue(instance, dependency.wrapIfOptional(value));
     }
 
-    static void checkIfInjectable(FieldBuilder builder, Field f, Annotation[] annotations) {
+    static FieldInvokerAtInject checkIfInjectable(FieldBuilder builder, Field f, Annotation[] annotations) {
         if (JavaXInjectSupport.isInjectAnnotationPresent(f)) {
             InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(f);
             checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
@@ -76,6 +76,8 @@ public final class FieldInvokerAtInject extends FieldInvoker {
             }
             FieldInvokerAtInject fi = new FieldInvokerAtInject(descriptor, builder.lookup);
             builder.injectableFields.add(fi);
+            return fi;
         }
+        return null;
     }
 }

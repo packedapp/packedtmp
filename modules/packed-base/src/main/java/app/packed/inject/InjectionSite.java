@@ -42,7 +42,7 @@ import packed.internal.inject.InternalInjectionSites;
  *
  * Fields
  *
- * getInstance() such as {@link OldInjector#getInstance(Key)}.
+ * getInstance() such as {@link Injector#with(Class)}.
  */
 // Hvad hvis man injecter i en service???Hvorfor kan man ikke faa det at vide
 public interface InjectionSite extends Dependency {
@@ -65,7 +65,7 @@ public interface InjectionSite extends Dependency {
     /**
      * Returns a new injection site for the specified injector and key.
      * <p>
-     * This method is can be used to create a valid injection site for methods such as {@link OldInjector#getOld(Key)}.
+     * This method is can be used to create a valid injection site for methods such as {@link Injector#with(Key)}.
      * 
      * @param injector
      *            the injector from where injection is requested

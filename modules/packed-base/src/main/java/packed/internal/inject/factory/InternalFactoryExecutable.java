@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
 import app.packed.inject.Factory;
-import app.packed.inject.InjectionException;
 import app.packed.inject.IllegalAccessRuntimeException;
+import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.Nullable;

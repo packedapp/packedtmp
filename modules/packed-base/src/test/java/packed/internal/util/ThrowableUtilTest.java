@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
 
-import packed.internal.util.ThrowableUtil;
 import support.stubs.Throwables.Error1;
 import support.stubs.Throwables.Exception1;
 import support.stubs.Throwables.RuntimeException1;

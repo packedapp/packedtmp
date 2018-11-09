@@ -27,6 +27,7 @@ import java.util.List;
 /**
  *
  */
+// Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
 public class FieldBuilder {
 
     ArrayList<FieldInvokerAtInject> injectableFields;
@@ -48,10 +49,14 @@ public class FieldBuilder {
                 Annotation[] a = field.getAnnotations();
                 if (a.length > 0) {
                     // Multiple annotations
-                    if (a.length > 1) {
+                    FieldInvokerAtInject inject = FieldInvokerAtInject.checkIfInjectable(result, field, a);
 
+                    // We need to to some checks when we have multiple annotations...
+                    if (a.length > 1) {
+                        if (inject != null) {
+                            System.out.println("OOPS");
+                        }
                     }
-                    FieldInvokerAtInject.checkIfInjectable(result, field, a);
 
                 }
             }

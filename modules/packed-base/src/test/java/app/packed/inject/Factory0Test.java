@@ -54,7 +54,7 @@ public class Factory0Test {
                 .withMessageStartingWith("Cannot determine type variable <R> for Factory<T> on class app.packed.inject.");
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new X(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <R> for Factory<T> on class app.packed.inject.Factory0");
+                .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
     }
 
     @Test

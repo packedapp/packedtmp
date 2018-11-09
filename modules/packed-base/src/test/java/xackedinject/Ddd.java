@@ -13,10 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package xackedinject;
 
-/** Tests {@link InternalFactory0}. */
-public class InternalFactory0Test {
+import app.packed.inject.Injector;
 
+/**
+ *
+ */
+public class Ddd {
 
+    public Ddd() {}
+
+    public static void main(String[] args) {
+        Injector oi = Injector.of(i -> {
+            i.bind(Ddd.class);
+            i.bind("123.class");
+        });
+
+        System.out.println(oi.getService(Ddd.class).getConfigurationSite());
+        System.out.println(oi.getService(String.class).getConfigurationSite());
+
+        System.out.println(oi.getService(Ddd.class).getConfigurationSite().parent().get());
+
+        System.out.println(oi.getConfigurationSite());
+
+    }
 }

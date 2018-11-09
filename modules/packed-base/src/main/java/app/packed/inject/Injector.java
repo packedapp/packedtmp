@@ -19,11 +19,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
+import packed.internal.inject.InternalInjectorConfiguration;
+import packed.internal.util.configurationsite.ConfigurationSiteType;
+import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -95,6 +99,8 @@ public interface Injector extends Taggable {
      * Returns a service instance for the given injection key if available, otherwise an empty optional. If you know for
      * certain that a service exists for the specified, {@link #with(Class)} usually leads to prettier code.
      *
+     * @param <T>
+     *            the type of service this method returns
      * @param key
      *            the key for which to return a service instance
      * @return an optional containing the service instance if present, otherwise an empty optional
@@ -115,12 +121,12 @@ public interface Injector extends Taggable {
     ConfigurationSite getConfigurationSite();
 
     @Nullable
-    default <T> ServiceDescriptor getServiceDescriptor(Class<T> serviceType) {
-        return getServiceDescriptor(Key.of(serviceType));
+    default <T> ServiceDescriptor getService(Class<T> serviceType) {
+        return getService(Key.of(serviceType));
     }
 
     @Nullable
-    default <T> ServiceDescriptor getServiceDescriptor(Key<T> key) {
+    default <T> ServiceDescriptor getService(Key<T> key) {
         requireNonNull(key, "key is null");
         Optional<ServiceDescriptor> o = services().filter(d -> d.getKey().equals(key)).findFirst();
         return o.orElse(null);
@@ -136,11 +142,11 @@ public interface Injector extends Taggable {
     String getDescription();
 
     /**
-     * Returns <tt>true</tt> if a service matching the specified type exists. Otherwise false.
+     * Returns true if a service matching the specified type exists. Otherwise false.
      *
      * @param key
      *            the type of service
-     * @return <tt>true</tt> if a service matching the specified type exists. Otherwise false.
+     * @return true if a service matching the specified type exists. Otherwise false.
      * @see #hasService(Key)
      */
     default boolean hasService(Class<?> key) {
@@ -151,7 +157,7 @@ public interface Injector extends Taggable {
     /**
      * Returns {@code true} if a service matching the specified type exists. Otherwise {@code false}.
      *
-     * @param serviceType
+     * @param key
      *            the type of service
      * @return true if a service matching the specified type exists. Otherwise false.
      * @see #hasService(Class)
@@ -163,8 +169,12 @@ public interface Injector extends Taggable {
      * <p>
      * This method is typically only needed if need to construct objects yourself.
      *
+     * @param <T>
+     *            the type of object to inject into
      * @param instance
      *            the instance to inject members (fields and methods) on
+     * @param lookup
+     *            A lookup object
      * @return the specified instance
      * @throws InjectionException
      *             if any of the injectable members of the specified instance could not be injected
@@ -223,7 +233,7 @@ public interface Injector extends Taggable {
      * </pre>
      *
      * @param <T>
-     *            the key of the service to return
+     *            the type of service this method returns
      * @param key
      *            the key of the service to return
      * @return a service with the specified key
@@ -238,6 +248,20 @@ public interface Injector extends Taggable {
             throw new UnsupportedOperationException("A service with the specified key could not be found, key = " + key);
         }
         return t.get();
+    }
+
+    /**
+     * Creates a new injector via the specified configurator.
+     *
+     * @param configurator
+     *            a consumer that can configure the injector
+     * @return the new injector
+     */
+    static Injector of(Consumer<InjectorConfiguration> configurator) {
+        requireNonNull(configurator, "configurator is null");
+        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
+        configurator.accept(c);
+        return c.binder.build();
     }
 }
 
