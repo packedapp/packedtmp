@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package packed.internal.invokers;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Key;
-import packed.internal.util.descriptor.fields.FieldBuilder;
-import packed.internal.util.descriptor.fields.FieldInvokerAtInject;
-import packed.internal.util.descriptor.methods.MethodInvokerAtInject;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
