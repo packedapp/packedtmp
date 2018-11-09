@@ -23,14 +23,14 @@ import app.packed.inject.IllegalAccessRuntimeException;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
-/**
- *
- */
-public class MethodInvoker {
+/** A method invoker extends a method descriptor with functionality for invoking the field. */
+public abstract class MethodInvoker {
 
-    final InternalMethodDescriptor descriptor;
+    /** The descriptor of the method. */
+    private final InternalMethodDescriptor descriptor;
 
-    final MethodHandle handle;
+    /** The method handle for the method. */
+    protected final MethodHandle handle;
 
     protected MethodInvoker(InternalMethodDescriptor descriptor, Lookup lookup) {
         this.descriptor = descriptor;
@@ -41,11 +41,16 @@ public class MethodInvoker {
         }
     }
 
-    public InternalMethodDescriptor descriptor() {
+    /**
+     * Returns the descriptor of the method.
+     * 
+     * @return the descriptor of the method
+     */
+    public final InternalMethodDescriptor descriptor() {
         return descriptor;
     }
 
-    public Object invoke(Object... arguments) throws Throwable {
+    public final Object invoke(Object... arguments) throws Throwable {
         return handle.invokeWithArguments(arguments);
     }
 

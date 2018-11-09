@@ -47,24 +47,7 @@ import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.AbstractVariableDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
-/**
- * A dependency Annotations are take from the field or parameter
- */
-
-// Key <- extract information with Optional, Provider, etc
-// Index (Er jo saadan set ogsaa i Parameter)
-// Optional <-annotated with, or returning Optional, xyz
-// Provider??? isProvider, isOptional
-
-// OptionalInt != Optional<Integer> <- key is identical, but dependencies are not
-// Also the way we need to things are different
-
-/**
- * A dependency object. This is typically created from a parameter on a constructor or method. In which case the
- * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable}. It can also be
- * a field, in which case {@link #variable} returns an instance of {@link ParameterDescriptor}. Dependencies can be
- * optional in which case {@link #isOptional()} returns true.
- */
+/** The default implementation of {@link Dependency}. */
 public final class InternalDependency implements Dependency {
 
     /** The index of this dependency. */
@@ -77,9 +60,11 @@ public final class InternalDependency implements Dependency {
      * Null if a non-optional dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
      * {@link OptionalDouble} or {@link Nullable} annotation.
      */
+    @Nullable
     private final Class<?> optionalType;
 
     /** The variable of this dependency. */
+    @Nullable
     private final VariableDescriptor variable;
 
     InternalDependency(Key<?> key, AbstractVariableDescriptor variable, Class<?> optionalType) {
@@ -145,8 +130,10 @@ public final class InternalDependency implements Dependency {
     public Optional<Member> getMember() {
         if (variable instanceof FieldDescriptor) {
             return Optional.of(((FieldDescriptor) variable));
-        } else {
+        } else if (variable instanceof ParameterDescriptor) {
             return Optional.of(((ParameterDescriptor) variable).getDeclaringExecutable());
+        } else {
+            return Optional.empty();
         }
     }
 
@@ -358,26 +345,3 @@ public final class InternalDependency implements Dependency {
         return new InternalDependency(key, variable, optionalType);
     }
 }
-
-//// ofOptional istedet for tror jeg
-// public static <T> Dependency optionalOf(Key<T> key, T defaultValue) {
-// throw new UnsupportedOperationException();
-// }
-//
-// public static Dependency optionalOfInt(int defaultValue) {
-// throw new UnsupportedOperationException();
-// }
-//
-// /**
-// * Creates a new dependency keeping the same properties as this dependency but replacing the existing index with the
-// * specified index.
-// *
-// * @param index
-// * the index of the returned variable
-// * @return a new dependency with the specified index
-// * @throws IllegalArgumentException
-// * if the index is negative ({@literal <}0
-// */
-// public Dependency withIndex(int index) {
-// throw new UnsupportedOperationException();
-// }

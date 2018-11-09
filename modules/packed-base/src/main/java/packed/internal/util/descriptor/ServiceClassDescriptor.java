@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Key;
-import packed.internal.util.descriptor.fields.ComponentClassFieldsBuilder;
+import packed.internal.util.descriptor.fields.FieldBuilder;
 import packed.internal.util.descriptor.fields.FieldInvokerAtInject;
 import packed.internal.util.descriptor.methods.MethodInvokerAtInject;
 
@@ -33,6 +33,9 @@ public class ServiceClassDescriptor<T> {
     /** The class this descriptor is created from. */
     private final Class<T> clazz;
 
+    /** The default key that this service will be made available, unless explicitly bound to another key. */
+    volatile Key<T> defaultKey;
+
     /** All fields annotated with {@link Inject}. */
     private final Collection<FieldInvokerAtInject> injectableFields;
 
@@ -43,21 +46,15 @@ public class ServiceClassDescriptor<T> {
     private final String simpleName;
 
     ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup) {
-        this.clazz = clazz;
-        this.simpleName = clazz.getSimpleName();
-        this.injectableFields = FieldInvokerAtInject.findInjectableFields(clazz, lookup);
-        this.injectableMethods = MethodInvokerAtInject.findInjectableMethods(clazz, lookup);
+        this(clazz, lookup, FieldBuilder.forService(clazz, lookup));
     }
 
-    protected ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup, ComponentClassFieldsBuilder fields) {
+    protected ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup, FieldBuilder fields) {
         this.clazz = clazz;
         this.simpleName = clazz.getSimpleName();
         this.injectableFields = fields.injectableFields();
         this.injectableMethods = MethodInvokerAtInject.findInjectableMethods(clazz, lookup);
     }
-
-    /** The default key that this service will be made available, unless explicitly bound to another key. */
-    volatile Key<T> defaultKey;
 
     public Key<T> getDefaultKey() {
         // Hmmmm, this does not play well with Factory.of(SomeQualifiedServiceClass.class) <- Which ignores the qualifier....
@@ -65,14 +62,6 @@ public class ServiceClassDescriptor<T> {
         // Static @Inject method
 
         return defaultKey;
-    }
-
-    public boolean hasInjectableFields() {
-        return !injectableFields.isEmpty();
-    }
-
-    public boolean hasInjectableMethods() {
-        return !injectableMethods.isEmpty();
     }
 
     /**
@@ -92,6 +81,14 @@ public class ServiceClassDescriptor<T> {
      */
     public final Class<T> getType() {
         return clazz;
+    }
+
+    public boolean hasInjectableFields() {
+        return !injectableFields.isEmpty();
+    }
+
+    public boolean hasInjectableMethods() {
+        return !injectableMethods.isEmpty();
     }
 
     /**

@@ -15,20 +15,18 @@
  */
 package packed.internal.util.descriptor.fields;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.Inject;
-import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
-/** This class represents a field annotated with the Inject annotation. */
+/** This class represents a field annotated with the {@link Inject} annotation. */
 public final class FieldInvokerAtInject extends FieldInvoker {
 
     /** The field represented as a dependency */
@@ -65,37 +63,19 @@ public final class FieldInvokerAtInject extends FieldInvoker {
      *            the value to inject
      */
     public void injectInstance(Object instance, Object value) {
-        setField(instance, dependency.wrapIfOptional(value));
+        setValue(instance, dependency.wrapIfOptional(value));
     }
 
-    public static Collection<FieldInvokerAtInject> findInjectableFields(Class<?> clazz, Lookup lookup) {
-        ArrayList<FieldInvokerAtInject> result = null;
-        for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
-            for (Field field : c.getDeclaredFields()) {
-                // Extract valid annotations
-                // First check for @Inject
-                FieldInvokerAtInject i = tryCreate(field, lookup);
-                if (i != null) {
-                    if (result == null) {
-                        result = new ArrayList<>(2);
-                    }
-                    result.add(i);
-                }
-            }
-        }
-        return result == null ? List.of() : List.copyOf(result);
-    }
-
-    // For now this is a separate method, when we also want to support components fields..
-    @Nullable
-    private static FieldInvokerAtInject tryCreate(Field field, Lookup lookup) {
-        // First check for @Inject
-        if (JavaXInjectSupport.isInjectAnnotationPresent(field)) {
-            InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+    static void checkIfInjectable(FieldBuilder builder, Field f, Annotation[] annotations) {
+        if (JavaXInjectSupport.isInjectAnnotationPresent(f)) {
+            InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(f);
             checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
             checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
-            return new FieldInvokerAtInject(descriptor, lookup);
+            if (builder.injectableFields == null) {
+                builder.injectableFields = new ArrayList<>(2);
+            }
+            FieldInvokerAtInject fi = new FieldInvokerAtInject(descriptor, builder.lookup);
+            builder.injectableFields.add(fi);
         }
-        return null;
     }
 }

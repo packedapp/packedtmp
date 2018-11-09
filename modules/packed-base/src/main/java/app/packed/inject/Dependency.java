@@ -27,7 +27,10 @@ import app.packed.util.VariableDescriptor;
 import packed.internal.inject.InternalDependency;
 
 /**
- *
+ * A dependency object. This is typically created from a parameter on a constructor or method. In which case the
+ * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable}. It can also be
+ * a field, in which case {@link #variable} returns an instance of {@link ParameterDescriptor}. Dependencies can be
+ * optional in which case {@link #isOptional()} returns true.
  */
 public interface Dependency {
 

@@ -54,12 +54,12 @@ import app.packed.util.MethodDescriptor;
 
 // Filter on accessors???
 // Syntes slet ikke der skal vaere nogle filtre..
-public class MethodDescriptorTraverser {
+public class MethodBuilder {
 
     /** Creates a new processor by subclassing this class. */
-    protected MethodDescriptorTraverser() {}
+    protected MethodBuilder() {}
 
-    public static final MethodDescriptorTraverser DEFAULT = new MethodDescriptorTraverser();
+    public static final MethodBuilder DEFAULT = new MethodBuilder();
 
     /**
      * Returns whether or not overridden methods should be ignored. The value is {@code true}.

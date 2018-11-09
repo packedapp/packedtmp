@@ -36,5 +36,4 @@ public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
     protected ComponentClassDescriptor(Class<T> clazz, Lookup lookup) {
         super(clazz, lookup);
     }
-
 }

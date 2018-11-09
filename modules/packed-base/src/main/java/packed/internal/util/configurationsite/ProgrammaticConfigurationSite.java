@@ -38,4 +38,8 @@ public class ProgrammaticConfigurationSite extends AbstractConfigurationSite {
         this.caller = requireNonNull(caller);
     }
 
+    @Override
+    public String toString() {
+        return caller.get().toString();
+    }
 }

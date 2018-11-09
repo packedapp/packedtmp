@@ -15,9 +15,51 @@
  */
 package packed.internal.util.descriptor.fields;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  *
  */
 public class FieldBuilder {
 
+    ArrayList<FieldInvokerAtInject> injectableFields;
+
+    final Lookup lookup;
+
+    FieldBuilder(Lookup lookup) {
+        this.lookup = requireNonNull(lookup);
+    }
+
+    public Collection<FieldInvokerAtInject> injectableFields() {
+        return injectableFields == null ? List.of() : List.copyOf(injectableFields);
+    }
+
+    public static FieldBuilder forService(Class<?> clazz, Lookup lookup) {
+        FieldBuilder result = new FieldBuilder(lookup);
+        for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
+            for (Field field : c.getDeclaredFields()) {
+                Annotation[] a = field.getAnnotations();
+                if (a.length > 0) {
+                    // Multiple annotations
+                    if (a.length > 1) {
+
+                    }
+                    FieldInvokerAtInject.checkIfInjectable(result, field, a);
+
+                }
+            }
+        }
+        return null;
+    }
+
+    public static FieldBuilder forComponent(Class<?> clazz, Lookup lookup) {
+        throw new UnsupportedOperationException();
+    }
 }

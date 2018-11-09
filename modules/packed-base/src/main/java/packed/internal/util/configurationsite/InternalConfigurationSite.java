@@ -28,13 +28,13 @@ public interface InternalConfigurationSite extends ConfigurationSite {
 
     default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
-                .walk(e -> e.filter(f -> !f.getClassName().startsWith("app.packed")).findFirst());
+                .walk(e -> e.filter(f -> (!f.getClassName().startsWith("app.packed") && !f.getClassName().startsWith("packed"))).findFirst());
         return new ProgrammaticConfigurationSite(this, cst, sf);
     }
 
     static InternalConfigurationSite ofStack(ConfigurationSiteType cst) {
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
-                .walk(e -> e.filter(f -> !f.getClassName().startsWith("app.packed")).findFirst());
+                .walk(e -> e.filter(f -> (!f.getClassName().startsWith("app.packed") && !f.getClassName().startsWith("packed"))).findFirst());
         return new ProgrammaticConfigurationSite(null, cst, sf);
     }
 

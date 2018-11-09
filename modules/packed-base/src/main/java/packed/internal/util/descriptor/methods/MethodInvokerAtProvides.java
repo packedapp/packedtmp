@@ -15,11 +15,17 @@
  */
 package packed.internal.util.descriptor.methods;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.Inject;
+import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provider;
 import app.packed.inject.Provides;
@@ -31,13 +37,14 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 /** This class represents a method annotated with the {@link Provider} annotation. */
 public final class MethodInvokerAtProvides extends MethodInvoker {
 
-    /** The caching mode of this node. */
-    private final BindingMode cachingMode;
+    /** The binding mode from {@link Provides#bindingMode()}. */
+    private final BindingMode bindingMode;
 
-    /** An optional description of the annotated method. */
+    /** An (optional) description from {@link Provides#description()}. */
+    @Nullable
     private final String description;
 
-    /** The key. */
+    /** The key under which this method will deliver services. */
     private final Key<?> key;
 
     MethodInvokerAtProvides(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup, Method method, Provides provides) {
@@ -49,16 +56,16 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
         }
         this.key = descriptor.fromMethodReturnType();
         this.description = provides.description().length() > 0 ? provides.description() : null;
-        this.cachingMode = provides.bindingMode();
+        this.bindingMode = provides.bindingMode();
     }
 
     /**
-     * Returns the binding mode.
-     * 
+     * Returns the binding mode as defined by {@link Provides#bindingMode()}.
+     *
      * @return the binding mode
      */
     public BindingMode getBindingMode() {
-        return cachingMode;
+        return bindingMode;
     }
 
     /**
@@ -72,12 +79,47 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
     }
 
     /**
-     * Returns the key
+     * Returns the key under which the provided service will be made available.
      * 
-     * @return
+     * @return the key under which the provided service will be made available
      */
     public Key<?> getKey() {
         return key;
+    }
+
+    public static Optional<MethodInvokerAtProvides> find(InternalMethodDescriptor method) {
+        for (Annotation a : method.annotations) {
+            if (a.annotationType() == Provides.class) {
+                return Optional.of(read(method, (Provides) a));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static MethodInvokerAtProvides read(InternalMethodDescriptor method, Provides provides) {
+        // Cannot have @Inject and @Provides on the same method
+        if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
+            throw new InjectionException("Cannot place both @Inject and @" + Provides.class.getSimpleName() + " on the same method, method = " + method);
+        }
+
+        Class<?> returnType = method.getReturnType();
+        if (returnType == void.class || returnType == Void.class || returnType == Optional.class || returnType == OptionalInt.class
+                || returnType == OptionalLong.class || returnType == OptionalDouble.class) {
+            throw new InjectionException("@Provides method " + method + " cannot have " + returnType.getSimpleName() + " as a return type");
+        }
+
+        // If factory, class, TypeLiteral, Provider, we need special handling
+
+        // Optional<Annotation> qualifier = method.findQualifiedAnnotation();
+        // if (qualifier.isPresent()) {
+        // key = Key.of(method.getGenericReturnType(), qualifier.get());
+        // } else {
+        // key = Key.of(method.getGenericReturnType());
+        // }
+
+        throw new UnsupportedOperationException();
+        // return new MethodInvokerAtProvidesDescriptor(key, provides.bindingMode(), provides.description().length() == 0 ? null
+        // : provides.description());
     }
 }
 
