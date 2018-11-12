@@ -29,9 +29,10 @@ import app.packed.inject.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.util.InternalErrorException;
+import packed.internal.util.StringFormatter;
 
 /** The default implementation of {@link MethodDescriptor}. */
-public final class InternalMethodDescriptor extends AbstractExecutableDescriptor implements MethodDescriptor {
+public final class InternalMethodDescriptor extends InternalExecutableDescriptor implements MethodDescriptor {
 
     /** The method that is being mirrored (private to avoid exposing). */
     private final Method method;
@@ -126,7 +127,7 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return format(method);
+        return StringFormatter.format(method);
     }
 
     /** {@inheritDoc} */
@@ -158,17 +159,5 @@ public final class InternalMethodDescriptor extends AbstractExecutableDescriptor
      */
     public static InternalMethodDescriptor of(Method method) {
         return new InternalMethodDescriptor(method);
-    }
-
-    public static String format(Method method) {
-        return "";
-    }
-
-    public static String formatWithParameters(Method method) {
-        return "";
-    }
-
-    public static String formatWithShortParameters(Method method) {
-        return "";
     }
 }

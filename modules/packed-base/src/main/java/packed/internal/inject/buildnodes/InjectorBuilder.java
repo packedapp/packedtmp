@@ -27,11 +27,14 @@ import packed.internal.inject.InternalInjector;
 import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.NodeMap;
 import packed.internal.inject.buildnodes.DependecyCycleDetector.DependencyCycle;
+import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-public final class InjectorBinder {
+public final class InjectorBuilder {
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
     final ArrayList<BuildNode<?>> buildNodes = new ArrayList<>();
+
+    final InternalInjectorConfiguration c;
 
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildNode<?>> detectCyclesFor;
@@ -39,17 +42,14 @@ public final class InjectorBinder {
     /** All nodes that have been exposed under a particular key */
     final NodeMap exposed = new NodeMap();
 
+    private InternalInjector injector;
+
+    final NodeMap injectorNodes = new NodeMap();
+
     final ArrayList<ImportFromInjector> injectorImport = new ArrayList<>();
 
-    final InternalInjectorConfiguration c;
-
-    public InjectorBinder(InternalInjectorConfiguration c) {
+    public InjectorBuilder(InternalInjectorConfiguration c) {
         this.c = requireNonNull(c);
-    }
-
-    public void addImportInjector(ImportFromInjector i) {
-        requireNonNull(i);
-        injectorImport.add(i);
     }
 
     public <T> BuildNode<T> addAndScan(BuildNode<T> node) {
@@ -71,14 +71,29 @@ public final class InjectorBinder {
         return node;
     }
 
+    public void addImportInjector(ImportFromInjector i) {
+        requireNonNull(i);
+        injectorImport.add(i);
+    }
+
     public Injector build() {
-        InternalInjector injector = new InternalInjector(c);
+        injector = new InternalInjector(c, injectorNodes); // Ignores any parent for now.
         // listener().injectorBuilder_freeze(builder);
         // freezeBuilder();
 
         for (ImportFromInjector i : injectorImport) {
             for (BuildNode<?> n : i.m.values()) {
                 buildNodes.add(n);
+            }
+        }
+
+        BuildNodeInstance<InternalInjector> bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, injector);
+        bn.as(Injector.class);
+        buildNodes.add(bn);
+
+        for (BuildNode<?> bv : buildNodes) {
+            if (bv.getKey() != null) {
+                exposed.put(bv);
             }
         }
 
@@ -120,6 +135,10 @@ public final class InjectorBinder {
         return null;
     }
 
+    public InternalInjector getInjector() {
+        return injector;
+    }
+
     /**
      * Instantiates all nodes.
      *
@@ -137,7 +156,7 @@ public final class InjectorBinder {
         }
         for (BuildNode<?> n : buildNodes) {
             if (n.getKey() != null) {
-                injector.nodes.put(n.toRuntimeNode());
+                injectorNodes.put(n.toRuntimeNode());
             }
         }
     }

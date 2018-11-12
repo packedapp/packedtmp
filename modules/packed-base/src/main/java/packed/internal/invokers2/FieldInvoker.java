@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xackedinject;
-
-import app.packed.inject.Injector;
+package packed.internal.invokers2;
 
 /**
  *
  */
-public class Ddd {
+public class FieldInvoker {
 
-    public Ddd() {}
-
-    public static void main(String[] args) {
-        Injector oi = Injector.of(i -> {
-            i.bind(Ddd.class);
-            i.bind("123.class");
-        });
-
-        System.out.println(oi.getService(Ddd.class).getConfigurationSite());
-        System.out.println(oi.getService(String.class).getConfigurationSite());
-
-        System.out.println(oi.getService(Ddd.class).getConfigurationSite().parent().get());
-
-        System.out.println(oi.getConfigurationSite());
-
-    }
 }

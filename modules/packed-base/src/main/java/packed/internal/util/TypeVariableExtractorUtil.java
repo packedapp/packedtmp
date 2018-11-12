@@ -101,6 +101,7 @@ public class TypeVariableExtractorUtil {
             for (Type ty : baseClass.getTypeParameters()) {
                 sj.add(formatSimple(ty));
             }
+            // TODO this is not for Factory0
             throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
         }
         ParameterizedType pt = (ParameterizedType) t;

@@ -15,6 +15,8 @@
  */
 package packed.internal.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -35,17 +37,17 @@ public final class InternalInjector extends AbstractInjector {
     private final String description;
 
     /** All the service configurations of this builder. */
-    public final NodeMap nodes;
+    private final NodeMap nodes;
 
     /** This injector's parent, or null if this is a top-level injector. */
-    private final AbstractInjector parent;
+    final AbstractInjector parent;
 
     /** The injector's tags. */
     private final Set<String> tags;
 
-    public InternalInjector(InternalInjectorConfiguration injectorConfiguration) {
+    public InternalInjector(InternalInjectorConfiguration injectorConfiguration, NodeMap nodes) {
         this.parent = injectorConfiguration.parentInjector;
-        this.nodes = parent == null ? new NodeMap() : new NodeMap(injectorConfiguration.parentInjector.nodes);
+        this.nodes = requireNonNull(nodes);
         this.tags = injectorConfiguration.immutableCopyOfTags();
         this.description = injectorConfiguration.getDescription();
         this.configurationSite = injectorConfiguration.configurationSite;

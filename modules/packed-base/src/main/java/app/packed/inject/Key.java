@@ -22,8 +22,8 @@ import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -34,6 +34,7 @@ import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.util.TypeUtil;
 
 /**
  * A key is unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal and an
@@ -115,12 +116,12 @@ public abstract class Key<T> {
     Key(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
         this.typeLiteral = typeLiteral;
         this.qualifier = qualifier;
-        this.hash = Objects.hashCode(qualifier) ^ typeLiteral.hashCode();
+        this.hash = typeLiteral.hashCode() ^ Objects.hashCode(qualifier);
     }
 
     /**
-     * To avoid inadvertently holding on to the instance that defines an anonymous class, this method creates a new instance
-     * without any reference to the instance that defined the anonymous class.
+     * To avoid accidentally holding on to any instance that defines this key as an anonymous class. This method creates a
+     * new key instance without any reference to the instance that defined the anonymous class.
      * 
      * @return the key
      */
@@ -144,9 +145,9 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns any qualifier this key might have, or null if this key has no qualifier.
+     * Returns any qualifier this key might have, or an empty optional if this key has no qualifier.
      *
-     * @return any qualifier this key might have, or null if this key has no qualifier
+     * @return any qualifier this key might have, or an empty optional if this key has no qualifier
      */
     public final Optional<Annotation> getQualifier() {
         return Optional.ofNullable(qualifier);
@@ -211,13 +212,24 @@ public abstract class Key<T> {
     }
 
     /**
+     * Returns a key with no qualifier but retaining this key's type. If this key has no annotation, returns this key.
+     * 
+     * @return the key with no qualifier
+     */
+    public final Key<T> withNoQualifier() {
+        return qualifier == null ? this : new CanonicalizedKey<>(typeLiteral, null);
+    }
+
+    /**
      * Returns a new key that retain its type but with the specified qualifier.
      * 
      * @param qualifier
      *            the new key's qualifier
      * @return the new key
+     * @throws InvalidDeclarationException
+     *             if the specified annotation is not annotation with {@link Qualifier}.
      */
-    public final Key<T> withAnnotation(Annotation qualifier) {
+    public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
         return new CanonicalizedKey<>(typeLiteral, qualifier);
@@ -239,14 +251,64 @@ public abstract class Key<T> {
      * @see Method#getGenericReturnType()
      */
     // What about Nullable-> ignore it
+
+    public static Key<?> fromField(Field field) {
+        requireNonNull(field, "field is null");
+        TypeLiteral<?> tl = TypeLiteral.fromField(field).box();
+        Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
+        return fromTypeLiteralNullableAnnotation(field, tl, annotation);
+    }
+
     public static Key<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
-        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method);
-
-        if (method.getReturnType() == void.class || method.getReturnType() == Void.class) {
-            throw new IllegalArgumentException("@Provides method " + method + " cannot have void return type");
+        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
+        if (method.getReturnType() == void.class) {
+            throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
-        return tl.toKey();
+        Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
+        return fromTypeLiteralNullableAnnotation(method, tl, annotation);
+    }
+
+    static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {
+        return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, null);
+    }
+
+    /**
+     * Returns a key with the specified qualifier and the same type as this instance.
+     * 
+     * @param qualifier
+     *            the qualifier of the new
+     * @return a key with the specified qualifier and the same type as this instance
+     * @throws InvalidDeclarationException
+     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
+     *             qualifier type is not annotated with {@link Qualifier}.
+     */
+    static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
+        return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
+    }
+
+    /**
+     * Helper method for {@link #toKey()} and {@link #toKey(Annotation)}.
+     * 
+     * @param qualifier
+     *            the checked qualifier or null if no qualifier
+     * @return the new key
+     */
+    public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
+        requireNonNull(typeLiteral, "typeLiteral is null");
+        // From field, from TypeLiteral, from Variable, from class, arghhh....
+        assert (source instanceof Field || source instanceof Method || source instanceof TypeLiteral || source instanceof Class);
+
+        if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
+            throw new InvalidDeclarationException(
+                    "Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
+        } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.getType())) {
+            throw new InvalidDeclarationException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
+                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(typeLiteral.getType()));
+        }
+        return Key.fromCheckedTypeAndCheckedNullableAnnotation(typeLiteral.canonicalize(), qualifier);
     }
 
     public static <T> Key<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
@@ -257,14 +319,7 @@ public abstract class Key<T> {
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
         Annotation qa = JavaXInjectSupport.findQualifier(pta, annotations);
 
-        return t.toKeyNullableAnnotation(qa);
-    }
-
-    public static Key<?> internalOf(Type type, Annotation optionalQualifier) {
-        if (optionalQualifier == null) {
-            return of(type);
-        }
-        return of(type, optionalQualifier);
+        return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
     /**
@@ -296,43 +351,7 @@ public abstract class Key<T> {
         return TypeLiteral.of(type).box().toKey(qualifier);
     }
 
-    /**
-     * Returns a key matching the specified type.
-     *
-     * @param <T>
-     *            the type to return a key for
-     * @param type
-     *            the type to return a key for
-     * @return a key matching the specified type
-     */
-    @SuppressWarnings({ "unchecked" })
-    static <T> Key<T> of(Type type) {
-        requireNonNull(type, "type is null");
-        if (type instanceof Class) {
-            return of((Class<T>) type);
-        }
-        return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(TypeLiteral.fromJavaImplementationType(type), null);
-    }
-
-    /**
-     * Returns a key matching the specified type and qualifier.
-     *
-     * @param <T>
-     *            the type to return a key for
-     * @param type
-     *            the type to return a key for
-     * @param qualifier
-     *            the qualifier of the key
-     * @return a key matching the specified type and qualifier
-     */
-    @SuppressWarnings({ "unchecked" })
-    static <T> Key<T> of(Type type, Annotation qualifier) {
-        requireNonNull(type, "type is null");
-        requireNonNull(qualifier, "qualifier is null");
-        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
-        return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(TypeLiteral.fromJavaImplementationType(type), qualifier);
-    }
-
+    /** See {@link CanonicalizedTypeLiteral}. */
     static final class CanonicalizedKey<T> extends Key<T> {
 
         /**
@@ -340,15 +359,51 @@ public abstract class Key<T> {
          * 
          * @param typeLiteral
          *            the type literal
-         * 
          * @param qualifier
-         *            an optional qualifier
+         *            a nullable qualifier
          */
         CanonicalizedKey(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
             super(typeLiteral, qualifier);
         }
     }
 }
+
+/// **
+// * Returns a key matching the specified type.
+// *
+// * @param <T>
+// * the type to return a key for
+// * @param type
+// * the type to return a key for
+// * @return a key matching the specified type
+// */
+// @SuppressWarnings({ "unchecked" })
+// static <T> Key<T> of(Type type) {
+// requireNonNull(type, "type is null");
+// if (type instanceof Class) {
+// return of((Class<T>) type);
+// }
+// return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(new CanonicalizedTypeLiteral<>(type), null);
+// }
+//
+/// **
+// * Returns a key matching the specified type and qualifier.
+// *
+// * @param <T>
+// * the type to return a key for
+// * @param type
+// * the type to return a key for
+// * @param qualifier
+// * the qualifier of the key
+// * @return a key matching the specified type and qualifier
+// */
+// @SuppressWarnings({ "unchecked" })
+// static <T> Key<T> of(Type type, Annotation qualifier) {
+// requireNonNull(type, "type is null");
+// requireNonNull(qualifier, "qualifier is null");
+// JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
+// return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(new CanonicalizedTypeLiteral<>(type), qualifier);
+// }
 
 //
 // /**
@@ -396,40 +451,3 @@ public abstract class Key<T> {
 //// If a Provides wants to provide null to someone the return type of the method should be Optional<XXXXX>
 //// Null indicates look in next injector...
 //
-/// ****************** SERVICEKEY ******************/
-//
-//// Optional<Annotation> qualifier = method.findQualifiedAnnotation();
-////
-//// Class<? extends Annotation> qualifierAttribute = p.wildcardQualifier() == Qualifier.class ? null :
-//// p.wildcardQualifier();
-//// // Make we do not both have a qualifying annotation and qualifying attribute
-//// if (qualifier.isPresent() && qualifierAttribute != null) {
-//// throw new InjectionException(provideHasBothQualifierAnnotationAndQualifierAttribute(this, qualifier.get(),
-//// qualifierAttribute));
-//// }
-// if (qualifierAttribute != null) {
-// AnnotationUtil.validateRuntimeRetentionPolicy(qualifierAttribute);
-// JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierAttribute);
-// // ????? Here we previously used a type
-// // TODO fik support for wildcards...
-// // key = Key.ofWildcardAnnotation(qualifierAttribute);
-// throw new UnsupportedOperationException("Wilcard annotation not currently supported");
-// // key = Key.of(method.getReturnTypeIgnoringOptionalBoxed(), qualifier.getAnnotation());
-// } else if (qualifier.isPresent()) {
-// key = Key.of(getReturnTypeIgnoringOptionalBoxed(), qualifier.get());
-// } else {
-// key = Key.of(getReturnTypeIgnoringOptionalBoxed());
-// }
-//
-//// After we have specific bindings it should not be a problem
-//// if (qualifier == null && getReturnTypeIgnoringOptionalBoxed() == Object.class) {
-//// throw new IllegalArgumentException("The return type of " + this + " cannot be Object, unless a qualifying
-//// annotation
-//// is specified");
-//// }
-////
-//// Well if we support chaining it could
-//// if (qualifier == Name.class) {
-//// throw new IllegalArgumentException("The annotation type cannot be @" + Name.class.getSimpleName() + ", as it is
-//// reserved for other use");
-//// }

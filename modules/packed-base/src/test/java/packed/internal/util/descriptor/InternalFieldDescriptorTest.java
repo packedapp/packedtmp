@@ -32,7 +32,7 @@ public class InternalFieldDescriptorTest {
     String string;
     String never;
 
-    static void validateField(Field f, AbstractVariableDescriptor d) {
+    static void validateField(Field f, InternalVariableDescriptor d) {
         // d.
     }
 

@@ -35,9 +35,6 @@ import packed.internal.inject.buildnodes.BuildNodeProvidesMethod;
 // introduce a boolean BuildNode.needsServiceProvider()
 public final class RuntimeNodeProvidesMethod<T> extends RuntimeNode<T> {
 
-    /** The caching mode of this node. */
-    final BindingMode bindMode;
-
     /** The object instance that contains the providing method. */
     private final Object instance;
 
@@ -74,13 +71,12 @@ public final class RuntimeNodeProvidesMethod<T> extends RuntimeNode<T> {
         // The owner is either a BuildNodeFactory or BuildNodeInstance, in neither case
         // we need a valid Injection site, so we just pass along a null.
         this.instance = requireNonNull(node.declaringNode().getInstance(null));
-        this.bindMode = node.getBindingMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public BindingMode getBindingMode() {
-        return bindMode;
+        return BindingMode.PROTOTYPE;
     }
 
     /** {@inheritDoc} */

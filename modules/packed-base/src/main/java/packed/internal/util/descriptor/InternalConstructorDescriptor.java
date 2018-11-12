@@ -27,7 +27,7 @@ import app.packed.util.ConstructorDescriptor;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */
-public final class InternalConstructorDescriptor<T> extends AbstractExecutableDescriptor implements ConstructorDescriptor<T> {
+public final class InternalConstructorDescriptor<T> extends InternalExecutableDescriptor implements ConstructorDescriptor<T> {
 
     /** The constructor that is being mirrored. */
     private final Constructor<?> constructor;

@@ -19,7 +19,7 @@ import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- *
+ * A build node for a component instance.
  */
 public class BuildNodeComponentInstance<T> extends BuildNodeInstance<T> {
 
@@ -34,24 +34,24 @@ public class BuildNodeComponentInstance<T> extends BuildNodeInstance<T> {
 
 }
 
-//public BuildNodeInstance(InternalInjectorConfiguration bundle, T instance, RegistrationPoint frame,
+// public BuildNodeInstance(InternalInjectorConfiguration bundle, T instance, RegistrationPoint frame,
 
-///** The component configuration, if created via an install functions. */
-//private final InternalComponentConfiguration<?> componentConfiguration;// not <T> because of mixins
+/// ** The component configuration, if created via an install functions. */
+// private final InternalComponentConfiguration<?> componentConfiguration;// not <T> because of mixins
 //
-///** The component instance id. or -1 if not a component instance. */
-//private final int componentInstanceId;
-//InternalComponentConfiguration<?> componentConfiguration, int componentInstanceId) {
-//super(bundle, List.of(), frame);
-//this.instance = instance;
-//this.componentConfiguration = requireNonNull(componentConfiguration);
-//this.componentInstanceId = componentInstanceId;
-//}
+/// ** The component instance id. or -1 if not a component instance. */
+// private final int componentInstanceId;
+// InternalComponentConfiguration<?> componentConfiguration, int componentInstanceId) {
+// super(bundle, List.of(), frame);
+// this.instance = instance;
+// this.componentConfiguration = requireNonNull(componentConfiguration);
+// this.componentInstanceId = componentInstanceId;
+// }
 
-//public InternalComponentConfiguration<?> getComponentConfiguration() {
-//return componentConfiguration;
-//}
+// public InternalComponentConfiguration<?> getComponentConfiguration() {
+// return componentConfiguration;
+// }
 //
-//public int getComponentInstanceId() {
-//return componentInstanceId;
-//}
+// public int getComponentInstanceId() {
+// return componentInstanceId;
+// }

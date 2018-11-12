@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package packed.internal.inject.factory;
 
-import static java.util.Objects.requireNonNull;
+import java.util.List;
+
+import app.packed.inject.TypeLiteral;
+import packed.internal.inject.InternalDependency;
 
 /**
  *
  */
-public enum ConfigurationSiteType {
+public abstract class InternalFactoryMember<T> extends InternalFactory<T> {
 
-    /** */
-    INJECTOR_BIND("Injector.bind"),
+    Object instance;
 
-    /** */
-    INJECTOR_IMPORT_FROM("Injector.importFrom"),
-
-    /** */
-    INJECTOR_OF("Injector.of");
-
-    final String f;
-
-    ConfigurationSiteType(String f) {
-        this.f = requireNonNull(f);
+    /**
+     * @param typeLiteralOrKey
+     * @param dependencies
+     */
+    public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies) {
+        super(typeLiteralOrKey, dependencies);
     }
 
-    @Override
-    public String toString() {
-        return f;
+    public boolean hasInstance() {
+        return instance != null;
     }
 }

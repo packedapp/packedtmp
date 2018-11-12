@@ -42,7 +42,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     private static final Node<?>[] EMPTY_ARRAY = new Node<?>[0];
 
     /** The configuration site of this node. **/
-    final InternalConfigurationSite configurationSite;
+    private final InternalConfigurationSite configurationSite;
 
     /** The dependencies of this node. */
     final List<InternalDependency> dependencies;

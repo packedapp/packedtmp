@@ -29,6 +29,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +45,7 @@ public class DependencyTest {
     public class OptionalsOf {
 
         @Test
+        @Disabled
         public void fromTypeAttribute() {
             InternalDependency opString = InternalDependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
@@ -54,6 +56,7 @@ public class DependencyTest {
     public class OptionalsOfInts {
 
         @Test
+        @Disabled
         public void fromTypeParameter() {
             assertThat(InternalDependency.of(OptionalInt.class)).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();

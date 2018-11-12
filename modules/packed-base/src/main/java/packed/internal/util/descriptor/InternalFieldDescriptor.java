@@ -26,11 +26,10 @@ import java.lang.reflect.Type;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
-public final class InternalFieldDescriptor extends AbstractVariableDescriptor implements FieldDescriptor {
+public final class InternalFieldDescriptor extends InternalVariableDescriptor implements FieldDescriptor {
 
     /** The field that is being wrapped. */
     private final Field field;
@@ -205,11 +204,5 @@ public final class InternalFieldDescriptor extends AbstractVariableDescriptor im
      */
     public static InternalFieldDescriptor of(FieldDescriptor descriptor) {
         return descriptor instanceof InternalFieldDescriptor ? (InternalFieldDescriptor) descriptor : of(descriptor.newField());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected InternalDependency toDependency0() {
-        return InternalDependency.of(this);
     }
 }

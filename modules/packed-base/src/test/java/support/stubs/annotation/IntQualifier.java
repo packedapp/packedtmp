@@ -13,32 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package support.stubs.annotation;
 
-import static java.util.Objects.requireNonNull;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.inject.Qualifier;
 
 /**
  *
  */
-public enum ConfigurationSiteType {
-
-    /** */
-    INJECTOR_BIND("Injector.bind"),
-
-    /** */
-    INJECTOR_IMPORT_FROM("Injector.importFrom"),
-
-    /** */
-    INJECTOR_OF("Injector.of");
-
-    final String f;
-
-    ConfigurationSiteType(String f) {
-        this.f = requireNonNull(f);
-    }
-
-    @Override
-    public String toString() {
-        return f;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+public @interface IntQualifier {
+    int value() default '0';
 }

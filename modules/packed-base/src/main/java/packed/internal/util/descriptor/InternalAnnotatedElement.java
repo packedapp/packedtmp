@@ -25,11 +25,10 @@ import app.packed.inject.InjectionException;
 import packed.internal.inject.JavaXInjectSupport;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
-public abstract class AbstractAnnotatedElement implements AnnotatedElement {
+public abstract class InternalAnnotatedElement implements AnnotatedElement {
 
     /** The annotations present on the element */
-    // TODO fix modifier
-    public final Annotation[] annotations;
+    private final Annotation[] annotations;
 
     /** The annotated element. */
     private final AnnotatedElement element;
@@ -43,13 +42,18 @@ public abstract class AbstractAnnotatedElement implements AnnotatedElement {
     // We only store the List instance
     // TODO test with some inherited annotations
 
+    // TODO fix
+    public final Annotation[] getAnnotationsUnsafe() {
+        return annotations;
+    }
+
     /**
      * Creates a new AbstractAnnotatedElement from an {@link AnnotatedElement}.
      *
      * @param element
      *            the annotated element
      */
-    public AbstractAnnotatedElement(AnnotatedElement element) {
+    InternalAnnotatedElement(AnnotatedElement element) {
         this.element = element;
         this.annotations = element.getAnnotations();
     }

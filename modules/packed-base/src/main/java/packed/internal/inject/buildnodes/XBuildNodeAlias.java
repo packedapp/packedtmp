@@ -28,7 +28,7 @@ import packed.internal.inject.runtimenodes.RuntimeNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** An alias build node. */
-public final class BuildNodeAlias<T> extends BuildNode<T> {
+public final class XBuildNodeAlias<T> extends BuildNode<T> {
 
     /** The node that this node is an alias of. */
     private final Node<T> aliasOf;
@@ -45,7 +45,7 @@ public final class BuildNodeAlias<T> extends BuildNode<T> {
      *            the class or instance used for aliasing the method.
      */
     @Deprecated // Logikken omkring resolving bliver lidt lettere uden den.
-    public BuildNodeAlias(InternalInjectorConfiguration bundle, InternalConfigurationSite configurationSite, Node<T> aliasOf) {
+    public XBuildNodeAlias(InternalInjectorConfiguration bundle, InternalConfigurationSite configurationSite, Node<T> aliasOf) {
         super(bundle, configurationSite, List.of());
         this.aliasOf = requireNonNull(aliasOf);
         setDescription(aliasOf.getDescription());// we copy the descriptor

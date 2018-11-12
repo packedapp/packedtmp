@@ -37,6 +37,7 @@ import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.InvalidDeclarationException;
 import support.stubs.annotation.AnnotationInstances;
 
@@ -44,53 +45,7 @@ import support.stubs.annotation.AnnotationInstances;
 public class TypeLiteralTest {
 
     static final TypeLiteral<Integer> TL_INTEGER = new TypeLiteral<Integer>() {};
-
-    @Test
-    public <S> void toKey() {
-        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
-
-        Key<Integer> k1 = tl1.toKey();
-        Key<Integer> k2 = TL_INTEGER.toKey();
-
-        assertThat(k1.getTypeLiteral()).isSameAs(tl1);
-        assertThat(k2.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(k2.getTypeLiteral()).isNotSameAs(TL_INTEGER);
-
-        assertThat(k1.hasQualifier()).isFalse();
-        assertThat(k2.hasQualifier()).isFalse();
-
-        // Optional
-        assertThatThrownBy(() -> new TypeLiteral<Optional<Integer>>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> new TypeLiteral<OptionalInt>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> new TypeLiteral<OptionalLong>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> new TypeLiteral<OptionalDouble>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
-
-        // We need to use this old fashion way because of
-        try {
-            new TypeLiteral<List<S>>() {}.toKey();
-            fail("should have failed");
-        } catch (InvalidDeclarationException e) {
-            assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
-        }
-    }
-
-    @Test
-    public <S> void toKeyAnnotation() {
-        npe(() -> TL_INTEGER.toKey(null), "qualifier");
-
-        Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
-                .getAnnotations()[0];
-        assertThatThrownBy(() -> TL_INTEGER.toKey(nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
-                .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
-
-        Key<Integer> key = TL_INTEGER.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
-        assertThat(key.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(key.getQualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
-    }
+    static final TypeLiteral<List<?>> TL_LIST_WILDCARD = new TypeLiteral<List<?>>() {};
 
     @Test
     public void canonicalize() {
@@ -100,6 +55,51 @@ public class TypeLiteralTest {
 
         assertThat(tl1).isSameAs(tl1.canonicalize());
         assertThat(TL_INTEGER).isNotSameAs(TL_INTEGER.canonicalize());
+    }
+
+    /** Tests {@link TypeLiteral#fromField(Field)}. */
+    @Test
+    public void fromField() throws Exception {
+        @SuppressWarnings("unused")
+        class Tmpx<T> {
+            Integer f;
+            List<?> fq;
+        }
+        Field f = Tmpx.class.getDeclaredField("f");
+        npe(TypeLiteral::fromField, f, "field");
+
+        assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromField(f));
+
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(Tmpx.class.getDeclaredField("fq")).getType());
+    }
+
+    /** Tests {@link TypeLiteral#fromMethodReturnType(Method)}. */
+    @Test
+    public void fromMethodReturnType() throws Exception {
+        class Tmpx<T> {
+            @SuppressWarnings("unused")
+            public List<?> foo() {
+                throw new UnsupportedOperationException();
+            }
+        }
+        Method m = Tmpx.class.getMethod("foo");
+        npe(TypeLiteral::fromMethodReturnType, m, "method");
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromMethodReturnType(m).getType());
+    }
+
+    /** Tests {@link TypeLiteral#fromParameter(Parameter)}. */
+    @Test
+    public void fromParameter() throws Exception {
+        class Tmpx<T> {
+            @SuppressWarnings("unused")
+            Tmpx(Integer f, List<?> l) {}
+        }
+        // Tmpx is a non-static class so first parameter is TypeLiteralTest
+        Parameter p = Tmpx.class.getDeclaredConstructors()[0].getParameters()[1];
+
+        npe(TypeLiteral::fromParameter, p, "parameter");
+        assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromParameter(p));
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[2]).getType());
     }
 
     /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
@@ -118,12 +118,12 @@ public class TypeLiteralTest {
 
         assertThat(integerNew).hasSameHashCodeAs(Integer.class);
         assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.of(Integer.class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer.class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer.class).hashCode());
 
         assertThat(integerNew).isEqualTo(TypeLiteral.of(Integer.class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
         assertThat(integerNew).isNotSameAs(integerNew.canonicalize());
-        assertThat(integerNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer.class));
+        assertThat(integerNew).isEqualTo(new CanonicalizedTypeLiteral<>(Integer.class));
 
         assertThat(integerNew).isNotEqualTo(Integer.class);
         assertThat(integerNew).isNotEqualTo(TypeLiteral.of(Long.class));
@@ -188,10 +188,10 @@ public class TypeLiteralTest {
 
         assertThat(TL_INTEGER).hasSameHashCodeAs(Integer.class);
         assertThat(TL_INTEGER).hasSameHashCodeAs(TypeLiteral.of(Integer.class).hashCode());
-        assertThat(TL_INTEGER).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer.class).hashCode());
+        assertThat(TL_INTEGER).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer.class).hashCode());
 
         assertThat(TL_INTEGER).isEqualTo(TypeLiteral.of(Integer.class));
-        assertThat(TL_INTEGER).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer.class));
+        assertThat(TL_INTEGER).isEqualTo(new CanonicalizedTypeLiteral<>(Integer.class));
         assertThat(TL_INTEGER).isEqualTo(TL_INTEGER.canonicalize());
 
         assertThat(TL_INTEGER).isNotEqualTo(Integer.class);
@@ -213,10 +213,10 @@ public class TypeLiteralTest {
 
         assertThat(integerNew).hasSameHashCodeAs(Integer[].class);
         assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.of(Integer[].class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer[].class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer[].class).hashCode());
 
         assertThat(integerNew).isEqualTo(TypeLiteral.of(Integer[].class));
-        assertThat(integerNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer[].class));
+        assertThat(integerNew).isEqualTo(new CanonicalizedTypeLiteral<>(Integer[].class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
 
         assertThat(integerNew).isNotEqualTo(Integer[].class);
@@ -238,10 +238,10 @@ public class TypeLiteralTest {
 
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(Integer[][].class);
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(TypeLiteral.of(Integer[][].class).hashCode());
-        assertThat(integerArrayArrayNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(Integer[][].class).hashCode());
+        assertThat(integerArrayArrayNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer[][].class).hashCode());
 
         assertThat(integerArrayArrayNew).isEqualTo(TypeLiteral.of(Integer[][].class));
-        assertThat(integerArrayArrayNew).isEqualTo(TypeLiteral.fromJavaImplementationType(Integer[][].class));
+        assertThat(integerArrayArrayNew).isEqualTo(new CanonicalizedTypeLiteral<>(Integer[][].class));
         assertThat(integerArrayArrayNew).isEqualTo(integerArrayArrayNew.canonicalize());
 
         assertThat(integerArrayArrayNew).isNotEqualTo(Integer[][].class);
@@ -262,9 +262,9 @@ public class TypeLiteralTest {
         assertThat(listStringNew.getType()).isEqualTo(LIST_STRING);
 
         assertThat(listStringNew).hasSameHashCodeAs(LIST_STRING);
-        assertThat(listStringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(LIST_STRING).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(LIST_STRING).hashCode());
 
-        assertThat(listStringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(LIST_STRING));
+        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeLiteral<>(LIST_STRING));
         assertThat(listStringNew).isNotEqualTo(List.class);
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
 
@@ -275,23 +275,21 @@ public class TypeLiteralTest {
     /** Tests {@code List<?>}. */
     @Test
     public void tl_ListWildcard() throws Exception {
-        TypeLiteral<List<?>> listWildcardNew = new TypeLiteral<List<?>>() {};
+        assertThat(TL_LIST_WILDCARD.box().getType()).isEqualTo(LIST_WILDCARD);
 
-        assertThat(listWildcardNew.box().getType()).isEqualTo(LIST_WILDCARD);
+        assertThat(TL_LIST_WILDCARD.getRawType()).isSameAs(List.class);
 
-        assertThat(listWildcardNew.getRawType()).isSameAs(List.class);
+        assertThat(TL_LIST_WILDCARD.getType()).isEqualTo(LIST_WILDCARD);
 
-        assertThat(listWildcardNew.getType()).isEqualTo(LIST_WILDCARD);
+        assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(LIST_WILDCARD);
+        assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(LIST_WILDCARD).hashCode());
 
-        assertThat(listWildcardNew).hasSameHashCodeAs(LIST_WILDCARD);
-        assertThat(listWildcardNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(LIST_WILDCARD).hashCode());
+        assertThat(TL_LIST_WILDCARD).isEqualTo(new CanonicalizedTypeLiteral<>(LIST_WILDCARD));
+        assertThat(TL_LIST_WILDCARD).isNotEqualTo(List.class);
+        assertThat(TL_LIST_WILDCARD).isEqualTo(TL_LIST_WILDCARD.canonicalize());
 
-        assertThat(listWildcardNew).isEqualTo(TypeLiteral.fromJavaImplementationType(LIST_WILDCARD));
-        assertThat(listWildcardNew).isNotEqualTo(List.class);
-        assertThat(listWildcardNew).isEqualTo(listWildcardNew.canonicalize());
-
-        assertThat(listWildcardNew).hasToString("java.util.List<?>");
-        assertThat(listWildcardNew.toStringSimple()).isEqualTo("List<?>");
+        assertThat(TL_LIST_WILDCARD).hasToString("java.util.List<?>");
+        assertThat(TL_LIST_WILDCARD.toStringSimple()).isEqualTo("List<?>");
     }
 
     /** Tests {@code Map<? extends String, ? super Integer>}. */
@@ -312,9 +310,9 @@ public class TypeLiteralTest {
         assertThat(listStringNew.getType()).isEqualTo(fGenericType);
 
         assertThat(listStringNew).hasSameHashCodeAs(fGenericType);
-        assertThat(listStringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(fGenericType).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(fGenericType).hashCode());
 
-        assertThat(listStringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(fGenericType));
+        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeLiteral<>(fGenericType));
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
         assertThat(listStringNew).isNotEqualTo(Map.class);
 
@@ -334,11 +332,11 @@ public class TypeLiteralTest {
 
         assertThat(stringNew).hasSameHashCodeAs(String.class);
         assertThat(stringNew).hasSameHashCodeAs(TypeLiteral.of(String.class).hashCode());
-        assertThat(stringNew).hasSameHashCodeAs(TypeLiteral.fromJavaImplementationType(String.class).hashCode());
+        assertThat(stringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(String.class).hashCode());
 
         assertThat(stringNew).isEqualTo(stringNew.canonicalize());
         assertThat(stringNew).isEqualTo(TypeLiteral.of(String.class));
-        assertThat(stringNew).isEqualTo(TypeLiteral.fromJavaImplementationType(String.class));
+        assertThat(stringNew).isEqualTo(new CanonicalizedTypeLiteral<>(String.class));
 
         assertThat(stringNew).isNotEqualTo(String.class);
 
@@ -378,7 +376,7 @@ public class TypeLiteralTest {
             Map<T, ?> f;
         }
         Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
-        TypeLiteral<?> typeVariable = TypeLiteral.fromJavaImplementationType(fGenericType);
+        TypeLiteral<?> typeVariable = new CanonicalizedTypeLiteral<>(fGenericType);
 
         assertThat(typeVariable.box().getType()).isEqualTo(fGenericType);
 
@@ -395,6 +393,53 @@ public class TypeLiteralTest {
         assertThat(typeVariable.toStringSimple()).isEqualTo("Map<T, ?>");
     }
 
+    @Test
+    public <S> void toKey() {
+        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
+
+        Key<Integer> k1 = tl1.toKey();
+        Key<Integer> k2 = TL_INTEGER.toKey();
+
+        assertThat(k1.getTypeLiteral()).isSameAs(tl1);
+        assertThat(k2.getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(k2.getTypeLiteral()).isNotSameAs(TL_INTEGER);
+
+        assertThat(k1.hasQualifier()).isFalse();
+        assertThat(k2.hasQualifier()).isFalse();
+
+        // Optional
+        assertThatThrownBy(() -> new TypeLiteral<Optional<Integer>>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> new TypeLiteral<OptionalInt>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> new TypeLiteral<OptionalLong>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
+        assertThatThrownBy(() -> new TypeLiteral<OptionalDouble>() {}.toKey()).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
+
+        // We need to use this old fashion way because of
+        try {
+            new TypeLiteral<List<S>>() {}.toKey();
+            fail("should have failed");
+        } catch (InvalidDeclarationException e) {
+            assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
+        }
+    }
+
+    @Test
+    public <S> void toKeyAnnotation() {
+        npe(() -> TL_INTEGER.toKey(null), "qualifier");
+
+        Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
+                .getAnnotations()[0];
+        assertThatThrownBy(() -> TL_INTEGER.toKey(nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
+                .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
+
+        Key<Integer> key = TL_INTEGER.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
+        assertThat(key.getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(key.getQualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
+    }
+
     @SuppressWarnings("rawtypes")
     @Test
     public void UnknownTypeVariable() {
@@ -408,50 +453,5 @@ public class TypeLiteralTest {
         assertThatThrownBy(() -> new MyTypeLiteral() {})
                 .hasMessageStartingWith("Cannot determine type variable <T> for TypeLiteral<T> on class app.packed.inject.TypeLiteralTest");
 
-    }
-
-    /** Tests {@link TypeLiteral#fromField(Field)}. */
-    @Test
-    public void fromField() throws Exception {
-        @SuppressWarnings("unused")
-        class Tmpx<T> {
-            Integer f;
-            List<?> fq;
-        }
-        Field f = Tmpx.class.getDeclaredField("f");
-        npe(TypeLiteral::fromField, f, "field");
-
-        assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromField(f));
-
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(Tmpx.class.getDeclaredField("fq")).getType());
-    }
-
-    /** Tests {@link TypeLiteral#fromParameter(Parameter)}. */
-    @Test
-    public void fromParameter() throws Exception {
-        class Tmpx<T> {
-            @SuppressWarnings("unused")
-            Tmpx(Integer f, List<?> l) {}
-        }
-        // Tmpx is a non-static class so first parameter is TypeLiteralTest
-        Parameter p = Tmpx.class.getDeclaredConstructors()[0].getParameters()[1];
-
-        npe(TypeLiteral::fromParameter, p, "parameter");
-        assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromParameter(p));
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[2]).getType());
-    }
-
-    /** Tests {@link TypeLiteral#fromMethodReturnType(Method)}. */
-    @Test
-    public void fromMethodReturnType() throws Exception {
-        class Tmpx<T> {
-            @SuppressWarnings("unused")
-            public List<?> foo() {
-                throw new UnsupportedOperationException();
-            }
-        }
-        Method m = Tmpx.class.getMethod("foo");
-        npe(TypeLiteral::fromMethodReturnType, m, "method");
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromMethodReturnType(m).getType());
     }
 }

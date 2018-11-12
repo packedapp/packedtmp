@@ -13,32 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.inject;
 
 /**
  *
  */
-public enum ConfigurationSiteType {
+public enum NodeType {
 
-    /** */
-    INJECTOR_BIND("Injector.bind"),
+    INSTANCE,
 
-    /** */
-    INJECTOR_IMPORT_FROM("Injector.importFrom"),
+    LAZY_INSTANCE,
 
-    /** */
-    INJECTOR_OF("Injector.of");
+    PROTOTYPE_DEPENDENCY_FREE, // empty constructor
 
-    final String f;
+    PROTOTYPE_INSTANCES, // All parameters are instantiated instances
 
-    ConfigurationSiteType(String f) {
-        this.f = requireNonNull(f);
-    }
+    // Other Protoype
 
-    @Override
-    public String toString() {
-        return f;
-    }
+    PROTOTYPE_NEEDS_INJECTION_SITE;
 }

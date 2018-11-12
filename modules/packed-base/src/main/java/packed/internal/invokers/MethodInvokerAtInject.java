@@ -18,7 +18,9 @@ package packed.internal.invokers;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
+import java.util.List;
 
+import packed.internal.inject.InternalDependency;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
@@ -26,12 +28,23 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  */
 public class MethodInvokerAtInject extends MethodInvoker {
 
+    List<InternalDependency> dependencies;
+
     /**
      * @param descriptor
      * @param handle
      */
     MethodInvokerAtInject(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup) {
         super(descriptor, lookup);
+    }
+
+    /**
+     * Returns the dependency representing the field.
+     *
+     * @return the dependency representing the field
+     */
+    public List<InternalDependency> dependencies() {
+        return dependencies;
     }
 
     public static Collection<MethodInvokerAtInject> findInjectableMethods(Class<?> clazz, Lookup lookup) {

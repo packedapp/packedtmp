@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import app.packed.inject.Dependency;
 import app.packed.inject.Inject;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
@@ -50,7 +49,7 @@ public final class FieldInvokerAtInject extends FieldInvoker {
      *
      * @return the dependency representing the field
      */
-    public Dependency dependency() {
+    public InternalDependency dependency() {
         return dependency;
     }
 
@@ -63,19 +62,19 @@ public final class FieldInvokerAtInject extends FieldInvoker {
      *            the value to inject
      */
     public void injectInstance(Object instance, Object value) {
-        setValue(instance, dependency.wrapIfOptional(value));
+        setValue(instance, value);
     }
 
-    static FieldInvokerAtInject checkIfInjectable(FieldBuilder builder, Field f, Annotation[] annotations) {
-        if (JavaXInjectSupport.isInjectAnnotationPresent(f)) {
-            InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(f);
+    static FieldInvokerAtInject createIfInjectable(MemberScanner builder, Field field, Annotation[] annotations) {
+        if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+            InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
             checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
             checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
-            if (builder.injectableFields == null) {
-                builder.injectableFields = new ArrayList<>(2);
+            if (builder.fieldsAtInject == null) {
+                builder.fieldsAtInject = new ArrayList<>(2);
             }
             FieldInvokerAtInject fi = new FieldInvokerAtInject(descriptor, builder.lookup);
-            builder.injectableFields.add(fi);
+            builder.fieldsAtInject.add(fi);
             return fi;
         }
         return null;

@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 import app.packed.util.FieldDescriptor;
@@ -27,23 +29,22 @@ import app.packed.util.VariableDescriptor;
 import packed.internal.inject.InternalDependency;
 
 /** The default abstract implementation of {@link VariableDescriptor}. */
-public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElement implements VariableDescriptor {
-
-    /** The variable as a dependency, lazy calculated. */
-    private volatile InternalDependency dependency;
+public abstract class InternalVariableDescriptor extends InternalAnnotatedElement implements VariableDescriptor {
 
     /**
-     * Creates a new AbstractVariableDescriptor.
+     * Creates a new descriptor.
      *
      * @param fieldOrParameter
      *            the field or parameter object
      */
-    AbstractVariableDescriptor(AnnotatedElement fieldOrParameter) {
+    InternalVariableDescriptor(AnnotatedElement fieldOrParameter) {
         super(fieldOrParameter);
     }
 
     /**
      * The index of the variable, used when creating {@link InternalDependency} instances.
+     * <p>
+     * If this variable is a field, this method returns {@code 0}.
      *
      * @return index of the variable.
      */
@@ -53,34 +54,24 @@ public abstract class AbstractVariableDescriptor extends AbstractAnnotatedElemen
      * Returns the parameterizedType of the variable
      *
      * @return the parameterizedType of the variable
+     * @see Field#getGenericType()
+     * @see Parameter#getParameterizedType()
      */
     public abstract Type getParameterizedType();
 
     /**
-     * Returns this variable as a dependency.
-     *
-     * @return this variable as a dependency
-     */
-    public InternalDependency toDependency() {
-        InternalDependency dependency = this.dependency;
-        return dependency == null ? this.dependency = toDependency0() : dependency;
-    }
-
-    protected abstract InternalDependency toDependency0();
-
-    /**
-     * Tries to convert the specified value descriptor to an abstract value descriptor.
+     * Tries to convert the specified value descriptor to an internal value descriptor.
      *
      * @param variable
      *            the variable to unwrap
      * @return the unwrapped variable
      * @throws IllegalArgumentException
-     *             if the specified variable could not be unwrapped
+     *             if the variable type is not a known variable type
      */
-    public static AbstractVariableDescriptor unwrap(VariableDescriptor variable) {
+    public static InternalVariableDescriptor unwrap(VariableDescriptor variable) {
         requireNonNull(variable, "variable is null");
-        if (variable instanceof AbstractVariableDescriptor) {
-            return (AbstractVariableDescriptor) variable;
+        if (variable instanceof InternalVariableDescriptor) {
+            return (InternalVariableDescriptor) variable;
         } else if (variable instanceof FieldDescriptor) {
             return InternalFieldDescriptor.of((FieldDescriptor) variable);
         } else if (variable instanceof ParameterDescriptor) {

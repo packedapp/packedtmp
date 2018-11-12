@@ -13,21 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.stubs;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import app.packed.inject.Qualifier;
+package packed.internal.invokers2;
 
 /**
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
-public @interface CharQualifier {
-    char value() default '?';
+public class AbstractInvoker {
+
 }

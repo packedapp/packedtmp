@@ -30,30 +30,28 @@ import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.inject.ServiceImportFilter;
+import app.packed.inject.ServiceStagingArea;
 import app.packed.inject.TypeLiteral;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.buildnodes.BuildNodeFactoryPrototype;
 import packed.internal.inject.buildnodes.BuildNodeFactorySingleton;
-import packed.internal.inject.buildnodes.BuildNodeImportFromInjector;
 import packed.internal.inject.buildnodes.BuildNodeInstance;
 import packed.internal.inject.buildnodes.ImportFromInjector;
-import packed.internal.inject.buildnodes.InjectorBinder;
+import packed.internal.inject.buildnodes.InjectorBuilder;
+import packed.internal.inject.buildnodes.XBuildNodeImportFromInjector;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.invokers.LookupDescriptorAccessor;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-/**
- * The default implementation of {@link InjectorConfiguration}.
- */
+/** The default implementation of {@link InjectorConfiguration}. */
 public class InternalInjectorConfiguration extends AbstractConfiguration<InternalInjectorConfiguration> implements InjectorConfiguration {
 
     /** The lookup object. We default to public access */
     protected LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
 
-    public final InjectorBinder binder = new InjectorBinder(this);
+    public final InjectorBuilder builder = new InjectorBuilder(this);
 
     InternalInjector parentInjector;
 
@@ -72,7 +70,7 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
 
     private <T> BuildNode<T> add(BuildNode<T> node) {
         // WHEN YOU CALL THIS METHOD, remember the key is not automatically bound, but must use .as(xxxxx)
-        binder.addAndScan(node);
+        builder.addAndScan(node);
         return node;
     }
 
@@ -205,17 +203,17 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void importFromInjector(Injector injector, InternalConfigurationSite frame, Consumer<? super ServiceImportFilter> c) {
+    protected final void importFromInjector(Injector injector, InternalConfigurationSite frame, Consumer<? super ServiceStagingArea> c) {
         requireNonNull(injector, "injector is null");
 
-        HashMap<Key<?>, BuildNodeImportFromInjector<?>> bound = new HashMap<>();
+        HashMap<Key<?>, XBuildNodeImportFromInjector<?>> bound = new HashMap<>();
         List<ServiceDescriptor> existing = injector.services().collect(Collectors.toList());
         for (ServiceDescriptor descriptor : existing) {
             // TODO fix
             frame = (InternalConfigurationSite) descriptor.getConfigurationSite();// StackCapture.create(descriptor.getRegistrationPoint(),
                                                                                   // CaptureType.INJECTOR_IMPORT_FROM);
 
-            BuildNodeImportFromInjector<Object> f = new BuildNodeImportFromInjector<>(this, frame, injector, descriptor);
+            XBuildNodeImportFromInjector<Object> f = new XBuildNodeImportFromInjector<>(this, frame, injector, descriptor);
             f.as((Key) descriptor.getKey());
             f.setDescription(descriptor.getDescription());
             f.tags().addAll(descriptor.tags());
@@ -223,13 +221,13 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
             bound.put(descriptor.getKey(), f);
         }
         ImportFromInjector ifi = new ImportFromInjector(injector, bound);
-        binder.addImportInjector(ifi);
-        c.accept(ifi);
+        builder.addImportInjector(ifi);
+        // c.accept(ifi);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final void importServices(Injector injector, Consumer<? super ServiceImportFilter> c) {
+    public final void importServices(Injector injector, Consumer<? super ServiceStagingArea> c) {
         requireNonNull(injector, "injector is null");
         checkConfigurable();
         // int depth = depth();
@@ -244,20 +242,5 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         checkConfigurable();
         accessor = LookupDescriptorAccessor.get(lookup);
-    }
-
-    /**
-     * Creates a new injector via the specified configurator.
-     *
-     * @param configurator
-     *            a consumer that can configure the injector
-     * @return the new injector
-     * @see Injector#of(Consumer)
-     */
-    public static Injector of(Consumer<InjectorConfiguration> configurator) {
-        requireNonNull(configurator, "configurator is null");
-        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
-        configurator.accept(c);
-        return c.binder.build();
     }
 }

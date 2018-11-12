@@ -22,7 +22,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.runtimenodes.RuntimeNode;
-import packed.internal.inject.runtimenodes.RuntimeNodeFactoryLazy;
+import packed.internal.inject.runtimenodes.RuntimeNodeLazy;
 import packed.internal.inject.runtimenodes.RuntimeNodeInstance;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -84,7 +84,7 @@ public final class BuildNodeFactorySingleton<T> extends BuildNodeFactory<T> {
     RuntimeNode<T> newRuntimeNode() {
         T i = instance;
         if (i == null && bindingMode == BindingMode.LAZY_SINGLETON) {
-            return new RuntimeNodeFactoryLazy<>(this, factory);
+            return new RuntimeNodeLazy<>(this, factory);
         } else {
             return new RuntimeNodeInstance<>(this, i, getBindingMode());
         }

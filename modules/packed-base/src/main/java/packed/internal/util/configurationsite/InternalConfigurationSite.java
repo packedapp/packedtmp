@@ -15,6 +15,8 @@
  */
 package packed.internal.util.configurationsite;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.Optional;
@@ -22,20 +24,57 @@ import java.util.Optional;
 import app.packed.util.ConfigurationSite;
 
 /**
- *
+ * The interface used internally for a configuration. This method includes methods that we are not yet ready to put out
+ * onto the public interface.
  */
 public interface InternalConfigurationSite extends ConfigurationSite {
+
+    /** A site that is used if a location of configuration site could not be determined. */
+    InternalConfigurationSite UNKNOWN = new InternalConfigurationSite() {
+
+        @Override
+        public String operation() {
+            return "Unknown";
+        }
+
+        @Override
+        public Optional<ConfigurationSite> parent() {
+            return Optional.empty();
+        }
+    };
 
     default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
                 .walk(e -> e.filter(f -> (!f.getClassName().startsWith("app.packed") && !f.getClassName().startsWith("packed"))).findFirst());
-        return new ProgrammaticConfigurationSite(this, cst, sf);
+        return sf.isPresent() ? new StackFrameConfigurationSite(this, cst, sf.get()) : UNKNOWN;
     }
 
     static InternalConfigurationSite ofStack(ConfigurationSiteType cst) {
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
                 .walk(e -> e.filter(f -> (!f.getClassName().startsWith("app.packed") && !f.getClassName().startsWith("packed"))).findFirst());
-        return new ProgrammaticConfigurationSite(null, cst, sf);
+        return sf.isPresent() ? new StackFrameConfigurationSite(null, cst, sf.get()) : UNKNOWN;
+    }
+
+    /** A programmatic configuration site from a {@link StackFrame}. */
+    static class StackFrameConfigurationSite extends AbstractConfigurationSite {
+
+        /** The stack frame. */
+        private final StackFrame stackFrame;
+
+        /**
+         * @param parent
+         * @param operation
+         */
+        StackFrameConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, StackFrame caller) {
+            super(parent, operation);
+            this.stackFrame = requireNonNull(caller);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return stackFrame.toString();
+        }
     }
 
 }

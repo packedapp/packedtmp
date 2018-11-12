@@ -55,7 +55,7 @@ public abstract class BuildNodeFactory<T> extends BuildNode<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(null, null, (Key) dependencies.get(i).getKey());
+                params[i] = resolvedDependencies[i].getInstance(injectorConfiguration.builder.getInjector(), null, (Key) dependencies.get(i).getKey());
             }
         }
         return factory.instantiate(params);

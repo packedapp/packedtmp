@@ -28,31 +28,52 @@ import java.util.List;
  *
  */
 // Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
-public class FieldBuilder {
+class MemberScanner {
 
-    ArrayList<FieldInvokerAtInject> injectableFields;
+    final Class<?> clazz;
 
+    ArrayList<FieldInvokerAtInject> fieldsAtInject;
+
+    ArrayList<FieldInvokerAtProvides> fieldsAtProvides;
+
+    /** The lookup object. */
     final Lookup lookup;
 
-    FieldBuilder(Lookup lookup) {
+    ArrayList<MethodInvokerAtInject> methodsAtInject;
+
+    ArrayList<MethodInvokerAtProvides> methodsAtProvides;
+
+    MemberScanner(Lookup lookup, Class<?> clazz) {
         this.lookup = requireNonNull(lookup);
+        this.clazz = requireNonNull(clazz);
     }
 
     public Collection<FieldInvokerAtInject> injectableFields() {
-        return injectableFields == null ? List.of() : List.copyOf(injectableFields);
+        return fieldsAtInject == null ? List.of() : List.copyOf(fieldsAtInject);
     }
 
-    public static FieldBuilder forService(Class<?> clazz, Lookup lookup) {
-        FieldBuilder result = new FieldBuilder(lookup);
+    public Collection<MethodInvokerAtInject> injectableMethods() {
+        return methodsAtInject == null ? List.of() : List.copyOf(methodsAtInject);
+    }
+
+    void scanMethods() {
+
+        // @Provides method cannot also have @Inject annotation
+        // if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
+        // throw new InvalidDeclarationException(cannotHaveBothAnnotations(Inject.class, Provides.class));
+        // }
+    }
+
+    void scanFields() {
         for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
             for (Field field : c.getDeclaredFields()) {
-                Annotation[] a = field.getAnnotations();
-                if (a.length > 0) {
+                Annotation[] annotations = field.getAnnotations();
+                if (annotations.length > 0) {
                     // Multiple annotations
-                    FieldInvokerAtInject inject = FieldInvokerAtInject.checkIfInjectable(result, field, a);
+                    FieldInvokerAtInject inject = FieldInvokerAtInject.createIfInjectable(this, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
-                    if (a.length > 1) {
+                    if (annotations.length > 1) {
                         if (inject != null) {
                             System.out.println("OOPS");
                         }
@@ -61,10 +82,15 @@ public class FieldBuilder {
                 }
             }
         }
-        return null;
     }
 
-    public static FieldBuilder forComponent(Class<?> clazz, Lookup lookup) {
+    public static MemberScanner forComponent(Class<?> clazz, Lookup lookup) {
         throw new UnsupportedOperationException();
+    }
+
+    static MemberScanner forService(Class<?> clazz, Lookup lookup) {
+        MemberScanner ms = new MemberScanner(lookup, clazz);
+        ms.scanFields();
+        return ms;
     }
 }

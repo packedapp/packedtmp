@@ -25,6 +25,8 @@ import app.packed.util.FieldDescriptor;
 /** A configuration point originating from an annotated method. */
 public final class AnnotatedFieldConfigurationSite extends AbstractConfigurationSite {
 
+    // Maybe just a reference to AnnotatedField
+
     /** The annotation. */
     final Annotation annotation;
 

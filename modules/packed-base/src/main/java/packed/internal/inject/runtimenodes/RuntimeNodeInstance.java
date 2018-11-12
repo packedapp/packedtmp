@@ -28,7 +28,10 @@ public final class RuntimeNodeInstance<T> extends RuntimeNode<T> implements Prov
     /** The singleton instance. */
     private final T instance;
 
-    /** The provides mode, we save it to distinguish between lazy and non-lazy services. */
+    /**
+     * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service is
+     * initialized.
+     */
     private final BindingMode bindingMode;
 
     /**

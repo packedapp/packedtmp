@@ -23,9 +23,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.util.List;
-
-import app.packed.inject.Dependency;
 
 /**
  * An executable descriptor.
@@ -62,15 +59,6 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Constructor#isVarArgs()
      */
     boolean isVarArgs();
-
-    /**
-     * Returns a list of dependencies matching the parameters of this executable.
-     *
-     * @return a dependency list
-     * @throws RuntimeException
-     *             if a dependency list could not be created. For example, if there are two qualifiers on a parameter.
-     */
-    List<Dependency> toDependencyList();
 
     /**
      * Unreflects this executable.

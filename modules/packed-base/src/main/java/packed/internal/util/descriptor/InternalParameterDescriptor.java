@@ -27,14 +27,13 @@ import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
-import packed.internal.inject.InternalDependency;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ParameterDescriptor}. */
-public final class InternalParameterDescriptor extends AbstractVariableDescriptor implements ParameterDescriptor {
+public final class InternalParameterDescriptor extends InternalVariableDescriptor implements ParameterDescriptor {
 
     /** The executable that declares the parameter. */
-    private final AbstractExecutableDescriptor declaringExecutable;
+    private final InternalExecutableDescriptor declaringExecutable;
 
     /** The index of the parameter. */
     private final int index;
@@ -52,7 +51,7 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
      * @param index
      *            the index of the parameter
      */
-    public InternalParameterDescriptor(AbstractExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
+    public InternalParameterDescriptor(InternalExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
         super(parameter);
         this.declaringExecutable = declaringExecutable;
         this.parameter = parameter;
@@ -165,12 +164,6 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
 
     /** {@inheritDoc} */
     @Override
-    protected InternalDependency toDependency0() {
-        return InternalDependency.of(this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String toString() {
         return parameter.toString();
     }
@@ -185,7 +178,7 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
     public static InternalParameterDescriptor of(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
 
-        AbstractExecutableDescriptor em;
+        InternalExecutableDescriptor em;
         if (parameter.getDeclaringExecutable() instanceof Constructor) {
             em = InternalConstructorDescriptor.of(parameter.getDeclaringExecutable());
         } else {
@@ -194,9 +187,9 @@ public final class InternalParameterDescriptor extends AbstractVariableDescripto
 
         // parameter.index is not visible, so we need to iterate through all parameters to find the right one
         if (em.getParameterCount() == 1) {
-            return em.getParameters()[0];
+            return em.getParametersUnsafe()[0];
         } else {
-            for (InternalParameterDescriptor p : em.getParameters()) {
+            for (InternalParameterDescriptor p : em.getParametersUnsafe()) {
                 if (p.parameter.equals(parameter)) {
                     return p;
                 }

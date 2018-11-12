@@ -31,7 +31,6 @@ import java.util.Optional;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
@@ -52,7 +51,7 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 public abstract class TypeLiteral<T> {
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
-    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETER_CACHE = new ClassValue<>() {
+    private static final ClassValue<TypeLiteral<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -80,7 +79,7 @@ public abstract class TypeLiteral<T> {
             /** {@inheritDoc} */
             @Override
             protected TypeLiteral<?> toTypeLiteral(Type type) {
-                return TypeLiteral.fromJavaImplementationType(type);
+                return new CanonicalizedTypeLiteral<>(type);
             }
         });
     }
@@ -105,7 +104,7 @@ public abstract class TypeLiteral<T> {
      */
     @SuppressWarnings("unchecked")
     protected TypeLiteral() {
-        TypeLiteral<?> tl = TYPE_PARAMETER_CACHE.get(getClass());
+        TypeLiteral<?> tl = TYPE_VARIABLE_CACHE.get(getClass());
         this.type = tl.type;
         this.rawType = (Class<? super T>) tl.rawType;
     }
@@ -116,9 +115,11 @@ public abstract class TypeLiteral<T> {
      * @param type
      *            the type to create a type literal from
      */
-    TypeLiteral(Type type, Class<? super T> rawType) {
+    @SuppressWarnings("unchecked")
+    TypeLiteral(Type type) {
+        assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
         this.type = requireNonNull(type, "type is null");
-        this.rawType = requireNonNull(rawType, "rawType is null");
+        this.rawType = (Class<? super T>) TypeUtil.findRawType(type);
     }
 
     /**
@@ -136,8 +137,8 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * To avoid inadvertently holding on to the instance that defines an anonymous class, this method creates a new instance
-     * without any reference to the instance that defined the anonymous class.
+     * To avoid accidentally holding on to any instance that defines this type literal as an anonymous class. This method
+     * creates a new type literal instance without any reference to the instance that defined the anonymous class.
      * 
      * @return the type literal
      */
@@ -191,7 +192,7 @@ public abstract class TypeLiteral<T> {
      *             this type literal it not free from type parameters
      */
     public final Key<T> toKey() {
-        return toKeyNullableAnnotation(null);
+        return Key.fromTypeLiteral(this);
     }
 
     /**
@@ -205,26 +206,7 @@ public abstract class TypeLiteral<T> {
      *             qualifier type is not annotated with {@link Qualifier}.
      */
     public final Key<T> toKey(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
-        return toKeyNullableAnnotation(qualifier);
-    }
-
-    /**
-     * Helper method for {@link #toKey()} and {@link #toKey(Annotation)}.
-     * 
-     * @param qualifier
-     *            the checked qualifier or null if no qualifier
-     * @return the new key
-     */
-    public final Key<T> toKeyNullableAnnotation(@Nullable Annotation qualifier) {
-        if (TypeUtil.isOptionalType(rawType)) {
-            throw new InvalidDeclarationException("Cannot convert an optional type (" + toStringSimple() + ") to a Key, as keys cannot be optional");
-        } else if (!TypeUtil.isFreeFromTypeVariables(type)) {
-            throw new InvalidDeclarationException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
-                    + toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(type));
-        }
-        return Key.fromCheckedTypeAndCheckedNullableAnnotation(canonicalize(), qualifier);
+        return Key.fromTypeLiteral(this, qualifier);
     }
 
     /** {@inheritDoc} */
@@ -237,7 +219,7 @@ public abstract class TypeLiteral<T> {
      * Returns a string where all the class names are replaced by their simple names. For example this method will return
      * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as {@link #toString()} does.
      * 
-     * @return a simple string represenation of this type
+     * @return a simple string representation of this type
      */
     public final String toStringSimple() {
         return formatSimple(type);
@@ -253,28 +235,7 @@ public abstract class TypeLiteral<T> {
      */
     public static TypeLiteral<?> fromField(Field field) {
         requireNonNull(field, "field is null");
-        return fromJavaImplementationType(field.getGenericType());
-    }
-
-    /**
-     * Returns a type literal from a type that is implemented by a class located in java.base, as these are known to be
-     * intra-comparable.
-     * <p>
-     * This method is not available publically because you can really pass anything in like a Type. Since there are no
-     * standard way to create hash codes for something like {@link ParameterizedType}, we need to make a copy of every
-     * specified type to make sure different implementations calculates the same hash code. For example,
-     * {@code BlueParameterizedType<String>} can have a different hashCode then {@code GreenParameterizedType<String>}
-     * because {@link ParameterizedType} does not specify how the hash code is calculated. As a result we need to transform
-     * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
-     * work, and has some overhead.
-     * 
-     * @param type
-     *            the type to return a type literal for
-     * @return a type literal from the specified type
-     * @see #of(Class)
-     */
-    public static CanonicalizedTypeLiteral<?> fromJavaImplementationType(Type type) {
-        return new CanonicalizedTypeLiteral<>(type);
+        return new CanonicalizedTypeLiteral<>(field.getGenericType());
     }
 
     /**
@@ -287,7 +248,7 @@ public abstract class TypeLiteral<T> {
      */
     public static TypeLiteral<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
-        return fromJavaImplementationType(method.getGenericReturnType());
+        return new CanonicalizedTypeLiteral<>(method.getGenericReturnType());
     }
 
     /**
@@ -300,7 +261,7 @@ public abstract class TypeLiteral<T> {
      */
     public static TypeLiteral<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
-        return fromJavaImplementationType(InternalParameterDescriptor.of(parameter).getParameterizedType());
+        return new CanonicalizedTypeLiteral<>(InternalParameterDescriptor.of(parameter).getParameterizedType());
     }
 
     /**
@@ -333,7 +294,7 @@ public abstract class TypeLiteral<T> {
      */
     public static <T> TypeLiteral<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
         Type t = TypeVariableExtractorUtil.findTypeParameterUnsafe(subClass, superClass, parameterIndex);
-        return fromJavaImplementationType(t);
+        return new CanonicalizedTypeLiteral<>(t);
     }
 
     /**
@@ -348,24 +309,39 @@ public abstract class TypeLiteral<T> {
     @SuppressWarnings("unchecked")
     public static <T> TypeLiteral<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
-        return (TypeLiteral<T>) fromJavaImplementationType(type);
+        return (TypeLiteral<T>) new CanonicalizedTypeLiteral<>(type);
     }
 
     /**
      * The default implementation of TypeLiteral. This is also the type we normally maintain a reference to internally. As
      * it is guaranteed to not retain any references to, for example, an instance that defined an anonymous class.
+     * <p>
+     * Returns a type literal from a type that is implemented by a class located in java.base, as these are known to be
+     * intra-comparable.
+     * <p>
+     * This method is not available publically because you can really pass anything in like a Type. Since there are no
+     * standard way to create hash codes for something like {@link ParameterizedType}, we need to make a copy of every
+     * specified type to make sure different implementations calculates the same hash code. For example,
+     * {@code BlueParameterizedType<String>} can have a different hashCode then {@code GreenParameterizedType<String>}
+     * because {@link ParameterizedType} does not specify how the hash code is calculated. As a result we need to transform
+     * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
+     * work, and has some overhead.
+     * 
+     * @param type
+     *            the type to return a type literal for
+     * @return a type literal from the specified type
+     * @see #of(Class)
      */
     static final class CanonicalizedTypeLiteral<T> extends TypeLiteral<T> {
 
         /**
-         * Creates a new instance
+         * Creates a new type literal instance
          * 
          * @param type
          *            the type
          */
-        @SuppressWarnings("unchecked")
         CanonicalizedTypeLiteral(Type type) {
-            super(requireNonNull(type, "type is null"), (Class<? super T>) TypeUtil.findRawType(type));
+            super(type);
         }
     }
 }

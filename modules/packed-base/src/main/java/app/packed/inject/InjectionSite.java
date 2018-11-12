@@ -17,8 +17,7 @@ package app.packed.inject;
 
 import java.util.Optional;
 
-import org.cakeframework.container.Component;
-
+import app.packed.container.Component;
 import app.packed.util.VariableDescriptor;
 import packed.internal.inject.InternalInjectionSites;
 

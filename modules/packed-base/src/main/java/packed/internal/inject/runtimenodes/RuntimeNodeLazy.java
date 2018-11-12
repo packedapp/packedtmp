@@ -26,22 +26,27 @@ import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
 
 /** A runtime node for an instance that have not yet been requested for the first time. */
-public final class RuntimeNodeFactoryLazy<T> extends RuntimeNode<T> {
+public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
 
     /** The lazily instantiated instance. */
     @Nullable
     private volatile T instance;
 
-    /** Lazy calculates the value, and throws away the factory and lock afterwards. */
+    /** Lazy calculates the value, and throws away the factory afterwards. */
     @Nullable
-    private volatile LazySync lazy;
+    private volatile Sync lazy;
 
     /**
+     * Creates a new node
+     * 
      * @param node
+     *            the build node to create this node from
+     * @param factory
+     *            the factory that will create the instance
      */
-    public RuntimeNodeFactoryLazy(BuildNode<T> node, InternalFactory<T> factory) {
+    public RuntimeNodeLazy(BuildNode<T> node, InternalFactory<T> factory) {
         super(node);
-        this.lazy = new LazySync(new RuntimeNodeFactory<>(node, factory));
+        this.lazy = new Sync(new RuntimeNodeFactory<>(node, factory));
     }
 
     /** {@inheritDoc} */
@@ -54,14 +59,15 @@ public final class RuntimeNodeFactoryLazy<T> extends RuntimeNode<T> {
     @Override
     public T getInstance(InjectionSite site) {
         for (;;) {
-            T instance = this.instance;
-            if (instance != null) {
-                return instance;
+            T i = instance;
+            if (i != null) {
+                return i;
             }
+
             // Lazy calculate the value
-            LazySync lazy = this.lazy;
-            if (lazy != null) {
-                lazy.update(); // updates this.instance, and nulls itself out
+            Sync l = lazy;
+            if (l != null) {
+                l.update(); // updates this.instance, and null itself out
             }
         }
     }
@@ -72,13 +78,20 @@ public final class RuntimeNodeFactoryLazy<T> extends RuntimeNode<T> {
         return false;
     }
 
+    /** A helper class for lazy calculating the value */
     @SuppressWarnings("serial")
-    final class LazySync extends Semaphore {
+    final class Sync extends Semaphore {
 
         /** The factory used for creating a new instance. */
         private final RuntimeNodeFactory<T> factory;
 
-        LazySync(RuntimeNodeFactory<T> factory) {
+        /**
+         * Creates a new Sync object
+         * 
+         * @param factory
+         *            the actual factory node that will create the value
+         */
+        Sync(RuntimeNodeFactory<T> factory) {
             super(1);
             this.factory = requireNonNull(factory);
         }
@@ -87,6 +100,8 @@ public final class RuntimeNodeFactoryLazy<T> extends RuntimeNode<T> {
             acquireUninterruptibly();
             try {
                 if (lazy != null) {
+                    // TODO I don't think we want to call the factory multiple times, maybe store the
+                    // exception
                     T newInstance = factory.get();
                     if (newInstance == null) {
                         requireNonNull(instance, "factory produced a null instance");

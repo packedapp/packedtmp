@@ -18,11 +18,10 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
-import org.cakeframework.container.Component;
-
-import app.packed.inject.Dependency;
+import app.packed.container.Component;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
@@ -90,11 +89,12 @@ public abstract class AbstractInjector implements Injector {
         // Inject fields
         if (descriptor.hasInjectableFields()) {
             for (FieldInvokerAtInject field : descriptor.injectableFields()) {
-                Dependency dependency = field.dependency();
+                InternalDependency dependency = field.dependency();
                 Node<?> node = findNode(dependency.getKey());
                 if (node != null) {
                     @SuppressWarnings({ "rawtypes", "unchecked" })
                     Object value = node.getInstance(null /* this */, component, (Key) dependency.getKey());
+                    value = dependency.wrapIfOptional(value);
                     field.injectInstance(instance, value);
                 } else if (dependency.isOptional()) {
                     // 3 Valgmuligheder
@@ -121,6 +121,14 @@ public abstract class AbstractInjector implements Injector {
         // Inject methods
         if (descriptor.hasInjectableMethods()) {
             for (MethodInvokerAtInject method : descriptor.injectableMethods()) {
+                List<InternalDependency> dependencies = method.dependencies();
+                Object[] arguments = new Object[dependencies.size()];
+                System.out.println(arguments);
+                for (InternalDependency dependency : dependencies) {
+                    Node<?> node = findNode(dependency.getKey());
+                    System.out.println(node);
+
+                }
                 System.out.println("Should have injected " + method);
             }
         }

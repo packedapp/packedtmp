@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.cakeframework.container;
+package support.stubs.annotation;
+
+import java.util.Arrays;
 
 /**
  *
  */
-public interface Component {
+public class CharQualifiers {
 
+    @CharQualifier('X')
+    public static final CharQualifier X = (CharQualifier) Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("X"))
+            .findFirst().get().getAnnotations()[0];
+
+    @CharQualifier('Y')
+    public static final CharQualifier Y = (CharQualifier) Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("Y"))
+            .findFirst().get().getAnnotations()[0];
 }

@@ -34,7 +34,6 @@ import java.util.OptionalLong;
 import app.packed.inject.Dependency;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import app.packed.util.ExecutableDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
@@ -44,14 +43,13 @@ import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.descriptor.AbstractVariableDescriptor;
+import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
+import packed.internal.util.descriptor.InternalParameterDescriptor;
+import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /** The default implementation of {@link Dependency}. */
 public final class InternalDependency implements Dependency {
-
-    /** The index of this dependency. */
-    private final int index;
 
     /** The key of this dependency. */
     private final Key<?> key;
@@ -65,20 +63,12 @@ public final class InternalDependency implements Dependency {
 
     /** The variable of this dependency. */
     @Nullable
-    private final VariableDescriptor variable;
+    private final InternalVariableDescriptor variable;
 
-    InternalDependency(Key<?> key, AbstractVariableDescriptor variable, Class<?> optionalType) {
-        this.key = requireNonNull(key);
-        this.index = variable.getIndex();
-        this.optionalType = optionalType;
-        this.variable = variable;
-    }
-
-    InternalDependency(Key<?> key, Class<?> optionalType) {
+    private InternalDependency(Key<?> key, Class<?> optionalType, InternalVariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionalType = optionalType;
-        this.index = 0;
-        this.variable = null;
+        this.variable = variable;
     }
 
     /**
@@ -116,7 +106,7 @@ public final class InternalDependency implements Dependency {
     /** {@inheritDoc} */
     @Override
     public int getIndex() {
-        return index;
+        return variable == null ? 0 : variable.getIndex();
     }
 
     /** {@inheritDoc} */
@@ -138,14 +128,21 @@ public final class InternalDependency implements Dependency {
     }
 
     /**
-     * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble} or
-     * {@link OptionalLong}) that was used to create this dependency or {@code null} if this dependency is not optional.
+     * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble},
+     * {@link OptionalLong} or {@link Nullable}) that was used to create this dependency or {@code null} if this dependency
+     * is not optional.
      *
      * @return the optional container type
      * @see #isOptional()
      */
     public Class<?> getOptionalContainerType() {
         return optionalType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<VariableDescriptor> getVariable() {
+        return Optional.ofNullable(variable);
     }
 
     /** {@inheritDoc} */
@@ -170,12 +167,6 @@ public final class InternalDependency implements Dependency {
         }
         sb.append("]");
         return sb.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<VariableDescriptor> getVariable() {
-        return Optional.ofNullable(variable);
     }
 
     /**
@@ -217,9 +208,22 @@ public final class InternalDependency implements Dependency {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static List<InternalDependency> fromExecutable(ExecutableDescriptor executable) {
-        return (List) executable.toDependencyList();
+    public static List<InternalDependency> fromExecutable(InternalExecutableDescriptor executable) {
+        InternalParameterDescriptor[] parameters = executable.getParametersUnsafe();
+        switch (parameters.length) {
+        case 0:
+            return List.of();
+        case 1:
+            return List.of(of(parameters[0]));
+        case 2:
+            return List.of(of(parameters[0]), of(parameters[1]));
+        default:
+            ArrayList<InternalDependency> list = new ArrayList<>(parameters.length);
+            for (int i = 0; i < parameters.length; i++) {
+                list.add(of(parameters[i]));
+            }
+            return List.copyOf(list);
+        }
     }
 
     /**
@@ -261,7 +265,8 @@ public final class InternalDependency implements Dependency {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(Key.internalOf(type, qa), optionalType);
+
+        return new InternalDependency(InjectSupport.toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -284,25 +289,25 @@ public final class InternalDependency implements Dependency {
         if (type == Optional.class) {
             throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
         } else if (type == OptionalInt.class) {
-            return new InternalDependency(Key.of(Integer.class), OptionalInt.class);
+            return new InternalDependency(Key.of(Integer.class), OptionalInt.class, null);
         } else if (type == OptionalLong.class) {
-            return new InternalDependency(Key.of(Long.class), OptionalLong.class);
+            return new InternalDependency(Key.of(Long.class), OptionalLong.class, null);
         } else if (type == OptionalDouble.class) {
-            return new InternalDependency(Key.of(Double.class), OptionalDouble.class);
+            return new InternalDependency(Key.of(Double.class), OptionalDouble.class, null);
         }
         return of(Key.of(type));
     }
 
     public static <T> InternalDependency of(Key<?> key) {
-        return new InternalDependency(key, null);
+        return new InternalDependency(key, null, null);
     }
 
     public static <T> InternalDependency of(VariableDescriptor variable) {
         requireNonNull(variable, "variable is null");
-        return ofVariable(AbstractVariableDescriptor.unwrap(variable));
+        return ofVariable(InternalVariableDescriptor.unwrap(variable));
     }
 
-    private static InternalDependency ofVariable(AbstractVariableDescriptor variable) {
+    private static InternalDependency ofVariable(InternalVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
         Annotation a = variable.findQualifiedAnnotation();
 
@@ -316,7 +321,7 @@ public final class InternalDependency implements Dependency {
         } else if (rawType == Optional.class) {
             optionalType = Optional.class;
             Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
-            tl = TypeLiteral.fromJavaImplementationType(cl);
+            tl = InjectSupport.toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.getRawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
             }
@@ -341,7 +346,7 @@ public final class InternalDependency implements Dependency {
         }
 
         // TL is free from Optional
-        Key<?> key = tl.toKeyNullableAnnotation(a);
-        return new InternalDependency(key, variable, optionalType);
+        Key<?> key = Key.fromTypeLiteralNullableAnnotation(variable, tl, a);
+        return new InternalDependency(key, optionalType, variable);
     }
 }

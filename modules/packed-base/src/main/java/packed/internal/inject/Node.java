@@ -15,8 +15,7 @@
  */
 package packed.internal.inject;
 
-import org.cakeframework.container.Component;
-
+import app.packed.container.Component;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;

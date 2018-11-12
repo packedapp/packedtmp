@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.stubs;
+package app.packed.container;
 
-import java.util.Arrays;
+import app.packed.util.Taggable;
 
 /**
  *
  */
-public class CharQualifiers {
+public interface Component extends Taggable {
 
-    @CharQualifier('X')
-    public static final CharQualifier X = (CharQualifier) Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("X"))
-            .findFirst().get().getAnnotations()[0];
-
-    @CharQualifier('Y')
-    public static final CharQualifier Y = (CharQualifier) Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("Y"))
-            .findFirst().get().getAnnotations()[0];
 }

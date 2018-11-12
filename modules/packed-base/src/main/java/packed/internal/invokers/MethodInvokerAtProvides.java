@@ -17,19 +17,16 @@ package packed.internal.invokers;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.inject.BindingMode;
-import app.packed.inject.Inject;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provider;
 import app.packed.inject.Provides;
-import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -47,13 +44,9 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
     /** The key under which this method will deliver services. */
     private final Key<?> key;
 
-    MethodInvokerAtProvides(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup, Method method, Provides provides) {
+    MethodInvokerAtProvides(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup, Provides provides) {
         super(descriptor, lookup);
 
-        // @Provides method cannot also have @Inject annotation
-        if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
-            throw new InvalidDeclarationException(cannotHaveBothAnnotations(Inject.class, Provides.class));
-        }
         this.key = descriptor.fromMethodReturnType();
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.bindingMode = provides.bindingMode();
@@ -88,7 +81,7 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
     }
 
     public static Optional<MethodInvokerAtProvides> find(InternalMethodDescriptor method) {
-        for (Annotation a : method.annotations) {
+        for (Annotation a : method.getAnnotationsUnsafe()) {
             if (a.annotationType() == Provides.class) {
                 return Optional.of(read(method, (Provides) a));
             }

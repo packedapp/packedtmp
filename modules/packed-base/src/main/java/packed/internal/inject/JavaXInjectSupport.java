@@ -63,6 +63,7 @@ public final class JavaXInjectSupport {
                 return;
             }
         }
+        // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
         throw new InvalidDeclarationException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 
@@ -82,6 +83,17 @@ public final class JavaXInjectSupport {
             }
         }
         return qualifier;
+    }
+
+    public static boolean isInjectAnnotationPresent(Annotation[] annotations) {
+        for (Class<? extends Annotation> a : JavaXInjectSupport.INJECT_ANNOTATIONS) {
+            for (Annotation an : annotations) {
+                if (an.annotationType() == a) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean isInjectAnnotationPresent(AnnotatedElement e) {

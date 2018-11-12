@@ -99,4 +99,9 @@ public abstract class Factory0<R> extends Factory<R> {
     public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> type) {
         return new Factory<>(new InternalFactory0<>(supplier, type));
     }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static void main(String[] args) {
+        new Factory0(() -> 1) {};
+    }
 }

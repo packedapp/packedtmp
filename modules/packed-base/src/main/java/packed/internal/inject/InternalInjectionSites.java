@@ -20,8 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Member;
 import java.util.Optional;
 
-import org.cakeframework.container.Component;
-
+import app.packed.container.Component;
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;

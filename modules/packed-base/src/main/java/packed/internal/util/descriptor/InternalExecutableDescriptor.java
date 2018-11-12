@@ -21,19 +21,12 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import app.packed.inject.Dependency;
 import app.packed.util.ExecutableDescriptor;
-import packed.internal.inject.InternalDependency;
 
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
-public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElement implements ExecutableDescriptor {
-
-    /** A cached list of this dependencies matching the parameters of the executable. */
-    private volatile List<InternalDependency> dependencies;
+public abstract class InternalExecutableDescriptor extends InternalAnnotatedElement implements ExecutableDescriptor {
 
     /** The executable */
     final Executable executable;
@@ -45,18 +38,18 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
     final Class<?>[] parameterTypes;
 
     /**
-     * Creates a new ExecutableMirror from the specified executable.
+     * Creates a new descriptor from the specified executable.
      *
      * @param executable
      *            the executable to mirror
      */
-    public AbstractExecutableDescriptor(Executable executable) {
+    public InternalExecutableDescriptor(Executable executable) {
         super(executable);
         this.executable = executable;
-        Parameter[] realParameters = executable.getParameters();
-        this.parameters = new InternalParameterDescriptor[realParameters.length];
-        for (int i = 0; i < realParameters.length; i++) {
-            this.parameters[i] = new InternalParameterDescriptor(this, realParameters[i], i);
+        Parameter[] javaParameters = executable.getParameters();
+        this.parameters = new InternalParameterDescriptor[javaParameters.length];
+        for (int i = 0; i < javaParameters.length; i++) {
+            this.parameters[i] = new InternalParameterDescriptor(this, javaParameters[i], i);
         }
         this.parameterTypes = executable.getParameterTypes();
     }
@@ -84,8 +77,7 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
      *
      * @return an array of parameter mirrors of the executable
      */
-    // TODO unsafe arrays
-    public final InternalParameterDescriptor[] getParameters() {
+    public final InternalParameterDescriptor[] getParametersUnsafe() {
         return parameters;
     }
 
@@ -113,42 +105,13 @@ public abstract class AbstractExecutableDescriptor extends AbstractAnnotatedElem
     public abstract Executable newExecutable();
 
     /**
-     * Returns a list of dependencies matching the parameters of this executable.
-     *
-     * @return a dependency list
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public final List<Dependency> toDependencyList() {
-        List<InternalDependency> d = this.dependencies;
-        if (d != null) {
-            return (List) d;
-        }
-
-        switch (parameters.length) {
-        case 0:
-            return (List) (dependencies = List.of());
-        case 1:
-            return (List) (dependencies = List.of(parameters[0].toDependency()));
-        case 2:
-            return (List) (dependencies = List.of(parameters[0].toDependency(), parameters[1].toDependency()));
-        default:
-            ArrayList<InternalDependency> list = new ArrayList<>(parameters.length);
-            for (int i = 0; i < parameters.length; i++) {
-                list.add(parameters[i].toDependency());
-            }
-            return (List) (dependencies = List.copyOf(list));
-        }
-    }
-
-    /**
-     * Creates a new descriptor from a method or constructor.
+     * Creates a new descriptor from a corresponding {@link Method} or {@link Constructor}.
      *
      * @param executable
      *            the executable to create a descriptor for
      * @return a new descriptor
      */
-    public static AbstractExecutableDescriptor of(Executable executable) {
+    public static InternalExecutableDescriptor of(Executable executable) {
         requireNonNull(executable, "executable is null");
         return executable instanceof Method ? InternalMethodDescriptor.of((Method) executable) : InternalConstructorDescriptor.of((Constructor<?>) executable);
     }

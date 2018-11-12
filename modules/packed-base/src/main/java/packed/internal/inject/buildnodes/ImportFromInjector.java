@@ -31,14 +31,14 @@ import app.packed.inject.ServiceImportFilter;
 // Skal nok have 2 versioner, en hvor de er RuntimeNodes og en hvor det er generiske noder, der bliver kopieret.
 public class ImportFromInjector implements ServiceImportFilter {
 
-    private final Map<Key<?>, BuildNodeImportFromInjector<?>> available;
+    private final Map<Key<?>, XBuildNodeImportFromInjector<?>> available;
 
     /** The injector that is being imported from. */
     final Injector injector;
 
-    final Map<Key<?>, BuildNodeImportFromInjector<?>> m;
+    final Map<Key<?>, XBuildNodeImportFromInjector<?>> m;
 
-    public ImportFromInjector(Injector injector, Map<Key<?>, BuildNodeImportFromInjector<?>> m) {
+    public ImportFromInjector(Injector injector, Map<Key<?>, XBuildNodeImportFromInjector<?>> m) {
         this.injector = requireNonNull(injector);
         this.m = m;
         this.available = Map.copyOf(m);
@@ -55,7 +55,7 @@ public class ImportFromInjector implements ServiceImportFilter {
     @SuppressWarnings("unchecked")
     @Override
     public <T> ServiceConfiguration<T> importService(Key<T> key) {
-        BuildNodeImportFromInjector<?> f = available.get(key);
+        XBuildNodeImportFromInjector<?> f = available.get(key);
 
         // TODO we kal paa en eller anden maade havde sat registranten
         if (f == null) {

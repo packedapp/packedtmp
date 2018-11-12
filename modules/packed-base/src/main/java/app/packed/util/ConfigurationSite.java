@@ -17,22 +17,22 @@ package app.packed.util;
 
 import java.util.Optional;
 
-/** A configuration site is the location where an object or parts of it was configured. */
+import packed.internal.util.configurationsite.InternalConfigurationSite;
+
+/**
+ * A configuration site is the location where a object was configured. This is typically either a combination of method
+ * and a line number, or a filename and a line number. A configuration site can have are parent, for example, the parent
+ * of registration of a service will the the registration point for the injector in which the service is registered in.
+ * 
+ */
+// ConfigurationLocation????
+/**
+ *
+ */
 public interface ConfigurationSite {
 
-    /** A registration point that contains no information. */
-    ConfigurationSite NO_INFO = new ConfigurationSite() {
-
-        @Override
-        public String operation() {
-            return "NOP";
-        }
-
-        @Override
-        public Optional<ConfigurationSite> parent() {
-            return Optional.empty();
-        }
-    };
+    /** A site that is used if a location of configuration site could not be determined. */
+    ConfigurationSite UNKNOWN = InternalConfigurationSite.UNKNOWN;
 
     /**
      * Returns whether or not this site has a parent.
@@ -44,11 +44,20 @@ public interface ConfigurationSite {
     }
 
     /**
-     * Returns the operation that was performed when configuring the object.
+     * Returns the configuration operation that was performed.
      * 
-     * @return the operation that was performed when configuring the object
+     * @return the configuration operation that was performed
      */
     String operation();
 
+    /**
+     * Returns any parent this site may have, or an empty {@link Optional} if this site has no parent.
+     * 
+     * @return any parent this site may have, or an empty {@link Optional} if this site has no parent
+     */
     Optional<ConfigurationSite> parent();
 }
+// Example with Provides
+// The exist because the "inject.provides" because of field xxxxx
+// This annotation was scanned, because an object was registered at this point
+// It was registered in the container xyz

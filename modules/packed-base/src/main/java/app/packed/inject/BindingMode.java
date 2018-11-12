@@ -16,21 +16,28 @@
 package app.packed.inject;
 
 /**
- *
+ * The binding mode of a service.
+ * 
+ * XX
+ * 
+ * 
+ * sdd
  */
 public enum BindingMode {
 
     /**
-     * A single instance is created as soon as possible. This is the default mode used throughout the framework.
+     * A service instance is created together with the injector that holds the service. This is the default mode used
+     * throughout the framework.
      */
     EAGER_SINGLETON,
 
     /**
-     * A single instance is created on demand. Concurrent calls by other threads while constructing the value will block.
+     * A single service instance is created on demand. Concurrent calls by other threads while constructing the value will
+     * block.
      */
     LAZY_SINGLETON,
 
-    /** A new instances is created for every request. */
+    /** A new service instance is created every time the service is requested. */
     PROTOTYPE;
 
     /**

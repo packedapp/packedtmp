@@ -39,7 +39,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  * A build that imports a service from another injector. 
  */
-public class BuildNodeImportFromInjector<T> extends BuildNode<T> implements Provider<T> {
+public class XBuildNodeImportFromInjector<T> extends BuildNode<T> implements Provider<T> {
 
     /** The descriptor of the service */
     final ServiceDescriptor descriptor;
@@ -57,7 +57,7 @@ public class BuildNodeImportFromInjector<T> extends BuildNode<T> implements Prov
      * @param stackframe
      */
     @SuppressWarnings("unchecked")
-    public BuildNodeImportFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
+    public XBuildNodeImportFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
             ServiceDescriptor descriptor) {
         super(injectorConfiguration, configurationSite, List.of());
         this.injector = requireNonNull(injector);

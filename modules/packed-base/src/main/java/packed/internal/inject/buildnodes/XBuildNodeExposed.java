@@ -27,14 +27,14 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  *
  */
-public class BuildNodeExposed<T> extends BuildNode<T> {
+public class XBuildNodeExposed<T> extends BuildNode<T> {
 
     /**
      * @param bundle
      * @param dependencies
      * @param stackframe
      */
-    public BuildNodeExposed(InternalInjectorConfiguration bundle,  InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
+    public XBuildNodeExposed(InternalInjectorConfiguration bundle,  InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         super(bundle, configurationSite, dependencies);
     }
 

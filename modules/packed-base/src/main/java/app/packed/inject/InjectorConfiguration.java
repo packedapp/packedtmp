@@ -129,7 +129,7 @@ public interface InjectorConfiguration extends Taggable {
      *            the injector to import services from
      */
     default void importServices(Injector injector) {
-        importServices(injector, c -> c.importServices(e -> true));
+        importServices(injector, c -> c.importAllServices(e -> true));
     }
 
     /**
@@ -143,7 +143,7 @@ public interface InjectorConfiguration extends Taggable {
      *             if not at least one service is selected for import
      */
     // includeServices..., ServiceImportSelector, den selectere og modificere.
-    void importServices(Injector injector, Consumer<? super ServiceImportFilter> imported);
+    void importServices(Injector injector, Consumer<? super ServiceStagingArea> imported);
 
     /**
      * Sets the specified {@link Lookup lookup} object that will be used to instantiate objects using constructors, invoke

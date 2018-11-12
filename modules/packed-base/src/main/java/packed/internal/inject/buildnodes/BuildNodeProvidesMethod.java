@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.inject.BindingMode;
-import app.packed.inject.Dependency;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.ConfigurationSite;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.InternalInjectionSites;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.inject.runtimenodes.RuntimeNodeProvidesMethod;
@@ -74,7 +74,8 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T getInstance(InjectionSite site) {
-        List<Dependency> dependencies = providesMethod.descriptor().toDependencyList();
+        // TODO cache in ProvidesXYZ
+        List<InternalDependency> dependencies = InternalDependency.fromExecutable(providesMethod.descriptor());
         Object[] params = new Object[dependencies.size()];
         Object ownerInstance = owner.getInstance(null);// Must be a factory or an instance, which ignore injection site
         for (int i = 0; i < params.length; i++) {
@@ -96,7 +97,7 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
         // ServiceRequest kan bruges i forbindelse med prototypes.
         // Singletons kan never have a ServiceRequest in its parameters
         // TODO we could cache this
-        List<Dependency> dependencies = providesMethod.descriptor().toDependencyList();
+        List<InternalDependency> dependencies = InternalDependency.fromExecutable(providesMethod.descriptor());
         for (int i = 0; i < dependencies.size(); i++) {
             Key<?> key = dependencies.get(i).getKey();
             if (key.equals(InternalInjectionSites.INJECTION_SITE_KEY) || resolvedDependencies[i].needsInjectionSite()) {
@@ -114,6 +115,9 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
 
     @Override
     RuntimeNode<T> newRuntimeNode() {
+        // if bindingmode==instance
+        // return
+
         return new RuntimeNodeProvidesMethod<>(this);
     }
 }

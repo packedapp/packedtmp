@@ -53,3 +53,4 @@ public class InvalidDeclarationException extends RuntimeException {
         super(message.toString(), cause);
     }
 }
+// Kunne vaere fedt med et configuration site...Men nah er det ikke kun statisk vi brokker os over

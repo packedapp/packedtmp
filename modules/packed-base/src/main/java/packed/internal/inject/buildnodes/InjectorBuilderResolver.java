@@ -20,13 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.Node;
-import packed.internal.util.descriptor.AbstractExecutableDescriptor;
+import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
@@ -34,9 +35,8 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
  */
 public class InjectorBuilderResolver {
     // TODO also check no injection of prototype beans into singleton, after we have resolved
-    
-    
-    public static void resolveAllDependencies(InjectorBinder b) {
+
+    public static void resolveAllDependencies(InjectorBuilder b) {
         b.detectCyclesFor = new ArrayList<>();
 
         for (BuildNode<?> node : b.buildNodes) {
@@ -76,7 +76,8 @@ public class InjectorBuilderResolver {
                             }
                             sb.append("parameter on ");
                             if (dependency.getVariable() != null) {
-                                AbstractExecutableDescriptor e = (AbstractExecutableDescriptor) ((InternalParameterDescriptor) dependency.getVariable().get())
+
+                                InternalExecutableDescriptor e = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.getVariable().get())
                                         .getDeclaringExecutable();
                                 sb.append(e.descriptorTypeName()).append(": ");
                                 sb.append(e.getDeclaringClass().getCanonicalName());
@@ -101,6 +102,7 @@ public class InjectorBuilderResolver {
                                 }
                                 sb.append(")");
                             }
+                            System.err.println(b.buildNodes.stream().map(e -> e.getKey()).collect(Collectors.toList()));
                             throw new InjectionException(sb.toString());
                         }
 

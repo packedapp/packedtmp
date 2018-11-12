@@ -261,7 +261,7 @@ public interface Injector extends Taggable {
         requireNonNull(configurator, "configurator is null");
         InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
         configurator.accept(c);
-        return c.binder.build();
+        return c.builder.build();
     }
 }
 

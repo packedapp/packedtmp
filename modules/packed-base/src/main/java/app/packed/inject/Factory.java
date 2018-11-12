@@ -26,6 +26,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
 import packed.internal.inject.factory.FindInjectable;
 import packed.internal.inject.factory.InternalFactory;
@@ -67,7 +68,7 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FindInjectable.find(TypeLiteral.fromJavaImplementationType(t)));
+            return new Factory(FindInjectable.find(new CanonicalizedTypeLiteral<>(t)));
         }
     };
 
@@ -237,7 +238,7 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (implementation.getClass() != TypeLiteral.class) {
+        if (implementation.getClass() != CanonicalizedTypeLiteral.class) {
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         } else {
             return new Factory<>(FindInjectable.find(implementation));

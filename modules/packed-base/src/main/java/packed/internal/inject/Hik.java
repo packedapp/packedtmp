@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package packed.internal.inject;
 
-import static java.util.Objects.requireNonNull;
+import app.packed.inject.Injector;
 
 /**
  *
  */
-public enum ConfigurationSiteType {
-
-    /** */
-    INJECTOR_BIND("Injector.bind"),
-
-    /** */
-    INJECTOR_IMPORT_FROM("Injector.importFrom"),
-
-    /** */
-    INJECTOR_OF("Injector.of");
-
-    final String f;
-
-    ConfigurationSiteType(String f) {
-        this.f = requireNonNull(f);
+public class Hik {
+    public Hik(Dus i, Injector id) {
+        System.out.println(id);
     }
 
-    @Override
-    public String toString() {
-        return f;
+    public static void main(String[] args) {
+        Injector ii = Injector.of(c -> {
+            c.bind(Hik.class);
+            c.bind(Dus.class);
+        });
+        System.out.println(ii);
+    }
+
+    public static class Dus {
+
     }
 }
