@@ -23,7 +23,6 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalInjectionSites;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
 
@@ -50,7 +49,8 @@ public final class RuntimeNodeFactory<T> extends RuntimeNode<T> implements Provi
         this.providers = new Provider[dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RuntimeNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
-            InjectionSite is = InternalInjectionSites.of(null, dependencies.get(i), null);
+            InjectionSite is = null;
+            InjectionSite.of(null, dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);
         }
         // Create local injection site for each parameter.

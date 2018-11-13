@@ -37,7 +37,7 @@ public interface Node<T> extends ServiceDescriptor {
     // }
 
     default T getInstance(Injector injector, Component component, Key<T> key) {
-        return getInstance(InternalInjectionSites.of(injector, key, component));
+        return getInstance(InjectionSite.of(injector, key));
     }
 
     T getInstance(InjectionSite site);

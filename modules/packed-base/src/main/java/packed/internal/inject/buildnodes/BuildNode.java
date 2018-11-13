@@ -24,8 +24,8 @@ import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
+import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalInjectionSites;
 import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.Node;
 import packed.internal.inject.runtimenodes.RuntimeNode;
@@ -80,7 +80,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
             for (InternalDependency e : dependencies) {
-                if (e.getKey().equals(InternalInjectionSites.INJECTION_SITE_KEY)) {
+                if (e.getKey().equals(CommonKeys.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;
                 }

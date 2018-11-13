@@ -67,9 +67,8 @@ public interface Dependency {
      * The variable for which this dependency was created. Or an empty {@link Optional} if this dependency was not created
      * from a variable.
      * <p>
-     * If this dependency was created from a variable this method will an optional containing either a
-     * {@link FieldDescriptor} in case of field injection, or a {@link ParameterDescriptor} in case of method or constructor
-     * injection.
+     * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
+     * created from a parameter this method will return a {@link ParameterDescriptor}.
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.

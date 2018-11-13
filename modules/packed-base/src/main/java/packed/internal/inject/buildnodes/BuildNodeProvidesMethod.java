@@ -24,8 +24,8 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.ConfigurationSite;
+import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalInjectionSites;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.inject.runtimenodes.RuntimeNodeProvidesMethod;
 import packed.internal.invokers.MethodInvokerAtProvides;
@@ -100,7 +100,7 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
         List<InternalDependency> dependencies = InternalDependency.fromExecutable(providesMethod.descriptor());
         for (int i = 0; i < dependencies.size(); i++) {
             Key<?> key = dependencies.get(i).getKey();
-            if (key.equals(InternalInjectionSites.INJECTION_SITE_KEY) || resolvedDependencies[i].needsInjectionSite()) {
+            if (key.equals(CommonKeys.INJECTION_SITE_KEY) || resolvedDependencies[i].needsInjectionSite()) {
                 return true;
             }
         }

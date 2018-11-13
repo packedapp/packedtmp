@@ -17,11 +17,6 @@ package app.packed.inject;
 
 /**
  * The binding mode of a service.
- * 
- * XX
- * 
- * 
- * sdd
  */
 public enum BindingMode {
 

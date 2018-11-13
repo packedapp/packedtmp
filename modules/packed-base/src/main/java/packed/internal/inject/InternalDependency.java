@@ -48,7 +48,10 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 import packed.internal.util.descriptor.InternalVariableDescriptor;
 
-/** The default implementation of {@link Dependency}. */
+/**
+ * The default implementation of {@link Dependency}.
+ * 
+ */
 public final class InternalDependency implements Dependency {
 
     /** The key of this dependency. */

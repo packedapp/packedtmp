@@ -24,8 +24,8 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
+import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalInjectionSites;
 import packed.internal.inject.buildnodes.BuildNodeProvidesMethod;
 
 /**
@@ -59,7 +59,7 @@ public final class RuntimeNodeProvidesMethod<T> extends RuntimeNode<T> {
         this.providers = new Function[dependencies.size()];
         for (int i = 0; i < dependencies.size(); i++) {
             Key<?> key = dependencies.get(i).getKey();
-            if (key.equals(InternalInjectionSites.INJECTION_SITE_KEY)) {
+            if (key.equals(CommonKeys.INJECTION_SITE_KEY)) {
                 providers[i] = site -> site;
             } else {
                 RuntimeNode<?> runtimeNode = node.resolvedDependencies[i].toRuntimeNode();
