@@ -55,7 +55,7 @@ public interface InjectionSite extends Dependency {
 
     /**
      * Returns the injector through which injection was requested. If the injection was requested via a container, the
-     * returned injector can be cast to the container interface.
+     * returned injector can be cast to Container.
      *
      * @return the injector through which injection was requested
      */

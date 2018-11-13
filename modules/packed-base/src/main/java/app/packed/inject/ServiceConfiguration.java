@@ -15,6 +15,8 @@
  */
 package app.packed.inject;
 
+import app.packed.util.ConfigurationSite;
+import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
 /**
@@ -27,7 +29,7 @@ import app.packed.util.Taggable;
  * <li>Extending ComponentConfiguration</li>
  * </ul>
  */
-public interface ServiceConfiguration<T> extends Taggable, ServiceDescriptor {
+public interface ServiceConfiguration<T> extends Taggable {
 
     /**
      * Services registered via {@link InjectorConfiguration} does not support binding to null. However components does.
@@ -65,6 +67,37 @@ public interface ServiceConfiguration<T> extends Taggable, ServiceDescriptor {
     default ServiceConfiguration<T> as(TypeLiteral<? super T> key) {
         return as(key.toKey());
     }
+
+    /**
+     * Returns the binding mode of the service.
+     *
+     * @return the binding mode of the service
+     */
+    BindingMode getBindingMode();
+
+    /**
+     * Returns the configuration site where this configuration was created.
+     * 
+     * @return the configuration site where this configuration was created
+     */
+    ConfigurationSite getConfigurationSite();
+
+    /**
+     * Returns the description of this service. Or null if no description has been set.
+     *
+     * @return the description of this service
+     * @see ServiceConfiguration#setDescription(String)
+     */
+    @Nullable
+    String getDescription();
+
+    /**
+     * Returns the key that the service is registered under.
+     *
+     * @return the key that the service is registered under
+     * @see ServiceConfiguration#as(Key)
+     */
+    Key<?> getKey();
 
     /**
      * Sets the description of this service.

@@ -1,0 +1,159 @@
+/*
+
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.container;
+
+import static java.util.Objects.requireNonNull;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
+ * of this class is normally acquired by invoking {@link Container#components()} or {@link Component#stream()}.
+ *
+ * <pre>
+ * Container c = ...
+ * System.out.println(&quot;Number of installed components = &quot; + c.componentStream().count());
+ * </pre>
+ * <p>
+ * This interface will be extended in the future with additional methods.
+ */
+public interface ComponentStream extends Stream<Component> {
+
+    /**
+     * Invokes the specified consumer for each component whose component instance is of the specific type.
+     * <p>
+     * Components that have not yet been fully initialized and where the initializing thread is different from the thread
+     * calling this method are ignored.
+     *
+     * This is a <em>terminal operation</em>.
+     *
+     * @param instanceType
+     *            the type of instances to invoke the consumer for
+     * @param consumer
+     *            the consumer to invoke for each match
+     */
+    <T> void forEachInstanceOf(Class<T> instanceType, BiConsumer<? super Component, ? super T> consumer);
+
+    <T> void forEachInstanceOf(Class<T> instanceType, Consumer<? super T> consumer);
+
+    /**
+     * Returns a new stream of all component instances.
+     *
+     * @return a new stream of all component instances
+     */
+    // Tager kun dem der er instantiated... Maaske skal vi endda have et generalt isInstantiatedFilter? return map(e ->
+    // e.getInstance());
+    Stream<Object> instances();
+
+    /**
+     * Returns a new stream of all component instances that are of the specified type.
+     * <p>
+     * Invoking this method is equivalent to {@code instances().filter(e -> instanceType.isAssignableFrom(e.getClass()))}.
+     * 
+     * @param <T>
+     *            The type of instances to include in the new stream
+     * @param instanceType
+     *            the component instance types to include in the new stream
+     * @return the new stream
+     */
+    @SuppressWarnings("unchecked")
+    default <T> Stream<T> instancesOfType(Class<T> instanceType) {
+        requireNonNull(instanceType, "instanceType is null");
+        return (Stream<T>) instances().filter(e -> instanceType.isAssignableFrom(e.getClass()));
+    }
+
+    /**
+     * Returns a new list containing all of the components in this stream in the order they where encountered. Is identical
+     * to invoking {@code stream.collect(Collectors.toList())}.
+     * <p>
+     * This is a <em>terminal operation</em>.
+     *
+     * @return a new list containing all of the components in this stream
+     */
+    default List<Component> toList() {
+        return collect(Collectors.toList());
+    }
+
+    /**
+     * Returns a component stream consisting of all components in this stream where the specified tag is present.
+     * <p>
+     * Usage:
+     *
+     * <pre>
+     * Container c;
+     * System.out.println("Number of important components : " + c.stream().withTag("IMPORTANT").count());
+     * </pre>
+     * <p>
+     * This is an <em>intermediate operation</em>.
+     *
+     * @param tag
+     *            the tag that must be present
+     * @return the new stream
+     */
+    default <T> ComponentStream withTag(String tag) {
+        requireNonNull(tag, "tag is null");
+        return filter(e -> e.tags().contains(tag));
+    }
+
+    /********** Overridden to provide a ComponentStream as a return value. **********/
+
+    /** {@inheritDoc} */
+    @Override
+    default ComponentStream distinct() {
+        return this; // All components are distinct by default
+    }
+
+    /** {@inheritDoc} */
+    @Override // Only available from Java 9
+    ComponentStream dropWhile(Predicate<? super Component> predicate);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream filter(Predicate<? super Component> predicate);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream limit(long maxSize);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream peek(Consumer<? super Component> action);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream skip(long n);
+
+    /** Returns a new component stream where components are sorted by their {@link Component#getPath()}. */
+    @Override
+    default ComponentStream sorted() {
+        return sorted((a, b) -> a.getPath().compareTo(b.getPath()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream sorted(Comparator<? super Component> comparator);
+
+    /** {@inheritDoc} */
+    @Override // Only available from Java 9
+    ComponentStream takeWhile(Predicate<? super Component> predicate);
+}

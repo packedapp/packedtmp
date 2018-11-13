@@ -46,7 +46,7 @@ public final class InjectorBuilder {
 
     final NodeMap injectorNodes = new NodeMap();
 
-    final ArrayList<ImportFromInjector> injectorImport = new ArrayList<>();
+    final ArrayList<ImportServicesFromInjector> injectorImport = new ArrayList<>();
 
     public InjectorBuilder(InternalInjectorConfiguration c) {
         this.c = requireNonNull(c);
@@ -71,7 +71,7 @@ public final class InjectorBuilder {
         return node;
     }
 
-    public void addImportInjector(ImportFromInjector i) {
+    public void addImportInjector(ImportServicesFromInjector i) {
         requireNonNull(i);
         injectorImport.add(i);
     }
@@ -81,8 +81,8 @@ public final class InjectorBuilder {
         // listener().injectorBuilder_freeze(builder);
         // freezeBuilder();
 
-        for (ImportFromInjector i : injectorImport) {
-            for (BuildNode<?> n : i.m.values()) {
+        for (ImportServicesFromInjector i : injectorImport) {
+            for (BuildNode<?> n : i.imports.values()) {
                 buildNodes.add(n);
             }
         }

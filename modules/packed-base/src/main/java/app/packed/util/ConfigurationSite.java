@@ -31,7 +31,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  */
 public interface ConfigurationSite {
 
-    /** A site that is used if a location of configuration site could not be determined. */
+    /** A special configuration site that is used if the actual configuration site could not be determined. */
     ConfigurationSite UNKNOWN = InternalConfigurationSite.UNKNOWN;
 
     /**

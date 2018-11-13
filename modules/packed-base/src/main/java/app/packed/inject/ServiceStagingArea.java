@@ -20,7 +20,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- *
+ * 
+ * Instances of this interface are never
  */
 // Maybe just ServiceStaging.... Or Service.Staging
 public interface ServiceStagingArea extends ServiceSpecification {
@@ -31,9 +32,15 @@ public interface ServiceStagingArea extends ServiceSpecification {
     // Hvordan fanden bliver de sat i bundled.
     // Definere man en service, og saa lader den vaere overridable???
 
-    ServiceStagingArea exportAllOptionalServices();
+    default ServiceStagingArea exportAllOptionalServices() {
+        optionalServices().forEach(c -> export(c));
+        return this;
+    }
 
-    ServiceStagingArea exportAllRequiredServices();
+    default ServiceStagingArea exportAllRequiredServices() {
+        requiredServices().forEach(c -> export(c));
+        return this;
+    }
 
     /**
      * Export all services required and optional services from the parent.

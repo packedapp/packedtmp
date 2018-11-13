@@ -27,13 +27,17 @@ public class Example {
     Example() {}
 
     public static void main(String[] args) {
+        Injector x1 = Injector.of(e -> e.bind(123));
+
         Injector i = Injector.of(e -> {
             e.lookup(MethodHandles.lookup());
             e.bind(Example.class);
             e.bind("foxxxx");
+            e.importServicesFrom(x1);
         });
 
         System.out.println(i.with(String.class));
         System.out.println(i.with(Example.class));
+        System.out.println(i.with(Integer.class));
     }
 }

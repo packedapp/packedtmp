@@ -18,27 +18,21 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.HashMap;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.ServiceStagingArea;
 import app.packed.inject.TypeLiteral;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.buildnodes.BuildNodeFactoryPrototype;
 import packed.internal.inject.buildnodes.BuildNodeFactorySingleton;
 import packed.internal.inject.buildnodes.BuildNodeInstance;
-import packed.internal.inject.buildnodes.ImportFromInjector;
+import packed.internal.inject.buildnodes.ImportServicesFromInjector;
 import packed.internal.inject.buildnodes.InjectorBuilder;
-import packed.internal.inject.buildnodes.XBuildNodeImportFromInjector;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.invokers.LookupDescriptorAccessor;
 import packed.internal.util.AbstractConfiguration;
@@ -202,38 +196,30 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         return add(node).as(factory.getKey());
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void importFromInjector(Injector injector, InternalConfigurationSite frame, Consumer<? super ServiceStagingArea> c) {
-        requireNonNull(injector, "injector is null");
-
-        HashMap<Key<?>, XBuildNodeImportFromInjector<?>> bound = new HashMap<>();
-        List<ServiceDescriptor> existing = injector.services().collect(Collectors.toList());
-        for (ServiceDescriptor descriptor : existing) {
-            // TODO fix
-            frame = (InternalConfigurationSite) descriptor.getConfigurationSite();// StackCapture.create(descriptor.getRegistrationPoint(),
-                                                                                  // CaptureType.INJECTOR_IMPORT_FROM);
-
-            XBuildNodeImportFromInjector<Object> f = new XBuildNodeImportFromInjector<>(this, frame, injector, descriptor);
-            f.as((Key) descriptor.getKey());
-            f.setDescription(descriptor.getDescription());
-            f.tags().addAll(descriptor.tags());
-            // TODO f.getRegistrationPoint(); add current to it.
-            bound.put(descriptor.getKey(), f);
-        }
-        ImportFromInjector ifi = new ImportFromInjector(injector, bound);
-        builder.addImportInjector(ifi);
-        // c.accept(ifi);
+    @Override
+    public final void importServicesFrom(Injector injector) {
+        importServices(injector, null, true);
     }
 
     /** {@inheritDoc} */
     @Override
-    public final void importServices(Injector injector, Consumer<? super ServiceStagingArea> c) {
+    public final void importServicesFrom(Injector injector, Consumer<? super ServiceStagingArea> configurator) {
+        requireNonNull(configurator, "configurator is null");
+        importServices(injector, configurator, false);
+    }
+
+    /** {@inheritDoc} */
+    private void importServices(Injector injector, Consumer<? super ServiceStagingArea> c, boolean autoImport) {
         requireNonNull(injector, "injector is null");
         checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
-        importFromInjector(injector, null, c);
+        InternalConfigurationSite cs = configurationSite.spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
+        ImportServicesFromInjector ifi = new ImportServicesFromInjector(this, injector, cs);
+        builder.addImportInjector(ifi);
+        if (autoImport) {
+            ifi.importAllServices();
+        } else {
+            c.accept(ifi);
+        }
     }
 
     /** {@inheritDoc} */

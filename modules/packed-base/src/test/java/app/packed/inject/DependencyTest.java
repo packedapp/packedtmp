@@ -39,6 +39,7 @@ import packed.internal.inject.InternalDependency;
  *
  */
 public class DependencyTest {
+
     static final Key<?> KEY_QA_INT = new Key< /* @Q("A") */ Integer>() {};
 
     @Nested

@@ -221,7 +221,7 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns a new key that retain its type but with the specified qualifier.
+     * Returns a new key retaining its original type but with the specified qualifier.
      * 
      * @param qualifier
      *            the new key's qualifier
@@ -233,6 +233,11 @@ public abstract class Key<T> {
         requireNonNull(qualifier, "qualifier is null");
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
         return new CanonicalizedKey<>(typeLiteral, qualifier);
+        // one value, or exactly 1 non-default value, or
+        // withQualifier(Class<? extends Annotation> annotationType, Object value);
+        // withQualifier(Class<? extends Annotation> annotationType, String attributeName1, Object value1);
+        // withQualifier(Class<? extends Annotation> annotationType, String attributeName1, Object value1, String
+        // attributeName2, Object value2);
     }
 
     static <T> Key<T> fromCheckedTypeAndCheckedNullableAnnotation(CanonicalizedTypeLiteral<T> typeLiteral, Annotation qualifier) {
@@ -242,7 +247,7 @@ public abstract class Key<T> {
     /**
      * Returns a key matching the return type of the method and any qualifier that may be present on the method.
      * 
-     * @param method
+     * @param field
      *            the method for whose return type to return a key for
      * @return the key matching the return type of the method
      * @throws InvalidDeclarationException
@@ -251,7 +256,6 @@ public abstract class Key<T> {
      * @see Method#getGenericReturnType()
      */
     // What about Nullable-> ignore it
-
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box();
@@ -276,6 +280,8 @@ public abstract class Key<T> {
     /**
      * Returns a key with the specified qualifier and the same type as this instance.
      * 
+     * @param typeLiteral
+     *            the typeLiteral of the new
      * @param qualifier
      *            the qualifier of the new
      * @return a key with the specified qualifier and the same type as this instance

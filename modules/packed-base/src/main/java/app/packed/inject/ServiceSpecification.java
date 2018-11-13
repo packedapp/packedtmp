@@ -21,6 +21,15 @@ import java.util.Set;
 /**
  *
  */
+
+// Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
+// Og dermed kun importere praecis de interfaces den definere...
+// Deploy(someSpec?) ved ikke lige med API'en /
+// FooBarBundle.API$2_2
+// FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
+// Maaske hellere have den markeret med @Preview :D
+/// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
+
 public interface ServiceSpecification {
 
     /**

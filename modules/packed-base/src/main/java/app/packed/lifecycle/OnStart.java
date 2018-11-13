@@ -1,0 +1,93 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.lifecycle;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import app.packed.inject.Injector;
+
+
+
+/**
+ * Used to annotate methods that should be invoked whenever a component is being started.
+ *
+ * <p>
+ * A simple usage example:
+ *
+ * <pre>
+ * &#064;OnStart()
+ * public void runMeWhenComponentIsStarting() {
+ *     System.out.println(&quot;Container is being started&quot;);
+ *
+ * }
+ * </pre>
+ *
+ * Methods annotated with OnStart can have any service that is also available from {@link Container#with(Class)}
+ * injected. For example, the following method will print out the name and the state of the container when it starts.
+ *
+ * <pre>
+ * &#064;OnStart()
+ * public void hello(Container container) {
+ *     System.out.println(&quot;The current state of container &quot; + container.getName() + &quot; is &quot; + container.getState());
+ * }
+ * </pre>
+ * <p>
+ * To find out exactly what kind of services that can be injected into the annotated method use an {@link Injector}.
+ *
+ * <pre>
+ * &#064;OnStart()
+ * public void showMeWhatCanBeInjected(Injector injector) {
+ *     System.out.println(&quot;The following services can be injected into this method&quot;);
+ *     for (Class&lt;?&gt; c : injector.services().keySet()) {
+ *         System.out.println(c.getCanonicalName());
+ *     }
+ * }
+ * </pre>
+ * <p>
+ * A common usage examples is initializing services with data:
+ *
+ * For example, fetching it from disk.
+ *
+ * <pre>
+ * &#064;OnStart()
+ * public void hello() throws IOException {
+ *     // load data from disk
+ *     // prepare service for use
+ * }
+ * </pre>
+ *
+ * Notice that this method throws a checked exception. Any method that throws an Exception will result in the container
+ * failing to start and moving to the shutdown phase.
+ * <p>
+ * Another common example would be to schedule repeatable tasks. But this is almost always easier achieved by using one
+ * of the scheduling annotations such as {@link org.cakeframework.concurrent.ScheduleAtFixedRate} and
+ * {@link org.cakeframework.concurrent.ScheduleWithFixedDelay}.
+ * <p>
+ *
+ * Normally services are not available from {@link Container#with(Class)} until all services have been successfully
+ * started. However, by using this annotation. Services that not yet completed startup can be injected. It is up to the
+ * user to make sure that invoking method on instances that injected this does not cause any problems. For example,
+ * calling a method on another service that only works when the container is in the running phase.
+ *
+ * @see OnInitialize
+ * @see OnStop
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface OnStart {}

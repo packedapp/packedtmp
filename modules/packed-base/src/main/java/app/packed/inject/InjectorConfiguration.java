@@ -19,14 +19,12 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
+import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
 /**
- * A configuration object for an {@link Injector}. It is most commonly used when invoking
- * {@link Injector#of(java.util.function.Consumer)}.
- * <p>
- * Unless otherwise noted, passing a {@code null} argument to any method in this interface will cause a
- * {@link NullPointerException} to be thrown.
+ * A configuration object for an {@link Injector}. This interface is typically used when configuring a new injector via
+ * {@link Injector#of(Consumer)}.
  */
 public interface InjectorConfiguration extends Taggable {
 
@@ -59,8 +57,6 @@ public interface InjectorConfiguration extends Taggable {
      */
     <T> ServiceConfiguration<T> bind(Factory<T> factory);
 
-    <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation);
-
     /**
      * Binds the specified instance as a new service.
      * <p>
@@ -74,8 +70,9 @@ public interface InjectorConfiguration extends Taggable {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    // TODO Think we want to rename it back to bind() to be consistent with Bindable.bind()
     <T> ServiceConfiguration<T> bind(T instance);
+
+    <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation);
 
     <T> ServiceConfiguration<T> bindLazy(Class<T> implementation);
 
@@ -113,24 +110,23 @@ public interface InjectorConfiguration extends Taggable {
     <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation);
 
     /**
-     * Returns a description of the injector, or null if no description has been set via {@link #setDescription(String)}.
+     * Returns the description of this injector, or null if no description has been set via {@link #setDescription(String)}.
      *
-     * @return a description of the injector, or null if no description has been set via {@link #setDescription(String)}.
+     * @return the description of this injector, or null if no description has been set via {@link #setDescription(String)}.
      * @see Injector#getDescription()
+     * @see #setDescription(String)
      */
+    @Nullable
     String getDescription();
 
     /**
-     * Imports all services that available in the specified injector. Use {@link #importServices(Injector, Consumer)} to
-     * only select a subset of services to import, or if you need to make services available under another key then what it
-     * is originally exposed with.
+     * Imports all services that available in the specified injector. To only import a subset of services, or to import
+     * service under a different key use {@link #importServicesFrom(Injector, Consumer)}.
      *
      * @param injector
      *            the injector to import services from
      */
-    default void importServices(Injector injector) {
-        importServices(injector, c -> c.importAllServices(e -> true));
-    }
+    void importServicesFrom(Injector injector);
 
     /**
      * Binds all services available in the specified injector that are explicitly selected by the specified consumer. If
@@ -142,12 +138,11 @@ public interface InjectorConfiguration extends Taggable {
      * @throws IllegalStateException
      *             if not at least one service is selected for import
      */
-    // includeServices..., ServiceImportSelector, den selectere og modificere.
-    void importServices(Injector injector, Consumer<? super ServiceStagingArea> imported);
+    void importServicesFrom(Injector injector, Consumer<? super ServiceStagingArea> imported);
 
     /**
-     * Sets the specified {@link Lookup lookup} object that will be used to instantiate objects using constructors, invoke
-     * methods, and read and write fields. The lookup object will be used for all service binding and component
+     * Sets the specified {@link Lookup lookup object} that will be used to instantiate new objects using constructors,
+     * invoke methods, and read and write fields. The lookup object will be used for all service binding and component
      * installations that happens after the invocation of this method.
      * <p>
      * This method can be invoked multiple times. In all cases the object being bound or installed will use the latest
@@ -156,34 +151,13 @@ public interface InjectorConfiguration extends Taggable {
      * Lookup objects that have been explicitly set using {@link Factory#withLookup(java.lang.invoke.MethodHandles.Lookup)}
      * are never overridden by any lookup object set using the method.
      * <p>
-     * If no lookup is specified using this method the runtime will use the public lookup
+     * If no lookup is specified using this method, the runtime will use the public lookup
      * ({@link MethodHandles#publicLookup()}) for member access.
      *
      * @param lookup
      *            the lookup object to use
      */
     void lookup(MethodHandles.Lookup lookup);
-
-    // Disse giver ingen mening.
-    // Man kan enten, lav en ny injector via Injector.of() og saa importere den via importInjector
-    // Eller Saa lave en bundle
-    // Det eneste skulle være hvis de skal bruge nogle dependencies, og saa selv giver nogen
-    // default Map<Key<?>, ServiceConfiguration<?>> importFrom(Bundle bundle) {
-    // throw new UnsupportedOperationException();
-    // }
-    //
-    // default Map<Key<?>, ServiceConfiguration<?>> importFrom(Bundle bundle, Predicate<? super ServiceDescriptor> filter) {
-    // throw new UnsupportedOperationException();
-    // }
-    //
-    // default Map<Key<?>, ServiceConfiguration<?>> importFrom(Class<? extends Bundle> bundle) {
-    // throw new UnsupportedOperationException();
-    // }
-    //
-    // default Map<Key<?>, ServiceConfiguration<?>> importFrom(Class<? extends Bundle> bundle, Predicate<? super
-    // ServiceDescriptor> filter) {
-    // throw new UnsupportedOperationException();
-    // }
 
     /**
      * Sets the (nullable) description of this injector, the description can later be obtained via
@@ -195,9 +169,29 @@ public interface InjectorConfiguration extends Taggable {
      * @see #getDescription()
      * @see Injector#getDescription()
      */
-    InjectorConfiguration setDescription(String description);
+    InjectorConfiguration setDescription(@Nullable String description);
 }
 
+// Disse giver ingen mening.
+// Man kan enten, lav en ny injector via Injector.of() og saa importere den via importInjector
+// Eller Saa lave en bundle
+// Det eneste skulle være hvis de skal bruge nogle dependencies, og saa selv giver nogen
+// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Bundle bundle) {
+// throw new UnsupportedOperationException();
+// }
+//
+// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Bundle bundle, Predicate<? super ServiceDescriptor> filter) {
+// throw new UnsupportedOperationException();
+// }
+//
+// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Class<? extends Bundle> bundle) {
+// throw new UnsupportedOperationException();
+// }
+//
+// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Class<? extends Bundle> bundle, Predicate<? super
+// ServiceDescriptor> filter) {
+// throw new UnsupportedOperationException();
+// }
 // class D {
 // public static void main(InjectorConfiguration c) {
 // c.bind(new Factory0<>(System::currentTimeMillis) {});

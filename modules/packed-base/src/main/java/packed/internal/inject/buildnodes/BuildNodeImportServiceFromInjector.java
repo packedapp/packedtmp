@@ -24,11 +24,9 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.InjectionSite;
-import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.Provider;
 import app.packed.inject.ServiceDescriptor;
-import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.Node;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.runtimenodes.RuntimeNode;
@@ -37,19 +35,19 @@ import packed.internal.inject.runtimenodes.RuntimeNodeFactory;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * A build that imports a service from another injector. 
+ * A build that imports a service from another injector.
  */
-public class XBuildNodeImportFromInjector<T> extends BuildNode<T> implements Provider<T> {
+public class BuildNodeImportServiceFromInjector<T> extends BuildNode<T> implements Provider<T> {
 
-    /** The descriptor of the service */
+    /** The descriptor of the service we are importing from. */
     final ServiceDescriptor descriptor;
 
-    /** The injector */
-    final Injector injector;
-
-    final Key<T> key;
+    final Key<T> injectorKey;
 
     final RuntimeNode<T> node;
+
+    /** The injector */
+    final ImportServicesFromInjector stagingArea;
 
     /**
      * @param injectorConfiguration
@@ -57,13 +55,13 @@ public class XBuildNodeImportFromInjector<T> extends BuildNode<T> implements Pro
      * @param stackframe
      */
     @SuppressWarnings("unchecked")
-    public XBuildNodeImportFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
+    public BuildNodeImportServiceFromInjector(ImportServicesFromInjector stagingArea, InternalConfigurationSite configurationSite,
             ServiceDescriptor descriptor) {
-        super(injectorConfiguration, configurationSite, List.of());
-        this.injector = requireNonNull(injector);
+        super(stagingArea.injectorConfiguration, configurationSite, List.of());
+        this.stagingArea = requireNonNull(stagingArea);
         this.descriptor = requireNonNull(descriptor);
         this.node = descriptor instanceof Node ? (RuntimeNode<T>) descriptor : null;
-        this.key = (Key<T>) requireNonNull(descriptor.getKey());
+        this.injectorKey = (Key<T>) requireNonNull(descriptor.getKey());
     }
 
     /** {@inheritDoc} */
@@ -82,7 +80,7 @@ public class XBuildNodeImportFromInjector<T> extends BuildNode<T> implements Pro
     @Override
     public T getInstance(InjectionSite site) {
         if (node == null) {
-            return injector.get(key).get();
+            return stagingArea.injector.get(injectorKey).get();
         }
         return node.getInstance(site);
     }
@@ -104,7 +102,7 @@ public class XBuildNodeImportFromInjector<T> extends BuildNode<T> implements Pro
     @Override
     RuntimeNode<T> newRuntimeNode() {
         if (node == null) {
-            Factory<T> f = Factory0.of((Supplier) () -> injector.get(key).get(), key.getTypeLiteral());
+            Factory<T> f = Factory0.of((Supplier) () -> stagingArea.injector.get(injectorKey).get(), injectorKey.getTypeLiteral());
             return new RuntimeNodeFactory<>(this, InternalFactory.from(f));
         }
         return new RuntimeNodeAlias<T>(this, node);

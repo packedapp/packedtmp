@@ -29,6 +29,9 @@ public enum ConfigurationSiteType {
     INJECTOR_IMPORT_FROM("Injector.importFrom"),
 
     /** */
+    INJECTOR_IMPORT_SERVICE("Injector.importService"),
+
+    /** */
     INJECTOR_OF("Injector.of");
 
     final String f;

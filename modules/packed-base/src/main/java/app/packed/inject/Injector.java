@@ -87,8 +87,8 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * configuration instance. So instances of {@code org.cakeframework.ContainerConfiguration} will never be available from
  * any service manager after the container has fully started.
  * <p>
- * Injectors are always immutable, however, they can be expanded with additional services by using YYY. This is
- * typically useful for specialized injection.
+ * Injectors are always immutable, however, extensions of this interface might provide mutable operations for methods
+ * unrelated to injection.
  */
 // getProvider(Class|Key|InjectionSite)
 // get(InjectionSite)
@@ -120,6 +120,15 @@ public interface Injector extends Taggable {
      */
     ConfigurationSite getConfigurationSite();
 
+    /**
+     * Returns the (nullable) description of this injector. Or null if no description was set when it was configured.
+     *
+     * @return the (nullable) description of this injector. Or null if no description was set when it was configured.
+     * @see InjectorConfiguration#setDescription(String)
+     */
+    @Nullable
+    String getDescription();
+
     @Nullable
     default <T> ServiceDescriptor getService(Class<T> serviceType) {
         return getService(Key.of(serviceType));
@@ -131,15 +140,6 @@ public interface Injector extends Taggable {
         Optional<ServiceDescriptor> o = services().filter(d -> d.getKey().equals(key)).findFirst();
         return o.orElse(null);
     }
-
-    /**
-     * Returns the (nullable) description of this injector. Or null if no description was set when it was configured.
-     *
-     * @return the (nullable) description of this injector. Or null if no description was set when it was configured.
-     * @see InjectorConfiguration#setDescription(String)
-     */
-    @Nullable
-    String getDescription();
 
     /**
      * Returns true if a service matching the specified type exists. Otherwise false.
@@ -196,15 +196,15 @@ public interface Injector extends Taggable {
      * @param <T>
      *            the type of service to return
      * @param key
-     *            the type of service to return
+     *            the key of the service to return
      * @return a service of the specified type
      * @throws UnsupportedOperationException
-     *             if no service of the specified type exist
-     * @throws NullPointerException
-     *             if the specified service type is null
+     *             if no service with the specified key exist
      * @throws IllegalStateException
-     *             if called from the constructor of a service before all services has been properly constructed by the
-     *             container
+     *             if a service with the specified key exist, but the service has not been properly initialized yet. For
+     *             example, if injecting an injector into a constructor of a service and then using the injector to try and
+     *             access other service that have not been properly initialized yet. For example, a service that depends on
+     *             the service being constructed
      * @see #hasService(Class)
      */
     default <T> T with(Class<T> key) {
@@ -240,7 +240,10 @@ public interface Injector extends Taggable {
      * @throws UnsupportedOperationException
      *             if no service with the specified key could be found
      * @throws IllegalStateException
-     *             if this injector is part of some lifecycle, and one or more of the phases in the lifecycle failed
+     *             if a service with the specified key exist, but the service has not been properly initialized yet. For
+     *             example, if injecting an injector into a constructor of a service and then using the injector to try and
+     *             access other service that have not been properly initialized yet. For example, a service that depends on
+     *             the service being constructed
      */
     default <T> T with(Key<T> key) {
         Optional<T> t = get(key);
@@ -254,7 +257,7 @@ public interface Injector extends Taggable {
      * Creates a new injector via the specified configurator.
      *
      * @param configurator
-     *            a consumer that can configure the injector
+     *            a consumer used for configuring the injector
      * @return the new injector
      */
     static Injector of(Consumer<InjectorConfiguration> configurator) {
