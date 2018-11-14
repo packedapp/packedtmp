@@ -25,14 +25,14 @@ import packed.internal.inject.buildnodes.BuildNode;
 /** An instantiated runtime node. */
 public final class RuntimeNodeInstance<T> extends RuntimeNode<T> implements Provider<T> {
 
-    /** The singleton instance. */
-    private final T instance;
-
     /**
-     * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service is
-     * initialized.
+     * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
+     * initialized while building the injector.
      */
     private final BindingMode bindingMode;
+
+    /** The singleton instance. */
+    private final T instance;
 
     /**
      * Creates a new instance node from the specified build node.

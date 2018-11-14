@@ -50,7 +50,6 @@ import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /**
  * The default implementation of {@link Dependency}.
- * 
  */
 public final class InternalDependency implements Dependency {
 
@@ -76,8 +75,8 @@ public final class InternalDependency implements Dependency {
 
     /**
      * Returns an object indicating that an optional dependency could not be fulfilled. For example, this method will return
-     * {@link Optional#empty()} if the dependency was created from an {@link Optional} object. And {@code null} if a
-     * parameter is annotated with {@link Nullable}.
+     * {@link OptionalInt#empty()} if a dependency was created from field with a {@link OptionalInt} type. And {@code null}
+     * if a parameter is annotated with {@link Nullable}.
      * <p>
      * If this dependency is not optional this method throws an {@link UnsupportedOperationException}.
      * 
@@ -138,6 +137,7 @@ public final class InternalDependency implements Dependency {
      * @return the optional container type
      * @see #isOptional()
      */
+    @Nullable
     public Class<?> getOptionalContainerType() {
         return optionalType;
     }

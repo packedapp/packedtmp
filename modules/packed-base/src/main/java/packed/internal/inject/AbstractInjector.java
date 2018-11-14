@@ -27,8 +27,8 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
-import packed.internal.invokers.FieldInvokerAtInject;
-import packed.internal.invokers.MethodInvokerAtInject;
+import packed.internal.invokers.AccessibleExecutable;
+import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.ServiceClassDescriptor;
 
 /** An abstract implementation of an injector. */
@@ -88,14 +88,13 @@ public abstract class AbstractInjector implements Injector {
     protected final void injectMembers(ServiceClassDescriptor<?> descriptor, Object instance, @Nullable Component component) {
         // Inject fields
         if (descriptor.hasInjectableFields()) {
-            for (FieldInvokerAtInject field : descriptor.injectableFields()) {
-                InternalDependency dependency = field.dependency();
+            for (AccessibleField<InternalDependency> field : descriptor.injectableFields()) {
+                InternalDependency dependency = field.metadata();
                 Node<?> node = findNode(dependency.getKey());
                 if (node != null) {
-                    @SuppressWarnings({ "rawtypes", "unchecked" })
-                    Object value = node.getInstance(null /* this */, component, (Key) dependency.getKey());
+                    Object value = node.getInstance(this, dependency, component);
                     value = dependency.wrapIfOptional(value);
-                    field.injectInstance(instance, value);
+                    field.setField(instance, value);
                 } else if (dependency.isOptional()) {
                     // 3 Valgmuligheder
 
@@ -120,8 +119,8 @@ public abstract class AbstractInjector implements Injector {
 
         // Inject methods
         if (descriptor.hasInjectableMethods()) {
-            for (MethodInvokerAtInject method : descriptor.injectableMethods()) {
-                List<InternalDependency> dependencies = method.dependencies();
+            for (AccessibleExecutable<List<InternalDependency>> method : descriptor.injectableMethods()) {
+                List<InternalDependency> dependencies = method.metadata();
                 Object[] arguments = new Object[dependencies.size()];
                 System.out.println(arguments);
                 for (InternalDependency dependency : dependencies) {

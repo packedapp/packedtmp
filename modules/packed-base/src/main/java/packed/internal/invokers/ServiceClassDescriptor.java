@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import app.packed.inject.Inject;
+import packed.internal.inject.InternalDependency;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
@@ -31,10 +32,10 @@ public class ServiceClassDescriptor<T> {
     private final Class<T> clazz;
 
     /** All fields annotated with {@link Inject}. */
-    private final Collection<FieldInvokerAtInject> injectableFields;
+    private final Collection<AccessibleField<InternalDependency>> injectableFields;
 
     /** All methods annotated with {@link Inject}. */
-    private final Collection<MethodInvokerAtInject> injectableMethods;
+    private final Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods;
 
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
     private final String simpleName;
@@ -105,7 +106,7 @@ public class ServiceClassDescriptor<T> {
      * 
      * @return all injectable fields on this type
      */
-    public final Collection<FieldInvokerAtInject> injectableFields() {
+    public final Collection<AccessibleField<InternalDependency>> injectableFields() {
         return injectableFields;
     }
 
@@ -114,7 +115,7 @@ public class ServiceClassDescriptor<T> {
      * 
      * @return all injectable methods on this type
      */
-    public final Collection<MethodInvokerAtInject> injectableMethods() {
+    public final Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods() {
         return injectableMethods;
     }
 

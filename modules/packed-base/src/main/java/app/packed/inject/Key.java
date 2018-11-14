@@ -37,9 +37,9 @@ import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
 
 /**
- * A key is unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal and an
- * optional annotation called a qualifier. It does so by requiring user to create a subclass of this class which enables
- * retrieval of the type information even at runtime. Some examples of non qualified keys are:
+ * A key defines a unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal
+ * and an optional annotation called a qualifier. It does so by requiring user to create a subclass of this class which
+ * enables retrieval of the type information even at runtime. Some examples of non-qualified keys are:
  *
  * <pre> {@code
  * Key<List<String>> list = new Key<List<String>>() {};
@@ -51,26 +51,22 @@ import packed.internal.util.TypeUtil;
  * public @interface Name {
  *    String value() default "noname";
  * }}
- * </pre> Some examples of qualified keys <pre> {@code
+ * </pre> Some examples of qualified keys are: <pre> {@code
  * Key<List<String>> list = new Key<@Name("foo") List<String>>() {};
  * Key<List<String>> list = new Key<@Name List<String>>() {}; //uses default value}
  * </pre>
  * 
  * In order for a key to be valid, it must:
  * <ul>
- * <li><b>Not an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
+ * <li><b>Not be an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
  * {@link OptionalLong} or {@link OptionalDouble} as they are reserved.</li>
  * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
  * {@link Qualifier}</li>
  * </ul>
  * Furthermore, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding
  * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
- * This means that, for example, {@code Key.of(int.class) equals Key.of(Integer.class)}.
+ * This means that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
  */
-// Create a valid key for @Provides
-// Extract from TypeVariable
-// of(Class)
-// toKey()
 public abstract class Key<T> {
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
@@ -89,11 +85,11 @@ public abstract class Key<T> {
      */
     private final int hash;
 
-    /** An (optional) qualifier of this key. */
+    /** An (optional) qualifier for this key. */
     @Nullable
     private final Annotation qualifier;
 
-    /** The generic type of this key. */
+    /** The generic type for this key. */
     private final CanonicalizedTypeLiteral<T> typeLiteral;
 
     /** Constructs a new key. Derives the type from this class's type parameter. */
@@ -212,7 +208,8 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns a key with no qualifier but retaining this key's type. If this key has no annotation, returns this key.
+     * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
+     * ({@code hasQualifier == null}), returns this key.
      * 
      * @return the key with no qualifier
      */
@@ -240,22 +237,18 @@ public abstract class Key<T> {
         // attributeName2, Object value2);
     }
 
-    static <T> Key<T> fromCheckedTypeAndCheckedNullableAnnotation(CanonicalizedTypeLiteral<T> typeLiteral, Annotation qualifier) {
-        return new CanonicalizedKey<T>(typeLiteral, qualifier);
-    }
-
     /**
-     * Returns a key matching the return type of the method and any qualifier that may be present on the method.
+     * Returns a key matching the type of the specified field and any qualifier that may be present on the field.
      * 
      * @param field
-     *            the method for whose return type to return a key for
-     * @return the key matching the return type of the method
+     *            the field to return a key for
+     * @return a key matching the type of the field and any qualifier that may be present on the field
      * @throws InvalidDeclarationException
-     *             if the specified method has a void return type. Or returns one of {@link Optional},
-     * @see Method#getReturnType()
-     * @see Method#getGenericReturnType()
+     *             if the type is an optional type such as {@link Optional} or {@link OptionalInt}. Or if there are more
+     *             than 1 qualifier present on the field
+     * @see Field#getType()
+     * @see Field#getGenericType()
      */
-    // What about Nullable-> ignore it
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box();
@@ -263,12 +256,24 @@ public abstract class Key<T> {
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
+    /**
+     * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
+     * 
+     * @param method
+     *            the method for to return a key for
+     * @return the key matching the return type of the method and any qualifier that may be present on the method
+     * @throws InvalidDeclarationException
+     *             if the specified method has a void return type. Or returns an optional type such as {@link Optional} or
+     *             {@link OptionalInt}. Or if there are more than 1 qualifier present on the method
+     * @see Method#getReturnType()
+     * @see Method#getGenericReturnType()
+     */
     public static Key<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
-        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
         if (method.getReturnType() == void.class) {
             throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
+        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
         Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
@@ -314,7 +319,7 @@ public abstract class Key<T> {
             throw new InvalidDeclarationException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
                     + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(typeLiteral.getType()));
         }
-        return Key.fromCheckedTypeAndCheckedNullableAnnotation(typeLiteral.canonicalize(), qualifier);
+        return new CanonicalizedKey<T>(typeLiteral.canonicalize(), qualifier);
     }
 
     public static <T> Key<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {

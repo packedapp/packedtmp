@@ -29,6 +29,7 @@ import app.packed.util.Taggable;
  * <li>Extending ComponentConfiguration</li>
  * </ul>
  */
+// This once extended ServiceDescriptor but no more, for some reason I have already forgot???
 public interface ServiceConfiguration<T> extends Taggable {
 
     /**

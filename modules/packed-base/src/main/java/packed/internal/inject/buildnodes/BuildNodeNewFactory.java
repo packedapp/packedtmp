@@ -17,12 +17,17 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.inject.BindingMode;
+import app.packed.inject.InjectionSite;
 import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-/** A abstract node that builds thing from a factory. */
-public abstract class BuildNodeFactory<T> extends BuildNode<T> {
+/**
+ *
+ */
+public class BuildNodeNewFactory<T> extends BuildNode<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -35,7 +40,7 @@ public abstract class BuildNodeFactory<T> extends BuildNode<T> {
      * @param dependencies
      * @param stackframe
      */
-    BuildNodeFactory(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InternalFactory<T> factory) {
+    BuildNodeNewFactory(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InternalFactory<T> factory) {
         super(injectorConfiguration, configurationSite, factory.getDependencies());
         this.factory = requireNonNull(factory, "factory is null");
     }
@@ -62,5 +67,29 @@ public abstract class BuildNodeFactory<T> extends BuildNode<T> {
     @Override
     public String toString() {
         return factory.toString();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T getInstance(InjectionSite site) {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean needsInjectionSite() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMode getBindingMode() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    RuntimeNode<T> newRuntimeNode() {
+        return null;
     }
 }

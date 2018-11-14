@@ -28,7 +28,8 @@ import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.inject.runtimenodes.RuntimeNodeProvidesMethod;
-import packed.internal.invokers.MethodInvokerAtProvides;
+import packed.internal.invokers.AccessibleExecutable;
+import packed.internal.util.descriptor.AtProvides;
 
 /** A build node for a method annotated with {@link Provides}. */
 public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
@@ -40,7 +41,7 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
     private final BuildNode<?> owner;
 
     /** The method annotated with {@link Provides}. */
-    private final MethodInvokerAtProvides providesMethod;
+    private final AccessibleExecutable<AtProvides> providesMethod;
 
     /**
      * @param owner
@@ -50,12 +51,12 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
      * @param original
      *            the class, instance or factory that was used to register owning node
      */
-    public BuildNodeProvidesMethod(BuildNode<?> owner, ConfigurationSite source, MethodInvokerAtProvides providesMethod) {
+    public BuildNodeProvidesMethod(BuildNode<?> owner, ConfigurationSite source, AccessibleExecutable<AtProvides> providesMethod) {
         super(null, null, null);// source, providesMethod.getMethod().toDependencyList());
         this.owner = requireNonNull(owner);
         this.providesMethod = requireNonNull(providesMethod);
-        this.bindingMode = providesMethod.getBindingMode();
-        setDescription(providesMethod.getDescription());
+        this.bindingMode = providesMethod.metadata().getBindingMode();
+        setDescription(providesMethod.metadata().getDescription());
     }
 
     /** {@inheritDoc} */
@@ -71,13 +72,13 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     public T getInstance(InjectionSite site) {
         // TODO cache in ProvidesXYZ
-        List<InternalDependency> dependencies = InternalDependency.fromExecutable(providesMethod.descriptor());
+        List<InternalDependency> dependencies = providesMethod.metadata().getDependencies();
         Object[] params = new Object[dependencies.size()];
         Object ownerInstance = owner.getInstance(null);// Must be a factory or an instance, which ignore injection site
+        System.out.println(ownerInstance);
         for (int i = 0; i < params.length; i++) {
             if (dependencies.get(i).getKey().equals(Key.of(InjectionSite.class))) {
 
@@ -85,7 +86,8 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
             params[i] = resolvedDependencies[i].getInstance(null);
         }
         try {
-            return (T) providesMethod.invoke(ownerInstance, params);
+            throw new UnsupportedOperationException();
+            // return (T) providesMethod.invoke(ownerInstance, params);
         } catch (Throwable e) {
             throw new Error(e);
         }
@@ -97,7 +99,7 @@ public final class BuildNodeProvidesMethod<T> extends BuildNode<T> {
         // ServiceRequest kan bruges i forbindelse med prototypes.
         // Singletons kan never have a ServiceRequest in its parameters
         // TODO we could cache this
-        List<InternalDependency> dependencies = InternalDependency.fromExecutable(providesMethod.descriptor());
+        List<InternalDependency> dependencies = providesMethod.metadata().getDependencies();
         for (int i = 0; i < dependencies.size(); i++) {
             Key<?> key = dependencies.get(i).getKey();
             if (key.equals(CommonKeys.INJECTION_SITE_KEY) || resolvedDependencies[i].needsInjectionSite()) {

@@ -24,6 +24,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.util.Nullable;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
+import packed.internal.util.ThrowableUtil;
 
 /** A runtime node for an instance that have not yet been requested for the first time. */
 public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
@@ -32,7 +33,7 @@ public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
     @Nullable
     private volatile T instance;
 
-    /** Lazy calculates the value, and throws away the factory afterwards. */
+    /** Lazy calculates the value, and is then nulled out. */
     @Nullable
     private volatile Sync lazy;
 
@@ -67,7 +68,12 @@ public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
             // Lazy calculate the value
             Sync l = lazy;
             if (l != null) {
-                l.update(); // updates this.instance, and null itself out
+                i = l.tryCreate();
+                if (i != null) {
+                    instance = i;
+                    lazy = null;
+                    return i;
+                }
             }
         }
     }
@@ -83,35 +89,52 @@ public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
     final class Sync extends Semaphore {
 
         /** The factory used for creating a new instance. */
-        private final RuntimeNodeFactory<T> factory;
+        private RuntimeNodeFactory<T> factory;
+
+        /** Any failure encountered while creating a new value. */
+        private Throwable failure;
 
         /**
          * Creates a new Sync object
          * 
          * @param factory
-         *            the actual factory node that will create the value
+         *            the factory node that will create the value
          */
         Sync(RuntimeNodeFactory<T> factory) {
             super(1);
             this.factory = requireNonNull(factory);
         }
 
-        void update() {
+        /**
+         * Try and create a new value.
+         * 
+         * @return the newly created value, or null if the value has already been created
+         */
+        T tryCreate() {
             acquireUninterruptibly();
             try {
-                if (lazy != null) {
-                    // TODO I don't think we want to call the factory multiple times, maybe store the
-                    // exception
-                    T newInstance = factory.get();
-                    if (newInstance == null) {
-                        requireNonNull(instance, "factory produced a null instance");
+                if (failure != null) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(failure);
+                }
+                if (factory != null) {
+                    try {
+                        T newInstance = factory.get();
+                        if (newInstance == null) {
+                            // TODO throw Provision Exception instead
+                            requireNonNull(instance, "factory produced a null instance");
+                        }
+                        return newInstance;
+                    } catch (RuntimeException | Error e) {
+                        failure = e;
+                        throw e;
+                    } finally {
+                        factory = null;
                     }
-                    instance = newInstance;
-                    lazy = null;
                 }
             } finally {
                 release();
             }
+            return null;
         }
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.inject.Provides;
+import packed.internal.util.descriptor.AtProvides;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
@@ -36,7 +37,7 @@ public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
     List<InternalFieldDescriptor> fieldsAllAnnotated;
 
     /** All methods annotated with {@link Provides}. */
-    final Collection<MethodInvokerAtProvides> methodsAtProvides;
+    final Collection<AccessibleExecutable<AtProvides>> methodsAtProvides;
 
     /**
      * @param clazz

@@ -29,20 +29,20 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /** The default implementation of {@link Injector}. */
 public final class InternalInjector extends AbstractInjector {
 
-    /** The configuration site of the injector. */
+    /** The configuration site of this injector. */
     private final InternalConfigurationSite configurationSite;
 
     /** An optional description of the injector. */
     @Nullable
     private final String description;
 
-    /** All the service configurations of this builder. */
+    /** A map of all services. */
     private final NodeMap nodes;
 
     /** This injector's parent, or null if this is a top-level injector. */
     final AbstractInjector parent;
 
-    /** The injector's tags. */
+    /** This injector's tags. */
     private final Set<String> tags;
 
     public InternalInjector(InternalInjectorConfiguration injectorConfiguration, NodeMap nodes) {

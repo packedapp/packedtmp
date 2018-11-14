@@ -16,86 +16,51 @@
 package packed.internal.invokers;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 
-import app.packed.inject.IllegalAccessRuntimeException;
-import app.packed.util.FieldDescriptor;
+import app.packed.inject.Inject;
+import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.inject.InternalDependency;
+import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.ErrorMessageBuilder;
+import packed.internal.util.descriptor.AtProvides;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
-/** A field invoker extends a field descriptor with functionality for getting and setting the value of the field. */
-public abstract class FieldInvoker {
+/** This class represents a field annotated with the {@link Inject} annotation. */
+public final class MemberScanners {
 
-    /** The descriptor of the field. */
-    private final InternalFieldDescriptor descriptor;
-
-    /** Whether or not the field is volatile. */
-    private final boolean isVolatile;
-
-    /** The var handle of the field. */
-    private final VarHandle varHandle;
-
-    /**
-     * Creates a new field invoker.
-     * 
-     * @param descriptor
-     *            the field descriptor
-     * @param lookup
-     *            the lookup object to use for access
-     */
-    public FieldInvoker(InternalFieldDescriptor descriptor, Lookup lookup) {
-        this.descriptor = descriptor;
-        try {
-            this.varHandle = descriptor.unreflect(lookup);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Field " + descriptor + " is not accessible for lookup object " + lookup, e);
+    static AccessibleField<InternalDependency> createIfInjectable(MemberScanner builder, Field field, Annotation[] annotations) {
+        if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+            InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+            checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
+            checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
+            if (builder.fieldsAtInject == null) {
+                builder.fieldsAtInject = new ArrayList<>(2);
+            }
+            AccessibleField<InternalDependency> fi = new AccessibleField<>(descriptor, builder.lookup, InternalDependency.of(descriptor));
+            builder.fieldsAtInject.add(fi);
+            return fi;
         }
-        this.isVolatile = Modifier.isVolatile(descriptor.getModifiers());
+        return null;
     }
 
-    /**
-     * Returns the descriptor of the field.
-     * 
-     * @return the descriptor of the field
-     */
-    public final FieldDescriptor descriptor() {
-        return descriptor;
-    }
-
-    /**
-     * Returns the value of this field for the given instance.
-     * 
-     * @param instance
-     *            the instance for which to return the value
-     * @return the value of this field for the specified instance
-     * @see VarHandle#get(Object...)
-     */
-    protected final Object getValue(Object instance) {
-        if (isVolatile) {
-            return varHandle.getVolatile(instance);
-        } else {
-            return varHandle.get(instance);
+    static AccessibleField<AtProvides> createIfPresent(MemberScanner builder, Field field, Annotation[] annotations) {
+        for (Annotation a : annotations) {
+            if (a.annotationType() == Provides.class) {
+                InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+                if (builder.fieldsAtProvides == null) {
+                    builder.fieldsAtProvides = new ArrayList<>(2);
+                }
+                AtProvides ap = AtProvides.from(descriptor, (Provides) a);
+                AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, builder.lookup, ap);
+                builder.fieldsAtProvides.add(fi);
+                return fi;
+            }
         }
-    }
-
-    /**
-     * Sets the value of the field
-     * 
-     * @param instance
-     *            the instance for which to set the value
-     * @param value
-     *            the value to set
-     * @see VarHandle#set(Object...)
-     */
-    protected final void setValue(Object instance, Object value) {
-        if (isVolatile) {
-            varHandle.setVolatile(instance, value);
-        } else {
-            varHandle.set(instance, value);
-        }
+        return null;
     }
 
     /**

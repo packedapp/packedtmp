@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers2;
+package packed.internal.inject.buildnodes.maker;
+
+import app.packed.inject.InjectionSite;
 
 /**
  *
  */
-public class FieldInvoker {
+public class InstanceMaker {
 
+    public Object make(InjectionSite site) {
+        return null;
+    }
 }

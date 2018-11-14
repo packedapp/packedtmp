@@ -54,7 +54,7 @@ public final class BuildNodeFactorySingleton<T> extends BuildNodeFactory<T> {
         if (hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
-        this.bindingMode = isLazy ? BindingMode.LAZY_SINGLETON : BindingMode.EAGER_SINGLETON;
+        this.bindingMode = isLazy ? BindingMode.LAZY_SINGLETON : BindingMode.SINGLETON;
     }
 
     /** {@inheritDoc} */

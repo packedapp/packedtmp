@@ -57,7 +57,7 @@ public class BuildNodeInstance<T> extends BuildNode<T> implements Provider<T> {
     /** {@inheritDoc} */
     @Override
     public BindingMode getBindingMode() {
-        return BindingMode.EAGER_SINGLETON;
+        return BindingMode.SINGLETON;
     }
 
     /** {@inheritDoc} */

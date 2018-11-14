@@ -27,8 +27,8 @@ import app.packed.inject.TypeLiteral;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
+import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
@@ -37,7 +37,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 public class FindInjectable {
 
     public static <T> InternalFactory<T> find(Class<T> implementation) {
-        InternalExecutableDescriptor executable = findMethod(implementation);
+        InternalExecutableDescriptor executable = findStaticMethod(implementation);
         if (executable == null) {
             executable = findConstructor(implementation);// moc.constructors().findInjectable();
         }
@@ -96,7 +96,7 @@ public class FindInjectable {
         return injectable;
     }
 
-    static InternalMethodDescriptor findMethod(Class<?> type) {
+    static InternalMethodDescriptor findStaticMethod(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
         } else if (type.isAnnotation()) {
@@ -115,6 +115,7 @@ public class FindInjectable {
             return null;
         }
 
+        // Det er jo i virkeligheden en Key vi laver her, burde havde det samme checkout..
         if (method.getReturnType() == void.class /* || returnType == Void.class */) {
             throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
                     + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");

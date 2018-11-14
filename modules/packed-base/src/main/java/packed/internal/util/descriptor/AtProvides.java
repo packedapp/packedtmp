@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
+package packed.internal.util.descriptor;
+
+import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -25,17 +27,22 @@ import java.util.OptionalLong;
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
-import app.packed.inject.Provider;
 import app.packed.inject.Provides;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
-/** This class represents a method annotated with the {@link Provider} annotation. */
-public final class MethodInvokerAtProvides extends MethodInvoker {
+/** A descriptor of the {@link Provides} annotation. */
+public final class AtProvides {
+
+    /** The annotated member, either an {@link InternalFieldDescriptor} or ab {@link InternalMethodDescriptor}. */
+    private final InternalAnnotatedElement annotatedMember;
 
     /** The binding mode from {@link Provides#bindingMode()}. */
     private final BindingMode bindingMode;
+
+    /** If the annotation is present on a method, any dependencies (parameters) the method has. */
+    private final List<InternalDependency> dependencies;
 
     /** An (optional) description from {@link Provides#description()}. */
     @Nullable
@@ -44,12 +51,21 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
     /** The key under which this method will deliver services. */
     private final Key<?> key;
 
-    MethodInvokerAtProvides(InternalMethodDescriptor descriptor, MethodHandles.Lookup lookup, Provides provides) {
-        super(descriptor, lookup);
-
-        this.key = descriptor.fromMethodReturnType();
+    AtProvides(InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        this.annotatedMember = requireNonNull(annotatedMember);
+        this.key = requireNonNull(key, "key is null");
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.bindingMode = provides.bindingMode();
+        this.dependencies = requireNonNull(dependencies);
+    }
+
+    /**
+     * Returns a {@link InternalFieldDescriptor} or {@link InternalMethodDescriptor} for the annotated field or method.
+     * 
+     * @return a descriptor of the annotated member
+     */
+    public InternalAnnotatedElement getAnnotatedMember() {
+        return annotatedMember;
     }
 
     /**
@@ -59,6 +75,15 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
      */
     public BindingMode getBindingMode() {
         return bindingMode;
+    }
+
+    /**
+     * Returns a list of any dependencies the annotated method might have. Is always empty for fields.
+     * 
+     * @return a list of any dependencies the annotated method might have
+     */
+    public List<InternalDependency> getDependencies() {
+        return dependencies;
     }
 
     /**
@@ -80,7 +105,21 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
         return key;
     }
 
-    public static Optional<MethodInvokerAtProvides> find(InternalMethodDescriptor method) {
+    public static AtProvides from(InternalAnnotatedElement fieldOrMethod, Provides p) {
+
+        // Extract key
+        // Men vi skal jo have informationer om hvorfor
+
+        // Saa metoder ved hvorfor, the caller knows where/what
+        // WHERE/What could not because of why...
+        // Maybe have a isValidKey(Type) or <T> checkValidKey(T extends RuntimeException, String message) throws T;
+        // Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
+        // because it "xxxxxx"
+
+        throw new UnsupportedOperationException();
+    }
+
+    public static Optional<AtProvides> find(InternalMethodDescriptor method) {
         for (Annotation a : method.getAnnotationsUnsafe()) {
             if (a.annotationType() == Provides.class) {
                 return Optional.of(read(method, (Provides) a));
@@ -89,7 +128,7 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
         return Optional.empty();
     }
 
-    private static MethodInvokerAtProvides read(InternalMethodDescriptor method, Provides provides) {
+    private static AtProvides read(InternalMethodDescriptor method, Provides provides) {
         // Cannot have @Inject and @Provides on the same method
         if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
             throw new InjectionException("Cannot place both @Inject and @" + Provides.class.getSimpleName() + " on the same method, method = " + method);
@@ -115,11 +154,3 @@ public final class MethodInvokerAtProvides extends MethodInvoker {
         // : provides.description());
     }
 }
-
-// static String provideHasBothQualifierAnnotationAndQualifierAttribute(AnnotationProvidesReflectionData m, Annotation
-// qualifierAnnotation,
-// Class<? extends Annotation> qualifierAttribute) {
-// return m + " cannot both specify a qualifying annotation (@" + qualifierAnnotation.annotationType() + ") and
-// qualifying attribute @Provides(qualifier="
-// + qualifierAttribute.getSimpleName() + ")";
-// }

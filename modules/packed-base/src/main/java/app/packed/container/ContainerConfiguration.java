@@ -26,11 +26,37 @@ import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
 
 /**
- * The configuration of a container. An instance of this class is typically acquired by calling
+ * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
  * {@link Container#of(Consumer)}.
+ * <p>
+ * This interface extends {@link InjectorConfiguration} with functionality for:
+ * <ul>
+ * <li>Installing components that should be available from the container, at least one component must be installed</li>
+ * <li>Registering callbacks that will be executed on certain syncpoints</li>
+ * <li>Setting a name for the container.</li>
+ * </ul>
  */
 public interface ContainerConfiguration extends InjectorConfiguration {
 
+    /**
+     * Returns the name of the container or null if the name has not been set.
+     *
+     * @return the name of the container or null if the name has not been set
+     * @see #setName(String)
+     * @see Container#getName()
+     */
+    String getName();
+
+    /**
+     * Install the specified component implementation and makes it available as a service with the specified class as the
+     * key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
+     * 
+     * @param implementation
+     *            the component implementation to install
+     * @return component configuration that can be use to configure the component in greater detail
+     * @throws InvalidDeclarationException
+     *             if some property of the implementation prevents it from being installed as a component
+     */
     <T> ComponentConfiguration<T> install(Class<T> implementation);
 
     <T> ComponentConfiguration<T> install(Factory<T> factory);
@@ -41,11 +67,8 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * <p>
      * If this install operation is the first install operation. The component will be installed as the root component of
      * the container. All subsequent install operations on this configuration will have the component as its parent. If you
-     * wish to have a specific component as a parent, use the various install methods on the {@link ComponentConfiguration}
-     * instance returned on each install can be used to specify a specific parent.
-     * <p>
-     * Unlike {@link #installAndBind(Object)}, components installed via this method is <b>not</b> automatically made
-     * available as services that can be injected into other components.
+     * wish to use a specific component as a parent, use the various install methods on the {@link ComponentConfiguration}
+     * instead of the install methods on this interface.
      *
      * @param instance
      *            the component instance to install
@@ -56,6 +79,16 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      */
     <T> ComponentConfiguration<T> install(T instance);
 
+    /**
+     * Install the specified component implementation and makes it available as a service with the specified type literal as
+     * the key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
+     * 
+     * @param implementation
+     *            the component implementation to install
+     * @return component configuration that can be use to configure the component in greater detail
+     * @throws InvalidDeclarationException
+     *             if some property of the implementation prevents it from being installed as a component
+     */
     <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation);
 
     /**
@@ -103,4 +136,20 @@ public interface ContainerConfiguration extends InjectorConfiguration {
     default ContainerActionable onStopping() {
         return on(LifecycleState.STOPPING);
     }
+
+    /**
+     * Sets the {@link Container#getName() name} of the container. The name must consists only of alphanumeric characters
+     * and '_' or '-'. The name is case sensitive.
+     * <p>
+     * If no name is set using this method a unique name (among siblings) is generated at build time.
+     *
+     * @param name
+     *            the name of the container
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string or if the name contains other characters then alphanumeric
+     *             characters and '_' or '-'
+     * @see #getName()
+     * @see Container#getName()
+     */
+    void setName(String name);
 }

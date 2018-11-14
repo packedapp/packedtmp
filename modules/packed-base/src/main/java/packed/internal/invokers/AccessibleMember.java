@@ -13,27 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.invokers;
 
-import app.packed.inject.Injector;
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-public class Hik {
-    public Hik(Dus i, Injector id) {
-        System.out.println(id);
+public abstract class AccessibleMember<T> {
+
+    private final T t;
+
+    AccessibleMember() {
+        this.t = null;
     }
 
-    public static void main(String[] args) {
-        Injector ii = Injector.of(c -> {
-            c.bind(Hik.class);
-            c.bind(Dus.class);
-        });
-        System.out.println(ii);
+    AccessibleMember(T t) {
+        this.t = requireNonNull(t);
     }
 
-    public static class Dus {
-
+    public final T metadata() {
+        return t;
     }
 }

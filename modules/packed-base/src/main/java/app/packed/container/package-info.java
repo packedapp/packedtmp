@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
 
 /**
- *
+ * Provides a simple component based framework. The framework provides life-cycle control, event notification,
+ * dependency injection and service registration/lookup.
  */
-public class FieldInvokerAtListenTo {
-
-}
+package app.packed.container;

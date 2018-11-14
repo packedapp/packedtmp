@@ -21,24 +21,24 @@ package app.packed.inject;
 public enum BindingMode {
 
     /**
-     * A service instance is created together with the injector that holds the service. This is the default mode used
-     * throughout the framework.
+     * A single instance of the service is created when the injector where the service is registered is created. This is the
+     * default mode used throughout the framework.
      */
-    EAGER_SINGLETON,
+    SINGLETON,
 
     /**
-     * A single service instance is created on demand. Concurrent calls by other threads while constructing the value will
+     * A single service instance is created the f. Concurrent calls by other threads while constructing the value will
      * block.
      */
     LAZY_SINGLETON,
 
-    /** A new service instance is created every time the service is requested. */
+    /** A new instance is created every time the service is requested. An injector will never attempt to cache it. */
     PROTOTYPE;
 
     /**
-     * Returns whether or not mode is {@link #EAGER_SINGLETON} or {@link #LAZY_SINGLETON}.
+     * Returns true if the binding mode is either {@link #SINGLETON} or {@link #LAZY_SINGLETON}, otherwise false.
      * 
-     * @return whether or not mode is {@link #EAGER_SINGLETON} or {@link #LAZY_SINGLETON}
+     * @return true if the binding mode is either {@link #SINGLETON} or {@link #LAZY_SINGLETON}, otherwise false
      */
     public boolean isSingleton() {
         return this != PROTOTYPE;

@@ -17,11 +17,12 @@ package app.packed.inject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- * 
- * Instances of this interface are never
+ * This interface provides methods to exactly control which services are imported and exported when one injector is
+ * imported into another injector.
  */
 // Maybe just ServiceStaging.... Or Service.Staging
 public interface ServiceStagingArea extends ServiceSpecification {
@@ -53,16 +54,16 @@ public interface ServiceStagingArea extends ServiceSpecification {
         return this;
     }
 
+    Set<Key<?>> exportedServices();
+
     /**
-     * Imports all of the exposed services.
+     * Imports all of the services exposed via {@link ServiceSpecification#exposedServices()} that have not already been
+     * imported.
      * 
-     * @return
+     * @return this staging
      */
-    // TODO this override any service that have already been imported right????
-    // Nej det syntes jeg egentlig ikke, skal vel virke lidt som importService(Predicate)
-    // importAllServices().exportAllServices()
     default ServiceStagingArea importAllServices() {
-        importAllServices(e -> true);
+        exposedServices().keySet().forEach(key -> importService(key));
         return this;
     }
 
@@ -90,27 +91,15 @@ public interface ServiceStagingArea extends ServiceSpecification {
     }
 
     /**
-     * Returns a map of all the services that have been imported.
-     * 
-     * <p>
-     * This map will be remain empty until porpulated by calls to the import service functions. Initially this map will be
-     * empt
+     * Returns an immutable view of all the services that have been imported. Initially this map is empty. But can be filled
+     * up by calling the various import methods of this interface.
      *
-     * <p>
-     * The returned map is partial mutable. Operations that remove entries from the map, such as {@link Map#clear()} or
-     * {@link Map#remove(Object)}, are allowed. While operations that add entries to map, such as
-     * {@link Map#put(Object, Object)}, will throw {@link UnsupportedOperationException}.
-     *
-     * @return a map of all the services that will be imported
+     * @return an immutable view of all the services that will be imported
      */
     Map<Key<?>, ServiceConfiguration<?>> importedServices();
 
     /**
-     * Imports a service of the specified type. The imported is made available under the specified key unless other
-     *
-     * This can, for example, if trying to import 2 service from 2 module that are both exposed as the same type.
-     * <p>
-     * Calling this method repeatable with the same key, will return the same service configuration.
+     * Equivalent to calling {@code importService(Key.of(key)}.
      *
      * @param <T>
      *            the type of service to import
@@ -124,6 +113,24 @@ public interface ServiceStagingArea extends ServiceSpecification {
         return importService(Key.of(key));
     }
 
+    /**
+     * Imports a service with the specified key. Or throws an {@link IllegalArgumentException} if the specified key does not
+     * match one of the {@link ServiceSpecification#exposedServices() exposed services}.
+     * <p>
+     * The returned service configuration can be used to make the service available under a different key. This is useful,
+     * for example, if trying to import two services from two different injectors that are both exposed as the same type.
+     * The imported is made available under the specified key unless other
+     *
+     * Calling this method repeatable with the same key, will return the same service configuration.
+     *
+     * @param <T>
+     *            the type of service to import
+     * @param key
+     *            the key of the service
+     * @return a service configuration
+     * @throws IllegalArgumentException
+     *             if a service for the specified type is not among the services returned by {@link #exposedServices()}
+     */
     <T> ServiceConfiguration<T> importService(Key<T> key);
 
     // exportedServices...

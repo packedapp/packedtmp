@@ -24,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import packed.internal.inject.InternalDependency;
+import packed.internal.util.descriptor.AtProvides;
+
 /**
  *
  */
@@ -32,27 +35,27 @@ class MemberScanner {
 
     final Class<?> clazz;
 
-    ArrayList<FieldInvokerAtInject> fieldsAtInject;
+    ArrayList<AccessibleField<InternalDependency>> fieldsAtInject;
 
-    ArrayList<FieldInvokerAtProvides> fieldsAtProvides;
+    ArrayList<AccessibleField<AtProvides>> fieldsAtProvides;
 
     /** The lookup object. */
     final Lookup lookup;
 
-    ArrayList<MethodInvokerAtInject> methodsAtInject;
+    ArrayList<AccessibleExecutable<List<InternalDependency>>> methodsAtInject;
 
-    ArrayList<MethodInvokerAtProvides> methodsAtProvides;
+    ArrayList<AccessibleExecutable<AtProvides>> methodsAtProvides;
 
     MemberScanner(Lookup lookup, Class<?> clazz) {
         this.lookup = requireNonNull(lookup);
         this.clazz = requireNonNull(clazz);
     }
 
-    public Collection<FieldInvokerAtInject> injectableFields() {
+    public Collection<AccessibleField<InternalDependency>> injectableFields() {
         return fieldsAtInject == null ? List.of() : List.copyOf(fieldsAtInject);
     }
 
-    public Collection<MethodInvokerAtInject> injectableMethods() {
+    public Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods() {
         return methodsAtInject == null ? List.of() : List.copyOf(methodsAtInject);
     }
 
@@ -70,7 +73,7 @@ class MemberScanner {
                 Annotation[] annotations = field.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    FieldInvokerAtInject inject = FieldInvokerAtInject.createIfInjectable(this, field, annotations);
+                    AccessibleField<InternalDependency> inject = MemberScanners.createIfInjectable(this, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {

@@ -15,18 +15,27 @@
  */
 package packed.internal.inject;
 
+import app.packed.container.Component;
+import app.packed.container.Container;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 
-/**
- *
- */
-public class CommonKeys {
+/** Various common keys. */
+public final class CommonKeys {
 
-    /** The {@link InjectionSite} class as a key */
+    /** The {@link Component} interface as a key. */
+    public static final Key<Component> COMPONENT_KEY = Key.of(Component.class);
+
+    /** The {@link Container} class as a key. */
+    public static final Key<?> CONTAINER_KEY = Key.of(Container.class);
+
+    /** The {@link InjectionSite} class as a key. */
     public static final Key<?> INJECTION_SITE_KEY = Key.of(InjectionSite.class);
 
-    /** The {@link InjectionSite} class as a key */
+    /** The {@link Injector} class as a key. */
     public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);
+
+    /** Cannot instantiate. */
+    private CommonKeys() {}
 }

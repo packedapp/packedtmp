@@ -17,6 +17,7 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -37,15 +38,19 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 // Skal nok have 2 versioner, en hvor de er RuntimeNodes og en hvor det er generiske noder, der bliver kopieret.
 public class ImportServicesFromInjector implements ServiceStagingArea {
 
+    /** The configuration site where the injector was imported. */
+    final InternalConfigurationSite configurationSite;
+
+    /** */
+    final Map<Key<?>, ServiceDescriptor> exposed;
+
     /** A map of all services that have been imported. */
-    final Map<Key<?>, BuildNodeImportServiceFromInjector<?>> imports = new HashMap<>();
+    final Map<Key<?>, BuildNodeImportServiceFromInjector<?>> importedServices = new HashMap<>();
 
     /** The injector that is being imported from. */
     final Injector injector;
 
-    final Map<Key<?>, ServiceDescriptor> exposed;
-
-    final InternalConfigurationSite configurationSite;
+    /** The configuration of the injector. */
     final InternalInjectorConfiguration injectorConfiguration;
 
     public ImportServicesFromInjector(InternalInjectorConfiguration injectorConfiguration, Injector injector, InternalConfigurationSite configurationSite) {
@@ -56,10 +61,35 @@ public class ImportServicesFromInjector implements ServiceStagingArea {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public void export(Key<?> key) {
+        throw new UnsupportedOperationException("Export is not supported when importing an already instantiated Injector");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<Key<?>> exportedServices() {
+        return Set.of();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Key<?>, ServiceDescriptor> exposedServices() {
+        return exposed;
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public Map<Key<?>, ServiceConfiguration<?>> importedServices() {
+        return (Map) Collections.unmodifiableMap(importedServices);
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <T> ServiceConfiguration<T> importService(Key<T> key) {
-        BuildNodeImportServiceFromInjector<T> f = (BuildNodeImportServiceFromInjector<T>) imports.get(key);
+        BuildNodeImportServiceFromInjector<T> f = (BuildNodeImportServiceFromInjector<T>) importedServices.get(key);
         if (f != null) {
             return f;
         }
@@ -70,24 +100,11 @@ public class ImportServicesFromInjector implements ServiceStagingArea {
             bn.as((Key) descriptor.getKey());
             bn.setDescription(descriptor.getDescription());
             bn.tags().addAll(descriptor.tags());
-            imports.put(key, bn);
+            importedServices.put(key, bn);
             return bn;
         } else {
             throw new IllegalArgumentException(key + " does not exist, list alternatives....");
         }
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public Map<Key<?>, ServiceConfiguration<?>> importedServices() {
-        return (Map) imports;// Make immutable??? Or at least semi immutable
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Key<?>, ServiceDescriptor> exposedServices() {
-        return exposed;
     }
 
     /** {@inheritDoc} */
@@ -100,11 +117,5 @@ public class ImportServicesFromInjector implements ServiceStagingArea {
     @Override
     public Set<Key<?>> requiredServices() {
         return Set.of();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void export(Key<?> key) {
-        throw new UnsupportedOperationException("Export is not supported when importing an already instantiated Injector");
     }
 }

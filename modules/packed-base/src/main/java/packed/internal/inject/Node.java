@@ -16,10 +16,12 @@
 package packed.internal.inject;
 
 import app.packed.container.Component;
+import app.packed.inject.Dependency;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Nullable;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 
 /**
@@ -36,7 +38,11 @@ public interface Node<T> extends ServiceDescriptor {
     // return () -> getInstance(site);
     // }
 
-    default T getInstance(Injector injector, Component component, Key<T> key) {
+    default T getInstance(Injector injector, Dependency dependency, @Nullable Component component) {
+        return getInstance(InjectionSite.of(injector, dependency));
+    }
+
+    default T getInstance(Injector injector, Key<T> key, @Nullable Component component) {
         return getInstance(InjectionSite.of(injector, key));
     }
 

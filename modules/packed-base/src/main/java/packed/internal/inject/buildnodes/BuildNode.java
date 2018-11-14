@@ -47,7 +47,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     /** The dependencies of this node. */
     final List<InternalDependency> dependencies;
 
-    /** A flag used to detect cycles in the build graph. */
+    /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
 
     /** The injector configuration this node is registered with. */
@@ -66,7 +66,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
 
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
-    private RuntimeNode<T> runtime;
+    private RuntimeNode<T> runtimeNode;
 
     /** Whether or this node contains a dependency on {@link InjectionSite}. */
     final boolean hasDependencyOnInjectionSite;
@@ -165,7 +165,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     /** {@inheritDoc} */
     @Override
     public final RuntimeNode<T> toRuntimeNode() {
-        RuntimeNode<T> runtime = this.runtime;
-        return runtime == null ? this.runtime = newRuntimeNode() : runtime;
+        RuntimeNode<T> runtime = this.runtimeNode;
+        return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
 }

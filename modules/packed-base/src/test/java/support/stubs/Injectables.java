@@ -233,6 +233,7 @@ public class Injectables {
 
     /** Various fields that should be injected. */
     public static class InjectAOptional {
+
         @Inject
         public Optional<A> field;
 

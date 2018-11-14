@@ -44,6 +44,7 @@ import packed.internal.util.TypeVariableExtractorUtil;
  * in internal classes. This might change in the future, but for now factories are created by the user and only the
  * internals of this framework can use them to create new object instances.
  */
+// TODO Qualifiers on Methods, Types together with findInjectable????
 public class Factory<T> {
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
@@ -58,8 +59,8 @@ public class Factory<T> {
     };
 
     /**
-     * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only by subclasses of TypeLiteral,
-     * never literals that are manually constructed.
+     * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only used by subclasses of
+     * TypeLiteral, never literals that are manually constructed.
      */
     private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
 
@@ -119,7 +120,7 @@ public class Factory<T> {
     }
 
     /**
-     * Returns a list of this factory's dependencies. Returns the empty list if this factory does not have any dependencies.
+     * Returns a list of this factory's dependencies. Returns an empty list if this factory does not have any dependencies.
      *
      * @return a list of this factory's dependencies
      */
@@ -169,8 +170,11 @@ public class Factory<T> {
      * If this factory was created from a constructor or method, this method returns a new factory that uses the specified
      * lookup object to access the underlying constructor or method whenever the factory needs to create a new object.
      * <p>
-     * Normally, the accessors method this is not needed if configuring a module. This can be useful, for example, to share
-     * a factory instance that has a package private constructor.
+     * This method is useful, for example, to make a factory publically available for an class that does not a public
+     * constructor.
+     * <p>
+     * The specified lookup object will always be used, even if registering with an injector prepended by a call to
+     * {@link InjectorConfiguration#lookup(java.lang.invoke.MethodHandles.Lookup)}.
      *
      * @param lookup
      *            the lookup object
@@ -240,6 +244,10 @@ public class Factory<T> {
         requireNonNull(implementation, "implementation is null");
         if (implementation.getClass() != CanonicalizedTypeLiteral.class) {
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
+        }
+        Type t = implementation.getType();
+        if (t instanceof Class) {
+            return (Factory<T>) FIND_INJECTABLE_FROM_CLASS_CACHE.get((Class<?>) t);
         } else {
             return new Factory<>(FindInjectable.find(implementation));
         }

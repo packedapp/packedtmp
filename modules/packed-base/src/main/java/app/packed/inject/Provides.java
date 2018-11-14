@@ -53,7 +53,7 @@ public @interface Provides {
      * 
      * @return the binding mode
      */
-    BindingMode bindingMode() default BindingMode.EAGER_SINGLETON;
+    BindingMode bindingMode() default BindingMode.SINGLETON;
 
     /**
      * The default value is {@link Qualifier} which indicates that it ignores any annotations

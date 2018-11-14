@@ -82,7 +82,7 @@ public final class InjectorBuilder {
         // freezeBuilder();
 
         for (ImportServicesFromInjector i : injectorImport) {
-            for (BuildNode<?> n : i.imports.values()) {
+            for (BuildNode<?> n : i.importedServices.values()) {
                 buildNodes.add(n);
             }
         }
@@ -149,7 +149,7 @@ public final class InjectorBuilder {
         for (BuildNode<?> node : buildNodes) {
             if (node instanceof BuildNodeFactorySingleton) {
                 BuildNodeFactorySingleton<?> s = (BuildNodeFactorySingleton<?>) node;
-                if (s.getBindingMode() == BindingMode.EAGER_SINGLETON) {
+                if (s.getBindingMode() == BindingMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
             }

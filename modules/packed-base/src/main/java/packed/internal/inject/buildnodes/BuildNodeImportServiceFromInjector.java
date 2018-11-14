@@ -42,6 +42,7 @@ public class BuildNodeImportServiceFromInjector<T> extends BuildNode<T> implemen
     /** The descriptor of the service we are importing from. */
     final ServiceDescriptor descriptor;
 
+    /** The key for which this node is registered in the injector we are importing from. */
     final Key<T> injectorKey;
 
     final RuntimeNode<T> node;

@@ -33,8 +33,9 @@ import java.util.Set;
 public interface ServiceSpecification {
 
     /**
-     * Returns an immutable map of all services that the entity makes available for importing. A service whose key have been
-     * remapped will have t <pre> {@code
+     * Returns an immutable map of all services that are available for importing.
+     * <p>
+     * A service whose key have been remapped will have t <pre> {@code
      *  Key<Integer> -> Descriptor<Key<Integer>, "MyService>
      *  importService(Integer.class).as(new Key<@Left Integer>));
      *  Key<Integer> -> Descriptor<Key<@Left Integer>, "MyService>

@@ -76,7 +76,7 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        return fromFactory(BindingMode.EAGER_SINGLETON, Factory.findInjectable(implementation));
+        return fromFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
@@ -87,7 +87,7 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        return fromFactory(BindingMode.EAGER_SINGLETON, factory);
+        return fromFactory(BindingMode.SINGLETON, factory);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        return fromFactory(BindingMode.EAGER_SINGLETON, Factory.findInjectable(implementation));
+        return fromFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
     @Override
@@ -187,7 +187,7 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         case LAZY_SINGLETON:
             node = new BuildNodeFactorySingleton<>(this, frame, f, true);
             break;
-        case EAGER_SINGLETON:
+        case SINGLETON:
             node = new BuildNodeFactorySingleton<>(this, frame, f, false);
             break;
         default:
