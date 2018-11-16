@@ -15,6 +15,8 @@
  */
 package packed.internal.util;
 
+import java.lang.reflect.AnnotatedElement;
+
 import app.packed.util.FieldDescriptor;
 import app.packed.util.VariableDescriptor;
 
@@ -28,6 +30,12 @@ public final class ErrorMessageBuilder implements CharSequence {
     public ErrorMessageBuilder cannot(String msg) {
         sb.append("Cannot " + msg);
         return this;
+    }
+
+    public static ErrorMessageBuilder of(AnnotatedElement e) {
+        ErrorMessageBuilder emb = new ErrorMessageBuilder();
+        emb.sb.append(e.toString());
+        return emb;
     }
 
     public static ErrorMessageBuilder of(VariableDescriptor vd) {

@@ -265,7 +265,7 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * Creates a new type literal by reading extracting information fron a type variable.
+     * Creates a new type literal by extracting information from a type variable.
      * <p>
      * Given a class:
      * 
@@ -285,12 +285,14 @@ public abstract class TypeLiteral<T> {
      * @param subClass
      *            the sub class
      * @param superClass
-     *            the base class that defines the type
+     *            the base class that defines the type variable we want to get information on
      * @param parameterIndex
      *            the index in the signature of superClass of the type variable to extract
      * @return a type literal matching the type variable
      * @throws UnsupportedOperationException
      *             this method does not currently support extracting type information from interfaces
+     * @throws IllegalArgumentException
+     *             if the extraction could not be performed for some other reason
      */
     public static <T> TypeLiteral<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
         Type t = TypeVariableExtractorUtil.findTypeParameterUnsafe(subClass, superClass, parameterIndex);

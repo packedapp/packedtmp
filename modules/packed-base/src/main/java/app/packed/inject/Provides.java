@@ -15,7 +15,6 @@
  */
 package app.packed.inject;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,89 +22,103 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Methods and fields can be annotated with {@link Provides}
+ * <p>
+ * The annotation can be used on both static and non-static fields and methods. However, if you use a non-static field
+ * or method you implicitly introduces a dependency to an instance of the type on which the field or method is located.
+ * This is normally not a problem, however in some situations it can lead to circles in the dependency graph.
+ * <p>
+ * A field
+ * 
  * 
  * Or a final field.
  * 
  * Using this annotation on non-final fields are not supported. Eller.... hvad er forskellen paa at expose en metode der
  * return non-final-field;.... Maaske skriv noget med volatile og multiple threads
  * 
+ * <p>
+ * Both fields and methods can make used of qualifiers to specify the exact key they are made available under. if
+ * needed, for example, given to Qualifier annotations: {@code @Left} and {@code @Right}<pre>
+ *  &#64;Left
+ *  &#64;Provides
+ *  String name = "left";
+ *   
+ *  &#64;Right
+ *  &#64;Provides
+ *  String provide() {
+ *      return "right";
+ *  }
+ *  </pre>
  * 
- * Fields and Methods are <b>not</b> automatically injected when returned by methods annotated with {@link Provides}.
- * inject members can be used to inject members if needed. // Null is only a valid result, if the dependency is
- * optional. Otherwise it is a failure
+ * The field will be made available under {@code Key<@Left String>} while the method will be made available under
+ * {@code Key<@Right String>}.
+ * <p>
+ * Provided objects are <b>never</b> injected when returned by a method or read from a field. This must be done manually
+ * if needed, for example, via <pre> 
+ *   &#64;Provides
+ *   public SomeObject provide(String name, Injector i) {
+ *       SomeObject o = new SomeObject(name);
+ *       i.injectMembers(o, MethodHandles.lookup());
+ *       return o;
+ *   }
+ * </pre>
+ * <p>
+ * You cannot register a service that have anything but singleton scope
+ * 
+ * place this annotation on objects that do not have
+ * 
+ * // Null is only a valid result, if the dependency is optional. Otherwise it is a failure
+ * 
+ * Or do we????
  * 
  */
+
+// Hvordan fungere den med asNone() metoden????? Der er jo ingen grund til at instantiere objekter...hvid vi ikke
+// behoever
+// saa registerer den som singleton bliver den lavet ligegyldigt hvad.
+// Lazy bliver den lavet hvis der er behov den...
+// Okay, lazy can godt have @Provides alligevel.
+// Hvis felterne er statisk paa en lazy, bliver lazy aldrig lavet?!!?!?!
+// Test med en constructor der smider en AssertionError
+
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// Can only expose final fields otherwise throw IAE,
 public @interface Provides {
 
     /**
-     * Returns a description of the service provided by this member.
-     *
-     * @return a description of the service provided by this member
-     */
-    String description() default "";
-
-    /**
-     * The bind mode of the provided method, the default is to eagerly create a new instance.
+     * The binding mode of the providing method or field, the default is {@link BindingMode#SINGLETON}.
      * 
      * @return the binding mode
      */
     BindingMode bindingMode() default BindingMode.SINGLETON;
 
     /**
-     * The default value is {@link Qualifier} which indicates that it ignores any annotations
+     * Returns a description of the service provided by the annotated method or field.
      *
-     * @return a wildcard annotation
+     * @return a description of the service provided by the annotated method or field
      */
-    Class<? extends Annotation> wildcardQualifier() default Qualifier.class;
-
-    // Cannot both have wildcardType and wildcardAnnotation
-    // Should have List<?> return Type
-    // Key.wildcardType(Class<?> type)
-    // Key.wildcardAnnotation(Class<? extends Annotation>)
-    Class<?> wildcardType() default Class.class;
+    String description() default "";
 }
 
-// Default is return type for methods or field type, on field bla bla.
-// skal maaske baade have real type og exposedType
-// Maaske have en exposedAs type ogsaa
-// Class<?> type() default Class.class;
+class X {
 
-/// **
-// * A single instance is created for each container on demand. Concurrent calls will block.
-// * <p>
-// * Injection will only be available via container injectors, component instances or via a {@link Component#injector()
-// * components injector}. Injection via a containers injector or a standalone injector is not supported.
-// */
-// PER_CONTAINER,
-//
-/// **
-// * A single instance is created for each component on demand. Concurrent calls will block.
-// * <p>
-// * Injection will only be available for component instances or via a {@link Component#injector() components injector}.
-// * Injection via a containers injector or a standalone injector is not supported.
-// */
-// PER_COMPONENT,
+    @Left
+    @Provides
+    public String name = "left";
 
-/** The default value for {@link Provides#wildcardQualifier()} */
-// @interface ProvidesQualifierNone {}
-// int priority() default 1;
+    @Right
+    @Provides
+    public String provide() {
+        return "right";
+    }
 
-// Class<? extends Annotation>[] ifAnyMethodAnnotatedWith() default {};
-//
-/// **
-// * The default value is {@link Qualifier} which indicates that it ignores any annotations
-// *
-// * @return
-// */
-// Class<? extends Annotation> wildcardAnnotation() default ProvidesQualifierNone.class;
-/**
- * Only provide instances for object whose owning type is annotated with a particular annotation
- *
- * @return the annotations that must be present on the declaring class
- */
-// What about annotations placed on interfaces implemented or super types??????
-// Class<? extends Annotation>[] ifTypeAnnotatedWith() default {};
+}
+
+@interface Right {}
+
+@interface Left {}
+
+class SomeObject {
+    SomeObject(String name) {}
+}

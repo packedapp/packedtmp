@@ -23,23 +23,55 @@ import static java.util.Objects.requireNonNull;
  */
 public class Letters {
 
-    public static final A A = new A();
+    public static final A A0 = new A();
     public static final A A1 = new A();
     public static final A A2 = new A();
 
-    public static final B B = new B();
+    public static final B B0 = new B();
+    public static final C C0 = new C();
+    public static final D D0 = new D();
+    public static final E E0 = new E();
+    public static final F F0 = new F();
+    public static final G G0 = new G();
+    public static final H H0 = new H();
+    public static final I I0 = new I();
+    public static final J J0 = new J();
 
     /** A test stub. */
-    public static class A extends Letters {};
+    public static class A {};
 
     /** A test stub. */
-    public static class B extends Letters {};
+    public static class B {};
 
     /** A test stub. */
-    public static class C extends Letters {};
+    public static class C {};
 
     /** A test stub. */
     public static class D {};
+
+    /** A test stub. */
+    public static class E {};
+
+    /** A test stub. */
+    public static class F {};
+
+    /** A test stub. */
+    public static class G {};
+
+    /** A test stub. */
+    public static class H {};
+
+    /** A test stub. */
+    public static class I {};
+
+    /** A test stub. */
+    public static class J {};
+
+    /** A test stub. */
+    public static class K {};
+
+    /** A test stub. */
+    public static class L {};
 
     /** A test stub. */
     public static class NeedsA {

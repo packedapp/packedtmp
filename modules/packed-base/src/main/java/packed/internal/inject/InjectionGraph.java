@@ -13,39 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.inject;
 
 /**
  *
  */
-public enum ConfigurationSiteType {
+public class InjectionGraph {
 
-    /** */
-    INJECTOR_BIND("Injector.bind"),
-
-    /** */
-    INJECTOR_IMPORT_FROM("Injector.importFrom"),
-
-    /** */
-    INJECTOR_IMPORT_SERVICE("Injector.importService"),
-
-    /** */
-    INJECTOR_OF("Injector.of");
-
-    final String f;
-
-    ConfigurationSiteType(String f) {
-        this.f = requireNonNull(f);
-    }
-
-    public String operation() {
-        return f;
-    }
-
-    @Override
-    public String toString() {
-        return f;
-    }
+    //
 }

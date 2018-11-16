@@ -32,12 +32,11 @@ import java.lang.annotation.Target;
 /**
  * 
  * <p>
- * A type that is not preview or deprecated
+ * A type that is not preview or deprecated is considered stable
  */
-//No description....Although it would be nice
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value={CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, MODULE, PARAMETER, TYPE})
+@Target(value = { CONSTRUCTOR, FIELD, LOCAL_VARIABLE, METHOD, PACKAGE, MODULE, PARAMETER, TYPE })
 public @interface Preview {
-    
+    String value() default "";
 }

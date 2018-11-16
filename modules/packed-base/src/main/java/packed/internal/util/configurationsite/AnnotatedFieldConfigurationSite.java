@@ -47,6 +47,12 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
         return field;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+        return null;
+    }
+
     // toString
     // x.op because of @Completes on field fox.sss.dd#sd
     // install.component[/sd/qwzzz] at sdkdkdk.sdsd.Dsksks:2323 .....Ahhh, saa skal man beholde references til registrerings

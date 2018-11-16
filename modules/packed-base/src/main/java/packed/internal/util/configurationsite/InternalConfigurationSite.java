@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import app.packed.util.ConfigurationSite;
 
@@ -41,17 +42,25 @@ public interface InternalConfigurationSite extends ConfigurationSite {
         public Optional<ConfigurationSite> parent() {
             return Optional.empty();
         }
+
+        @Override
+        public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+            return UNKNOWN;
+        }
     };
 
+    InternalConfigurationSite replaceParent(ConfigurationSite newParent);
+
+    static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
+            && !f.getClassName().startsWith("java.");
+
     default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
-                .walk(e -> e.filter(f -> (!f.getClassName().startsWith("app.packed") && !f.getClassName().startsWith("packed"))).findFirst());
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
         return sf.isPresent() ? new StackFrameConfigurationSite(this, cst, sf.get()) : UNKNOWN;
     }
 
     static InternalConfigurationSite ofStack(ConfigurationSiteType cst) {
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE)
-                .walk(e -> e.filter(f -> (!f.getClassName().startsWith("app.packed") && !f.getClassName().startsWith("packed"))).findFirst());
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
         return sf.isPresent() ? new StackFrameConfigurationSite(null, cst, sf.get()) : UNKNOWN;
     }
 
@@ -74,6 +83,12 @@ public interface InternalConfigurationSite extends ConfigurationSite {
         @Override
         public String toString() {
             return stackFrame.toString();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+            return new StackFrameConfigurationSite(newParent, super.operation, stackFrame);
         }
     }
 

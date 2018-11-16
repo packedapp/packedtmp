@@ -25,6 +25,9 @@ import java.util.function.Predicate;
  * imported into another injector.
  */
 // Maybe just ServiceStaging.... Or Service.Staging
+// Eller noget med Joint, joine
+// ServiceLink
+// https://www.thesaurus.com/browse/join
 public interface ServiceStagingArea extends ServiceSpecification {
 
     void export(Key<?> key);
@@ -62,10 +65,7 @@ public interface ServiceStagingArea extends ServiceSpecification {
      * 
      * @return this staging
      */
-    default ServiceStagingArea importAllServices() {
-        exposedServices().keySet().forEach(key -> importService(key));
-        return this;
-    }
+    ServiceStagingArea importAllServices();
 
     /**
      * This method will traverse through all available service descriptor from {@link #exposedServices()} and apply the

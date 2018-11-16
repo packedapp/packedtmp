@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Member;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import app.packed.container.Component;
 import app.packed.util.Nullable;
@@ -89,17 +88,18 @@ class InjectionSiteForDependency implements InjectionSite {
         return dependency.isOptional();
     }
 
-    public static void main(String[] args) {
-        new Factory1<InjectionSite, Logger>(
-                site -> site.getComponent().isPresent() ? Logger.getLogger(site.getComponent().get().getPath().toString()) : Logger.getAnonymousLogger()) {};
-    }
-
-    @Provides
-    public static Logger provideLogger(InjectionSite site) {
-        if (site.getComponent().isPresent()) {
-            return Logger.getLogger(site.getComponent().get().getPath().toString());
-        } else {
-            return Logger.getAnonymousLogger();
-        }
-    }
+    // public static void main(String[] args) {
+    // new Factory1<InjectionSite, Logger>(
+    // site -> site.getComponent().isPresent() ? Logger.getLogger(site.getComponent().get().getPath().toString()) :
+    // Logger.getAnonymousLogger()) {};
+    // }
+    //
+    // @Provides
+    // public static Logger provideLogger(InjectionSite site) {
+    // if (site.getComponent().isPresent()) {
+    // return Logger.getLogger(site.getComponent().get().getPath().toString());
+    // } else {
+    // return Logger.getAnonymousLogger();
+    // }
+    // }
 }

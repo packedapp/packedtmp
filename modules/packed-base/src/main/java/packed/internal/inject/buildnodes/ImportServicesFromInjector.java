@@ -53,11 +53,15 @@ public class ImportServicesFromInjector implements ServiceStagingArea {
     /** The configuration of the injector. */
     final InternalInjectorConfiguration injectorConfiguration;
 
-    public ImportServicesFromInjector(InternalInjectorConfiguration injectorConfiguration, Injector injector, InternalConfigurationSite configurationSite) {
+    final boolean autoImport;
+
+    public ImportServicesFromInjector(InternalInjectorConfiguration injectorConfiguration, Injector injector, InternalConfigurationSite configurationSite,
+            boolean autoImport) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.injector = requireNonNull(injector);
         this.configurationSite = requireNonNull(configurationSite);
         this.exposed = Map.copyOf(injector.services().collect(Collectors.toMap(e -> e.getKey(), e -> e)));
+        this.autoImport = autoImport;
     }
 
     /** {@inheritDoc} */
@@ -79,6 +83,17 @@ public class ImportServicesFromInjector implements ServiceStagingArea {
     }
 
     /** {@inheritDoc} */
+    @Override
+    public ServiceStagingArea importAllServices() {
+        if (autoImport) {
+            exposedServices().keySet().forEach(key -> importServicex(key, configurationSite));
+        } else {
+            importAllServices(e -> true);
+        }
+        return this;
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Map<Key<?>, ServiceConfiguration<?>> importedServices() {
@@ -95,7 +110,29 @@ public class ImportServicesFromInjector implements ServiceStagingArea {
         }
         ServiceDescriptor descriptor = exposed.get(key);
         if (descriptor != null) {
-            InternalConfigurationSite cs = configurationSite.spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_SERVICE);
+            InternalConfigurationSite ics = (InternalConfigurationSite) descriptor.getConfigurationSite();
+            InternalConfigurationSite cs = ics.spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_SERVICE);
+            BuildNodeImportServiceFromInjector<T> bn = new BuildNodeImportServiceFromInjector<>(this, cs, descriptor);
+            bn.as((Key) descriptor.getKey());
+            bn.setDescription(descriptor.getDescription());
+            bn.tags().addAll(descriptor.tags());
+            importedServices.put(key, bn);
+            return bn;
+        } else {
+            throw new IllegalArgumentException(key + " does not exist, list alternatives....");
+        }
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T> ServiceConfiguration<T> importServicex(Key<T> key, InternalConfigurationSite ics) {
+        BuildNodeImportServiceFromInjector<T> f = (BuildNodeImportServiceFromInjector<T>) importedServices.get(key);
+        if (f != null) {
+            return f;
+        }
+        ServiceDescriptor descriptor = exposed.get(key);
+        if (descriptor != null) {
+            InternalConfigurationSite cs = ics.replaceParent(descriptor.getConfigurationSite());
             BuildNodeImportServiceFromInjector<T> bn = new BuildNodeImportServiceFromInjector<>(this, cs, descriptor);
             bn.as((Key) descriptor.getKey());
             bn.setDescription(descriptor.getDescription());

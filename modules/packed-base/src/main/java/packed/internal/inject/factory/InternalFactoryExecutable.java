@@ -103,7 +103,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException(
-                    "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access");
+                    "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);
     }

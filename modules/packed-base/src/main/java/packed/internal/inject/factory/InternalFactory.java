@@ -25,6 +25,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
+import app.packed.lifecycle.OnStart;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
@@ -118,7 +119,7 @@ public abstract class InternalFactory<T> {
 
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
-     * {@link org.cakeframework.lifecycle.OnStart} and {@link app.packed.inject.Provides}. This might differ from the
+     * {@link OnStart} and {@link app.packed.inject.Provides}. This might differ from the
      *
      * @return
      */

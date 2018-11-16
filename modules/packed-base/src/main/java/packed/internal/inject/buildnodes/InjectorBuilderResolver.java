@@ -64,7 +64,7 @@ public class InjectorBuilderResolver {
 
                     // See if we have a matching service in the node map.
                     if (resolveTo == null) {
-                        resolveTo = b.exposed.getNode(dependency);
+                        resolveTo = b.internal.getNode(dependency);
 
                         // Did not find service of the specified type
                         if (resolveTo == null) {

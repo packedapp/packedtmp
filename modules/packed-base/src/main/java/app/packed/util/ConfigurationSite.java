@@ -15,24 +15,38 @@
  */
 package app.packed.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * A configuration site is the location where a object was configured. This is typically either a combination of method
- * and a line number, or a filename and a line number. A configuration site can have are parent, for example, the parent
- * of registration of a service will the the registration point for the injector in which the service is registered in.
- * 
- */
-// ConfigurationLocation????
-/**
- *
+ * A configuration site is the location where an object was configured/registered. This is typically either a
+ * combination of method and a line number, or a filename and a line number. A configuration site can have are parent,
+ * for example, the parent of a service registration will be the registration point where the injector in which the
+ * service is registered in was created.
  */
 public interface ConfigurationSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
     ConfigurationSite UNKNOWN = InternalConfigurationSite.UNKNOWN;
+
+    /**
+     * Performs the given action on each element in configuration site chain, traversing from the top configuration site.
+     *
+     * @param action
+     *            an action to be performed on each {@code ConfigurationSite} in the chain
+     */
+    default void forEach(Consumer<? super ConfigurationSite> action) {
+        requireNonNull(action, "action is null");
+        ConfigurationSite cs = this;
+        while (cs != null) {
+            action.accept(cs);
+            cs = cs.parent().orElse(null);
+        }
+    }
 
     /**
      * Returns whether or not this site has a parent.
@@ -56,6 +70,10 @@ public interface ConfigurationSite {
      * @return any parent this site may have, or an empty {@link Optional} if this site has no parent
      */
     Optional<ConfigurationSite> parent();
+
+    default void print() {
+        forEach(e -> System.out.println(e));
+    }
 }
 // Example with Provides
 // The exist because the "inject.provides" because of field xxxxx

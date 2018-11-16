@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.bundle.Bundles;
+import app.packed.bundle.InjectorBundle;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
@@ -84,8 +86,8 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * The map returned by this method may vary doing the life cycle of a container. For example, if this method is invoked
  * in the constructor of a service registered with container builder. An instance of container builder is present in the
  * map returned. However, after the container has been initialized, the container will no longer keep a reference to the
- * configuration instance. So instances of {@code org.cakeframework.ContainerConfiguration} will never be available from
- * any service manager after the container has fully started.
+ * configuration instance. So instances of Injector will never be available from any service manager after the container
+ * has fully started.
  * <p>
  * Injectors are always immutable, however, extensions of this interface might provide mutable operations for methods
  * unrelated to injection.
@@ -114,9 +116,9 @@ public interface Injector extends Taggable {
     <T> Optional<T> get(Key<T> key);
 
     /**
-     * Returns the configuration site of the injector.
+     * Returns the configuration site of this injector.
      * 
-     * @return the configuration site of the injector
+     * @return the configuration site of this injector
      */
     ConfigurationSite getConfigurationSite();
 
@@ -262,9 +264,20 @@ public interface Injector extends Taggable {
      */
     static Injector of(Consumer<InjectorConfiguration> configurator) {
         requireNonNull(configurator, "configurator is null");
-        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
+        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
         configurator.accept(c);
         return c.builder.build();
+    }
+
+    static Injector of(InjectorBundle bundle) {
+        requireNonNull(bundle, "bundle is null");
+        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
+        bundle.configure(c, true);
+        return c.builder.build();
+    }
+
+    static Injector of(Class<? extends InjectorBundle> bundleType) {
+        return of(Bundles.instantiate(bundleType));
     }
 }
 

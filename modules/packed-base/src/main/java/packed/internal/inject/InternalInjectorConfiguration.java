@@ -20,13 +20,16 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundle;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceStagingArea;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.buildnodes.BuildNodeFactoryPrototype;
 import packed.internal.inject.buildnodes.BuildNodeFactorySingleton;
@@ -47,10 +50,14 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
 
     public final InjectorBuilder builder = new InjectorBuilder(this);
 
-    InternalInjector parentInjector;
+    /** Any bundle we are configuring, or null if {@link Injector#of(Consumer)}. */
+    @Nullable
+    final Bundle bundle;
 
     /** The configuration of the injector */
     protected final InternalConfigurationSite configurationSite;
+
+    InternalInjector parentInjector;
 
     /**
      * Creates a new configuration.
@@ -58,8 +65,9 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
      * @param configurationSite
      *            the configuration site
      */
-    public InternalInjectorConfiguration(InternalConfigurationSite configurationSite) {
+    public InternalInjectorConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle) {
         this.configurationSite = requireNonNull(configurationSite);
+        this.bundle = bundle;
     }
 
     private <T> BuildNode<T> add(BuildNode<T> node) {
@@ -173,9 +181,24 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         return fromFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
-    /** {@inheritDoc} */
-    protected int depth() {
-        return 1;
+    /**
+     * @param type
+     * @return
+     */
+    public final <T> ServiceConfiguration<T> expose(Class<T> type) {
+        return null;
+    }
+
+    public final <T> ServiceConfiguration<T> expose(Key<T> type) {
+        return null;
+    }
+
+    public final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
+        return null;
+    }
+
+    public final void exposeAll() {
+
     }
 
     protected final <T> ServiceConfiguration<T> fromFactory(BindingMode mode, Factory<T> factory) {
@@ -196,6 +219,20 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
         return add(node).as(factory.getKey());
     }
 
+    /** {@inheritDoc} */
+    private void importServices(Injector injector, Consumer<? super ServiceStagingArea> c, boolean autoImport) {
+        requireNonNull(injector, "injector is null");
+        checkConfigurable();
+        InternalConfigurationSite cs = configurationSite.spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
+        ImportServicesFromInjector ifi = new ImportServicesFromInjector(this, injector, cs, autoImport);
+        builder.addImportInjector(ifi);
+        if (autoImport) {
+            ifi.importAllServices();
+        } else {
+            c.accept(ifi);
+        }
+    }
+
     @Override
     public final void importServicesFrom(Injector injector) {
         importServices(injector, null, true);
@@ -209,24 +246,10 @@ public class InternalInjectorConfiguration extends AbstractConfiguration<Interna
     }
 
     /** {@inheritDoc} */
-    private void importServices(Injector injector, Consumer<? super ServiceStagingArea> c, boolean autoImport) {
-        requireNonNull(injector, "injector is null");
-        checkConfigurable();
-        InternalConfigurationSite cs = configurationSite.spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
-        ImportServicesFromInjector ifi = new ImportServicesFromInjector(this, injector, cs);
-        builder.addImportInjector(ifi);
-        if (autoImport) {
-            ifi.importAllServices();
-        } else {
-            c.accept(ifi);
-        }
-    }
-
-    /** {@inheritDoc} */
     @Override
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         checkConfigurable();
-        accessor = LookupDescriptorAccessor.get(lookup);
+        this.accessor = LookupDescriptorAccessor.get(lookup);
     }
 }

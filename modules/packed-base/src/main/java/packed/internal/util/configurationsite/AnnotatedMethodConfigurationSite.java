@@ -40,4 +40,10 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
     public MethodDescriptor getAnnotatedMethod() {
         return method;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+        return null;
+    }
 }

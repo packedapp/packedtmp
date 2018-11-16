@@ -43,7 +43,7 @@ public class Fields {
 
     public static class FinalAField {
         @Inject
-        public final A value = A.A;
+        public final A value = Letters.A0;
     }
 
     public static class InjectAMethod {

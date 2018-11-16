@@ -27,9 +27,9 @@ import app.packed.util.MethodDescriptor;
 /** An abstract implementation of {@link ConfigurationSite}. */
 public abstract class AbstractConfigurationSite implements InternalConfigurationSite {
 
-    private final ConfigurationSiteType operation;
+    final ConfigurationSiteType operation;
 
-    private final ConfigurationSite parent;
+    final ConfigurationSite parent;
 
     AbstractConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation) {
         this.parent = parent;
@@ -39,7 +39,7 @@ public abstract class AbstractConfigurationSite implements InternalConfiguration
     /** {@inheritDoc} */
     @Override
     public String operation() {
-        return operation.name();
+        return operation.toString();
     }
 
     @Override

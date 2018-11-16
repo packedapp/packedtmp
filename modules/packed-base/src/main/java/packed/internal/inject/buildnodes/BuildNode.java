@@ -50,6 +50,9 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
 
+    /** Whether or this node contains a dependency on {@link InjectionSite}. */
+    final boolean hasDependencyOnInjectionSite;
+
     /** The injector configuration this node is registered with. */
     final InternalInjectorConfiguration injectorConfiguration;
 
@@ -67,9 +70,6 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
     private RuntimeNode<T> runtimeNode;
-
-    /** Whether or this node contains a dependency on {@link InjectionSite}. */
-    final boolean hasDependencyOnInjectionSite;
 
     BuildNode(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
@@ -98,6 +98,12 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
         this.key = (Key<T>) key;
+        return this;
+    }
+
+    @Override
+    public ServiceConfiguration<?> asNone() {
+        key = null;
         return this;
     }
 

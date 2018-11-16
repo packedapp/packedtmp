@@ -20,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundles;
+import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
@@ -89,7 +91,7 @@ public interface Container extends Injector {
      */
     String getName();
 
-   // ListenerManager listenerManager(); // listeners()...???, container.jobs().
+    // ListenerManager listenerManager(); // listeners()...???, container.jobs().
 
     /**
      * Returns the root component of this container.
@@ -143,31 +145,31 @@ public interface Container extends Injector {
 
     LifecycleOperations<? extends Container> state();
 
-//    /**
-//     * Creates a new container from the specified bundle.
-//     *
-//     * @param bundle
-//     *            the bundle to create the container from
-//     * @return a new container
-//     * @throws RuntimeException
-//     *             if the container could not be created
-//     */
-//    static Container of(Bundle bundle) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    /**
-//     * Creates a new container from a bundle of the specified type.
-//     *
-//     * @param bundleType
-//     *            the type of bundle to create the container from
-//     * @return a new container
-//     * @throws RuntimeException
-//     *             if the container could not be created
-//     */
-//    static Container of(Class<? extends Bundle> bundleType) {
-//        return of(Bundles.of(bundleType));
-//    }
+    /**
+     * Creates a new container from the specified bundle.
+     *
+     * @param bundle
+     *            the bundle to create the container from
+     * @return a new container
+     * @throws RuntimeException
+     *             if the container could not be created
+     */
+    static Container of(ContainerBundle bundle) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Creates a new container from a bundle of the specified type.
+     *
+     * @param bundleType
+     *            the type of bundle to create the container from
+     * @return a new container
+     * @throws RuntimeException
+     *             if the container could not be created
+     */
+    static Container of(Class<? extends ContainerBundle> bundleType) {
+        return of(Bundles.instantiate(bundleType));
+    }
 
     static Container of(Consumer<? super ContainerConfiguration> configurator) {
         throw new UnsupportedOperationException();

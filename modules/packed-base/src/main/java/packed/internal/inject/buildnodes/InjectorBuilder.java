@@ -40,6 +40,8 @@ public final class InjectorBuilder {
     ArrayList<BuildNode<?>> detectCyclesFor;
 
     /** All nodes that have been exposed under a particular key */
+    final NodeMap internal = new NodeMap();
+
     final NodeMap exposed = new NodeMap();
 
     private InternalInjector injector;
@@ -93,7 +95,7 @@ public final class InjectorBuilder {
 
         for (BuildNode<?> bv : buildNodes) {
             if (bv.getKey() != null) {
-                exposed.put(bv);
+                internal.put(bv);
             }
         }
 

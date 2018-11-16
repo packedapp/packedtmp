@@ -39,4 +39,10 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
     public Class<?> getAnnotatedType() {
         return clazz;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+        return null;
+    }
 }

@@ -20,9 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.container.Container;
 import app.packed.inject.Injector;
-
-
 
 /**
  * Used to annotate methods that should be invoked whenever a component is being started.
@@ -74,10 +73,6 @@ import app.packed.inject.Injector;
  *
  * Notice that this method throws a checked exception. Any method that throws an Exception will result in the container
  * failing to start and moving to the shutdown phase.
- * <p>
- * Another common example would be to schedule repeatable tasks. But this is almost always easier achieved by using one
- * of the scheduling annotations such as {@link org.cakeframework.concurrent.ScheduleAtFixedRate} and
- * {@link org.cakeframework.concurrent.ScheduleWithFixedDelay}.
  * <p>
  *
  * Normally services are not available from {@link Container#with(Class)} until all services have been successfully

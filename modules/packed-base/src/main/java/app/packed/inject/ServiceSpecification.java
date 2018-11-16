@@ -30,6 +30,7 @@ import java.util.Set;
 // Maaske hellere have den markeret med @Preview :D
 /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
 
+// The union of exposedServices, optionalService and requiredService must be empty
 public interface ServiceSpecification {
 
     /**

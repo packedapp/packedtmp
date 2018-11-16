@@ -38,8 +38,6 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @param key
      *            the key for which to register the service under
      * @return this configuration
-     * @throws NullPointerException
-     *             if the key is null and the type of service does not support binding to null
      */
     default ServiceConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
@@ -51,23 +49,17 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @param key
      *            the key for which to register the service under
      * @return this configuration
-     * @throws NullPointerException
-     *             if the key is null and the type of service does not support binding to null
      */
     ServiceConfiguration<T> as(Key<? super T> key);
 
     /**
-     * Services registered via {@link InjectorConfiguration} does not support binding to null. However components does.
-     *
-     * @param key
-     *            the key for which to register the service under
+     * Indicates that the service will not be available for. The primary use for this method is to register object with has
+     * fields and/or methods annotated with {@link Provides}. But where we do not want to expose the declaring class as a
+     * service.
+     * 
      * @return this configuration
-     * @throws NullPointerException
-     *             if the key is null and the type of service does not support binding to null
      */
-    default ServiceConfiguration<T> as(TypeLiteral<? super T> key) {
-        return as(key.toKey());
-    }
+    ServiceConfiguration<?> asNone();
 
     /**
      * Returns the binding mode of the service.
@@ -93,11 +85,12 @@ public interface ServiceConfiguration<T> extends Taggable {
     String getDescription();
 
     /**
-     * Returns the key that the service is registered under.
+     * Returns the key that the service is registered under. Returns null if {@link #asNone()} has been invoked.
      *
      * @return the key that the service is registered under
      * @see ServiceConfiguration#as(Key)
      */
+    @Nullable
     Key<?> getKey();
 
     /**

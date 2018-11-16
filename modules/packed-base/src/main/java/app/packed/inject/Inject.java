@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Unlike many other popular dependency injection frameworks. There are usually no requirements in Cake to use
+ * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
  * <code>@Inject</code> annotations on the constructor or method that must have dependencies injected. However, in some
- * situations an annotation can be used for providing greater control over how dependencies are being injected.
+ * situations an annotation can be used for providing greater control over how dependencies are bseing injected.
  * <p>
  * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
  * throwing an {@link InjectionException}.

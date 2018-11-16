@@ -15,10 +15,14 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundles;
+import app.packed.bundle.InjectorBundle;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
@@ -139,6 +143,24 @@ public interface InjectorConfiguration extends Taggable {
      *             if not at least one service is selected for import
      */
     void importServicesFrom(Injector injector, Consumer<? super ServiceStagingArea> imported);
+
+    default void importServicesFrom(InjectorBundle bundle) {
+        requireNonNull(bundle, "bundle is null");
+        importServicesFrom(Injector.of(bundle));
+    }
+
+    default void importServicesFrom(InjectorBundle bundle, Consumer<? super ServiceStagingArea> imported) {
+        requireNonNull(bundle, "bundle is null");
+        importServicesFrom(Injector.of(bundle), imported);
+    }
+
+    default void importServicesFrom(Class<? extends InjectorBundle> bundleType) {
+        importServicesFrom(Bundles.instantiate(bundleType));
+    }
+
+    default void importServicesFrom(Class<? extends InjectorBundle> bundleType, Consumer<? super ServiceStagingArea> imported) {
+        importServicesFrom(Bundles.instantiate(bundleType), imported);
+    }
 
     /**
      * Sets the specified {@link Lookup lookup object} that will be used to instantiate new objects using constructors,
