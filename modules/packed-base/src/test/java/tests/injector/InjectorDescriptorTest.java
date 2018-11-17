@@ -13,45 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package tests.injector;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
+import app.packed.bundle.BundleDescriptor;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.Injector;
+import app.packed.inject.BindingMode;
+import app.packed.inject.Key;
+import app.packed.inject.ServiceDescriptor;
 import support.stubs.Letters.A;
-import support.stubs.Letters.B;
-import support.stubs.Letters.NeedsA;
-import support.stubs.Letters.NeedsB;
 
 /**
  *
  */
-public class TestIt {
+public class InjectorDescriptorTest {
 
-    public static void main(String[] args) {
-        Injector i = Injector.of(c -> {
-            c.bind(B.class);
-            c.bind(NeedsB.class);
-        });
+    @Test
+    public void testBasicService() {
+        BundleDescriptor d = BundleDescriptor.of(new InjectorBundle() {
 
-        System.out.println(i.with(NeedsB.class));
-
-        System.out.println("      ");
-        InjectorBundle ib = new InjectorBundle() {
             @Override
             protected void configure() {
                 bind(A.class);
-                bind(NeedsA.class);
-                importServices(i);
-
                 expose(A.class);
-                expose(NeedsA.class);
             }
-        };
+        });
+        ServiceDescriptor sd = d.services().exposedServices().values().iterator().next();
 
-        Injector i2 = Injector.of(ib);
-        System.out.println(i2.with(A.class));
-        System.out.println();
-        i.services().forEach(e -> System.out.println(e.getKey()));
+        assertThat(sd.getBindingMode()).isSameAs(BindingMode.SINGLETON);
+        assertThat(sd.getDescription()).isNull();
+        assertThat(sd.getKey()).isEqualTo(Key.of(A.class));
+        assertThat(sd.tags()).isEmpty();
 
+        // BundleDescriptor er saa meget en AssertThatTarget
     }
+
 }

@@ -109,7 +109,7 @@ public abstract class Bundle {
      *     return this;
      * }}
      * </pre>
-     *
+     * 
      * @throws IllegalStateException
      *             if the {@link #configure()} method has already been invoked once for this extension instance
      */
@@ -122,10 +122,10 @@ public abstract class Bundle {
     /**
      * Configures the bundle.
      *
-     * This method is invoked after the user has invoked {@link CB#buildInjector()} but before the container has been
-     * instantiated. Since the user has fully populated the configuration, this method can be used to install agents,
-     * dependencies and services that depends on the contents of the configuration. This is done via invoking methods on
-     * {@link ContainerInitializer} and <b>NOT</b> on the container configuration using {@link CB#installAndBind(Object)}.
+     * This method is invoked after the user has invoked but before the container has been instantiated. Since the user has
+     * fully populated the configuration, this method can be used to install agents, dependencies and services that depends
+     * on the contents of the configuration. This is done via invoking methods on ContainerInitializer and <b>NOT</b> on the
+     * container configuration using }.
      * <p>
      * If multiple extensions have been added to the container. This method will be invoked in the order they have been
      * added.
@@ -136,6 +136,8 @@ public abstract class Bundle {
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}.
      * 
+     * @param <T>
+     *            the type of the exposed service
      * @param key
      *            the key of the internal service to expose
      * @return a service configuration for the exposed service
@@ -160,6 +162,8 @@ public abstract class Bundle {
      * expose(ServiceImpl.class).as(Service.class);}
      * </pre>
      * 
+     * @param <T>
+     *            the type of the exposed service
      * @param key
      *            the key of the internal service to expose
      * @return a service configuration for the exposed service
@@ -178,8 +182,10 @@ public abstract class Bundle {
 
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     *
+     * Unless your private
+     * 
      * @param lookup
+     *            the lookup object
      */
     protected final void lookup(Lookup lookup) {
         internal().lookup(lookup);

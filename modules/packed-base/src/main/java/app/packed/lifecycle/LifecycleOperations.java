@@ -31,8 +31,6 @@ import app.packed.container.Container;
  *
  * Instead an instance of this inte
  *
- * @see Container#state()
- * @see Component#lifecycle()
  */
 // TODO LifecycleExpansion
 // Nu har vi syncpoints paa en container, men ikke paa en component...
@@ -47,12 +45,12 @@ public interface LifecycleOperations<T> {
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
      * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
-     * will return immediately with <tt>true</tt>.
+     * will return immediately with true.
      *
      * @param state
      *            the state to wait on
-     * @throws Interrup
-     *             tedException if interrupted while waiting
+     * @throws InterruptedException
+     *             if interrupted while waiting
      * @see #await(LifecycleState, long, TimeUnit)
      * @see #getState()
      * @see #whenAt(LifecycleState)
@@ -65,7 +63,7 @@ public interface LifecycleOperations<T> {
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
      * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
-     * will return immediately with <tt>true</tt>.
+     * will return immediately with true.
      *
      * @param state
      *            the state to wait on
@@ -73,8 +71,8 @@ public interface LifecycleOperations<T> {
      *            the maximum time to wait
      * @param unit
      *            the time unit of the timeout argument
-     * @return <tt>true</tt> if this object is in (or has already passed) the specified state and <tt>false</tt> if the
-     *         timeout elapsed before reaching the state
+     * @return true if this object is in (or has already passed) the specified state and false if the timeout elapsed before
+     *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
      * @see #await(LifecycleState)
@@ -171,9 +169,9 @@ public interface LifecycleOperations<T> {
      * <p>
      * For example, the following example will print a simple string if the component starts successfully:
      *
-     * <pre>
+     * <pre> {@code
      * Component component = ...;
-     * component.whenAtState(State.RUNNING).thenRunAsync(() -> System.out.println("Component started successfully"));
+     * component.whenAtState(State.RUNNING).thenRunAsync(() -> System.out.println("Component started successfully"));}
      * </pre>
      * <p>
      * If the component has already reached or passed the specified state the completion stage is already completed when

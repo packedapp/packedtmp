@@ -47,7 +47,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
     /**
      * Adds the specified mixin to the list of mixins for the component.
      *
-     * @param mixin
+     * @param factory
      *            the mixin (factory) to add
      * @return this configuration
      * @throws IllegalArgumentException
@@ -63,7 +63,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      * instantiated and injected according to same rules as the component instance. Or an instance in which case it will
      * only be injected.
      *
-     * @param mixin
+     * @param instance
      *            the mixin instance to add
      * @return this configuration
      * @throws IllegalArgumentException
@@ -75,10 +75,11 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
     ComponentConfiguration<T> addMixin(Object instance);
 
     /**
-     * Will not participate as <b>source</b> in dependency injection
+     * Prohibits the component for being available as a dependency to other services/components.
      * 
-     * @return
+     * @return this component configuration
      */
+    @Override
     ComponentConfiguration<?> asNone();
 
     /**
@@ -151,10 +152,11 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
     /**
      * Install the specified component implementation as a child of this component.
      *
+     * @param <S>
+     *            the type of child component to install
      * @param implementation
      *            the component implementation to install
      * @return the configuration of the child component
-     * @see ComponentListener#componentConfiguration_new(ComponentConfiguration)
      */
     // @NeedsJavadoc
     <S> ComponentConfiguration<S> install(Class<S> implementation);
@@ -162,18 +164,21 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
     /**
      * Installs a new child to this configuration, which uses the specified factory to instantiate the component instance.
      *
+     * @param <S>
+     *            the type of child component to install
      * @param factory
      *            the factory used to instantiate the component instance
      * @return the configuration of the child component
-     * @see ComponentListener#componentConfiguration_new(ComponentConfiguration)
      */
     // @NeedsJavadoc
     <S> ComponentConfiguration<S> install(Factory<S> factory);
 
     /**
      * Install the specified component instance as a child of this component.
-     *
-     * @param implementation
+     * 
+     * @param <S>
+     *            the type of child component to install
+     * @param instance
      *            the component instance to install
      * @return the configuration of the child component
      */
@@ -185,6 +190,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      * needed for this component. For example, for instantiating the component instance or any of its mixins. The injector
      * can accessed via {@link Component#injector()} at runtime.
      * 
+     * @return a the component's injector
      * @see Component#injector()
      */
     // Or privateInjector

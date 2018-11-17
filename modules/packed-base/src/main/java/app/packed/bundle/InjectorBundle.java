@@ -24,7 +24,7 @@ import app.packed.inject.ServiceImportFilter;
 import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
- * A injector bundle provides a simple way to package services
+ * A injector bundle provides a simple way to package services into a resuable container nice little thingy.
  * 
  * Bundles provide a simply way to package components and service. For example, so they can be used easily across
  * multiple containers. Or simply for organizing a complex project into distinct sections, such that each section
@@ -76,12 +76,10 @@ import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
  *
  * </pre>
  *
- * An extension contains two main method for modifying a containers configuration. The first one is using
- * {@link #onInstall(AbstractContainerConfiguration)} which is invoked exactly once. And that is when the extension is
- * added to containers configuration.
+ * An extension contains two main method for modifying a containers configuration. The first one is using which is
+ * invoked exactly once. And that is when the extension is added to containers configuration.
  *
- * The second method is {@link #configureBundle(ContainerInitializer)} which is invoked every time a new container is
- * instantiated.
+ * The second method is which is invoked every time a new container is instantiated.
  *
  *
  *

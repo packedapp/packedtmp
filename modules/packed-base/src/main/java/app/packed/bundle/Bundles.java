@@ -31,6 +31,8 @@ public class Bundles {
     /**
      * Instantiates a new bundle of the specified type.
      * 
+     * @param <T>
+     *            the type of bundle to instantiate
      * @param bundleType
      *            the type of bundle to instantiate
      * @return the new bundle

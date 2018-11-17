@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import java.util.Collection;
-import java.util.function.Consumer;
 
 import app.packed.inject.Injector;
 import app.packed.util.ConfigurationSite;
@@ -30,10 +29,9 @@ public interface Component extends Taggable {
 
     /**
      * Returns an immutable view of this component's children. To remove or add children at runtime, use this component's
-     * {@link #installer()}.
+     * installer.
      *
      * @return an immutable view of this component's children
-     * @see #installer()
      */
     Collection<Component> children();
 
@@ -102,8 +100,6 @@ public interface Component extends Taggable {
      * Returns a component stream consisting of this component and all of its descendants in any order.
      *
      * @return a component stream consisting of this component and all of its descendants in any order
-     * @see Container#components()
-     * @see #forEach(Consumer)
      */
     ComponentStream stream();
 }

@@ -30,18 +30,17 @@ import app.packed.lifecycle.OnInitialize;
 /**
  * The main purpose of this interface is to manage and control the life cycle of components.
  * <p>
- * To create a new Container first create a new {@link CB}. When the builder has been configured, a new Container
- * instance can be created by calling {@link CB#buildInjector()} which returns a new container in the
- * {@link LifecycleState#INITIALIZED} state.
+ * To create a new Container first create a new . When the builder has been configured, a new Container instance can be
+ * created by calling which returns a new container in the {@link LifecycleState#INITIALIZED} state.
  * <p>
  * The container can now be started either by calling a method that requires a running container, for example,
- * {@link #with(Class)}. Or by calling {@link #start()} which will <tt>asynchronously</tt> start the container. Calling
+ * {@link #with(Class)}. Or by calling {@link #start()} which will <b>asynchronously</b> start the container. Calling
  * either of these methods will move the container into the {@link LifecycleState#STARTING} state. When the container
  * and all of its components have been properly started the container will move to the {@link LifecycleState#RUNNING}
  * state. Which indicates that the container is ready for use. Calls by other threads to the container before it is
  * fully started will block until the container transitions from the {@link LifecycleState#STARTING} state.
  * <p>
- * A <tt>Container</tt> can be shut down, which will cause it to stop accepting any form of new work. What exactly is
+ * A <b>Container</b> can be shut down, which will cause it to stop accepting any form of new work. What exactly is
  * meant by the term 'work' depends on the type of the container, for example, a database-like structure extending this
  * interface might not allow mutation or retrieval operations of data. While a network-like structure might not allow
  * sending of packets between different hosts.
@@ -76,7 +75,7 @@ public interface Container extends Injector {
      *
      * @param path
      *            the path of the component. Typically a {@link String} or a {@link ComponentPath}.
-     * @return
+     * @return the component if present, otherwise an empty optional
      * @throws NullPointerException
      *             if the specified path is null
      */

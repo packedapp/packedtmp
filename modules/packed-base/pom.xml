@@ -10,8 +10,8 @@
 
   <artifactId>cked-base</artifactId>
   <packaging>jar</packaging>
-  <name>Cked-Base</name>
-  <description>Cked Base</description>
+  <name>Packed-Base</name>
+  <description>Packed Base</description>
   
   <!-- ==================================================================== -->
 

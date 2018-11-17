@@ -61,6 +61,8 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * Install the specified component implementation and makes it available as a service with the specified class as the
      * key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
      * 
+     * @param <T>
+     *            the type of component to install
      * @param implementation
      *            the component implementation to install
      * @return component configuration that can be use to configure the component in greater detail
@@ -80,10 +82,11 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * wish to use a specific component as a parent, use the various install methods on the {@link ComponentConfiguration}
      * instead of the install methods on this interface.
      *
+     * @param <T>
+     *            the type of component to install
      * @param instance
      *            the component instance to install
      * @return the component configuration
-     * @see Component#install(Object)
      * @throws InvalidDeclarationException
      *             if some property of the instance prevents it from being installed as a component
      */
@@ -93,6 +96,8 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * Install the specified component implementation and makes it available as a service with the specified type literal as
      * the key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
      * 
+     * @param <T>
+     *            the type of component to install
      * @param implementation
      *            the component implementation to install
      * @return component configuration that can be use to configure the component in greater detail
@@ -104,7 +109,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
     /**
      * @param state
      *            the lifecycle state
-     * @return
+     * @return stuff
      */
     // Every container has 6 build-in syncpoints
     // INITIALIZING (ALWAYS TRUE, INJECT NOT SUPPORTED by outside threads)
@@ -125,7 +130,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      *
      * @param syncpoints
      *            the point to synchronoize on
-     * @return
+     * @return an action
      * @throws IllegalArgumentException
      *             if the arguments contain an unknown syncpoint
      */

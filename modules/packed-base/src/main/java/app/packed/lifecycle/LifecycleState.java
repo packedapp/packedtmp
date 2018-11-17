@@ -32,8 +32,7 @@ public enum LifecycleState {
 
     /**
      * The initial state in the lifecycle of an entity. The en will remain in this state until it is started by an external
-     * action, for example, by calling {@link Container#getService(Class)} or {@link Container#start()}. After which it will
-     * transition to the {@link #STARTING} state.
+     * action, for example, by calling start. After which it will transition to the {@link #STARTING} state.
      *
      * Typically this state is used for reading and validating the configuration of entities.
      *
@@ -51,7 +50,7 @@ public enum LifecycleState {
     /**
      * The container has been started by an external action. However, all components have not yet completed startup. When
      * all components have been properly started the container will transition to the {@link #RUNNING} state. If any
-     * component fails to start up properly. The container will automatically shutdown and move to the {@link #SHUTDOWN}
+     * component fails to start up properly. The container will automatically shutdown and move to the {@link #STOPPING}
      * phase.
      */
     STARTING,
@@ -60,8 +59,6 @@ public enum LifecycleState {
      * The entity is running normally. The entity will remain in this state until it is shutdown by some stop action, after
      * which it will transition to the {@link #STOPPING} state.
      *
-     * @see Container#shutdown()
-     * @see Container#shutdown(Throwable)
      */
     RUNNING,
 
@@ -77,11 +74,11 @@ public enum LifecycleState {
     TERMINATED;
 
     /**
-     * Returns <tt>true</tt> if the entity is in any of the specified states, otherwise false.
+     * Returns true if the entity is in any of the specified states, otherwise false.
      *
      * @param states
      *            the states to check
-     * @return <tt>true</tt> if the entity is in any of the specified states, otherwise false
+     * @return true if the entity is in any of the specified states, otherwise false
      */
     public boolean isAnyOf(LifecycleState... states) {
         for (LifecycleState s : states) {
@@ -93,9 +90,9 @@ public enum LifecycleState {
     }
 
     /**
-     * Returns <tt>true</tt> if the entity has been shut down (in the {@link #STOPPING} or {@link #TERMINATED} state).
+     * Returns true if the entity has been shut down (in the {@link #STOPPING} or {@link #TERMINATED} state).
      *
-     * @return <tt>true</tt> if the entity has been shut down (in the shutdown or terminated state).
+     * @return true if the entity has been shut down (in the shutdown or terminated state).
      */
     public boolean isShutdown() {
         return this == TERMINATED || this == STOPPING;

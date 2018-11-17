@@ -47,6 +47,8 @@ public interface ComponentStream extends Stream<Component> {
      *
      * This is a <em>terminal operation</em>.
      *
+     * @param <T>
+     *            the type of component instances to consume
      * @param instanceType
      *            the type of instances to invoke the consumer for
      * @param consumer
@@ -110,7 +112,7 @@ public interface ComponentStream extends Stream<Component> {
      *            the tag that must be present
      * @return the new stream
      */
-    default <T> ComponentStream withTag(String tag) {
+    default ComponentStream withTag(String tag) {
         requireNonNull(tag, "tag is null");
         return filter(e -> e.tags().contains(tag));
     }

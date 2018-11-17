@@ -15,7 +15,6 @@
  */
 package app.packed.bundle;
 
-import app.packed.container.Component;
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Provides;
@@ -30,16 +29,14 @@ public abstract class ContainerBundle extends Bundle {
 
     /**
      * Installs the specified component implementation. This method is short for
-     * {@code install(Factory.find(implementation))} which basically finds a valid constructor/static method (as outlined in
-     * {@link Factory#find(Class)}) to instantiate the component implementation.
+     * {@code install(Factory.findInjectable(implementation))} which basically finds a valid constructor/static method (as
+     * outlined in {@link Factory#findInjectable(Class)}) to instantiate the component implementation.
      *
+     * @param <T>
+     *            the type of component to install
      * @param implementation
      *            the component implementation to install
      * @return a component configuration that can be use to configure the component in greater detail
-     * @throws IllegalStateException
-     *             if {@link #build()} has already been called
-     * @throws NullPointerException
-     *             if the specified implementation is null
      */
     protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
         // return builder.installable().install(implementation, currentStackFrame());
@@ -49,16 +46,13 @@ public abstract class ContainerBundle extends Bundle {
     /**
      *
      * <p>
-     * {@link Factory#getRawType()} will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
      *
+     * @param <T>
+     *            the type of component to install
      * @param factory
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
-     * @return this configuration
-     * @throws IllegalStateException
-     *             if {@link #build()} has already been called
-     * @throws NullPointerException
-     *             if the specified factory is null
      */
     protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
         // return builder.installable().install(factory, currentStackFrame());
@@ -69,21 +63,18 @@ public abstract class ContainerBundle extends Bundle {
      * Install the specified component instance.
      * <p>
      * If install operation is the first install operation of the container. The component will be installed as the root
-     * component of the container. All subsequent install operations on {@link ContainerBuilder} will have have component as
-     * its parent. If you wish to have a specific component as a parent, the various install methods on the
-     * {@link ComponentConfiguration} instance returned on each install can be used to specify a specific parent.
+     * component of the container. All subsequent install operations on will have have component as its parent. If you wish
+     * to have a specific component as a parent, the various install methods on the {@link ComponentConfiguration} instance
+     * returned on each install can be used to specify a specific parent.
      * <p>
-     * Unlike {@link #installAndBind(Object)}, components installed via this method is <b>not</b> automatically made
-     * available as services that can be injected into other components.
+     * Unlike {@link #install(Object)}, components installed via this method is <b>not</b> automatically made available as
+     * services that can be injected into other components.
      *
+     * @param <T>
+     *            the type of component to install
      * @param instance
      *            the component instance to install
      * @return this configuration
-     * @throws IllegalStateException
-     *             if {@link #build()} has already been called
-     * @throws NullPointerException
-     *             if the specified instance is null
-     * @see Component#install(Object)
      */
     protected final <T> ComponentConfiguration<T> install(T instance) {
         // return builder.installable().install(instance, currentStackFrame());

@@ -56,7 +56,7 @@ public class ServiceImportFilter extends ServiceFilter {
     /**
      * Returns a map of all service
      * 
-     * @return
+     * @return stuff
      */
     protected final Map<Key<?>, ServiceDescriptor> exposedServices() {
         throw new UnsupportedOperationException();
@@ -79,12 +79,7 @@ public class ServiceImportFilter extends ServiceFilter {
     // Og split det ud i Key<@XXX String>.
     // Det vil sige en service til mange...
 
-    /**
-     * Returns an import filter that accepts all the services selected by the specified predicate
-     * 
-     * @param predicate
-     * @return
-     */
+    // Returns an import filter that accepts all the services selected by the specified predicate
     public static ServiceImportFilter accept(Predicate<? super ServiceDescriptor> predicate) {
         throw new UnsupportedOperationException();
     }

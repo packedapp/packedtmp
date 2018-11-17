@@ -300,13 +300,6 @@ public abstract class Key<T> {
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
-    /**
-     * Helper method for {@link #toKey()} and {@link #toKey(Annotation)}.
-     * 
-     * @param qualifier
-     *            the checked qualifier or null if no qualifier
-     * @return the new key
-     */
     public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, from TypeLiteral, from Variable, from class, arghhh....

@@ -32,7 +32,7 @@ public interface Service<T> extends ServiceDescriptor {
     /**
      * Returns the injector this service is registered with.
      *
-     * @return
+     * @return nice injector
      */
     // Vil vi have denne? Ja det er sgu ligesom getContainer paa component
     Injector getInjector();
