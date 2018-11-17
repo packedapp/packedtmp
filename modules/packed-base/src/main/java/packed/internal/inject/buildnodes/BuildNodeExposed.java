@@ -15,27 +15,49 @@
  */
 package packed.internal.inject.buildnodes;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.List;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
-import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalInjectorConfiguration;
+import app.packed.inject.Key;
+import app.packed.util.Nullable;
+import packed.internal.inject.Node;
 import packed.internal.inject.runtimenodes.RuntimeNode;
+import packed.internal.inject.runtimenodes.RuntimeNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- *
+ * A build node that is created when a service is exposed.
  */
-public class XBuildNodeExposed<T> extends BuildNode<T> {
+public class BuildNodeExposed<T> extends BuildNode<T> {
+
+    Node<T> other;
+
+    final Key<T> privateKey;
 
     /**
-     * @param bundle
-     * @param dependencies
-     * @param stackframe
+     * @param configuration
+     *            the injector configuration this node is being added to
+     * @param configurationSite
+     *            the configuration site of the exposure
      */
-    public XBuildNodeExposed(InternalInjectorConfiguration bundle,  InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
-        super(bundle, configurationSite, dependencies);
+    public BuildNodeExposed(InternalInjectorConfiguration configuration, InternalConfigurationSite configurationSite, Key<T> privateKey) {
+        super(configuration, configurationSite, List.of());
+        this.privateKey = requireNonNull(privateKey, "privateKey is null");
+    }
+
+    @Override
+    @Nullable
+    BuildNode<?> declaringNode() {
+        return super.declaringNode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BindingMode getBindingMode() {
+        return other.getBindingMode();
     }
 
     /** {@inheritDoc} */
@@ -44,10 +66,8 @@ public class XBuildNodeExposed<T> extends BuildNode<T> {
         return null;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public BindingMode getBindingMode() {
-        return null;
+    public Key<T> getPrivateKey() {
+        return privateKey;
     }
 
     /** {@inheritDoc} */
@@ -65,6 +85,6 @@ public class XBuildNodeExposed<T> extends BuildNode<T> {
     /** {@inheritDoc} */
     @Override
     RuntimeNode<T> newRuntimeNode() {
-        return null;
+        return new RuntimeNodeAlias<>(this, other.toRuntimeNode());
     }
 }

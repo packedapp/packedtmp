@@ -21,7 +21,6 @@ import java.util.List;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
-import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.Node;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.inject.runtimenodes.RuntimeNodeAlias;

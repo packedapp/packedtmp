@@ -19,7 +19,6 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.inject.runtimenodes.RuntimeNodeLazy;

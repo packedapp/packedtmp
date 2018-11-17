@@ -30,6 +30,7 @@ import app.packed.util.Taggable;
  * </ul>
  */
 // This once extended ServiceDescriptor but no more, for some reason I have already forgot???
+// I think it was that descriptors are immutable, configurations are not
 public interface ServiceConfiguration<T> extends Taggable {
 
     /**

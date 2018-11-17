@@ -21,7 +21,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provides;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.OnStart;
-import packed.internal.inject.InternalInjectorConfiguration;
+import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
  *

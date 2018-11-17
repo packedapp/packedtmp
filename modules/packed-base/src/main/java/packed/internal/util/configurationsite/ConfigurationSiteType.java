@@ -32,7 +32,10 @@ public enum ConfigurationSiteType {
     INJECTOR_IMPORT_SERVICE("Injector.importService"),
 
     /** */
-    INJECTOR_OF("Injector.of");
+    INJECTOR_OF("Injector.of"),
+
+    /** */
+    DESCRIPTOR_OF("Descriptor.of");
 
     final String f;
 

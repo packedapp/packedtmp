@@ -26,7 +26,6 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.Node;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.util.AbstractConfiguration;
@@ -40,9 +39,6 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
 
     /** An empty array of nodes */
     private static final Node<?>[] EMPTY_ARRAY = new Node<?>[0];
-
-    /** The configuration site of this node. **/
-    private final InternalConfigurationSite configurationSite;
 
     /** The dependencies of this node. */
     final List<InternalDependency> dependencies;
@@ -72,8 +68,8 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     private RuntimeNode<T> runtimeNode;
 
     BuildNode(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
+        super(configurationSite);
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
-        this.configurationSite = requireNonNull(configurationSite);
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new Node<?>[dependencies.size()];
 
@@ -130,12 +126,6 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     @Override
     public final void freeze() {
         super.freeze();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final InternalConfigurationSite getConfigurationSite() {
-        return configurationSite;
     }
 
     /**

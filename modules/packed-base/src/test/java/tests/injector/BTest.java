@@ -37,8 +37,8 @@ public class BTest {
         System.out.println(String.class.getModule().getDescriptor());
 
         i = Injector.of(c -> {
-            c.importServicesFrom(MyBundle.class);
-            c.importServicesFrom(MyBundle4.class);
+            c.deployInjector(MyBundle.class);
+            c.deployInjector(MyBundle4.class);
             c.bind("123");
         });
         System.out.println("");
@@ -52,7 +52,7 @@ public class BTest {
 
         @Override
         protected void configure() {
-            lookup(MethodHandles.lookup());
+            super.lookup(MethodHandles.lookup());
             bind(Private.class);
             bind(PrivateImplementation.class);
         }

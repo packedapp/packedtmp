@@ -20,9 +20,7 @@ import java.util.function.Consumer;
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import packed.internal.inject.InternalInjectorConfiguration;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
  *
@@ -44,9 +42,11 @@ public class DependencyGraph<T extends Injector> {
     }
 
     public static Injector create(Consumer<? super InjectorConfiguration> configurator) {
-        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
-        configurator.accept(c);
-        return c.builder.build();
+        // InternalInjectorConfiguration c = new
+        // InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
+        // configurator.accept(c);
+        // return c.builder.build();
+        throw new UnsupportedOperationException();
     }
 
 }

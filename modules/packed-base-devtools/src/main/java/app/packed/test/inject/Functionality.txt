@@ -1,0 +1,18 @@
+Extract PrivateInjector from Injector
+
+//
+
+
+
+    // public updateJavadoc();//Finds source javadoc. looks for tag @{code packedspec}, or existing layout.
+    // Replaces existing text... Sorted... Maybe its a test utility. Or maybe we call it packed-dev
+    //// YES!!!!!! Saa kan det sgu fylde saa meget man har lyst..... Og en API der lidt er i vejen...
+    // Hele analyse arbejdet, o.s.v. Ideen er at man kan have jar'en paa classpath'en naar man udvikler
+    // packed.base.devtools
+    
+    
+    
+//Masser af static analysis.
+
+//Maaske er det ogsaa denne der skriver native image?
+//Ville ikke vaere lige saa let, men hmmmm det er jo ikke noget functionalitet men skal bruge paa runtime.

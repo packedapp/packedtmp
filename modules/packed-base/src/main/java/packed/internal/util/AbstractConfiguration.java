@@ -23,12 +23,16 @@ import java.util.Iterator;
 import java.util.Set;
 
 import app.packed.util.Nullable;
+import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * An abstract configuration object. That provides basic support for strings tags, setting a description, and freezing a
  * configuration.
  */
+// Todo maybe ditch<T> pro
 public abstract class AbstractConfiguration<T extends AbstractConfiguration<T>> {
+
+    private final InternalConfigurationSite configurationSite;
 
     /** The description. */
     @Nullable
@@ -41,12 +45,23 @@ public abstract class AbstractConfiguration<T extends AbstractConfiguration<T>> 
     @Nullable
     private AbstractConfigurableTagSet<String> tags;
 
-    protected void checkConfigurable() {
-
+    protected AbstractConfiguration(InternalConfigurationSite configurationSite) {
+        this.configurationSite = requireNonNull(configurationSite);
     }
+
+    protected void checkConfigurable() {}
 
     protected void freeze() {
         isFrozen = true;
+    }
+
+    /**
+     * Returns the configuration site of this configuration.
+     * 
+     * @return the configuration site of this configuration
+     */
+    public final InternalConfigurationSite getConfigurationSite() {
+        return configurationSite;
     }
 
     /**

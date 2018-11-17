@@ -99,6 +99,14 @@ public @interface Provides {
      * @return a description of the service provided by the annotated method or field
      */
     String description() default "";
+
+    /**
+     * Returns the tags of the service.
+     * 
+     * @return the tags of the service
+     * @see ServiceDescriptor#tags()
+     */
+    String[] tags() default {};
 }
 
 class X {

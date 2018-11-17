@@ -48,7 +48,7 @@ public class BuildNodeImportServiceFromInjector<T> extends BuildNode<T> implemen
     final RuntimeNode<T> node;
 
     /** The injector */
-    final ImportServicesFromInjector stagingArea;
+    final OldImportServicesFromInjector stagingArea;
 
     /**
      * @param injectorConfiguration
@@ -56,7 +56,7 @@ public class BuildNodeImportServiceFromInjector<T> extends BuildNode<T> implemen
      * @param stackframe
      */
     @SuppressWarnings("unchecked")
-    public BuildNodeImportServiceFromInjector(ImportServicesFromInjector stagingArea, InternalConfigurationSite configurationSite,
+    public BuildNodeImportServiceFromInjector(OldImportServicesFromInjector stagingArea, InternalConfigurationSite configurationSite,
             ServiceDescriptor descriptor) {
         super(stagingArea.injectorConfiguration, configurationSite, List.of());
         this.stagingArea = requireNonNull(stagingArea);

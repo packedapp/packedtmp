@@ -15,7 +15,6 @@
  */
 package packed.internal.inject.buildnodes;
 
-import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**

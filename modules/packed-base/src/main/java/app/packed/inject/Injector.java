@@ -27,7 +27,8 @@ import app.packed.bundle.InjectorBundle;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
-import packed.internal.inject.InternalInjectorConfiguration;
+import packed.internal.bundle.BundleSupport;
+import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -266,14 +267,21 @@ public interface Injector extends Taggable {
         requireNonNull(configurator, "configurator is null");
         InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
         configurator.accept(c);
-        return c.builder.build();
+        return c.finish();
     }
 
+    /**
+     * Creates a new injector from the specified bundle.
+     *
+     * @param bundle
+     *            a bundle to create an injector from
+     * @return the new injector
+     */
     static Injector of(InjectorBundle bundle) {
         requireNonNull(bundle, "bundle is null");
         InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
-        bundle.configure(c, true);
-        return c.builder.build();
+        BundleSupport.configure(bundle, c, true);
+        return c.finish();
     }
 
     static Injector of(Class<? extends InjectorBundle> bundleType) {

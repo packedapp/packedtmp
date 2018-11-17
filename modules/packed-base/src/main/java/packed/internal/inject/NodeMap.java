@@ -58,6 +58,11 @@ public class NodeMap {
         requireNonNull(node.getKey());
         map.put(node.getKey(), node);
     }
+
+    public boolean putIfAbsent(Node<?> node) {
+        requireNonNull(node.getKey());
+        return map.putIfAbsent(node.getKey(), node) == null;
+    }
 }
 
 // Couple of ideas.

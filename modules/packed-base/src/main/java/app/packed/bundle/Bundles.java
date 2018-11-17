@@ -25,6 +25,7 @@ import app.packed.util.InvalidDeclarationException;
 /**
  * Various bundle utility methods.
  */
+// Hvis vi kun har en kan vi jo smide den paa bundle
 public class Bundles {
 
     /**
@@ -46,4 +47,5 @@ public class Bundles {
                     "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
         }
     }
+
 }

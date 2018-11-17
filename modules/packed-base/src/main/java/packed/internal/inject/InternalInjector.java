@@ -24,6 +24,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link Injector}. */
@@ -40,17 +41,18 @@ public final class InternalInjector extends AbstractInjector {
     private final NodeMap nodes;
 
     /** This injector's parent, or null if this is a top-level injector. */
+    @Nullable
     final AbstractInjector parent;
 
     /** This injector's tags. */
     private final Set<String> tags;
 
     public InternalInjector(InternalInjectorConfiguration injectorConfiguration, NodeMap nodes) {
-        this.parent = injectorConfiguration.parentInjector;
+        this.parent = null;// injectorConfiguration.parentInjector;
         this.nodes = requireNonNull(nodes);
         this.tags = injectorConfiguration.immutableCopyOfTags();
         this.description = injectorConfiguration.getDescription();
-        this.configurationSite = injectorConfiguration.configurationSite;
+        this.configurationSite = injectorConfiguration.getConfigurationSite();
     }
 
     /** {@inheritDoc} */
@@ -77,7 +79,7 @@ public final class InternalInjector extends AbstractInjector {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) nodes.map.values().stream();
+        return (Stream) nodes.map.values().stream().filter(e -> !e.getKey().equals(CommonKeys.INJECTOR_KEY));
     }
 
     /** {@inheritDoc} */

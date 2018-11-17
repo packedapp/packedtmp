@@ -19,92 +19,101 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
+import app.packed.inject.Key;
 import packed.internal.inject.InternalInjector;
-import packed.internal.inject.InternalInjectorConfiguration;
-import packed.internal.inject.NodeMap;
+import packed.internal.inject.Node;
 import packed.internal.inject.buildnodes.DependecyCycleDetector.DependencyCycle;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 public final class InjectorBuilder {
-
-    /** All nodes that have been added to this builder, even those that are not exposed. */
-    final ArrayList<BuildNode<?>> buildNodes = new ArrayList<>();
 
     final InternalInjectorConfiguration c;
 
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildNode<?>> detectCyclesFor;
 
-    /** All nodes that have been exposed under a particular key */
-    final NodeMap internal = new NodeMap();
-
-    final NodeMap exposed = new NodeMap();
-
-    private InternalInjector injector;
-
-    final NodeMap injectorNodes = new NodeMap();
-
-    final ArrayList<ImportServicesFromInjector> injectorImport = new ArrayList<>();
+    final ArrayList<OldImportServicesFromInjector> injectorImport = new ArrayList<>();
 
     public InjectorBuilder(InternalInjectorConfiguration c) {
         this.c = requireNonNull(c);
     }
 
-    public <T> BuildNode<T> addAndScan(BuildNode<T> node) {
-        buildNodes.add(requireNonNull(node));
+    @SuppressWarnings({ "rawtypes" })
+    public void build() {
+        setup();
+        instantiateAll(c.privateInjector);
 
-        // If we need to separate the scanning, just take a boolean in the method
-        if (node instanceof BuildNode) {
-            // BuildNodeInstanceOrFactory<?> scanNode = (BuildNodeInstanceOrFactory<?>) node;
-            // if (scanNode.getMirror().methods().annotatedMethods() != null) {
-            // for (AnnotationProvidesReflectionData pmm : scanNode.getMirror().methods().annotatedMethods().providesMethods()) {
-            // throw new UnsupportedOperationException();
-            // // Get original is gone
-            // // BuildNodeProvidesMethod<Object> pm = new BuildNodeProvidesMethod<>(scanNode, pmm, scanNode.getOriginal());
-            // // buildNodes.add(pm);
-            // // pm.as(pm.getReturnType());
-            // }
-            // }
+        for (BuildNode<?> bn : c.publicExposedNodeList) {
+            if (bn instanceof BuildNodeExposed) {
+                BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
+                c.publicRuntimeNodes.put(bne.toRuntimeNode());
+            }
         }
-        return node;
     }
 
-    public void addImportInjector(ImportServicesFromInjector i) {
-        requireNonNull(i);
-        injectorImport.add(i);
-    }
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    void setup() {
+        // First start by creating the new injectors.
+        c.privateInjector = new InternalInjector(c, c.privateRuntimeNodes); // Ignores any parent + Bundle for now.
+        BuildNodeInstance<InternalInjector> inj = new BuildNodeInstance<>(c, c.getConfigurationSite(), c.privateInjector);
+        inj.as(Injector.class);
+        c.privateBuildNodeList.add(inj);
 
-    public Injector build() {
-        injector = new InternalInjector(c, injectorNodes); // Ignores any parent for now.
-        // listener().injectorBuilder_freeze(builder);
-        // freezeBuilder();
+        if (c.bundle == null) {
+            c.publicInjector = c.privateInjector;
+        } else {
+            c.publicInjector = new InternalInjector(c, c.publicRuntimeNodes);
 
-        for (ImportServicesFromInjector i : injectorImport) {
+            // Add public injector
+            // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
+            // bn.as(Injector.class);
+            // c.public BuildNodeList.add(bn);
+
+        }
+
+        // Freeze
+
+        // Add imports
+        for (OldImportServicesFromInjector i : injectorImport) {
             for (BuildNode<?> n : i.importedServices.values()) {
-                buildNodes.add(n);
+                c.privateBuildNodeList.add(n);
             }
         }
 
-        BuildNodeInstance<InternalInjector> bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, injector);
-        bn.as(Injector.class);
-        buildNodes.add(bn);
-
-        for (BuildNode<?> bv : buildNodes) {
+        HashMap<Key<?>, ArrayList<BuildNode<?>>> collisions = new HashMap<>();
+        for (BuildNode<?> bv : c.privateBuildNodeList) {
             if (bv.getKey() != null) {
-                internal.put(bv);
+                if (!c.privateBuildNodeMap.putIfAbsent(bv)) {
+                    collisions.computeIfAbsent(bv.getKey(), k -> new ArrayList<>()).add(bv);
+                }
+                c.privateBuildNodeMap.put(bv);
+            }
+        }
+        // import all services...
+        for (ImportServices i : c.privateImports) {
+            i.importInto(c);
+        }
+
+        if (!collisions.isEmpty()) {
+            System.err.println("OOOPS");
+        }
+
+        // All exposures
+        for (BuildNode<?> bn : c.publicExposedNodeList) {
+            if (bn instanceof BuildNodeExposed) {
+                BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
+                Node<?> node = c.privateBuildNodeMap.get(bne.getPrivateKey());
+                bne.other = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
             }
         }
 
         InjectorBuilderResolver.resolveAllDependencies(this);
 
         dependencyCyclesDetect();
-        instantiateAll(injector);
-
-        return injector;
     }
 
     /**
@@ -137,10 +146,6 @@ public final class InjectorBuilder {
         return null;
     }
 
-    public InternalInjector getInjector() {
-        return injector;
-    }
-
     /**
      * Instantiates all nodes.
      *
@@ -148,7 +153,7 @@ public final class InjectorBuilder {
      *             if a node could not be instantiated
      */
     public void instantiateAll(InternalInjector injector) {
-        for (BuildNode<?> node : buildNodes) {
+        for (BuildNode<?> node : c.privateBuildNodeList) {
             if (node instanceof BuildNodeFactorySingleton) {
                 BuildNodeFactorySingleton<?> s = (BuildNodeFactorySingleton<?>) node;
                 if (s.getBindingMode() == BindingMode.SINGLETON) {
@@ -156,9 +161,9 @@ public final class InjectorBuilder {
                 }
             }
         }
-        for (BuildNode<?> n : buildNodes) {
+        for (BuildNode<?> n : c.privateBuildNodeList) {
             if (n.getKey() != null) {
-                injectorNodes.put(n.toRuntimeNode());
+                c.privateRuntimeNodes.put(n.toRuntimeNode());
             }
         }
     }

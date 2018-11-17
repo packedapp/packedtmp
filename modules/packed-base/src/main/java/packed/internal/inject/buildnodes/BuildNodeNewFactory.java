@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
-import packed.internal.inject.InternalInjectorConfiguration;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.runtimenodes.RuntimeNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -58,7 +57,7 @@ public class BuildNodeNewFactory<T> extends BuildNode<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorConfiguration.builder.getInjector(), dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(injectorConfiguration.publicInjector, dependencies.get(i), null);
             }
         }
         return factory.instantiate(params);

@@ -15,8 +15,6 @@
  */
 package app.packed.inject;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
@@ -113,6 +111,12 @@ public interface InjectorConfiguration extends Taggable {
 
     <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation);
 
+    default void deployInjector(Class<? extends InjectorBundle> bundleType, ServiceFilter... filters) {
+        deployInjector(Bundles.instantiate(bundleType), filters);
+    }
+
+    void deployInjector(InjectorBundle bundle, ServiceFilter... filters);
+
     /**
      * Returns the description of this injector, or null if no description has been set via {@link #setDescription(String)}.
      *
@@ -124,43 +128,15 @@ public interface InjectorConfiguration extends Taggable {
     String getDescription();
 
     /**
-     * Imports all services that available in the specified injector. To only import a subset of services, or to import
-     * service under a different key use {@link #importServicesFrom(Injector, Consumer)}.
+     * Imports the services that are available in the specified injector.
      *
      * @param injector
      *            the injector to import services from
+     * @param filters
+     *            any number of filters that restricts the services that are imported. Or makes them available under
+     *            different keys
      */
-    void importServicesFrom(Injector injector);
-
-    /**
-     * Binds all services available in the specified injector that are explicitly selected by the specified consumer. If
-     *
-     * @param injector
-     *            the injector to import services from
-     * @param imported
-     *            the import filter
-     * @throws IllegalStateException
-     *             if not at least one service is selected for import
-     */
-    void importServicesFrom(Injector injector, Consumer<? super ServiceStagingArea> imported);
-
-    default void importServicesFrom(InjectorBundle bundle) {
-        requireNonNull(bundle, "bundle is null");
-        importServicesFrom(Injector.of(bundle));
-    }
-
-    default void importServicesFrom(InjectorBundle bundle, Consumer<? super ServiceStagingArea> imported) {
-        requireNonNull(bundle, "bundle is null");
-        importServicesFrom(Injector.of(bundle), imported);
-    }
-
-    default void importServicesFrom(Class<? extends InjectorBundle> bundleType) {
-        importServicesFrom(Bundles.instantiate(bundleType));
-    }
-
-    default void importServicesFrom(Class<? extends InjectorBundle> bundleType, Consumer<? super ServiceStagingArea> imported) {
-        importServicesFrom(Bundles.instantiate(bundleType), imported);
-    }
+    void importServices(Injector injector, ServiceImportFilter... filters);
 
     /**
      * Sets the specified {@link Lookup lookup object} that will be used to instantiate new objects using constructors,

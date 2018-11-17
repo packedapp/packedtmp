@@ -21,10 +21,12 @@ import java.util.Set;
 import app.packed.container.Container;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
+import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalInjectorConfiguration;
+import packed.internal.bundle.BundleSupport;
+import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
  * Bundles provide a simply way to package components and service. For example, so they can be used easily across
@@ -42,6 +44,15 @@ import packed.internal.inject.InternalInjectorConfiguration;
  */
 public abstract class Bundle {
 
+    static {
+        BundleSupport.Helper.init(new BundleSupport.Helper() {
+
+            @Override
+            protected void configure(InjectorBundle bundle, InternalInjectorConfiguration delegate, boolean freeze) {
+                bundle.configure(delegate, freeze);
+            }
+        });
+    }
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
 
@@ -122,6 +133,47 @@ public abstract class Bundle {
     // Can we have bundles without configuration???, maybe just 5 Provides method????
     protected abstract void configure();
 
+    /**
+     * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}.
+     * 
+     * @param key
+     *            the key of the internal service to expose
+     * @return a service configuration for the exposed service
+     * @see #expose(Key)
+     */
+    protected final <T> ServiceConfiguration<T> expose(Class<T> key) {
+        return internal().expose(key);
+    }
+
+    /**
+     * Exposes an internal service outside of this bundle.
+     * 
+     * 
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class);}
+     * </pre>
+     * 
+     * You can also choose to expose a service under a different key then what it is known as internally in the
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service.class);}
+     * </pre>
+     * 
+     * @param key
+     *            the key of the internal service to expose
+     * @return a service configuration for the exposed service
+     * @see #expose(Key)
+     */
+    protected final <T> ServiceConfiguration<T> expose(Key<T> key) {
+        return internal().expose(key);
+    }
+
+    protected final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
+        throw new UnsupportedOperationException();
+        // return internal().expose(configuration);
+    }
+
     abstract InternalInjectorConfiguration internal();
 
     /**
@@ -146,4 +198,5 @@ public abstract class Bundle {
     protected final Set<String> tags() {
         return internal().tags();
     }
+
 }

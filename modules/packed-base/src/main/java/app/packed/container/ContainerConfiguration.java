@@ -19,8 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundle;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.ServiceFilter;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
@@ -37,6 +39,14 @@ import app.packed.util.InvalidDeclarationException;
  * </ul>
  */
 public interface ContainerConfiguration extends InjectorConfiguration {
+
+    default void deploy(Bundle bundle, ServiceFilter... filters) {
+        throw new UnsupportedOperationException();// DeployedBundle
+    }
+
+    default void deploy(Class<? extends Bundle> bundleType, ServiceFilter... filters) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the name of the container or null if the name has not been set.

@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.internal.inject.buildnodes;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+
+import app.packed.inject.Key;
+import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ServiceDescriptor;
+import app.packed.inject.ServiceSpecification;
 
 /**
  * This interface provides methods to exactly control which services are imported and exported when one injector is

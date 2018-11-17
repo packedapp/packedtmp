@@ -8,11 +8,12 @@
   </parent>
   <artifactId>cked-modules</artifactId>
   <packaging>pom</packaging>
-  <name>Cked-Modules</name>
-  <description>Cked Modules POM</description>
+  <name>Packed-Modules</name>
+  <description>Packed Modules POM</description>
   <!-- ==================================================================== -->
   <modules>
     <module>packed-base</module>
+    <module>packed-base-devtools</module>
   </modules>
   <build>
     <plugins>

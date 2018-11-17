@@ -19,22 +19,42 @@ import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.Map;
+import java.util.Set;
 
 import app.packed.inject.Injector;
+import app.packed.inject.Key;
+import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Preview;
+import packed.internal.inject.buildnodes.InternalBundleDescriptor;
 
 /**
- *
+ * A bundle descriptor.
  */
 public class BundleDescriptor {
 
+    /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
+    final Map<Key<?>, ServiceDescriptor> exposedServices;
+
+    final Set<Key<?>> optionalServices;
+
+    final Set<Key<?>> requiredServices;
+
+    private Services services;
+
     /**
+     * Creates a new descriptor.
+     * 
      * @param bundleType
+     *            the type of the bundle
      */
-    BundleDescriptor(Class<? extends Bundle> bundleType) {
+    BundleDescriptor(Class<? extends Bundle> bundleType, InternalBundleDescriptor ibd) {
         this.bundleType = bundleType;
+        this.exposedServices = ibd.exposedServices;
+        this.optionalServices = ibd.optionalServices;
+        this.requiredServices = ibd.requiredServices;
     }
 
     /**
@@ -54,7 +74,7 @@ public class BundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public Class<? extends Bundle> getBundleType() {
+    public Class<? extends Bundle> bundleType() {
         return bundleType;
     }
 
@@ -69,7 +89,13 @@ public class BundleDescriptor {
      * @see Class#getModule()
      */
     public Module getModule() {
+        // Gider bi bruge denne metode????? Maaske bare skip den
         return bundleType.getModule();
+    }
+
+    public Services services() {
+        Services s = services;
+        return s == null ? services = new Services() : s;
     }
 
     @Override
@@ -94,11 +120,48 @@ public class BundleDescriptor {
      */
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        return new BundleDescriptor(bundle.getClass());
+        return new BundleDescriptor(bundle.getClass(), InternalBundleDescriptor.of(bundle));
     }
 
     public static BundleDescriptor of(Class<? extends Bundle> bundleType) {
         return of(Bundles.instantiate(bundleType));
     }
 
+    public class Services {
+        Services() {}
+
+        /**
+         * Returns an immutable map of all services that are available for importing.
+         * <p>
+         * A service whose key have been remapped will have t <pre> {@code
+         *  Key<Integer> -> Descriptor<Key<Integer>, "MyService>
+         *  importService(Integer.class).as(new Key<@Left Integer>));
+         *  Key<Integer> -> Descriptor<Key<@Left Integer>, "MyService>
+         *  Note the key of the map has not changed, only the key of the descriptor.}
+         * </pre> Eller ogsaa er det kun i imported servicess?????Ja det tror jeg
+         *
+         * @return a map of all services that available to import
+         */
+        public Map<Key<?>, ServiceDescriptor> exposedServices() {
+            return exposedServices;
+        }
+
+        /**
+         * Returns an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity.
+         * 
+         * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
+         */
+        public Set<Key<?>> optionalServices() {
+            return optionalServices;
+        }
+
+        /**
+         * Returns an immutable set of all service keys that <b>must</b> be made available to the entity.
+         * 
+         * @return an immutable set of all service keys that <b>must</b> be made available to the entity
+         */
+        public Set<Key<?>> requiredServices() {
+            return requiredServices;
+        }
+    }
 }

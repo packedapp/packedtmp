@@ -17,13 +17,11 @@ package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Consumer;
-
 import app.packed.inject.Injector;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceStagingArea;
-import packed.internal.inject.InternalInjectorConfiguration;
+import app.packed.inject.ServiceFilter;
+import app.packed.inject.ServiceImportFilter;
+import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
  * A injector bundle provides a simple way to package services
@@ -138,7 +136,7 @@ public abstract class InjectorBundle extends Bundle {
      *          {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
      *          object escape.
      */
-    public final void configure(InternalInjectorConfiguration delegate, boolean freeze) {
+    final void configure(InternalInjectorConfiguration delegate, boolean freeze) {
 
         // Maybe we can do some access checkes on the Configurator. To allow for testing....
 
@@ -159,28 +157,25 @@ public abstract class InjectorBundle extends Bundle {
         }
     }
 
-    protected final <T> ServiceConfiguration<T> expose(Class<T> type) {
-        return internal().expose(type);
+    protected final void deployInjector(Class<? extends InjectorBundle> bundleType, ServiceFilter... filters) {
+        internal().deployInjector(bundleType, filters);
     }
 
-    protected final <T> ServiceConfiguration<T> expose(Key<T> type) {
-        return internal().expose(type);
+    /**
+     * Imports the services that are available in the specified injector.
+     *
+     * @param injector
+     *            the injector to import services from
+     * @param filters
+     *            any number of filters that restricts the services that are imported. Or makes them available under
+     *            different keys
+     */
+    protected final void importServices(Injector injector, ServiceImportFilter... filters) {
+        internal().importServices(injector, filters);
     }
 
-    protected final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
-        return internal().expose(configuration);
-    }
-
-    protected final void exposeAll() {
-        internal().exposeAll();
-    }
-
-    protected final void importServicesFrom(Injector injector) {
-        internal().importServicesFrom(injector);
-    }
-
-    protected final void importServicesFrom(Injector injector, Consumer<? super ServiceStagingArea> configurator) {
-        internal().importServicesFrom(injector, configurator);
+    protected final void deployInjector(InjectorBundle bundle, ServiceFilter... filters) {
+        internal().deployInjector(bundle, filters);
     }
 
     @Override
@@ -191,4 +186,13 @@ public abstract class InjectorBundle extends Bundle {
         return delegate;
     }
 
+    // Ideen er at man man extend et Bundle, med et nyt bundle der har test information
+    // Lav nogle testvaerktoejer der aabner dem istedet syntes jeg
+    // Eller saetter et pre-filter ind...
+    protected final void overwrite(ServiceConfiguration<?> sc) {
+
+    }
+
+    // requireAll();
+    // require(Predicate<? super Dependenc> p); //require(e->!e.isOptional);
 }
