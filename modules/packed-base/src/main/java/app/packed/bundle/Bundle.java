@@ -151,10 +151,11 @@ public abstract class Bundle {
      * A single internal service can be exposed under multiple keys: <pre>{@code 
      * bind(ServiceImpl.class);
      * expose(ServiceImpl.class).as(Service1.class).setDescription("Service 1");
-     * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");
+     * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");}
      * </pre>
      * 
-     * @param <T> the type of the exposed service
+     * @param <T>
+     *            the type of the exposed service
      * 
      * @param key
      *            the key of the internal service to expose
