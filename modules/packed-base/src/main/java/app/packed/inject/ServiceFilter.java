@@ -15,9 +15,32 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles;
+
+import app.packed.util.Nullable;
+
 /**
  *
  */
 public abstract class ServiceFilter {
-    ServiceFilter() {}
+    @Nullable
+    final MethodHandles.Lookup lookup;
+
+    /** Creates a new filter */
+    ServiceFilter() {
+        this.lookup = null;
+    }
+
+    /**
+     * Creates a new filter
+     * 
+     * @param lookup
+     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
+     */
+    ServiceFilter(MethodHandles.Lookup lookup) {
+        this.lookup = requireNonNull(lookup, "lookup is null");
+    }
+
 }

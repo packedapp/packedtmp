@@ -15,11 +15,12 @@
  */
 package app.packed.inject;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- *
+ * 
  */
 
 // Vi splitter dem ud i klasser, fordi vi bliver noedt til at separere import og export i 2 klasser.
@@ -38,11 +39,28 @@ import java.util.function.Predicate;
 // Or InjectorImportFilter
 public class ServiceImportFilter extends ServiceFilter {
 
+    // @Inject not supported....
+
     public static final ServiceImportFilter ALL = new ServiceImportFilter();// Why???
 
+    /** A filter that rejects all services. */
     public static final ServiceImportFilter NONE = new ServiceImportFilter();
 
+    /** Show test example, with complex filtering first, and then Systemout */
     public static final ServiceImportFilter SYSTEM_OUT = new ServiceImportFilter();
+
+    /** Creates a new filter */
+    protected ServiceImportFilter() {}
+
+    /**
+     * Creates a new filter
+     * 
+     * @param lookup
+     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
+     */
+    protected ServiceImportFilter(MethodHandles.Lookup lookup) {
+        super(lookup);
+    }
 
     protected final ServiceConfiguration<?> clone(ServiceConfiguration<?> sc) {
         return sc;// Do we ever need to make a service available under two different keys
@@ -80,6 +98,21 @@ public class ServiceImportFilter extends ServiceFilter {
     // Det vil sige en service til mange...
 
     // Returns an import filter that accepts all the services selected by the specified predicate
+
+    /**
+     * Creates
+     * 
+     * @param originalKey
+     *            the key of the original service
+     * @param newKey
+     *            the key that the service should be rebound to
+     * @return the new filter
+     */
+    public static ServiceImportFilter rebind(Key<?> originalKey, Key<?> newKey) {
+
+        throw new UnsupportedOperationException();
+    }
+
     public static ServiceImportFilter accept(Predicate<? super ServiceDescriptor> predicate) {
         throw new UnsupportedOperationException();
     }

@@ -17,6 +17,8 @@ package tests.injector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.invoke.MethodHandles;
+
 import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.BundleDescriptor;
@@ -37,6 +39,7 @@ public class InjectorDescriptorTest {
 
             @Override
             protected void configure() {
+                lookup(MethodHandles.lookup());
                 bind(A.class);
                 expose(A.class);
             }

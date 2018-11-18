@@ -15,26 +15,19 @@
  */
 package app.packed.inject;
 
+import app.packed.bundle.InjectorBundle;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
 /**
- * The configuration of a service. An instance of this type is usually obtained by calling the various bind methods
- * located on {@link InjectorConfiguration}.
- * <ul>
- * <li>Binding of services to an injector</li>
- * <li>Exporting services from a bundle</li>
- * <li>Import services from a bundle or Injector</li>
- * <li>Extending ComponentConfiguration</li>
- * </ul>
+ * A configuration of a service. An instance of this interface is usually obtained by calling the various bind methods
+ * located on {@link InjectorConfiguration} or {@link InjectorBundle}.
  */
-// This once extended ServiceDescriptor but no more, for some reason I have already forgot???
-// I think it was that descriptors are immutable, configurations are not
 public interface ServiceConfiguration<T> extends Taggable {
 
     /**
-     * Services registered via {@link InjectorConfiguration} does not support binding to null. However components does.
+     * Registers this service under the specified key.
      *
      * @param key
      *            the key for which to register the service under
@@ -45,7 +38,7 @@ public interface ServiceConfiguration<T> extends Taggable {
     }
 
     /**
-     * Services registered via {@link InjectorConfiguration} does not support binding to null. However components does.
+     * Registers this service under the specified key.
      *
      * @param key
      *            the key for which to register the service under
@@ -54,9 +47,10 @@ public interface ServiceConfiguration<T> extends Taggable {
     ServiceConfiguration<T> as(Key<? super T> key);
 
     /**
-     * Indicates that the service will not be available for. The primary use for this method is to register object with has
-     * fields and/or methods annotated with {@link Provides}. But where we do not want to expose the declaring class as a
-     * service.
+     * Indicates that the service will not be made available under any key.
+     * <p>
+     * The primary use for this method is to register object with has fields and/or methods annotated with {@link Provides}.
+     * But where we do not want to expose the declaring class as a service.
      * 
      * @return this configuration
      */
@@ -103,18 +97,5 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @see #getDescription()
      * @see ServiceDescriptor#getDescription()
      */
-    ServiceConfiguration<T> setDescription(String description);
+    ServiceConfiguration<T> setDescription(@Nullable String description);
 }
-//
-/// **
-// * Returns an mutable set of string tags whose contents will be made available via {@link ServiceDescriptor#tags()} at
-// * runtime.
-// * <p>
-// * The returned set throws {@link IllegalStateException} on all mutable operations after the service has been
-// * constructed.
-// *
-// * @return a mutable set of tags
-// * @see ServiceDescriptor#tags()
-// */
-// @Override
-// Set<String> tags();

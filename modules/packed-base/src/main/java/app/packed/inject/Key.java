@@ -228,13 +228,25 @@ public abstract class Key<T> {
      */
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
+        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);// qualifierType instead??
         return new CanonicalizedKey<>(typeLiteral, qualifier);
-        // one value, or exactly 1 non-default value, or
-        // withQualifier(Class<? extends Annotation> annotationType, Object value);
-        // withQualifier(Class<? extends Annotation> annotationType, String attributeName1, Object value1);
-        // withQualifier(Class<? extends Annotation> annotationType, String attributeName1, Object value1, String
-        // attributeName2, Object value2);
+    }
+
+    /**
+     * Returns a new key retaining its original type but with a qualifier of the specified type iff the specified qualifier
+     * type has default values for every attribute.
+     *
+     * @param qualifierType
+     *            the type of qualifier for the new key
+     * @return the new key
+     * @throws IllegalArgumentException
+     *             if the specified qualifier type does not have default values for every attribute
+     * @throws InvalidDeclarationException
+     *             if the specified qualifier type is not annotation with {@link Qualifier}.
+     */
+    public final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
+        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierType);
+        throw new UnsupportedOperationException();
     }
 
     /**

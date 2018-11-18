@@ -134,10 +134,28 @@ public abstract class Bundle {
     protected abstract void configure();
 
     /**
-     * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}.
+     * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
+     * case if having a single
      * 
-     * @param <T>
-     *            the type of the exposed service
+     * When you expose an internal service, the descriptions and tags it may have are copied to the exposed services.
+     * Overridden them will not effect the internal service from which the exposed service was created.
+     * 
+     * <p>
+     * Once an internal service has been exposed, the internal service is made immutable. For example,
+     * {@code setDescription()} will fail in the following example with a runtime exception: <pre>{@code 
+     * ServiceConfiguration<?> sc = bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service.class);
+     * sc.setDescription("foo");}
+     * </pre>
+     * <p>
+     * A single internal service can be exposed under multiple keys: <pre>{@code 
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service1.class).setDescription("Service 1");
+     * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");
+     * </pre>
+     * 
+     * @param <T> the type of the exposed service
+     * 
      * @param key
      *            the key of the internal service to expose
      * @return a service configuration for the exposed service

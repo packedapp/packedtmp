@@ -25,7 +25,6 @@ import java.util.Set;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.util.Preview;
 import packed.internal.inject.buildnodes.InternalBundleDescriptor;
 
 /**
@@ -58,7 +57,7 @@ public class BundleDescriptor {
     }
 
     /**
-     * Returns any annotations that are present on the bundle. For example, {@link Deprecated} or {@link Preview}.
+     * Returns any annotations that are present on the bundle. For example, {@link Deprecated}
      * 
      * @return any annotations that are present on the bundle
      */
@@ -127,6 +126,19 @@ public class BundleDescriptor {
         return of(Bundles.instantiate(bundleType));
     }
 
+    /**
+    *
+    */
+
+    // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
+    // Og dermed kun importere praecis de interfaces den definere...
+    // Deploy(someSpec?) ved ikke lige med API'en /
+    // FooBarBundle.API$2_2
+    // FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
+    // Maaske hellere have den markeret med @Preview :D
+    /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
+
+    // The union of exposedServices, optionalService and requiredService must be empty
     public class Services {
         Services() {}
 

@@ -23,7 +23,6 @@ import java.util.function.Predicate;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.inject.ServiceSpecification;
 
 /**
  * This interface provides methods to exactly control which services are imported and exported when one injector is
@@ -33,7 +32,34 @@ import app.packed.inject.ServiceSpecification;
 // Eller noget med Joint, joine
 // ServiceLink
 // https://www.thesaurus.com/browse/join
-public interface ServiceStagingArea extends ServiceSpecification {
+public interface ServiceStagingArea {
+    /**
+     * Returns an immutable map of all services that are available for importing.
+     * <p>
+     * A service whose key have been remapped will have t <pre> {@code
+     *  Key<Integer> -> Descriptor<Key<Integer>, "MyService>
+     *  importService(Integer.class).as(new Key<@Left Integer>));
+     *  Key<Integer> -> Descriptor<Key<@Left Integer>, "MyService>
+     *  Note the key of the map has not changed, only the key of the descriptor.}
+     * </pre> Eller ogsaa er det kun i imported servicess?????Ja det tror jeg
+     *
+     * @return a map of all services that available to import
+     */
+    Map<Key<?>, ServiceDescriptor> exposedServices();
+
+    /**
+     * Returns an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity.
+     * 
+     * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
+     */
+    Set<Key<?>> optionalServices();// Description??
+
+    /**
+     * Returns an immutable set of all service keys that <b>must</b> be made available to the entity.
+     * 
+     * @return an immutable set of all service keys that <b>must</b> be made available to the entity
+     */
+    Set<Key<?>> requiredServices();
 
     void export(Key<?> key);
     // ServiceConfiguration????? Can we set tags?, ect, context. wulala??

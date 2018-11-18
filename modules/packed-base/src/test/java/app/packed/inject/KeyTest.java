@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static support.assertj.Assertions.npe;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -281,7 +282,7 @@ public class KeyTest {
 
     @Test
     public void withQualifier() throws Exception {
-        npe(() -> KEY_INTEGER.withQualifier(null), "qualifier");
+        npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
         assertThat(KEY_INTEGER.withQualifier(CharQualifiers.X)).isEqualTo(KEY_INTEGER_X);
         assertThat(KEY_INTEGER_X.withQualifier(CharQualifiers.Y)).isEqualTo(KEY_INTEGER_Y);
 
@@ -295,7 +296,7 @@ public class KeyTest {
     /** Tests {@link Key#withNoQualifier()}. */
     @Test
     public void withNoQualifier() {
-        npe(() -> KEY_INTEGER.withQualifier(null), "qualifier");
+        npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
         assertThat(KEY_INTEGER.withNoQualifier()).isSameAs(KEY_INTEGER);
         assertThat(KEY_INTEGER_X.withNoQualifier()).isEqualTo(KEY_INTEGER);
     }

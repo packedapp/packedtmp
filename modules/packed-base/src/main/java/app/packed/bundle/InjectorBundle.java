@@ -118,6 +118,14 @@ public abstract class InjectorBundle extends Bundle {
     // We do not not want any more garbage then needed.
     private InternalInjectorConfiguration delegate;
 
+    final void ifPropertySet(String value, Runnable r) {
+        // SetThreadLocal
+        ifPropertySet("foo", () -> {
+            bind("Foo");
+        });
+        // ClearThreadLocal
+    }
+
     protected final <T> T asDeprecated(T t, String reason) {
         return t;
     }
