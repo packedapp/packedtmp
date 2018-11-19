@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package support.stubs;
+
+import app.packed.bundle.InjectorBundle;
+import app.packed.inject.Injector;
 
 /**
  *
  */
-public class ServiceExportFilter extends ServiceFilter {
+public class TestBundle extends InjectorBundle {
 
-    public static final ServiceExportFilter NONE = null;
-
-    protected final boolean isRequired(Key<?> key) {
-        return false;
+    public static void main(String[] args) {
+        System.out.println(Injector.of(TestBundle.class).with(String.class));
     }
 
-    protected void filterMandatory(ServiceConfiguration<?> configuration) {
-        filter(configuration);
-    }
-
-    protected void filterOptional(ServiceConfiguration<?> configuration) {
-        filter(configuration);
-    }
-
-    protected void filter(ServiceConfiguration<?> configuration) {
-        // if (configuration.getKey() isN)
-
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        bind("fooo");
+        bind(this);
+        // expose(String.class);
     }
 }

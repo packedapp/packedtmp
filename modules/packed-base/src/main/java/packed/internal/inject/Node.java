@@ -63,6 +63,10 @@ public interface Node<T> extends ServiceDescriptor {
      * @return if build node converts to runtime node, if runtime node returns self
      */
     RuntimeNode<T> toRuntimeNode();
+
+    default boolean isPrivate() {
+        return getKey().equals(CommonKeys.INJECTOR_KEY) || getKey().equals(CommonKeys.CONTAINER_KEY);
+    }
 }
 
 // default void validateKey(Key<?> key) {}

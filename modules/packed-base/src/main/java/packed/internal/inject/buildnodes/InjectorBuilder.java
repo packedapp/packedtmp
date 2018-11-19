@@ -47,10 +47,17 @@ public final class InjectorBuilder {
         setup();
         instantiateAll(c.privateInjector);
 
-        for (BuildNode<?> bn : c.publicExposedNodeList) {
-            if (bn instanceof BuildNodeExposed) {
-                BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
-                c.publicRuntimeNodes.put(bne.toRuntimeNode());
+        if (c.bundle != null) {
+            for (BuildNode<?> bn : c.publicExposedNodeList) {
+                if (bn instanceof BuildNodeExposed) {
+                    BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
+                    c.publicRuntimeNodes.put(bne.toRuntimeNode());
+                }
+            }
+        } else {
+            // TODO fix
+            for (BuildNode<?> bn : c.privateBuildNodeList) {
+                c.publicRuntimeNodes.put(bn.toRuntimeNode());
             }
         }
     }
@@ -83,6 +90,10 @@ public final class InjectorBuilder {
                 c.privateBuildNodeList.add(n);
             }
         }
+        // import all services...
+        for (ImportServices i : c.privateImports) {
+            i.importInto(c);
+        }
 
         HashMap<Key<?>, ArrayList<BuildNode<?>>> collisions = new HashMap<>();
         for (BuildNode<?> bv : c.privateBuildNodeList) {
@@ -92,10 +103,6 @@ public final class InjectorBuilder {
                 }
                 c.privateBuildNodeMap.put(bv);
             }
-        }
-        // import all services...
-        for (ImportServices i : c.privateImports) {
-            i.importInto(c);
         }
 
         if (!collisions.isEmpty()) {

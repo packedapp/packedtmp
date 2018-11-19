@@ -97,4 +97,9 @@ public abstract class RuntimeNode<T> implements Node<T> {
     public final String toString() {
         return getKey() + "[" + getBindingMode() + "]: " + getDescription();
     }
+
+    // Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
+    public boolean isAssignableTo(Class<?> type) {
+        throw new UnsupportedOperationException();
+    }
 }

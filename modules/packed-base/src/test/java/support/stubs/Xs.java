@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importing;
+package support.stubs;
 
-import app.packed.bundle.InjectorBundle;
+import org.junit.jupiter.api.Test;
+
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceExportStage;
 import app.packed.inject.ServiceImportStage;
 
 /**
  *
  */
-public class ImportTest {
+public class Xs {
 
-    public static void main(String[] args) {
-        //
-        System.out.println(ParseIT.def());
-
-        Injector.of(ParseIT.def().getBundleType());
-
-        Injector.of(c -> {
-            c.deployInjector(I.class, ServiceImportStage.NONE, ServiceExportStage.NONE);
-
+    @Test
+    public void main() {
+        Injector i = Injector.of(c -> {
+            c.bind("fooo");
+            c.bind(1234);
         });
-    }
 
-    public final class I extends InjectorBundle {
+        Injector i2 = Injector.of(c -> {
+            c.importServices(i, ServiceImportStage.peek(e -> System.out.println("Available " + e.getKey())), ServiceImportStage.accept(String.class));
+        });
 
-        /** {@inheritDoc} */
-        @Override
-        protected void configure() {}
+        System.out.println();
+        i2.getService(String.class).getConfigurationSite().print();
+
     }
 }

@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.IdentityHashMap;
 import java.util.Map.Entry;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Factory;
@@ -105,7 +104,6 @@ public class InjectorConfigurationSiteTest {
      * {@link InjectorConfiguration#importServicesFrom(Injector)}.
      */
     @Test
-    @Disabled
     public void importServiceFrom() {
         Injector i = Injector.of(c -> {
             c.bind(123);
@@ -139,6 +137,9 @@ public class InjectorConfigurationSiteTest {
 
     @Test
     public void importServiceFromStaging() {
+
+        // Den her test
+
         // Injector i = Injector.of(c -> {
         // c.bind(123);
         // });

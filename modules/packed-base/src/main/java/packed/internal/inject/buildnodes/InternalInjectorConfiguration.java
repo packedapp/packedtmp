@@ -30,7 +30,7 @@ import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceFilter;
-import app.packed.inject.ServiceImportFilter;
+import app.packed.inject.ServiceImportStage;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalInjector;
 import packed.internal.inject.NodeMap;
@@ -159,7 +159,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     }
 
     /** {@inheritDoc} */
-    private void importServices(Injector injector, Consumer<? super ServiceStagingArea> c, boolean autoImport) {
+    void importServices(Injector injector, Consumer<? super ServiceStagingArea> c, boolean autoImport) {
         requireNonNull(injector, "injector is null");
         checkConfigurable();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
@@ -173,13 +173,12 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     }
 
     @Override
-    public final void importServices(Injector injector, ServiceImportFilter... filters) {
-        importServices(injector, null, true);
-
-        requireNonNull(bundle, "bundle is null");
+    public final void importServices(Injector injector, ServiceImportStage... filters) {
         requireNonNull(filters, "filters is null");
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
-        privateImports.add(new ImportServicesFromInjector(this, cs, injector, filters));
+        ImportServicesFromInjector is = new ImportServicesFromInjector(this, cs, injector, filters);
+        privateImports.add(is);
+        is.doStuff();
     }
 
     public Injector finish() {

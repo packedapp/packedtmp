@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceFilter;
-import app.packed.inject.ServiceImportFilter;
+import app.packed.inject.ServiceImportStage;
 import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
@@ -176,7 +176,7 @@ public abstract class InjectorBundle extends Bundle {
      *            any number of filters that restricts the services that are imported. Or makes them available under
      *            different keys
      */
-    protected final void importServices(Injector injector, ServiceImportFilter... filters) {
+    protected final void importServices(Injector injector, ServiceImportStage... filters) {
         internal().importServices(injector, filters);
     }
 

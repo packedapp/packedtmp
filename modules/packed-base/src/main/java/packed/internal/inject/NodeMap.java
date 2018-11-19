@@ -17,7 +17,9 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.Key;
@@ -62,6 +64,10 @@ public class NodeMap {
     public boolean putIfAbsent(Node<?> node) {
         requireNonNull(node.getKey());
         return map.putIfAbsent(node.getKey(), node) == null;
+    }
+
+    public List<Node<?>> toAll() {
+        return new ArrayList<>(map.values());
     }
 }
 

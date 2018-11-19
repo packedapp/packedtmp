@@ -263,7 +263,10 @@ public interface Injector extends Taggable {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<InjectorConfiguration> configurator) {
+    // Maa have noget Bootstrap??? ogsaa med stages o.s.v., vi gider ihvertfald ikke bliver noedt til at lave en
+    // container hvor vi skal importere den anden container. Og saa staar vi ved med to.
+    // Nej vi skal have noget boot agtigt noget. InjectorBooter?
+    static Injector of(Consumer<InjectorConfiguration> configurator /* , Object... requirements */) {
         requireNonNull(configurator, "configurator is null");
         InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
         configurator.accept(c);
@@ -286,6 +289,10 @@ public interface Injector extends Taggable {
 
     static Injector of(Class<? extends InjectorBundle> bundleType) {
         return of(Bundles.instantiate(bundleType));
+    }
+
+    default void print() {
+        services().forEach(s -> System.out.println(s));
     }
 }
 

@@ -47,6 +47,12 @@ public interface InternalConfigurationSite extends ConfigurationSite {
         public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
             return UNKNOWN;
         }
+
+        @Override
+        public String toString() {
+            return "Unknown";
+        }
+
     };
 
     InternalConfigurationSite replaceParent(ConfigurationSite newParent);

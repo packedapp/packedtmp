@@ -38,7 +38,7 @@ public final class InternalInjector extends AbstractInjector {
     private final String description;
 
     /** A map of all services. */
-    private final NodeMap nodes;
+    public final NodeMap nodes;
 
     /** This injector's parent, or null if this is a top-level injector. */
     @Nullable
@@ -53,6 +53,17 @@ public final class InternalInjector extends AbstractInjector {
         this.tags = injectorConfiguration.immutableCopyOfTags();
         this.description = injectorConfiguration.getDescription();
         this.configurationSite = injectorConfiguration.getConfigurationSite();
+    }
+
+    @Override
+    protected void failedGet(Key<?> key) {
+        // Oehhh hvad med internal injector, skal vi have en reference til den.
+        // Vi kan jo saadan set GC'en den??!?!?!?
+        for (Node<?> n : nodes.map.values()) {
+            System.out.println(n);
+            // if (n instanceof RuntimeNode<T>)
+        }
+        super.failedGet(key);
     }
 
     /** {@inheritDoc} */

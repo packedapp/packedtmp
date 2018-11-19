@@ -111,11 +111,11 @@ public interface InjectorConfiguration extends Taggable {
 
     <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation);
 
-    default void deployInjector(Class<? extends InjectorBundle> bundleType, ServiceFilter... filters) {
-        deployInjector(Bundles.instantiate(bundleType), filters);
+    default void deployInjector(Class<? extends InjectorBundle> bundleType, ServiceFilter... stages) {
+        deployInjector(Bundles.instantiate(bundleType), stages);
     }
 
-    void deployInjector(InjectorBundle bundle, ServiceFilter... filters);
+    void deployInjector(InjectorBundle bundle, ServiceFilter... stages);
 
     /**
      * Returns the description of this injector, or null if no description has been set via {@link #setDescription(String)}.
@@ -132,11 +132,10 @@ public interface InjectorConfiguration extends Taggable {
      *
      * @param injector
      *            the injector to import services from
-     * @param filters
-     *            any number of filters that restricts the services that are imported. Or makes them available under
-     *            different keys
+     * @param stages
+     *            any number of stages that restricts or transforms the services that are imported
      */
-    void importServices(Injector injector, ServiceImportFilter... filters);
+    void importServices(Injector injector, ServiceImportStage... stages);
 
     /**
      * Sets the specified {@link Lookup lookup object} that will be used to instantiate new objects using constructors,
