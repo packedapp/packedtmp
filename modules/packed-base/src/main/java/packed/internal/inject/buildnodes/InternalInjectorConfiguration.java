@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.InjectorBundle;
@@ -159,24 +158,11 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     }
 
     /** {@inheritDoc} */
-    void importServices(Injector injector, Consumer<? super ServiceStagingArea> c, boolean autoImport) {
-        requireNonNull(injector, "injector is null");
-        checkConfigurable();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
-        OldImportServicesFromInjector ifi = new OldImportServicesFromInjector(this, injector, cs, autoImport);
-        // builder.addImportInjector(ifi);
-        if (autoImport) {
-            ifi.importAllServices();
-        } else {
-            c.accept(ifi);
-        }
-    }
-
     @Override
-    public final void importServices(Injector injector, ServiceImportStage... filters) {
-        requireNonNull(filters, "filters is null");
+    public final void importServices(Injector injector, ServiceImportStage... stages) {
+        requireNonNull(stages, "stages is null");
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
-        ImportServicesFromInjector is = new ImportServicesFromInjector(this, cs, injector, filters);
+        ImportServicesFromInjector is = new ImportServicesFromInjector(this, cs, injector, stages);
         privateImports.add(is);
         is.doStuff();
     }

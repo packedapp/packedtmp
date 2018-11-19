@@ -36,8 +36,6 @@ public final class InjectorBuilder {
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildNode<?>> detectCyclesFor;
 
-    final ArrayList<OldImportServicesFromInjector> injectorImport = new ArrayList<>();
-
     public InjectorBuilder(InternalInjectorConfiguration c) {
         this.c = requireNonNull(c);
     }
@@ -84,12 +82,6 @@ public final class InjectorBuilder {
 
         // Freeze
 
-        // Add imports
-        for (OldImportServicesFromInjector i : injectorImport) {
-            for (BuildNode<?> n : i.importedServices.values()) {
-                c.privateBuildNodeList.add(n);
-            }
-        }
         // import all services...
         for (ImportServices i : c.privateImports) {
             i.importInto(c);

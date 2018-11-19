@@ -16,19 +16,27 @@
 package tests.injector.importing;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static support.assertj.Assertions.npe;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceImportStage;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/**
- *
- */
+/** Tests the {@link InjectorConfiguration#importServices(Injector, ServiceImportStage...)} method. */
 public class InjectorImportTest {
+
+    /** Tests various null arguments. */
+    @Test
+    public void nullArguments() {
+        Injector i = Injector.of(c -> c.bind("X"));
+        npe(() -> Injector.of(c -> c.importServices(null)), "injector");
+        npe(() -> Injector.of(c -> c.importServices(i, (ServiceImportStage[]) null)), "stages");
+    }
 
     /** Tests that we can import no services. */
     @Test
@@ -42,6 +50,20 @@ public class InjectorImportTest {
             c.importServices(i1, ServiceImportStage.NONE);
         });
         assertThat(i.services().count()).isEqualTo(0L);
+    }
+
+    /** Tests that we can chain stages. */
+    @Test
+    public void rebindChaining() {
+        Injector i1 = Injector.of(c -> c.bind("X"));
+
+        Injector i = Injector.of(c -> {
+            c.importServices(i1, ServiceImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
+                    ServiceImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
+        });
+        assertThat(i.hasService(String.class)).isFalse();
+        assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
+        assertThat(i.with(new Key<@Right String>() {})).isEqualTo("X");
     }
 
     /** Tests that we can rebind imported services. */
@@ -79,20 +101,6 @@ public class InjectorImportTest {
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("Y");
-        assertThat(i.with(new Key<@Right String>() {})).isEqualTo("X");
-    }
-
-    /** Tests that we can chain stages. */
-    @Test
-    public void rebindChaining() {
-        Injector i1 = Injector.of(c -> c.bind("X"));
-
-        Injector i = Injector.of(c -> {
-            c.importServices(i1, ServiceImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
-                    ServiceImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
-        });
-        assertThat(i.hasService(String.class)).isFalse();
-        assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
         assertThat(i.with(new Key<@Right String>() {})).isEqualTo("X");
     }
 }
