@@ -29,13 +29,11 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.InjectorImportStage;
 import app.packed.inject.Key;
-import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalInjector;
 import packed.internal.inject.NodeMap;
 import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactoryField;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.ServiceClassDescriptor;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
@@ -80,23 +78,12 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     public final <T> ServiceConfiguration<T> bind(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
+        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
 
-        InternalConfigurationSite ics = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-        ServiceClassDescriptor<?> scd = super.accessor.getServiceDescriptor(instance.getClass());
-        BuildNode<T> node = new BuildNodeDefault<>(this, ics, instance);
-
-        for (AccessibleField<AtProvides> s : scd.fieldsAtProvides) {
-            // take configuration from AccessibleField, and splice in ontop of
-            InternalConfigurationSite icss = ics.spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
-                    s.metadata().getAnnotatedMember().getAnnotation(Provides.class), s.descriptor());
-            InternalFactoryField<?> iff = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
-
-            BuildNodeDefault<?> bnn = new BuildNodeDefault<>(this, icss, iff, s.metadata().getBindingMode());
-            bindNode(bnn).as((Key) s.metadata().getKey());
-            System.out.println(s.descriptor());
+        ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(instance.getClass());
+        for (AccessibleField<AtProvides> field : serviceDesc.fieldsAtProvides) {
+            BuildNodeDefault<?> providedNode = node.provide(field);
+            bindNode(providedNode).as((Key) field.metadata().getKey());
         }
         return bindNode(node).as((Class) instance.getClass());
     }
@@ -111,7 +98,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         return bindNode(node).as(factory.getKey());
     }
 
-    private <T> BuildNode<T> bindNode(BuildNode<T> node) {
+    protected <T> BuildNode<T> bindNode(BuildNode<T> node) {
         // WHEN YOU CALL THIS METHOD, remember the key is not automatically bound, but must use .as(xxxxx)
 
         // If we need to separate the scanning, just take a boolean in the method

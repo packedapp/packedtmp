@@ -52,5 +52,4 @@ public class InternalBundleDescriptor {
         builder.addRequiredServices(conf.requiredServicesMandatory);
         return builder;
     }
-
 }

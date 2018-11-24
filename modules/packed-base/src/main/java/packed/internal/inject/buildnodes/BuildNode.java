@@ -35,7 +35,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> implements Node<T>, ServiceConfiguration<T> {
+public abstract class BuildNode<T> extends AbstractConfiguration implements Node<T>, ServiceConfiguration<T> {
 
     /** An empty array of nodes */
     private static final Node<?>[] EMPTY_ARRAY = new Node<?>[0];
@@ -88,7 +88,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public final ServiceConfiguration<T> as(Key<? super T> key) {
+    public ServiceConfiguration<T> as(Key<? super T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         // validateKey(key);
@@ -148,6 +148,13 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
      * @return the new runtime node
      */
     abstract RuntimeServiceNode<T> newRuntimeNode();
+
+    /** {@inheritDoc} */
+    @Override
+    public BuildNode<T> setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override

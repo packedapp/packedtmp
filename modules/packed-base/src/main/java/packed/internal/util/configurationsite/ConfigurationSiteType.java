@@ -40,7 +40,9 @@ public enum ConfigurationSiteType {
     INJECTOR_OF("Injector.of"),
 
     /** */
-    INJECTOR_PROVIDE("Injector.provide");
+    INJECTOR_PROVIDE("Injector.provide"),
+
+    COMPONENT_INSTALL("Component.install");
 
     final String f;
 

@@ -22,14 +22,19 @@ import java.util.List;
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.factory.InternalFactoryField;
 import packed.internal.inject.runtimenodes.RuntimeServiceNode;
 import packed.internal.inject.runtimenodes.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtimenodes.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtimenodes.RuntimeServiceNodeSingleton;
+import packed.internal.invokers.AccessibleField;
+import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.util.descriptor.AtProvides;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
@@ -59,6 +64,15 @@ public class BuildNodeDefault<T> extends BuildNode<T> {
         if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
+    }
+
+    public BuildNodeDefault<?> provide(AccessibleField<AtProvides> s) {
+        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
+                s.metadata().getAnnotatedMember().getAnnotation(Provides.class), s.descriptor());
+
+        AtProvides atProvides = s.metadata();
+        InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
+        return new BuildNodeDefault<>(injectorConfiguration, icss, factory, atProvides.getBindingMode());
     }
 
     /**

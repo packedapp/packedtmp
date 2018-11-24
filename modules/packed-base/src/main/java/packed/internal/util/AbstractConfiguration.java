@@ -30,7 +30,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * configuration.
  */
 // Todo maybe ditch<T> pro
-public abstract class AbstractConfiguration<T extends AbstractConfiguration<T>> {
+public abstract class AbstractConfiguration {
 
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
@@ -97,11 +97,10 @@ public abstract class AbstractConfiguration<T extends AbstractConfiguration<T>> 
      * @throws IllegalStateException
      *             if this configuration can no longer be configured
      */
-    @SuppressWarnings("unchecked")
-    public final T setDescription(String description) {
+    public AbstractConfiguration setDescription(String description) {
         checkConfigurable();
         this.description = description;
-        return (T) this;
+        return this;
     }
 
     /**

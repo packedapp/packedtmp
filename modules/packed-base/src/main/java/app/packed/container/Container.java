@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -26,6 +28,9 @@ import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
+import packed.internal.container.InternalContainerConfiguration;
+import packed.internal.util.configurationsite.ConfigurationSiteType;
+import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * The main purpose of this interface is to manage and control the life cycle of components.
@@ -171,7 +176,10 @@ public interface Container extends Injector {
     }
 
     static Container of(Consumer<? super ContainerConfiguration> configurator) {
-        throw new UnsupportedOperationException();
+        requireNonNull(configurator, "configurator is null");
+        InternalContainerConfiguration c = new InternalContainerConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
+        configurator.accept(c);
+        return c.finish();
     }
 }
 

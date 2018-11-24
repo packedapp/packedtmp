@@ -36,7 +36,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  *
  */
-public abstract class AbstractInjectorConfiguration extends AbstractConfiguration<InternalInjectorConfiguration> implements InjectorConfiguration {
+public abstract class AbstractInjectorConfiguration extends AbstractConfiguration implements InjectorConfiguration {
 
     /** The lookup object. We default to public access */
     protected LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
@@ -160,5 +160,12 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         checkConfigurable();
         this.accessor = LookupDescriptorAccessor.get(lookup);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public AbstractInjectorConfiguration setDescription(String description) {
+        super.setDescription(description);
+        return this;
     }
 }

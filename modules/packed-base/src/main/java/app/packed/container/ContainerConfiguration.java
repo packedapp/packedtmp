@@ -26,6 +26,7 @@ import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Nullable;
 
 /**
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
@@ -55,6 +56,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * @see #setName(String)
      * @see Container#getName()
      */
+    @Nullable
     String getName();
 
     /**
@@ -166,5 +168,5 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * @see #getName()
      * @see Container#getName()
      */
-    void setName(String name);
+    void setName(@Nullable String name);
 }

@@ -26,21 +26,18 @@ import app.packed.util.FieldDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** An accessible field. */
-public final class AccessibleField<T> {
+public final class AccessibleField<T> extends AccessibleMember<T> {
     /** The descriptor of the field. */
     private final InternalFieldDescriptor descriptor;
 
     /** Whether or not the field is volatile. */
     private final boolean isVolatile;
 
-    /** An metadata object, can probably change to non-null */
-    private final T metadata;
-
     /** The var handle of the field. */
     private final VarHandle varHandle;
 
     public AccessibleField(InternalFieldDescriptor descriptor, Lookup lookup, T t) {
-        this.metadata = requireNonNull(t);
+        super(t);
         this.descriptor = descriptor;
         try {
             this.varHandle = descriptor.unreflect(lookup);
@@ -59,7 +56,6 @@ public final class AccessibleField<T> {
      *            the lookup object to use for access
      */
     public AccessibleField(InternalFieldDescriptor descriptor, VarHandle varHandle) {
-        this.metadata = null;
         this.descriptor = descriptor;
         this.varHandle = requireNonNull(varHandle);
         this.isVolatile = Modifier.isVolatile(descriptor.getModifiers());
@@ -74,7 +70,7 @@ public final class AccessibleField<T> {
      *            the lookup object to use for access
      */
     public AccessibleField(InternalFieldDescriptor descriptor, VarHandle varHandle, T t) {
-        this.metadata = requireNonNull(t);
+        super(t);
         this.descriptor = descriptor;
         this.varHandle = requireNonNull(varHandle);
         this.isVolatile = Modifier.isVolatile(descriptor.getModifiers());
@@ -112,10 +108,6 @@ public final class AccessibleField<T> {
      */
     public boolean isVolatile() {
         return isVolatile;
-    }
-
-    public T metadata() {
-        return metadata;
     }
 
     /**
