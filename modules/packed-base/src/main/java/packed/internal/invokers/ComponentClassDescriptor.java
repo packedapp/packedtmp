@@ -17,12 +17,9 @@ package packed.internal.invokers;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import app.packed.inject.Provides;
-import packed.internal.util.descriptor.AtProvides;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
@@ -36,15 +33,11 @@ public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
     /** All fields that have at least 1 annotation. */
     List<InternalFieldDescriptor> fieldsAllAnnotated;
 
-    /** All methods annotated with {@link Provides}. */
-    final Collection<AccessibleExecutable<AtProvides>> methodsAtProvides;
-
     /**
      * @param clazz
      * @param lookup
      */
     ComponentClassDescriptor(Class<T> clazz, Lookup lookup, MemberScanner scanner) {
         super(clazz, lookup, scanner);
-        this.methodsAtProvides = scanner.methodsAtProvides == null ? List.of() : List.copyOf(scanner.methodsAtProvides);
     }
 }

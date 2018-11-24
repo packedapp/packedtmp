@@ -21,29 +21,19 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
 
 /**
  * Tests various things that do not have their own test class.
  */
 public class InjectorTest {
 
-    InjectorConfiguration ic;
-
-    @Test
-    public void emptyInjector() {
-        // assertThat(Injector.of(c -> {}).services()).isEmpty();
-        // Jeg syntes ikke injector skal med i listen....
-
-        assertThat(Injector.of(c -> {}).tags()).isEmpty();
-    }
+    static final Injector EMPTY = Injector.of(c -> {});
 
     @Test
     public void description() {
-        Injector i = Injector.of(c -> {});
-        assertThat(i.getDescription()).isNull();
+        assertThat(EMPTY.getDescription()).isNull();
 
-        i = Injector.of(c -> {
+        Injector i = Injector.of(c -> {
             assertThat(c.getDescription()).isNull();
 
             assertThat(c.setDescription("fooo")).isSameAs(c);
@@ -53,26 +43,27 @@ public class InjectorTest {
             assertThat(c.getDescription()).isNull();
 
             c.setDescription("final_desc");
-            ic = c;
         });
         assertThat(i.getDescription()).isEqualTo("final_desc");
-        ic.setDescription("sdsdsd");
+    }
+
+    @Test
+    public void services() {
+        assertThat(EMPTY.services()).isEmpty();
     }
 
     @Test
     public void tags() {
-        Injector i = Injector.of(c -> {});
-        assertThat(i.tags()).isEmpty();
+        assertThat(EMPTY.tags()).isEmpty();
 
-        i = Injector.of(c -> {
+        Injector i = Injector.of(c -> {
             assertThat(c.tags()).isEmpty();
 
             assertThat(c.tags().add("foo")).isTrue();
             assertThat(c.tags()).contains("foo");
             assertThat(c.tags().add("foo")).isFalse();
-
             assertThatNullPointerException().isThrownBy(() -> c.tags().add(null));
         });
-
+        assertThat(i.tags()).containsExactly("foo");
     }
 }

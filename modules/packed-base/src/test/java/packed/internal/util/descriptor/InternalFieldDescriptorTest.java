@@ -79,5 +79,4 @@ public class InternalFieldDescriptorTest {
         validateField(C.getDeclaredField("string"), InternalFieldDescriptor.of(C, "string"));
         validateField(C.getDeclaredField("C"), InternalFieldDescriptor.of(C, "C"));
     }
-
 }

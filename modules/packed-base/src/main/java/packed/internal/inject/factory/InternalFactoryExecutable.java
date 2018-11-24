@@ -97,7 +97,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
      *            the lookup object to use
      * @return a new internal factory that uses the specified lookup object
      */
-    public InternalFactory<T> withMethodLookup(Lookup lookup) {
+    public InternalFactory<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
             handle = executable.unreflect(lookup);

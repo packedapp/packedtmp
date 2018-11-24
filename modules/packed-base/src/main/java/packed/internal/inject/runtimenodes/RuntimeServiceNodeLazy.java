@@ -21,13 +21,14 @@ import java.util.concurrent.Semaphore;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.Provider;
 import app.packed.util.Nullable;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime node for an instance that have not yet been requested for the first time. */
-public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
+public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
 
     /** The lazily instantiated instance. */
     @Nullable
@@ -45,15 +46,15 @@ public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
      * @param factory
      *            the factory that will create the instance
      */
-    public RuntimeNodeLazy(BuildNode<T> node, InternalFactory<T> factory) {
+    public RuntimeServiceNodeLazy(BuildNode<T> node, InternalFactory<T> factory) {
         super(node);
-        this.lazy = new Sync(new RuntimeNodeFactory<>(node, factory));
+        this.lazy = new Sync(new RuntimeServiceNodePrototype<>(node, factory));
     }
 
     /** {@inheritDoc} */
     @Override
     public BindingMode getBindingMode() {
-        return BindingMode.LAZY_SINGLETON;
+        return BindingMode.LAZY;
     }
 
     /** {@inheritDoc} */
@@ -89,7 +90,7 @@ public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
     final class Sync extends Semaphore {
 
         /** The factory used for creating a new instance. */
-        private RuntimeNodeFactory<T> factory;
+        private Provider<T> factory;
 
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
@@ -100,7 +101,7 @@ public final class RuntimeNodeLazy<T> extends RuntimeNode<T> {
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(RuntimeNodeFactory<T> factory) {
+        Sync(Provider<T> factory) {
             super(1);
             this.factory = requireNonNull(factory);
         }

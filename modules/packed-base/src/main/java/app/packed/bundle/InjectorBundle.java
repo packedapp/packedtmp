@@ -17,10 +17,7 @@ package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceFilter;
-import app.packed.inject.ServiceImportStage;
 import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
@@ -118,14 +115,6 @@ public abstract class InjectorBundle extends Bundle {
     // We do not not want any more garbage then needed.
     private InternalInjectorConfiguration delegate;
 
-    final void ifPropertySet(String value, Runnable r) {
-        // SetThreadLocal
-        ifPropertySet("foo", () -> {
-            bind("Foo");
-        });
-        // ClearThreadLocal
-    }
-
     protected final <T> T asDeprecated(T t, String reason) {
         return t;
     }
@@ -163,25 +152,12 @@ public abstract class InjectorBundle extends Bundle {
         }
     }
 
-    protected final void deployInjector(Class<? extends InjectorBundle> bundleType, ServiceFilter... filters) {
-        internal().deployInjector(bundleType, filters);
-    }
-
-    /**
-     * Imports the services that are available in the specified injector.
-     *
-     * @param injector
-     *            the injector to import services from
-     * @param filters
-     *            any number of filters that restricts the services that are imported. Or makes them available under
-     *            different keys
-     */
-    protected final void importServices(Injector injector, ServiceImportStage... filters) {
-        internal().importServices(injector, filters);
-    }
-
-    protected final void deployInjector(InjectorBundle bundle, ServiceFilter... filters) {
-        internal().deployInjector(bundle, filters);
+    final void ifPropertySet(String value, Runnable r) {
+        // SetThreadLocal
+        ifPropertySet("foo", () -> {
+            bind("Foo");
+        });
+        // ClearThreadLocal
     }
 
     @Override

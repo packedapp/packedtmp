@@ -27,7 +27,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.Node;
-import packed.internal.inject.runtimenodes.RuntimeNode;
+import packed.internal.inject.runtimenodes.RuntimeServiceNode;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -41,7 +41,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
     private static final Node<?>[] EMPTY_ARRAY = new Node<?>[0];
 
     /** The dependencies of this node. */
-    final List<InternalDependency> dependencies;
+    public final List<InternalDependency> dependencies;
 
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
@@ -65,7 +65,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
 
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
-    private RuntimeNode<T> runtimeNode;
+    private RuntimeServiceNode<T> runtimeNode;
 
     BuildNode(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         super(configurationSite);
@@ -128,15 +128,6 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
         super.freeze();
     }
 
-    /**
-     * Returns a list of all dependencies of this node.
-     * 
-     * @return a list of all dependencies of this node
-     */
-    public final List<InternalDependency> getDependencies() {
-        return dependencies;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final Key<T> getKey() {
@@ -156,12 +147,12 @@ public abstract class BuildNode<T> extends AbstractConfiguration<BuildNode<T>> i
      *
      * @return the new runtime node
      */
-    abstract RuntimeNode<T> newRuntimeNode();
+    abstract RuntimeServiceNode<T> newRuntimeNode();
 
     /** {@inheritDoc} */
     @Override
-    public final RuntimeNode<T> toRuntimeNode() {
-        RuntimeNode<T> runtime = this.runtimeNode;
+    public final RuntimeServiceNode<T> toRuntimeNode() {
+        RuntimeServiceNode<T> runtime = this.runtimeNode;
         return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
 }

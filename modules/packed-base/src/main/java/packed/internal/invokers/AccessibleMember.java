@@ -18,21 +18,27 @@ package packed.internal.invokers;
 import static java.util.Objects.requireNonNull;
 
 /**
- *
+ * An accessible field, constructor or method with a metadata object.
  */
+
+// Maybe we are going to use it again?
 public abstract class AccessibleMember<T> {
 
-    private final T t;
+    /** An metadata object, can probably change to non-null */
+    private final T metadata;
 
     AccessibleMember() {
-        this.t = null;
+        this.metadata = null;
     }
 
-    AccessibleMember(T t) {
-        this.t = requireNonNull(t);
+    /**
+     * @param metadata
+     */
+    AccessibleMember(T metadata) {
+        this.metadata = requireNonNull(metadata);
     }
 
     public final T metadata() {
-        return t;
+        return metadata;
     }
 }

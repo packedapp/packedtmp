@@ -25,23 +25,23 @@ import java.util.Set;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
+import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.inject.buildnodes.InternalBundleDescriptor;
 
 /**
  * A bundle descriptor.
+ * 
+ * <p>
+ * {@code BundleDescriptor} objects are immutable and safe for use by multiple concurrent threads.
+ * </p>
  */
 public class BundleDescriptor {
 
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
-    final Map<Key<?>, ServiceDescriptor> exposedServices;
-
-    final Set<Key<?>> optionalServices;
-
-    final Set<Key<?>> requiredServices;
-
-    private Services services;
+    /** a Services object. */
+    private final Services services;
 
     /**
      * Creates a new descriptor.
@@ -49,11 +49,9 @@ public class BundleDescriptor {
      * @param bundleType
      *            the type of the bundle
      */
-    BundleDescriptor(Class<? extends Bundle> bundleType, InternalBundleDescriptor ibd) {
+    BundleDescriptor(Class<? extends Bundle> bundleType, BundleDescriptorBuilder builder) {
         this.bundleType = bundleType;
-        this.exposedServices = ibd.exposedServices;
-        this.optionalServices = ibd.optionalServices;
-        this.requiredServices = ibd.requiredServices;
+        this.services = new Services(builder);
     }
 
     /**
@@ -92,9 +90,13 @@ public class BundleDescriptor {
         return bundleType.getModule();
     }
 
+    /**
+     * Return a {@link Services} object representing the exposed and required services of the bundle.
+     * 
+     * @return a services object
+     */
     public Services services() {
-        Services s = services;
-        return s == null ? services = new Services() : s;
+        return services;
     }
 
     @Override
@@ -139,8 +141,20 @@ public class BundleDescriptor {
     /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
 
     // The union of exposedServices, optionalService and requiredService must be empty
-    public class Services {
-        Services() {}
+    public static class Services {
+
+        /** The exposed services of the bundle. */
+        private final Map<Key<?>, ServiceDescriptor> exposedServices;
+
+        private final Set<Key<?>> optionalServices;
+
+        private final Set<Key<?>> requiredServices;
+
+        Services(BundleDescriptorBuilder builder) {
+            this.exposedServices = Map.copyOf(builder.exposedServices);
+            this.optionalServices = requireNonNull(builder.optionalServices);
+            this.requiredServices = requireNonNull(builder.requiredServices);
+        }
 
         /**
          * Returns an immutable map of all services that are available for importing.

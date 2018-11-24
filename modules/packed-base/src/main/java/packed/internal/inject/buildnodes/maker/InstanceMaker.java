@@ -15,7 +15,11 @@
  */
 package packed.internal.inject.buildnodes.maker;
 
+import java.lang.invoke.MethodHandles;
+
 import app.packed.inject.InjectionSite;
+import app.packed.inject.Injector;
+import app.packed.inject.Provides;
 
 /**
  *
@@ -24,5 +28,38 @@ public class InstanceMaker {
 
     public Object make(InjectionSite site) {
         return null;
+    }
+
+    public static void main(String[] args) {
+        Injector i = Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(new X());
+            c.bind(NeedIt.class);
+        });
+
+        i.with(String.class);
+
+        System.out.println("Bye");
+    }
+
+    // TODO men kan godt constructor dependende paa en statisk streng for et felt paa samme klasse
+    // Vi skal have owner med inde paa BuildNodeDefault....
+    // Eller maaske en owned node... Nej lad os sgu bare noejes med en node.....
+
+    public static class X {
+
+        @Provides
+        static final String foo = "dfdfdf";
+
+        @Provides
+        public String fff() {
+            return "pdfpdpd";
+        }
+    }
+
+    public static class NeedIt {
+        NeedIt(String s) {
+            System.out.println("Du eer for cool Kasper " + s);
+        }
     }
 }

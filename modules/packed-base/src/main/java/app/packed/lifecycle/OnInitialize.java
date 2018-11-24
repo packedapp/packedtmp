@@ -28,7 +28,7 @@ import app.packed.inject.Injector;
  * entity has transitioned to the {@link LifecycleState#INITIALIZING} state. But before it transitions to the
  * {@link LifecycleState#INITIALIZED} state.
  * <p>
- * This annotation can, for example, be used on method on a component instance, such as:
+ * This annotation can, for example, be used on the method of a component instance, such as:
  *
  * <pre>{@code  @OnInitialize
  * public void onInit() {

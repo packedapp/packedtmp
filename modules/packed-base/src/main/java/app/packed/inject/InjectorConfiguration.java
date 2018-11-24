@@ -111,12 +111,6 @@ public interface InjectorConfiguration extends Taggable {
 
     <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation);
 
-    default void deployInjector(Class<? extends InjectorBundle> bundleType, ServiceFilter... stages) {
-        deployInjector(Bundles.instantiate(bundleType), stages);
-    }
-
-    void deployInjector(InjectorBundle bundle, ServiceFilter... stages);
-
     /**
      * Returns the description of this injector, or null if no description has been set via {@link #setDescription(String)}.
      *
@@ -128,14 +122,53 @@ public interface InjectorConfiguration extends Taggable {
     String getDescription();
 
     /**
-     * Imports the services that are available in the specified injector.
-     *
-     * @param injector
-     *            the injector to import services from
+     * @param bundleType
+     *            the type of bundle to instantiate
+     * @param stages
+     */
+    default void injectorBind(Class<? extends InjectorBundle> bundleType, AbstractInjectorStage... stages) {
+        injectorBind(Bundles.instantiate(bundleType), stages);
+    }
+
+    /**
+     * Binds services from the specified injector.
+     * <p>
+     * A simple example, importing a singleton {@code String} service from one injector into another:
+     * 
+     * <pre> {@code
+     * Injector importFrom = Injector.of(c -> c.bind("foostring"));
+     * 
+     * Injector importTo = Injector.of(c -> {
+     *   c.bind(12345); 
+     *   c.injectorBind(importFrom);
+     * );
+     * 
+     * System.out.println(importTo.with(String.class));// prints "foostring"}
+     * </pre>
+     * <p>
+     * These method takes any number of import stages to restrict
+     * <p>
+     * For example, the following example take the injector we created in the previous example, and creates a new injector
+     * by removing anything but the {@code String} service.
+     * 
+     * <pre> {@code
+     * Injector i = Injector.of(c -> {
+     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
+     * });}
+     * </pre>
+     * 
+     * @param injector the injector to bind services from
+     * 
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
      */
-    void importServices(Injector injector, ServiceImportStage... stages);
+    void injectorBind(Injector injector, InjectorImportStage... stages);
+
+    /**
+     * @param bundle
+     * @param stages
+     */
+    void injectorBind(InjectorBundle bundle, AbstractInjectorStage... stages);
 
     /**
      * Sets the specified {@link Lookup lookup object} that will be used to instantiate new objects using constructors,
@@ -146,13 +179,13 @@ public interface InjectorConfiguration extends Taggable {
      * registered lookup object.
      * <p>
      * Lookup objects that have been explicitly set using {@link Factory#withLookup(java.lang.invoke.MethodHandles.Lookup)}
-     * are never overridden by any lookup object set using the method.
+     * are never overridden by any lookup object set using this method.
      * <p>
      * If no lookup is specified using this method, the runtime will use the public lookup
      * ({@link MethodHandles#publicLookup()}) for member access.
      *
      * @param lookup
-     *            the lookup object to use
+     *            the lookup object
      */
     void lookup(MethodHandles.Lookup lookup);
 
@@ -168,39 +201,3 @@ public interface InjectorConfiguration extends Taggable {
      */
     InjectorConfiguration setDescription(@Nullable String description);
 }
-
-// Disse giver ingen mening.
-// Man kan enten, lav en ny injector via Injector.of() og saa importere den via importInjector
-// Eller Saa lave en bundle
-// Det eneste skulle være hvis de skal bruge nogle dependencies, og saa selv giver nogen
-// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Bundle bundle) {
-// throw new UnsupportedOperationException();
-// }
-//
-// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Bundle bundle, Predicate<? super ServiceDescriptor> filter) {
-// throw new UnsupportedOperationException();
-// }
-//
-// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Class<? extends Bundle> bundle) {
-// throw new UnsupportedOperationException();
-// }
-//
-// default Map<Key<?>, ServiceConfiguration<?>> importFrom(Class<? extends Bundle> bundle, Predicate<? super
-// ServiceDescriptor> filter) {
-// throw new UnsupportedOperationException();
-// }
-// class D {
-// public static void main(InjectorConfiguration c) {
-// c.bind(new Factory0<>(System::currentTimeMillis) {});
-// c.bind(Long.class, System::currentTimeMillies);
-// Denne sidste giver ingen mening, saa det kan kun betale sig at have den med en class
-// c.bind(new TypeLiteral<Long>() {}, System::currentTimeMillies));
-// }
-// }
-// Name?, Nahhh syntes ikke vi behoever det, Context Yes
-
-// void optimizeFor(Optimizer.Speed);
-// Hvis man koerer den som det foerste....
-// enum Optimizer {MEMORY, SPEED, ECT...)
-// Paa en eller anden maade skal det foere tilbage til base environment..
-// Altsaa den skal kunne overskrive, f.eks. i development, er det altid fejlmeddelelser foerst

@@ -17,12 +17,18 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.inject.AbstractInjectorStage;
+import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorImportStage;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- *
+ * An abstract class for the various injector bind methods such as
+ * {@link InjectorConfiguration#injectorBind(Class, AbstractInjectorStage...)} and
+ * {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
  */
-public abstract class ImportServices {
+public abstract class BindInjector {
 
     /** The configuration site where the injector was imported. */
     final InternalConfigurationSite configurationSite;
@@ -30,7 +36,7 @@ public abstract class ImportServices {
     /** The configuration of the injector. */
     final InternalInjectorConfiguration injectorConfiguration;
 
-    public ImportServices(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite) {
+    public BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
     }

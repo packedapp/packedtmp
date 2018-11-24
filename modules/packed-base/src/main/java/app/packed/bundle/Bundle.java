@@ -19,8 +19,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.container.Container;
+import app.packed.inject.AbstractInjectorStage;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorImportStage;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
@@ -53,9 +56,9 @@ public abstract class Bundle {
             }
         });
     }
+
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
-
     Bundle() {}
 
     protected final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
@@ -195,6 +198,30 @@ public abstract class Bundle {
     protected final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
         throw new UnsupportedOperationException();
         // return internal().expose(configuration);
+    }
+
+    public void foo() {}
+
+    protected final void injectorBind(Class<? extends InjectorBundle> bundleType, AbstractInjectorStage... filters) {
+        internal().injectorBind(bundleType, filters);
+    }
+
+    /**
+     * Imports the services that are available in the specified injector.
+     *
+     * @param injector
+     *            the injector to import services from
+     * @param filters
+     *            any number of filters that restricts the services that are imported. Or makes them available under
+     *            different keys
+     * @see InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)
+     */
+    protected final void injectorBind(Injector injector, InjectorImportStage... filters) {
+        internal().injectorBind(injector, filters);
+    }
+
+    protected final void injectorBind(InjectorBundle bundle, AbstractInjectorStage... filters) {
+        internal().injectorBind(bundle, filters);
     }
 
     abstract InternalInjectorConfiguration internal();

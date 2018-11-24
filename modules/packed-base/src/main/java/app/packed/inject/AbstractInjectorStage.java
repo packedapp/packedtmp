@@ -24,13 +24,16 @@ import app.packed.util.Nullable;
 /**
  *
  */
-public abstract class ServiceFilter {
+// Bliver brugt som
+public abstract class AbstractInjectorStage {
+
+    /** A Lookup object. */
     @Nullable
     final MethodHandles.Lookup lookup;
 
     /** Creates a new filter */
-    ServiceFilter() {
-        this.lookup = null;
+    AbstractInjectorStage() {
+        this.lookup = MethodHandles.publicLookup();
     }
 
     /**
@@ -39,8 +42,7 @@ public abstract class ServiceFilter {
      * @param lookup
      *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
      */
-    ServiceFilter(MethodHandles.Lookup lookup) {
+    AbstractInjectorStage(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup, "lookup is null");
     }
-
 }

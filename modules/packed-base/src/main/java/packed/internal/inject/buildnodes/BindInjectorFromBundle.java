@@ -20,20 +20,20 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.ServiceFilter;
+import app.packed.inject.AbstractInjectorStage;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  *
  */
-public final class ImportServicesFromBundle extends ImportServices {
+public final class BindInjectorFromBundle extends BindInjector {
 
     private final InjectorBundle bundle;
 
-    private final List<ServiceFilter> filters;
+    private final List<AbstractInjectorStage> filters;
 
-    public ImportServicesFromBundle(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            ServiceFilter[] filters) {
+    public BindInjectorFromBundle(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
+            AbstractInjectorStage[] filters) {
         super(injectorConfiguration, configurationSite);
         this.bundle = requireNonNull(bundle, "bundle is null");
         this.filters = List.of(filters);
@@ -43,7 +43,7 @@ public final class ImportServicesFromBundle extends ImportServices {
         return bundle;
     }
 
-    public List<ServiceFilter> getFilters() {
+    public List<AbstractInjectorStage> getFilters() {
         return filters;
     }
 }

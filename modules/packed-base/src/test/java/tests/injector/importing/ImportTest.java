@@ -17,8 +17,7 @@ package tests.injector.importing;
 
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceExportStage;
-import app.packed.inject.ServiceImportStage;
+import app.packed.inject.InjectorImportStage;
 
 /**
  *
@@ -32,7 +31,7 @@ public class ImportTest {
         Injector.of(ParseIT.def().getBundleType());
 
         Injector.of(c -> {
-            c.deployInjector(I.class, ServiceImportStage.NONE, ServiceExportStage.NONE);
+            c.injectorBind(I.class, InjectorImportStage.NONE);
 
         });
     }

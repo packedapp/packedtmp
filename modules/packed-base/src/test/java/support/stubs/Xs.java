@@ -18,7 +18,7 @@ package support.stubs;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceImportStage;
+import app.packed.inject.InjectorImportStage;
 
 /**
  *
@@ -33,7 +33,7 @@ public class Xs {
         });
 
         Injector i2 = Injector.of(c -> {
-            c.importServices(i, ServiceImportStage.peek(e -> System.out.println("Available " + e.getKey())), ServiceImportStage.accept(String.class));
+            c.injectorBind(i, InjectorImportStage.peek(e -> System.out.println("Available " + e.getKey())), InjectorImportStage.accept(String.class));
         });
 
         System.out.println();

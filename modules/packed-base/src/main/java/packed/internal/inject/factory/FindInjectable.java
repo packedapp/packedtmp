@@ -24,6 +24,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.inject.Inject;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.InvalidDeclarationException;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
@@ -32,76 +33,30 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
- * This class is responsible for binding a single constructor or method from an implementation.
+ * This class is responsible for finding an injectable executable.
  */
 public class FindInjectable {
 
     public static <T> InternalFactory<T> find(Class<T> implementation) {
-        InternalExecutableDescriptor executable = findStaticMethod(implementation);
-        if (executable == null) {
-            executable = findConstructor(implementation);// moc.constructors().findInjectable();
-        }
+        InternalExecutableDescriptor executable = findExecutable(implementation);
         return new InternalFactoryExecutable<>(TypeLiteral.of(implementation), executable, InternalDependency.fromExecutable(executable),
                 executable.getParameterCount(), null);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> InternalFactory<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return (InternalFactory<T>) find(implementation.getRawType());
+        InternalExecutableDescriptor executable = findExecutable(implementation.getRawType());
+        return new InternalFactoryExecutable<>(implementation, executable, InternalDependency.fromExecutable(executable), executable.getParameterCount(), null);
     }
 
-    @SuppressWarnings("unchecked")
-    static <T> InternalConstructorDescriptor<T> findConstructor(Class<T> clazz) {
-        int maxParameters = 0;
-        Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
-        InternalConstructorDescriptor<T>[] constructors = new InternalConstructorDescriptor[declaredConstructors.length];
-        for (int i = 0; i < declaredConstructors.length; i++) {
-            constructors[i] = (InternalConstructorDescriptor<T>) InternalConstructorDescriptor.of(declaredConstructors[i]);
-            maxParameters = Math.max(maxParameters, constructors[i].getParameterCount());
-        }
-        // See if we only have one constructor, in which case we keep it for later
-        if (constructors.length == 1) {
-            // one = constructors[0];
-        }
-
-        // Look for a single constructor annotated with @Inject
-        InternalConstructorDescriptor<T> injectable = null;
-        for (InternalConstructorDescriptor<T> cm : constructors) {
-            if (JavaXInjectSupport.isInjectAnnotationPresent(cm)) {
-                if (injectable != null) {
-                    throw new IllegalArgumentException("Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class "
-                            + format(constructors[0].getDeclaringClass()));
-                }
-                injectable = cm;
-            }
-        }
-
-        // Look for a single constructor with the maximum number of parameters
-        if (injectable == null) {
-            for (InternalConstructorDescriptor<T> cm : constructors) {
-                if (cm.getParameterCount() == maxParameters) {
-                    if (injectable != null) {
-                        throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
-                                + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class "
-                                + format(constructors[0].getDeclaringClass()));
-                    }
-                    injectable = cm;
-                }
-            }
-        }
-        if (injectable == null) {
-            throw new IllegalArgumentException("Did not find anything");
-        }
-        return injectable;
-    }
-
-    static InternalMethodDescriptor findStaticMethod(Class<?> type) {
+    private static InternalExecutableDescriptor findExecutable(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
         } else if (type.isAnnotation()) {
             throw new IllegalArgumentException("The specified type (" + format(type) + ") is an annotation");
         }
+
+        // Try to find a single static method annotated with @Inject
         Method method = null;
         for (Method m : type.getDeclaredMethods()) {
             if (Modifier.isStatic(m.getModifiers()) && JavaXInjectSupport.isInjectAnnotationPresent(m)) {
@@ -111,18 +66,53 @@ public class FindInjectable {
                 method = m;
             }
         }
-        if (method == null) {
-            return null;
+        if (method != null) {
+            // Det er jo i virkeligheden en Key vi laver her, burde havde det samme checkout..
+            if (method.getReturnType() == void.class /* || returnType == Void.class */) {
+                throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
+                        + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
+            } else if (TypeUtil.isOptionalType(method.getReturnType())) {
+                throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
+                        + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
+            }
+            return InternalMethodDescriptor.of(method);
         }
 
-        // Det er jo i virkeligheden en Key vi laver her, burde havde det samme checkout..
-        if (method.getReturnType() == void.class /* || returnType == Void.class */) {
-            throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
-                    + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
-        } else if (TypeUtil.isOptionalType(method.getReturnType())) {
-            throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
-                    + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
+        // Try to find a single static method annotated with @Inject
+        Constructor<?>[] constructors = type.getDeclaredConstructors();
+
+        // If we only have 1 constructor, return it.
+        if (constructors.length == 1) {
+            return InternalConstructorDescriptor.of(constructors[0]);
         }
-        return InternalMethodDescriptor.of(method);
+
+        // See if we have a single constructor annotated with @Inject
+        Constructor<?> constructor = null;
+        int maxParameters = 0;
+        for (Constructor<?> c : constructors) {
+            maxParameters = Math.max(maxParameters, c.getParameterCount());
+            if (JavaXInjectSupport.isInjectAnnotationPresent(c)) {
+                if (constructor != null) {
+                    throw new InvalidDeclarationException(
+                            "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + format(type));
+                }
+                constructor = c;
+            }
+        }
+        if (constructor != null) {
+            return InternalConstructorDescriptor.of(constructor);
+        }
+
+        // Try and find one constructor with maximum number of parameters.
+        for (Constructor<?> c : constructors) {
+            if (c.getParameterCount() == maxParameters) {
+                if (constructor != null) {
+                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
+                            + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class " + format(type));
+                }
+                constructor = c;
+            }
+        }
+        return InternalConstructorDescriptor.of(constructor);
     }
 }

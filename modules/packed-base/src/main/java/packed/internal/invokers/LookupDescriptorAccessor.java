@@ -106,7 +106,7 @@ public final class LookupDescriptorAccessor {
         if (factory instanceof InternalFactoryExecutable) {
             InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory;
             if (!e.hasMethodHandle()) {
-                return e.withMethodLookup(lookup);
+                return e.withLookup(lookup);
             }
         }
         return factory;

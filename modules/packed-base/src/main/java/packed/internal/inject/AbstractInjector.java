@@ -87,8 +87,8 @@ public abstract class AbstractInjector implements Injector {
 
     protected final void injectMembers(ServiceClassDescriptor<?> descriptor, Object instance, @Nullable Component component) {
         // Inject fields
-        if (descriptor.hasInjectableFields()) {
-            for (AccessibleField<InternalDependency> field : descriptor.injectableFields()) {
+        if (!descriptor.injectableFields.isEmpty()) {
+            for (AccessibleField<InternalDependency> field : descriptor.injectableFields) {
                 InternalDependency dependency = field.metadata();
                 Node<?> node = findNode(dependency.getKey());
                 if (node != null) {
@@ -118,8 +118,8 @@ public abstract class AbstractInjector implements Injector {
         }
 
         // Inject methods
-        if (descriptor.hasInjectableMethods()) {
-            for (AccessibleExecutable<List<InternalDependency>> method : descriptor.injectableMethods()) {
+        if (!descriptor.injectableMethods.isEmpty()) {
+            for (AccessibleExecutable<List<InternalDependency>> method : descriptor.injectableMethods) {
                 List<InternalDependency> dependencies = method.metadata();
                 Object[] arguments = new Object[dependencies.size()];
                 System.out.println(arguments);

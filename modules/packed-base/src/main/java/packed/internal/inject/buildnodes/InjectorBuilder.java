@@ -61,10 +61,10 @@ public final class InjectorBuilder {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void setup() {
+    public void setup() {
         // First start by creating the new injectors.
         c.privateInjector = new InternalInjector(c, c.privateRuntimeNodes); // Ignores any parent + Bundle for now.
-        BuildNodeInstance<InternalInjector> inj = new BuildNodeInstance<>(c, c.getConfigurationSite(), c.privateInjector);
+        BuildNode<InternalInjector> inj = new BuildNodeDefault<>(c, c.getConfigurationSite(), c.privateInjector);
         inj.as(Injector.class);
         c.privateBuildNodeList.add(inj);
 
@@ -83,7 +83,7 @@ public final class InjectorBuilder {
         // Freeze
 
         // import all services...
-        for (ImportServices i : c.privateImports) {
+        for (BindInjector i : c.privateImports) {
             i.importInto(c);
         }
 
@@ -106,7 +106,7 @@ public final class InjectorBuilder {
             if (bn instanceof BuildNodeExposed) {
                 BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
                 Node<?> node = c.privateBuildNodeMap.get(bne.getPrivateKey());
-                bne.other = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
+                bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
             }
         }
 
@@ -153,8 +153,8 @@ public final class InjectorBuilder {
      */
     public void instantiateAll(InternalInjector injector) {
         for (BuildNode<?> node : c.privateBuildNodeList) {
-            if (node instanceof BuildNodeFactorySingleton) {
-                BuildNodeFactorySingleton<?> s = (BuildNodeFactorySingleton<?>) node;
+            if (node instanceof BuildNodeDefault) {
+                BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
                 if (s.getBindingMode() == BindingMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }

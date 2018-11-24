@@ -105,7 +105,11 @@ public final class AtProvides {
         return key;
     }
 
-    public static AtProvides from(InternalAnnotatedElement fieldOrMethod, Provides p) {
+    public static AtProvides from(InternalFieldDescriptor field, Provides p) {
+        Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
+        Key<?> key = Key.fromTypeLiteralNullableAnnotation(field, field.getTypeLiteral(), annotation);
+
+        return new AtProvides(field, key, p, List.of());
 
         // Extract key
         // Men vi skal jo have informationer om hvorfor
@@ -116,7 +120,6 @@ public final class AtProvides {
         // Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
         // because it "xxxxxx"
 
-        throw new UnsupportedOperationException();
     }
 
     public static Optional<AtProvides> find(InternalMethodDescriptor method) {

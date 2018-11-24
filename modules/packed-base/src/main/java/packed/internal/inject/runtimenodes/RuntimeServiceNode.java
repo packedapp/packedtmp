@@ -27,7 +27,7 @@ import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** A node that represents a service at runtime. */
-public abstract class RuntimeNode<T> implements Node<T> {
+public abstract class RuntimeServiceNode<T> implements Node<T> {
 
     /** The point where this node was registered. */
     private final InternalConfigurationSite configurationSite;
@@ -48,7 +48,7 @@ public abstract class RuntimeNode<T> implements Node<T> {
      * @param node
      *            the build node to create the runtime node from
      */
-    RuntimeNode(BuildNode<T> node) {
+    RuntimeServiceNode(BuildNode<T> node) {
         this.configurationSite = requireNonNull(node.getConfigurationSite());
         this.description = node.getDescription();
         this.key = requireNonNull(node.getKey());
@@ -74,6 +74,12 @@ public abstract class RuntimeNode<T> implements Node<T> {
         return key;
     }
 
+    // Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
+    // F.eks. man eftersporger Foo.class, men maaske er der en FooImpl et sted
+    public boolean isAssignableTo(Class<?> type) {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final boolean needsResolving() {
@@ -88,7 +94,7 @@ public abstract class RuntimeNode<T> implements Node<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final RuntimeNode<T> toRuntimeNode() {
+    public final RuntimeServiceNode<T> toRuntimeNode() {
         return this;
     }
 
@@ -96,10 +102,5 @@ public abstract class RuntimeNode<T> implements Node<T> {
     @Override
     public final String toString() {
         return getKey() + "[" + getBindingMode() + "]: " + getDescription();
-    }
-
-    // Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
-    public boolean isAssignableTo(Class<?> type) {
-        throw new UnsupportedOperationException();
     }
 }

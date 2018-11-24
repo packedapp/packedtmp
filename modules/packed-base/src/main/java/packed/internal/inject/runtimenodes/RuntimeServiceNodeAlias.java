@@ -22,11 +22,14 @@ import app.packed.inject.InjectionSite;
 import packed.internal.inject.Node;
 import packed.internal.inject.buildnodes.BuildNode;
 
-/** The runtime representation of an aliased service. It basically just delegates all calls to the aliased node. */
-public final class RuntimeNodeAlias<T> extends RuntimeNode<T> {
+/**
+ * The runtime representation of an aliased service which delegates the getInstance() to the aliased node. This type is
+ * used for exposed nodes as well as nodes that are imported from other injectors.
+ */
+public final class RuntimeServiceNodeAlias<T> extends RuntimeServiceNode<T> {
 
     /** The runtime node to delegate to. */
-    private final RuntimeNode<T> aliasOf;
+    private final RuntimeServiceNode<T> aliasOf;
 
     /**
      * Creates a new runtime alias node.
@@ -34,7 +37,7 @@ public final class RuntimeNodeAlias<T> extends RuntimeNode<T> {
      * @param aliasOf
      *            the build time alias node to create a runtime node from
      */
-    public RuntimeNodeAlias(BuildNode<T> buildNode, Node<T> aliasOf) {
+    public RuntimeServiceNodeAlias(BuildNode<T> buildNode, Node<T> aliasOf) {
         super(buildNode);
         this.aliasOf = requireNonNull(aliasOf.toRuntimeNode());
     }

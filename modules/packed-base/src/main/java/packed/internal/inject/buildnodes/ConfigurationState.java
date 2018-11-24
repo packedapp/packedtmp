@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector;
+package packed.internal.inject.buildnodes;
 
 /**
  *
  */
-public class InjectorConfigurationImportTest {
 
+// Ideen er vi har en enkelt af denne, og saa kan man invoke checkBind(), checkInstall(), ect foerend nogle metoder.
+// Det eneste daarlige med at dele det op paa den maade, er for features/extensions som ikke har adgang til dette...
+
+// Den er kun noedvendig hvis har raekkefoelge
+enum ConfigurationState {
+
+    ANY,
+
+    EXTEND_FINISHED;
+
+    public void checkBind() {};
+
+    public void checkExpose() {};
 }

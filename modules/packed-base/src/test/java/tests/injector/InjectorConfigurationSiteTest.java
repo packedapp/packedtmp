@@ -93,7 +93,7 @@ public class InjectorConfigurationSiteTest {
         ConfigurationSite cs = sc.getConfigurationSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
-        assertThat(cs.operation()).isEqualTo(ConfigurationSiteType.INJECTOR_BIND.operation());
+        assertThat(cs.operation()).isEqualTo(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND.operation());
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
         sites.put(sc.getKey().getTypeLiteral().getRawType(), cs);
@@ -111,7 +111,7 @@ public class InjectorConfigurationSiteTest {
 
         Injector i2 = Injector.of(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
-            c.importServices(i);
+            c.injectorBind(i);
         });
 
         ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
@@ -124,7 +124,7 @@ public class InjectorConfigurationSiteTest {
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.of(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
-            c.importServices(i2);
+            c.injectorBind(i2);
         });
 
         cs = i3.getService(Integer.class).getConfigurationSite();

@@ -37,8 +37,8 @@ import java.lang.annotation.Target;
  * return non-final-field;.... Maaske skriv noget med volatile og multiple threads
  * 
  * <p>
- * Both fields and methods can make used of qualifiers to specify the exact key they are made available under. if
- * needed, for example, given to Qualifier annotations: {@code @Left} and {@code @Right}<pre>
+ * Both fields and methods can make used of qualifiers to specify the exact key they are made available under. For
+ * example, given to two qualifier annotations: {@code @Left} and {@code @Right}<pre>
  *  &#64;Left
  *  &#64;Provides
  *  String name = "left";
@@ -50,11 +50,11 @@ import java.lang.annotation.Target;
  *  }
  *  </pre>
  * 
- * The field will be made available under {@code Key<@Left String>} while the method will be made available under
- * {@code Key<@Right String>}.
+ * The field will is made available with the key {@code Key<@Left String>} while the method will be made available under
+ * the key {@code Key<@Right String>}.
  * <p>
- * Provided objects are <b>never</b> injected when returned by a method or read from a field. This must be done manually
- * if needed, for example, via <pre> 
+ * The objects provided by fields and methods are <b>never</b> injected. This must be done manually if needed, for
+ * example, via <pre> 
  *   &#64;Provides
  *   public SomeObject provide(String name, Injector i) {
  *       SomeObject o = new SomeObject(name);
@@ -63,10 +63,11 @@ import java.lang.annotation.Target;
  *   }
  * </pre>
  * <p>
- * You cannot register a service that have anything but singleton scope
+ * Placing You cannot register a service that have anything but singleton scope
  * 
  * place this annotation on objects that do not have
  * 
+ * <p>
  * // Null is only a valid result, if the dependency is optional. Otherwise it is a failure
  * 
  * Or do we????

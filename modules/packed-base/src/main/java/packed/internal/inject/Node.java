@@ -22,7 +22,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.runtimenodes.RuntimeNode;
+import packed.internal.inject.runtimenodes.RuntimeServiceNode;
 
 /**
  * A node is the base interface for internally registered services.
@@ -62,7 +62,7 @@ public interface Node<T> extends ServiceDescriptor {
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */
-    RuntimeNode<T> toRuntimeNode();
+    RuntimeServiceNode<T> toRuntimeNode();
 
     default boolean isPrivate() {
         return getKey().equals(CommonKeys.INJECTOR_KEY) || getKey().equals(CommonKeys.CONTAINER_KEY);

@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package tests.injector;
 
 /**
  *
  */
-public class ServiceExportStage extends ServiceFilter {
+public class InjectorBindInjector {
 
-    public static final ServiceExportStage NONE = null;
-
-    protected final boolean isRequired(Key<?> key) {
-        return false;
-    }
-
-    protected void filterMandatory(ServiceConfiguration<?> configuration) {
-        filter(configuration);
-    }
-
-    protected void filterOptional(ServiceConfiguration<?> configuration) {
-        filter(configuration);
-    }
-
-    protected void filter(ServiceConfiguration<?> configuration) {
-        // if (configuration.getKey() isN)
-
-    }
 }

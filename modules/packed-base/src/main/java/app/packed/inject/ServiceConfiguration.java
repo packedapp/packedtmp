@@ -47,10 +47,14 @@ public interface ServiceConfiguration<T> extends Taggable {
     ServiceConfiguration<T> as(Key<? super T> key);
 
     /**
-     * Indicates that the service will not be made available under any key.
+     * Indicates that the service will be disabled. There are a number of use cases for this method:
      * <p>
      * The primary use for this method is to register object with has fields and/or methods annotated with {@link Provides}.
      * But where we do not want to expose the declaring class as a service.
+     * <p>
+     * Install component with a serv
+     * <p>
+     * For import and export stages, to indicate that a service should not be send further in the pipeline.
      * 
      * @return this configuration
      */

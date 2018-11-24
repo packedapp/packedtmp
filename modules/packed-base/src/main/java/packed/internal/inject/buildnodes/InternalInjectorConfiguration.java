@@ -22,20 +22,25 @@ import java.util.HashSet;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.InjectorBundle;
+import app.packed.inject.AbstractInjectorStage;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorImportStage;
 import app.packed.inject.Key;
+import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceFilter;
-import app.packed.inject.ServiceImportStage;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalInjector;
 import packed.internal.inject.NodeMap;
 import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.factory.InternalFactoryField;
+import packed.internal.invokers.AccessibleField;
+import packed.internal.invokers.ServiceClassDescriptor;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.util.descriptor.AtProvides;
 
 /** The default implementation of {@link InjectorConfiguration}. */
 public class InternalInjectorConfiguration extends AbstractInjectorConfiguration {
@@ -46,7 +51,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     final NodeMap privateBuildNodeMap = new NodeMap();
 
     /** A list of imports/exports from injectors or injector bundles */
-    final ArrayList<ImportServices> privateImports = new ArrayList<>();
+    final ArrayList<BindInjector> privateImports = new ArrayList<>();
 
     InternalInjector privateInjector;
 
@@ -78,26 +83,31 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        BuildNode<T> node = new BuildNodeInstance<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_BIND), instance);
+
+        InternalConfigurationSite ics = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
+        ServiceClassDescriptor<?> scd = super.accessor.getServiceDescriptor(instance.getClass());
+        BuildNode<T> node = new BuildNodeDefault<>(this, ics, instance);
+
+        for (AccessibleField<AtProvides> s : scd.fieldsAtProvides) {
+            // take configuration from AccessibleField, and splice in ontop of
+            InternalConfigurationSite icss = ics.spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
+                    s.metadata().getAnnotatedMember().getAnnotation(Provides.class), s.descriptor());
+            InternalFactoryField<?> iff = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
+
+            BuildNodeDefault<?> bnn = new BuildNodeDefault<>(this, icss, iff, s.metadata().getBindingMode());
+            bindNode(bnn).as((Key) s.metadata().getKey());
+            System.out.println(s.descriptor());
+        }
         return bindNode(node).as((Class) instance.getClass());
     }
 
     @Override
     protected final <T> ServiceConfiguration<T> bindFactory(BindingMode mode, Factory<T> factory) {
-        InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_BIND);
-        final BuildNode<T> node;
+        InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFactory<T> f = InternalFactory.from(factory);
         f = accessor.readable(f);
-        switch (mode) {
-        case LAZY_SINGLETON:
-            node = new BuildNodeFactorySingleton<>(this, frame, f, true);
-            break;
-        case SINGLETON:
-            node = new BuildNodeFactorySingleton<>(this, frame, f, false);
-            break;
-        default:
-            node = new BuildNodeFactoryPrototype<T>(this, frame, f);
-        }
+
+        BuildNode<T> node = new BuildNodeDefault<>(this, frame, f, mode);
         return bindNode(node).as(factory.getKey());
     }
 
@@ -124,11 +134,11 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     }
 
     @Override
-    public void deployInjector(InjectorBundle bundle, ServiceFilter... filters) {
+    public void injectorBind(InjectorBundle bundle, AbstractInjectorStage... filters) {
         requireNonNull(bundle, "bundle is null");
         requireNonNull(filters, "filters is null");
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
-        privateImports.add(new ImportServicesFromBundle(this, cs, bundle, filters));
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        privateImports.add(new BindInjectorFromBundle(this, cs, bundle, filters));
     }
 
     /**
@@ -144,7 +154,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
 
     public final <T> ServiceConfiguration<T> expose(Key<T> key) {
         freezeBindings();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
         BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, key);
         // Lookup and copy from original, such things as description, and tags
         // We are really in expose only mode, all imports should have been resolved.
@@ -159,15 +169,16 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public final void importServices(Injector injector, ServiceImportStage... stages) {
+    public final void injectorBind(Injector injector, InjectorImportStage... stages) {
         requireNonNull(stages, "stages is null");
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_IMPORT_FROM);
-        ImportServicesFromInjector is = new ImportServicesFromInjector(this, cs, injector, stages);
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, stages);
         privateImports.add(is);
         is.doStuff();
     }
 
     public Injector finish() {
+        freeze();
         new InjectorBuilder(this).build();
         return publicInjector;
     }

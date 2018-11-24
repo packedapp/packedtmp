@@ -32,11 +32,26 @@ import app.packed.container.Container;
  * Instead an instance of this inte
  *
  */
+// start/stop/stop(Throwable)
+// uninstall()/uninstall(Throwable) / or stop(Throwable).uninstall(); (Stopping return a StopFuture with uninstall)
 // TODO LifecycleExpansion
 // Nu har vi syncpoints paa en container, men ikke paa en component...
 // Maaske er det bare for containeren???? Eller maaske smider de unsupported operation exception.
 // Virker lidt maerkeligt at "inititalized" bleviver haandteret af component, men "dddd" bliver haandteret af
 // containeren.
+
+// Vi har ogsaa start/stop/stop(throwable).
+// uninstall (attachable)
+
+// LifecyclePoint extends SyncPoint() {
+// LfecycleState() getEnum())
+// lockAndRun....
+// }
+// component.pointOf("fooo").await();
+// component.pointOf("fooo").thenRun();
+
+// component.state().of(Initializated).await();
+// then run();
 public interface LifecycleOperations<T> {
 
     /**

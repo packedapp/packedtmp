@@ -32,6 +32,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 // Todo maybe ditch<T> pro
 public abstract class AbstractConfiguration<T extends AbstractConfiguration<T>> {
 
+    /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
 
     /** The description. */
@@ -49,7 +50,11 @@ public abstract class AbstractConfiguration<T extends AbstractConfiguration<T>> 
         this.configurationSite = requireNonNull(configurationSite);
     }
 
-    protected void checkConfigurable() {}
+    protected void checkConfigurable() {
+        if (isFrozen) {
+            throw new IllegalStateException();
+        }
+    }
 
     protected void freeze() {
         isFrozen = true;

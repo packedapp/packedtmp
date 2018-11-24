@@ -28,22 +28,24 @@ package app.packed.lifecycle;
  * "automatically". That is, when all the startup code has been successfully executed. The object will automatically
  * transition to the {@link #RUNNING} state without the user having to do anything.
  */
+// Failure on Initializain -> Stopping or Terminated?
+// Stop called on Initialized -> Stopping or Terminated? (should be same as above)
+// Stop while starting
 public enum LifecycleState {
 
     /**
-     * The initial state in the lifecycle of an entity. The en will remain in this state until it is started by an external
-     * action, for example, by calling start. After which it will transition to the {@link #STARTING} state.
-     *
-     * Typically this state is used for reading and validating the configuration of entities.
-     *
+     * The initial state in the lifecycle of an entity. This state is typically used for reading and validating the
+     * configuration of the entity. Throwing and runtime exception or error if some invariant is broken. When the entity
+     * successfully finishes this phase it will move to the {@link #INITIALIZED} state.
      */
     INITIALIZING,
 
     /**
-     * This is the state an entity reaches immediately after it has been successfully initialized.
+     * A state indicating that an entity has been successfully initialized.
      * <p>
-     * The entity will remain in this state until it is started by an external action of some kind. For example, if the user
-     * calls some kind of {@code start} function. After which it will transition to the {@link #STARTING} state.
+     * The entity will remain in this state until it is started by an external action of some kind. For example, if a user
+     * calls some kind of {@code start} function. After which the state of entity transitions to the {@link #STARTING}
+     * state.
      */
     INITIALIZED,
 
@@ -56,21 +58,18 @@ public enum LifecycleState {
     STARTING,
 
     /**
-     * The entity is running normally. The entity will remain in this state until it is shutdown by some stop action, after
-     * which it will transition to the {@link #STOPPING} state.
-     *
+     * The entity is running normally. The entity will remain in this state until it is shutdown by some kind of stop
+     * action, after which it will transition to the {@link #STOPPING} state.
      */
     RUNNING,
 
     /**
-     * The entity is currently in the process of being shutdown. When the entity has completed shutdown it will transition
-     * to the {@link #TERMINATED} state.
+     * The entity is currently in the process of being stopped. When the entity has been completely stopped it will
+     * transition to the {@link #TERMINATED} state.
      */
     STOPPING,
 
-    /**
-     * The final lifecycle state of an entity, it cannot transition to any other state.
-     */
+    /** The final lifecycle state of an entity, it cannot transition to any other state. */
     TERMINATED;
 
     /**
@@ -92,9 +91,9 @@ public enum LifecycleState {
     /**
      * Returns true if the entity has been shut down (in the {@link #STOPPING} or {@link #TERMINATED} state).
      *
-     * @return true if the entity has been shut down (in the shutdown or terminated state).
+     * @return true if the entity has been shut down (in the stopping or terminated state).
      */
     public boolean isShutdown() {
-        return this == TERMINATED || this == STOPPING;
+        return this == STOPPING || this == TERMINATED;
     }
 }

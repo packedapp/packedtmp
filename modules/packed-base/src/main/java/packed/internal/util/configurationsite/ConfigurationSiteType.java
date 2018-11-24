@@ -20,22 +20,27 @@ import static java.util.Objects.requireNonNull;
 /**
  *
  */
+
+// Separate for bundle/configuration?????
 public enum ConfigurationSiteType {
 
     /** */
-    INJECTOR_BIND("Injector.bind"),
+    BUNDLE_DESCRIPTOR_OF("Descriptor.of"),
 
     /** */
-    INJECTOR_IMPORT_FROM("Injector.importFrom"),
+    BUNDLE_EXPOSE("Injector.expose"),
 
     /** */
-    INJECTOR_IMPORT_SERVICE("Injector.importService"),
+    INJECTOR_CONFIGURATION_BIND("Injector.bind"),
+
+    /** */
+    INJECTOR_CONFIGURATION_INJECTOR_BIND("Injector.injectorBind"),
 
     /** */
     INJECTOR_OF("Injector.of"),
 
     /** */
-    DESCRIPTOR_OF("Descriptor.of");
+    INJECTOR_PROVIDE("Injector.provide");
 
     final String f;
 

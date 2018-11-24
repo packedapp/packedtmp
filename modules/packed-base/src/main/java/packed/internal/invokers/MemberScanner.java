@@ -74,6 +74,7 @@ class MemberScanner {
                 if (annotations.length > 0) {
                     // Multiple annotations
                     AccessibleField<InternalDependency> inject = MemberScanners.createIfInjectable(this, field, annotations);
+                    MemberScanners.createAtProvides(this, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
@@ -81,7 +82,6 @@ class MemberScanner {
                             System.out.println("OOPS");
                         }
                     }
-
                 }
             }
         }

@@ -37,6 +37,18 @@ import java.util.stream.Stream;
  * <p>
  * This interface will be extended in the future with additional methods.
  */
+
+// Cross
+// withDepthLessThen();<-maaske bedre med en traverser, det skal jo vaere relativt i forhold til node.stream().
+//// Maaske bedre at snakke om levels..
+
+// withModulePrefix() <- Does not stop traversel
+// print.... <- prints hierachels
+// print(Function<Component->String> <-maintains _-- alle stregerne
+// Maaske skal vi have en container printer.....
+// ContainerPrinter.print (.... or TreePrinter....).. Ideen er lidt at
+// sort(), skip, osv. ikke passer searlig godt ind...
+// filterOn
 public interface ComponentStream extends Stream<Component> {
 
     /**
@@ -132,6 +144,16 @@ public interface ComponentStream extends Stream<Component> {
     /** {@inheritDoc} */
     @Override
     ComponentStream filter(Predicate<? super Component> predicate);
+
+    default <T> ComponentStream filterOnType(Class<T> type) {
+        return filter(c -> {
+            return c.getInstance().getClass().isAssignableFrom(type);
+        });
+    }
+
+    default <T> ComponentStream filterOnInstance(Class<T> type, Predicate<T> predicate) {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override

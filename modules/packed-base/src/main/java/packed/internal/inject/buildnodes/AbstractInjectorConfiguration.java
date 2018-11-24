@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
+import app.packed.container.Container;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -40,7 +41,7 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
     /** The lookup object. We default to public access */
     protected LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
 
-    /** Any bundle we are configuring, or null if {@link Injector#of(Consumer)}. */
+    /** Any bundle we are configuring, or null if using {@link Injector#of(Consumer)} or {@link Container#of(Consumer)}. */
     @Nullable
     final Bundle bundle;
 
@@ -49,6 +50,8 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
      * 
      * @param configurationSite
      *            the configuration site
+     * @param bundle
+     *            if this configuration is created from a bundle
      */
     public AbstractInjectorConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle) {
         super(configurationSite);
@@ -97,7 +100,7 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        return bindFactory(BindingMode.LAZY_SINGLETON, Factory.findInjectable(implementation));
+        return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
@@ -108,7 +111,7 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        return bindFactory(BindingMode.LAZY_SINGLETON, factory);
+        return bindFactory(BindingMode.LAZY, factory);
     }
 
     @Override
@@ -118,7 +121,7 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
         // int depth = depth();
         // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
         // e.skip(depth).findFirst()));
-        return bindFactory(BindingMode.LAZY_SINGLETON, Factory.findInjectable(implementation));
+        return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
     @Override

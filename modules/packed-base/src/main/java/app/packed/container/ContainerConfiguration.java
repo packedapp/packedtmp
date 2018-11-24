@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.Bundle;
+import app.packed.bundle.ContainerBundle;
+import app.packed.inject.AbstractInjectorStage;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.ServiceFilter;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
@@ -40,11 +40,11 @@ import app.packed.util.InvalidDeclarationException;
  */
 public interface ContainerConfiguration extends InjectorConfiguration {
 
-    default void deploy(Bundle bundle, ServiceFilter... filters) {
-        throw new UnsupportedOperationException();// DeployedBundle
+    default void containerInstall(Class<? extends ContainerBundle> bundleType, AbstractInjectorStage... filters) {
+        throw new UnsupportedOperationException();
     }
 
-    default void deploy(Class<? extends Bundle> bundleType, ServiceFilter... filters) {
+    default void containerInstall(ContainerBundle bundle, AbstractInjectorStage... filters) {
         throw new UnsupportedOperationException();
     }
 
@@ -65,7 +65,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      *            the type of component to install
      * @param implementation
      *            the component implementation to install
-     * @return component configuration that can be use to configure the component in greater detail
+     * @return a component configuration that can be use to configure the component in greater detail
      * @throws InvalidDeclarationException
      *             if some property of the implementation prevents it from being installed as a component
      */

@@ -19,10 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import app.packed.util.ConfigurationSite;
+import app.packed.util.FieldDescriptor;
 
 /**
  * The interface used internally for a configuration. This method includes methods that we are not yet ready to put out
@@ -59,6 +61,10 @@ public interface InternalConfigurationSite extends ConfigurationSite {
 
     static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
+
+    default InternalConfigurationSite spawnAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
+        return new AnnotatedFieldConfigurationSite(this, cst, field, annotation);
+    }
 
     default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());

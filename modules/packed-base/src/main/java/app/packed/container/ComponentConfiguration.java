@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
@@ -23,8 +24,8 @@ import app.packed.util.Nullable;
 
 /**
  * The configuration of a components. A component configuration instance is usually obtained by calling one of the
- * install methods on XX or {@link ComponentConfiguration} at build time. Or one of the install methods on
- * {@link Component} at runtime.
+ * install methods on {@link ComponentConfiguration} or {@link ContainerBundle} at configuration time. Or one of the
+ * install methods on {@link Component} at runtime.
  */
 // add getChildren()?
 // add getComponentType() <- The type
@@ -116,28 +117,6 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
     @Override
     @Nullable
     String getDescription();
-
-    /**
-     * If the main component instance is registered as a service, returns the key under which it is registered. Otherwise
-     * returns null.
-     *
-     * @return if the main component instance is registered as a service, returns the key under which it is registered.
-     *         Otherwise returns null
-     */
-    //
-    // /**
-    // * Returns the key that this service is bound to. Services does not support bindings to null, however
-    // * ComponentConfiguration does. In which the object is installed as a component with all of its lifecycle capabilities
-    // * but not available as a service.
-    // *
-    // * @return the key that this service is bound to.
-    // */
-    // @Override
-    // Key<T> getKey();
-
-    @Override
-    @Nullable
-    Key<T> getKey();
 
     /**
      * Returns the name of the component or null if the name has not been set.

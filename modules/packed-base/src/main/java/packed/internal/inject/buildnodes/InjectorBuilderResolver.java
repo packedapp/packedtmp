@@ -44,7 +44,7 @@ public class InjectorBuilderResolver {
 
             if (node.needsResolving()) {
                 b.detectCyclesFor.add(node);
-                List<InternalDependency> dependencies = node.getDependencies();
+                List<InternalDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     Dependency dependency = dependencies.get(i);
                     Node<?> resolveTo = null;

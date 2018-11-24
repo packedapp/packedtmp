@@ -22,8 +22,11 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
 import packed.internal.inject.buildnodes.BuildNode;
 
-/** An instantiated runtime node. */
-public final class RuntimeNodeInstance<T> extends RuntimeNode<T> implements Provider<T> {
+/**
+ * An runtime service node holding {@link BindingMode#SINGLETON} instances. This node also holds
+ * {@link BindingMode#LAZY} instances that are created at configuration.
+ */
+public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> implements Provider<T> {
 
     /**
      * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
@@ -40,7 +43,7 @@ public final class RuntimeNodeInstance<T> extends RuntimeNode<T> implements Prov
      * @param buildNode
      *            the node to create this node from
      */
-    public RuntimeNodeInstance(BuildNode<T> buildNode, T instance, BindingMode bindingMode) {
+    public RuntimeServiceNodeSingleton(BuildNode<T> buildNode, T instance, BindingMode bindingMode) {
         super(buildNode);
         this.instance = requireNonNull(instance);
         this.bindingMode = requireNonNull(bindingMode);

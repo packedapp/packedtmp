@@ -26,16 +26,19 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
 /**
  *
  */
-public class AccessibleExecutable<T> extends AccessibleMember<T> {
+public class AccessibleExecutable<T> {
 
     /** The descriptor of the field. */
     private final InternalExecutableDescriptor descriptor;
+
+    /** An metadata object, can probably change to non-null */
+    private final T metadata;
 
     /** The method handle of the executable. */
     private final MethodHandle methodHandle;
 
     public AccessibleExecutable(InternalExecutableDescriptor descriptor, Lookup lookup, T t) {
-        super(t);
+        this.metadata = requireNonNull(t);
         this.descriptor = descriptor;
         try {
             this.methodHandle = descriptor.unreflect(lookup);
@@ -53,6 +56,7 @@ public class AccessibleExecutable<T> extends AccessibleMember<T> {
      *            the lookup object to use for access
      */
     public AccessibleExecutable(InternalExecutableDescriptor descriptor, MethodHandle methodHandle) {
+        this.metadata = null;
         this.descriptor = descriptor;
         this.methodHandle = requireNonNull(methodHandle);
     }
@@ -66,13 +70,9 @@ public class AccessibleExecutable<T> extends AccessibleMember<T> {
      *            the lookup object to use for access
      */
     public AccessibleExecutable(InternalExecutableDescriptor descriptor, MethodHandle methodHandle, T t) {
-        super(t);
+        this.metadata = requireNonNull(t);
         this.descriptor = descriptor;
         this.methodHandle = requireNonNull(methodHandle);
-    }
-
-    public final Object invoke(Object... arguments) throws Throwable {
-        return methodHandle.invokeWithArguments(arguments);
     }
 
     /**
@@ -82,6 +82,14 @@ public class AccessibleExecutable<T> extends AccessibleMember<T> {
      */
     public InternalExecutableDescriptor descriptor() {
         return descriptor;
+    }
+
+    public final Object invoke(Object... arguments) throws Throwable {
+        return methodHandle.invokeWithArguments(arguments);
+    }
+
+    public T metadata() {
+        return metadata;
     }
 
     public MethodHandle methodHandle() {

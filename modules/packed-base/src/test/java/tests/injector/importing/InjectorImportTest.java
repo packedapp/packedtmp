@@ -22,20 +22,20 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorImportStage;
 import app.packed.inject.Key;
-import app.packed.inject.ServiceImportStage;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfiguration#importServices(Injector, ServiceImportStage...)} method. */
+/** Tests the {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)} method. */
 public class InjectorImportTest {
 
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
         Injector i = Injector.of(c -> c.bind("X"));
-        npe(() -> Injector.of(c -> c.importServices(null)), "injector");
-        npe(() -> Injector.of(c -> c.importServices(i, (ServiceImportStage[]) null)), "stages");
+        npe(() -> Injector.of(c -> c.injectorBind((Injector) null)), "injector");
+        npe(() -> Injector.of(c -> c.injectorBind(i, (InjectorImportStage[]) null)), "stages");
     }
 
     /** Tests that we can import no services. */
@@ -47,7 +47,7 @@ public class InjectorImportTest {
         });
 
         Injector i = Injector.of(c -> {
-            c.importServices(i1, ServiceImportStage.NONE);
+            c.injectorBind(i1, InjectorImportStage.NONE);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -58,8 +58,8 @@ public class InjectorImportTest {
         Injector i1 = Injector.of(c -> c.bind("X"));
 
         Injector i = Injector.of(c -> {
-            c.importServices(i1, ServiceImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
-                    ServiceImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.injectorBind(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
+                    InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
         });
         assertThat(i.hasService(String.class)).isFalse();
         assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
@@ -73,8 +73,8 @@ public class InjectorImportTest {
         Injector i2 = Injector.of(c -> c.bind("Y"));
 
         Injector i = Injector.of(c -> {
-            c.importServices(i1, ServiceImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}));
-            c.importServices(i2, ServiceImportStage.rebind(new Key<String>() {}, new Key<@Right String>() {}));
+            c.injectorBind(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}));
+            c.injectorBind(i2, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Right String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
@@ -88,16 +88,16 @@ public class InjectorImportTest {
         Injector i2 = Injector.of(c -> c.bind("Y").as(new Key<@Right String>() {}));
 
         Injector i = Injector.of(c -> {
-            c.importServices(i1);
-            c.importServices(i2);
+            c.injectorBind(i1);
+            c.injectorBind(i2);
         });
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
         assertThat(i.with(new Key<@Right String>() {})).isEqualTo("Y");
 
         // Now let us switch them around
         i = Injector.of(c -> {
-            c.importServices(i1, ServiceImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
-            c.importServices(i2, ServiceImportStage.rebind(new Key<@Right String>() {}, new Key<@Left String>() {}));
+            c.injectorBind(i1, InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.injectorBind(i2, InjectorImportStage.rebind(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("Y");

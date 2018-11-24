@@ -51,8 +51,8 @@ public final class DependecyCycleDetector {
                     to = owner;
                 }
 
-                if (to.needsResolving() && to instanceof BuildNodeFactory) {
-                    BuildNodeFactory<?> ic = (BuildNodeFactory<?>) to;
+                if (to.needsResolving() && to instanceof BuildNodeDefault) {
+                    BuildNodeDefault<?> ic = (BuildNodeDefault<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);
                         // See if the component is already on the stack -> A cycle has been detected

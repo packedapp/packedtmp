@@ -49,5 +49,4 @@ public class Bundles {
                     "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
         }
     }
-
 }

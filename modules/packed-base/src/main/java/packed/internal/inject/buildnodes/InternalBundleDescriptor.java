@@ -15,17 +15,10 @@
  */
 package packed.internal.inject.buildnodes;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import app.packed.bundle.Bundle;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.BindingMode;
-import app.packed.inject.Key;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.util.ConfigurationSite;
-import app.packed.util.Nullable;
+import app.packed.inject.ServiceConfiguration;
+import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -35,96 +28,29 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  */
 public class InternalBundleDescriptor {
 
-    public Map<Key<?>, ServiceDescriptor> exposedServices;
-    public Set<Key<?>> optionalServices;
-    public Set<Key<?>> requiredServices;
-
     /**
      * @param bundle
      * @return
      */
-    public static InternalBundleDescriptor of(Bundle bundle) {
-        InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.DESCRIPTOR_OF);
-
+    public static BundleDescriptorBuilder of(Bundle bundle) {
+        InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         InternalInjectorConfiguration conf = new InternalInjectorConfiguration(ics, bundle);
 
         BundleSupport.configure((InjectorBundle) bundle, conf, false);
 
-        InjectorBuilder ib = new InjectorBuilder(conf);
-        ib.setup();
+        InjectorBuilder injectorBuilder = new InjectorBuilder(conf);
+        injectorBuilder.setup();
 
-        InternalBundleDescriptor d = new InternalBundleDescriptor();
-
-        d.requiredServices = Set.copyOf(conf.requiredServicesMandatory);
-        d.optionalServices = Set.copyOf(conf.requiredServicesOptionally);
-        HashMap<Key<?>, ServiceDescriptor> map = new HashMap<>();
+        //////////////// Create the builder
+        BundleDescriptorBuilder builder = new BundleDescriptorBuilder();
         for (BuildNode<?> n : conf.publicExposedNodeList) {
             if (n instanceof BuildNodeExposed) {
-                BuildNodeExposed<?> bne = (BuildNodeExposed<?>) n;
-                ServiceDescriptor sd = new ServiceDescriptorImpl(bne);
-                map.put(sd.getKey(), sd);
+                builder.addExposed((ServiceConfiguration<?>) n);
             }
         }
-        d.exposedServices = Map.copyOf(map);
-        return d;
+        builder.addOptionalServices(conf.requiredServicesOptionally);
+        builder.addRequiredServices(conf.requiredServicesMandatory);
+        return builder;
     }
 
-    static class ServiceDescriptorImpl implements ServiceDescriptor {
-        private final BindingMode bindingMode;
-        private final ConfigurationSite configurationSite;
-        private final @Nullable String description;
-        private final Key<?> key;
-
-        private final Set<String> tags;
-
-        ServiceDescriptorImpl(BuildNodeExposed<?> bne) {
-            this.key = bne.getKey();
-            this.tags = Set.copyOf(bne.tags());
-            this.bindingMode = bne.getBindingMode();
-            this.configurationSite = bne.getConfigurationSite();
-            this.description = bne.getDescription();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BindingMode getBindingMode() {
-            return bindingMode;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigurationSite getConfigurationSite() {
-            return configurationSite;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public @Nullable String getDescription() {
-            return description;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Key<?> getKey() {
-            return key;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<String> tags() {
-            return tags;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[Key = " + getKey().toStringSimple());
-            sb.append(", bindingMode = " + getBindingMode());
-            if (!tags.isEmpty()) {
-                sb.append(", tags = " + tags);
-            }
-            sb.append("]");
-            return sb.toString();
-        }
-    }
 }

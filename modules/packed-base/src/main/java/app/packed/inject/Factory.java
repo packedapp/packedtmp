@@ -189,7 +189,7 @@ public class Factory<T> {
         if (!(factory instanceof InternalFactoryExecutable)) {
             throw new UnsupportedOperationException("This method is only supported by factories that was created from a constructor or a method");
         }
-        return new Factory<>(((InternalFactoryExecutable<T>) factory).withMethodLookup(lookup));
+        return new Factory<>(((InternalFactoryExecutable<T>) factory).withLookup(lookup));
     }
 
     public final Factory<T> withKey(Key<? super T> key) {

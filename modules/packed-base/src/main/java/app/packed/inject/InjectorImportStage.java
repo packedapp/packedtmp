@@ -36,10 +36,11 @@ import app.packed.util.Nullable;
  * A stage that is executed during the import phase of an injector or module.
  */
 // TODO preProcess(), postProcess() <- mainly to check invariants, for example, did not find a key to rebind.
-public abstract class ServiceImportStage extends ServiceFilter {
+// Renamed because we do not want ComponentImportStage but ContainerImportStage
+public abstract class InjectorImportStage extends AbstractInjectorStage {
 
-    /** A filter that imports nothing. */
-    public static final ServiceImportStage NONE = new ServiceImportStage() {
+    /** A stage that reject every service. */
+    public static final InjectorImportStage NONE = new InjectorImportStage() {
 
         @Override
         public void process(ServiceConfiguration<?> sc) {
@@ -48,7 +49,7 @@ public abstract class ServiceImportStage extends ServiceFilter {
     };
 
     /** Creates a new stage */
-    protected ServiceImportStage() {}
+    protected InjectorImportStage() {}
 
     /**
      * Creates a new stage with a lookup object. This constructor is typically only used if the extending class makes use of
@@ -57,7 +58,7 @@ public abstract class ServiceImportStage extends ServiceFilter {
      * @param lookup
      *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
      */
-    protected ServiceImportStage(MethodHandles.Lookup lookup) {
+    protected InjectorImportStage(MethodHandles.Lookup lookup) {
         super(lookup);
     }
 
@@ -79,16 +80,28 @@ public abstract class ServiceImportStage extends ServiceFilter {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Process each
+     * 
+     * @param sc
+     *            the service configuration
+     */
     public void process(ServiceConfiguration<?> sc) {}
+
+    /**
+     * A callback method that will be invoked, when all services has been processed by the stage. The default implementation
+     * does nothing.
+     */
+    protected void onFinish() {};
 
     /**
      * Returns a new import stage that only accepts services that have a key matching any of the specified class keys.
      * 
      * @param keys
-     *            the accepted keys
+     *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static ServiceImportStage accept(Class<?>... keys) {
+    public static InjectorImportStage accept(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return accept(d -> set.contains(d.getKey()));
@@ -98,10 +111,10 @@ public abstract class ServiceImportStage extends ServiceFilter {
      * Returns a new import stage that only accepts services that have a key matching any of the specified keys.
      * 
      * @param keys
-     *            the accepted keys
+     *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static ServiceImportStage accept(Key<?>... keys) {
+    public static InjectorImportStage accept(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Set.of(keys);
         return accept(d -> set.contains(d.getKey()));
@@ -111,15 +124,15 @@ public abstract class ServiceImportStage extends ServiceFilter {
      * Returns a new import stage that only accepts the services accepted by the specified predicate.
      * <p>
      * For example, {@code accept(s -> s.getKey().isQualifiedWith(Blue.class))} will return an import stage that will only
-     * accept the services that are qualified with a {@code @Blue} annotation.
+     * accept services that are qualified with {@code @Blue}.
      * 
      * @param predicate
      *            the predicate that selects which services are accepted by this stage
      * @return the new import stage
      */
-    public static ServiceImportStage accept(Predicate<? super ServiceDescriptor> predicate) {
+    public static InjectorImportStage accept(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
-        return new ServiceImportStage() {
+        return new InjectorImportStage() {
             @Override
             public void process(ServiceConfiguration<?> sc) {
                 if (!predicate.test(new DescriptorAdaptor(sc))) {
@@ -129,7 +142,7 @@ public abstract class ServiceImportStage extends ServiceFilter {
         };
     }
 
-    public static <T, S> ServiceImportStage adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
+    public static <T, S> InjectorImportStage adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
         // Nahhh kun supporte provides her.. Evt. Factory...
         throw new UnsupportedOperationException();
 
@@ -143,13 +156,25 @@ public abstract class ServiceImportStage extends ServiceFilter {
     // Og split det ud i Key<@XXX String>.
     // Det vil sige en service til mange...
 
-    // Returns an import filter that accepts all the services selected by the specified predicate
-
-    // c.importServices(i, ServiceImportStage.peek(e -> System.out.println("Available " + e.getKey())),
-    // ServiceImportStage.accept(String.class));
-    public static ServiceImportStage peek(Consumer<? super ServiceDescriptor> action) {
+    /**
+     * This method exists mainly to support debugging, where you want to see the services as they flow past a certain point
+     * in the import pipeline: <pre>
+     * {@code 
+     * Injector injector = some injector to import;
+     *
+     * Injector.of(c -> {
+     *   c.importServices(injector, ServiceImportStage.peek(e -> System.out.println("Importing service " + e.getKey())));
+     * });}
+     * </pre>
+     * 
+     * @param action
+     *            the action to perform for each service
+     * 
+     * @return the new stage
+     */
+    public static InjectorImportStage peek(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
-        return new ServiceImportStage() {
+        return new InjectorImportStage() {
             @Override
             public void process(ServiceConfiguration<?> sc) {
                 action.accept(new DescriptorAdaptor(sc));
@@ -168,10 +193,10 @@ public abstract class ServiceImportStage extends ServiceFilter {
      *            the key that the service should be rebound to
      * @return the new filter
      */
-    public static ServiceImportStage rebind(Key<?> key, Key<?> rebindTo) {
+    public static InjectorImportStage rebind(Key<?> key, Key<?> rebindTo) {
         requireNonNull(key, "rebindTo is null");
         requireNonNull(rebindTo, "rebindTo is null");
-        return new ServiceImportStage() {
+        return new InjectorImportStage() {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public void process(ServiceConfiguration<?> sc) {
@@ -182,17 +207,17 @@ public abstract class ServiceImportStage extends ServiceFilter {
         };
     }
 
-    public static ServiceImportStage reject(Class<?>... keys) {
+    public static InjectorImportStage reject(Class<?>... keys) {
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return reject(d -> set.contains(d.getKey()));
     }
 
-    public static ServiceImportStage reject(Key<?>... keys) {
+    public static InjectorImportStage reject(Key<?>... keys) {
         Set<Key<?>> set = Set.of(keys);
         return reject(d -> set.contains(d.getKey()));
     }
 
-    public static ServiceImportStage reject(Predicate<? super ServiceDescriptor> predicate) {
+    public static InjectorImportStage reject(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
         return accept(e -> !predicate.test(e));
     }

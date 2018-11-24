@@ -26,10 +26,8 @@ import packed.internal.inject.InternalDependency;
 import packed.internal.inject.buildnodes.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
 
-/**
- *
- */
-public final class RuntimeNodeFactory<T> extends RuntimeNode<T> implements Provider<T> {
+/** A runtime service node for prototypes. */
+public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -42,13 +40,13 @@ public final class RuntimeNodeFactory<T> extends RuntimeNode<T> implements Provi
     /**
      * @param node
      */
-    public RuntimeNodeFactory(BuildNode<T> node, InternalFactory<T> factory) {
+    public RuntimeServiceNodePrototype(BuildNode<T> node, InternalFactory<T> factory) {
         super(node);
         this.factory = requireNonNull(factory);
-        List<InternalDependency> dependencies = node.getDependencies();
+        List<InternalDependency> dependencies = node.dependencies;
         this.providers = new Provider[dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
-            RuntimeNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
+            RuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
             InjectionSite is = null;
             InjectionSite.of(null, dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);

@@ -30,15 +30,15 @@ public enum BindingMode {
      * A single service instance is created the f. Concurrent calls by other threads while constructing the value will
      * block.
      */
-    LAZY_SINGLETON,
+    LAZY,
 
     /** A new instance is created every time the service is requested. An injector will never attempt to cache it. */
     PROTOTYPE;
 
     /**
-     * Returns true if the binding mode is either {@link #SINGLETON} or {@link #LAZY_SINGLETON}, otherwise false.
+     * Returns true if the binding mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
      * 
-     * @return true if the binding mode is either {@link #SINGLETON} or {@link #LAZY_SINGLETON}, otherwise false
+     * @return true if the binding mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
      */
     public boolean isSingleton() {
         return this != PROTOTYPE;

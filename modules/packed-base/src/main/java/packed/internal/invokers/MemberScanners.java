@@ -47,7 +47,7 @@ public final class MemberScanners {
         return null;
     }
 
-    static AccessibleField<AtProvides> createIfPresent(MemberScanner builder, Field field, Annotation[] annotations) {
+    static AccessibleField<AtProvides> createAtProvides(MemberScanner builder, Field field, Annotation[] annotations) {
         for (Annotation a : annotations) {
             if (a.annotationType() == Provides.class) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
