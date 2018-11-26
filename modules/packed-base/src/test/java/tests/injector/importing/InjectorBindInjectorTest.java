@@ -28,7 +28,7 @@ import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
 /** Tests the {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)} method. */
-public class InjectorImportTest {
+public class InjectorBindInjectorTest {
 
     /** Tests various null arguments. */
     @Test
@@ -52,7 +52,7 @@ public class InjectorImportTest {
         assertThat(i.services().count()).isEqualTo(0L);
     }
 
-    /** Tests that we can import no services. */
+    /** Tests that we can import a single service. */
     @Test
     public void import1() {
         Injector i1 = Injector.of(c -> {

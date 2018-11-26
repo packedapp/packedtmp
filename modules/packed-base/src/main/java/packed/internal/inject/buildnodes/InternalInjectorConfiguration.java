@@ -59,7 +59,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     InternalInjector publicInjector;
 
     /** The runtime nodes that will be available in the injector. */
-    final NodeMap publicInjectorNodes = new NodeMap();
+    final NodeMap publicNodeMap = new NodeMap();
 
     HashSet<Key<?>> requiredServicesMandatory = new HashSet<>();
 
@@ -186,14 +186,12 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     }
 
     @Override
-    public void injectorBind(InjectorBundle bundle, ImportExportStage... filters) {
+    public void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
         requireNonNull(bundle, "bundle is null");
-        requireNonNull(filters, "filters is null");
+        requireNonNull(stages, "stages is null");
         freezeBindings();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        injectorBindings.add(new BindInjectorFromBundle(this, cs, bundle, filters));
-
-        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, filters);
+        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, stages);
         is.process();
         injectorBindings.add(is);
         for (BuildNodeImport<?> n : is.importedServices.values()) {
