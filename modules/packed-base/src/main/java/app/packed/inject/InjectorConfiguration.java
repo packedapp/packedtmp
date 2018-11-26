@@ -48,12 +48,12 @@ public interface InjectorConfiguration extends Taggable {
      * The following two example are equivalent
      * </p>
      * <pre> 
-     * Injector i = Injector.of(c -> { 
+     * Injector i = Injector.of(c -&gt; { 
      *    c.bind(SomeService.class); 
      * });
      * </pre> <pre> 
-     * Injector i = Injector.of(c -> { 
-     *   c.bind(SomeService.class).as(new Key<&#64;SomeQualifier SomeService>() {});
+     * Injector i = Injector.of(c -&gt; { 
+     *   c.bind(SomeService.class).as(new Key&lt;&#64;SomeQualifier SomeService&gt;() {});
      * });
      * </pre>
      * 
@@ -101,6 +101,8 @@ public interface InjectorConfiguration extends Taggable {
      * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will
      * not be instantiatied until it is requested, possible never.
      * 
+     * @param <T>
+     *            the type of service
      * @param implementation
      *            the implementation to bind
      * @return a service configuration object
@@ -154,6 +156,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param bundleType
      *            the type of bundle to instantiate
      * @param stages
+     *            optional stages
      */
     default void injectorBind(Class<? extends InjectorBundle> bundleType, ImportExportStage... stages) {
         injectorBind(Bundles.instantiate(bundleType), stages);
@@ -165,9 +168,9 @@ public interface InjectorConfiguration extends Taggable {
      * A simple example, importing a singleton {@code String} service from one injector into another:
      * 
      * <pre> {@code
-     * Injector importFrom = Injector.of(c -> c.bind("foostring"));
+     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
      * 
-     * Injector importTo = Injector.of(c -> {
+     * Injector importTo = Injector.of(c -&gt; {
      *   c.bind(12345); 
      *   c.injectorBind(importFrom);
      * );
@@ -181,15 +184,17 @@ public interface InjectorConfiguration extends Taggable {
      * that only imports the {@code String.class} service.
      * 
      * <pre>
-     * Injector i = Injector.of(c -> {
+     * Injector i = Injector.of(c -&gt; {
      *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
      * });
      * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
-     * Injector i = Injector.of(c -> {
+     * Injector i = Injector.of(c -&gt; {
      *   c.injectorBind(importTo, InjectorImportStage.reject(Integer.class));
      * });
      * </pre> @param injector the injector to bind services from
      * 
+     * @param injector
+     *            the injector to import services from
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
      */
@@ -197,7 +202,9 @@ public interface InjectorConfiguration extends Taggable {
 
     /**
      * @param bundle
+     *            the bundle to bind
      * @param stages
+     *            optional import/export stages
      */
     void injectorBind(InjectorBundle bundle, ImportExportStage... stages);
 
