@@ -19,8 +19,11 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.Bundles;
+import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.InjectorImportStage;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
@@ -31,17 +34,35 @@ import app.packed.util.Taggable;
 public interface InjectorConfiguration extends Taggable {
 
     /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
-     * find a valid constructor or method to instantiate the service instance once the injector is created.
+     * Binds the specified implementation as a new singleton service. An instance of the implementation will be created
+     * together with the injector that this configurations create. The runtime will use
+     * {@link Factory#findInjectable(Class)} to find the constructor or method used for instantiation.
      * <p>
-     * The default key for the service will be the specified {@code implementation}. If the implementation is annotated with
-     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
-     *
+     * The default key for the service will be the specified {@code implementation}. If the specified {@code Class} is
+     * annotated with a {@link Qualifier qualifier annotation}, the default key will include the qualifier. For example,
+     * given this implementation: <pre>
+     * &#64;SomeQualifier
+     * public class SomeService {}
+     * </pre>
+     * <p>
+     * The following two example are equivalent
+     * </p>
+     * <pre> 
+     * Injector i = Injector.of(c -> { 
+     *    c.bind(SomeService.class); 
+     * });
+     * </pre> <pre> 
+     * Injector i = Injector.of(c -> { 
+     *   c.bind(SomeService.class).as(new Key<&#64;SomeQualifier SomeService>() {});
+     * });
+     * </pre>
+     * 
      * @param <T>
      *            the type of service to bind
      * @param implementation
      *            the implementation to bind
      * @return a service configuration for the service
+     * @see Bundle#bind(Class)
      */
     <T> ServiceConfiguration<T> bind(Class<T> implementation);
 
@@ -76,6 +97,14 @@ public interface InjectorConfiguration extends Taggable {
 
     <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation);
 
+    /**
+     * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will
+     * not be instantiatied until it is requested, possible never.
+     * 
+     * @param implementation
+     *            the implementation to bind
+     * @return a service configuration object
+     */
     <T> ServiceConfiguration<T> bindLazy(Class<T> implementation);
 
     /**
@@ -126,12 +155,12 @@ public interface InjectorConfiguration extends Taggable {
      *            the type of bundle to instantiate
      * @param stages
      */
-    default void injectorBind(Class<? extends InjectorBundle> bundleType, AbstractInjectorStage... stages) {
+    default void injectorBind(Class<? extends InjectorBundle> bundleType, ImportExportStage... stages) {
         injectorBind(Bundles.instantiate(bundleType), stages);
     }
 
     /**
-     * Binds services from the specified injector.
+     * Binds all services from the specified injector.
      * <p>
      * A simple example, importing a singleton {@code String} service from one injector into another:
      * 
@@ -143,21 +172,23 @@ public interface InjectorConfiguration extends Taggable {
      *   c.injectorBind(importFrom);
      * );
      * 
-     * System.out.println(importTo.with(String.class));// prints "foostring"}
+     * System.out.println(importTo.with(String.class));// prints "foostring"}}
      * </pre>
      * <p>
-     * These method takes any number of import stages to restrict
+     * It is possible to specify one or import stages that can restrict or transform the imported services.
      * <p>
-     * For example, the following example take the injector we created in the previous example, and creates a new injector
-     * by removing anything but the {@code String} service.
+     * For example, the following example takes the injector we created in the previous example, and creates a new injector
+     * that only imports the {@code String.class} service.
      * 
-     * <pre> {@code
+     * <pre>
      * Injector i = Injector.of(c -> {
      *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
-     * });}
-     * </pre>
-     * 
-     * @param injector the injector to bind services from
+     * });
+     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
+     * Injector i = Injector.of(c -> {
+     *   c.injectorBind(importTo, InjectorImportStage.reject(Integer.class));
+     * });
+     * </pre> @param injector the injector to bind services from
      * 
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
@@ -168,12 +199,12 @@ public interface InjectorConfiguration extends Taggable {
      * @param bundle
      * @param stages
      */
-    void injectorBind(InjectorBundle bundle, AbstractInjectorStage... stages);
+    void injectorBind(InjectorBundle bundle, ImportExportStage... stages);
 
     /**
-     * Sets the specified {@link Lookup lookup object} that will be used to instantiate new objects using constructors,
-     * invoke methods, and read and write fields. The lookup object will be used for all service binding and component
-     * installations that happens after the invocation of this method.
+     * Sets a {@link Lookup lookup object} that will be used to access members (fields, constructors and methods) on
+     * registered objects. The lookup object will be used for all service binding and component installations that happens
+     * after the invocation of this method.
      * <p>
      * This method can be invoked multiple times. In all cases the object being bound or installed will use the latest
      * registered lookup object.

@@ -48,8 +48,8 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
 
     private final int numberOfMissingDependencies;
 
-    InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies, int numberOfMissingDependencies,
-            MethodHandle methodHandle) {
+    public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies,
+            int numberOfMissingDependencies, MethodHandle methodHandle) {
         super(key, dependencies);
         this.executable = executable;
         this.numberOfMissingDependencies = numberOfMissingDependencies;

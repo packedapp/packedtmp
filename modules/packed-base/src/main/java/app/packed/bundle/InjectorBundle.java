@@ -124,14 +124,15 @@ public abstract class InjectorBundle extends Bundle {
     }
 
     /**
-     * @param delegate
+     * @param configuration
+     *            the injector configuration to delagate to
      * @param freeze
      * @apiNote we take an AbstractBundleConfigurator instead of a BundleConfigurator to make sure we never parse an
      *          external configurator by accident. And we some let the bundle implementation invoke
      *          {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
      *          object escape.
      */
-    final void configure(InternalInjectorConfiguration delegate, boolean freeze) {
+    final void configure(InternalInjectorConfiguration configuration, boolean freeze) {
 
         // Maybe we can do some access checkes on the Configurator. To allow for testing....
 
@@ -141,7 +142,7 @@ public abstract class InjectorBundle extends Bundle {
             // vi skal have love til f.eks. at koere en gang descriptor af, saa det er kun hvis vi skal freeze den ogsaa doer.
             throw new IllegalStateException("Cannot configure this bundle, after it has been been frozen");
         }
-        this.delegate = requireNonNull(delegate);
+        this.delegate = requireNonNull(configuration);
         try {
             configure();
         } finally {
@@ -161,7 +162,7 @@ public abstract class InjectorBundle extends Bundle {
     }
 
     @Override
-    InternalInjectorConfiguration internal() {
+    InternalInjectorConfiguration configuration() {
         if (delegate == null) {
             throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
         }

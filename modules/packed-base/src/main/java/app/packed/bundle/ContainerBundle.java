@@ -16,7 +16,6 @@
 package app.packed.bundle;
 
 import app.packed.container.ComponentConfiguration;
-import app.packed.inject.AbstractInjectorStage;
 import app.packed.inject.Factory;
 import app.packed.inject.Provides;
 import app.packed.inject.TypeLiteral;
@@ -28,7 +27,7 @@ import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
  */
 public abstract class ContainerBundle extends Bundle {
 
-    protected final void containerInstall(ContainerBundle bundle, AbstractInjectorStage... stages) {
+    protected final void containerInstall(ContainerBundle bundle, ImportExportStage... stages) {
 
     }
 
@@ -93,7 +92,7 @@ public abstract class ContainerBundle extends Bundle {
 
     /** {@inheritDoc} */
     @Override
-    InternalInjectorConfiguration internal() {
+    InternalInjectorConfiguration configuration() {
         throw new UnsupportedOperationException();
     }
 

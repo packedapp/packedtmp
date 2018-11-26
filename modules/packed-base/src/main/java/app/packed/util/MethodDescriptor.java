@@ -18,6 +18,7 @@ package app.packed.util;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import app.packed.inject.TypeLiteral;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
@@ -51,6 +52,14 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      * @return a new method from this descriptor
      */
     Method newMethod();
+
+    /**
+     * Returns a type literal that identifies the generic type return type of the method.
+     *
+     * @return a type literal that identifies the generic type return type of the method
+     * @see Method#getGenericReturnType()
+     */
+    TypeLiteral<?> getReturnTypeLiteral();
 
     public static MethodDescriptor of(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
         throw new UnsupportedOperationException();

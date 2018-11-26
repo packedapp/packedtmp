@@ -119,8 +119,26 @@ public final class LookupDescriptorAccessor {
     // install as service instance
     // newInstance()
 
+    static final ThreadLocal<MethodHandles.Lookup> HACK = new ThreadLocal<>();
+
+    /** A cache of service class descriptors. */
+    static final ClassValue<LookupDescriptorAccessor> LOOKUP_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected LookupDescriptorAccessor computeValue(Class<?> type) {
+            // TODO fix, for lookup modes...
+            return new LookupDescriptorAccessor(HACK.get());
+        }
+    };
+
     public static LookupDescriptorAccessor get(MethodHandles.Lookup lookup) {
-        return new LookupDescriptorAccessor(lookup);// TODO cache this object,
+        HACK.set(lookup);
+        try {
+            return LOOKUP_CACHE.get(lookup.lookupClass());
+        } finally {
+            HACK.remove();
+        }
     }
 
     // Naar vi laver factoriet ved vi ikke hvordan det skal bruges....

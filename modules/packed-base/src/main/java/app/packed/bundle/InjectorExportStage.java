@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.inject.InjectorImportStage.DescriptorAdaptor;
+import app.packed.bundle.InjectorImportStage.DescriptorAdaptor;
+import app.packed.inject.Key;
+import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ServiceDescriptor;
 
 /**
  *
@@ -45,7 +48,7 @@ import app.packed.inject.InjectorImportStage.DescriptorAdaptor;
 
 // Do we expose Dependencies????? It is kind of breaking the encapsulation...
 
-public class InjectorExportStage extends AbstractInjectorStage {
+public class InjectorExportStage extends ImportExportStage {
 
     /** An export stage, that ignores all optional dependencies */
     public static final InjectorExportStage IGNORE_OPTIONAL = null;

@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.ContainerBundle;
-import app.packed.inject.AbstractInjectorStage;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.TypeLiteral;
@@ -41,11 +41,11 @@ import app.packed.util.Nullable;
  */
 public interface ContainerConfiguration extends InjectorConfiguration {
 
-    default void containerInstall(Class<? extends ContainerBundle> bundleType, AbstractInjectorStage... filters) {
+    default void containerInstall(Class<? extends ContainerBundle> bundleType, ImportExportStage... filters) {
         throw new UnsupportedOperationException();
     }
 
-    default void containerInstall(ContainerBundle bundle, AbstractInjectorStage... filters) {
+    default void containerInstall(ContainerBundle bundle, ImportExportStage... filters) {
         throw new UnsupportedOperationException();
     }
 

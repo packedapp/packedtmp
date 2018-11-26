@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import packed.internal.inject.InternalDependency;
-import packed.internal.util.descriptor.AtProvides;
 
 /**
  *
@@ -35,16 +35,13 @@ class MemberScanner {
 
     final Class<?> clazz;
 
+    ProvidesSupport.Builder provides = new ProvidesSupport.Builder();
     ArrayList<AccessibleField<InternalDependency>> fieldsAtInject;
-
-    ArrayList<AccessibleField<AtProvides>> fieldsAtProvides;
 
     /** The lookup object. */
     final Lookup lookup;
 
     ArrayList<AccessibleExecutable<List<InternalDependency>>> methodsAtInject;
-
-    ArrayList<AccessibleExecutable<AtProvides>> methodsAtProvides;
 
     MemberScanner(Lookup lookup, Class<?> clazz) {
         this.lookup = requireNonNull(lookup);
@@ -60,11 +57,33 @@ class MemberScanner {
     }
 
     void scanMethods() {
+        // optimize for classes extending Object.
+        // No overridden....well except default methods on interfaces....
+
+        // also optimize for
 
         // @Provides method cannot also have @Inject annotation
         // if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
         // throw new InvalidDeclarationException(cannotHaveBothAnnotations(Inject.class, Provides.class));
         // }
+        for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
+            for (Method method : c.getDeclaredMethods()) {
+                Annotation[] annotations = method.getAnnotations();
+                if (annotations.length > 0) {
+                    // Multiple annotations
+                    AccessibleExecutable<List<InternalDependency>> inject = MemberScanners.createIfInjectable(this, method, annotations);
+                    provides.forMethod(lookup, method, annotations);
+
+                    // We need to to some checks when we have multiple annotations...
+                    if (annotations.length > 1) {
+                        if (inject != null) {
+                            System.out.println("OOPS");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     void scanFields() {
@@ -74,7 +93,8 @@ class MemberScanner {
                 if (annotations.length > 0) {
                     // Multiple annotations
                     AccessibleField<InternalDependency> inject = MemberScanners.createIfInjectable(this, field, annotations);
-                    MemberScanners.createAtProvides(this, field, annotations);
+
+                    provides.forField(lookup, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
@@ -94,6 +114,7 @@ class MemberScanner {
     static MemberScanner forService(Class<?> clazz, Lookup lookup) {
         MemberScanner ms = new MemberScanner(lookup, clazz);
         ms.scanFields();
+        ms.scanMethods();
         return ms;
     }
 }

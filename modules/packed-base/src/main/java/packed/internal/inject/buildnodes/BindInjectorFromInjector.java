@@ -17,17 +17,13 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.InjectorImportStage;
-import app.packed.inject.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalInjector;
 import packed.internal.inject.Node;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -36,24 +32,12 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  */
 public final class BindInjectorFromInjector extends BindInjector {
 
-    /** The configuration site where the injector or bundle was bound. */
-    final InternalConfigurationSite configurationSite;
-
-    /** The configuration of the injector that the injector or bundle was bound to. */
-    final InternalInjectorConfiguration injectorConfiguration;
-
-    /** A map of all services that have been imported. */
-    final Map<Key<?>, BuildNodeImport<?>> importedServices = new HashMap<>();
+    @Nullable
+    final InjectorBundle bundle;
 
     /** The injector to bind. */
     @Nullable
     Injector injector;
-
-    /** The import stages. */
-    final List<InjectorImportStage> importStages;
-
-    @Nullable
-    final InjectorBundle bundle;
 
     /**
      * Creates a new
@@ -65,60 +49,16 @@ public final class BindInjectorFromInjector extends BindInjector {
      */
     public BindInjectorFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
             InjectorImportStage[] stages) {
-        super(injectorConfiguration, configurationSite);
-        this.injectorConfiguration = requireNonNull(injectorConfiguration);
-        this.configurationSite = requireNonNull(configurationSite);
+        super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
-        this.importStages = List.of(stages);
         this.bundle = null;
     }
 
-    /**
-     * 
-     */
-    public void doStuff() {
+    void process() {
         InternalInjector ii = (InternalInjector) injector;
 
         // All the nodes we potentially want to import
         List<Node<?>> allNodes = List.copyOf(ii.nodes.toAll());// immutable
-
-        BuildNodeImport<?>[] bns = new BuildNodeImport[allNodes.size()];
-        for (int i = 0; i < bns.length; i++) {
-            Node<?> n = allNodes.get(i);
-            if (!n.isPrivate()) {
-                InternalConfigurationSite cs = configurationSite.replaceParent(n.getConfigurationSite());
-                bns[i] = new BuildNodeImport<>(injectorConfiguration, cs, this, n);
-            }
-        }
-
-        for (InjectorImportStage stage : importStages) {
-            // Find @Provides, lookup class
-            for (int i = 0; i < bns.length; i++) {
-                BuildNodeImport<?> bn = bns[i];
-                if (bn != null) {
-                    Key<?> existing = bn.getKey();
-                    stage.process(bn);
-                    if (bn.getKey() == null) {
-                        bns[i] = null;
-                    } else {
-                        if (!bn.getKey().equals(existing)) {
-                            // Should make new, with new configuration site
-                        }
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < bns.length; i++) {
-            if (bns[i] != null) {
-                importedServices.put(bns[i].getKey(), bns[i]);
-            }
-        }
-    }
-
-    @Override
-    void importInto(InternalInjectorConfiguration configuration) {
-        for (BuildNodeImport<?> n : importedServices.values()) {
-            configuration.privateBuildNodeList.add(n);
-        }
+        processNodes(allNodes);
     }
 }

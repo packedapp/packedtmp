@@ -13,7 +13,8 @@
   <!-- ==================================================================== -->
   <modules>
     <module>packed-base</module>
-    <module>packed-base-devtools</module>
+ <!--   <module>packed-base-devtools</module> -->
+    <module>packed-base-micro</module>
   </modules>
   <build>
     <plugins>

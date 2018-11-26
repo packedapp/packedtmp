@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.bundle.BundleDescriptor;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
@@ -30,9 +31,7 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 
-/**
- *
- */
+/** A builder object for {@link BundleDescriptor}. */
 public class BundleDescriptorBuilder {
 
     public Map<Key<?>, ServiceDescriptor> exposedServices = new HashMap<>();
@@ -40,18 +39,6 @@ public class BundleDescriptorBuilder {
     public Set<Key<?>> optionalServices = new HashSet<>();
 
     public Set<Key<?>> requiredServices = new HashSet<>();
-
-    public BundleDescriptorBuilder addOptionalServices(Collection<Key<?>> keys) {
-        requireNonNull(keys, "keys is null");
-        optionalServices.addAll(keys);
-        return this;
-    }
-
-    public BundleDescriptorBuilder addRequiredServices(Collection<Key<?>> keys) {
-        requireNonNull(keys, "keys is null");
-        requiredServices.addAll(keys);
-        return this;
-    }
 
     public BundleDescriptorBuilder addExposed(ServiceConfiguration<?> configuration) {
         requireNonNull(configuration, "configuration is null");
@@ -66,6 +53,18 @@ public class BundleDescriptorBuilder {
         if (exposedServices.putIfAbsent(descriptor.getKey(), descriptor) != null) {
             throw new IllegalStateException("A service descriptor with the same key has already been added, key = " + descriptor.getKey());
         }
+        return this;
+    }
+
+    public BundleDescriptorBuilder addOptionalServices(Collection<Key<?>> keys) {
+        requireNonNull(keys, "keys is null");
+        optionalServices.addAll(keys);
+        return this;
+    }
+
+    public BundleDescriptorBuilder addRequiredServices(Collection<Key<?>> keys) {
+        requireNonNull(keys, "keys is null");
+        requiredServices.addAll(keys);
         return this;
     }
 

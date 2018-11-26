@@ -25,6 +25,7 @@ import java.util.function.Predicate;
 
 import app.packed.util.ConfigurationSite;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.MethodDescriptor;
 
 /**
  * The interface used internally for a configuration. This method includes methods that we are not yet ready to put out
@@ -32,6 +33,7 @@ import app.packed.util.FieldDescriptor;
  */
 public interface InternalConfigurationSite extends ConfigurationSite {
 
+    static final boolean DISABLED = true;
     /** A site that is used if a location of configuration site could not be determined. */
     InternalConfigurationSite UNKNOWN = new InternalConfigurationSite() {
 
@@ -63,15 +65,31 @@ public interface InternalConfigurationSite extends ConfigurationSite {
             && !f.getClassName().startsWith("java.");
 
     default InternalConfigurationSite spawnAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
         return new AnnotatedFieldConfigurationSite(this, cst, field, annotation);
     }
 
+    default InternalConfigurationSite spawnAnnotatedMethod(ConfigurationSiteType cst, Annotation annotation, MethodDescriptor method) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        return new AnnotatedMethodConfigurationSite(this, cst, method, annotation);
+    }
+
     default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
         return sf.isPresent() ? new StackFrameConfigurationSite(this, cst, sf.get()) : UNKNOWN;
     }
 
     static InternalConfigurationSite ofStack(ConfigurationSiteType cst) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
         return sf.isPresent() ? new StackFrameConfigurationSite(null, cst, sf.get()) : UNKNOWN;
     }

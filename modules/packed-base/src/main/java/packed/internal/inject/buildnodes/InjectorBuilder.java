@@ -23,9 +23,8 @@ import java.util.HashMap;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Injector;
 import app.packed.inject.Key;
-import packed.internal.inject.InternalInjector;
+import packed.internal.inject.CommonKeys;
 import packed.internal.inject.Node;
 import packed.internal.inject.buildnodes.DependecyCycleDetector.DependencyCycle;
 
@@ -45,33 +44,39 @@ public final class InjectorBuilder {
         setup();
         instantiateAll(c.privateInjector);
 
-        if (c.bundle != null) {
-            for (BuildNode<?> bn : c.publicExposedNodeList) {
-                if (bn instanceof BuildNodeExposed) {
-                    BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
-                    c.publicRuntimeNodes.put(bne.toRuntimeNode());
-                }
-            }
-        } else {
-            // TODO fix
-            for (BuildNode<?> bn : c.privateBuildNodeList) {
-                c.publicRuntimeNodes.put(bn.toRuntimeNode());
-            }
-        }
+        // if (c.bundle != null) {
+        // for (BuildNode<?> bn : c.publicExposedNodeList) {
+        // if (bn instanceof BuildNodeExposed) {
+        // BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
+        // c.privateInjectorNodes.put(bne.toRuntimeNode());
+        // }
+        // }
+        // } else {
+        // // TODO fix
+        // for (BuildNode<?> bn : c.privateNodeList) {
+        // c.privateInjectorNodes.put(bn.toRuntimeNode());
+        // }
+        // for (Node<?> bn : c.privateNodeMap.toAll()) {
+        // if (bn instanceof BuildNode) {
+        // c.privateInjectorNodes.put(((BuildNode<?>) bn).toRuntimeNode());
+        // }
+        // }
+        // }
+
+        c.privateNodeMap.nodes.replaceAll((k, v) -> v.toRuntimeNode());
     }
 
+    /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void setup() {
-        // First start by creating the new injectors.
-        c.privateInjector = new InternalInjector(c, c.privateRuntimeNodes); // Ignores any parent + Bundle for now.
-        BuildNode<InternalInjector> inj = new BuildNodeDefault<>(c, c.getConfigurationSite(), c.privateInjector);
-        inj.as(Injector.class);
-        c.privateBuildNodeList.add(inj);
+        c.freezeBindings();
+        c.privateInjector = new InternalInjector(c, c.privateNodeMap);
+        c.privateNodeMap.put(new BuildNodeDefault<>(c, c.getConfigurationSite(), c.privateInjector).as((Key) CommonKeys.INJECTOR_KEY));
 
         if (c.bundle == null) {
             c.publicInjector = c.privateInjector;
         } else {
-            c.publicInjector = new InternalInjector(c, c.publicRuntimeNodes);
+            c.publicInjector = new InternalInjector(c, c.publicInjectorNodes);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
@@ -80,20 +85,21 @@ public final class InjectorBuilder {
 
         }
 
+        for (BindInjector i : c.injectorBindings) {
+            if (i instanceof BindInjectorFromBundle) {
+                BindInjectorFromBundle bi = (BindInjectorFromBundle) i;
+                new InjectorBuilder(bi.c).build();
+            }
+        }
         // Freeze
 
-        // import all services...
-        for (BindInjector i : c.privateImports) {
-            i.importInto(c);
-        }
-
         HashMap<Key<?>, ArrayList<BuildNode<?>>> collisions = new HashMap<>();
-        for (BuildNode<?> bv : c.privateBuildNodeList) {
+        for (BuildNode<?> bv : c.privateNodeList) {
             if (bv.getKey() != null) {
-                if (!c.privateBuildNodeMap.putIfAbsent(bv)) {
+                if (!c.privateNodeMap.putIfAbsent(bv)) {
                     collisions.computeIfAbsent(bv.getKey(), k -> new ArrayList<>()).add(bv);
                 }
-                c.privateBuildNodeMap.put(bv);
+                c.privateNodeMap.put(bv);
             }
         }
 
@@ -105,7 +111,7 @@ public final class InjectorBuilder {
         for (BuildNode<?> bn : c.publicExposedNodeList) {
             if (bn instanceof BuildNodeExposed) {
                 BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
-                Node<?> node = c.privateBuildNodeMap.get(bne.getPrivateKey());
+                Node<?> node = c.privateNodeMap.get(bne.getPrivateKey());
                 bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
             }
         }
@@ -152,17 +158,12 @@ public final class InjectorBuilder {
      *             if a node could not be instantiated
      */
     public void instantiateAll(InternalInjector injector) {
-        for (BuildNode<?> node : c.privateBuildNodeList) {
+        for (Node<?> node : c.privateNodeMap.nodes.values()) {
             if (node instanceof BuildNodeDefault) {
                 BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
                 if (s.getBindingMode() == BindingMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
-            }
-        }
-        for (BuildNode<?> n : c.privateBuildNodeList) {
-            if (n.getKey() != null) {
-                c.privateRuntimeNodes.put(n.toRuntimeNode());
             }
         }
     }

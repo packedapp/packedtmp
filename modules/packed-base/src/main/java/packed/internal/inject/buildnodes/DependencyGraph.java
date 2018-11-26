@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.graph;
+package packed.internal.inject.buildnodes;
 
 import java.util.function.Consumer;
 
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
  *

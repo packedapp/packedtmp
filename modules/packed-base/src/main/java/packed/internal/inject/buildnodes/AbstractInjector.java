@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,6 +27,8 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.InternalDependency;
+import packed.internal.inject.Node;
 import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.ServiceClassDescriptor;

@@ -18,9 +18,13 @@ package tests.injector;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
+import java.lang.invoke.MethodHandles;
+
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
+import packed.internal.inject.runtimenodes.RuntimeServiceNode;
+import support.stubs.Letters.A;
 
 /**
  * Tests various things that do not have their own test class.
@@ -65,5 +69,15 @@ public class InjectorTest {
             assertThatNullPointerException().isThrownBy(() -> c.tags().add(null));
         });
         assertThat(i.tags()).containsExactly("foo");
+    }
+
+    @Test
+    public void isRuntimeServices() {
+        Injector i = Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(A.class);
+        });
+
+        assertThat(i.getService(A.class)).isInstanceOf(RuntimeServiceNode.class);
     }
 }

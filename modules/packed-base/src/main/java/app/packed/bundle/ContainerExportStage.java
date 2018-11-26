@@ -13,31 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.stubs;
-
-import org.junit.jupiter.api.Test;
-
-import app.packed.bundle.InjectorImportStage;
-import app.packed.inject.Injector;
+package app.packed.bundle;
 
 /**
  *
  */
-public class Xs {
+public class ContainerExportStage {
 
-    @Test
-    public void main() {
-        Injector i = Injector.of(c -> {
-            c.bind("fooo");
-            c.bind(1234);
-        });
-
-        Injector i2 = Injector.of(c -> {
-            c.injectorBind(i, InjectorImportStage.peek(e -> System.out.println("Available " + e.getKey())), InjectorImportStage.accept(String.class));
-        });
-
-        System.out.println();
-        i2.getService(String.class).getConfigurationSite().print();
-
-    }
 }

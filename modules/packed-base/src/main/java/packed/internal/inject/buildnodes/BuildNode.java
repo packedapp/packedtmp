@@ -85,10 +85,16 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
         this.hasDependencyOnInjectionSite = hasDependencyOnInjectionSite;
     }
 
+    @Override
+    public BuildNode<T> as(Class<? super T> key) {
+        requireNonNull(key, "key is null");
+        return as(Key.of(key));
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public ServiceConfiguration<T> as(Key<? super T> key) {
+    public BuildNode<T> as(Key<? super T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         // validateKey(key);
@@ -99,6 +105,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
 
     @Override
     public ServiceConfiguration<?> asNone() {
+        checkConfigurable();
         key = null;
         return this;
     }

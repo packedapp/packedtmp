@@ -17,6 +17,7 @@ package packed.internal.bundle;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.TypeLiteral;
 import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
@@ -25,7 +26,7 @@ import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 public final class BundleSupport {
 
     public static final void configure(InjectorBundle bundle, InternalInjectorConfiguration delegate, boolean freeze) {
-        SingletonHolder.SINGLETON.configure(bundle, delegate, freeze);
+        SingletonHolder.SINGLETON.configureInjectorBundle(bundle, delegate, freeze);
     }
 
     /** Holder of the singleton. */
@@ -46,7 +47,9 @@ public final class BundleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        protected abstract void configure(InjectorBundle bundle, InternalInjectorConfiguration delegate, boolean freeze);
+        protected abstract void configureInjectorBundle(InjectorBundle bundle, InternalInjectorConfiguration delegate, boolean freeze);
+
+        protected abstract void importExportStageOnFinish(ImportExportStage stage);
 
         /**
          * Initializes this class.

@@ -17,10 +17,9 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
+import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.AbstractInjectorStage;
+import packed.internal.bundle.BundleSupport;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
@@ -30,20 +29,20 @@ public final class BindInjectorFromBundle extends BindInjector {
 
     private final InjectorBundle bundle;
 
-    private final List<AbstractInjectorStage> filters;
+    InternalInjectorConfiguration c;
 
     public BindInjectorFromBundle(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            AbstractInjectorStage[] filters) {
-        super(injectorConfiguration, configurationSite);
+            ImportExportStage[] filters) {
+        super(injectorConfiguration, configurationSite, filters);
         this.bundle = requireNonNull(bundle, "bundle is null");
-        this.filters = List.of(filters);
     }
 
-    public InjectorBundle bundle() {
-        return bundle;
-    }
-
-    public List<AbstractInjectorStage> getFilters() {
-        return filters;
+    /**
+     * 
+     */
+    public void process() {
+        c = new InternalInjectorConfiguration(configurationSite, bundle);
+        BundleSupport.configure(bundle, c, true);
+        processNodes(c.publicExposedNodeList);
     }
 }

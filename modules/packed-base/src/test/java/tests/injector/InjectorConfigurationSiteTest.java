@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.IdentityHashMap;
 import java.util.Map.Entry;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Factory;
@@ -47,6 +48,7 @@ import support.stubs.Letters.J;
  * <p>
  * Most of the test are pretty hackish.
  */
+@Disabled
 public class InjectorConfigurationSiteTest {
 
     /** A helper stack frame */

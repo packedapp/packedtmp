@@ -19,12 +19,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.container.Container;
-import app.packed.inject.AbstractInjectorStage;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.InjectorImportStage;
 import app.packed.inject.Key;
+import app.packed.inject.Qualifier;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
@@ -32,17 +31,19 @@ import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
 
 /**
- * Bundles provide a simply way to package components and service. For example, so they can be used easily across
- * multiple containers. Or simply for organizing a complex project into distinct sections, such that each section
- * addresses a separate concern.
- * <p>
- * There are currently two types of bundles available in Packed:
- * 
+ * Bundles provide a simply way to package components and service. This is useful, for example, for:
  * <ul>
- * <li><b>{@link InjectorBundle}</b> which bundles information about services and from which {@link Injector injectors}
- * can be created.</li>
- * <li><b>{@link ContainerBundle}</b> which bundles information about both services and components and from which
- * {@link Container containers} can be created.</li>
+ * <li>Sharing functionality across multiple injectors and/or containers.</li>
+ * <li>Hiding implementation details from users.</li>
+ * <li>Organizing a complex project into distinct sections, such that each section addresses a separate concern.</li>
+ * </ul>
+ * <p>
+ * There are currently two types of bundles available:
+ * <ul>
+ * <li><b>{@link InjectorBundle}</b> which bundles information about services and creates {@link Injector} instances
+ * using {@link Injector#of(Class)}.</li>
+ * <li><b>{@link ContainerBundle}</b> which bundles information about both services and creates {@link Container}
+ * instances using {@link Container#of(Class)}.</li>
  * </ul>
  */
 public abstract class Bundle {
@@ -50,55 +51,78 @@ public abstract class Bundle {
     static {
         BundleSupport.Helper.init(new BundleSupport.Helper() {
 
+            /** {@inheritDoc} */
             @Override
-            protected void configure(InjectorBundle bundle, InternalInjectorConfiguration delegate, boolean freeze) {
-                bundle.configure(delegate, freeze);
+            protected void configureInjectorBundle(InjectorBundle bundle, InternalInjectorConfiguration configuration, boolean freeze) {
+                bundle.configure(configuration, freeze);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            protected void importExportStageOnFinish(ImportExportStage stage) {
+                stage.onFinish();
             }
         });
     }
 
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
+
+    /** Prevent users from extending this class. */
     Bundle() {}
 
+    /**
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
+     * find a valid constructor or method to instantiate the service instance once the injector is created.
+     * <p>
+     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
+     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param implementation
+     *            the implementation to bind
+     * @return a service configuration for the service
+     * @see InjectorConfiguration#bind(Class)
+     */
     protected final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
-        return internal().bind(implementation);
+        return configuration().bind(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
-        return internal().bind(factory);
+        return configuration().bind(factory);
     }
 
     protected final <T> ServiceConfiguration<T> bind(T instance) {
-        return internal().bind(instance);
+        return configuration().bind(instance);
     }
 
     protected final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
-        return internal().bind(implementation);
+        return configuration().bind(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
-        return internal().bindLazy(implementation);
+        return configuration().bindLazy(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
-        return internal().bindLazy(factory);
+        return configuration().bindLazy(factory);
     }
 
     protected final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
-        return internal().bindLazy(implementation);
+        return configuration().bindLazy(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
-        return internal().bindPrototype(implementation);
+        return configuration().bindPrototype(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
-        return internal().bindPrototype(factory);
+        return configuration().bindPrototype(factory);
     }
 
     protected final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
-        return internal().bindPrototype(implementation);
+        return configuration().bindPrototype(implementation);
     }
 
     /**
@@ -123,17 +147,13 @@ public abstract class Bundle {
     }
 
     /**
-     * Configures the bundle.
-     *
-     * This method is invoked after the user has invoked but before the container has been instantiated. Since the user has
-     * fully populated the configuration, this method can be used to install agents, dependencies and services that depends
-     * on the contents of the configuration. This is done via invoking methods on ContainerInitializer and <b>NOT</b> on the
-     * container configuration using }.
-     * <p>
-     * If multiple extensions have been added to the container. This method will be invoked in the order they have been
-     * added.
+     * Returns the configuration object that we delegate to.
+     * 
+     * @return the configuration object that we delegate to
      */
-    // Can we have bundles without configuration???, maybe just 5 Provides method????
+    abstract InternalInjectorConfiguration configuration();
+
+    /** Configures the bundle using the various protected methods. */
     protected abstract void configure();
 
     /**
@@ -166,7 +186,7 @@ public abstract class Bundle {
      * @see #expose(Key)
      */
     protected final <T> ServiceConfiguration<T> expose(Class<T> key) {
-        return internal().expose(key);
+        return configuration().expose(key);
     }
 
     /**
@@ -192,7 +212,7 @@ public abstract class Bundle {
      * @see #expose(Key)
      */
     protected final <T> ServiceConfiguration<T> expose(Key<T> key) {
-        return internal().expose(key);
+        return configuration().expose(key);
     }
 
     protected final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
@@ -200,10 +220,8 @@ public abstract class Bundle {
         // return internal().expose(configuration);
     }
 
-    public void foo() {}
-
-    protected final void injectorBind(Class<? extends InjectorBundle> bundleType, AbstractInjectorStage... filters) {
-        internal().injectorBind(bundleType, filters);
+    protected final void injectorBind(Class<? extends InjectorBundle> bundleType, ImportExportStage... filters) {
+        configuration().injectorBind(bundleType, filters);
     }
 
     /**
@@ -217,14 +235,12 @@ public abstract class Bundle {
      * @see InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)
      */
     protected final void injectorBind(Injector injector, InjectorImportStage... filters) {
-        internal().injectorBind(injector, filters);
+        configuration().injectorBind(injector, filters);
     }
 
-    protected final void injectorBind(InjectorBundle bundle, AbstractInjectorStage... filters) {
-        internal().injectorBind(bundle, filters);
+    protected final void injectorBind(InjectorBundle bundle, ImportExportStage... filters) {
+        configuration().injectorBind(bundle, filters);
     }
-
-    abstract InternalInjectorConfiguration internal();
 
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
@@ -232,9 +248,10 @@ public abstract class Bundle {
      * 
      * @param lookup
      *            the lookup object
+     * @see InjectorConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
-        internal().lookup(lookup);
+        configuration().lookup(lookup);
     }
 
     /**
@@ -242,13 +259,15 @@ public abstract class Bundle {
      * 
      * @param description
      *            the description of the injector or container
+     * @see InjectorConfiguration#setDescription(String)
+     * @see Injector#getDescription()
      */
     protected final void setDescription(@Nullable String description) {
-        internal().setDescription(description);
+        configuration().setDescription(description);
     }
 
     protected final Set<String> tags() {
-        return internal().tags();
+        return configuration().tags();
     }
 
 }

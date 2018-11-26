@@ -79,7 +79,15 @@ public abstract class Key<T> {
             return fromTypeVariable((Class) implementation, Key.class, 0);
         }
     };
+    /** A cache of factories used by {@link #findInjectable(Class)}. */
+    private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {
 
+        /** {@inheritDoc} */
+        @Override
+        protected Key<?> computeValue(Class<?> implementation) {
+            return TypeLiteral.of(implementation).box().toKey();
+        }
+    };
     /**
      * The computed hash code, not lazy because we are probably always going to use it for comparison against other keys.
      */
@@ -348,8 +356,10 @@ public abstract class Key<T> {
      * @return a key matching the specified type with no qualifiers
      */
     // TODO rename type to key?????
+    @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> type) {
-        return TypeLiteral.of(type).box().toKey();
+        requireNonNull(type, "type is null");
+        return (Key<T>) CLASS_CACHE.get(type);
     }
 
     /**

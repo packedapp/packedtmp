@@ -16,8 +16,8 @@
 package tests.injector.importing;
 
 import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorImportStage;
 
 /**
  *

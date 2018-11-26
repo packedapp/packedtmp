@@ -13,36 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.inject.Provides;
 import app.packed.util.Nullable;
 
 /**
- *
+ * A shared superclass for {@link InjectorImportStage}, {@link ImportExportStage}, {@link ContainerImportStage} and
+ * {@link ContainerExportStage}.
  */
-// Bliver brugt som
-public abstract class AbstractInjectorStage {
+public abstract class ImportExportStage {
 
     /** A Lookup object. */
     @Nullable
     final MethodHandles.Lookup lookup;
 
-    /** Creates a new filter */
-    AbstractInjectorStage() {
+    /** Creates a new stage */
+    ImportExportStage() {
         this.lookup = MethodHandles.publicLookup();
     }
 
     /**
-     * Creates a new filter
+     * Creates a new stage
      * 
      * @param lookup
-     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
+     *            a lookup object that will be used, for example, for invoking methods annotated with {@link Provides}.
      */
-    AbstractInjectorStage(MethodHandles.Lookup lookup) {
+    ImportExportStage(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup, "lookup is null");
     }
+
+    /** Performs cleanup or post processing validation of the stage. The default implementation does nothing. */
+    protected void onFinish() {};
+
 }

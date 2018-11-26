@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,8 @@ import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
+import packed.internal.inject.CommonKeys;
+import packed.internal.inject.Node;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link Injector}. */
@@ -48,7 +49,7 @@ public final class InternalInjector extends AbstractInjector {
     private final Set<String> tags;
 
     public InternalInjector(InternalInjectorConfiguration injectorConfiguration, NodeMap nodes) {
-        this.parent = null;// injectorConfiguration.parentInjector;
+        this.parent = null;
         this.nodes = requireNonNull(nodes);
         this.tags = injectorConfiguration.immutableCopyOfTags();
         this.description = injectorConfiguration.getDescription();
@@ -59,7 +60,7 @@ public final class InternalInjector extends AbstractInjector {
     protected void failedGet(Key<?> key) {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
-        for (Node<?> n : nodes.map.values()) {
+        for (Node<?> n : nodes.nodes.values()) {
             System.out.println(n);
             // if (n instanceof RuntimeNode<T>)
         }
@@ -90,7 +91,7 @@ public final class InternalInjector extends AbstractInjector {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) nodes.map.values().stream().filter(e -> !e.getKey().equals(CommonKeys.INJECTOR_KEY));
+        return (Stream) nodes.nodes.values().stream().filter(e -> !e.getKey().equals(CommonKeys.INJECTOR_KEY));
     }
 
     /** {@inheritDoc} */

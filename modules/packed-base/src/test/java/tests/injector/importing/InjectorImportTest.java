@@ -20,9 +20,9 @@ import static support.assertj.Assertions.npe;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.InjectorImportStage;
 import app.packed.inject.Key;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
@@ -50,6 +50,19 @@ public class InjectorImportTest {
             c.injectorBind(i1, InjectorImportStage.NONE);
         });
         assertThat(i.services().count()).isEqualTo(0L);
+    }
+
+    /** Tests that we can import no services. */
+    @Test
+    public void import1() {
+        Injector i1 = Injector.of(c -> {
+            c.bind("X");
+        });
+
+        Injector i = Injector.of(c -> {
+            c.injectorBind(i1);
+        });
+        i.with(String.class);
     }
 
     /** Tests that we can chain stages. */

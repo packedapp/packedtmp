@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package app.packed.bundle;
 
 /**
  *
  */
-public class InjectionGraph {
+// Hmm
+public class ContainerImportStage extends InjectorImportStage {
 
-    //
+    @Override
+    InjectorImportStage andThen(InjectorImportStage next) {
+        return super.andThen(next);
+    }
+
 }

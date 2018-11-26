@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,13 +23,14 @@ import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.Key;
+import packed.internal.inject.Node;
 
 /**
  *
  */
 public class NodeMap {
 
-    final HashMap<Key<?>, Node<?>> map = new HashMap<>();
+    final HashMap<Key<?>, Node<?>> nodes = new HashMap<>();
 
     final NodeMap parent;
 
@@ -45,7 +46,7 @@ public class NodeMap {
     public <T> Node<T> get(Key<T> type) {
         // System.out.println("Looking for " + type);
         // System.out.println("Contents " + map.keySet());
-        Node<T> node = (Node<T>) map.get(type);
+        Node<T> node = (Node<T>) nodes.get(type);
         if (node == null && parent != null) {
             return parent.get(type);
         }
@@ -58,16 +59,16 @@ public class NodeMap {
 
     public void put(Node<?> node) {
         requireNonNull(node.getKey());
-        map.put(node.getKey(), node);
+        nodes.put(node.getKey(), node);
     }
 
     public boolean putIfAbsent(Node<?> node) {
         requireNonNull(node.getKey());
-        return map.putIfAbsent(node.getKey(), node) == null;
+        return nodes.putIfAbsent(node.getKey(), node) == null;
     }
 
     public List<Node<?>> toAll() {
-        return new ArrayList<>(map.values());
+        return new ArrayList<>(nodes.values());
     }
 }
 

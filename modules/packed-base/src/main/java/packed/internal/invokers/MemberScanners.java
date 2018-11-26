@@ -17,17 +17,18 @@ package packed.internal.invokers;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.List;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.ErrorMessageBuilder;
-import packed.internal.util.descriptor.AtProvides;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
+import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** This class represents a field annotated with the {@link Inject} annotation. */
 public final class MemberScanners {
@@ -47,18 +48,16 @@ public final class MemberScanners {
         return null;
     }
 
-    static AccessibleField<AtProvides> createAtProvides(MemberScanner builder, Field field, Annotation[] annotations) {
-        for (Annotation a : annotations) {
-            if (a.annotationType() == Provides.class) {
-                InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-                if (builder.fieldsAtProvides == null) {
-                    builder.fieldsAtProvides = new ArrayList<>(2);
-                }
-                AtProvides ap = AtProvides.from(descriptor, (Provides) a);
-                AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, builder.lookup, ap);
-                builder.fieldsAtProvides.add(fi);
-                return fi;
+    static AccessibleExecutable<List<InternalDependency>> createIfInjectable(MemberScanner builder, Method method, Annotation[] annotations) {
+        if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+            InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
+            if (builder.methodsAtInject == null) {
+                builder.methodsAtInject = new ArrayList<>(2);
             }
+            AccessibleExecutable<List<InternalDependency>> fi = new AccessibleExecutable<>(descriptor, builder.lookup,
+                    InternalDependency.fromExecutable(descriptor));
+            builder.methodsAtInject.add(fi);
+            return fi;
         }
         return null;
     }

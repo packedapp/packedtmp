@@ -39,7 +39,7 @@ public class InjectorBuilderResolver {
     public static void resolveAllDependencies(InjectorBuilder b) {
         b.detectCyclesFor = new ArrayList<>();
 
-        for (BuildNode<?> node : b.c.privateBuildNodeList) {
+        for (BuildNode<?> node : b.c.privateNodeList) {
             node.freeze();
 
             if (node.needsResolving()) {
@@ -64,7 +64,7 @@ public class InjectorBuilderResolver {
 
                     // See if we have a matching service in the node map.
                     if (resolveTo == null) {
-                        resolveTo = b.c.privateBuildNodeMap.getNode(dependency);
+                        resolveTo = b.c.privateNodeMap.getNode(dependency);
 
                         // Did not find service of the specified type
                         if (resolveTo == null) {
@@ -102,7 +102,7 @@ public class InjectorBuilderResolver {
                                 }
                                 sb.append(")");
                             }
-                            System.err.println(b.c.privateBuildNodeList.stream().map(e -> e.getKey()).collect(Collectors.toList()));
+                            System.err.println(b.c.privateNodeList.stream().map(e -> e.getKey()).collect(Collectors.toList()));
                             throw new InjectionException(sb.toString());
                         }
 
@@ -114,7 +114,7 @@ public class InjectorBuilderResolver {
             // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
         }
 
-        b.c.privateBuildNodeList.forEach(n -> n.checkResolved());// An extra check for now
+        b.c.privateNodeList.forEach(n -> n.checkResolved());// An extra check for now
     }
 
 }

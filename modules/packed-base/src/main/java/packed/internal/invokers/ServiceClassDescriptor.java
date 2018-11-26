@@ -20,9 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provides;
 import packed.internal.inject.InternalDependency;
-import packed.internal.util.descriptor.AtProvides;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
@@ -33,17 +31,13 @@ public class ServiceClassDescriptor<T> {
     /** The class this descriptor is created from. */
     private final Class<T> clazz;
 
-    /** All fields annotated with {@link Provides}. */
-    public final Collection<AccessibleField<AtProvides>> fieldsAtProvides;
+    public final ProvidesSupport provides;
 
     /** All fields annotated with {@link Inject}. */
     public final Collection<AccessibleField<InternalDependency>> injectableFields;
 
     /** All methods annotated with {@link Inject}. */
     public final Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods;
-
-    /** All methods annotated with {@link Provides}. */
-    public final Collection<AccessibleExecutable<AtProvides>> methodsAtProvides;
 
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
     private final String simpleName;
@@ -70,8 +64,7 @@ public class ServiceClassDescriptor<T> {
         this.simpleName = clazz.getSimpleName();
         this.injectableFields = scanner.fieldsAtInject == null ? List.of() : List.copyOf(scanner.fieldsAtInject);
         this.injectableMethods = scanner.methodsAtInject == null ? List.of() : List.copyOf(scanner.methodsAtInject);
-        this.methodsAtProvides = scanner.methodsAtProvides == null ? List.of() : List.copyOf(scanner.methodsAtProvides);
-        this.fieldsAtProvides = scanner.fieldsAtProvides == null ? List.of() : List.copyOf(scanner.fieldsAtProvides);
+        this.provides = scanner.provides.build();
     }
 
     /**

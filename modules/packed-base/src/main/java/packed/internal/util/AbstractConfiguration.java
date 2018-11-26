@@ -29,7 +29,6 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * An abstract configuration object. That provides basic support for strings tags, setting a description, and freezing a
  * configuration.
  */
-// Todo maybe ditch<T> pro
 public abstract class AbstractConfiguration {
 
     /** The configuration site of this object. */

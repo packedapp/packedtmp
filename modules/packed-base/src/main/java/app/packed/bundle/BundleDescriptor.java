@@ -22,25 +22,24 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.inject.buildnodes.InternalBundleDescriptor;
 
 /**
- * A bundle descriptor.
+ * An immutable bundle descriptor.
  * 
  * <p>
  * {@code BundleDescriptor} objects are immutable and safe for use by multiple concurrent threads.
  * </p>
  */
-public class BundleDescriptor {
+public final class BundleDescriptor {
 
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
-    /** a Services object. */
+    /** A Services object. */
     private final Services services;
 
     /**
@@ -48,6 +47,8 @@ public class BundleDescriptor {
      * 
      * @param bundleType
      *            the type of the bundle
+     * @param builder
+     *            a builder object
      */
     BundleDescriptor(Class<? extends Bundle> bundleType, BundleDescriptorBuilder builder) {
         this.bundleType = bundleType;
@@ -65,9 +66,6 @@ public class BundleDescriptor {
 
     /**
      * Returns the type of the bundle.
-     * <p>
-     * If the bundle is created on the fly, for example, via {@link Injector#of(java.util.function.Consumer)} this method
-     * returns {@link Bundle}. Indicating that the bundle type could not be determined.
      *
      * @return the type of the bundle
      */
@@ -91,7 +89,8 @@ public class BundleDescriptor {
     }
 
     /**
-     * Return a {@link Services} object representing the exposed and required services of the bundle.
+     * Return a {@link Services} object representing the services the bundle exposes. As well as any required or optional
+     * services.
      * 
      * @return a services object
      */
@@ -99,6 +98,7 @@ public class BundleDescriptor {
         return services;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -128,28 +128,24 @@ public class BundleDescriptor {
         return of(Bundles.instantiate(bundleType));
     }
 
-    /**
-    *
-    */
+    /** An object representing the services the bundle exposes. As well as any required or optional services. */
+    public static final class Services {
 
-    // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
-    // Og dermed kun importere praecis de interfaces den definere...
-    // Deploy(someSpec?) ved ikke lige med API'en /
-    // FooBarBundle.API$2_2
-    // FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
-    // Maaske hellere have den markeret med @Preview :D
-    /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
-
-    // The union of exposedServices, optionalService and requiredService must be empty
-    public static class Services {
-
-        /** The exposed services of the bundle. */
+        /** An immutable map of all the services the bundle exposes. */
         private final Map<Key<?>, ServiceDescriptor> exposedServices;
 
+        /** A set of all optional service keys. */
         private final Set<Key<?>> optionalServices;
 
+        /** A set of all required service keys. */
         private final Set<Key<?>> requiredServices;
 
+        /**
+         * Creates a new Services object
+         * 
+         * @param builder
+         *            the builder object
+         */
         Services(BundleDescriptorBuilder builder) {
             this.exposedServices = Map.copyOf(builder.exposedServices);
             this.optionalServices = requireNonNull(builder.optionalServices);
@@ -157,16 +153,9 @@ public class BundleDescriptor {
         }
 
         /**
-         * Returns an immutable map of all services that are available for importing.
-         * <p>
-         * A service whose key have been remapped will have t <pre> {@code
-         *  Key<Integer> -> Descriptor<Key<Integer>, "MyService>
-         *  importService(Integer.class).as(new Key<@Left Integer>));
-         *  Key<Integer> -> Descriptor<Key<@Left Integer>, "MyService>
-         *  Note the key of the map has not changed, only the key of the descriptor.}
-         * </pre> Eller ogsaa er det kun i imported servicess?????Ja det tror jeg
+         * Returns an immutable map of all the services the bundle exposes.
          *
-         * @return a map of all services that available to import
+         * @return an immutable map of all the services the bundle exposes
          */
         public Map<Key<?>, ServiceDescriptor> exposedServices() {
             return exposedServices;
@@ -190,4 +179,14 @@ public class BundleDescriptor {
             return requiredServices;
         }
     }
+
+    // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
+    // Og dermed kun importere praecis de interfaces den definere...
+    // Deploy(someSpec?) ved ikke lige med API'en /
+    // FooBarBundle.API$2_2
+    // FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
+    // Maaske hellere have den markeret med @Preview :D
+    /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
+
+    // The union of exposedServices, optionalService and requiredService must be empty
 }

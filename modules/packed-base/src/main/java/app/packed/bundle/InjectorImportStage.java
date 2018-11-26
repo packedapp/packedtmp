@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,15 +29,27 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import app.packed.inject.BindingMode;
+import app.packed.inject.Key;
+import app.packed.inject.Provides;
+import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ServiceDescriptor;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 
 /**
- * A stage that is executed during the import phase of an injector or module.
+ * A stage that is executed during the import phase of an injector or module. A typically usage is to restrict what
+ * services are imported from an injector or bundle.
+ * <p>
+ * In most cases the functionality provided by the various static methods will be enough.
+ * 
+ * 
+ * <p>
+ * This class contains common functionality for often used
  */
 // TODO preProcess(), postProcess() <- mainly to check invariants, for example, did not find a key to rebind.
 // Renamed because we do not want ComponentImportStage but ContainerImportStage
-public abstract class InjectorImportStage extends AbstractInjectorStage {
+public abstract class InjectorImportStage extends ImportExportStage {
 
     /** A stage that reject every service. */
     public static final InjectorImportStage NONE = new InjectorImportStage() {
@@ -81,18 +93,12 @@ public abstract class InjectorImportStage extends AbstractInjectorStage {
     }
 
     /**
-     * Process each
+     * Processes each service.
      * 
      * @param sc
      *            the service configuration
      */
     public void process(ServiceConfiguration<?> sc) {}
-
-    /**
-     * A callback method that will be invoked, when all services has been processed by the stage. The default implementation
-     * does nothing.
-     */
-    protected void onFinish() {};
 
     /**
      * Returns a new import stage that only accepts services that have a key matching any of the specified class keys.
@@ -220,6 +226,10 @@ public abstract class InjectorImportStage extends AbstractInjectorStage {
     public static InjectorImportStage reject(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
         return accept(e -> !predicate.test(e));
+    }
+
+    InjectorImportStage andThen(InjectorImportStage next) {
+        return next;
     }
 
     static class DescriptorAdaptor implements ServiceDescriptor {

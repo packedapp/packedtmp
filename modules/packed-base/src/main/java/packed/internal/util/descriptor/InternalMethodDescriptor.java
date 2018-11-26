@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 
 import app.packed.inject.Key;
+import app.packed.inject.TypeLiteral;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.util.InternalErrorException;
@@ -159,5 +160,11 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
      */
     public static InternalMethodDescriptor of(Method method) {
         return new InternalMethodDescriptor(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TypeLiteral<?> getReturnTypeLiteral() {
+        return TypeLiteral.fromMethodReturnType(method);
     }
 }
