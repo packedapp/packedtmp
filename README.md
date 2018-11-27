@@ -18,4 +18,4 @@ To install and compile the source code locally, run:
   mvn install
 ```
 
-Note that Packed requires Java 11 to compile and run. In the future it is expected that minimum Java version will be 9.
+Note that Packed requires Java 11 to compile and run.
