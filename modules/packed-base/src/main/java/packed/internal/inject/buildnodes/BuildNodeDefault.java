@@ -45,22 +45,22 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  */
 public class BuildNodeDefault<T> extends BuildNode<T> {
 
+    /** An empty object array. */
+    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+
     /** The binding mode of this node. */
     private final BindingMode bindingMode;
 
-    /** An empty object array. */
-    private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
-    /** The internal factory. */
+    /** An internal factory, null for nodes created from an instance. */
     @Nullable
-    final InternalFactory<T> factory;
+    private final InternalFactory<T> factory;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable
     private T instance;
 
-    public BuildNodeDefault(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InternalFactory<T> factory,
-            BindingMode bindingMode) {
+    public BuildNodeDefault(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, BindingMode bindingMode,
+            InternalFactory<T> factory) {
         super(injectorConfiguration, configurationSite, factory.getDependencies());
         this.factory = requireNonNull(factory, "factory is null");
         this.bindingMode = requireNonNull(bindingMode);
@@ -118,7 +118,7 @@ public class BuildNodeDefault<T> extends BuildNode<T> {
         return !dependencies.isEmpty();
     }
 
-    final T newInstance() {
+    private T newInstance() {
         Object[] params = EMPTY_OBJECT_ARRAY;
         int size = dependencies.size();
         if (size > 0) {
@@ -153,7 +153,7 @@ public class BuildNodeDefault<T> extends BuildNode<T> {
         AtProvides atProvides = s.metadata();
         InternalFactoryExecutable<?> factory = new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.metadata().getDependencies(),
                 m.getParameterCount(), s.methodHandle());
-        return new BuildNodeDefault<>(injectorConfiguration, icss, factory, atProvides.getBindingMode());
+        return new BuildNodeDefault<>(injectorConfiguration, icss, atProvides.getBindingMode(), factory);
     }
 
     public BuildNodeDefault<?> provide(AccessibleField<AtProvides> s) {
@@ -162,7 +162,7 @@ public class BuildNodeDefault<T> extends BuildNode<T> {
 
         AtProvides atProvides = s.metadata();
         InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
-        return new BuildNodeDefault<>(injectorConfiguration, icss, factory, atProvides.getBindingMode());
+        return new BuildNodeDefault<>(injectorConfiguration, icss, atProvides.getBindingMode(), factory);
     }
 
     @Override

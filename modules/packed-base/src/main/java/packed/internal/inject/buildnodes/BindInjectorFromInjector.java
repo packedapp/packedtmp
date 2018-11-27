@@ -30,7 +30,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  * Represents an imported injector via {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
  */
-public final class BindInjectorFromInjector extends BindInjector {
+final class BindInjectorFromInjector extends BindInjector {
 
     @Nullable
     final InjectorBundle bundle;
@@ -47,7 +47,7 @@ public final class BindInjectorFromInjector extends BindInjector {
      * @param injector
      * @param stages
      */
-    public BindInjectorFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
+    BindInjectorFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
             InjectorImportStage[] stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");

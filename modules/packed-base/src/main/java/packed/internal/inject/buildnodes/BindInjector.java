@@ -36,7 +36,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * {@link InjectorConfiguration#injectorBind(Class, ImportExportStage...)} and
  * {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
  */
-public abstract class BindInjector {
+abstract class BindInjector {
 
     /** A map of all services that have been imported. */
     final Map<Key<?>, BuildNodeImport<?>> importedServices = new HashMap<>();
@@ -52,13 +52,13 @@ public abstract class BindInjector {
 
     final Set<Key<?>> requiredKeys = new HashSet<>();
 
-    public BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorImportStage[] stages) {
+    BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorImportStage[] stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.stages = List.of(stages);
     }
 
-    public BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, ImportExportStage[] stages) {
+    BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, ImportExportStage[] stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.stages = List.of(stages);

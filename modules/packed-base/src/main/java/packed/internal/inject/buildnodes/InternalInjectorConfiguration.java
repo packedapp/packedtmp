@@ -93,7 +93,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         InternalFactory<T> f = InternalFactory.from(factory);
         f = accessor.readable(f);
 
-        BuildNode<T> node = new BuildNodeDefault<>(this, frame, f, mode);
+        BuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f);
         return bindNode(node).as(factory.getKey());
     }
 

@@ -53,7 +53,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
      */
     public InternalComponentConfiguration(InternalContainerConfiguration injectorConfiguration, InternalConfigurationSite configurationSite,
             @Nullable InternalComponentConfiguration<?> parent, InternalFactory<T> factory) {
-        super(injectorConfiguration, configurationSite, factory, BindingMode.SINGLETON);
+        super(injectorConfiguration, configurationSite, BindingMode.SINGLETON, factory);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
     }

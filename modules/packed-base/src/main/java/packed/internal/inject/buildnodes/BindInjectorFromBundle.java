@@ -31,28 +31,28 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  *
  */
-public final class BindInjectorFromBundle extends BindInjector {
+final class BindInjectorFromBundle extends BindInjector {
 
     private final InjectorBundle bundle;
 
-    InternalInjectorConfiguration newConfiguration;
+    final InternalInjectorConfiguration newConfiguration;
 
-    public BindInjectorFromBundle(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
+    BindInjectorFromBundle(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
             ImportExportStage[] filters) {
         super(injectorConfiguration, configurationSite, filters);
         this.bundle = requireNonNull(bundle, "bundle is null");
+        this.newConfiguration = new InternalInjectorConfiguration(configurationSite, bundle);
     }
 
     /**
      * 
      */
-    public void process() {
-        newConfiguration = new InternalInjectorConfiguration(configurationSite, bundle);
+    void process() {
         BundleSupport.configure(bundle, newConfiguration, true);
         processNodes(newConfiguration.publicNodeList);
     }
 
-    public void processExport() {
+    void processExport() {
         for (ImportExportStage s : stages) {
             if (s instanceof InjectorExportStage) {
                 throw new UnsupportedOperationException();
