@@ -51,7 +51,7 @@ public abstract class AbstractConfiguration {
 
     protected void checkConfigurable() {
         if (isFrozen) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("This configuration has been frozen and can no longer be modified");
         }
     }
 

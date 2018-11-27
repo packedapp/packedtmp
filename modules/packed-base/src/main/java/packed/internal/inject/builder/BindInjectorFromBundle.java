@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +57,10 @@ final class BindInjectorFromBundle extends BindInjector {
         List<BuildNodeExport<?>> exports = new ArrayList<>();
         if (newConfiguration.requiredServicesMandatory != null) {
             for (Key<?> k : newConfiguration.requiredServicesMandatory) {
-                if (newConfiguration.privateNodeMap.nodes.containsKey(k)) {
+                if (newConfiguration.privateNodeMap.containsKey(k)) {
                     throw new RuntimeException("OOPS already there " + k);
                 }
-                Node<?> node = injectorConfiguration.privateNodeMap.nodes.get(k);
+                Node<?> node = injectorConfiguration.privateNodeMap.getRecursive(k);
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }

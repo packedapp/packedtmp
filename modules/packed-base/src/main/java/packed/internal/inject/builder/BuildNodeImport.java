@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,8 +24,8 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.Node;
-import packed.internal.inject.runtimenodes.RuntimeServiceNode;
-import packed.internal.inject.runtimenodes.RuntimeServiceNodeAlias;
+import packed.internal.inject.runtime.RuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** A build node that imports a service from another injector. */

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -26,6 +27,8 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.CommonKeys;
 import packed.internal.inject.Node;
+import packed.internal.inject.NodeMap;
+import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link Injector}. */
@@ -39,7 +42,7 @@ public final class InternalInjector extends AbstractInjector {
     private final String description;
 
     /** A map of all services. */
-    public final NodeMap nodes;
+    private final NodeMap nodes;
 
     /** This injector's parent, or null if this is a top-level injector. */
     @Nullable
@@ -60,7 +63,7 @@ public final class InternalInjector extends AbstractInjector {
     protected void failedGet(Key<?> key) {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
-        for (Node<?> n : nodes.nodes.values()) {
+        for (Node<?> n : nodes) {
             System.out.println(n);
             // if (n instanceof RuntimeNode<T>)
         }
@@ -91,12 +94,16 @@ public final class InternalInjector extends AbstractInjector {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) nodes.nodes.values().stream().filter(e -> !e.getKey().equals(CommonKeys.INJECTOR_KEY));
+        return (Stream) nodes.stream().filter(e -> !e.getKey().equals(CommonKeys.INJECTOR_KEY));
     }
 
     /** {@inheritDoc} */
     @Override
     public Set<String> tags() {
         return tags;
+    }
+
+    public List<Node<?>> copyNodes() {
+        return nodes.copyNodes();
     }
 }

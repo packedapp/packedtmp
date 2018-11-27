@@ -28,7 +28,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.inject.buildnodes.InjectorBuilder;
+import packed.internal.inject.builder.InjectorBuilder;
 
 /**
  * Bundles provide a simply way to package components and service. This is useful, for example, for:

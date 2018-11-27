@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.runtimenodes;
+package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Provider;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.buildnodes.BuildNode;
+import packed.internal.inject.builder.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
 
 /** A runtime service node for prototypes. */

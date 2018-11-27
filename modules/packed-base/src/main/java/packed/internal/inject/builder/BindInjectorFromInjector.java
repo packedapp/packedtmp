@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,6 +24,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.inject.Node;
+import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
@@ -53,7 +54,7 @@ final class BindInjectorFromInjector extends BindInjector {
         InternalInjector ii = (InternalInjector) injector;
 
         // All the nodes we potentially want to import
-        List<Node<?>> allNodes = List.copyOf(ii.nodes.toAll());// immutable
+        List<Node<?>> allNodes = ii.copyNodes();// immutable
         processNodes(allNodes);
     }
 }

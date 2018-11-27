@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.TypeLiteral;
-import packed.internal.inject.buildnodes.InjectorBuilder;
+import packed.internal.inject.builder.InjectorBuilder;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class BundleSupport {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.runtimenodes;
+package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,11 +23,11 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildnodes.BuildNode;
+import packed.internal.inject.builder.BuildNode;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.ThrowableUtil;
 
-/** A runtime node for an instance that have not yet been requested for the first time. */
+/** A lazy runtime node if the service was not requested at configuration time. */
 public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
 
     /** The lazily instantiated instance. */

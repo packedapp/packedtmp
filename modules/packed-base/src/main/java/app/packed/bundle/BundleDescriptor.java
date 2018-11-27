@@ -25,7 +25,7 @@ import java.util.Set;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import packed.internal.bundle.BundleDescriptorBuilder;
-import packed.internal.inject.buildnodes.InternalBundleDescriptor;
+import packed.internal.inject.builder.InternalBundleDescriptor;
 
 /**
  * An immutable bundle descriptor.

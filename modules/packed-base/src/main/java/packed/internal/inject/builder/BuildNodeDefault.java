@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,10 +28,10 @@ import app.packed.util.Nullable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactoryExecutable;
 import packed.internal.inject.factory.InternalFactoryField;
-import packed.internal.inject.runtimenodes.RuntimeServiceNode;
-import packed.internal.inject.runtimenodes.RuntimeServiceNodeLazy;
-import packed.internal.inject.runtimenodes.RuntimeServiceNodePrototype;
-import packed.internal.inject.runtimenodes.RuntimeServiceNodeSingleton;
+import packed.internal.inject.runtime.RuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
+import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
+import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
 import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.ProvidesSupport.AtProvides;

@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import packed.internal.inject.runtimenodes.RuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeServiceNode;
 import support.stubs.Letters.A;
 
 /**

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.function.Consumer;
@@ -25,29 +26,36 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
 import app.packed.bundle.InjectorImportStage;
-import app.packed.container.Container;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.Node;
+import packed.internal.inject.NodeMap;
 import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
+import packed.internal.invokers.LookupDescriptorAccessor;
 import packed.internal.invokers.ProvidesSupport.AtProvides;
 import packed.internal.invokers.ServiceClassDescriptor;
+import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-/** The default implementation of {@link InjectorConfiguration}. */
-public class InjectorBuilder extends AbstractInjectorBuilder {
+/**
+ * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfiguration}.
+ */
+public class InjectorBuilder extends AbstractConfiguration implements InjectorConfiguration {
 
-    /**
-     * The bundle we are building an injector for, null for {@link Injector#of(Consumer)} or {@link Container#of(Consumer)}.
-     */
+    /** The lookup object. We default to public access */
+    protected LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
+
+    /** The bundle we are building an injector for, null for {@link Injector#of(Consumer)}. */
     @Nullable
     final Bundle bundle;
 
@@ -95,27 +103,58 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
         publicNodeList = new ArrayList<>();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
+        return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
+        return bindFactory(BindingMode.SINGLETON, requireNonNull(factory, "factory is null"));
+    }
+
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> bind(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
-        freezeBindings();
+        freezeLatest();
         BuildNodeDefault<T> node = new BuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
         scan(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
 
+    /** {@inheritDoc} */
     @Override
+    public final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
+        return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
+    }
+
     protected final <T> ServiceConfiguration<T> bindFactory(BindingMode mode, Factory<T> factory) {
         checkConfigurable();
-        freezeBindings();
+        freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFactory<T> f = InternalFactory.from(factory);
-        f = accessor.readable(f);
-
-        BuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f);
+        BuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
         return bindNode(node).as(factory.getKey());
+    }
+
+    @Override
+    public final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
+        return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
+        return bindFactory(BindingMode.LAZY, requireNonNull(factory, "factory is null"));
+    }
+
+    @Override
+    public final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
+        return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
     protected <T> BuildNode<T> bindNode(BuildNode<T> node) {
@@ -124,9 +163,27 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
         return node;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
+        return bindFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
+        return bindFactory(BindingMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
+        return bindFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
+    }
+
     public Injector build() {
+        freezeLatest();
         freeze();
-        freezeBindings();
         new DependencyGraph(this).instantiate();
         return publicInjector;
     }
@@ -144,7 +201,7 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
 
     public final <T> ServiceConfiguration<T> expose(Key<T> key) {
         checkConfigurable();
-        freezeBindings();
+        freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
         BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, key);
 
@@ -160,11 +217,11 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
     @SuppressWarnings("unchecked")
     public final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
         checkConfigurable();
-        freezeBindings();
+        freezeLatest();
         return (ServiceConfiguration<T>) expose(configuration.getKey());
     }
 
-    protected void freezeBindings() {
+    protected void freezeLatest() {
         if (privateLatestNode != null) {
             if (!privateNodeMap.putIfAbsent(privateLatestNode)) {
                 System.err.println("OOPS");
@@ -176,8 +233,10 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
     /** {@inheritDoc} */
     @Override
     public final void injectorBind(Injector injector, InjectorImportStage... stages) {
+        requireNonNull(injector, "injector is null");
         requireNonNull(stages, "stages is null");
-        freezeBindings();
+        checkConfigurable();
+        freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, stages);
         is.importServices();
@@ -186,8 +245,10 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
     /** {@inheritDoc} */
     @Override
     public void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
-        requireNonNull(stages, "stages is null");
-        freezeBindings();
+        requireNonNull(bundle, "bundle is null");
+        requireNonNull(stages, "stages is null");// We should probably validates stages for null, before freezeLatest
+        checkConfigurable();
+        freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, stages);
         is.process();
@@ -195,6 +256,14 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
             injectorBundleBindings = new ArrayList<>(1);
         }
         injectorBundleBindings.add(is);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        checkConfigurable();
+        this.accessor = LookupDescriptorAccessor.get(lookup);
     }
 
     public void requireMandatory(Class<?> key) {
@@ -234,6 +303,12 @@ public class InjectorBuilder extends AbstractInjectorBuilder {
         }
     }
 
-    // public void require(Predicate<? super Dependency> p);
+    /** {@inheritDoc} */
+    @Override
+    public InjectorBuilder setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
 
+    // public void require(Predicate<? super Dependency> p);
 }

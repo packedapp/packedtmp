@@ -28,7 +28,7 @@ import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.inject.buildnodes.InjectorBuilder;
+import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 

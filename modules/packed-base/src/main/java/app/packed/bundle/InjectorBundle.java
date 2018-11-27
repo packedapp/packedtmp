@@ -18,7 +18,7 @@ package app.packed.bundle;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ServiceConfiguration;
-import packed.internal.inject.buildnodes.InjectorBuilder;
+import packed.internal.inject.builder.InjectorBuilder;
 
 /**
  * A injector bundle provides a simple way to package services into a resuable container nice little thingy.

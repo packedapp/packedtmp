@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -41,7 +41,7 @@ public class DependencyGraphResolver {
     public static void resolveAllDependencies(DependencyGraph b) {
         b.detectCyclesFor = new ArrayList<>();
 
-        for (Node<?> nn : b.root.privateNodeMap.nodes.values()) {
+        for (Node<?> nn : b.root.privateNodeMap) {
             BuildNode<?> node = (BuildNode<?>) nn;
             node.freeze();
 
@@ -92,7 +92,7 @@ public class DependencyGraphResolver {
                                 }
                                 sb.append(")");
                             }
-                            System.err.println(b.root.privateNodeMap.nodes.values().stream().map(e -> e.getKey()).collect(Collectors.toList()));
+                            System.err.println(b.root.privateNodeMap.stream().map(e -> e.getKey()).collect(Collectors.toList()));
                             throw new InjectionException(sb.toString());
                         }
 
@@ -104,6 +104,6 @@ public class DependencyGraphResolver {
             }
         }
 
-        b.root.privateNodeMap.nodes.values().forEach(n -> ((BuildNode<?>) n).checkResolved());
+        b.root.privateNodeMap.forEach(n -> ((BuildNode<?>) n).checkResolved());
     }
 }

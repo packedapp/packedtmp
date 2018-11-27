@@ -24,7 +24,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildnodes.BuildNodeDefault;
+import packed.internal.inject.builder.BuildNodeDefault;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,26 +21,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.Key;
-import packed.internal.inject.Node;
 
 /**
  *
  */
 public class NodeMap implements Iterable<Node<?>> {
 
-    final HashMap<Key<?>, Node<?>> nodes = new HashMap<>();
+    private final HashMap<Key<?>, Node<?>> nodes = new HashMap<>();
 
-    final NodeMap parent;
+    private final NodeMap parent;
 
     public NodeMap() {
         this.parent = null;
     }
 
+    @Override
+    public void forEach(Consumer<? super Node<?>> action) {
+        nodes.values().forEach(action);
+    }
+
     public NodeMap(NodeMap parent) {
         this.parent = requireNonNull(parent);
+    }
+
+    public boolean containsKey(Key<?> key) {
+        return nodes.containsKey(key);
     }
 
     @SuppressWarnings("unchecked")
@@ -68,7 +78,7 @@ public class NodeMap implements Iterable<Node<?>> {
         return nodes.putIfAbsent(node.getKey(), node) == null;
     }
 
-    public List<Node<?>> toAll() {
+    public List<Node<?>> copyNodes() {
         return new ArrayList<>(nodes.values());
     }
 
@@ -80,6 +90,10 @@ public class NodeMap implements Iterable<Node<?>> {
     @Override
     public Iterator<Node<?>> iterator() {
         return nodes.values().iterator();
+    }
+
+    public Stream<Node<?>> stream() {
+        return nodes.values().stream();
     }
 }
 

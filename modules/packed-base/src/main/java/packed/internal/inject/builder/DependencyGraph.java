@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildnodes;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,8 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import packed.internal.inject.CommonKeys;
 import packed.internal.inject.Node;
-import packed.internal.inject.buildnodes.DependencyGraphCycleDetector.DependencyCycle;
+import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;
+import packed.internal.inject.runtime.InternalInjector;
 
 final class DependencyGraph {
 
@@ -120,7 +121,7 @@ final class DependencyGraph {
         analyze(root);
 
         // Instantiate all singletons
-        for (Node<?> node : root.privateNodeMap.nodes.values()) {
+        for (Node<?> node : root.privateNodeMap) {
             if (node instanceof BuildNodeDefault) {
                 BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
                 if (s.getBindingMode() == BindingMode.SINGLETON) {

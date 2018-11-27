@@ -22,7 +22,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.runtimenodes.RuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeServiceNode;
 
 /**
  * A node is the base interface for internally registered services.

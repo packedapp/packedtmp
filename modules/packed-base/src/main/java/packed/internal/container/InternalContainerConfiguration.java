@@ -24,7 +24,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildnodes.InjectorBuilder;
+import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.inject.factory.FindInjectable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
