@@ -18,7 +18,6 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.util.List;
 import java.util.function.Function;
 
 import app.packed.inject.Factory;
@@ -46,9 +45,18 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    public InternalFactory1(Function<? super T, ? extends R> function, TypeLiteral<R> typeLiteral, List<InternalDependency> dependencies) {
-        super(typeLiteral, dependencies);
-        this.function = requireNonNull(function);
+    public InternalFactory1(Function<?, ? extends T> supplier, Class<?> typeInfo) {
+        this(supplier, TYPE_PARAMETERS.get(typeInfo));
+    }
+
+    /**
+     * @param supplier
+     * @param functionalSignature
+     */
+    @SuppressWarnings("unchecked")
+    private InternalFactory1(Function<?, ? extends T> function, FunctionalSignature fs) {
+        super((TypeLiteral<R>) fs.objectType, fs.dependencies);
+        this.function = (Function<? super T, ? extends R>) requireNonNull(function, "function is null");
     }
 
     /** {@inheritDoc} */
@@ -70,11 +78,4 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         }
         return instance;
     }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> InternalFactory<T> fromTypeVariables(Function<?, ? extends T> supplier, Class<?> factory1Type) {
-        FunctionalSignature fs = TYPE_PARAMETERS.get(factory1Type);
-        return new InternalFactory1(supplier, fs.objectType, fs.dependencies);
-    }
-
 }

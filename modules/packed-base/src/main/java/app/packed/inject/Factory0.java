@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.inject.factory.InternalFactory0;
 
 /**
  * A {@link Factory} type that uses a {@link Supplier} to create new instances.
@@ -65,43 +64,39 @@ public abstract class Factory0<R> extends Factory<R> {
     protected Factory0(Supplier<? extends R> supplier) {
         super(supplier);
     }
-
-    /***
-     * Returns a factory that uses the specified supplier to create new instances.**
-     * 
-     * @param <T>
-     *            the type of objects the factory will create*
-     * @param supplier
-     *            the supplier to use for creating new instances*
-     * @param type
-     *            the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
-     *            instances
-     * @return the new factory
-     */
-    // Don't know if we want to keep them... They are problematic on Factory0
-    public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> type) {
-        return of(supplier, TypeLiteral.of(type));
-    }
-
-    /***
-     * 
-     * Returns a factory that uses the specified supplier to create new instances.**
-     * 
-     * @param <T>
-     *            the type of objects the factory will create*
-     * @param supplier
-     *            the supplier to use for creating new instances*
-     * @param type
-     *            the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
-     *            instances
-     * @return the new factory
-     */
-    public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> type) {
-        return new Factory<>(new InternalFactory0<>(supplier, type));
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void main(String[] args) {
-        new Factory0(() -> 1) {};
-    }
 }
+//
+/// ***
+// * Returns a factory that uses the specified supplier to create new instances.**
+// *
+// * @param <T>
+// * the type of objects the factory will create*
+// * @param supplier
+// * the supplier to use for creating new instances*
+// * @param type
+// * the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
+// * instances
+// * @return the new factory
+// */
+//// Don't know if we want to keep them... They are problematic on Factory0, but used for importing nodes from a generic
+//// injector
+// public static <T> Factory<T> of(Supplier<? extends T> supplier, Class<T> type) {
+// return of(supplier, TypeLiteral.of(type));
+// }
+//
+/// ***
+// *
+// * Returns a factory that uses the specified supplier to create new instances.**
+// *
+// * @param <T>
+// * the type of objects the factory will create*
+// * @param supplier
+// * the supplier to use for creating new instances*
+// * @param type
+// * the type of objects the supplier creates*@return a factory that uses the specified supplier to create new
+// * instances
+// * @return the new factory
+// */
+// public static <T> Factory<T> of(Supplier<? extends T> supplier, TypeLiteral<T> type) {
+// return new Factory<>(new InternalFactory0<>(supplier, type));
+// }

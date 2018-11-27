@@ -37,9 +37,17 @@ import packed.internal.inject.InternalDependency;
  */
 public abstract class InternalFactory<T> {
 
-    // 3 Types
-
+    // Dependencies
     // Key -> The key under which the factory will be register unless registered under another key
+
+    //////// TYPES (Raw)
+    // ExactType... -> Instance, Constructor
+    // LowerBoundType, Field, Method
+    // PromisedType -> Fac0,Fac1,Fac2,
+
+    /// TypeLiteral<- Always the promised, key must be assignable via raw type
+    ///////////////
+
     // TypeLiteral
     // actual type
 
@@ -78,7 +86,6 @@ public abstract class InternalFactory<T> {
         this.typeLiteral = typeLiteralOrKey;
         this.type = typeLiteral.getRawType();
         this.actualType = requireNonNull(actualType);
-
     }
 
     protected T checkLowerbound(T instance) {
@@ -147,15 +154,6 @@ public abstract class InternalFactory<T> {
     public abstract T instantiate(Object[] params);
 
     /**
-     * @param lookup
-     *            the lookup object to test against
-     * @return whether or not the this factory can create using the specified lookup object
-     */
-    public boolean isAccessibleWith(Lookup lookup) {
-        return true;
-    }
-
-    /**
      * Converts the specified factory to an internal factory
      * 
      * @param <T>
@@ -167,6 +165,10 @@ public abstract class InternalFactory<T> {
     public static <T> InternalFactory<T> from(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         return InjectSupport.toInternalFactory(factory);
+    }
+
+    public InternalFactory<T> withLookup(Lookup lookup) {
+        throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
     }
 
     static class FunctionalSignature {
@@ -182,3 +184,12 @@ public abstract class InternalFactory<T> {
     }
 
 }
+//
+/// **
+// * @param lookup
+// * the lookup object to test against
+// * @return whether or not the this factory can create using the specified lookup object
+// */
+// public boolean isAccessibleWith(Lookup lookup) {
+// return true;
+// }

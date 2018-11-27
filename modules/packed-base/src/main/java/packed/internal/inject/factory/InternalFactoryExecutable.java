@@ -77,11 +77,6 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
     }
 
     @Override
-    public boolean isAccessibleWith(Lookup lookup) {
-        return super.isAccessibleWith(lookup);
-    }
-
-    @Override
     public String toString() {
         return executable.toString();
     }
@@ -97,6 +92,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
      *            the lookup object to use
      * @return a new internal factory that uses the specified lookup object
      */
+    @Override
     public InternalFactory<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {

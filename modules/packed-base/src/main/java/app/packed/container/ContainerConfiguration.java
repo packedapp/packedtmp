@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.ContainerBundle;
+import app.packed.bundle.ImportExportStage;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.TypeLiteral;
@@ -158,7 +158,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * Sets the {@link Container#getName() name} of the container. The name must consists only of alphanumeric characters
      * and '_' or '-'. The name is case sensitive.
      * <p>
-     * If no name is set using this method a unique name (among siblings) is generated at build time.
+     * If no name is set using this method a unique name (among sibling containers) is generated at build time.
      *
      * @param name
      *            the name of the container

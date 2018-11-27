@@ -27,11 +27,16 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 
-/** An internal factory for {@link Factory0}. */
+/**
+ * An internal factory for {@link Factory0}.
+ * 
+ * @param <T>
+ *            the type of elements the factory produces
+ */
 public final class InternalFactory0<T> extends InternalFactory<T> {
 
     /** A cache of extracted type variables. */
-    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETERS = new ClassValue<>() {
+    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETER_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -44,8 +49,18 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;
 
-    public InternalFactory0(Supplier<? extends T> supplier, TypeLiteral<T> typeLiteralOrKey) {
-        super(typeLiteralOrKey, List.of());
+    /**
+     * Creates a factory0 instance.
+     * 
+     * @param supplier
+     *            the supplier that creates the actual values
+     * @param typeInfo
+     *            the class to extract type info from.
+     * @return the new factory
+     */
+    @SuppressWarnings("unchecked")
+    public InternalFactory0(Supplier<? extends T> supplier, Class<?> typeInfo) {
+        super((TypeLiteral<T>) TYPE_PARAMETER_CACHE.get(typeInfo), List.of());
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
@@ -65,21 +80,5 @@ public final class InternalFactory0<T> extends InternalFactory<T> {
                             + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
-    }
-
-    /**
-     * Create
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param supplier
-     *            the supplier that creates the actual values
-     * @param extractFrom
-     *            the class to extract the type variable from
-     * @return the new factory
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> InternalFactory<T> fromTypeVariable(Supplier<? extends T> supplier, Class<?> extractFrom) {
-        return new InternalFactory0<>(supplier, (TypeLiteral<T>) TYPE_PARAMETERS.get(extractFrom));
     }
 }

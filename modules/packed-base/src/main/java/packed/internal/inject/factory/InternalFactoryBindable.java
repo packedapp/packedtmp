@@ -23,9 +23,10 @@ import app.packed.util.Nullable;
 /**
  *
  */
-
 // Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
 public class InternalFactoryBindable<T> extends InternalFactory<T> {
+
+    InternalFactory<T> wrapping;
 
     public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
         super(typeLiteral, List.of());
@@ -43,5 +44,4 @@ public class InternalFactoryBindable<T> extends InternalFactory<T> {
     public T instantiate(Object[] params) {
         return null;
     }
-
 }

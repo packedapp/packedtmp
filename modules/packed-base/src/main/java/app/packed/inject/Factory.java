@@ -33,7 +33,6 @@ import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactory0;
 import packed.internal.inject.factory.InternalFactory1;
 import packed.internal.inject.factory.InternalFactory2;
-import packed.internal.inject.factory.InternalFactoryExecutable;
 import packed.internal.inject.factory.InternalFactoryInstance;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -95,7 +94,7 @@ public class Factory<T> {
      *            the function
      */
     Factory(Function<?, ? extends T> function) {
-        this.factory = InternalFactory1.fromTypeVariables(function, getClass());
+        this.factory = new InternalFactory1<>(function, getClass());
     }
 
     /**
@@ -116,7 +115,7 @@ public class Factory<T> {
      *            the supplier
      */
     Factory(Supplier<? extends T> supplier) {
-        this.factory = InternalFactory0.fromTypeVariable(supplier, getClass());
+        this.factory = new InternalFactory0<>(supplier, getClass());
     }
 
     /**
@@ -167,8 +166,8 @@ public class Factory<T> {
     }
 
     /**
-     * If this factory was created from a constructor or method, this method returns a new factory that uses the specified
-     * lookup object to access the underlying constructor or method whenever the factory needs to create a new object.
+     * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
+     * the specified lookup object to access the underlying member whenever the factory needs to create a new object.
      * <p>
      * This method is useful, for example, to make a factory publically available for an class that does not a public
      * constructor.
@@ -178,20 +177,25 @@ public class Factory<T> {
      *
      * @param lookup
      *            the lookup object
-     * @return a new factory with uses the specified lookup object when invoke the underlying method or constructor
+     * @return a new factory with uses the specified lookup object when accessing the underlying member
      * @throws IllegalAccessRuntimeException
-     *             if the specified lookup object does not give access to the underlying constructor or method
+     *             if the specified lookup object does not give access to the underlying member
      * @throws UnsupportedOperationException
-     *             if this factory was not created from either a constructor or method.
+     *             if this factory was not created from either a field, constructor or method.
      */
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        if (!(factory instanceof InternalFactoryExecutable)) {
-            throw new UnsupportedOperationException("This method is only supported by factories that was created from a constructor or a method");
-        }
-        return new Factory<>(((InternalFactoryExecutable<T>) factory).withLookup(lookup));
+        return new Factory<>(factory.withLookup(lookup));
     }
 
+    /**
+     * Returns a new factory retaining all the properties of this factory. Except that the default key this factory will be
+     * bound to will be the specified key.
+     * 
+     * @param key
+     *            the default key under which to bind the factory
+     * @return the new factory
+     */
     public final Factory<T> withKey(Key<? super T> key) {
         throw new UnsupportedOperationException();
     }

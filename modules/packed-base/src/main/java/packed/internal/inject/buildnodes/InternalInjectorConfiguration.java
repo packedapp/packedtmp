@@ -50,6 +50,8 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     InternalInjector privateInjector;
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
+
+    // Change list to BuildNode<?> current.....
     final ArrayList<BuildNode<?>> privateNodeList = new ArrayList<>();
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
