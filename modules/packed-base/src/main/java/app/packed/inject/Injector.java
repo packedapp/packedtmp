@@ -28,7 +28,7 @@ import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
+import packed.internal.inject.buildnodes.InjectorBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -266,11 +266,12 @@ public interface Injector extends Taggable {
     // Maa have noget Bootstrap??? ogsaa med stages o.s.v., vi gider ihvertfald ikke bliver noedt til at lave en
     // container hvor vi skal importere den anden container. Og saa staar vi ved med to.
     // Nej vi skal have noget boot agtigt noget. InjectorBooter?
-    static Injector of(Consumer<InjectorConfiguration> configurator /* , Object... requirements */) {
+    // /* , Object... requirements */
+    static Injector of(Consumer<InjectorConfiguration> configurator) {
         requireNonNull(configurator, "configurator is null");
-        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
-        configurator.accept(c);
-        return c.finish();
+        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
+        configurator.accept(builder);
+        return builder.build();
     }
 
     /**
@@ -282,9 +283,9 @@ public interface Injector extends Taggable {
      */
     static Injector of(InjectorBundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        InternalInjectorConfiguration c = new InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
-        BundleSupport.configure(bundle, c, true);
-        return c.finish();
+        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
+        BundleSupport.configure(bundle, builder, true);
+        return builder.build();
     }
 
     static Injector of(Class<? extends InjectorBundle> bundleType) {

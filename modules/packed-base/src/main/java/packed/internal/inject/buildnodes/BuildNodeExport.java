@@ -38,7 +38,7 @@ public class BuildNodeExport<T> extends BuildNode<T> {
     final BindInjector source;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildNodeExport(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector source, Node<T> node) {
+    BuildNodeExport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector source, Node<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.source = requireNonNull(source);

@@ -18,17 +18,12 @@ package packed.internal.inject.buildnodes;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Consumer;
 
-import app.packed.bundle.Bundle;
-import app.packed.container.Container;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
-import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
-import app.packed.util.Nullable;
 import packed.internal.invokers.LookupDescriptorAccessor;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -36,14 +31,10 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  *
  */
-public abstract class AbstractInjectorConfiguration extends AbstractConfiguration implements InjectorConfiguration {
+public abstract class AbstractInjectorBuilder extends AbstractConfiguration implements InjectorConfiguration {
 
     /** The lookup object. We default to public access */
     protected LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
-
-    /** Any bundle we are configuring, or null if using {@link Injector#of(Consumer)} or {@link Container#of(Consumer)}. */
-    @Nullable
-    final Bundle bundle;
 
     /**
      * Creates a new configuration.
@@ -53,19 +44,14 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
      * @param bundle
      *            if this configuration is created from a bundle
      */
-    public AbstractInjectorConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle) {
+    public AbstractInjectorBuilder(InternalConfigurationSite configurationSite) {
         super(configurationSite);
-        this.bundle = bundle;
     }
 
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
@@ -73,10 +59,6 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
     @Override
     public final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.SINGLETON, factory);
     }
 
@@ -84,10 +66,6 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
     @Override
     public final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
@@ -96,10 +74,6 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
     @Override
     public final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
@@ -107,50 +81,30 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
     @Override
     public final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.LAZY, factory);
     }
 
     @Override
     public final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
     @Override
     public final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
     @Override
     public final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.PROTOTYPE, factory);
     }
 
     @Override
     public final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        checkConfigurable();
-        // int depth = depth();
-        // ConfigurationSite point = depth == 0 ? ConfigurationSite.NO_INFO : ConfigurationSite.fromFrame(W.walk(e ->
-        // e.skip(depth).findFirst()));
         return bindFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
@@ -164,7 +118,7 @@ public abstract class AbstractInjectorConfiguration extends AbstractConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public AbstractInjectorConfiguration setDescription(String description) {
+    public AbstractInjectorBuilder setDescription(String description) {
         super.setDescription(description);
         return this;
     }

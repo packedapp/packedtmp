@@ -33,15 +33,15 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 /**
  *
  */
-public class InjectorBuilderResolver {
+public class DependencyGraphResolver {
     // TODO also check no injection of prototype beans into singleton, after we have resolved
 
     // Requirements -> cannot require any exposed services, or internally registered services...
 
-    public static void resolveAllDependencies(InjectorBuilder b) {
+    public static void resolveAllDependencies(DependencyGraph b) {
         b.detectCyclesFor = new ArrayList<>();
 
-        for (Node<?> nn : b.c.privateNodeMap.nodes.values()) {
+        for (Node<?> nn : b.root.privateNodeMap.nodes.values()) {
             BuildNode<?> node = (BuildNode<?>) nn;
             node.freeze();
 
@@ -52,22 +52,9 @@ public class InjectorBuilderResolver {
                     Dependency dependency = dependencies.get(i);
                     Node<?> resolveTo = null;
 
-                    // Special handling for mixins. They are allowed to be inner classes, without the outer class
-                    // needing to be exposed as a service
-                    // Also we need to check it first because, we should always override any exposed service with the same key
-                    // if (i == 0 && node instanceof BuildNodeOldFactory) {
-                    // BuildNodeOldFactory<?> factory = (BuildNodeOldFactory<?>) node;
-                    // if (factory.componentInstanceId > 0) {// A mixin
-                    // BuildNodeInstanceOrFactory<?> parent = factory.componentConfiguration.getNodes().get(0);
-                    // if (factory.mirror.isInnerClassOf(parent.mirror.getType())) {
-                    // resolveTo = parent;
-                    // }
-                    // }
-                    // }
-
                     // See if we have a matching service in the node map.
                     if (resolveTo == null) {
-                        resolveTo = b.c.privateNodeMap.getNode(dependency);
+                        resolveTo = b.root.privateNodeMap.getNode(dependency);
 
                         // Did not find service of the specified type
                         if (resolveTo == null) {
@@ -105,7 +92,7 @@ public class InjectorBuilderResolver {
                                 }
                                 sb.append(")");
                             }
-                            System.err.println(b.c.privateNodeList.stream().map(e -> e.getKey()).collect(Collectors.toList()));
+                            System.err.println(b.root.privateNodeMap.nodes.values().stream().map(e -> e.getKey()).collect(Collectors.toList()));
                             throw new InjectionException(sb.toString());
                         }
 
@@ -117,8 +104,6 @@ public class InjectorBuilderResolver {
             }
         }
 
-        b.c.privateNodeMap.nodes.values().forEach(n -> {
-            ((BuildNode<?>) n).checkResolved();
-        });
+        b.root.privateNodeMap.nodes.values().forEach(n -> ((BuildNode<?>) n).checkResolved());
     }
 }

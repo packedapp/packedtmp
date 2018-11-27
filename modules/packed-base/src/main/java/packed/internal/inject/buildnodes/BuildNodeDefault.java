@@ -59,7 +59,7 @@ public class BuildNodeDefault<T> extends BuildNode<T> {
     @Nullable
     private T instance;
 
-    public BuildNodeDefault(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, BindingMode bindingMode,
+    public BuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindingMode bindingMode,
             InternalFactory<T> factory) {
         super(injectorConfiguration, configurationSite, factory.getDependencies());
         this.factory = requireNonNull(factory, "factory is null");
@@ -79,7 +79,7 @@ public class BuildNodeDefault<T> extends BuildNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildNodeDefault(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, T instance) {
+    public BuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.bindingMode = BindingMode.SINGLETON;

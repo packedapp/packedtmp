@@ -50,7 +50,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
     final boolean hasDependencyOnInjectionSite;
 
     /** The injector configuration this node is registered with. */
-    final InternalInjectorConfiguration injectorConfiguration;
+    final InjectorBuilder injectorConfiguration;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
@@ -67,7 +67,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    BuildNode(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
+    BuildNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         super(configurationSite);
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.dependencies = requireNonNull(dependencies);

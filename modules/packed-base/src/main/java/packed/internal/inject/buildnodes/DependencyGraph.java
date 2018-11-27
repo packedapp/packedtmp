@@ -15,37 +15,125 @@
  */
 package packed.internal.inject.buildnodes;
 
-import java.util.function.Consumer;
+import static java.util.Objects.requireNonNull;
 
-import app.packed.bundle.InjectorBundle;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
-/**
- *
- */
-public class DependencyGraph<T extends Injector> {
+import app.packed.inject.BindingMode;
+import app.packed.inject.InjectionException;
+import app.packed.inject.Key;
+import packed.internal.inject.CommonKeys;
+import packed.internal.inject.Node;
+import packed.internal.inject.buildnodes.DependencyGraphCycleDetector.DependencyCycle;
 
-    InternalInjectorConfiguration rootConfiguration;
-    InjectorBundle rootBundle;
+final class DependencyGraph {
 
-    // Fra ContainerBundle.
-    // Fra Consumer<ContainerConfiguration>
-    // Fra InjectorBundle
-    // Fra Consumer<InjectorConfiguration>
+    /** A list of nodes to use when detecting dependency cycles. */
+    ArrayList<BuildNode<?>> detectCyclesFor;
 
-    // DP<T> and then build
+    /** The root injector builder. */
+    final InjectorBuilder root;
 
-    public static Injector create(InjectorBundle bundle) {
-        throw new UnsupportedOperationException();
+    /**
+     * Creates a new dependency graph.
+     * 
+     * @param root
+     *            the root injector builder
+     */
+    DependencyGraph(InjectorBuilder root) {
+        this.root = requireNonNull(root);
     }
 
-    public static Injector create(Consumer<? super InjectorConfiguration> configurator) {
-        // InternalInjectorConfiguration c = new
-        // InternalInjectorConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
-        // configurator.accept(c);
-        // return c.builder.build();
-        throw new UnsupportedOperationException();
+    /** Also used for descriptors. */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    void analyze(InjectorBuilder builder) {
+        builder.privateInjector = new InternalInjector(builder, builder.privateNodeMap);
+        builder.privateNodeMap.put(new BuildNodeDefault<>(builder, builder.getConfigurationSite(), builder.privateInjector).as((Key) CommonKeys.INJECTOR_KEY));
+        if (builder.bundle == null) {
+            builder.publicInjector = builder.privateInjector;
+        } else {
+            builder.publicInjector = new InternalInjector(builder, builder.publicNodeMap);
+
+            // Add public injector
+            // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
+            // bn.as(Injector.class);
+            // c.public BuildNodeList.add(bn);
+
+        }
+
+        if (builder.injectorBundleBindings != null) {
+            for (BindInjectorFromBundle bi : builder.injectorBundleBindings) {
+                bi.processExport();
+                new DependencyGraph(bi.newConfiguration).instantiate();
+            }
+        }
+
+        // All exposures
+        if (builder.publicNodeList != null) {
+            for (BuildNode<?> bn : builder.publicNodeList) {
+                if (bn instanceof BuildNodeExposed) {
+                    BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
+                    Node<?> node = builder.privateNodeMap.getRecursive(bne.getPrivateKey());
+                    bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
+                }
+            }
+        }
+
+        // If we do not export services into a bundle. We should be able to resolver much quicker..
+        DependencyGraphResolver.resolveAllDependencies(this);
+
+        dependencyCyclesDetect();
+    }
+
+    /**
+     * Tries to find a dependency cycle.
+     *
+     * @throws InjectionException
+     *             if a dependency cycle was detected
+     */
+    public void dependencyCyclesDetect() {
+        DependencyCycle c = dependencyCyclesFind();
+        if (c != null) {
+            throw new InjectionException("Dependency cycle detected: " + c);
+        }
+    }
+
+    DependencyCycle dependencyCyclesFind() {
+        if (detectCyclesFor == null) {
+            throw new IllegalStateException("Must resolve nodes before detecting cycles");
+        }
+        ArrayDeque<BuildNode<?>> stack = new ArrayDeque<>();
+        ArrayDeque<BuildNode<?>> dependencies = new ArrayDeque<>();
+        for (BuildNode<?> node : detectCyclesFor) {
+            if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
+                DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
+                if (dc != null) {
+                    return dc;
+                }
+            }
+        }
+        return null;
+    }
+
+    void instantiate() {
+        analyze(root);
+
+        // Instantiate all singletons
+        for (Node<?> node : root.privateNodeMap.nodes.values()) {
+            if (node instanceof BuildNodeDefault) {
+                BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
+                if (s.getBindingMode() == BindingMode.SINGLETON) {
+                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
+                }
+            }
+        }
+
+        // Okay we are finished, convert all nodes to runtime nodes.
+        root.privateNodeMap.toRuntimeNodes();
+        if (root.privateNodeMap != root.publicNodeMap) {
+            root.publicNodeMap.toRuntimeNodes();
+        }
     }
 
 }

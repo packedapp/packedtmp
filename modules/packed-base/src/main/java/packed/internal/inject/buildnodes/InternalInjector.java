@@ -48,7 +48,7 @@ public final class InternalInjector extends AbstractInjector {
     /** This injector's tags. */
     private final Set<String> tags;
 
-    public InternalInjector(InternalInjectorConfiguration injectorConfiguration, NodeMap nodes) {
+    public InternalInjector(InjectorBuilder injectorConfiguration, NodeMap nodes) {
         this.parent = null;
         this.nodes = requireNonNull(nodes);
         this.tags = injectorConfiguration.immutableCopyOfTags();

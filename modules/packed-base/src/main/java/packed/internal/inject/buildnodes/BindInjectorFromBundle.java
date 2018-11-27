@@ -15,8 +15,6 @@
  */
 package packed.internal.inject.buildnodes;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +31,12 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  */
 final class BindInjectorFromBundle extends BindInjector {
 
-    private final InjectorBundle bundle;
+    final InjectorBuilder newConfiguration;
 
-    final InternalInjectorConfiguration newConfiguration;
-
-    BindInjectorFromBundle(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
+    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
             ImportExportStage[] filters) {
-        super(injectorConfiguration, configurationSite, filters);
-        this.bundle = requireNonNull(bundle, "bundle is null");
-        this.newConfiguration = new InternalInjectorConfiguration(configurationSite, bundle);
+        super(injectorConfiguration, configurationSite, bundle, filters);
+        this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }
 
     /**
@@ -60,17 +55,19 @@ final class BindInjectorFromBundle extends BindInjector {
         }
 
         List<BuildNodeExport<?>> exports = new ArrayList<>();
-        for (Key<?> k : newConfiguration.requiredServicesMandatory) {
-            if (newConfiguration.privateNodeMap.nodes.containsKey(k)) {
-                throw new RuntimeException("OOPS already there " + k);
+        if (newConfiguration.requiredServicesMandatory != null) {
+            for (Key<?> k : newConfiguration.requiredServicesMandatory) {
+                if (newConfiguration.privateNodeMap.nodes.containsKey(k)) {
+                    throw new RuntimeException("OOPS already there " + k);
+                }
+                Node<?> node = injectorConfiguration.privateNodeMap.nodes.get(k);
+                if (node == null) {
+                    throw new RuntimeException("OOPS " + k);
+                }
+                BuildNodeExport<?> e = new BuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this, node);
+                exports.add(e);
+                newConfiguration.privateNodeMap.put(e);
             }
-            Node<?> node = injectorConfiguration.privateNodeMap.nodes.get(k);
-            if (node == null) {
-                throw new RuntimeException("OOPS " + k);
-            }
-            BuildNodeExport<?> e = new BuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this, node);
-            exports.add(e);
-            newConfiguration.privateNodeMap.put(e);
         }
     }
 }

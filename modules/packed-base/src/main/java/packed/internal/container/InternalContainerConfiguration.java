@@ -24,7 +24,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
+import packed.internal.inject.buildnodes.InjectorBuilder;
 import packed.internal.inject.factory.FindInjectable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
@@ -33,7 +33,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  *
  */
-public class InternalContainerConfiguration extends InternalInjectorConfiguration implements ContainerConfiguration {
+public class InternalContainerConfiguration extends InjectorBuilder implements ContainerConfiguration {
 
     /** The name of the container, or null if no name has been set. */
     @Nullable
@@ -52,7 +52,7 @@ public class InternalContainerConfiguration extends InternalInjectorConfiguratio
     }
 
     @Override
-    public Container finish() {
+    public Container build() {
         throw new UnsupportedOperationException();
     }
 

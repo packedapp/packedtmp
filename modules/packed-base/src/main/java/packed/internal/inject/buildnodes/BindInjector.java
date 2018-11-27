@@ -17,17 +17,17 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.InjectorBundle;
 import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
+import app.packed.util.Nullable;
 import packed.internal.inject.Node;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -38,30 +38,33 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  */
 abstract class BindInjector {
 
-    /** A map of all services that have been imported. */
-    final Map<Key<?>, BuildNodeImport<?>> importedServices = new HashMap<>();
-
     /** The configuration site where the injector was imported. */
     final InternalConfigurationSite configurationSite;
 
-    /** The configuration of the injector. */
-    final InternalInjectorConfiguration injectorConfiguration;
+    /** The configuration of the injector that is import/exporting services. */
+    final InjectorBuilder injectorConfiguration;
 
     /** The import stages. */
     final List<ImportExportStage> stages;
 
     final Set<Key<?>> requiredKeys = new HashSet<>();
 
-    BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorImportStage[] stages) {
+    @Nullable
+    final InjectorBundle bundle;
+
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorImportStage[] stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.stages = List.of(stages);
+        this.stages = List.of(stages); // checks for null
+        this.bundle = null;
     }
 
-    BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, ImportExportStage[] stages) {
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
+            ImportExportStage[] stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.stages = List.of(stages);
+        this.stages = List.of(stages); // checks for null
+        this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
     /**
@@ -107,7 +110,8 @@ abstract class BindInjector {
         }
         for (int i = 0; i < importNodes.length; i++) {
             if (importNodes[i] != null) {
-                importedServices.put(importNodes[i].getKey(), importNodes[i]);
+                // TODO check non existing
+                injectorConfiguration.privateNodeMap.put(importNodes[i]);
             }
         }
     }

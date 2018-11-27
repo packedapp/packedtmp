@@ -18,7 +18,7 @@ package app.packed.bundle;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ServiceConfiguration;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
+import packed.internal.inject.buildnodes.InjectorBuilder;
 
 /**
  * A injector bundle provides a simple way to package services into a resuable container nice little thingy.
@@ -113,7 +113,7 @@ public abstract class InjectorBundle extends Bundle {
     // We probably want to null this out...
     // If we install the bundle as a component....
     // We do not not want any more garbage then needed.
-    private InternalInjectorConfiguration delegate;
+    private InjectorBuilder delegate;
 
     protected final <T> T asDeprecated(T t, String reason) {
         return t;
@@ -132,7 +132,7 @@ public abstract class InjectorBundle extends Bundle {
      *          {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
      *          object escape.
      */
-    final void configure(InternalInjectorConfiguration configuration, boolean freeze) {
+    final void configure(InjectorBuilder configuration, boolean freeze) {
 
         // Maybe we can do some access checkes on the Configurator. To allow for testing....
 
@@ -162,7 +162,7 @@ public abstract class InjectorBundle extends Bundle {
     }
 
     @Override
-    InternalInjectorConfiguration configuration() {
+    InjectorBuilder configuration() {
         if (delegate == null) {
             throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
         }

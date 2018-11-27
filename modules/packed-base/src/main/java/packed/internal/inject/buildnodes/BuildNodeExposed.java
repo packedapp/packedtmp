@@ -43,7 +43,7 @@ public final class BuildNodeExposed<T> extends BuildNode<T> {
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public BuildNodeExposed(InternalInjectorConfiguration configuration, InternalConfigurationSite configurationSite, Key<T> privateKey) {
+    public BuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, Key<T> privateKey) {
         super(configuration, configurationSite, List.of());
         this.privateKey = requireNonNull(privateKey, "privateKey is null");
     }

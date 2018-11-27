@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -67,7 +66,7 @@ public class KeyMicro {
     // return new Key<String>() {};
     // }
 
-    @Benchmark
+    // @Benchmark
     public Key<String> KeyOfString() {
         return Key.of(String.class);
     }

@@ -20,7 +20,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provides;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.OnStart;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
+import packed.internal.inject.buildnodes.InjectorBuilder;
 
 /**
  *
@@ -92,7 +92,7 @@ public abstract class ContainerBundle extends Bundle {
 
     /** {@inheritDoc} */
     @Override
-    InternalInjectorConfiguration configuration() {
+    InjectorBuilder configuration() {
         throw new UnsupportedOperationException();
     }
 

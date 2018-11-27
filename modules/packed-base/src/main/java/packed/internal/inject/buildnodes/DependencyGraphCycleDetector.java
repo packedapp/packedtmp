@@ -24,7 +24,7 @@ import app.packed.inject.InjectionException;
 import packed.internal.inject.Node;
 
 /** A utility class that can find cycles in a dependency graph. */
-public final class DependecyCycleDetector {
+final class DependencyGraphCycleDetector {
 
     /**
      * Recursively invoked for each node.
@@ -39,7 +39,7 @@ public final class DependecyCycleDetector {
      * @throws InjectionException
      *             if there is a cycle in the graph
      */
-    public static DependencyCycle detectCycle(BuildNode<?> node, ArrayDeque<BuildNode<?>> stack, ArrayDeque<BuildNode<?>> dependencies) {
+    static DependencyCycle detectCycle(BuildNode<?> node, ArrayDeque<BuildNode<?>> stack, ArrayDeque<BuildNode<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             Node<?> dependency = node.resolvedDependencies[i];

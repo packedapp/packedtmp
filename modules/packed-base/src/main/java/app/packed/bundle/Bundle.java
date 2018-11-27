@@ -28,7 +28,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.inject.buildnodes.InternalInjectorConfiguration;
+import packed.internal.inject.buildnodes.InjectorBuilder;
 
 /**
  * Bundles provide a simply way to package components and service. This is useful, for example, for:
@@ -53,7 +53,7 @@ public abstract class Bundle {
 
             /** {@inheritDoc} */
             @Override
-            protected void configureInjectorBundle(InjectorBundle bundle, InternalInjectorConfiguration configuration, boolean freeze) {
+            protected void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder configuration, boolean freeze) {
                 bundle.configure(configuration, freeze);
             }
 
@@ -151,7 +151,7 @@ public abstract class Bundle {
      * 
      * @return the configuration object that we delegate to
      */
-    abstract InternalInjectorConfiguration configuration();
+    abstract InjectorBuilder configuration();
 
     /** Configures the bundle using the various protected methods. */
     protected abstract void configure();

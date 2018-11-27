@@ -34,12 +34,12 @@ public class InternalBundleDescriptor {
      */
     public static BundleDescriptorBuilder of(Bundle bundle) {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
-        InternalInjectorConfiguration conf = new InternalInjectorConfiguration(ics, bundle);
+        InjectorBuilder conf = new InjectorBuilder(ics, bundle);
 
         BundleSupport.configure((InjectorBundle) bundle, conf, false);
 
-        InjectorBuilder injectorBuilder = new InjectorBuilder(conf);
-        injectorBuilder.setup();
+        DependencyGraph injectorBuilder = new DependencyGraph(conf);
+        injectorBuilder.analyze(conf);
 
         //////////////// Create the builder
         BundleDescriptorBuilder builder = new BundleDescriptorBuilder();
@@ -48,8 +48,12 @@ public class InternalBundleDescriptor {
                 builder.addExposed((ServiceConfiguration<?>) n);
             }
         }
-        builder.addOptionalServices(conf.requiredServicesOptionally);
-        builder.addRequiredServices(conf.requiredServicesMandatory);
+        if (conf.requiredServicesOptionally != null) {
+            builder.addOptionalServices(conf.requiredServicesOptionally);
+        }
+        if (conf.requiredServicesMandatory != null) {
+            builder.addRequiredServices(conf.requiredServicesMandatory);
+        }
         return builder;
     }
 }

@@ -179,7 +179,7 @@ public interface Container extends Injector {
         requireNonNull(configurator, "configurator is null");
         InternalContainerConfiguration c = new InternalContainerConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
         configurator.accept(c);
-        return c.finish();
+        return c.build();
     }
 }
 

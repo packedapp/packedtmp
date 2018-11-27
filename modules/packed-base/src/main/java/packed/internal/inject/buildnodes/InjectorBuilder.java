@@ -17,118 +17,223 @@ package packed.internal.inject.buildnodes;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.function.Consumer;
 
+import app.packed.bundle.Bundle;
+import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.InjectorImportStage;
+import app.packed.container.Container;
 import app.packed.inject.BindingMode;
-import app.packed.inject.InjectionException;
+import app.packed.inject.Factory;
+import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
-import packed.internal.inject.CommonKeys;
+import app.packed.inject.ServiceConfiguration;
+import app.packed.util.Nullable;
 import packed.internal.inject.Node;
-import packed.internal.inject.buildnodes.DependecyCycleDetector.DependencyCycle;
+import packed.internal.inject.factory.InternalFactory;
+import packed.internal.invokers.AccessibleExecutable;
+import packed.internal.invokers.AccessibleField;
+import packed.internal.invokers.ProvidesSupport.AtProvides;
+import packed.internal.invokers.ServiceClassDescriptor;
+import packed.internal.util.configurationsite.ConfigurationSiteType;
+import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-public final class InjectorBuilder {
+/** The default implementation of {@link InjectorConfiguration}. */
+public class InjectorBuilder extends AbstractInjectorBuilder {
 
-    final InternalInjectorConfiguration c;
+    /**
+     * The bundle we are building an injector for, null for {@link Injector#of(Consumer)} or {@link Container#of(Consumer)}.
+     */
+    @Nullable
+    final Bundle bundle;
 
-    /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<BuildNode<?>> detectCyclesFor;
+    /** A list of bundle bindings, as we need to post process the exports. */
+    ArrayList<BindInjectorFromBundle> injectorBundleBindings;
 
-    public InjectorBuilder(InternalInjectorConfiguration c) {
-        this.c = requireNonNull(c);
+    InternalInjector privateInjector;
+
+    /** All nodes that have been added to this builder, even those that are not exposed. */
+    BuildNode<?> privateLatestNode;
+
+    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
+    final NodeMap privateNodeMap;
+
+    InternalInjector publicInjector;
+
+    @Nullable
+    final ArrayList<BuildNodeExposed<?>> publicNodeList;
+
+    /** The runtime nodes that will be available in the injector. */
+    final NodeMap publicNodeMap;
+
+    HashSet<Key<?>> requiredServicesMandatory;
+
+    HashSet<Key<?>> requiredServicesOptionally;
+
+    /**
+     * Creates a new configuration.
+     * 
+     * @param configurationSite
+     *            the configuration site
+     */
+    public InjectorBuilder(InternalConfigurationSite configurationSite) {
+        super(configurationSite);
+        this.bundle = null;
+        publicNodeMap = privateNodeMap = new NodeMap();
+        publicNodeList = null;
     }
 
-    void build() {
-        setup();
-
-        // Instantiate all singletons
-        for (Node<?> node : c.privateNodeMap.nodes.values()) {
-            if (node instanceof BuildNodeDefault) {
-                BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
-                if (s.getBindingMode() == BindingMode.SINGLETON) {
-                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
-                }
-            }
-        }
-
-        // Okay we are finished, convert all nodes to runtime nodes.
-        c.privateNodeMap.toRuntimeNodes();
-        if (c.privateNodeMap != c.publicNodeMap) {
-            c.publicNodeMap.toRuntimeNodes();
-        }
+    public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
+        super(configurationSite);
+        this.bundle = requireNonNull(bundle);
+        publicNodeMap = new NodeMap();
+        privateNodeMap = new NodeMap();
+        publicNodeList = new ArrayList<>();
     }
 
-    /** Also used for descriptors. */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void setup() {
-        c.freezeBindings();
-        c.privateInjector = new InternalInjector(c, c.privateNodeMap);
-        c.privateNodeMap.put(new BuildNodeDefault<>(c, c.getConfigurationSite(), c.privateInjector).as((Key) CommonKeys.INJECTOR_KEY));
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public final <T> ServiceConfiguration<T> bind(T instance) {
+        requireNonNull(instance, "instance is null");
+        checkConfigurable();
+        freezeBindings();
+        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
+        scan(instance.getClass(), node);
+        return bindNode(node).as((Class) instance.getClass());
+    }
 
-        if (c.bundle == null) {
-            c.publicInjector = c.privateInjector;
-        } else {
-            c.publicInjector = new InternalInjector(c, c.publicNodeMap);
+    @Override
+    protected final <T> ServiceConfiguration<T> bindFactory(BindingMode mode, Factory<T> factory) {
+        checkConfigurable();
+        freezeBindings();
+        InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalFactory<T> f = InternalFactory.from(factory);
+        f = accessor.readable(f);
 
-            // Add public injector
-            // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
-            // bn.as(Injector.class);
-            // c.public BuildNodeList.add(bn);
+        BuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f);
+        return bindNode(node).as(factory.getKey());
+    }
 
-        }
+    protected <T> BuildNode<T> bindNode(BuildNode<T> node) {
+        assert privateLatestNode == null;
+        privateLatestNode = node;
+        return node;
+    }
 
-        for (BindInjector i : c.injectorBindings) {
-            if (i instanceof BindInjectorFromBundle) {
-                BindInjectorFromBundle bi = (BindInjectorFromBundle) i;
-
-                bi.processExport();
-
-                new InjectorBuilder(bi.newConfiguration).build();
-            }
-        }
-
-        // All exposures
-        for (BuildNode<?> bn : c.publicNodeList) {
-            if (bn instanceof BuildNodeExposed) {
-                BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
-                Node<?> node = c.privateNodeMap.getRecursive(bne.getPrivateKey());
-                bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
-            }
-        }
-
-        InjectorBuilderResolver.resolveAllDependencies(this);
-
-        dependencyCyclesDetect();
+    public Injector build() {
+        freeze();
+        freezeBindings();
+        new DependencyGraph(this).instantiate();
+        return publicInjector;
     }
 
     /**
-     * Tries to find a dependency cycle.
-     *
-     * @throws InjectionException
-     *             if a dependency cycle was detected
+     * Exposes the specified key as a service.
+     * 
+     * @param key
+     *            the key of the service that should be exposed
+     * @return a configuration for the exposed service
      */
-    public void dependencyCyclesDetect() {
-        DependencyCycle c = dependencyCyclesFind();
-        if (c != null) {
-            throw new InjectionException("Dependency cycle detected: " + c);
+    public final <T> ServiceConfiguration<T> expose(Class<T> key) {
+        return expose(Key.of(key));
+    }
+
+    public final <T> ServiceConfiguration<T> expose(Key<T> key) {
+        checkConfigurable();
+        freezeBindings();
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
+        BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, key);
+
+        Node<T> node = privateNodeMap.getRecursive(key);
+        if (node == null) {
+            throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
+        }
+        bn.as(key);
+        publicNodeList.add(bn);
+        return bn;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
+        checkConfigurable();
+        freezeBindings();
+        return (ServiceConfiguration<T>) expose(configuration.getKey());
+    }
+
+    protected void freezeBindings() {
+        if (privateLatestNode != null) {
+            if (!privateNodeMap.putIfAbsent(privateLatestNode)) {
+                System.err.println("OOPS");
+            }
+            privateLatestNode = null;
         }
     }
 
-    DependencyCycle dependencyCyclesFind() {
-        if (detectCyclesFor == null) {
-            throw new IllegalStateException("Must resolve nodes before detecting cycles");
-        }
-        ArrayDeque<BuildNode<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BuildNode<?>> dependencies = new ArrayDeque<>();
-        for (BuildNode<?> node : detectCyclesFor) {
-            if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = DependecyCycleDetector.detectCycle(node, stack, dependencies);
-                if (dc != null) {
-                    return dc;
-                }
-            }
-        }
-        return null;
+    /** {@inheritDoc} */
+    @Override
+    public final void injectorBind(Injector injector, InjectorImportStage... stages) {
+        requireNonNull(stages, "stages is null");
+        freezeBindings();
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, stages);
+        is.importServices();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
+        requireNonNull(stages, "stages is null");
+        freezeBindings();
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, stages);
+        is.process();
+        if (injectorBundleBindings == null) {
+            injectorBundleBindings = new ArrayList<>(1);
+        }
+        injectorBundleBindings.add(is);
+    }
+
+    public void requireMandatory(Class<?> key) {
+        requireMandatory(Key.of(key));
+    }
+
+    public void requireMandatory(Key<?> key) {
+        requireNonNull(key, "key is null");
+        if (requiredServicesMandatory == null) {
+            requiredServicesMandatory = new HashSet<>();
+        }
+        requiredServicesMandatory.add(key);
+    }
+
+    public void requireOptionally(Class<?> key) {
+        requireOptionally(Key.of(key));
+    }
+
+    public void requireOptionally(Key<?> key) {
+        requireNonNull(key, "key is null");
+        if (requiredServicesOptionally == null) {
+            requiredServicesOptionally = new HashSet<>();
+        }
+        requiredServicesOptionally.add(key);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void scan(Class<?> type, BuildNodeDefault<?> parent) {
+        ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
+        for (AccessibleField<AtProvides> field : serviceDesc.provides.fields) {
+            BuildNodeDefault<?> providedNode = parent.provide(field);
+            bindNode(providedNode).as((Key) field.metadata().getKey());
+        }
+        for (AccessibleExecutable<AtProvides> field : serviceDesc.provides.methods) {
+            BuildNodeDefault<?> providedNode = parent.provide(field);
+            bindNode(providedNode).as((Key) field.metadata().getKey());
+        }
+    }
+
+    // public void require(Predicate<? super Dependency> p);
 
 }

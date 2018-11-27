@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.bundle.InjectorBundle;
 import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -31,9 +30,6 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * Represents an imported injector via {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
  */
 final class BindInjectorFromInjector extends BindInjector {
-
-    @Nullable
-    final InjectorBundle bundle;
 
     /** The injector to bind. */
     @Nullable
@@ -47,14 +43,13 @@ final class BindInjectorFromInjector extends BindInjector {
      * @param injector
      * @param stages
      */
-    BindInjectorFromInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
+    BindInjectorFromInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
             InjectorImportStage[] stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
-        this.bundle = null;
     }
 
-    void process() {
+    void importServices() {
         InternalInjector ii = (InternalInjector) injector;
 
         // All the nodes we potentially want to import

@@ -38,7 +38,7 @@ public class BuildNodeImport<T> extends BuildNode<T> {
     final BindInjector binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildNodeImport(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector binding, Node<T> node) {
+    BuildNodeImport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector binding, Node<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.binding = requireNonNull(binding);
