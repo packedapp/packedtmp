@@ -18,8 +18,10 @@ package packed.internal.inject.buildnodes;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorImportStage;
@@ -47,6 +49,8 @@ public abstract class BindInjector {
 
     /** The import stages. */
     final List<ImportExportStage> stages;
+
+    final Set<Key<?>> requiredKeys = new HashSet<>();
 
     public BindInjector(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, InjectorImportStage[] stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);

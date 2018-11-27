@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import app.packed.inject.Dependency;
@@ -28,7 +29,7 @@ import packed.internal.inject.Node;
 /**
  *
  */
-public class NodeMap {
+public class NodeMap implements Iterable<Node<?>> {
 
     final HashMap<Key<?>, Node<?>> nodes = new HashMap<>();
 
@@ -43,18 +44,18 @@ public class NodeMap {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Node<T> get(Key<T> type) {
+    public <T> Node<T> getRecursive(Key<T> type) {
         // System.out.println("Looking for " + type);
         // System.out.println("Contents " + map.keySet());
         Node<T> node = (Node<T>) nodes.get(type);
         if (node == null && parent != null) {
-            return parent.get(type);
+            return parent.getRecursive(type);
         }
         return node;
     }
 
     public Node<?> getNode(Dependency dependency) {
-        return get(dependency.getKey());
+        return getRecursive(dependency.getKey());
     }
 
     public void put(Node<?> node) {
@@ -69,6 +70,16 @@ public class NodeMap {
 
     public List<Node<?>> toAll() {
         return new ArrayList<>(nodes.values());
+    }
+
+    public void toRuntimeNodes() {
+        nodes.replaceAll((k, v) -> v.toRuntimeNode());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<Node<?>> iterator() {
+        return nodes.values().iterator();
     }
 }
 

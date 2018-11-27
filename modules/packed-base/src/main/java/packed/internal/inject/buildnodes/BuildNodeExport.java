@@ -28,63 +28,58 @@ import packed.internal.inject.runtimenodes.RuntimeServiceNode;
 import packed.internal.inject.runtimenodes.RuntimeServiceNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-/**
- * A build node that is created when a service is exposed.
- */
-public final class BuildNodeExposed<T> extends BuildNode<T> {
+/** A build node that imports a service from another injector. */
+public class BuildNodeExport<T> extends BuildNode<T> {
 
-    Node<T> exposureOf;
+    /** The node to import. */
+    final Node<T> other;
 
-    final Key<T> privateKey;
+    /** The bind injector source. */
+    final BindInjector source;
 
-    /**
-     * @param configuration
-     *            the injector configuration this node is being added to
-     * @param configurationSite
-     *            the configuration site of the exposure
-     */
-    public BuildNodeExposed(InternalInjectorConfiguration configuration, InternalConfigurationSite configurationSite, Key<T> privateKey) {
-        super(configuration, configurationSite, List.of());
-        this.privateKey = requireNonNull(privateKey, "privateKey is null");
-    }
-
-    @Override
-    @Nullable
-    BuildNode<?> declaringNode() {
-        return (exposureOf instanceof BuildNode) ? ((BuildNode<?>) exposureOf).declaringNode() : null;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    BuildNodeExport(InternalInjectorConfiguration injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector source, Node<T> node) {
+        super(injectorConfiguration, configurationSite, List.of());
+        this.other = requireNonNull(node);
+        this.source = requireNonNull(source);
+        this.as((Key) node.getKey());
+        this.setDescription(node.getDescription());
+        this.tags().addAll(node.tags());
     }
 
     /** {@inheritDoc} */
     @Override
     public BindingMode getBindingMode() {
-        return exposureOf.getBindingMode();
+        return other.getBindingMode();
+    }
+
+    @Override
+    @Nullable
+    BuildNode<?> declaringNode() {
+        return (other instanceof BuildNode) ? ((BuildNode<?>) other).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(InjectionSite site) {
-        return null;
-    }
-
-    public Key<T> getPrivateKey() {
-        return privateKey;
+        return other.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return false;
+        return other.needsInjectionSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return false;
+        return other.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
     RuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeServiceNodeAlias<>(this, exposureOf);
+        return new RuntimeServiceNodeAlias<T>(this, other);
     }
 }

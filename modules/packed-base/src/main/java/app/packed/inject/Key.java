@@ -342,7 +342,6 @@ public abstract class Key<T> {
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
         Annotation qa = JavaXInjectSupport.findQualifier(pta, annotations);
-
         return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 

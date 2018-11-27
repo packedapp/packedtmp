@@ -268,7 +268,6 @@ public final class InternalDependency implements Dependency {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-
         return new InternalDependency(InjectSupport.toKeyNullableQualifier(type, qa), optionalType, null);
     }
 

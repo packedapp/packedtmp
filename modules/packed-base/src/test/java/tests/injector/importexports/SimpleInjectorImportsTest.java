@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importing;
+package tests.injector.importexports;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static support.assertj.Assertions.npe;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
 /** Tests the {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)} method. */
-public class InjectorBindInjectorTest {
+public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */
     @Test
@@ -36,11 +37,14 @@ public class InjectorBindInjectorTest {
         Injector i = Injector.of(c -> c.bind("X"));
         npe(() -> Injector.of(c -> c.injectorBind((Injector) null)), "injector");
         npe(() -> Injector.of(c -> c.injectorBind(i, (InjectorImportStage[]) null)), "stages");
+
+        // TODO test error message
+        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.injectorBind(i, InjectorImportStage.NONE, null)));
     }
 
     /** Tests that we can import no services. */
     @Test
-    public void noImport() {
+    public void import0() {
         Injector i1 = Injector.of(c -> {
             c.bind("X");
             c.bind(123);
@@ -62,7 +66,8 @@ public class InjectorBindInjectorTest {
         Injector i = Injector.of(c -> {
             c.injectorBind(i1);
         });
-        i.with(String.class);
+        assertThat(i.with(String.class)).isEqualTo("X");
+
     }
 
     /** Tests that we can chain stages. */

@@ -71,7 +71,7 @@ public final class InternalInjector extends AbstractInjector {
     @Override
     @Nullable
     protected <T> Node<T> findNode(Key<T> key) {
-        return nodes.get(key);
+        return nodes.getRecursive(key);
     }
 
     /** {@inheritDoc} */

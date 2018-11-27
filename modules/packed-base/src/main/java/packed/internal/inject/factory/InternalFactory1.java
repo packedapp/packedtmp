@@ -39,7 +39,7 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         @Override
         protected FunctionalSignature computeValue(Class<?> type) {
             return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    InternalDependency.fromTypeVariables(Factory1.class, (Class) type, 0));
+                    InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0));
         }
     };
 
@@ -71,8 +71,10 @@ public class InternalFactory1<T, R> extends InternalFactory<R> {
         return instance;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> InternalFactory<T> fromTypeVariables(Function<?, ? extends T> supplier, Class<?> factory1Type) {
-        throw new UnsupportedOperationException();
+        FunctionalSignature fs = TYPE_PARAMETERS.get(factory1Type);
+        return new InternalFactory1(supplier, fs.objectType, fs.dependencies);
     }
 
 }

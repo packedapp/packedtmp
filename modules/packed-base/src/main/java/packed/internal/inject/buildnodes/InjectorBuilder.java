@@ -38,8 +38,10 @@ public final class InjectorBuilder {
         this.c = requireNonNull(c);
     }
 
-    public void build() {
+    void build() {
         setup();
+
+        // Instantiate all singletons
         for (Node<?> node : c.privateNodeMap.nodes.values()) {
             if (node instanceof BuildNodeDefault) {
                 BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
@@ -48,7 +50,12 @@ public final class InjectorBuilder {
                 }
             }
         }
-        c.privateNodeMap.nodes.replaceAll((k, v) -> v.toRuntimeNode());
+
+        // Okay we are finished, convert all nodes to runtime nodes.
+        c.privateNodeMap.toRuntimeNodes();
+        if (c.privateNodeMap != c.publicNodeMap) {
+            c.publicNodeMap.toRuntimeNodes();
+        }
     }
 
     /** Also used for descriptors. */
@@ -73,15 +80,18 @@ public final class InjectorBuilder {
         for (BindInjector i : c.injectorBindings) {
             if (i instanceof BindInjectorFromBundle) {
                 BindInjectorFromBundle bi = (BindInjectorFromBundle) i;
-                new InjectorBuilder(bi.c).build();
+
+                bi.processExport();
+
+                new InjectorBuilder(bi.newConfiguration).build();
             }
         }
 
         // All exposures
-        for (BuildNode<?> bn : c.publicExposedNodeList) {
+        for (BuildNode<?> bn : c.publicNodeList) {
             if (bn instanceof BuildNodeExposed) {
                 BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
-                Node<?> node = c.privateNodeMap.get(bne.getPrivateKey());
+                Node<?> node = c.privateNodeMap.getRecursive(bne.getPrivateKey());
                 bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
             }
         }

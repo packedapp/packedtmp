@@ -21,6 +21,7 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.reflect.Constructor;
 
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.util.TypeUtil;
 
 /**
  * Various bundle utility methods.
@@ -45,6 +46,9 @@ public class Bundles {
             Constructor<T> c = bundleType.getDeclaredConstructor();
             return c.newInstance();
         } catch (ReflectiveOperationException e) {
+            if (TypeUtil.isInnerOrLocalClass(bundleType)) {
+                throw new InvalidDeclarationException("The specified bundle type is a inner (non-static) class, bundle type = " + format(bundleType), e);
+            }
             throw new InvalidDeclarationException(
                     "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
         }

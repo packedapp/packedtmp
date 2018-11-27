@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.micro.inject;
+package micro.inject;
 
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
@@ -63,5 +63,4 @@ public class InjectorMicro {
     public static class NeedsString {
         NeedsString(String s) {}
     }
-
 }

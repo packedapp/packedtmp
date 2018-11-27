@@ -36,10 +36,13 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 public class InjectorBuilderResolver {
     // TODO also check no injection of prototype beans into singleton, after we have resolved
 
+    // Requirements -> cannot require any exposed services, or internally registered services...
+
     public static void resolveAllDependencies(InjectorBuilder b) {
         b.detectCyclesFor = new ArrayList<>();
 
-        for (BuildNode<?> node : b.c.privateNodeList) {
+        for (Node<?> nn : b.c.privateNodeMap.nodes.values()) {
+            BuildNode<?> node = (BuildNode<?>) nn;
             node.freeze();
 
             if (node.needsResolving()) {
@@ -109,12 +112,13 @@ public class InjectorBuilderResolver {
                     }
                     node.resolvedDependencies[i] = requireNonNull(resolveTo);
                 }
-            }
 
-            // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
+                // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
+            }
         }
 
-        b.c.privateNodeList.forEach(n -> n.checkResolved());// An extra check for now
+        b.c.privateNodeMap.nodes.values().forEach(n -> {
+            ((BuildNode<?>) n).checkResolved();
+        });
     }
-
 }

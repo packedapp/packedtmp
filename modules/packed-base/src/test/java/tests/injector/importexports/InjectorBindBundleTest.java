@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importing;
+package tests.injector.importexports;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static support.assertj.Assertions.npe;

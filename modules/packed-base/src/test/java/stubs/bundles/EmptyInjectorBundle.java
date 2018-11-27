@@ -13,25 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package stubs.bundles;
 
-import app.packed.inject.TypeLiteral;
+import app.packed.bundle.InjectorBundle;
 
 /**
- * This test just tests that {@link Nullable} can be placed everywhere we need it.
+ *
  */
-public class NullableTest {
+public class EmptyInjectorBundle extends InjectorBundle {
 
-    @Nullable
-    String nullableField;
-
-    @Nullable // no way to disable this, and then allow for type variable usage
-    public NullableTest() {}
-
-    public NullableTest(@Nullable String parame) {}
-
-    @Nullable
-    public void nullableReturnType(@Nullable String parame) {
-        new TypeLiteral<@Nullable String>() {};
-    }
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {}
 }

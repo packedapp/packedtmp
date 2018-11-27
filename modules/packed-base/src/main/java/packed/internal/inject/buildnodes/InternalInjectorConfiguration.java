@@ -47,23 +47,24 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     /** A list of imports/exports from injectors or injector bundles */
     final ArrayList<BindInjector> injectorBindings = new ArrayList<>();
 
+    InternalInjector privateInjector;
+
     /** All nodes that have been added to this builder, even those that are not exposed. */
     final ArrayList<BuildNode<?>> privateNodeList = new ArrayList<>();
 
+    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     final NodeMap privateNodeMap = new NodeMap();
 
-    InternalInjector privateInjector;
-
-    final ArrayList<BuildNodeExposed<?>> publicExposedNodeList = new ArrayList<>();
-
     InternalInjector publicInjector;
+
+    final ArrayList<BuildNodeExposed<?>> publicNodeList = new ArrayList<>();
 
     /** The runtime nodes that will be available in the injector. */
     final NodeMap publicNodeMap = new NodeMap();
 
-    HashSet<Key<?>> requiredServicesMandatory = new HashSet<>();
+    final HashSet<Key<?>> requiredServicesMandatory = new HashSet<>();
 
-    HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
+    final HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
 
     /**
      * Creates a new configuration.
@@ -82,22 +83,8 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         BuildNodeDefault<T> node = new BuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
-
         scan(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void scan(Class<?> type, BuildNodeDefault<?> parent) {
-        ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
-        for (AccessibleField<AtProvides> field : serviceDesc.provides.fields) {
-            BuildNodeDefault<?> providedNode = parent.provide(field);
-            bindNode(providedNode).as((Key) field.metadata().getKey());
-        }
-        for (AccessibleExecutable<AtProvides> field : serviceDesc.provides.methods) {
-            BuildNodeDefault<?> providedNode = parent.provide(field);
-            bindNode(providedNode).as((Key) field.metadata().getKey());
-        }
     }
 
     @Override
@@ -132,7 +119,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
         BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, key);
 
-        Node<T> node = privateNodeMap.get(key);
+        Node<T> node = privateNodeMap.getRecursive(key);
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }
@@ -140,8 +127,15 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         // Lookup and copy from original, such things as description, and tags
         // We are really in expose only mode, all imports should have been resolved.
         bn.as(key);
-        publicExposedNodeList.add(bn);
+        publicNodeList.add(bn);
         return bn;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
+        checkConfigurable();
+        freezeBindings();
+        return (ServiceConfiguration<T>) expose(configuration.getKey());
     }
 
     public Injector finish() {
@@ -185,6 +179,7 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
         requireNonNull(bundle, "bundle is null");
@@ -215,6 +210,19 @@ public class InternalInjectorConfiguration extends AbstractInjectorConfiguration
     public void requireOptionally(Key<?> key) {
         requireNonNull(key, "key is null");
         requiredServicesOptionally.add(key);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void scan(Class<?> type, BuildNodeDefault<?> parent) {
+        ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
+        for (AccessibleField<AtProvides> field : serviceDesc.provides.fields) {
+            BuildNodeDefault<?> providedNode = parent.provide(field);
+            bindNode(providedNode).as((Key) field.metadata().getKey());
+        }
+        for (AccessibleExecutable<AtProvides> field : serviceDesc.provides.methods) {
+            BuildNodeDefault<?> providedNode = parent.provide(field);
+            bindNode(providedNode).as((Key) field.metadata().getKey());
+        }
     }
 
     // public void require(Predicate<? super Dependency> p);

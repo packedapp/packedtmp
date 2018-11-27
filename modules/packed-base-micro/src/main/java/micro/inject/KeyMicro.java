@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.micro.inject;
+package micro.inject;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

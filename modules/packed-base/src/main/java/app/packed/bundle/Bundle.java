@@ -216,8 +216,7 @@ public abstract class Bundle {
     }
 
     protected final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
-        throw new UnsupportedOperationException();
-        // return internal().expose(configuration);
+        return configuration().expose(configuration);
     }
 
     protected final void injectorBind(Class<? extends InjectorBundle> bundleType, ImportExportStage... filters) {
@@ -268,6 +267,14 @@ public abstract class Bundle {
 
     protected final Set<String> tags() {
         return configuration().tags();
+    }
+
+    protected void requireMandatory(Class<?> key) {
+        configuration().requireMandatory(key);
+    }
+
+    protected void requireMandatory(Key<?> key) {
+        configuration().requireMandatory(key);
     }
 
 }

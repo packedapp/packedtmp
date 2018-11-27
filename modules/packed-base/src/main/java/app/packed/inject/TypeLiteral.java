@@ -73,7 +73,8 @@ public abstract class TypeLiteral<T> {
             /** {@inheritDoc} */
             @Override
             protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
-                return null;
+                TypeLiteral<?> tl = new TypeLiteral.CanonicalizedTypeLiteral<>(type);
+                return Key.fromTypeLiteralNullableAnnotation(type, tl, qualifier);
             }
 
             /** {@inheritDoc} */

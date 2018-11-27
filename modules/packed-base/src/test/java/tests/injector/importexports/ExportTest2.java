@@ -13,33 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importing;
+package tests.injector.importexports;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorImportStage;
+import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
 
 /**
  *
  */
-public class ImportTest {
+public class ExportTest2 {
 
+    // The import at (Xxxx) and (Yyyy) both defines are service with Key<ZoneId>
     public static void main(String[] args) {
-        //
-        System.out.println(ParseIT.def());
 
-        Injector.of(ParseIT.def().getBundleType());
-
-        Injector.of(c -> {
-            c.injectorBind(I.class, InjectorImportStage.NONE);
-
+        Injector i = Injector.of(c -> {
+            c.bind(ZoneId.systemDefault()).as(ZoneId.class);
+            c.injectorBind(I.class);
         });
+
+        i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));
+
+        System.out.println(i.with(ZonedDateTime.class));
     }
 
-    public final class I extends InjectorBundle {
+    public static final class I extends InjectorBundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {}
+        protected void configure() {
+            requireMandatory(ZoneId.class);
+            expose(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+        }
     }
+
 }
