@@ -109,6 +109,7 @@ public abstract class Key<T> {
         this.qualifier = key.qualifier;
         this.typeLiteral = (CanonicalizedTypeLiteral<T>) key.typeLiteral;
         this.hash = key.hash;
+        assert (!typeLiteral.getRawType().isPrimitive());
     }
 
     /**
@@ -123,6 +124,7 @@ public abstract class Key<T> {
         this.typeLiteral = typeLiteral;
         this.qualifier = qualifier;
         this.hash = typeLiteral.hashCode() ^ Objects.hashCode(qualifier);
+        assert (!typeLiteral.getRawType().isPrimitive());
     }
 
     /**
@@ -328,6 +330,7 @@ public abstract class Key<T> {
         assert (source instanceof Field || source instanceof Method || source instanceof FieldDescriptor || source instanceof MethodDescriptor
                 || source instanceof TypeLiteral || source instanceof Class);
 
+        typeLiteral = typeLiteral.box();
         if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
             throw new InvalidDeclarationException(
                     "Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");

@@ -25,6 +25,8 @@ import app.packed.inject.Injector;
  *
  */
 @SuppressWarnings("unused")
+
+// Det her bliver lavet i en integrations test..
 public class InjectorLookupAccess {
 
     public static void main(String[] args) {

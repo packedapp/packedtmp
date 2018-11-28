@@ -311,9 +311,9 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
                 providedNode.as((Key) field.metadata().key);
                 privateNodeMap.put(providedNode);// put them directly
             }
-            for (AccessibleExecutable<AtProvides> field : ps.methods) {
-                BuildNodeDefault<?> providedNode = parent.provide(field);
-                providedNode.as((Key) field.metadata().key);
+            for (AccessibleExecutable<AtProvides> method : ps.methods) {
+                BuildNodeDefault<?> providedNode = parent.provide(method);
+                providedNode.as((Key) method.metadata().key);
                 privateNodeMap.put(providedNode);// put them directly
             }
         }

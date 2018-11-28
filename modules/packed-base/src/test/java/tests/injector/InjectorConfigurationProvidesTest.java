@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.inject.BindingMode;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
@@ -38,6 +39,46 @@ public class InjectorConfigurationProvidesTest {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });
+    }
+
+    @Test
+    public void tags() {
+
+    }
+
+    @Test
+    public void bindingModes() {
+        Injector i = of(c -> c.bind(BindingModes.class));
+        BindingModes.L = 2L;
+        BindingModes.S = 2;
+        BindingModes.P = 2;
+
+        assertThat(i.with(Short.class)).isEqualTo((short) 1);
+        assertThat(i.with(Long.class)).isEqualTo(2L);
+        assertThat(i.with(Integer.class)).isEqualTo(2);
+        BindingModes.L = 3L;
+        BindingModes.S = 3;
+        BindingModes.P = 3;
+        assertThat(i.with(Short.class)).isEqualTo((short) 1);
+        assertThat(i.with(Long.class)).isEqualTo(2L);
+        assertThat(i.with(Integer.class)).isEqualTo(3);
+    }
+
+    @Test
+    public void description() {
+        class WithDescription {
+
+            @Provides(description = "niceField", bindingMode = BindingMode.PROTOTYPE)
+            public final Long F = 0L;
+
+            @Provides(description = "niceMethod", bindingMode = BindingMode.PROTOTYPE)
+            public int m() {
+                return 0;
+            }
+        }
+        Injector i = of(c -> c.bind(new WithDescription()));
+        assertThat(i.getService(Long.class).getDescription()).isEqualTo("niceField");
+        assertThat(i.getService(Integer.class).getDescription()).isEqualTo("niceMethod");
     }
 
     @Test
@@ -58,6 +99,18 @@ public class InjectorConfigurationProvidesTest {
         assertThat(i.with(new Key<@StringQualifier("m_public") String>() {})).isEqualTo("public_m");
         assertThat(i.with(new Key<@StringQualifier("m_protected") String>() {})).isEqualTo("protected_m");
         assertThat(i.with(new Key<@StringQualifier("m_private") String>() {})).isEqualTo("private_m");
+    }
+
+    static class BindingModes {
+
+        @Provides(bindingMode = BindingMode.SINGLETON)
+        static Short S = 1;
+
+        @Provides(bindingMode = BindingMode.LAZY)
+        static Long L = 1L;
+
+        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        static Integer P = 1;
     }
 
     static class VisibilityStatic {

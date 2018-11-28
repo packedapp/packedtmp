@@ -59,8 +59,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     @Nullable
     private T instance;
 
-    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode,
-            InternalFactory<T> factory) {
+    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
         super(injectorBuilder, configurationSite, factory.getDependencies());
         this.factory = requireNonNull(factory, "factory is null");
         this.bindingMode = requireNonNull(bindingMode);
@@ -153,7 +152,9 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         AtProvides atProvides = s.metadata();
         InternalFactoryExecutable<?> factory = new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.metadata().getDependencies(),
                 m.getParameterCount(), s.methodHandle());
-        return new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory);
+        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory);
+        bnd.setDescription(atProvides.getDescription());
+        return bnd;
     }
 
     public BuildNodeDefault<?> provide(AccessibleField<AtProvides> s) {
@@ -162,7 +163,9 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
         AtProvides atProvides = s.metadata();
         InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
-        return new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory);
+        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory);
+        bnd.setDescription(atProvides.getDescription());
+        return bnd;
     }
 
     @Override
