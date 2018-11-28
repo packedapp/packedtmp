@@ -21,9 +21,12 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -36,6 +39,7 @@ import app.packed.inject.Provides;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalAnnotatedElement;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -52,9 +56,20 @@ public final class ProvidesSupport {
     /** All methods annotated with {@link Provides}. */
     public final Collection<AccessibleExecutable<AtProvides>> methods;
 
+    /** A set of all keys provided. */
+    public final Map<Key<?>, AtProvides> keys;
+
+    public final boolean hasInstanceMembers;
+
     ProvidesSupport(Builder builder) {
         this.methods = builder.methods == null ? List.of() : List.copyOf(builder.methods);
         this.fields = builder.fields == null ? List.of() : List.copyOf(builder.fields);
+        this.keys = builder.keys == null ? Map.of() : Map.copyOf(builder.keys);
+        this.hasInstanceMembers = builder.hasInstanceMembers;
+    }
+
+    public boolean hasProvidingMembers() {
+        return keys.size() > 0;
     }
 
     public static class Builder {
@@ -64,6 +79,10 @@ public final class ProvidesSupport {
         ArrayList<AccessibleField<AtProvides>> fields;
 
         ArrayList<AccessibleExecutable<AtProvides>> methods;
+
+        HashMap<Key<?>, AtProvides> keys;
+
+        boolean hasInstanceMembers;
 
         public ProvidesSupport build() {
             if (fields == null && methods == null) {
@@ -77,11 +96,24 @@ public final class ProvidesSupport {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
                     InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
+                    hasInstanceMembers |= !descriptor.isStatic();
                     if (methods == null) {
                         methods = new ArrayList<>(1);
+                        if (keys == null) {
+                            keys = new HashMap<>();
+                        }
                     }
                     AtProvides ap = AtProvides.from(descriptor, (Provides) a);
+                    if (Modifier.isPrivate(method.getModifiers())) {
+                        lookup = lookup.in(method.getDeclaringClass());
+                    }
                     AccessibleExecutable<AtProvides> fi = new AccessibleExecutable<>(descriptor, lookup, ap);
+
+                    Key<?> key = fi.metadata().key;
+                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
+                        ErrorMessageBuilder.of(method.getDeclaringClass()).cannot("have multiple members providing services with the same key (" + key + ")")
+                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members");
+                    }
                     methods.add(fi);
                     return fi;
                 }
@@ -93,11 +125,24 @@ public final class ProvidesSupport {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
                     InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+                    hasInstanceMembers |= !descriptor.isStatic();
                     if (fields == null) {
                         fields = new ArrayList<>(1);
+                        if (keys == null) {
+                            keys = new HashMap<>();
+                        }
                     }
                     AtProvides ap = AtProvides.from(descriptor, (Provides) a);
+                    if (Modifier.isPrivate(field.getModifiers())) {
+                        lookup = lookup.in(field.getDeclaringClass());
+                    }
                     AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, lookup, ap);
+
+                    Key<?> key = fi.metadata().key;
+                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
+                        ErrorMessageBuilder.of(field.getDeclaringClass()).cannot("have multiple members providing services with the same key (" + key + ")")
+                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members");
+                    }
                     fields.add(fi);
                     return fi;
                 }
@@ -122,8 +167,8 @@ public final class ProvidesSupport {
         @Nullable
         private final String description;
 
-        /** The key under which this method will deliver services. */
-        private final Key<?> key;
+        /** The key under which the provided service will be made available. */
+        public final Key<?> key;
 
         AtProvides(InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
             this.annotatedMember = requireNonNull(annotatedMember);
@@ -168,15 +213,6 @@ public final class ProvidesSupport {
         @Nullable
         public String getDescription() {
             return description;
-        }
-
-        /**
-         * Returns the key under which the provided service will be made available.
-         * 
-         * @return the key under which the provided service will be made available
-         */
-        public Key<?> getKey() {
-            return key;
         }
 
         public static AtProvides from(InternalMethodDescriptor method, Provides p) {

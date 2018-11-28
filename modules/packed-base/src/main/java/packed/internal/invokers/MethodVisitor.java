@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.stubs.annotation;
+package packed.internal.invokers;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import app.packed.inject.Qualifier;
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Method;
 
 /**
- * An annotation with a single string value, used for testing.
  *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Qualifier
-public @interface StringValueQualifier {
-    String value() default "";
+public interface MethodVisitor {
+
+    // Ved ikke med den boolean, det der er vi skal checke for f.eks. @Inject+@Provides
+    // @Inject + LifecycleAnnotations,...
+    boolean forMethod(Lookup lookup, Method method, Annotation[] annotations);
 }

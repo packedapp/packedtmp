@@ -15,6 +15,8 @@
  */
 package packed.internal.util;
 
+import static packed.internal.util.StringFormatter.format;
+
 import java.lang.reflect.AnnotatedElement;
 
 import app.packed.util.FieldDescriptor;
@@ -27,9 +29,45 @@ public final class ErrorMessageBuilder implements CharSequence {
 
     StringBuilder sb = new StringBuilder();
 
+    private ErrorMessageBuilder() {}
+
     public ErrorMessageBuilder cannot(String msg) {
         sb.append("Cannot " + msg);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public char charAt(int index) {
+        return sb.charAt(index);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int length() {
+        return sb.length();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return sb.subSequence(start, end);
+    }
+
+    public ErrorMessageBuilder toResolve(String msg) {
+        sb.append("To resolve " + msg);
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return sb.toString();
+    }
+
+    public static ErrorMessageBuilder of(Class<?> e) {
+        ErrorMessageBuilder emb = new ErrorMessageBuilder();
+        emb.sb.append(format(e));
+        return emb;
     }
 
     public static ErrorMessageBuilder of(AnnotatedElement e) {
@@ -44,33 +82,5 @@ public final class ErrorMessageBuilder implements CharSequence {
             emb.sb.append("field " + vd.getName());
         }
         return emb;
-    }
-
-    public ErrorMessageBuilder toResolve(String msg) {
-        sb.append("To resolve " + msg);
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return sb.toString();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int length() {
-        return sb.length();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public char charAt(int index) {
-        return sb.charAt(index);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return sb.subSequence(start, end);
     }
 }

@@ -41,6 +41,7 @@ import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.LookupDescriptorAccessor;
+import packed.internal.invokers.ProvidesSupport;
 import packed.internal.invokers.ProvidesSupport.AtProvides;
 import packed.internal.invokers.ServiceClassDescriptor;
 import packed.internal.util.AbstractConfiguration;
@@ -137,7 +138,10 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFactory<T> f = InternalFactory.from(factory);
-        AbstractBuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
+        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
+
+        scan(f.getRawType(), node);
+
         return bindNode(node).as(factory.getKey());
     }
 
@@ -293,13 +297,25 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void scan(Class<?> type, BuildNodeDefault<?> parent) {
         ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
-        for (AccessibleField<AtProvides> field : serviceDesc.provides.fields) {
-            BuildNodeDefault<?> providedNode = parent.provide(field);
-            bindNode(providedNode).as((Key) field.metadata().getKey());
-        }
-        for (AccessibleExecutable<AtProvides> field : serviceDesc.provides.methods) {
-            BuildNodeDefault<?> providedNode = parent.provide(field);
-            bindNode(providedNode).as((Key) field.metadata().getKey());
+
+        ProvidesSupport ps = serviceDesc.provides;
+        if (ps.hasProvidingMembers()) {
+            // First check that the class does not provide services that have already been registered
+            for (Key<?> k : ps.keys.keySet()) {
+                if (privateNodeMap.containsKey(k)) {
+                    throw new IllegalArgumentException("At service with key " + k + " has already been registered");
+                }
+            }
+            for (AccessibleField<AtProvides> field : ps.fields) {
+                BuildNodeDefault<?> providedNode = parent.provide(field);
+                providedNode.as((Key) field.metadata().key);
+                privateNodeMap.put(providedNode);// put them directly
+            }
+            for (AccessibleExecutable<AtProvides> field : ps.methods) {
+                BuildNodeDefault<?> providedNode = parent.provide(field);
+                providedNode.as((Key) field.metadata().key);
+                privateNodeMap.put(providedNode);// put them directly
+            }
         }
     }
 
