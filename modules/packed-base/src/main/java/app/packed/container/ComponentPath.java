@@ -52,7 +52,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, CharSequence {
         }
 
         @Override
-        public int getDepth() {
+        public int findDepth() {
             return 0;
         }
 
@@ -91,12 +91,12 @@ public interface ComponentPath extends Comparable<ComponentPath>, CharSequence {
     };
 
     /**
-     * Returns the number of elements in this path.
+     * Returns the number of elements in this path. This is not a constant time operation as we might need to traverse
+     * through all parents of this component, but it is usually really fast.
      *
      * @return the number of elements in the path, or {@code 0} if this path represents a root component
      */
-    //Want a name with count to indicate that the operation is not necessarily a constant time operation?
-    int getDepth();
+    int findDepth();
 
     /**
      * Returns the <em>parent path</em>, or null if this path does not have a parent (is a root).

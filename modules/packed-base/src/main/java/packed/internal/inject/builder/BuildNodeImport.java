@@ -29,7 +29,7 @@ import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** A build node that imports a service from another injector. */
-public class BuildNodeImport<T> extends BuildNode<T> {
+public class BuildNodeImport<T> extends AbstractBuildNode<T> {
 
     /** The node to import. */
     final Node<T> other;
@@ -55,8 +55,8 @@ public class BuildNodeImport<T> extends BuildNode<T> {
 
     @Override
     @Nullable
-    BuildNode<?> declaringNode() {
-        return (other instanceof BuildNode) ? ((BuildNode<?>) other).declaringNode() : null;
+    AbstractBuildNode<?> declaringNode() {
+        return (other instanceof AbstractBuildNode) ? ((AbstractBuildNode<?>) other).declaringNode() : null;
     }
 
     /** {@inheritDoc} */

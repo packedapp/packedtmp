@@ -31,7 +31,7 @@ import packed.internal.inject.runtime.InternalInjector;
 final class DependencyGraph {
 
     /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<BuildNode<?>> detectCyclesFor;
+    ArrayList<AbstractBuildNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
     final InjectorBuilder root;
@@ -70,20 +70,8 @@ final class DependencyGraph {
             }
         }
 
-        // All exposures
-        if (builder.publicNodeList != null) {
-            for (BuildNode<?> bn : builder.publicNodeList) {
-                if (bn instanceof BuildNodeExposed) {
-                    BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
-                    Node<?> node = builder.privateNodeMap.getRecursive(bne.getPrivateKey());
-                    bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
-                }
-            }
-        }
-
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         DependencyGraphResolver.resolveAllDependencies(this);
-
         dependencyCyclesDetect();
     }
 
@@ -104,9 +92,9 @@ final class DependencyGraph {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<BuildNode<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BuildNode<?>> dependencies = new ArrayDeque<>();
-        for (BuildNode<?> node : detectCyclesFor) {
+        ArrayDeque<AbstractBuildNode<?>> stack = new ArrayDeque<>();
+        ArrayDeque<AbstractBuildNode<?>> dependencies = new ArrayDeque<>();
+        for (AbstractBuildNode<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
@@ -138,3 +126,14 @@ final class DependencyGraph {
     }
 
 }
+
+// All exposures
+// if (builder.publicNodeList != null) {
+// for (BuildNode<?> bn : builder.publicNodeList) {
+// if (bn instanceof BuildNodeExposed) {
+// BuildNodeExposed<?> bne = (BuildNodeExposed) bn;
+// Node<?> node = builder.privateNodeMap.getRecursive(bne. .getPrivateKey());
+// bne.exposureOf = requireNonNull((Node) node, "Could not find private key " + bne.getPrivateKey());
+// }
+// }
+// }

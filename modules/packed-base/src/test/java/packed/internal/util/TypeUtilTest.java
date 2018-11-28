@@ -20,10 +20,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static support.assertj.Assertions.npe;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
@@ -45,19 +51,31 @@ public class TypeUtilTest {
         assertThat(TypeUtil.boxClass(void.class)).isSameAs(Void.class);
     }
 
-    /** Tests {@link TypeUtil#unboxClass(Class)}. */
+    /** Tests {@link TypeUtil#findRawType(Type)}. */
     @Test
-    public void unboxClass() {
-        assertThat(TypeUtil.unboxClass(String.class)).isSameAs(String.class);
-        assertThat(TypeUtil.unboxClass(Boolean.class)).isSameAs(boolean.class);
-        assertThat(TypeUtil.unboxClass(Byte.class)).isSameAs(byte.class);
-        assertThat(TypeUtil.unboxClass(Character.class)).isSameAs(char.class);
-        assertThat(TypeUtil.unboxClass(Double.class)).isSameAs(double.class);
-        assertThat(TypeUtil.unboxClass(Float.class)).isSameAs(float.class);
-        assertThat(TypeUtil.unboxClass(Integer.class)).isSameAs(int.class);
-        assertThat(TypeUtil.unboxClass(Long.class)).isSameAs(long.class);
-        assertThat(TypeUtil.unboxClass(Short.class)).isSameAs(short.class);
-        assertThat(TypeUtil.unboxClass(Void.class)).isSameAs(void.class);
+    public void findRawType() throws Exception {
+        @SuppressWarnings("unused")
+        class C<T> {
+            public List<String> f1;
+            public Map<? extends String, ? super Integer> f2;
+            public List<String>[] f3;
+            public List<?> f4;
+        }
+        npe(() -> TypeUtil.findRawType(null), "type");
+        assertThat(TypeUtil.findRawType(String.class)).isSameAs(String.class);
+        assertThat(TypeUtil.findRawType(String[].class)).isSameAs(String[].class);
+
+        assertThat(TypeUtil.findRawType(C.class.getField("f1").getGenericType())).isSameAs(List.class);
+        assertThat(TypeUtil.findRawType(C.class.getField("f2").getGenericType())).isSameAs(Map.class);
+        assertThat(TypeUtil.findRawType(C.class.getField("f3").getGenericType())).isSameAs(List[].class);
+        assertThat(TypeUtil.findRawType(C.class.getField("f4").getGenericType())).isSameAs(List.class);
+
+        WildcardType wt = (WildcardType) ((ParameterizedType) C.class.getField("f4").getGenericType()).getActualTypeArguments()[0];
+        assertThat(TypeUtil.findRawType(wt)).isSameAs(Object.class);
+
+        assertThat(TypeUtil.findRawType(C.class.getTypeParameters()[0])).isSameAs(Object.class);
+
+        assertThatThrownBy(() -> TypeUtil.findRawType(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     /** Tests {@link TypeUtil#isFreeFromTypeVariables(Type)}. */
@@ -86,6 +104,48 @@ public class TypeUtilTest {
             }
         }
         assertThatThrownBy(() -> TypeUtil.isFreeFromTypeVariables(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
-
     }
+
+    /** Tests {@link TypeUtil#isInnerOrLocalClass(Class)}. */
+    @Test
+    public void isInnerOrLocalClass() {
+        assertThat(TypeUtil.isInnerOrLocalClass(TypeUtilTest.class)).isFalse();
+        assertThat(TypeUtil.isInnerOrLocalClass(NestedStaticClass.class)).isFalse();
+
+        class LocalClass {}
+        assertThat(TypeUtil.isInnerOrLocalClass(LocalClass.class)).isTrue();
+        assertThat(TypeUtil.isInnerOrLocalClass(NestedNonStaticClass.class)).isTrue();
+        // TODO should we include anonymous class??
+        // assertThat(TypeUtil.isInnerOrLocalClass(new Object() {}.getClass())).isTrue();
+    }
+
+    /** Tests {@link TypeUtil#isOptionalType(Class)}. */
+    @Test
+    public void isOptionalType() {
+        assertThat(TypeUtil.isOptionalType(String.class)).isFalse();
+        assertThat(TypeUtil.isOptionalType(null)).isFalse();
+        assertThat(TypeUtil.isOptionalType(Optional.class)).isTrue();
+        assertThat(TypeUtil.isOptionalType(OptionalLong.class)).isTrue();
+        assertThat(TypeUtil.isOptionalType(OptionalInt.class)).isTrue();
+        assertThat(TypeUtil.isOptionalType(OptionalDouble.class)).isTrue();
+    }
+
+    /** Tests {@link TypeUtil#unboxClass(Class)}. */
+    @Test
+    public void unboxClass() {
+        assertThat(TypeUtil.unboxClass(String.class)).isSameAs(String.class);
+        assertThat(TypeUtil.unboxClass(Boolean.class)).isSameAs(boolean.class);
+        assertThat(TypeUtil.unboxClass(Byte.class)).isSameAs(byte.class);
+        assertThat(TypeUtil.unboxClass(Character.class)).isSameAs(char.class);
+        assertThat(TypeUtil.unboxClass(Double.class)).isSameAs(double.class);
+        assertThat(TypeUtil.unboxClass(Float.class)).isSameAs(float.class);
+        assertThat(TypeUtil.unboxClass(Integer.class)).isSameAs(int.class);
+        assertThat(TypeUtil.unboxClass(Long.class)).isSameAs(long.class);
+        assertThat(TypeUtil.unboxClass(Short.class)).isSameAs(short.class);
+        assertThat(TypeUtil.unboxClass(Void.class)).isSameAs(void.class);
+    }
+
+    class NestedNonStaticClass {}
+
+    static class NestedStaticClass {}
 }

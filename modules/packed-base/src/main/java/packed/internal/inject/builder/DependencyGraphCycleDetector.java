@@ -39,14 +39,14 @@ final class DependencyGraphCycleDetector {
      * @throws InjectionException
      *             if there is a cycle in the graph
      */
-    static DependencyCycle detectCycle(BuildNode<?> node, ArrayDeque<BuildNode<?>> stack, ArrayDeque<BuildNode<?>> dependencies) {
+    static DependencyCycle detectCycle(AbstractBuildNode<?> node, ArrayDeque<AbstractBuildNode<?>> stack, ArrayDeque<AbstractBuildNode<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             Node<?> dependency = node.resolvedDependencies[i];
-            if (dependency instanceof BuildNode) {
-                BuildNode<?> to = (BuildNode<?>) dependency;
+            if (dependency instanceof AbstractBuildNode) {
+                AbstractBuildNode<?> to = (AbstractBuildNode<?>) dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
-                BuildNode<?> owner = to.declaringNode();
+                AbstractBuildNode<?> owner = to.declaringNode();
                 if (owner != null) {
                     to = owner;
                 }
@@ -81,15 +81,15 @@ final class DependencyGraphCycleDetector {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<BuildNode<?>> dependencies;
+        final ArrayDeque<AbstractBuildNode<?>> dependencies;
 
-        DependencyCycle(ArrayDeque<BuildNode<?>> dependencies) {
+        DependencyCycle(ArrayDeque<AbstractBuildNode<?>> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 
         @Override
         public String toString() {
-            ArrayList<BuildNode<?>> list = new ArrayList<>(dependencies);
+            ArrayList<AbstractBuildNode<?>> list = new ArrayList<>(dependencies);
             // This method does not yet support Provides methods
 
             // Try checking this out and running some examples, it should have better error messages.
@@ -103,7 +103,7 @@ final class DependencyGraphCycleDetector {
 
             // Uncomments the 3
             // sb.append(format(s.factory.mirror.getType()));
-            for (BuildNode<?> n : list) {
+            for (AbstractBuildNode<?> n : list) {
                 System.out.println(n);
                 sb.append(" -");
                 // s = (BuildNodeOldFactory<?>) n;

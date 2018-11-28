@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import app.packed.bundle.ContainerBundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.inject.Factory;
+import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.LifecycleState;
@@ -41,13 +42,19 @@ import app.packed.util.Nullable;
  */
 public interface ContainerConfiguration extends InjectorConfiguration {
 
-    default void containerInstall(Class<? extends ContainerBundle> bundleType, ImportExportStage... filters) {
-        throw new UnsupportedOperationException();
-    }
+    void containerInstall(Class<? extends ContainerBundle> bundleType, ImportExportStage... stages);
 
-    default void containerInstall(ContainerBundle bundle, ImportExportStage... filters) {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Installs the specified container bundle in the container. The container created from the bundle, will have the latest
+     * installed component as parent of the root in the new container. If no components have been installed, the root of the
+     * bundle will be the root of the container. And no more components can be installed
+     * 
+     * @param bundle
+     *            the bundle to install
+     * @param stages
+     *            import export stages
+     */
+    void containerInstall(ContainerBundle bundle, ImportExportStage... stages);
 
     /**
      * Returns the name of the container or null if the name has not been set.
@@ -155,6 +162,19 @@ public interface ContainerConfiguration extends InjectorConfiguration {
     }
 
     /**
+     * Sets the (nullable) description of this injector, the description can later be obtained via
+     * {@link Injector#getDescription()}.
+     *
+     * @param description
+     *            a (nullable) description of this injector
+     * @return this configuration
+     * @see #getDescription()
+     * @see Injector#getDescription()
+     */
+    @Override
+    ContainerConfiguration setDescription(@Nullable String description);
+
+    /**
      * Sets the {@link Container#getName() name} of the container. The name must consists only of alphanumeric characters
      * and '_' or '-'. The name is case sensitive.
      * <p>
@@ -169,4 +189,14 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * @see Container#getName()
      */
     void setName(@Nullable String name);
+
+    // change of() <- to async start (this includes bundles then, but then we cannot create a bundled container, without
+    // starting it)
+    // IDeen er at have
+
+    // autoStart
+    // dontAutoStart
+    // startBlocking
+    // ????
+
 }

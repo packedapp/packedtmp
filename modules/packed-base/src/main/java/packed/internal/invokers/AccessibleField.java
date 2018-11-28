@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.Modifier;
 
 import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.util.FieldDescriptor;
@@ -27,6 +26,7 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** An accessible field. */
 public final class AccessibleField<T> extends AccessibleMember<T> {
+
     /** The descriptor of the field. */
     private final InternalFieldDescriptor descriptor;
 
@@ -44,7 +44,7 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("Field " + descriptor + " is not accessible for lookup object " + lookup, e);
         }
-        this.isVolatile = Modifier.isVolatile(descriptor.getModifiers());
+        this.isVolatile = descriptor.isVolatile();
     }
 
     /**
@@ -58,7 +58,7 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
     public AccessibleField(InternalFieldDescriptor descriptor, VarHandle varHandle) {
         this.descriptor = descriptor;
         this.varHandle = requireNonNull(varHandle);
-        this.isVolatile = Modifier.isVolatile(descriptor.getModifiers());
+        this.isVolatile = descriptor.isVolatile();
     }
 
     /**
@@ -73,7 +73,7 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
         super(t);
         this.descriptor = descriptor;
         this.varHandle = requireNonNull(varHandle);
-        this.isVolatile = Modifier.isVolatile(descriptor.getModifiers());
+        this.isVolatile = descriptor.isVolatile();
     }
 
     /**

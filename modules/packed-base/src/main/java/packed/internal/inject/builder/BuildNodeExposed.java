@@ -21,7 +21,6 @@ import java.util.List;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
-import app.packed.inject.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.Node;
 import packed.internal.inject.runtime.RuntimeServiceNode;
@@ -31,11 +30,9 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  * A build node that is created when a service is exposed.
  */
-public final class BuildNodeExposed<T> extends BuildNode<T> {
+public final class BuildNodeExposed<T> extends AbstractBuildNode<T> {
 
-    Node<T> exposureOf;
-
-    final Key<T> privateKey;
+    final Node<T> exposureOf;
 
     /**
      * @param configuration
@@ -43,15 +40,15 @@ public final class BuildNodeExposed<T> extends BuildNode<T> {
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public BuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, Key<T> privateKey) {
+    public BuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, Node<T> exposureOf) {
         super(configuration, configurationSite, List.of());
-        this.privateKey = requireNonNull(privateKey, "privateKey is null");
+        this.exposureOf = requireNonNull(exposureOf);
     }
 
     @Override
     @Nullable
-    BuildNode<?> declaringNode() {
-        return (exposureOf instanceof BuildNode) ? ((BuildNode<?>) exposureOf).declaringNode() : null;
+    AbstractBuildNode<?> declaringNode() {
+        return (exposureOf instanceof AbstractBuildNode) ? ((AbstractBuildNode<?>) exposureOf).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
@@ -64,10 +61,6 @@ public final class BuildNodeExposed<T> extends BuildNode<T> {
     @Override
     public T getInstance(InjectionSite site) {
         return null;
-    }
-
-    public Key<T> getPrivateKey() {
-        return privateKey;
     }
 
     /** {@inheritDoc} */

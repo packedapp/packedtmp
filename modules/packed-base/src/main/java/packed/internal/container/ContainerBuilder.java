@@ -17,7 +17,12 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
+
 import app.packed.bundle.Bundle;
+import app.packed.bundle.ContainerBundle;
+import app.packed.bundle.ImportExportStage;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
@@ -25,15 +30,15 @@ import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.InjectorBuilder;
-import packed.internal.inject.factory.FindInjectable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- *
+ * A builder of {@link Container containers}. Is both used via {@link ContainerBundle} and
+ * {@link ContainerConfiguration}.
  */
-public class InternalContainerConfiguration extends InjectorBuilder implements ContainerConfiguration {
+public final class ContainerBuilder extends InjectorBuilder implements ContainerConfiguration {
 
     /** The name of the container, or null if no name has been set. */
     @Nullable
@@ -43,16 +48,17 @@ public class InternalContainerConfiguration extends InjectorBuilder implements C
     @Nullable
     private InternalComponentConfiguration<?> root;
 
-    /**
-     * @param configurationSite
-     * @param bundle
-     */
-    public InternalContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle) {
+    public ContainerBuilder(InternalConfigurationSite configurationSite) {
+        super(configurationSite);
+    }
+
+    public ContainerBuilder(InternalConfigurationSite configurationSite, ContainerBundle bundle) {
         super(configurationSite, bundle);
     }
 
     @Override
     public Container build() {
+
         throw new UnsupportedOperationException();
     }
 
@@ -65,8 +71,7 @@ public class InternalContainerConfiguration extends InjectorBuilder implements C
     /** {@inheritDoc} */
     @Override
     public <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return install0(FindInjectable.find(implementation));
+        return install(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
@@ -87,17 +92,7 @@ public class InternalContainerConfiguration extends InjectorBuilder implements C
     /** {@inheritDoc} */
     @Override
     public <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return install0(FindInjectable.find(implementation));
-    }
-
-    private <T> InternalComponentConfiguration<T> install0(InternalFactory<T> factory) {
-        InternalFactory<T> f = factory;
-        f = accessor.readable(f);
-        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), root, f);
-        bindNode(icc).as(f.getKey());
-        return install0(icc);
+        return install(Factory.findInjectable(implementation));
     }
 
     /**
@@ -114,9 +109,59 @@ public class InternalContainerConfiguration extends InjectorBuilder implements C
         return configuration;
     }
 
+    private <T> InternalComponentConfiguration<T> install0(InternalFactory<T> factory) {
+        InternalFactory<T> f = factory;
+        f = accessor.readable(f);
+        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
+                getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), root, f);
+        bindNode(icc).as(f.getKey());
+        return install0(icc);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerBuilder setDescription(String description) {
+        super.setDescription(description);
+        return this;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setName(String name) {
         this.name = name;
     }
+
+    /** Small for utility class for generate a best effort unique name for containers. */
+    static class InternalContainerName {
+
+        /** Assigns unique IDs, starting with 1 when lazy naming containers. */
+        private static final AtomicLong ANONYMOUS_ID = new AtomicLong();
+
+        private static final ClassValue<Supplier<String>> BUNDLE_NAME_SUPPLIER = new ClassValue<>() {
+            private final AtomicLong L = new AtomicLong();
+
+            @Override
+            protected Supplier<String> computeValue(Class<?> type) {
+                String simpleName = type.getSimpleName();
+                String s = simpleName.endsWith("Bundle") && simpleName.length() > 6 ? simpleName.substring(simpleName.length() - 6) : simpleName;
+                return () -> s + L.incrementAndGet();
+            }
+        };
+
+        static String fromBundleType(Class<? extends Bundle> cl) {
+            return BUNDLE_NAME_SUPPLIER.get(cl).get();
+        }
+
+        static String next() {
+            return "Container" + ANONYMOUS_ID.incrementAndGet();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void containerInstall(Class<? extends ContainerBundle> bundleType, ImportExportStage... filters) {}
+
+    /** {@inheritDoc} */
+    @Override
+    public void containerInstall(ContainerBundle bundle, ImportExportStage... filters) {}
 }

@@ -17,21 +17,23 @@ package packed.internal.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
+import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.BuildNodeDefault;
+import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.inject.factory.InternalFactory;
+import packed.internal.util.Checks;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link ComponentConfiguration}. */
 public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> implements ComponentConfiguration<T> {
-
-    final @Nullable InternalComponentConfiguration<?> parent;
 
     /** A list of all children that have been added (lazily initialized). */
     ArrayList<InternalComponentConfiguration<?>> children;
@@ -39,33 +41,44 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     /** A map of all children that have been added whose name has been explicitly set (lazily initialized). */
     HashMap<String, InternalComponentConfiguration<?>> childrenExplicitNamed;
 
+    /** The internal component, after it has been initialized. */
+    InternalComponent component;
+
     /**
      * The thread that was used to create this configuration, is needed, because some operations are only allowed from the
      * installing thread.
      */
     final Thread initializationThread;
 
+    ArrayList<MixinBuildNode> mixins;
+
+    @Nullable
+    String name;
+
+    /** The parent of this configuration, or null for the root component. */
+    final @Nullable InternalComponentConfiguration<?> parent;
+
     /**
-     * @param injectorConfiguration
+     * @param containerBuilder
      * @param configurationSite
      * @param factory
      * @param bindingMode
      */
-    public InternalComponentConfiguration(InternalContainerConfiguration injectorConfiguration, InternalConfigurationSite configurationSite,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
             @Nullable InternalComponentConfiguration<?> parent, InternalFactory<T> factory) {
-        super(injectorConfiguration, configurationSite, BindingMode.SINGLETON, factory);
+        super(containerBuilder, configurationSite, BindingMode.SINGLETON, factory);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
     }
 
     /**
-     * @param injectorConfiguration
+     * @param containerBuilder
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(InternalContainerConfiguration injectorConfiguration, InternalConfigurationSite configurationSite,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
             @Nullable InternalComponentConfiguration<?> parent, T instance) {
-        super(injectorConfiguration, configurationSite, instance);
+        super(containerBuilder, configurationSite, instance);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
     }
@@ -73,19 +86,30 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration<T> addMixin(Class<?> implementation) {
-        return null;
+        return addMixin(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration<T> addMixin(Factory<?> factory) {
-        return null;
+        checkConfigurable();
+        InternalFactory<?> f = InternalFactory.from(factory);
+        return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration<T> addMixin(Object instance) {
-        return null;
+        checkConfigurable();
+        return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, instance));
+    }
+
+    private ComponentConfiguration<T> addMixin0(MixinBuildNode node) {
+        if (mixins == null) {
+            mixins = new ArrayList<>(1);
+        }
+        mixins.add(node);
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -112,13 +136,13 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     /** {@inheritDoc} */
     @Override
     public @Nullable String getName() {
-        return null;
+        return name;
     }
 
     /** {@inheritDoc} */
     @Override
     public <S> ComponentConfiguration<S> install(Class<S> implementation) {
-        return null;
+        return install(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
@@ -131,6 +155,12 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     @Override
     public <S> ComponentConfiguration<S> install(S instance) {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <S> ComponentConfiguration<S> install(TypeLiteral<S> implementation) {
+        return install(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
@@ -149,6 +179,48 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration<T> setName(String name) {
-        return null;
+        checkConfigurable();
+        if (!Objects.equals(name, this.name)) {
+            if (parent != null) {
+                if (name == null) { // we allow clearing of the name if automatically set, for example, by an annotation
+                    parent.childrenExplicitNamed.remove(this.name);
+                } else {
+                    Checks.checkLetterNumberUnderscoreDotOrHyphen(name);
+                    if (parent.childrenExplicitNamed == null) {
+                        parent.childrenExplicitNamed = new HashMap<>(4);
+                    } else if (parent.childrenExplicitNamed.containsKey(name)) {
+                        throw new IllegalArgumentException("An existing component with the specified name already exist, name = " + name);
+                    }
+                    if (this.name != null) {
+                        parent.childrenExplicitNamed.remove(this.name);
+                    }
+                    parent.childrenExplicitNamed.put(name, this);
+                }
+            }
+            this.name = name;
+        }
+        return this;
+    }
+
+    /** A special build node that is used for mixins. */
+    static class MixinBuildNode extends BuildNodeDefault<Object> {
+
+        /**
+         * @param injectorBuilder
+         * @param configurationSite
+         * @param factory
+         */
+        public MixinBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, InternalFactory<Object> factory) {
+            super(injectorBuilder, configurationSite, BindingMode.SINGLETON, factory);
+        }
+
+        /**
+         * @param injectorConfiguration
+         * @param configurationSite
+         * @param instance
+         */
+        public MixinBuildNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
+            super(injectorConfiguration, configurationSite, instance);
+        }
     }
 }

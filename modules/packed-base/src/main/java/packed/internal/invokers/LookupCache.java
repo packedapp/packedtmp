@@ -51,4 +51,29 @@ public class LookupCache<T> {
             return null;
         }
     }
+
+    final class LookupAccessFactory {
+
+        // private static volatile X[] INFOS = new X[10];
+        //
+        // VarHandle[] fieldHandles;
+        //
+        // MethodHandle[] methodHandles;
+        //
+        // public static LookupAccessor get(MethodHandles.Lookup l) {
+        // X x = INFOS[l.lookupModes()];
+        //
+        // return x.get(l.lookupClass());
+        // }
+        //
+        // static class X extends ClassValue<LookupAccessor> {
+        //
+        // /** {@inheritDoc} */
+        // @Override
+        // protected LookupAccessor computeValue(Class<?> type) {
+        // return null;
+        // }
+        // }
+    }
+
 }

@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.inject.Inject;
 import app.packed.inject.Injector;
 
 /**
@@ -44,10 +43,6 @@ import app.packed.inject.Injector;
  *   System.out.println("This component is registered with " + container.getName());
  * }}
  * </pre>
- *
- * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
- * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's
- * <b>initialization</b> phase.
  * <p>
  * To find out exactly what kind of services that can be injected into an annotated method use an {@link Injector}.
  *
@@ -60,7 +55,11 @@ import app.packed.inject.Injector;
  * <p>
  * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
  * fail, and the state of the entity change from {@link LifecycleState#INITIALIZING} to {@link LifecycleState#STOPPING}.
- *
+ * <p>
+ * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
+ * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's
+ * <b>initialization</b> phase.
+ * 
  * @see OnStart
  * @see OnStop
  */

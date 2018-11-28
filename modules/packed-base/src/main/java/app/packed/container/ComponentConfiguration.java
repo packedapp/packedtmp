@@ -20,6 +20,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 
 /**
@@ -139,6 +140,8 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      */
     // @NeedsJavadoc
     <S> ComponentConfiguration<S> install(Class<S> implementation);
+
+    <S> ComponentConfiguration<S> install(TypeLiteral<S> implementation);
 
     /**
      * Installs a new child to this configuration, which uses the specified factory to instantiate the component instance.

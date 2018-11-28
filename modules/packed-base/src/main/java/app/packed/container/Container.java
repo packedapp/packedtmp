@@ -28,7 +28,7 @@ import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
-import packed.internal.container.InternalContainerConfiguration;
+import packed.internal.container.ContainerBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -177,7 +177,7 @@ public interface Container extends Injector {
 
     static Container of(Consumer<? super ContainerConfiguration> configurator) {
         requireNonNull(configurator, "configurator is null");
-        InternalContainerConfiguration c = new InternalContainerConfiguration(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
+        ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
         configurator.accept(c);
         return c.build();
     }

@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 
 import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
-import packed.internal.inject.factory.FindInjectable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactory0;
 import packed.internal.inject.factory.InternalFactory1;
@@ -53,7 +52,7 @@ public class Factory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
-            return new Factory(FindInjectable.find(implementation));
+            return new Factory(FactoryFindInjectable.find(implementation));
         }
     };
 
@@ -68,7 +67,7 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FindInjectable.find(new CanonicalizedTypeLiteral<>(t)));
+            return new Factory(FactoryFindInjectable.find(new CanonicalizedTypeLiteral<>(t)));
         }
     };
 
@@ -253,7 +252,7 @@ public class Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) FIND_INJECTABLE_FROM_CLASS_CACHE.get((Class<?>) t);
         } else {
-            return new Factory<>(FindInjectable.find(implementation));
+            return new Factory<>(FactoryFindInjectable.find(implementation));
         }
     }
 

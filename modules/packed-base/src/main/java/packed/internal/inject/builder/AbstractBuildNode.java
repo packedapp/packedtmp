@@ -35,7 +35,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class BuildNode<T> extends AbstractConfiguration implements Node<T>, ServiceConfiguration<T> {
+public abstract class AbstractBuildNode<T> extends AbstractConfiguration implements Node<T>, ServiceConfiguration<T> {
 
     /** An empty array of nodes */
     private static final Node<?>[] EMPTY_ARRAY = new Node<?>[0];
@@ -50,7 +50,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
     final boolean hasDependencyOnInjectionSite;
 
     /** The injector configuration this node is registered with. */
-    final InjectorBuilder injectorConfiguration;
+    protected final InjectorBuilder injectorBuilder;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
@@ -67,9 +67,9 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    BuildNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
+    AbstractBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         super(configurationSite);
-        this.injectorConfiguration = requireNonNull(injectorConfiguration);
+        this.injectorBuilder = requireNonNull(injectorBuilder);
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new Node<?>[dependencies.size()];
 
@@ -86,7 +86,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
     }
 
     @Override
-    public BuildNode<T> as(Class<? super T> key) {
+    public AbstractBuildNode<T> as(Class<? super T> key) {
         requireNonNull(key, "key is null");
         return as(Key.of(key));
     }
@@ -94,7 +94,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public BuildNode<T> as(Key<? super T> key) {
+    public AbstractBuildNode<T> as(Key<? super T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         // validateKey(key);
@@ -126,7 +126,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
      * @return
      */
     @Nullable
-    BuildNode<?> declaringNode() {
+    AbstractBuildNode<?> declaringNode() {
         return null;
     }
 
@@ -158,7 +158,7 @@ public abstract class BuildNode<T> extends AbstractConfiguration implements Node
 
     /** {@inheritDoc} */
     @Override
-    public BuildNode<T> setDescription(String description) {
+    public AbstractBuildNode<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }

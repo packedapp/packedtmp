@@ -53,7 +53,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 public class InjectorBuilder extends AbstractConfiguration implements InjectorConfiguration {
 
     /** The lookup object. We default to public access */
-    protected LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
+    public LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
 
     /** The bundle we are building an injector for, null for {@link Injector#of(Consumer)}. */
     @Nullable
@@ -65,7 +65,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     InternalInjector privateInjector;
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
-    BuildNode<?> privateLatestNode;
+    AbstractBuildNode<?> privateLatestNode;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     final NodeMap privateNodeMap;
@@ -137,7 +137,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFactory<T> f = InternalFactory.from(factory);
-        BuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
+        AbstractBuildNode<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
         return bindNode(node).as(factory.getKey());
     }
 
@@ -157,7 +157,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
-    protected <T> BuildNode<T> bindNode(BuildNode<T> node) {
+    protected final <T> AbstractBuildNode<T> bindNode(AbstractBuildNode<T> node) {
         assert privateLatestNode == null;
         privateLatestNode = node;
         return node;
@@ -203,12 +203,12 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
-        BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, key);
 
         Node<T> node = privateNodeMap.getRecursive(key);
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }
+        BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, node);
         bn.as(key);
         publicNodeList.add(bn);
         return bn;
@@ -266,11 +266,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         this.accessor = LookupDescriptorAccessor.get(lookup);
     }
 
-    public void requireMandatory(Class<?> key) {
+    public final void requireMandatory(Class<?> key) {
         requireMandatory(Key.of(key));
     }
 
-    public void requireMandatory(Key<?> key) {
+    public final void requireMandatory(Key<?> key) {
         requireNonNull(key, "key is null");
         if (requiredServicesMandatory == null) {
             requiredServicesMandatory = new HashSet<>();
@@ -278,11 +278,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         requiredServicesMandatory.add(key);
     }
 
-    public void requireOptionally(Class<?> key) {
+    public final void requireOptionally(Class<?> key) {
         requireOptionally(Key.of(key));
     }
 
-    public void requireOptionally(Key<?> key) {
+    public final void requireOptionally(Key<?> key) {
         requireNonNull(key, "key is null");
         if (requiredServicesOptionally == null) {
             requiredServicesOptionally = new HashSet<>();

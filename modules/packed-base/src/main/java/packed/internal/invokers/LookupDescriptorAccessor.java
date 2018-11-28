@@ -22,30 +22,6 @@ import java.lang.invoke.MethodHandles;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactoryExecutable;
 
-final class LookupAccessFactory {
-
-    // private static volatile X[] INFOS = new X[10];
-    //
-    // VarHandle[] fieldHandles;
-    //
-    // MethodHandle[] methodHandles;
-    //
-    // public static LookupAccessor get(MethodHandles.Lookup l) {
-    // X x = INFOS[l.lookupModes()];
-    //
-    // return x.get(l.lookupClass());
-    // }
-    //
-    // static class X extends ClassValue<LookupAccessor> {
-    //
-    // /** {@inheritDoc} */
-    // @Override
-    // protected LookupAccessor computeValue(Class<?> type) {
-    // return null;
-    // }
-    // }
-}
-
 /**
  * 
  */
@@ -103,6 +79,7 @@ public final class LookupDescriptorAccessor {
     }
 
     public <T> InternalFactory<T> readable(InternalFactory<T> factory) {
+        // TODO add field...
         if (factory instanceof InternalFactoryExecutable) {
             InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory;
             if (!e.hasMethodHandle()) {

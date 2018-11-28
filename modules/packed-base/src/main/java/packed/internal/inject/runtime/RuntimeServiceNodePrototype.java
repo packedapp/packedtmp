@@ -24,7 +24,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Provider;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.builder.BuildNode;
+import packed.internal.inject.builder.AbstractBuildNode;
 import packed.internal.inject.factory.InternalFactory;
 
 /** A runtime service node for prototypes. */
@@ -41,7 +41,7 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
     /**
      * @param node
      */
-    public RuntimeServiceNodePrototype(BuildNode<T> node, InternalFactory<T> factory) {
+    public RuntimeServiceNodePrototype(AbstractBuildNode<T> node, InternalFactory<T> factory) {
         super(node);
         this.factory = requireNonNull(factory);
         List<InternalDependency> dependencies = node.dependencies;

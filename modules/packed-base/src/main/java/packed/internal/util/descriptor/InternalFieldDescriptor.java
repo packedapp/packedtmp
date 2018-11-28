@@ -21,6 +21,7 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import app.packed.inject.TypeLiteral;
@@ -128,6 +129,15 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
     @Override
     public boolean isSynthetic() {
         return field.isSynthetic();
+    }
+
+    /**
+     * Returns whether or not the field is volatile.
+     * 
+     * @return whether or not the field is volatile
+     */
+    public boolean isVolatile() {
+        return Modifier.isVolatile(field.getModifiers());
     }
 
     /** {@inheritDoc} */

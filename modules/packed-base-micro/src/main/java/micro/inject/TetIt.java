@@ -15,10 +15,12 @@
  */
 package micro.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Injector;
-import micro.inject.InjectorMicro.NeedsString;
 
 /**
  *
@@ -26,10 +28,30 @@ import micro.inject.InjectorMicro.NeedsString;
 public class TetIt {
 
     public static void main(String[] args) {
-        Injector.of(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.bind("foo");
-            c.bind(NeedsString.class);
-        });
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1_000_000; i++) {
+            Injector inj = Injector.of(c -> {
+                c.lookup(MethodHandles.lookup());
+                c.bind("foo");
+                c.bind(NeedsString.class);
+            });
+            requireNonNull(inj.with(NeedsString.class));
+        }
+        System.out.println("Total time: " + (System.currentTimeMillis() - start) + " milliseconds");
+    }
+
+    static class NeedsString {
+        NeedsString(String s) {}
+    }
+
+    public static class MyContainer extends ContainerBundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            install("Root").asNone();
+            install("Child1").asNone();
+            install("Child2").asNone();
+        }
     }
 }

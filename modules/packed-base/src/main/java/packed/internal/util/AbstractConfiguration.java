@@ -32,7 +32,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 public abstract class AbstractConfiguration {
 
     /** The configuration site of this object. */
-    private final InternalConfigurationSite configurationSite;
+    protected final InternalConfigurationSite configurationSite;
 
     /** The description. */
     @Nullable

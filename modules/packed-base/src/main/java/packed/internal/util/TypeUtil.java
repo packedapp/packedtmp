@@ -38,17 +38,6 @@ public final class TypeUtil {
     private TypeUtil() {}
 
     /**
-     * Tests if the specified class is an inner class.
-     * 
-     * @param clazz
-     *            the class to test
-     * @return whether or not the specified class is an inner class
-     */
-    public static boolean isInnerOrLocalClass(Class<?> clazz) {
-        return clazz.isLocalClass() || (clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers()));
-    }
-
-    /**
      * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
      * is not a primitive class.
      *
@@ -194,6 +183,17 @@ public final class TypeUtil {
         } else {
             throw new IllegalArgumentException("Unknown type: " + type);
         }
+    }
+
+    /**
+     * Tests if the specified class is an inner class.
+     * 
+     * @param clazz
+     *            the class to test
+     * @return whether or not the specified class is an inner class
+     */
+    public static boolean isInnerOrLocalClass(Class<?> clazz) {
+        return clazz.isLocalClass() || (clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers()));
     }
 
     /**
