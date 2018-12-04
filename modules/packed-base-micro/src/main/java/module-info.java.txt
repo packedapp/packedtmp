@@ -1,0 +1,4 @@
+module app.packed.base.micro {
+    requires app.packed.base;
+    requires jmh.core;
+}

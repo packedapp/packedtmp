@@ -59,6 +59,23 @@ public final class InternalFactoryField<T> extends InternalFactory<T> {
         this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0 + (field.isStatic() ? 2 : 0);
     }
 
+    public InternalFactoryField(InternalFactoryField<T> other, Object instance) {
+        super(other.getType(), List.of());
+        this.field = other.field;
+        this.varHandle = other.varHandle;
+        this.instance = requireNonNull(instance);
+        this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0;
+    }
+
+    public InternalFactoryField<T> withInstance(Object instance) {
+        requireNonNull(instance, "instance is null");
+        return new InternalFactoryField<>(this, instance);
+    }
+
+    public boolean isStatic() {
+        return type >= 2;
+    }
+
     /**
      * Compiles the code to a single method handle.
      * 
@@ -83,6 +100,7 @@ public final class InternalFactoryField<T> extends InternalFactory<T> {
     public @Nullable T instantiate(Object[] params) {
         switch (type) {
         case INSTANCE_GET:
+            requireNonNull(instance);
             return (T) varHandle.get(instance);
         case INSTANCE_GET_VOLATILE:
             return (T) varHandle.getVolatile(instance);
@@ -100,6 +118,7 @@ public final class InternalFactoryField<T> extends InternalFactory<T> {
      *            the lookup object to use
      * @return a new internal factory that uses the specified lookup object
      */
+    @Override
     public InternalFactory<T> withLookup(Lookup lookup) {
         VarHandle handle;
         try {

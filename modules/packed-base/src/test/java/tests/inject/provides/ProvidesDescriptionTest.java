@@ -28,6 +28,7 @@ import tests.inject.AbstractInjectorTest;
 /** Tests {@link Provides#description()}. */
 public class ProvidesDescriptionTest extends AbstractInjectorTest {
 
+    /** Tests service with description on {@link Provides}. */
     @Test
     public void withDescription() {
         Injector i = Injector.of(c -> {
@@ -38,6 +39,7 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
         assertThat(i.getService(Integer.class).getDescription()).isEqualTo("niceMethod");
     }
 
+    /** Tests service without description on {@link Provides}. */
     @Test
     public void withoutDescription() {
         Injector i = Injector.of(c -> {
@@ -48,23 +50,23 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
         assertThat(i.getService(Integer.class).getDescription()).isNull();
     }
 
-    static class WithoutDescription {
-
-        @Provides
-        public static final Long F = 0L;
-
-        @Provides
-        public static int m() {
-            return 0;
-        }
-    }
-
     static class WithDescription {
 
         @Provides(description = "niceField")
         public static final Long F = 0L;
 
         @Provides(description = "niceMethod")
+        public static int m() {
+            return 0;
+        }
+    }
+
+    static class WithoutDescription {
+
+        @Provides
+        public static final Long F = 0L;
+
+        @Provides
         public static int m() {
             return 0;
         }

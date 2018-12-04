@@ -33,12 +33,12 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 /**
  *
  */
-public class DependencyGraphResolver {
+class DependencyGraphResolver {
     // TODO also check no injection of prototype beans into singleton, after we have resolved
 
     // Requirements -> cannot require any exposed services, or internally registered services...
 
-    public static void resolveAllDependencies(DependencyGraph b) {
+    static void resolveAllDependencies(DependencyGraph b) {
         b.detectCyclesFor = new ArrayList<>();
 
         for (Node<?> nn : b.root.privateNodeMap) {

@@ -59,13 +59,32 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     @Nullable
     private T instance;
 
-    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
+    final BuildNodeDefault<?> parent;
+
+    BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory,
+            BuildNodeDefault<?> parent) {
         super(injectorBuilder, configurationSite, factory.getDependencies());
+        this.parent = parent;
         this.factory = requireNonNull(factory, "factory is null");
         this.bindingMode = requireNonNull(bindingMode);
         if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
+    }
+
+    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
+        super(injectorBuilder, configurationSite, factory.getDependencies());
+        this.factory = requireNonNull(factory, "factory is null");
+        this.parent = null;
+        this.bindingMode = requireNonNull(bindingMode);
+        if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
+            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
+        }
+    }
+
+    @Override
+    AbstractBuildNode<?> declaringNode() {
+        return parent;
     }
 
     /**
@@ -81,6 +100,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     public BuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
+        this.parent = null;
         this.bindingMode = BindingMode.SINGLETON;
         this.factory = null;
     }
@@ -127,19 +147,37 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
                 params[i] = resolvedDependencies[i].getInstance(injectorBuilder.publicInjector, dependencies.get(i), null);
             }
         }
-        return factory.instantiate(params);
+
+        T t = fac().instantiate(params);
+        requireNonNull(t);
+        return t;
+    }
+
+    private InternalFactory<T> fac() {
+        if (parent != null) {
+            if (factory instanceof InternalFactoryField) {
+                InternalFactoryField<T> ff = (InternalFactoryField<T>) factory;
+                if (!ff.isStatic()) {
+                    return ff.withInstance(parent.getInstance(null));
+                }
+            } else {
+                return factory;
+            }
+        }
+        return factory;
     }
 
     /** {@inheritDoc} */
     @Override
     final RuntimeServiceNode<T> newRuntimeNode() {
         if (bindingMode == BindingMode.PROTOTYPE) {
-            return new RuntimeServiceNodePrototype<>(this, factory);
+            return new RuntimeServiceNodePrototype<>(this, fac());
         }
         T i = instance;
         if (i == null && bindingMode == BindingMode.LAZY) {
-            return new RuntimeServiceNodeLazy<>(this, factory);
+            return new RuntimeServiceNodeLazy<>(this, fac());
         } else {
+            requireNonNull(i);
             return new RuntimeServiceNodeSingleton<>(this, i, getBindingMode());
         }
     }
@@ -152,7 +190,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         AtProvides atProvides = s.metadata();
         InternalFactoryExecutable<?> factory = new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.metadata().getDependencies(),
                 m.getParameterCount(), s.methodHandle());
-        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory);
+        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
         bnd.setDescription(atProvides.getDescription());
         return bnd;
     }
@@ -163,7 +201,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
         AtProvides atProvides = s.metadata();
         InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
-        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory);
+        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
         bnd.setDescription(atProvides.getDescription());
         return bnd;
     }

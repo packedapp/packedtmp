@@ -35,6 +35,7 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
+import app.packed.util.ParameterDescriptor;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
 
@@ -326,9 +327,9 @@ public abstract class Key<T> {
 
     public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
-        // From field, from TypeLiteral, from Variable, from class, arghhh....
-        assert (source instanceof Field || source instanceof Method || source instanceof FieldDescriptor || source instanceof MethodDescriptor
-                || source instanceof TypeLiteral || source instanceof Class);
+        // From field, fromTypeLiteral, from Variable, from class, arghhh....
+        assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof FieldDescriptor
+                || source instanceof MethodDescriptor || source instanceof TypeLiteral || source instanceof Class);
 
         typeLiteral = typeLiteral.box();
         if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
