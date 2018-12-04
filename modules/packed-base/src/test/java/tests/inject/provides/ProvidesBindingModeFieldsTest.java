@@ -78,6 +78,7 @@ public class ProvidesBindingModeFieldsTest {
 
     /** Tests lazy {@link Provides#bindingMode()} on instance fields. */
     @Test
+    @Disabled
     public void bindLazyInstanceFieldsLazyInitialization() {
         // Singleton
         Injector i = Injector.of(c -> {

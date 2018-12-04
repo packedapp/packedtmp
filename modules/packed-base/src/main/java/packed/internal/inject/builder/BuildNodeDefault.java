@@ -170,12 +170,20 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     /** {@inheritDoc} */
     @Override
     final RuntimeServiceNode<T> newRuntimeNode() {
+        T i = instance;
+        if (i != null) {
+            return new RuntimeServiceNodeSingleton<>(this, i, getBindingMode());
+        }
         if (bindingMode == BindingMode.PROTOTYPE) {
             return new RuntimeServiceNodePrototype<>(this, fac());
         }
-        T i = instance;
+
         if (i == null && bindingMode == BindingMode.LAZY) {
-            return new RuntimeServiceNodeLazy<>(this, fac());
+            if (parent != null && parent.getBindingMode() == BindingMode.LAZY) {
+                return new RuntimeServiceNodeLazy<>(this, fac());
+            } else {
+                return new RuntimeServiceNodeLazy<>(this, fac());
+            }
         } else {
             requireNonNull(i);
             return new RuntimeServiceNodeSingleton<>(this, i, getBindingMode());
