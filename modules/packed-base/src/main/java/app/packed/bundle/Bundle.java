@@ -31,7 +31,8 @@ import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**
- * Bundles provide a simply way to package components and service. This is useful, for example, for:
+ * Bundles provide a simply way to package components and service and build modular application. This is useful, for
+ * example, for:
  * <ul>
  * <li>Sharing functionality across multiple injectors and/or containers.</li>
  * <li>Hiding implementation details from users.</li>
@@ -40,12 +41,14 @@ import packed.internal.inject.builder.InjectorBuilder;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link InjectorBundle}</b> which bundles information about services and creates {@link Injector} instances
+ * <li><b>{@link InjectorBundle}</b> which bundles information about services, and creates {@link Injector} instances
  * using {@link Injector#of(Class)}.</li>
- * <li><b>{@link ContainerBundle}</b> which bundles information about both services and creates {@link Container}
- * instances using {@link Container#of(Class)}.</li>
+ * <li><b>{@link ContainerBundle}</b> which bundles information about both services and components, and creates
+ * {@link Container} instances using {@link Container#of(Class)}.</li>
  * </ul>
  */
+
+// Descriptor does not freeze, Injector+Container freezes
 public abstract class Bundle {
 
     static {
@@ -140,9 +143,9 @@ public abstract class Bundle {
      * @throws IllegalStateException
      *             if the {@link #configure()} method has already been invoked once for this extension instance
      */
-    protected final void checkNotFrozen() {
+    protected final void checkConfigurable() {
         if (isFrozen) {
-            throw new IllegalStateException("The configuration of this bundle has been frozen");
+            throw new IllegalStateException("This bundle is no longer configurable");
         }
     }
 

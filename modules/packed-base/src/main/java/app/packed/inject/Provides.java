@@ -109,25 +109,3 @@ public @interface Provides {
      */
     String[] tags() default {};
 }
-
-class X {
-
-    @Left
-    @Provides
-    public String name = "left";
-
-    @Right
-    @Provides
-    public String provide() {
-        return "right";
-    }
-
-}
-
-@interface Right {}
-
-@interface Left {}
-
-class SomeObject {
-    SomeObject(String name) {}
-}

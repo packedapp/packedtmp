@@ -47,24 +47,6 @@ public class InjectorConfigurationProvidesTest {
     }
 
     @Test
-    public void bindingModes() {
-        Injector i = of(c -> c.bind(BindingModes.class));
-        BindingModes.L = 2L;
-        BindingModes.S = 2;
-        BindingModes.P = 2;
-
-        assertThat(i.with(Short.class)).isEqualTo((short) 1);
-        assertThat(i.with(Long.class)).isEqualTo(2L);
-        assertThat(i.with(Integer.class)).isEqualTo(2);
-        BindingModes.L = 3L;
-        BindingModes.S = 3;
-        BindingModes.P = 3;
-        assertThat(i.with(Short.class)).isEqualTo((short) 1);
-        assertThat(i.with(Long.class)).isEqualTo(2L);
-        assertThat(i.with(Integer.class)).isEqualTo(3);
-    }
-
-    @Test
     public void description() {
         class WithDescription {
 
@@ -99,18 +81,6 @@ public class InjectorConfigurationProvidesTest {
         assertThat(i.with(new Key<@StringQualifier("m_public") String>() {})).isEqualTo("public_m");
         assertThat(i.with(new Key<@StringQualifier("m_protected") String>() {})).isEqualTo("protected_m");
         assertThat(i.with(new Key<@StringQualifier("m_private") String>() {})).isEqualTo("private_m");
-    }
-
-    static class BindingModes {
-
-        @Provides(bindingMode = BindingMode.SINGLETON)
-        static Short S = 1;
-
-        @Provides(bindingMode = BindingMode.LAZY)
-        static Long L = 1L;
-
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
-        static Integer P = 1;
     }
 
     static class VisibilityStatic {

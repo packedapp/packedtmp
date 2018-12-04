@@ -1,0 +1,38 @@
+Provides Import Injector (custom injector, packed injector)
+Provides Import Bundle
+Provides Export bundle
+
+Provides components
+
+
+
+Provides with dependencies
+  static methods
+  non-static methods
+
+ProvidesErrorMessagesTest() <- nahh ude specifikt.
+  Circular...
+  
+  
+Some error messages
+
+
+
+@Provided methods
+
+asNone
+
+Cannot output a service with the same key from multiple methods...
+must call asNone() on the service in process()<-rename to processService...
+
+Or they are automatically filtere asNone()....
+I think auto filtered
+
+Any @Provided services are automatically aplied asNone on...
+
+@Provide
+SomeService withCaching(InjectionSite s, SomeService)
+
+Can be used for caching. Some calculation module...
+
+Kaching....

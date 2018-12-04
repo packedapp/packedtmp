@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
@@ -30,6 +31,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.inject.Key;
+import support.stubs.annotation.StringQualifier;
 
 /**
  *
@@ -49,25 +51,40 @@ public class KeyMicro {
 
     static final String STRING = "";
 
-    static final Field STRING$ = Arrays.stream(KeyMicro.class.getDeclaredFields()).filter(e -> e.getName().equals("STRING")).findFirst().get();
-    //
-    // @Benchmark
-    // public Key<?> keyFromFieldMapStringInteger() {
-    // return Key.fromField(MAP_STRING_INTEGER$);
-    // }
-    //
-    // @Benchmark
-    // public Key<?> keyFromFieldString() {
-    // return Key.fromField(STRING$);
-    // }
-    //
-    // @Benchmark
-    // public Key<String> newKeyString() {
-    // return new Key<String>() {};
-    // }
+    static final String STRING_QUALIFIED = "";
 
-    // @Benchmark
+    static final Field STRING_QUALIFIED$ = Arrays.stream(KeyMicro.class.getDeclaredFields()).filter(e -> e.getName().equals("STRING_QUALIFIED")).findFirst()
+            .get();
+
+    static final Field STRING$ = Arrays.stream(KeyMicro.class.getDeclaredFields()).filter(e -> e.getName().equals("STRING")).findFirst().get();
+
+    @Benchmark
+    public Key<?> keyFromFieldMapStringInteger() {
+        return Key.fromField(MAP_STRING_INTEGER$);
+    }
+
+    @Benchmark
+    public Key<?> keyFromFieldString() {
+        return Key.fromField(STRING$);
+    }
+
+    @Benchmark
+    public Key<?> keyFromFieldStringQualified() {
+        return Key.fromField(STRING_QUALIFIED$);
+    }
+
+    @Benchmark
     public Key<String> KeyOfString() {
         return Key.of(String.class);
+    }
+
+    @Benchmark
+    public Key<String> newKeyString() {
+        return new Key<String>() {};
+    }
+
+    @Benchmark
+    public Key<String> newKeyStringQualified() {
+        return new Key<@StringQualifier("foo") String>() {};
     }
 }

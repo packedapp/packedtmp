@@ -26,6 +26,30 @@ import app.packed.util.Nullable;
  * A shared superclass for {@link InjectorImportStage}, {@link ImportExportStage}, {@link ContainerImportStage} and
  * {@link ContainerExportStage}.
  */
+
+// Kunne vaere rart, hvis man f.eks. kunne
+// bindInjector(SomeBundle.class, JaxRSSpec.2_1);
+// bindInjector(SomeBundle.class, JettySpec.23_1);
+
+/// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
+// ComponentInstanceHook
+// AnnotatedComponentTypeHook
+// AnnotatedComponentMethodHook
+
+/// activeInstance(Startable.class)
+/// activeAnnotatedMethod(onStart.class)...
+//// De skal vaere en del af specifikationen
+// Activators
+// InstanceOfActivator (Component+<T>)
+
+// AnnotatedTypeActivator
+// AnnotatedMethodActivator
+
+// ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
+
+// Interface (maybe ditch it for now) + Description
+
+//
 public abstract class ImportExportStage {
 
     /** A Lookup object. */
@@ -49,5 +73,4 @@ public abstract class ImportExportStage {
 
     /** Performs cleanup or post processing validation of the stage. The default implementation does nothing. */
     protected void onFinish() {};
-
 }

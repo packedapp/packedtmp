@@ -33,7 +33,7 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** This class is responsible for finding an injectable executable. */
-class FactoryFindInjectable {
+class FindInjectableExecutable {
 
     static <T> InternalFactory<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);

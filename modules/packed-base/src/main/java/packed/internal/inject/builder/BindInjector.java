@@ -90,7 +90,7 @@ abstract class BindInjector {
                     if (importNode != null) {
                         Key<?> existing = importNode.getKey();
 
-                        stage.process(importNode);
+                        stage.importService(importNode);
 
                         if (importNode.getKey() == null) {
                             importNodes[i] = null;

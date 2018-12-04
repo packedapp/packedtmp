@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.InjectorImportStage.DescriptorAdaptor;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
@@ -48,6 +47,9 @@ import app.packed.inject.ServiceDescriptor;
 
 // Do we expose Dependencies????? It is kind of breaking the encapsulation...
 
+// Maa koere en BundleDescriptor hvis man vil se..
+// Vi er strictly flow.....Eller det behoever vi jo saadan ikke at vaere.....
+// Ellers k
 public class InjectorExportStage extends ImportExportStage {
 
     /** An export stage, that ignores all optional dependencies */
@@ -86,7 +88,7 @@ public class InjectorExportStage extends ImportExportStage {
         return new InjectorExportStage() {
             @Override
             public void process(ServiceConfiguration<?> sc) {
-                action.accept(new DescriptorAdaptor(sc));
+                action.accept(ServiceDescriptor.of(sc));
             }
         };
     }

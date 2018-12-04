@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package tests.inject;
+
+import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
+
+import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfiguration;
 
 /**
  *
  */
-// Hmm
-public class ContainerImportStage extends InjectorImportStage {
+public abstract class AbstractInjectorTest {
+
+    public static Injector injector(MethodHandles.Lookup lookup, Consumer<? super InjectorConfiguration> consumer) {
+        return Injector.of(c -> {
+            c.lookup(lookup);
+            consumer.accept(c);
+        });
+    }
 
 }

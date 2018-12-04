@@ -52,7 +52,7 @@ public class Factory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
-            return new Factory(FactoryFindInjectable.find(implementation));
+            return new Factory(FindInjectableExecutable.find(implementation));
         }
     };
 
@@ -67,7 +67,7 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FactoryFindInjectable.find(new CanonicalizedTypeLiteral<>(t)));
+            return new Factory(FindInjectableExecutable.find(new CanonicalizedTypeLiteral<>(t)));
         }
     };
 
@@ -252,7 +252,7 @@ public class Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) FIND_INJECTABLE_FROM_CLASS_CACHE.get((Class<?>) t);
         } else {
-            return new Factory<>(FactoryFindInjectable.find(implementation));
+            return new Factory<>(FindInjectableExecutable.find(implementation));
         }
     }
 
