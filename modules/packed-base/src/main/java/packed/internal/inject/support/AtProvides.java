@@ -19,13 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 
 import app.packed.inject.BindingMode;
-import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.FieldDescriptor;
@@ -73,15 +68,6 @@ public final class AtProvides {
         return annotatedMember instanceof FieldDescriptor ? ((FieldDescriptor) annotatedMember).isStatic() : ((MethodDescriptor) annotatedMember).isStatic();
     }
 
-    public static Optional<AtProvides> find(InternalMethodDescriptor method) {
-        for (Annotation a : method.getAnnotationsUnsafe()) {
-            if (a.annotationType() == Provides.class) {
-                return Optional.of(read(method, (Provides) a));
-            }
-        }
-        return Optional.empty();
-    }
-
     public static AtProvides from(InternalFieldDescriptor field, Provides p) {
         Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(field, field.getTypeLiteral(), annotation);
@@ -106,29 +92,42 @@ public final class AtProvides {
         return new AtProvides(method, key, p, List.of());
     }
 
-    private static AtProvides read(InternalMethodDescriptor method, Provides provides) {
-        // Cannot have @Inject and @Provides on the same method
-        if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
-            throw new InjectionException("Cannot place both @Inject and @" + Provides.class.getSimpleName() + " on the same method, method = " + method);
-        }
-
-        Class<?> returnType = method.getReturnType();
-        if (returnType == void.class || returnType == Void.class || returnType == Optional.class || returnType == OptionalInt.class
-                || returnType == OptionalLong.class || returnType == OptionalDouble.class) {
-            throw new InjectionException("@Provides method " + method + " cannot have " + returnType.getSimpleName() + " as a return type");
-        }
-
-        // If factory, class, TypeLiteral, Provider, we need special handling
-
-        // Optional<Annotation> qualifier = method.findQualifiedAnnotation();
-        // if (qualifier.isPresent()) {
-        // key = Key.of(method.getGenericReturnType(), qualifier.get());
-        // } else {
-        // key = Key.of(method.getGenericReturnType());
-        // }
-
-        throw new UnsupportedOperationException();
-        // return new MethodInvokerAtProvidesDescriptor(key, provides.bindingMode(), provides.description().length() == 0 ? null
-        // : provides.description());
-    }
+    // public static Optional<AtProvides> find(InternalMethodDescriptor method) {
+    // for (Annotation a : method.getAnnotationsUnsafe()) {
+    // if (a.annotationType() == Provides.class) {
+    // return Optional.of(read(method, (Provides) a));
+    // }
+    // }
+    // return Optional.empty();
+    // }
+    //
+    // private static AtProvides read(InternalMethodDescriptor method, Provides provides) {
+    // // Cannot have @Inject and @Provides on the same method
+    // if (JavaXInjectSupport.isInjectAnnotationPresent(method)) {
+    // throw new InjectionException("Cannot place both @Inject and @" + Provides.class.getSimpleName() + " on the same
+    // method, method = " + method);
+    // }
+    //
+    // Class<?> returnType = method.getReturnType();
+    // if (returnType == void.class || returnType == Void.class || returnType == Optional.class || returnType ==
+    // OptionalInt.class
+    // || returnType == OptionalLong.class || returnType == OptionalDouble.class) {
+    // throw new InjectionException("@Provides method " + method + " cannot have " + returnType.getSimpleName() + " as a
+    // return type");
+    // }
+    //
+    // // If factory, class, TypeLiteral, Provider, we need special handling
+    //
+    // // Optional<Annotation> qualifier = method.findQualifiedAnnotation();
+    // // if (qualifier.isPresent()) {
+    // // key = Key.of(method.getGenericReturnType(), qualifier.get());
+    // // } else {
+    // // key = Key.of(method.getGenericReturnType());
+    // // }
+    //
+    // throw new UnsupportedOperationException();
+    // // return new MethodInvokerAtProvidesDescriptor(key, provides.bindingMode(), provides.description().length() == 0 ?
+    // null
+    // // : provides.description());
+    // }
 }

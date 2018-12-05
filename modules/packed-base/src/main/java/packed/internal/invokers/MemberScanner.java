@@ -21,8 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import app.packed.inject.Inject;
@@ -45,24 +43,12 @@ class MemberScanner {
     /** A builder for members annotated with {@link Inject}. */
     AtInjectGroup.Builder inject = new AtInjectGroup.Builder();
 
-    ArrayList<AccessibleField<InternalDependency>> fieldsAtInject;
-
     /** The lookup object. */
     final Lookup lookup;
-
-    ArrayList<AccessibleExecutable<List<InternalDependency>>> methodsAtInject;
 
     MemberScanner(Lookup lookup, Class<?> clazz) {
         this.lookup = requireNonNull(lookup);
         this.clazz = requireNonNull(clazz);
-    }
-
-    public Collection<AccessibleField<InternalDependency>> injectableFields() {
-        return fieldsAtInject == null ? List.of() : List.copyOf(fieldsAtInject);
-    }
-
-    public Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods() {
-        return methodsAtInject == null ? List.of() : List.copyOf(methodsAtInject);
     }
 
     void scanMethods() {
@@ -102,7 +88,6 @@ class MemberScanner {
                 Annotation[] annotations = field.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-
                     AccessibleField<InternalDependency> fInject = inject.createIfInjectable(lookup, field, annotations);
 
                     provides.addIfAnnotated(lookup, field, annotations);

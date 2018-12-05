@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Inject;
+import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.invokers.AccessibleExecutable;
@@ -57,6 +58,7 @@ public final class AtInjectGroup {
         /** All non-static methods annotated with {@link Inject}. */
         ArrayList<AccessibleExecutable<List<InternalDependency>>> methods;
 
+        @Nullable
         public AccessibleField<InternalDependency> createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
@@ -72,6 +74,7 @@ public final class AtInjectGroup {
             return null;
         }
 
+        @Nullable
         public AccessibleExecutable<List<InternalDependency>> createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
