@@ -147,7 +147,7 @@ public abstract class InternalFunction<T> {
      *            the factory convert
      * @return the converted factory
      */
-    public static <T> InternalFunction<T> from(Factory<T> factory) {
+    public static <T> InternalFactory<T> from(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         return InjectSupport.toInternalFactory(factory);
     }

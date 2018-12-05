@@ -36,6 +36,7 @@ import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.Node;
 import packed.internal.inject.NodeMap;
+import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokers.AccessibleExecutable;
@@ -137,10 +138,10 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-        InternalFunction<T> f = InternalFunction.from(factory);
-        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
+        InternalFactory<T> f = InternalFunction.from(factory);
+        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f.function).toFactory());
 
-        scan(f.getRawType(), node);
+        scan(f.function.getRawType(), node);
 
         return bindNode(node).as(factory.getKey());
     }

@@ -28,6 +28,7 @@ import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.BuildNodeDefault;
 import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.function.InternalFunction;
 import packed.internal.util.Checks;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -65,7 +66,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
      * @param bindingMode
      */
     public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
-            @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> factory) {
+            @Nullable InternalComponentConfiguration<?> parent, InternalFactory<T> factory) {
         super(containerBuilder, configurationSite, BindingMode.SINGLETON, factory);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
@@ -93,7 +94,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     @Override
     public ComponentConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
-        InternalFunction<?> f = InternalFunction.from(factory);
+        InternalFunction<?> f = InternalFunction.from(factory).function;
         return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
 
@@ -210,7 +211,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
          * @param configurationSite
          * @param factory
          */
-        public MixinBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, InternalFunction<Object> factory) {
+        public MixinBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, InternalFactory<Object> factory) {
             super(injectorBuilder, configurationSite, BindingMode.SINGLETON, factory);
         }
 
