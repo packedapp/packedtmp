@@ -17,7 +17,9 @@ package packed.internal.util.descriptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static support.assertj.Assertions.npe;
+import static support.stubs.TypeStubs.LIST_WILDCARD;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
@@ -27,6 +29,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.inject.Injector;
+import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 
@@ -75,4 +79,26 @@ public class InternalParameterDescriptorTest {
 
     public void someMethod(@Nullable Map<String, List<?>> s, int f) {}
 
+    /** {@link #test1()} and {@link #test2()} should both */
+    @Test
+    public void test1() throws Exception {
+        class Tmpx<T> {
+            @SuppressWarnings("unused")
+            Tmpx(List<?> l) {}
+        }
+        // Tmpx is a non-static class so first parameter is TypeLiteralTest
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).getType());
+    }
+
+    /** {@link #test1()} and {@link #test2()} should both */
+    @Test
+    public void test2() {
+        class X {}
+
+        Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(X.class);
+            c.bind(this);
+        });
+    }
 }

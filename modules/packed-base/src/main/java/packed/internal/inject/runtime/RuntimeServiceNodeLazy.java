@@ -46,9 +46,9 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
      * @param factory
      *            the factory that will create the instance
      */
-    public RuntimeServiceNodeLazy(AbstractBuildNode<T> node, InternalFactory<T> factory) {
+    public RuntimeServiceNodeLazy(AbstractBuildNode<T> node, InternalFactory<T> factory, @Nullable RuntimeServiceNode<T> parent) {
         super(node);
-        this.lazy = new Sync(new RuntimeServiceNodePrototype<>(node, factory));
+        this.lazy = new Sync(new RuntimeServiceNodePrototype<>(node, factory), parent);
     }
 
     /** {@inheritDoc} */
@@ -95,13 +95,15 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
 
+        RuntimeServiceNode<T> parent;
+
         /**
          * Creates a new Sync object
          * 
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(Provider<T> factory) {
+        Sync(Provider<T> factory, @Nullable RuntimeServiceNode<T> parent) {
             super(1);
             this.factory = requireNonNull(factory);
         }

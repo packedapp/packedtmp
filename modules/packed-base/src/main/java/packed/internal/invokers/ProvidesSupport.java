@@ -36,6 +36,7 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
@@ -111,8 +112,9 @@ public final class ProvidesSupport {
 
                     Key<?> key = fi.metadata().key;
                     if (keys.putIfAbsent(key, fi.metadata()) != null) {
-                        ErrorMessageBuilder.of(method.getDeclaringClass()).cannot("have multiple members providing services with the same key (" + key + ")")
-                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members");
+                        throw new InvalidDeclarationException(ErrorMessageBuilder.of(method.getDeclaringClass())
+                                .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
+                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
                     }
                     methods.add(fi);
                     return fi;
@@ -140,8 +142,9 @@ public final class ProvidesSupport {
 
                     Key<?> key = fi.metadata().key;
                     if (keys.putIfAbsent(key, fi.metadata()) != null) {
-                        ErrorMessageBuilder.of(field.getDeclaringClass()).cannot("have multiple members providing services with the same key (" + key + ")")
-                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members");
+                        throw new InvalidDeclarationException(ErrorMessageBuilder.of(field.getDeclaringClass())
+                                .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
+                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
                     }
                     fields.add(fi);
                     return fi;

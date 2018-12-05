@@ -18,6 +18,7 @@ package packed.internal.inject.factory;
 import java.util.List;
 
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 
 /**
@@ -25,17 +26,23 @@ import packed.internal.inject.InternalDependency;
  */
 public abstract class InternalFactoryMember<T> extends InternalFactory<T> {
 
-    Object instance;
+    @Nullable
+    final Object instance;
 
     /**
      * @param typeLiteralOrKey
      * @param dependencies
      */
-    public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies) {
+    public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies, Object instance) {
         super(typeLiteralOrKey, dependencies);
+        this.instance = instance;
     }
 
     public boolean hasInstance() {
         return instance != null;
     }
+
+    public abstract InternalFactoryMember<T> withInstance(Object instance);
+
+    public abstract boolean isMissingInstance();
 }

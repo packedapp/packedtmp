@@ -31,7 +31,7 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 
 /** An internal factory that reads a field. Is mainly used in connection with {@link Provides}. */
-public final class InternalFactoryField<T> extends InternalFactory<T> {
+public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
 
     private static final int INSTANCE_GET = 0;
     private static final int INSTANCE_GET_VOLATILE = 1;
@@ -42,9 +42,6 @@ public final class InternalFactoryField<T> extends InternalFactory<T> {
     /** The field to read. */
     private final FieldDescriptor field;
 
-    @Nullable
-    private final Object instance;
-
     /** Whether or not the field is volatile. */
     private final int type;
 
@@ -52,28 +49,28 @@ public final class InternalFactoryField<T> extends InternalFactory<T> {
     private final VarHandle varHandle;
 
     public InternalFactoryField(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
-        super(typeLiteralOrKey, List.of());
+        super(typeLiteralOrKey, List.of(), instance);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
-        this.instance = instance;
         this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0 + (field.isStatic() ? 2 : 0);
     }
 
     public InternalFactoryField(InternalFactoryField<T> other, Object instance) {
-        super(other.getType(), List.of());
+        super(other.getType(), List.of(), requireNonNull(instance));
         this.field = other.field;
         this.varHandle = other.varHandle;
-        this.instance = requireNonNull(instance);
         this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0;
     }
 
+    @Override
     public InternalFactoryField<T> withInstance(Object instance) {
         requireNonNull(instance, "instance is null");
         return new InternalFactoryField<>(this, instance);
     }
 
-    public boolean isStatic() {
-        return type >= 2;
+    @Override
+    public boolean isMissingInstance() {
+        return !field.isStatic() && instance == null;
     }
 
     /**

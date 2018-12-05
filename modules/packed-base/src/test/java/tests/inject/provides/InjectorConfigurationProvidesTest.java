@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector;
+package tests.inject.provides;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.BindingMode;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
@@ -39,28 +38,6 @@ public class InjectorConfigurationProvidesTest {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });
-    }
-
-    @Test
-    public void tags() {
-
-    }
-
-    @Test
-    public void description() {
-        class WithDescription {
-
-            @Provides(description = "niceField", bindingMode = BindingMode.PROTOTYPE)
-            public final Long F = 0L;
-
-            @Provides(description = "niceMethod", bindingMode = BindingMode.PROTOTYPE)
-            public int m() {
-                return 0;
-            }
-        }
-        Injector i = of(c -> c.bind(new WithDescription()));
-        assertThat(i.getService(Long.class).getDescription()).isEqualTo("niceField");
-        assertThat(i.getService(Integer.class).getDescription()).isEqualTo("niceMethod");
     }
 
     @Test

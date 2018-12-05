@@ -28,6 +28,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.factory.InternalFactoryExecutable;
 import packed.internal.inject.factory.InternalFactoryField;
+import packed.internal.inject.factory.InternalFactoryMember;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
@@ -53,13 +54,13 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
-    private final InternalFactory<T> factory;
+    private InternalFactory<T> factory;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable
     private T instance;
 
-    final BuildNodeDefault<?> parent;
+    private BuildNodeDefault<?> parent;
 
     BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory,
             BuildNodeDefault<?> parent) {
@@ -155,13 +156,9 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     private InternalFactory<T> fac() {
         if (parent != null) {
-            if (factory instanceof InternalFactoryField) {
-                InternalFactoryField<T> ff = (InternalFactoryField<T>) factory;
-                if (!ff.isStatic()) {
-                    return ff.withInstance(parent.getInstance(null));
-                }
-            } else {
-                return factory;
+            InternalFactoryMember<T> ff = (InternalFactoryMember<T>) factory;
+            if (ff.isMissingInstance()) {
+                factory = ff.withInstance(parent.getInstance(null));
             }
         }
         return factory;
@@ -174,20 +171,19 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         if (i != null) {
             return new RuntimeServiceNodeSingleton<>(this, i, getBindingMode());
         }
-        if (bindingMode == BindingMode.PROTOTYPE) {
-            return new RuntimeServiceNodePrototype<>(this, fac());
-        }
 
-        if (i == null && bindingMode == BindingMode.LAZY) {
-            if (parent != null && parent.getBindingMode() == BindingMode.LAZY) {
-                return new RuntimeServiceNodeLazy<>(this, fac());
+        if (parent == null || parent.getBindingMode() == BindingMode.SINGLETON || parent.instance != null
+                || (factory instanceof InternalFactoryMember && !((InternalFactoryMember<?>) factory).isMissingInstance())) {
+            if (bindingMode == BindingMode.PROTOTYPE) {
+                return new RuntimeServiceNodePrototype<>(this, fac());
             } else {
-                return new RuntimeServiceNodeLazy<>(this, fac());
+                return new RuntimeServiceNodeLazy<>(this, fac(), null);
             }
-        } else {
-            requireNonNull(i);
-            return new RuntimeServiceNodeSingleton<>(this, i, getBindingMode());
         }
+        // parent==LAZY and not initialized, this.bindingMode=Lazy or Prototype
+
+        return new RuntimeServiceNodeLazy<>(this, fac(), null);
+
     }
 
     public BuildNodeDefault<?> provide(AccessibleExecutable<AtProvides> s) {

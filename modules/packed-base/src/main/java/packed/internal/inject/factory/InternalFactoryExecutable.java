@@ -26,12 +26,13 @@ import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
+import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
-public class InternalFactoryExecutable<T> extends InternalFactory<T> {
+public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
 
     /**
      * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for
@@ -50,7 +51,7 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
 
     public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies,
             int numberOfMissingDependencies, MethodHandle methodHandle) {
-        super(key, dependencies);
+        super(key, dependencies, null);
         this.executable = executable;
         this.numberOfMissingDependencies = numberOfMissingDependencies;
         this.methodHandle = methodHandle;
@@ -74,6 +75,11 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new InjectionException("Failed to inject " + executable.descriptorTypeName(), e);
         }
+    }
+
+    @Override
+    public boolean isMissingInstance() {
+        return executable instanceof MethodDescriptor && !((MethodDescriptor) executable).isStatic() && instance == null;
     }
 
     @Override
@@ -102,5 +108,11 @@ public class InternalFactoryExecutable<T> extends InternalFactory<T> {
                     "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InternalFactoryMember<T> withInstance(Object instance) {
+        throw new UnsupportedOperationException();
     }
 }

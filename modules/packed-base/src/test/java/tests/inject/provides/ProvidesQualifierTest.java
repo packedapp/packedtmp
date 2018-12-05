@@ -15,9 +15,138 @@
  */
 package tests.inject.provides;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.lang.invoke.MethodHandles;
+
+import org.assertj.core.api.AbstractThrowableAssert;
+import org.junit.jupiter.api.Test;
+
+import app.packed.inject.BindingMode;
+import app.packed.inject.Injector;
+import app.packed.inject.Key;
+import app.packed.inject.Provides;
+import app.packed.util.InvalidDeclarationException;
+import support.stubs.annotation.StringQualifier;
+
 /**
  *
  */
 public class ProvidesQualifierTest {
 
+    @Test
+    public void multipleFields() {
+        Stub.A = 1L;
+        Stub.B = 1L;
+        Stub.C = 1L;
+        Stub.L = 1L;
+        Injector i = Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(Stub.class);
+        });
+        Stub.A = 2L;
+        Stub.B = 2L;
+        Stub.C = 2L;
+        Stub.L = 2L;
+
+        assertThat(i.with(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
+        assertThat(i.with(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
+        assertThat(i.with(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
+        assertThat(i.with(new Key<Long>() {})).isEqualTo(1L);
+
+        Stub.A = 3L;
+        Stub.B = 3L;
+        Stub.C = 3L;
+        Stub.L = 3L;
+
+        assertThat(i.with(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
+        assertThat(i.with(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
+        assertThat(i.with(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
+        assertThat(i.with(new Key<Long>() {})).isEqualTo(1L);
+    }
+
+    @Test
+    public void cannotDefineSameProvidedKeys() {
+
+        AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(MultipleIdenticalQualifiedFieldKeys.class);
+        }));
+        at.isExactlyInstanceOf(InvalidDeclarationException.class);
+        at.hasNoCause();
+        // TODO check message
+
+        at = assertThatThrownBy(() -> Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(MultipleIdenticalQualifiedMethodKeys.class);
+        }));
+        at.isExactlyInstanceOf(InvalidDeclarationException.class);
+        at.hasNoCause();
+
+        at = assertThatThrownBy(() -> Injector.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.bind(MultipleIdenticalQualifiedMemberKeys.class);
+        }));
+        at.isExactlyInstanceOf(InvalidDeclarationException.class);
+        at.hasNoCause();
+
+    }
+
+    static class MultipleIdenticalQualifiedFieldKeys {
+
+        @Provides
+        @StringQualifier("A")
+        private Long A = 0L;
+
+        @Provides
+        @StringQualifier("A")
+        private Long B = 0L;
+    }
+
+    static class MultipleIdenticalQualifiedMethodKeys {
+
+        @Provides
+        @StringQualifier("A")
+        static Long a() {
+            return 0L;
+        }
+
+        @Provides
+        @StringQualifier("A")
+        static Long b() {
+            return 0L;
+        }
+    }
+
+    static class MultipleIdenticalQualifiedMemberKeys {
+
+        @Provides
+        @StringQualifier("A")
+        private Long A = 0L;
+
+        @Provides
+        @StringQualifier("A")
+        static Long b() {
+            return 0L;
+        }
+    }
+
+    static class Stub {
+
+        @Provides(bindingMode = BindingMode.LAZY)
+        @StringQualifier("A")
+        private static Long A;
+
+        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        @StringQualifier("B")
+        private static Long B;
+
+        @Provides(bindingMode = BindingMode.SINGLETON)
+        @StringQualifier("C")
+        private static Long C;
+
+        @Provides
+        private static Long L;
+    }
 }
