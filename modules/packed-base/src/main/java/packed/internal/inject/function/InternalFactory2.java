@@ -18,7 +18,6 @@ package packed.internal.inject.function;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.util.List;
 import java.util.function.BiFunction;
 
 import app.packed.inject.Factory;
@@ -27,6 +26,7 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.factory.InternalFactory;
 
 /** An internal factory for {@link Factory2}. */
 public class InternalFactory2<T, U, R> extends InternalFunction<R> {
@@ -46,8 +46,8 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral, List<InternalDependency> dependencies) {
-        super(typeLiteral, dependencies);
+    public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral) {
+        super(typeLiteral);
         this.function = requireNonNull(function);
     }
 
@@ -73,7 +73,7 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
         return instance;
     }
 
-    public static <T> InternalFunction<T> fromTypeVariables(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
+    public static <T> InternalFactory<T> create(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
         throw new UnsupportedOperationException();
     }
 }

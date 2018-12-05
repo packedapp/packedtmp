@@ -33,7 +33,6 @@ import packed.internal.inject.function.InternalFactory0;
 import packed.internal.inject.function.InternalFactory1;
 import packed.internal.inject.function.InternalFactory2;
 import packed.internal.inject.function.InternalFactoryInstance;
-import packed.internal.inject.function.InternalFunction;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
@@ -84,7 +83,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) InternalFactory2.fromTypeVariables(function, getClass()).toFactory();
+        this.factory = (InternalFactory<T>) InternalFactory2.create(function, getClass());
     }
 
     /**
@@ -96,17 +95,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) new InternalFactory1<>(function, getClass()).toFactory();
-    }
-
-    /**
-     * Creates a new factory by wrapping an internal factory.
-     *
-     * @param factory
-     *            the internal factory to wrap.
-     */
-    Factory(InternalFunction<T> factory) {
-        this.factory = requireNonNull(factory, "factory is null").toFactory();
+        this.factory = (InternalFactory<T>) InternalFactory1.create(function, getClass());
     }
 
     /**
@@ -198,7 +187,7 @@ public class Factory<T> {
      */
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new Factory<>(factory.function.withLookup(lookup).toFactory());
+        return new Factory<>(factory.withLookup(lookup));
     }
 
     /**
@@ -280,7 +269,7 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(InternalFactoryInstance.of(instance));
+        return new Factory<>(new InternalFactory<>(InternalFactoryInstance.of(instance)));
     }
 }
 //

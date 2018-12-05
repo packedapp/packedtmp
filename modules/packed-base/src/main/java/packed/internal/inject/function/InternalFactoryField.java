@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
-import java.util.List;
 
 import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.inject.Provides;
@@ -49,14 +48,14 @@ public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
     private final VarHandle varHandle;
 
     public InternalFactoryField(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
-        super(typeLiteralOrKey, List.of(), instance);
+        super(typeLiteralOrKey, instance);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
         this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0 + (field.isStatic() ? 2 : 0);
     }
 
     public InternalFactoryField(InternalFactoryField<T> other, Object instance) {
-        super(other.getType(), List.of(), requireNonNull(instance));
+        super(other.getType(), requireNonNull(instance));
         this.field = other.field;
         this.varHandle = other.varHandle;
         this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0;

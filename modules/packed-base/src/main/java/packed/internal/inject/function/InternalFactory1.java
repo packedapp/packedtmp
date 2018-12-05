@@ -26,6 +26,7 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.factory.InternalFactory;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFunction<R> {
@@ -45,17 +46,13 @@ public class InternalFactory1<T, R> extends InternalFunction<R> {
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    public InternalFactory1(Function<?, ? extends T> supplier, Class<?> typeInfo) {
-        this(supplier, TYPE_PARAMETERS.get(typeInfo));
-    }
-
     /**
      * @param supplier
      * @param functionalSignature
      */
     @SuppressWarnings("unchecked")
     private InternalFactory1(Function<?, ? extends T> function, FunctionalSignature fs) {
-        super((TypeLiteral<R>) fs.objectType, fs.dependencies);
+        super((TypeLiteral<R>) fs.objectType);
         this.function = (Function<? super T, ? extends R>) requireNonNull(function, "function is null");
     }
 
@@ -77,5 +74,10 @@ public class InternalFactory1<T, R> extends InternalFunction<R> {
                             + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
+    }
+
+    public static <T, R> InternalFactory<R> create(Function<?, ? extends T> supplier, Class<?> typeInfo) {
+        FunctionalSignature fs = TYPE_PARAMETERS.get(typeInfo);
+        return new InternalFactory<>(new InternalFactory1<>(supplier, fs), fs.dependencies);
     }
 }

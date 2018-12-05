@@ -17,8 +17,6 @@ package packed.internal.inject.function;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 
@@ -29,7 +27,7 @@ public final class InternalFactoryInstance<T> extends InternalFunction<T> {
     private final T instance;
 
     private InternalFactoryInstance(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
-        super(typeLiteralOrKey, List.of(), actualType);
+        super(typeLiteralOrKey, actualType);
         this.instance = instance;
     }
 

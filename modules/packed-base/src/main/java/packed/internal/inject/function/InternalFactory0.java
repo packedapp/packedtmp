@@ -18,7 +18,6 @@ package packed.internal.inject.function;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.inject.Factory;
@@ -61,7 +60,7 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
      */
     @SuppressWarnings("unchecked")
     public InternalFactory0(Supplier<? extends T> supplier, Class<?> typeInfo) {
-        super((TypeLiteral<T>) TYPE_PARAMETER_CACHE.get(typeInfo), List.of());
+        super((TypeLiteral<T>) TYPE_PARAMETER_CACHE.get(typeInfo));
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
@@ -86,5 +85,4 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
     public static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> typeInfo) {
         return new InternalFactory<>(new InternalFactory0<>(supplier, typeInfo));
     }
-
 }

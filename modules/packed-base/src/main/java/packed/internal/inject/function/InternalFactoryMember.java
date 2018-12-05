@@ -15,11 +15,8 @@
  */
 package packed.internal.inject.function;
 
-import java.util.List;
-
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
 
 /**
  * An internal factory
@@ -33,8 +30,8 @@ public abstract class InternalFactoryMember<T> extends InternalFunction<T> {
      * @param typeLiteralOrKey
      * @param dependencies
      */
-    public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies, Object instance) {
-        super(typeLiteralOrKey, dependencies);
+    public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
+        super(typeLiteralOrKey);
         this.instance = instance;
     }
 

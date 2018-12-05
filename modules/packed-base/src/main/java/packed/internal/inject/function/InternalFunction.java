@@ -23,7 +23,6 @@ import java.util.List;
 
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Nullable;
@@ -66,24 +65,18 @@ public abstract class InternalFunction<T> {
     final Class<?> actualType;
 
     /** The dependencies for this factory. */
-    public final List<InternalDependency> dependencies;
-
-    /** The key that this factory will be registered under by default with an injector. */
-    public final Key<T> key;
 
     private final Class<? super T> type;
 
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    public InternalFunction(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies) {
-        this(typeLiteralOrKey, dependencies, typeLiteralOrKey.getRawType());
+    public InternalFunction(TypeLiteral<T> typeLiteralOrKey) {
+        this(typeLiteralOrKey, typeLiteralOrKey.getRawType());
     }
 
-    public InternalFunction(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies, Class<?> actualType) {
+    public InternalFunction(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        this.dependencies = requireNonNull(dependencies);
-        this.key = typeLiteralOrKey.toKey();
         this.typeLiteral = typeLiteralOrKey;
         this.type = typeLiteral.getRawType();
         this.actualType = requireNonNull(actualType);

@@ -17,6 +17,7 @@ package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
 import app.packed.inject.Key;
@@ -31,16 +32,11 @@ public final class InternalFactory<T> {
     /** A list of all of this factory's dependencies. */
     public final List<InternalDependency> dependencies;
 
-    /** The key that this factory will be registered under by default with an injector. */
-    public final Key<T> key;
-
+    /** The function used to create a new instance. */
     public final InternalFunction<T> function;
 
-    public InternalFactory(Key<T> key, List<InternalDependency> dependencies, InternalFunction<T> function) {
-        this.key = requireNonNull(key, "key is null");
-        this.dependencies = requireNonNull(dependencies, "dependencies is null");
-        this.function = requireNonNull(function);
-    }
+    /** The key that this factory will be registered under by default with an injector. */
+    public final Key<T> key;
 
     public InternalFactory(InternalFunction<T> function) {
         this(function, List.of());
@@ -50,5 +46,15 @@ public final class InternalFactory<T> {
         this.key = function.typeLiteral.toKey();
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
+    }
+
+    public InternalFactory(Key<T> key, List<InternalDependency> dependencies, InternalFunction<T> function) {
+        this.key = requireNonNull(key, "key is null");
+        this.dependencies = requireNonNull(dependencies, "dependencies is null");
+        this.function = requireNonNull(function);
+    }
+
+    public InternalFactory<T> withLookup(Lookup lookup) {
+        return new InternalFactory<T>(function.withLookup(lookup), dependencies);
     }
 }

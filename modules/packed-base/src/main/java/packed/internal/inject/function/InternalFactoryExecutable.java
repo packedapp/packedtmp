@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
 
 import app.packed.inject.Factory;
 import app.packed.inject.IllegalAccessRuntimeException;
@@ -28,7 +27,6 @@ import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
@@ -47,9 +45,8 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
     /** A special method handle that should for this factory. */
     final MethodHandle methodHandle;
 
-    public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies, MethodHandle methodHandle,
-            @Nullable Object instance) {
-        super(key, dependencies, instance);
+    public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, @Nullable Object instance) {
+        super(key, instance);
         this.executable = executable;
         this.methodHandle = methodHandle;
         this.checkLowerBound = false;
@@ -108,12 +105,12 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new InternalFactoryExecutable<>(getType(), executable, dependencies, handle, instance);
+        return new InternalFactoryExecutable<>(getType(), executable, handle, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public InternalFactoryMember<T> withInstance(Object instance) {
-        return new InternalFactoryExecutable<>(getType(), executable, dependencies, methodHandle, instance);
+        return new InternalFactoryExecutable<>(getType(), executable, methodHandle, instance);
     }
 }

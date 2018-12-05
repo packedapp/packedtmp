@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
 
 import app.packed.inject.Factory;
 import app.packed.inject.IllegalAccessRuntimeException;
@@ -27,7 +26,6 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
@@ -43,9 +41,8 @@ public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
     @Nullable
     private final MethodHandle methodHandle;
 
-    public InternalFactoryConstructor(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, List<InternalDependency> dependencies,
-            MethodHandle methodHandle) {
-        super(key, dependencies);
+    public InternalFactoryConstructor(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, MethodHandle methodHandle) {
+        super(key);
         this.constructor = requireNonNull(constructor, "constructor is null");
         this.methodHandle = methodHandle;
     }
@@ -86,6 +83,6 @@ public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the constructor " + constructor + " using the specified lookup", e);
         }
-        return new InternalFactoryConstructor<>(getType(), constructor, dependencies, handle);
+        return new InternalFactoryConstructor<>(getType(), constructor, handle);
     }
 }

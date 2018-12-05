@@ -115,7 +115,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         f = accessor.readable(f);
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), root, f.toFactory());
-        bindNode(icc).as(f.key);
+        bindNode(icc).as(factory.key);
         return install0(icc);
     }
 
