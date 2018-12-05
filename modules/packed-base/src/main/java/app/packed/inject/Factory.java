@@ -28,11 +28,11 @@ import java.util.function.Supplier;
 
 import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
-import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactory0;
-import packed.internal.inject.factory.InternalFactory1;
-import packed.internal.inject.factory.InternalFactory2;
-import packed.internal.inject.factory.InternalFactoryInstance;
+import packed.internal.inject.function.InternalFunction;
+import packed.internal.inject.function.InternalFactory0;
+import packed.internal.inject.function.InternalFactory1;
+import packed.internal.inject.function.InternalFactory2;
+import packed.internal.inject.function.InternalFactoryInstance;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
@@ -72,7 +72,7 @@ public class Factory<T> {
     };
 
     /** The internal factory that all calls are delegated to. */
-    final InternalFactory<T> factory;
+    final InternalFunction<T> factory;
 
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot call {@link Object#getClass()} before calling a
@@ -102,7 +102,7 @@ public class Factory<T> {
      * @param factory
      *            the internal factory to wrap.
      */
-    Factory(InternalFactory<T> factory) {
+    Factory(InternalFunction<T> factory) {
         this.factory = requireNonNull(factory);
     }
 

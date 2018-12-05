@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactoryExecutable;
+import packed.internal.inject.function.InternalFunction;
+import packed.internal.inject.function.InternalFactoryExecutable;
 
 /**
  * 
@@ -78,7 +78,7 @@ public final class LookupDescriptorAccessor {
         return (ServiceClassDescriptor<T>) serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 
-    public <T> InternalFactory<T> readable(InternalFactory<T> factory) {
+    public <T> InternalFunction<T> readable(InternalFunction<T> factory) {
         // TODO add field...
         if (factory instanceof InternalFactoryExecutable) {
             InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory;

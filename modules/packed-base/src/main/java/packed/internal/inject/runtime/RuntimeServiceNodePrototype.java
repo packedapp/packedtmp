@@ -25,7 +25,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.Provider;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.builder.AbstractBuildNode;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.function.InternalFunction;
 
 /** A runtime service node for prototypes. */
 public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> implements Provider<T> {
@@ -34,14 +34,14 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     /** The factory used for creating new instances. */
-    private final InternalFactory<T> factory;
+    private final InternalFunction<T> factory;
 
     Provider<?>[] providers;
 
     /**
      * @param node
      */
-    public RuntimeServiceNodePrototype(AbstractBuildNode<T> node, InternalFactory<T> factory) {
+    public RuntimeServiceNodePrototype(AbstractBuildNode<T> node, InternalFunction<T> factory) {
         super(node);
         this.factory = requireNonNull(factory);
         List<InternalDependency> dependencies = node.dependencies;

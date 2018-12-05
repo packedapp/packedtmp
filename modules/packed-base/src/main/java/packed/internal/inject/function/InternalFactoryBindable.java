@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.function;
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ import app.packed.util.Nullable;
  *
  */
 // Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class InternalFactoryBindable<T> extends InternalFactory<T> {
+public class InternalFactoryBindable<T> extends InternalFunction<T> {
 
-    InternalFactory<T> wrapping;
+    InternalFunction<T> wrapping;
 
     public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
         super(typeLiteral, List.of());

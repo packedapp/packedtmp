@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.function;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -33,7 +33,7 @@ import app.packed.util.Nullable;
  * @param <T>
  *            the type of elements the factory produces
  */
-public final class InternalFactory0<T> extends InternalFactory<T> {
+public final class InternalFactory0<T> extends InternalFunction<T> {
 
     /** A cache of extracted type variables. */
     private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETER_CACHE = new ClassValue<>() {

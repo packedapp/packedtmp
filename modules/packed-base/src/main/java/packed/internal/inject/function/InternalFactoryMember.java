@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.function;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import packed.internal.inject.InternalDependency;
 /**
  * An internal factory
  */
-public abstract class InternalFactoryMember<T> extends InternalFactory<T> {
+public abstract class InternalFactoryMember<T> extends InternalFunction<T> {
 
     @Nullable
     final Object instance;

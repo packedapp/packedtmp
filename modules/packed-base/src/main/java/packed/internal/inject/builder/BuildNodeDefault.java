@@ -25,10 +25,10 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.inject.factory.InternalFactory;
-import packed.internal.inject.factory.InternalFactoryExecutable;
-import packed.internal.inject.factory.InternalFactoryField;
-import packed.internal.inject.factory.InternalFactoryMember;
+import packed.internal.inject.function.InternalFunction;
+import packed.internal.inject.function.InternalFactoryExecutable;
+import packed.internal.inject.function.InternalFactoryField;
+import packed.internal.inject.function.InternalFactoryMember;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
@@ -54,7 +54,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
-    private InternalFactory<T> factory;
+    private InternalFunction<T> factory;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable
@@ -62,7 +62,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     private BuildNodeDefault<?> parent;
 
-    BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory,
+    BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory,
             BuildNodeDefault<?> parent) {
         super(injectorBuilder, configurationSite, factory.getDependencies());
         this.parent = parent;
@@ -73,7 +73,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         }
     }
 
-    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
+    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory) {
         super(injectorBuilder, configurationSite, factory.getDependencies());
         this.factory = requireNonNull(factory, "factory is null");
         this.parent = null;
@@ -154,7 +154,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         return t;
     }
 
-    private InternalFactory<T> fac() {
+    private InternalFunction<T> fac() {
         if (parent != null) {
             InternalFactoryMember<T> ff = (InternalFactoryMember<T>) factory;
             if (ff.isMissingInstance()) {

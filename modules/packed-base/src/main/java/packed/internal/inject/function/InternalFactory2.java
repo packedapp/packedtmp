@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.function;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -29,7 +29,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 
 /** An internal factory for {@link Factory2}. */
-public class InternalFactory2<T, U, R> extends InternalFactory<R> {
+public class InternalFactory2<T, U, R> extends InternalFunction<R> {
 
     /** A cache of function factory definitions. */
     static final ClassValue<FunctionalSignature> CACHE = new ClassValue<>() {
@@ -73,7 +73,7 @@ public class InternalFactory2<T, U, R> extends InternalFactory<R> {
         return instance;
     }
 
-    public static <T> InternalFactory<T> fromTypeVariables(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
+    public static <T> InternalFunction<T> fromTypeVariables(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
         throw new UnsupportedOperationException();
     }
 }

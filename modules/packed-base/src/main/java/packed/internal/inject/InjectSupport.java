@@ -23,7 +23,7 @@ import java.lang.reflect.Type;
 import app.packed.inject.Factory;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.function.InternalFunction;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class InjectSupport {
@@ -37,7 +37,7 @@ public final class InjectSupport {
      *            the factory to extract from
      * @return the internal factory
      */
-    public static <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
+    public static <T> InternalFunction<T> toInternalFactory(Factory<T> factory) {
         return SingletonHolder.SINGLETON.toInternalFactory(factory);
     }
 
@@ -76,7 +76,7 @@ public final class InjectSupport {
          *            the factory to extract from
          * @return the internal factory
          */
-        protected abstract <T> InternalFactory<T> toInternalFactory(Factory<T> factory);
+        protected abstract <T> InternalFunction<T> toInternalFactory(Factory<T> factory);
 
         // Take a Source??? For example, a method to use for error message.
         // When creating the key

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -116,7 +116,7 @@ public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public InternalFactory<T> withLookup(Lookup lookup) {
+    public InternalFunction<T> withLookup(Lookup lookup) {
         VarHandle handle;
         try {
             handle = field.unreflect(lookup);

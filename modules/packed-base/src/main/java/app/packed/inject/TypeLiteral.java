@@ -31,7 +31,7 @@ import java.util.Optional;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.function.InternalFunction;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
@@ -66,7 +66,7 @@ public abstract class TypeLiteral<T> {
 
             /** {@inheritDoc} */
             @Override
-            protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
+            protected <T> InternalFunction<T> toInternalFactory(Factory<T> factory) {
                 return factory.factory;
             }
 

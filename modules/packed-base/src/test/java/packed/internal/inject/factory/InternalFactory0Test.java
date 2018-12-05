@@ -15,6 +15,8 @@
  */
 package packed.internal.inject.factory;
 
+import packed.internal.inject.function.InternalFactory0;
+
 /** Tests {@link InternalFactory0}. */
 public class InternalFactory0Test {
 

@@ -19,18 +19,18 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.function.InternalFunction;
 
 /**
  *
  */
-public class InternalFactoryAssert<T> extends AbstractAssert<InternalFactoryAssert<T>, InternalFactory<T>> {
+public class InternalFactoryAssert<T> extends AbstractAssert<InternalFactoryAssert<T>, InternalFunction<T>> {
 
     /**
      * @param actual
      * @param selfType
      */
-    public InternalFactoryAssert(InternalFactory<T> actual) {
+    public InternalFactoryAssert(InternalFunction<T> actual) {
         super(actual, InternalFactoryAssert.class);
     }
 

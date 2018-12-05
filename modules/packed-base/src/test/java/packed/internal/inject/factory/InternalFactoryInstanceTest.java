@@ -20,13 +20,15 @@ import static support.assertj.Assertions.assertThatInternalFactory;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Key;
+import packed.internal.inject.function.InternalFunction;
+import packed.internal.inject.function.InternalFactoryInstance;
 
 /** Tests {@link InternalFactoryInstance} */
 public class InternalFactoryInstanceTest {
 
     @Test
     public void ofInstance() {
-        InternalFactory<String> f = InternalFactoryInstance.of("foo");
+        InternalFunction<String> f = InternalFactoryInstance.of("foo");
         assertThatInternalFactory(f).is(new Key<String>() {});
         assertThatInternalFactory(f).hasBound(String.class, String.class);
         
@@ -34,7 +36,7 @@ public class InternalFactoryInstanceTest {
     
     @Test
     public void ofInstanceClass() {
-        InternalFactory<String> f = InternalFactoryInstance.of("foo");
+        InternalFunction<String> f = InternalFactoryInstance.of("foo");
         assertThatInternalFactory(f).hasBound(String.class, String.class);
     }
 }

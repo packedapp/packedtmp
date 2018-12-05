@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 
 /** A factory that returns the same instance on every invocation. */
-public final class InternalFactoryInstance<T> extends InternalFactory<T> {
+public final class InternalFactoryInstance<T> extends InternalFunction<T> {
 
     /** The instance that is returned every time. */
     private final T instance;
@@ -56,7 +56,7 @@ public final class InternalFactoryInstance<T> extends InternalFactory<T> {
      * @see Factory#ofInstance(Object)
      */
     @SuppressWarnings("unchecked")
-    public static <T> InternalFactory<T> of(T instance) {
+    public static <T> InternalFunction<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
         return new InternalFactoryInstance<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
