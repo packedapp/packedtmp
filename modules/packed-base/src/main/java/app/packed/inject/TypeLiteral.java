@@ -67,7 +67,7 @@ public abstract class TypeLiteral<T> {
             /** {@inheritDoc} */
             @Override
             protected <T> InternalFunction<T> toInternalFactory(Factory<T> factory) {
-                return factory.factory;
+                return factory.factory.function;
             }
 
             /** {@inheritDoc} */

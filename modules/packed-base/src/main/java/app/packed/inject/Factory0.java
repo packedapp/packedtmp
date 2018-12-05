@@ -21,7 +21,8 @@ import java.util.function.Supplier;
 import app.packed.util.InvalidDeclarationException;
 
 /**
- * A {@link Factory} type that uses a {@link Supplier} to create new instances.
+ * A {@link Factory} type that provides an easy way to use a {@link Supplier} to dynamically provide new instances,
+ * circumventing the limitations of Java's type system.
  * <p>
  * Is typically used like this:
  *

@@ -108,12 +108,12 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), handle, instance);
+        return new InternalFactoryExecutable<>(getType(), executable, dependencies, handle, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public InternalFactoryMember<T> withInstance(Object instance) {
-        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), methodHandle, instance);
+        return new InternalFactoryExecutable<>(getType(), executable, dependencies, methodHandle, instance);
     }
 }

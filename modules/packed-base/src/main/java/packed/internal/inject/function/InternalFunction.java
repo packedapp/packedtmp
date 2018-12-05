@@ -29,6 +29,7 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.factory.InternalFactory;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -65,15 +66,15 @@ public abstract class InternalFunction<T> {
     final Class<?> actualType;
 
     /** The dependencies for this factory. */
-    private final List<InternalDependency> dependencies;
+    public final List<InternalDependency> dependencies;
 
     /** The key that this factory will be registered under by default with an injector. */
-    private final Key<T> key;
+    public final Key<T> key;
 
     private final Class<? super T> type;
 
     /** The type of objects this factory creates. */
-    private final TypeLiteral<T> typeLiteral;
+    public final TypeLiteral<T> typeLiteral;
 
     public InternalFunction(TypeLiteral<T> typeLiteralOrKey, List<InternalDependency> dependencies) {
         this(typeLiteralOrKey, dependencies, typeLiteralOrKey.getRawType());
@@ -93,24 +94,6 @@ public abstract class InternalFunction<T> {
             throw new InjectionException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
         }
         return instance;
-    }
-
-    /**
-     * Returns a list of all of this factory's dependencies.
-     * 
-     * @return a list of all of this factory's dependencies
-     */
-    public final List<InternalDependency> getDependencies() {
-        return dependencies;
-    }
-
-    /**
-     * Returns the key that this factory will be made available under if registering with an injector.
-     * 
-     * @return the key that this factory will be made available under if registering with an injector
-     */
-    public final Key<T> getKey() {
-        return key;
     }
 
     public Class<?> getLowerBound() {
@@ -185,6 +168,9 @@ public abstract class InternalFunction<T> {
         }
     }
 
+    public final InternalFactory<T> toFactory() {
+        return new InternalFactory<>(this);
+    }
 }
 //
 /// **

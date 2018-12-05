@@ -25,10 +25,10 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.function.InternalFactoryExecutable;
 import packed.internal.inject.function.InternalFactoryField;
 import packed.internal.inject.function.InternalFactoryMember;
+import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
@@ -64,7 +64,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory,
             BuildNodeDefault<?> parent) {
-        super(injectorBuilder, configurationSite, factory.getDependencies());
+        super(injectorBuilder, configurationSite, factory.dependencies);
         this.parent = parent;
         this.factory = requireNonNull(factory, "factory is null");
         this.bindingMode = requireNonNull(bindingMode);
@@ -73,8 +73,9 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         }
     }
 
-    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory) {
-        super(injectorBuilder, configurationSite, factory.getDependencies());
+    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode,
+            InternalFunction<T> factory) {
+        super(injectorBuilder, configurationSite, factory.dependencies);
         this.factory = requireNonNull(factory, "factory is null");
         this.parent = null;
         this.bindingMode = requireNonNull(bindingMode);

@@ -28,11 +28,12 @@ import java.util.function.Supplier;
 
 import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.function.InternalFactory0;
 import packed.internal.inject.function.InternalFactory1;
 import packed.internal.inject.function.InternalFactory2;
 import packed.internal.inject.function.InternalFactoryInstance;
+import packed.internal.inject.function.InternalFunction;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
@@ -72,7 +73,7 @@ public class Factory<T> {
     };
 
     /** The internal factory that all calls are delegated to. */
-    final InternalFunction<T> factory;
+    final InternalFactory<T> factory;
 
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot call {@link Object#getClass()} before calling a
@@ -81,8 +82,9 @@ public class Factory<T> {
      * @param function
      *            the function
      */
+    @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = InternalFactory2.fromTypeVariables(function, getClass());
+        this.factory = (InternalFactory<T>) InternalFactory2.fromTypeVariables(function, getClass()).toFactory();
     }
 
     /**
@@ -92,8 +94,9 @@ public class Factory<T> {
      * @param function
      *            the function
      */
+    @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = new InternalFactory1<>(function, getClass());
+        this.factory = (InternalFactory<T>) new InternalFactory1<>(function, getClass()).toFactory();
     }
 
     /**
@@ -103,7 +106,17 @@ public class Factory<T> {
      *            the internal factory to wrap.
      */
     Factory(InternalFunction<T> factory) {
-        this.factory = requireNonNull(factory);
+        this.factory = requireNonNull(factory, "factory is null").toFactory();
+    }
+
+    /**
+     * Creates a new factory by wrapping an internal factory.
+     *
+     * @param factory
+     *            the internal factory to wrap.
+     */
+    Factory(InternalFactory<T> factory) {
+        this.factory = requireNonNull(factory, "factory is null");
     }
 
     /**
@@ -113,8 +126,9 @@ public class Factory<T> {
      * @param supplier
      *            the supplier
      */
+    @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = new InternalFactory0<>(supplier, getClass());
+        this.factory = (InternalFactory<T>) new InternalFactory0<>(supplier, getClass()).toFactory();
     }
 
     /**
@@ -124,7 +138,7 @@ public class Factory<T> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public final List<Dependency> getDependencies() {
-        return (List) factory.getDependencies();
+        return (List) factory.dependencies;
     }
 
     /**
@@ -133,7 +147,7 @@ public class Factory<T> {
      * @return the default key under which this factory will be registered
      */
     public final Key<T> getKey() {
-        return factory.getKey();
+        return factory.key;
     }
 
     /**
@@ -161,7 +175,7 @@ public class Factory<T> {
      * @return the type of objects this factory creates
      */
     public final TypeLiteral<T> getTypeLiteral() {
-        return factory.getType();
+        return factory.function.getType();
     }
 
     /**
@@ -184,7 +198,7 @@ public class Factory<T> {
      */
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new Factory<>(factory.withLookup(lookup));
+        return new Factory<>(factory.function.withLookup(lookup).toFactory());
     }
 
     /**
@@ -415,7 +429,6 @@ class XFac2 {
     }
 
     public static <T> Factory<T> ofMethodStatic(Method method, TypeLiteral<T> returnType) {
-
         requireNonNull(method, "method is null");
         requireNonNull(returnType, "returnType is null");
         // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());

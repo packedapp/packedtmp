@@ -26,6 +26,7 @@ import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
+import packed.internal.inject.factory.InternalFactory;
 
 /**
  * An internal factory for {@link Factory0}.
@@ -81,4 +82,9 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
         }
         return instance;
     }
+
+    public static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> typeInfo) {
+        return new InternalFactory<>(new InternalFactory0<>(supplier, typeInfo));
+    }
+
 }

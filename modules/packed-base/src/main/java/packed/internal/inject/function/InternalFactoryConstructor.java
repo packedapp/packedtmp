@@ -86,6 +86,6 @@ public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the constructor " + constructor + " using the specified lookup", e);
         }
-        return new InternalFactoryConstructor<>(getType(), constructor, getDependencies(), handle);
+        return new InternalFactoryConstructor<>(getType(), constructor, dependencies, handle);
     }
 }

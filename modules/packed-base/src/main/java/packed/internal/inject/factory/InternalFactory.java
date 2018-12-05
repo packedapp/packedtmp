@@ -41,4 +41,14 @@ public final class InternalFactory<T> {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
     }
+
+    public InternalFactory(InternalFunction<T> function) {
+        this(function, List.of());
+    }
+
+    public InternalFactory(InternalFunction<T> function, List<InternalDependency> dependencies) {
+        this.key = function.typeLiteral.toKey();
+        this.dependencies = requireNonNull(dependencies, "dependencies is null");
+        this.function = requireNonNull(function);
+    }
 }
