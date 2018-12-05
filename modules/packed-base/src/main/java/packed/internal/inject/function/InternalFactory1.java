@@ -26,7 +26,7 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.InternalFactory;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFunction<R> {

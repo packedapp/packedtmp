@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import app.packed.inject.Factory;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
-import packed.internal.inject.factory.InternalFactory;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class InjectSupport {

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.InternalFactory;
 import packed.internal.inject.function.InternalFactoryExecutable;
 import packed.internal.inject.function.InternalFunction;
 

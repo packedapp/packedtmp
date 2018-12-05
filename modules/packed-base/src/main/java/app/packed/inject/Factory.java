@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.InternalFactory;
 import packed.internal.inject.function.InternalFactory0;
 import packed.internal.inject.function.InternalFactory1;
 import packed.internal.inject.function.InternalFactory2;

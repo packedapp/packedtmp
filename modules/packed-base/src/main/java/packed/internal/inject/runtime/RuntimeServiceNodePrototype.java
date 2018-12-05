@@ -17,13 +17,10 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Provider;
-import packed.internal.inject.InternalDependency;
 import packed.internal.inject.builder.AbstractBuildNode;
 import packed.internal.inject.function.InternalFunction;
 
@@ -34,22 +31,21 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     /** The factory used for creating new instances. */
-    private final InternalFunction<T> factory;
+    private final InternalFunction<T> function;
 
     Provider<?>[] providers;
 
     /**
      * @param node
      */
-    public RuntimeServiceNodePrototype(AbstractBuildNode<T> node, InternalFunction<T> factory) {
+    public RuntimeServiceNodePrototype(AbstractBuildNode<T> node, InternalFunction<T> function) {
         super(node);
-        this.factory = requireNonNull(factory);
-        List<InternalDependency> dependencies = node.dependencies;
-        this.providers = new Provider[dependencies.size()];
+        this.function = requireNonNull(function);
+        this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
             InjectionSite is = null;
-            InjectionSite.of(Injector.of(c -> {}), dependencies.get(i));
+            InjectionSite.of(Injector.of(c -> {}), node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);
         }
         // Create local injection site for each parameter.
@@ -93,6 +89,6 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
                 params[i] = providers[i].get();
             }
         }
-        return factory.invoke(params);
+        return function.invoke(params);
     }
 }

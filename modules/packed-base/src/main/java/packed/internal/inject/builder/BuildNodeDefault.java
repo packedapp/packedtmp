@@ -25,7 +25,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.inject.factory.InternalFactory;
+import packed.internal.inject.InternalFactory;
 import packed.internal.inject.function.InternalFactoryExecutable;
 import packed.internal.inject.function.InternalFactoryField;
 import packed.internal.inject.function.InternalFactoryMember;
@@ -55,7 +55,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
-    private InternalFactory<T> factory;
+    private InternalFunction<T> factory;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable
@@ -67,7 +67,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
             BuildNodeDefault<?> parent) {
         super(injectorBuilder, configurationSite, factory.dependencies);
         this.parent = parent;
-        this.factory = requireNonNull(factory, "factory is null");
+        this.factory = requireNonNull(factory, "factory is null").function;
         this.bindingMode = requireNonNull(bindingMode);
         if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
@@ -77,14 +77,14 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     BuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFactory<T> factory, BuildNodeDefault<?> parent) {
         super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
         this.parent = parent;
-        this.factory = requireNonNull(factory, "factory is null");
+        this.factory = requireNonNull(factory, "factory is null").function;
         this.bindingMode = atProvides.bindingMode;
         setDescription(atProvides.description);
     }
 
     public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
         super(injectorBuilder, configurationSite, factory.dependencies);
-        this.factory = requireNonNull(factory, "factory is null");
+        this.factory = requireNonNull(factory, "factory is null").function;
         this.parent = null;
         this.bindingMode = requireNonNull(bindingMode);
         if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
@@ -165,12 +165,12 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     private InternalFunction<T> fac() {
         if (parent != null) {
-            InternalFactoryMember<T> ff = (InternalFactoryMember<T>) factory.function;
+            InternalFactoryMember<T> ff = (InternalFactoryMember<T>) factory;
             if (ff.isMissingInstance()) {
-                factory = new InternalFactory<>(ff.withInstance(parent.getInstance(null)), factory.dependencies);
+                factory = ff.withInstance(parent.getInstance(null));
             }
         }
-        return factory.function;
+        return factory;
     }
 
     /** {@inheritDoc} */
@@ -182,7 +182,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         }
 
         if (parent == null || parent.getBindingMode() == BindingMode.SINGLETON || parent.instance != null
-                || (factory.function instanceof InternalFactoryMember && !((InternalFactoryMember<?>) factory.function).isMissingInstance())) {
+                || (factory instanceof InternalFactoryMember && !((InternalFactoryMember<?>) factory).isMissingInstance())) {
             if (bindingMode == BindingMode.PROTOTYPE) {
                 return new RuntimeServiceNodePrototype<>(this, fac());
             } else {

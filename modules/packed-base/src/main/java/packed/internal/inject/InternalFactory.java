@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,8 +24,6 @@ import app.packed.inject.Factory;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.lifecycle.OnStart;
-import packed.internal.inject.InjectSupport;
-import packed.internal.inject.InternalDependency;
 import packed.internal.inject.function.InternalFunction;
 
 /**

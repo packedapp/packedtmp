@@ -24,8 +24,8 @@ import java.lang.reflect.Modifier;
 
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalFactory;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.function.InternalFactoryExecutable;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
