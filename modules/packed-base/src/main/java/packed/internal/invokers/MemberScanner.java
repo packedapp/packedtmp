@@ -25,7 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import app.packed.inject.Inject;
+import app.packed.inject.Provides;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.support.AtInjectGroup;
+import packed.internal.inject.support.AtProvidesGroup;
 
 /**
  *
@@ -35,7 +39,12 @@ class MemberScanner {
 
     final Class<?> clazz;
 
-    ProvidesSupport.Builder provides = new ProvidesSupport.Builder();
+    /** A builder for members annotated with {@link Provides}. */
+    AtProvidesGroup.Builder provides = new AtProvidesGroup.Builder();
+
+    /** A builder for members annotated with {@link Inject}. */
+    AtInjectGroup.Builder inject = new AtInjectGroup.Builder();
+
     ArrayList<AccessibleField<InternalDependency>> fieldsAtInject;
 
     /** The lookup object. */
@@ -71,12 +80,13 @@ class MemberScanner {
                 Annotation[] annotations = method.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    AccessibleExecutable<List<InternalDependency>> inject = MemberScanners.createIfInjectable(this, method, annotations);
-                    provides.forMethod(lookup, method, annotations);
+                    AccessibleExecutable<List<InternalDependency>> fInject = inject.createIfInjectable(lookup, method, annotations);
+
+                    provides.addIfAnnotated(lookup, method, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
-                        if (inject != null) {
+                        if (fInject != null) {
                             System.out.println("OOPS");
                         }
                     }
@@ -92,13 +102,14 @@ class MemberScanner {
                 Annotation[] annotations = field.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    AccessibleField<InternalDependency> inject = MemberScanners.createIfInjectable(this, field, annotations);
 
-                    provides.forField(lookup, field, annotations);
+                    AccessibleField<InternalDependency> fInject = inject.createIfInjectable(lookup, field, annotations);
+
+                    provides.addIfAnnotated(lookup, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
-                        if (inject != null) {
+                        if (fInject != null) {
                             System.out.println("OOPS");
                         }
                     }

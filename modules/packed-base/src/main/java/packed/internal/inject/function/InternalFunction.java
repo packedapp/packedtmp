@@ -24,7 +24,6 @@ import java.util.List;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
-import app.packed.lifecycle.OnStart;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 
@@ -95,16 +94,6 @@ public abstract class InternalFunction<T> {
      */
     public final Class<? super T> getRawType() {
         return type;
-    }
-
-    /**
-     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
-     * {@link OnStart} and {@link app.packed.inject.Provides}. This might differ from the
-     *
-     * @return
-     */
-    Class<? super T> getScannableType() {
-        return getRawType();
     }
 
     /**

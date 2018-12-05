@@ -34,9 +34,9 @@ import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
+import packed.internal.inject.support.AtProvides;
 import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
-import packed.internal.invokers.ProvidesSupport.AtProvides;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -72,6 +72,14 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
+    }
+
+    BuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFactory<T> factory, BuildNodeDefault<?> parent) {
+        super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
+        this.parent = parent;
+        this.factory = requireNonNull(factory, "factory is null");
+        this.bindingMode = atProvides.bindingMode;
+        setDescription(atProvides.description);
     }
 
     public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
@@ -187,42 +195,30 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     }
 
-    public BuildNodeDefault<?> provide(AccessibleExecutable<AtProvides> s) {
+    public AbstractBuildNode<?> provide(AccessibleExecutable<AtProvides> s) {
+        AtProvides atProvides = s.metadata();
         InternalMethodDescriptor m = (InternalMethodDescriptor) s.descriptor();
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMethod(ConfigurationSiteType.INJECTOR_PROVIDE,
-                s.metadata().getAnnotatedMember().getAnnotation(Provides.class), m);
+                atProvides.annotatedMember.getAnnotation(Provides.class), m);
 
-        AtProvides atProvides = s.metadata();
-        if (getBindingMode() == BindingMode.PROTOTYPE && !atProvides.isStaticMember()) {
-            throw new InvalidDeclarationException("OOOPS");
-        }
-        Object instance = s.metadata().isStaticMember() ? null : this.instance;
+        Object instance = atProvides.isStaticMember() ? null : this.instance;
 
         InternalFactory<?> factory = new InternalFactory<>(new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.methodHandle(), instance),
-                s.metadata().getDependencies());
-        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
-        bnd.setDescription(atProvides.getDescription());
-        return bnd;
+                atProvides.dependencies);
+        return new BuildNodeDefault<>(icss, atProvides, factory, this);
     }
 
-    public BuildNodeDefault<?> provide(AccessibleField<AtProvides> s) {
-        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
-                s.metadata().getAnnotatedMember().getAnnotation(Provides.class), s.descriptor());
-
+    public AbstractBuildNode<?> provide(AccessibleField<AtProvides> s) {
         AtProvides atProvides = s.metadata();
-        if (getBindingMode() == BindingMode.PROTOTYPE && !atProvides.isStaticMember()) {
-            throw new InvalidDeclarationException("OOOPS");
-        }
+
+        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
+                atProvides.annotatedMember.getAnnotation(Provides.class), s.descriptor());
+
         Object instance = s.metadata().isStaticMember() ? null : this.instance;
-        // InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(),
-        // s.varHandle(), instance);
 
         InternalFactory<?> factory = new InternalFactory<>(
                 new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance));
-
-        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
-        bnd.setDescription(atProvides.getDescription());
-        return bnd;
+        return new BuildNodeDefault<>(icss, atProvides, factory, this);
     }
 
     @Override

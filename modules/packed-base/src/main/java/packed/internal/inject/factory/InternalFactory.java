@@ -22,6 +22,8 @@ import java.util.List;
 
 import app.packed.inject.Factory;
 import app.packed.inject.Key;
+import app.packed.inject.Provides;
+import app.packed.lifecycle.OnStart;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.function.InternalFunction;
@@ -58,6 +60,16 @@ public final class InternalFactory<T> {
 
     public InternalFactory<T> withLookup(Lookup lookup) {
         return new InternalFactory<T>(function.withLookup(lookup), dependencies);
+    }
+
+    /**
+     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
+     * {@link OnStart} and {@link Provides}.
+     *
+     * @return the scannable type of this factory
+     */
+    public Class<? super T> getScannableType() {
+        return function.getRawType();
     }
 
     /**

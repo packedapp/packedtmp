@@ -16,11 +16,11 @@
 package packed.internal.invokers;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collection;
-import java.util.List;
 
 import app.packed.inject.Inject;
-import packed.internal.inject.InternalDependency;
+import app.packed.inject.Provides;
+import packed.internal.inject.support.AtInjectGroup;
+import packed.internal.inject.support.AtProvidesGroup;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
@@ -29,18 +29,16 @@ import packed.internal.inject.InternalDependency;
 public class ServiceClassDescriptor<T> {
 
     /** The class this descriptor is created from. */
-    private final Class<T> clazz;
+    public final Class<T> type;
 
-    public final ProvidesSupport provides;
+    /** A group of all members annotated with {@link Provides}. */
+    public final AtProvidesGroup provides;
 
-    /** All fields annotated with {@link Inject}. */
-    public final Collection<AccessibleField<InternalDependency>> injectableFields;
-
-    /** All methods annotated with {@link Inject}. */
-    public final Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods;
+    /** A group of all members annotated with {@link Inject}. */
+    public final AtInjectGroup inject;
 
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
-    private final String simpleName;
+    public final String simpleName;
 
     /**
      * Creates a new descriptor.
@@ -60,30 +58,10 @@ public class ServiceClassDescriptor<T> {
         // Or maybe just throw it in an invoker?? The classes you register, are normally there for a reason.
         // Meaning the annotations are probablye
 
-        this.clazz = clazz;
+        this.type = clazz;
         this.simpleName = clazz.getSimpleName();
-        this.injectableFields = scanner.fieldsAtInject == null ? List.of() : List.copyOf(scanner.fieldsAtInject);
-        this.injectableMethods = scanner.methodsAtInject == null ? List.of() : List.copyOf(scanner.methodsAtInject);
         this.provides = scanner.provides.build();
-    }
-
-    /**
-     * Returns the simple name of the class.
-     *
-     * @return the simpleName of the class
-     * @see Class#getSimpleName()
-     */
-    public final String getSimpleName() {
-        return simpleName;
-    }
-
-    /**
-     * Returns the type that is mirrored
-     *
-     * @return the type that is mirrored
-     */
-    public final Class<T> getType() {
-        return clazz;
+        this.inject = scanner.inject.build();
     }
 
     /**
@@ -101,51 +79,3 @@ public class ServiceClassDescriptor<T> {
         return LookupDescriptorAccessor.get(lookup).getServiceDescriptor(type);
     }
 }
-//
-// public Key<T> getDefaultKey() {
-// // Hmmmm, this does not play well with Factory.of(SomeQualifiedServiceClass.class) <- Which ignores the qualifier....
-// // skal virke baade paa bind(Class) + bind(instance)
-// // Static @Inject method
-//
-// /** The default key that this service will be made available, unless explicitly bound to another key. */
-// // Men er det ikke her vi har Factoriet?????
-// volatile Key<T> defaultKey;
-//
-// return defaultKey;
-// }
-//
-// /**
-// * Returns whether or not the service type has any injectable fields
-// *
-// * @return whether or not the service type has any injectable fields
-// */
-// public final boolean hasInjectableFields() {
-// return !injectableFields.isEmpty();
-// }
-//
-// /**
-// * Returns whether or not the service type has any injectable methods
-// *
-// * @return whether or not the service type has any injectable methods
-// */
-// public final boolean hasInjectableMethods() {
-// return !injectableMethods.isEmpty();
-// }
-// //
-// /**
-// * Returns all injectable fields on this type.
-// *
-// * @return all injectable fields on this type
-// */
-// public final Collection<AccessibleField<InternalDependency>> injectableFields() {
-// return injectableFields;
-// }
-//
-// /**
-// * Returns all injectable methods on this type.
-// *
-// * @return all injectable methods on this type
-// */
-// public final Collection<AccessibleExecutable<List<InternalDependency>>> injectableMethods() {
-// return injectableMethods;
-// }

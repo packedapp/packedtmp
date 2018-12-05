@@ -13,55 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
+package packed.internal.inject.support;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
-import app.packed.inject.Inject;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.inject.InternalDependency;
-import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
-/** This class represents a field annotated with the {@link Inject} annotation. */
-public final class MemberScanners {
-
-    static AccessibleField<InternalDependency> createIfInjectable(MemberScanner builder, Field field, Annotation[] annotations) {
-        if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
-            InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-            checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
-            checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
-            if (builder.fieldsAtInject == null) {
-                builder.fieldsAtInject = new ArrayList<>(2);
-            }
-            AccessibleField<InternalDependency> fi = new AccessibleField<>(descriptor, builder.lookup, InternalDependency.of(descriptor));
-            builder.fieldsAtInject.add(fi);
-            return fi;
-        }
-        return null;
-    }
-
-    static AccessibleExecutable<List<InternalDependency>> createIfInjectable(MemberScanner builder, Method method, Annotation[] annotations) {
-        if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
-            InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-            if (builder.methodsAtInject == null) {
-                builder.methodsAtInject = new ArrayList<>(2);
-            }
-            AccessibleExecutable<List<InternalDependency>> fi = new AccessibleExecutable<>(descriptor, builder.lookup,
-                    InternalDependency.fromExecutable(descriptor));
-            builder.methodsAtInject.add(fi);
-            return fi;
-        }
-        return null;
-    }
-
+/**
+ *
+ */
+class Checks {
     /**
      * Checks that an annotated field is not final.
      * 
@@ -70,7 +34,7 @@ public final class MemberScanners {
      * @param annotationType
      *            the type of annotation that forced the check
      */
-    protected static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         if ((Modifier.isStatic(field.getModifiers()))) {
             throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field
                     + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
@@ -85,7 +49,7 @@ public final class MemberScanners {
      * @param annotationType
      *            the type of annotation that forced the check
      */
-    protected static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         if ((Modifier.isStatic(field.getModifiers()))) {
             throw new InvalidDeclarationException(
                     ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
@@ -97,7 +61,7 @@ public final class MemberScanners {
         }
     }
 
-    protected static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
+    static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
             Class<? extends Annotation> annotationType2) {
         return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
                 + ", to resolve remove one of the annotations.";
@@ -112,7 +76,7 @@ public final class MemberScanners {
      *            the annotation
      * @return the error message
      */
-    protected static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
         return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
                 + " or make the field non-final";
     }

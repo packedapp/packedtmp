@@ -10,6 +10,7 @@ module app.packed.base {
     exports packed.internal.inject.builder to app.packed.base.devtools;
     exports packed.internal.inject.function to app.packed.base.devtools;
     exports packed.internal.inject.runtime to app.packed.base.devtools;
+    exports packed.internal.inject.support to app.packed.base.devtools;
     exports packed.internal.invokers to app.packed.base.devtools;
     exports packed.internal.util.descriptor to app.packed.base.devtools;
     exports packed.internal.util.configurationsite to app.packed.base.devtools;

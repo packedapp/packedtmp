@@ -33,16 +33,17 @@ import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.Node;
 import packed.internal.inject.NodeMap;
 import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.runtime.InternalInjector;
+import packed.internal.inject.support.AtProvides;
+import packed.internal.inject.support.AtProvidesGroup;
 import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.LookupDescriptorAccessor;
-import packed.internal.invokers.ProvidesSupport;
-import packed.internal.invokers.ProvidesSupport.AtProvides;
 import packed.internal.invokers.ServiceClassDescriptor;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
@@ -140,7 +141,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         InternalFactory<T> f = InternalFactory.from(factory);
         BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
 
-        scan(f.function.getRawType(), node);
+        scan(f.getScannableType(), node);
 
         return bindNode(node).as(factory.getKey());
     }
@@ -298,21 +299,28 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     private void scan(Class<?> type, BuildNodeDefault<?> parent) {
         ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
 
-        ProvidesSupport ps = serviceDesc.provides;
-        if (ps.hasProvidingMembers()) {
+        AtProvidesGroup ps = serviceDesc.provides;
+        if (!ps.isEmpty()) {
+            if (parent.getBindingMode() == BindingMode.PROTOTYPE && ps.hasInstanceMembers) {
+                throw new InvalidDeclarationException("OOOPS");
+            }
+
             // First check that the class does not provide services that have already been registered
             for (Key<?> k : ps.keys.keySet()) {
                 if (privateNodeMap.containsKey(k)) {
                     throw new IllegalArgumentException("At service with key " + k + " has already been registered");
                 }
             }
+
+            // ProvidesSupport has already validated that the specified type does not have any members that provide services with
+            // the same key, so we can just add them now without checking
             for (AccessibleField<AtProvides> field : ps.fields) {
-                BuildNodeDefault<?> providedNode = parent.provide(field);
+                AbstractBuildNode<?> providedNode = parent.provide(field);
                 providedNode.as((Key) field.metadata().key);
                 privateNodeMap.put(providedNode);// put them directly
             }
             for (AccessibleExecutable<AtProvides> method : ps.methods) {
-                BuildNodeDefault<?> providedNode = parent.provide(method);
+                AbstractBuildNode<?> providedNode = parent.provide(method);
                 providedNode.as((Key) method.metadata().key);
                 privateNodeMap.put(providedNode);// put them directly
             }
