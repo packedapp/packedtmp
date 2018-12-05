@@ -117,7 +117,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) new InternalFactory0<>(supplier, getClass()).toFactory();
+        this.factory = (InternalFactory<T>) InternalFactory0.create(supplier, getClass());
     }
 
     /**

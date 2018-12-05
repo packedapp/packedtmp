@@ -26,9 +26,7 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Nullable;
-import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.factory.InternalFactory;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -36,9 +34,6 @@ import packed.internal.inject.factory.InternalFactory;
  * Instances of this this class are <b>never</b> exposed to users.
  */
 public abstract class InternalFunction<T> {
-
-    // Dependencies
-    // Key -> The key under which the factory will be register unless registered under another key
 
     //////// TYPES (Raw)
     // ExactType... -> Instance, Constructor
@@ -129,21 +124,7 @@ public abstract class InternalFunction<T> {
      * @return the new instance
      */
     @Nullable
-    public abstract T instantiate(Object[] params);
-
-    /**
-     * Converts the specified factory to an internal factory
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory convert
-     * @return the converted factory
-     */
-    public static <T> InternalFactory<T> from(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        return InjectSupport.toInternalFactory(factory);
-    }
+    public abstract T invoke(Object[] params);
 
     public InternalFunction<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
@@ -159,10 +140,6 @@ public abstract class InternalFunction<T> {
             this.objectType = requireNonNull(objectType);
             this.dependencies = requireNonNull(dependencies);
         }
-    }
-
-    public final InternalFactory<T> toFactory() {
-        return new InternalFactory<>(this);
     }
 }
 //

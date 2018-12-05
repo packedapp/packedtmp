@@ -20,7 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
+import app.packed.inject.Factory;
 import app.packed.inject.Key;
+import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.function.InternalFunction;
 
@@ -56,5 +58,19 @@ public final class InternalFactory<T> {
 
     public InternalFactory<T> withLookup(Lookup lookup) {
         return new InternalFactory<T>(function.withLookup(lookup), dependencies);
+    }
+
+    /**
+     * Converts the specified factory to an internal factory
+     * 
+     * @param <T>
+     *            the type of elements the factory produces
+     * @param factory
+     *            the factory convert
+     * @return the converted factory
+     */
+    public static <T> InternalFactory<T> from(Factory<T> factory) {
+        requireNonNull(factory, "factory is null");
+        return InjectSupport.toInternalFactory(factory);
     }
 }

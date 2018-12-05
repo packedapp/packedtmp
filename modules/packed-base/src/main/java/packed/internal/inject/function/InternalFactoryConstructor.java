@@ -50,7 +50,7 @@ public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public T instantiate(Object[] params) {
+    public T invoke(Object[] params) {
         requireNonNull(methodHandle, "internal error");
         try {
             return (T) methodHandle.invokeWithArguments(params);

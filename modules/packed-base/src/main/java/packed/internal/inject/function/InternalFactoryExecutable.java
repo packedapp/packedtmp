@@ -61,7 +61,7 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public T instantiate(Object[] params) {
+    public T invoke(Object[] params) {
         requireNonNull(methodHandle, "internal error");
         try {
             MethodHandle mh = methodHandle;

@@ -93,7 +93,7 @@ public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable T instantiate(Object[] params) {
+    public @Nullable T invoke(Object[] params) {
         switch (type) {
         case INSTANCE_GET:
             requireNonNull(instance);

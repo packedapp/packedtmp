@@ -48,7 +48,7 @@ public class InternalFactoryAssert<T> extends AbstractAssert<InternalFactoryAsse
 
     public InternalFactoryAssert<T> instantiateIs(Object expected, Object... args) {
         isNotNull();
-        T result = actual.instantiate(args);
+        T result = actual.invoke(args);
         if (!expected.equals(result)) {
             failWithMessage("\nExpecting instantiate to return '%s' but was '%s'", expected, result);
         }

@@ -39,7 +39,7 @@ public class InternalFactoryBindable<T> extends InternalFunction<T> {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public T instantiate(Object[] params) {
+    public T invoke(Object[] params) {
         return null;
     }
 }

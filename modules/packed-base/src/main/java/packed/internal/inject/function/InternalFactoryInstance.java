@@ -39,7 +39,7 @@ public final class InternalFactoryInstance<T> extends InternalFunction<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T instantiate(Object[] ignore) {
+    public T invoke(Object[] ignore) {
         return instance;
     }
 

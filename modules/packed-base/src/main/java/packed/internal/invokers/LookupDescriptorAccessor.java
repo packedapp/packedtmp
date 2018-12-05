@@ -19,8 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.inject.factory.InternalFactory;
 import packed.internal.inject.function.InternalFactoryExecutable;
+import packed.internal.inject.function.InternalFunction;
 
 /**
  * 
@@ -76,6 +77,17 @@ public final class LookupDescriptorAccessor {
     @SuppressWarnings("unchecked")
     public <T> ServiceClassDescriptor<T> getServiceDescriptor(Class<T> implementation) {
         return (ServiceClassDescriptor<T>) serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
+    }
+
+    public <T> InternalFactory<T> readable(InternalFactory<T> factory) {
+        // TODO add field...
+        if (factory.function instanceof InternalFactoryExecutable) {
+            InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory.function;
+            if (!e.hasMethodHandle()) {
+                return factory.withLookup(lookup);
+            }
+        }
+        return factory;
     }
 
     public <T> InternalFunction<T> readable(InternalFunction<T> factory) {

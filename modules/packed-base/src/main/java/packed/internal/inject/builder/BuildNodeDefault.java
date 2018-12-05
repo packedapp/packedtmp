@@ -150,7 +150,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
             }
         }
 
-        T t = fac().instantiate(params);
+        T t = fac().invoke(params);
         requireNonNull(t);
         return t;
     }
@@ -159,7 +159,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         if (parent != null) {
             InternalFactoryMember<T> ff = (InternalFactoryMember<T>) factory.function;
             if (ff.isMissingInstance()) {
-                factory = ff.withInstance(parent.getInstance(null)).toFactory();
+                factory = new InternalFactory<>(ff.withInstance(parent.getInstance(null)), factory.dependencies);
             }
         }
         return factory.function;
@@ -214,8 +214,13 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
             throw new InvalidDeclarationException("OOOPS");
         }
         Object instance = s.metadata().isStaticMember() ? null : this.instance;
-        InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
-        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory.toFactory(), this);
+        // InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(),
+        // s.varHandle(), instance);
+
+        InternalFactory<?> factory = new InternalFactory<>(
+                new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance));
+
+        BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
         bnd.setDescription(atProvides.getDescription());
         return bnd;
     }

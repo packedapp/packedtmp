@@ -72,7 +72,7 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public T instantiate(Object[] ignore) {
+    public T invoke(Object[] ignore) {
         T instance = supplier.get();
         if (!getRawType().isInstance(instance)) {
             throw new InjectionException(

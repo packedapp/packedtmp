@@ -94,7 +94,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     @Override
     public ComponentConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
-        InternalFunction<?> f = InternalFunction.from(factory).function;
+        InternalFunction<?> f = InternalFactory.from(factory).function;
         return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
 

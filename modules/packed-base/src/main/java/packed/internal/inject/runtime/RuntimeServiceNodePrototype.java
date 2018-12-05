@@ -93,6 +93,6 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
                 params[i] = providers[i].get();
             }
         }
-        return factory.instantiate(params);
+        return factory.invoke(params);
     }
 }

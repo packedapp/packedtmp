@@ -61,7 +61,7 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public R instantiate(Object[] params) {
+    public R invoke(Object[] params) {
         T t = (T) params[0];
         U u = (U) params[1];
         R instance = function.apply(t, u);
