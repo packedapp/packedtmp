@@ -192,8 +192,12 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
                 s.metadata().getAnnotatedMember().getAnnotation(Provides.class), m);
 
         AtProvides atProvides = s.metadata();
+        if (getBindingMode() == BindingMode.PROTOTYPE && !atProvides.isStaticMember()) {
+            throw new InvalidDeclarationException("OOOPS");
+        }
+        Object instance = s.metadata().isStaticMember() ? null : this.instance;
         InternalFactoryExecutable<?> factory = new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.metadata().getDependencies(),
-                m.getParameterCount(), s.methodHandle());
+                m.getParameterCount(), s.methodHandle(), instance);
         BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
         bnd.setDescription(atProvides.getDescription());
         return bnd;
@@ -204,6 +208,10 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
                 s.metadata().getAnnotatedMember().getAnnotation(Provides.class), s.descriptor());
 
         AtProvides atProvides = s.metadata();
+        if (getBindingMode() == BindingMode.PROTOTYPE && !atProvides.isStaticMember()) {
+            throw new InvalidDeclarationException("OOOPS");
+        }
+        Object instance = s.metadata().isStaticMember() ? null : this.instance;
         InternalFactoryField<?> factory = new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance);
         BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
         bnd.setDescription(atProvides.getDescription());

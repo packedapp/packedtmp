@@ -50,8 +50,8 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
     private final int numberOfMissingDependencies;
 
     public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies,
-            int numberOfMissingDependencies, MethodHandle methodHandle) {
-        super(key, dependencies, null);
+            int numberOfMissingDependencies, MethodHandle methodHandle, @Nullable Object instance) {
+        super(key, dependencies, instance);
         this.executable = executable;
         this.numberOfMissingDependencies = numberOfMissingDependencies;
         this.methodHandle = methodHandle;
@@ -70,7 +70,11 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
     public T instantiate(Object[] params) {
         requireNonNull(methodHandle, "internal error");
         try {
-            return (T) methodHandle.invokeWithArguments(params);
+            MethodHandle mh = methodHandle;
+            if (instance != null) {
+                mh = methodHandle.bindTo(instance);
+            }
+            return (T) mh.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new InjectionException("Failed to inject " + executable.descriptorTypeName(), e);
@@ -107,12 +111,12 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle);
+        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public InternalFactoryMember<T> withInstance(Object instance) {
-        throw new UnsupportedOperationException();
+        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, methodHandle, instance);
     }
 }

@@ -36,7 +36,9 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
+import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
@@ -54,13 +56,13 @@ public final class ProvidesSupport {
     /** All fields annotated with {@link Provides}. */
     public final Collection<AccessibleField<AtProvides>> fields;
 
-    /** All methods annotated with {@link Provides}. */
-    public final Collection<AccessibleExecutable<AtProvides>> methods;
+    public final boolean hasInstanceMembers;
 
     /** A set of all keys provided. */
     public final Map<Key<?>, AtProvides> keys;
 
-    public final boolean hasInstanceMembers;
+    /** All methods annotated with {@link Provides}. */
+    public final Collection<AccessibleExecutable<AtProvides>> methods;
 
     ProvidesSupport(Builder builder) {
         this.methods = builder.methods == null ? List.of() : List.copyOf(builder.methods);
@@ -73,91 +75,10 @@ public final class ProvidesSupport {
         return keys.size() > 0;
     }
 
-    public static class Builder {
-
-        private static final ProvidesSupport EMPTY = new ProvidesSupport(new Builder());
-
-        ArrayList<AccessibleField<AtProvides>> fields;
-
-        ArrayList<AccessibleExecutable<AtProvides>> methods;
-
-        HashMap<Key<?>, AtProvides> keys;
-
-        boolean hasInstanceMembers;
-
-        public ProvidesSupport build() {
-            if (fields == null && methods == null) {
-                return EMPTY;
-            }
-            // TODO check that we do not have multiple fields/methods with the same key....
-            return new ProvidesSupport(this);
-        }
-
-        AccessibleExecutable<AtProvides> forMethod(Lookup lookup, Method method, Annotation[] annotations) {
-            for (Annotation a : annotations) {
-                if (a.annotationType() == Provides.class) {
-                    InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-                    hasInstanceMembers |= !descriptor.isStatic();
-                    if (methods == null) {
-                        methods = new ArrayList<>(1);
-                        if (keys == null) {
-                            keys = new HashMap<>();
-                        }
-                    }
-                    AtProvides ap = AtProvides.from(descriptor, (Provides) a);
-                    if (Modifier.isPrivate(method.getModifiers())) {
-                        lookup = lookup.in(method.getDeclaringClass());
-                    }
-                    AccessibleExecutable<AtProvides> fi = new AccessibleExecutable<>(descriptor, lookup, ap);
-
-                    Key<?> key = fi.metadata().key;
-                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
-                        throw new InvalidDeclarationException(ErrorMessageBuilder.of(method.getDeclaringClass())
-                                .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
-                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
-                    }
-                    methods.add(fi);
-                    return fi;
-                }
-            }
-            return null;
-        }
-
-        AccessibleField<AtProvides> forField(Lookup lookup, Field field, Annotation[] annotations) {
-            for (Annotation a : annotations) {
-                if (a.annotationType() == Provides.class) {
-                    InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-                    hasInstanceMembers |= !descriptor.isStatic();
-                    if (fields == null) {
-                        fields = new ArrayList<>(1);
-                        if (keys == null) {
-                            keys = new HashMap<>();
-                        }
-                    }
-                    AtProvides ap = AtProvides.from(descriptor, (Provides) a);
-                    if (Modifier.isPrivate(field.getModifiers())) {
-                        lookup = lookup.in(field.getDeclaringClass());
-                    }
-                    AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, lookup, ap);
-
-                    Key<?> key = fi.metadata().key;
-                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
-                        throw new InvalidDeclarationException(ErrorMessageBuilder.of(field.getDeclaringClass())
-                                .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
-                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
-                    }
-                    fields.add(fi);
-                    return fi;
-                }
-            }
-            return null;
-        }
-    }
-
     /** A descriptor of the {@link Provides} annotation. */
     public static final class AtProvides {
 
-        /** The annotated member, either an {@link InternalFieldDescriptor} or ab {@link InternalMethodDescriptor}. */
+        /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
         private final InternalAnnotatedElement annotatedMember;
 
         /** The binding mode from {@link Provides#bindingMode()}. */
@@ -218,11 +139,23 @@ public final class ProvidesSupport {
             return description;
         }
 
-        public static AtProvides from(InternalMethodDescriptor method, Provides p) {
-            Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
-            Key<?> key = Key.fromTypeLiteralNullableAnnotation(method, method.getReturnTypeLiteral(), annotation);
+        /**
+         * Returns whether or not the field or method on which the annotation is present is a static field or method.
+         * 
+         * @return whether or not the field or method on which the annotation is present is a static field or method
+         */
+        public boolean isStaticMember() {
+            return annotatedMember instanceof FieldDescriptor ? ((FieldDescriptor) annotatedMember).isStatic()
+                    : ((MethodDescriptor) annotatedMember).isStatic();
+        }
 
-            return new AtProvides(method, key, p, List.of());
+        public static Optional<AtProvides> find(InternalMethodDescriptor method) {
+            for (Annotation a : method.getAnnotationsUnsafe()) {
+                if (a.annotationType() == Provides.class) {
+                    return Optional.of(read(method, (Provides) a));
+                }
+            }
+            return Optional.empty();
         }
 
         public static AtProvides from(InternalFieldDescriptor field, Provides p) {
@@ -242,13 +175,11 @@ public final class ProvidesSupport {
 
         }
 
-        public static Optional<AtProvides> find(InternalMethodDescriptor method) {
-            for (Annotation a : method.getAnnotationsUnsafe()) {
-                if (a.annotationType() == Provides.class) {
-                    return Optional.of(read(method, (Provides) a));
-                }
-            }
-            return Optional.empty();
+        public static AtProvides from(InternalMethodDescriptor method, Provides p) {
+            Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
+            Key<?> key = Key.fromTypeLiteralNullableAnnotation(method, method.getReturnTypeLiteral(), annotation);
+
+            return new AtProvides(method, key, p, List.of());
         }
 
         private static AtProvides read(InternalMethodDescriptor method, Provides provides) {
@@ -275,6 +206,87 @@ public final class ProvidesSupport {
             throw new UnsupportedOperationException();
             // return new MethodInvokerAtProvidesDescriptor(key, provides.bindingMode(), provides.description().length() == 0 ? null
             // : provides.description());
+        }
+    }
+
+    public static class Builder {
+
+        private static final ProvidesSupport EMPTY = new ProvidesSupport(new Builder());
+
+        ArrayList<AccessibleField<AtProvides>> fields;
+
+        boolean hasInstanceMembers;
+
+        HashMap<Key<?>, AtProvides> keys;
+
+        ArrayList<AccessibleExecutable<AtProvides>> methods;
+
+        public ProvidesSupport build() {
+            if (fields == null && methods == null) {
+                return EMPTY;
+            }
+            // TODO check that we do not have multiple fields/methods with the same key....
+            return new ProvidesSupport(this);
+        }
+
+        AccessibleField<AtProvides> forField(Lookup lookup, Field field, Annotation[] annotations) {
+            for (Annotation a : annotations) {
+                if (a.annotationType() == Provides.class) {
+                    InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+                    hasInstanceMembers |= !descriptor.isStatic();
+                    if (fields == null) {
+                        fields = new ArrayList<>(1);
+                        if (keys == null) {
+                            keys = new HashMap<>();
+                        }
+                    }
+                    AtProvides ap = AtProvides.from(descriptor, (Provides) a);
+                    if (Modifier.isPrivate(field.getModifiers())) {
+                        lookup = lookup.in(field.getDeclaringClass());
+                    }
+                    AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, lookup, ap);
+
+                    Key<?> key = fi.metadata().key;
+                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
+                        throw new InvalidDeclarationException(ErrorMessageBuilder.of(field.getDeclaringClass())
+                                .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
+                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
+                    }
+                    fields.add(fi);
+                    return fi;
+                }
+            }
+            return null;
+        }
+
+        AccessibleExecutable<AtProvides> forMethod(Lookup lookup, Method method, Annotation[] annotations) {
+            for (Annotation a : annotations) {
+                if (a.annotationType() == Provides.class) {
+                    InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
+                    hasInstanceMembers |= !descriptor.isStatic();
+                    if (methods == null) {
+                        methods = new ArrayList<>(1);
+                        if (keys == null) {
+                            keys = new HashMap<>();
+                        }
+                    }
+                    AtProvides ap = AtProvides.from(descriptor, (Provides) a);
+                    if (Modifier.isPrivate(method.getModifiers())) {
+                        lookup = lookup.in(method.getDeclaringClass());
+                    }
+                    AccessibleExecutable<AtProvides> fi = new AccessibleExecutable<>(descriptor, lookup, ap);
+
+                    Key<?> key = fi.metadata().key;
+                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
+                        throw new InvalidDeclarationException(ErrorMessageBuilder.of(method.getDeclaringClass())
+                                .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
+                                .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
+                    }
+                    methods.add(fi);
+                    return fi;
+                }
+            }
+            return null;
         }
     }
 

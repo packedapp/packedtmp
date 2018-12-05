@@ -13,27 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.inject.provides;
+package packed.internal.util.descriptor;
 
-import app.packed.inject.BindingMode;
-import app.packed.inject.Provides;
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 
-/** Tests {@link Provides#bindingMode()}. */
-public class ProvidesBindingModeMethodsTest {
+/**
+ *
+ */
+public interface InternalMemberDescriptor extends Member {
 
-    static class BindingModeMethods {
-
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
-        static Integer P = 1;
-
-        @Provides(bindingMode = BindingMode.SINGLETON)
-        static Short S = 1;
-
-        @Provides(bindingMode = BindingMode.LAZY)
-        public static Long l() {
-            return 0L;
-        }
-
+    /**
+     * Returns whether or not this field is a static field.
+     *
+     * @return whether or not this field is a static field
+     * @see Modifier#isStatic(int)
+     */
+    default boolean isStatic() {
+        return Modifier.isStatic(getModifiers());
     }
 
 }

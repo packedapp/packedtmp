@@ -38,13 +38,14 @@ class FindInjectableExecutable {
     static <T> InternalFactory<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);
         return new InternalFactoryExecutable<>(TypeLiteral.of(implementation), executable, InternalDependency.fromExecutable(executable),
-                executable.getParameterCount(), null);
+                executable.getParameterCount(), null, null);
     }
 
     static <T> InternalFactory<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.getRawType());
-        return new InternalFactoryExecutable<>(implementation, executable, InternalDependency.fromExecutable(executable), executable.getParameterCount(), null);
+        return new InternalFactoryExecutable<>(implementation, executable, InternalDependency.fromExecutable(executable), executable.getParameterCount(), null,
+                null);
     }
 
     private static InternalExecutableDescriptor findExecutable(Class<?> type) {
