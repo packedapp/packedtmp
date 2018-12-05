@@ -22,7 +22,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 
 /**
- *
+ * An internal factory
  */
 public abstract class InternalFactoryMember<T> extends InternalFactory<T> {
 

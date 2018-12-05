@@ -47,13 +47,10 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
     /** A special method handle that should for this factory. */
     final MethodHandle methodHandle;
 
-    private final int numberOfMissingDependencies;
-
-    public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies,
-            int numberOfMissingDependencies, MethodHandle methodHandle, @Nullable Object instance) {
+    public InternalFactoryExecutable(TypeLiteral<T> key, ExecutableDescriptor executable, List<InternalDependency> dependencies, MethodHandle methodHandle,
+            @Nullable Object instance) {
         super(key, dependencies, instance);
         this.executable = executable;
-        this.numberOfMissingDependencies = numberOfMissingDependencies;
         this.methodHandle = methodHandle;
         this.checkLowerBound = false;
     }
@@ -111,12 +108,12 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, handle, instance);
+        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), handle, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public InternalFactoryMember<T> withInstance(Object instance) {
-        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), numberOfMissingDependencies, methodHandle, instance);
+        return new InternalFactoryExecutable<>(getType(), executable, getDependencies(), methodHandle, instance);
     }
 }

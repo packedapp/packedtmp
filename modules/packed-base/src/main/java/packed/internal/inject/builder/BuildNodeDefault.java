@@ -196,8 +196,8 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
             throw new InvalidDeclarationException("OOOPS");
         }
         Object instance = s.metadata().isStaticMember() ? null : this.instance;
-        InternalFactoryExecutable<?> factory = new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.metadata().getDependencies(),
-                m.getParameterCount(), s.methodHandle(), instance);
+        InternalFactoryExecutable<?> factory = new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.metadata().getDependencies(), s.methodHandle(),
+                instance);
         BuildNodeDefault<?> bnd = new BuildNodeDefault<>(injectorBuilder, icss, atProvides.getBindingMode(), factory, this);
         bnd.setDescription(atProvides.getDescription());
         return bnd;
