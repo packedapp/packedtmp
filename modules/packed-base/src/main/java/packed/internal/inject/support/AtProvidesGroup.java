@@ -109,8 +109,8 @@ public final class AtProvidesGroup {
 
                     AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, lookup, ap);
 
-                    Key<?> key = fi.metadata().key;
-                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
+                    Key<?> key = fi.metadata.key;
+                    if (keys.putIfAbsent(key, fi.metadata) != null) {
                         throw new InvalidDeclarationException(ErrorMessageBuilder.of(field.getDeclaringClass())
                                 .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
                                 .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
@@ -139,8 +139,8 @@ public final class AtProvidesGroup {
                     }
                     AccessibleExecutable<AtProvides> fi = new AccessibleExecutable<>(descriptor, lookup, ap);
 
-                    Key<?> key = fi.metadata().key;
-                    if (keys.putIfAbsent(key, fi.metadata()) != null) {
+                    Key<?> key = fi.metadata.key;
+                    if (keys.putIfAbsent(key, fi.metadata) != null) {
                         throw new InvalidDeclarationException(ErrorMessageBuilder.of(method.getDeclaringClass())
                                 .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
                                 .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));

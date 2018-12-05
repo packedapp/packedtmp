@@ -17,6 +17,8 @@ package packed.internal.invokers;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.util.Nullable;
+
 /**
  * An accessible field, constructor or method with a metadata object.
  */
@@ -25,7 +27,8 @@ import static java.util.Objects.requireNonNull;
 public abstract class AccessibleMember<T> {
 
     /** An metadata object, can probably change to non-null */
-    private final T metadata;
+    @Nullable
+    public final T metadata;
 
     AccessibleMember() {
         this.metadata = null;
@@ -36,9 +39,5 @@ public abstract class AccessibleMember<T> {
      */
     AccessibleMember(T metadata) {
         this.metadata = requireNonNull(metadata);
-    }
-
-    public final T metadata() {
-        return metadata;
     }
 }

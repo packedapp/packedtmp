@@ -52,7 +52,7 @@ public final class LookupDescriptorAccessor {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected ServiceClassDescriptor<?> computeValue(Class<?> type) {
-            return new ServiceClassDescriptor(type, lookup);
+            return new ServiceClassDescriptor(type, lookup, MemberScanner.forService(type, lookup));
         }
     };
 

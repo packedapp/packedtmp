@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.Key;
+import app.packed.util.Nullable;
 
 /**
  *
@@ -34,15 +35,12 @@ public class NodeMap implements Iterable<Node<?>> {
 
     private final HashMap<Key<?>, Node<?>> nodes = new HashMap<>();
 
-    private final NodeMap parent;
+    /** Any parent this node map might have */
+    @Nullable
+    public final NodeMap parent;
 
     public NodeMap() {
         this.parent = null;
-    }
-
-    @Override
-    public void forEach(Consumer<? super Node<?>> action) {
-        nodes.values().forEach(action);
     }
 
     public NodeMap(NodeMap parent) {
@@ -51,6 +49,19 @@ public class NodeMap implements Iterable<Node<?>> {
 
     public boolean containsKey(Key<?> key) {
         return nodes.containsKey(key);
+    }
+
+    public List<Node<?>> copyNodes() {
+        return new ArrayList<>(nodes.values());
+    }
+
+    @Override
+    public void forEach(Consumer<? super Node<?>> action) {
+        nodes.values().forEach(action);
+    }
+
+    public Node<?> getNode(Dependency dependency) {
+        return getRecursive(dependency.getKey());
     }
 
     @SuppressWarnings("unchecked")
@@ -64,8 +75,10 @@ public class NodeMap implements Iterable<Node<?>> {
         return node;
     }
 
-    public Node<?> getNode(Dependency dependency) {
-        return getRecursive(dependency.getKey());
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<Node<?>> iterator() {
+        return nodes.values().iterator();
     }
 
     public void put(Node<?> node) {
@@ -78,22 +91,12 @@ public class NodeMap implements Iterable<Node<?>> {
         return nodes.putIfAbsent(node.getKey(), node) == null;
     }
 
-    public List<Node<?>> copyNodes() {
-        return new ArrayList<>(nodes.values());
+    public Stream<Node<?>> stream() {
+        return nodes.values().stream();
     }
 
     public void toRuntimeNodes() {
         nodes.replaceAll((k, v) -> v.toRuntimeNode());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Iterator<Node<?>> iterator() {
-        return nodes.values().iterator();
-    }
-
-    public Stream<Node<?>> stream() {
-        return nodes.values().stream();
     }
 }
 

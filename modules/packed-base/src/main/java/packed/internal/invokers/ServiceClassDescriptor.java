@@ -28,17 +28,17 @@ import packed.internal.inject.support.AtProvidesGroup;
 // Qualifier, default key...
 public class ServiceClassDescriptor<T> {
 
-    /** The class this descriptor is created from. */
-    public final Class<T> type;
+    /** A group of all members annotated with {@link Inject}. */
+    public final AtInjectGroup inject;
 
     /** A group of all members annotated with {@link Provides}. */
     public final AtProvidesGroup provides;
 
-    /** A group of all members annotated with {@link Inject}. */
-    public final AtInjectGroup inject;
-
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
     public final String simpleName;
+
+    /** The class this descriptor is created from. */
+    public final Class<T> type;
 
     /**
      * Creates a new descriptor.
@@ -47,11 +47,9 @@ public class ServiceClassDescriptor<T> {
      *            the class to create a descriptor for
      * @param lookup
      *            the lookup object used to access fields and methods
+     * @param scanner
+     *            a member scanner
      */
-    ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup) {
-        this(clazz, lookup, MemberScanner.forService(clazz, lookup));
-    }
-
     ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup, MemberScanner scanner) {
         // Do we need to store lookup??? I think yes. And then collect all annotated Fields in a list
         // We then run through each of them

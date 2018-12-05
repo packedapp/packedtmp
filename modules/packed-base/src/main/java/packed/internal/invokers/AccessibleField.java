@@ -21,14 +21,13 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
 import app.packed.inject.IllegalAccessRuntimeException;
-import app.packed.util.FieldDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** An accessible field. */
 public final class AccessibleField<T> extends AccessibleMember<T> {
 
     /** The descriptor of the field. */
-    private final InternalFieldDescriptor descriptor;
+    public final InternalFieldDescriptor descriptor;
 
     /** Whether or not the field is volatile. */
     private final boolean isVolatile;
@@ -77,15 +76,6 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
     }
 
     /**
-     * Returns the descriptor of the field.
-     * 
-     * @return the descriptor of the field
-     */
-    public FieldDescriptor descriptor() {
-        return descriptor;
-    }
-
-    /**
      * Returns the value of this field for the given instance.
      * 
      * @param instance
@@ -99,15 +89,6 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
         } else {
             return varHandle.get(instance);
         }
-    }
-
-    /**
-     * Returns whether or not the field is volatile.
-     * 
-     * @return whether or not the field is volatile
-     */
-    public boolean isVolatile() {
-        return isVolatile;
     }
 
     /**

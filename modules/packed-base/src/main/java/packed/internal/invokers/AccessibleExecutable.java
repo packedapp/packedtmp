@@ -28,11 +28,11 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
  */
 public class AccessibleExecutable<T> {
 
-    /** The descriptor of the field. */
-    private final InternalExecutableDescriptor descriptor;
+    /** The descriptor of the executable. */
+    public final InternalExecutableDescriptor descriptor;
 
     /** An metadata object, can probably change to non-null */
-    private final T metadata;
+    public final T metadata;
 
     /** The method handle of the executable. */
     private final MethodHandle methodHandle;
@@ -75,21 +75,8 @@ public class AccessibleExecutable<T> {
         this.methodHandle = requireNonNull(methodHandle);
     }
 
-    /**
-     * Returns the descriptor of the field.
-     * 
-     * @return the descriptor of the field
-     */
-    public InternalExecutableDescriptor descriptor() {
-        return descriptor;
-    }
-
     public final Object invoke(Object... arguments) throws Throwable {
         return methodHandle.invokeWithArguments(arguments);
-    }
-
-    public T metadata() {
-        return metadata;
     }
 
     public MethodHandle methodHandle() {

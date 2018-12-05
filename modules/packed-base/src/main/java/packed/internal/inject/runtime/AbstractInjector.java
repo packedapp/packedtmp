@@ -36,9 +36,6 @@ import packed.internal.invokers.ServiceClassDescriptor;
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
 
-    /** The {@link InjectionSite} class as a key */
-    public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);
-
     @Nullable
     protected <T> Node<T> findNode(Class<T> key) {
         requireNonNull(key, "key is null");
@@ -91,7 +88,7 @@ public abstract class AbstractInjector implements Injector {
         // Inject fields
         if (!descriptor.inject.fields.isEmpty()) {
             for (AccessibleField<InternalDependency> field : descriptor.inject.fields) {
-                InternalDependency dependency = field.metadata();
+                InternalDependency dependency = field.metadata;
                 Node<?> node = findNode(dependency.getKey());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);
@@ -122,7 +119,7 @@ public abstract class AbstractInjector implements Injector {
         // Inject methods
         if (!descriptor.inject.methods.isEmpty()) {
             for (AccessibleExecutable<List<InternalDependency>> method : descriptor.inject.methods) {
-                List<InternalDependency> dependencies = method.metadata();
+                List<InternalDependency> dependencies = method.metadata;
                 Object[] arguments = new Object[dependencies.size()];
                 System.out.println(arguments);
                 for (InternalDependency dependency : dependencies) {

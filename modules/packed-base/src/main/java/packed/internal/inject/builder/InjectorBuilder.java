@@ -316,12 +316,12 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
             // the same key, so we can just add them now without checking
             for (AccessibleField<AtProvides> field : ps.fields) {
                 AbstractBuildNode<?> providedNode = parent.provide(field);
-                providedNode.as((Key) field.metadata().key);
+                providedNode.as((Key) field.metadata.key);
                 privateNodeMap.put(providedNode);// put them directly
             }
             for (AccessibleExecutable<AtProvides> method : ps.methods) {
                 AbstractBuildNode<?> providedNode = parent.provide(method);
-                providedNode.as((Key) method.metadata().key);
+                providedNode.as((Key) method.metadata.key);
                 privateNodeMap.put(providedNode);// put them directly
             }
         }

@@ -45,9 +45,6 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
      */
     public RuntimeServiceNodeSingleton(AbstractBuildNode<T> buildNode, T instance, BindingMode bindingMode) {
         super(buildNode);
-        if (instance == null) {
-            System.out.println(buildNode.getKey());
-        }
         this.instance = requireNonNull(instance);
         this.bindingMode = requireNonNull(bindingMode);
     }

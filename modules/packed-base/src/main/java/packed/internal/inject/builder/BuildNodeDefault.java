@@ -196,8 +196,8 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     }
 
     public AbstractBuildNode<?> provide(AccessibleExecutable<AtProvides> s) {
-        AtProvides atProvides = s.metadata();
-        InternalMethodDescriptor m = (InternalMethodDescriptor) s.descriptor();
+        AtProvides atProvides = s.metadata;
+        InternalMethodDescriptor m = (InternalMethodDescriptor) s.descriptor;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMethod(ConfigurationSiteType.INJECTOR_PROVIDE,
                 atProvides.annotatedMember.getAnnotation(Provides.class), m);
 
@@ -209,15 +209,14 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     }
 
     public AbstractBuildNode<?> provide(AccessibleField<AtProvides> s) {
-        AtProvides atProvides = s.metadata();
+        AtProvides atProvides = s.metadata;
 
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.annotatedMember.getAnnotation(Provides.class), s.descriptor());
+                atProvides.annotatedMember.getAnnotation(Provides.class), s.descriptor);
 
-        Object instance = s.metadata().isStaticMember() ? null : this.instance;
+        Object instance = s.metadata.isStaticMember() ? null : this.instance;
 
-        InternalFactory<?> factory = new InternalFactory<>(
-                new InternalFactoryField<>(s.descriptor().getTypeLiteral(), s.descriptor(), s.varHandle(), instance));
+        InternalFactory<?> factory = new InternalFactory<>(new InternalFactoryField<>(s.descriptor.getTypeLiteral(), s.descriptor, s.varHandle(), instance));
         return new BuildNodeDefault<>(icss, atProvides, factory, this);
     }
 
