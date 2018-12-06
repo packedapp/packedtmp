@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.inject.function.InternalFactoryExecutable;
+import packed.internal.inject.function.ExecutableInvoker;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
@@ -36,7 +36,7 @@ class FindInjectableExecutable {
 
     static <T> InternalFactory<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);
-        return new InternalFactory<>(new InternalFactoryExecutable<>(TypeLiteral.of(implementation), executable, null, null),
+        return new InternalFactory<>(new ExecutableInvoker<>(TypeLiteral.of(implementation), executable, null, null),
                 InternalDependency.fromExecutable(executable));
     }
 
@@ -44,7 +44,7 @@ class FindInjectableExecutable {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.getRawType());
 
-        return new InternalFactory<>(new InternalFactoryExecutable<>(implementation, executable, null, null), InternalDependency.fromExecutable(executable));
+        return new InternalFactory<>(new ExecutableInvoker<>(implementation, executable, null, null), InternalDependency.fromExecutable(executable));
     }
 
     private static InternalExecutableDescriptor findExecutable(Class<?> type) {

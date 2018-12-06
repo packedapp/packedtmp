@@ -17,7 +17,6 @@ package packed.internal.inject.support;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 
 import app.packed.inject.BindingMode;
@@ -27,7 +26,7 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.inject.function.ExecutableInvoker;
 import packed.internal.inject.function.FieldInvoker;
 import packed.internal.util.descriptor.InternalAnnotatedElement;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -55,8 +54,8 @@ public final class AtProvides extends AbstractAccessibleMember {
     /** whether or not the field or method on which the annotation is present is a static field or method. */
     public final boolean isStaticMember;
 
-    AtProvides(AccessibleMember am, InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
-        super(am, null);
+    AtProvides(ExecutableInvoker<?> fi, InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        super(fi);
         this.annotatedMember = requireNonNull(annotatedMember);
         this.key = requireNonNull(key, "key is null");
         this.description = provides.description().length() > 0 ? provides.description() : null;
@@ -66,21 +65,14 @@ public final class AtProvides extends AbstractAccessibleMember {
                 : ((MethodDescriptor) annotatedMember).isStatic();
     }
 
-    AtProvides(AccessibleMember am, FieldInvoker<?> fi, InternalFieldDescriptor annotatedMember, Key<?> key, Provides provides) {
-        super(null, fi);
+    AtProvides(FieldInvoker<?> fi, InternalFieldDescriptor annotatedMember, Key<?> key, Provides provides) {
+        super(fi);
         this.annotatedMember = requireNonNull(annotatedMember);
         this.key = requireNonNull(key, "key is null");
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.bindingMode = provides.bindingMode();
         this.dependencies = List.of();
         this.isStaticMember = annotatedMember.isStatic();
-    }
-
-    static AtProvides from(AccessibleMember am, InternalMethodDescriptor method, Provides p) {
-        Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
-        Key<?> key = Key.fromTypeLiteralNullableAnnotation(method, method.getReturnTypeLiteral(), annotation);
-
-        return new AtProvides(am, method, key, p, List.of());
     }
 
     // Extract key

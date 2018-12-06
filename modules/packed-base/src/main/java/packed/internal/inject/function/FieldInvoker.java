@@ -153,3 +153,11 @@ public final class FieldInvoker<T> extends InternalFactoryMember<T> {
         return new FieldInvoker<>(getType(), field, handle, instance);
     }
 }
+/**
+ * Returns the value of this field for the given instance.
+ * 
+ * @param instance
+ *            the instance for which to return the value
+ * @return the value of this field for the specified instance
+ * @see VarHandle#get(Object...)
+ */

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.inject.function.InternalFactoryExecutable;
+import packed.internal.inject.function.ExecutableInvoker;
 import packed.internal.inject.function.InternalFunction;
 
 /**
@@ -80,8 +80,8 @@ public final class LookupDescriptorAccessor {
 
     public <T> InternalFunction<T> readable(InternalFunction<T> factory) {
         // TODO add field...
-        if (factory instanceof InternalFactoryExecutable) {
-            InternalFactoryExecutable<T> e = (InternalFactoryExecutable<T>) factory;
+        if (factory instanceof ExecutableInvoker) {
+            ExecutableInvoker<T> e = (ExecutableInvoker<T>) factory;
             if (!e.hasMethodHandle()) {
                 return e.withLookup(lookup);
             }

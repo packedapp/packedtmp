@@ -22,13 +22,9 @@ import packed.internal.inject.function.InternalFactoryMember;
  */
 public class AbstractAccessibleMember {
 
-    @Deprecated
-    public final AccessibleMember am;
+    public final InternalFactoryMember<?> ifm;
 
-    public InternalFactoryMember<?> ifm;
-
-    AbstractAccessibleMember(AccessibleMember am, InternalFactoryMember<?> ifm) {
-        this.am = am;
+    AbstractAccessibleMember(InternalFactoryMember<?> ifm) {
         this.ifm = ifm;
     }
 }

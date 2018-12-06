@@ -28,6 +28,7 @@ import java.util.Map;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.inject.function.ExecutableInvoker;
 import packed.internal.inject.function.FieldInvoker;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -91,15 +92,10 @@ public final class AtProvidesGroup {
                     Key<?> key = Key.fromField(field);
 
                     InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-
-                    FieldInvoker<?> fii = new FieldInvoker<>(descriptor);
-
                     hasInstanceMembers |= !descriptor.isStatic();
 
-                    if (Modifier.isPrivate(field.getModifiers())) {
-                        lookup = lookup.in(field.getDeclaringClass());
-                    }
-                    AtProvides ap = new AtProvides(null, fii.withLookup(lookup), descriptor, key, (Provides) a);
+                    FieldInvoker<?> fii = new FieldInvoker<>(descriptor).withLookup(lookup);
+                    AtProvides ap = new AtProvides(fii, descriptor, key, (Provides) a);
 
                     // Check this
                     // if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
@@ -128,17 +124,20 @@ public final class AtProvidesGroup {
         public AtProvides addIfAnnotated(Lookup lookup, Method method, Annotation[] annotations) {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
+                    Key<?> key = Key.fromMethodReturnType(method);
+
                     InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
                     hasInstanceMembers |= !descriptor.isStatic();
+
+                    ExecutableInvoker<?> fii = new ExecutableInvoker<Object>(descriptor).withLookup(lookup);
 
                     if (Modifier.isPrivate(method.getModifiers())) {
                         lookup = lookup.in(method.getDeclaringClass());
                     }
-                    AccessibleExecutable fi = new AccessibleExecutable(descriptor, lookup);
 
-                    AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
+                    AtProvides ap = new AtProvides(fii, descriptor, key, (Provides) a, List.of());
 
-                    Key<?> key = ap.key;
+                    // AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
 
                     if (methods == null) {
                         methods = new ArrayList<>(1);
