@@ -25,7 +25,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalFactory;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.function.InternalFactoryExecutable;
 import packed.internal.inject.function.InternalFactoryField;
 import packed.internal.inject.function.InternalFactoryMember;
@@ -39,6 +39,7 @@ import packed.internal.invokers.AccessibleExecutable;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
@@ -55,36 +56,27 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
-    private InternalFunction<T> factory;
+    private InternalFunction<T> function;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable
     private T instance;
 
-    private BuildNodeDefault<?> parent;
+    /** The parent, if this node is the result of a member annotated with {@link Provides}. */
+    private final BuildNodeDefault<?> parent;
 
-    BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory,
-            BuildNodeDefault<?> parent) {
-        super(injectorBuilder, configurationSite, factory.dependencies);
-        this.parent = parent;
-        this.factory = requireNonNull(factory, "factory is null").function;
-        this.bindingMode = requireNonNull(bindingMode);
-        if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
-            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
-        }
-    }
-
-    BuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFactory<T> factory, BuildNodeDefault<?> parent) {
+    BuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory, BuildNodeDefault<?> parent) {
         super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
         this.parent = parent;
-        this.factory = requireNonNull(factory, "factory is null").function;
+        this.function = requireNonNull(factory, "factory is null");
         this.bindingMode = atProvides.bindingMode;
         setDescription(atProvides.description);
     }
 
-    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFactory<T> factory) {
-        super(injectorBuilder, configurationSite, factory.dependencies);
-        this.factory = requireNonNull(factory, "factory is null").function;
+    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory,
+            List<InternalDependency> dependencies) {
+        super(injectorBuilder, configurationSite, dependencies);
+        this.function = requireNonNull(factory, "factory is null");
         this.parent = null;
         this.bindingMode = requireNonNull(bindingMode);
         if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
@@ -112,7 +104,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
         this.bindingMode = BindingMode.SINGLETON;
-        this.factory = null;
+        this.function = null;
     }
 
     /** {@inheritDoc} */
@@ -165,12 +157,12 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     private InternalFunction<T> fac() {
         if (parent != null) {
-            InternalFactoryMember<T> ff = (InternalFactoryMember<T>) factory;
+            InternalFactoryMember<T> ff = (InternalFactoryMember<T>) function;
             if (ff.isMissingInstance()) {
-                factory = ff.withInstance(parent.getInstance(null));
+                function = ff.withInstance(parent.getInstance(null));
             }
         }
-        return factory;
+        return function;
     }
 
     /** {@inheritDoc} */
@@ -182,7 +174,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         }
 
         if (parent == null || parent.getBindingMode() == BindingMode.SINGLETON || parent.instance != null
-                || (factory instanceof InternalFactoryMember && !((InternalFactoryMember<?>) factory).isMissingInstance())) {
+                || (function instanceof InternalFactoryMember && !((InternalFactoryMember<?>) function).isMissingInstance())) {
             if (bindingMode == BindingMode.PROTOTYPE) {
                 return new RuntimeServiceNodePrototype<>(this, fac());
             } else {
@@ -195,33 +187,29 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     }
 
-    public AbstractBuildNode<?> provide(AccessibleExecutable<AtProvides> s) {
-        AtProvides atProvides = s.metadata;
-        InternalMethodDescriptor m = (InternalMethodDescriptor) s.descriptor;
+    public AbstractBuildNode<?> provideMethod(AtProvides atProvides) {
+        InternalMethodDescriptor m = (InternalMethodDescriptor) atProvides.annotatedMember;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMethod(ConfigurationSiteType.INJECTOR_PROVIDE,
                 atProvides.annotatedMember.getAnnotation(Provides.class), m);
 
-        Object instance = atProvides.isStaticMember() ? null : this.instance;
-
-        InternalFactory<?> factory = new InternalFactory<>(new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, s.methodHandle(), instance),
-                atProvides.dependencies);
-        return new BuildNodeDefault<>(icss, atProvides, factory, this);
+        Object instance = atProvides.isStaticMember ? null : this.instance;
+        return new BuildNodeDefault<>(icss, atProvides,
+                new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, ((AccessibleExecutable<?>) atProvides.am).methodHandle(), instance), this);
     }
 
-    public AbstractBuildNode<?> provide(AccessibleField<AtProvides> s) {
-        AtProvides atProvides = s.metadata;
-
+    public AbstractBuildNode<?> provideField(AtProvides atProvides) {
+        InternalFieldDescriptor m = (InternalFieldDescriptor) atProvides.annotatedMember;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.annotatedMember.getAnnotation(Provides.class), s.descriptor);
+                atProvides.annotatedMember.getAnnotation(Provides.class), m);
 
-        Object instance = s.metadata.isStaticMember() ? null : this.instance;
+        Object instance = atProvides.isStaticMember ? null : this.instance;
 
-        InternalFactory<?> factory = new InternalFactory<>(new InternalFactoryField<>(s.descriptor.getTypeLiteral(), s.descriptor, s.varHandle(), instance));
-        return new BuildNodeDefault<>(icss, atProvides, factory, this);
+        return new BuildNodeDefault<>(icss, atProvides,
+                new InternalFactoryField<>(m.getTypeLiteral(), m, ((AccessibleField<?>) atProvides.am).varHandle(), instance), this);
     }
 
     @Override
     public final String toString() {
-        return factory == null ? String.valueOf(instance) : factory.toString();
+        return function == null ? String.valueOf(instance) : function.toString();
     }
 }

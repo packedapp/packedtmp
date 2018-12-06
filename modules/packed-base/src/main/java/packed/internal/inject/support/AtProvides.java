@@ -28,12 +28,13 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.invokers.AccessibleMember;
 import packed.internal.util.descriptor.InternalAnnotatedElement;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** A descriptor of the {@link Provides} annotation. */
-public final class AtProvides {
+public final class AtProvides extends AbstractAccessibleMember {
 
     /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
     public final InternalAnnotatedElement annotatedMember;
@@ -51,28 +52,25 @@ public final class AtProvides {
     /** The key under which the provided service will be made available. */
     public final Key<?> key;
 
-    AtProvides(InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+    /** whether or not the field or method on which the annotation is present is a static field or method. */
+    public final boolean isStaticMember;
+
+    AtProvides(AccessibleMember<?> am, InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        super(am);
         this.annotatedMember = requireNonNull(annotatedMember);
         this.key = requireNonNull(key, "key is null");
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.bindingMode = provides.bindingMode();
         this.dependencies = requireNonNull(dependencies);
+        this.isStaticMember = annotatedMember instanceof FieldDescriptor ? ((FieldDescriptor) annotatedMember).isStatic()
+                : ((MethodDescriptor) annotatedMember).isStatic();
     }
 
-    /**
-     * Returns whether or not the field or method on which the annotation is present is a static field or method.
-     * 
-     * @return whether or not the field or method on which the annotation is present is a static field or method
-     */
-    public boolean isStaticMember() {
-        return annotatedMember instanceof FieldDescriptor ? ((FieldDescriptor) annotatedMember).isStatic() : ((MethodDescriptor) annotatedMember).isStatic();
-    }
-
-    public static AtProvides from(InternalFieldDescriptor field, Provides p) {
+    static AtProvides from(AccessibleMember<?> am, InternalFieldDescriptor field, Provides p) {
         Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(field, field.getTypeLiteral(), annotation);
 
-        return new AtProvides(field, key, p, List.of());
+        return new AtProvides(am, field, key, p, List.of());
 
         // Extract key
         // Men vi skal jo have informationer om hvorfor
@@ -85,11 +83,11 @@ public final class AtProvides {
 
     }
 
-    public static AtProvides from(InternalMethodDescriptor method, Provides p) {
+    static AtProvides from(AccessibleMember<?> am, InternalMethodDescriptor method, Provides p) {
         Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(method, method.getReturnTypeLiteral(), annotation);
 
-        return new AtProvides(method, key, p, List.of());
+        return new AtProvides(am, method, key, p, List.of());
     }
 
     // public static Optional<AtProvides> find(InternalMethodDescriptor method) {

@@ -21,11 +21,10 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Provides;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.support.AtInject;
 import packed.internal.inject.support.AtInjectGroup;
 import packed.internal.inject.support.AtProvidesGroup;
 
@@ -66,7 +65,7 @@ class MemberScanner {
                 Annotation[] annotations = method.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    AccessibleExecutable<List<InternalDependency>> fInject = inject.createIfInjectable(lookup, method, annotations);
+                    AtInject fInject = inject.createIfInjectable(lookup, method, annotations);
 
                     provides.addIfAnnotated(lookup, method, annotations);
 
@@ -88,7 +87,7 @@ class MemberScanner {
                 Annotation[] annotations = field.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    AccessibleField<InternalDependency> fInject = inject.createIfInjectable(lookup, field, annotations);
+                    AtInject fInject = inject.createIfInjectable(lookup, field, annotations);
 
                     provides.addIfAnnotated(lookup, field, annotations);
 

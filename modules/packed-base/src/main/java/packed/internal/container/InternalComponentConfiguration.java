@@ -20,13 +20,12 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import app.packed.container.ComponentConfiguration;
-import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalFactory;
+import packed.internal.inject.InjectSupport;
 import packed.internal.inject.builder.BuildNodeDefault;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.inject.function.InternalFunction;
@@ -59,18 +58,18 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     /** The parent of this configuration, or null for the root component. */
     final @Nullable InternalComponentConfiguration<?> parent;
 
-    /**
-     * @param containerBuilder
-     * @param configurationSite
-     * @param factory
-     * @param bindingMode
-     */
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
-            @Nullable InternalComponentConfiguration<?> parent, InternalFactory<T> factory) {
-        super(containerBuilder, configurationSite, BindingMode.SINGLETON, factory);
-        this.parent = parent;
-        this.initializationThread = Thread.currentThread();
-    }
+    // /**
+    // * @param containerBuilder
+    // * @param configurationSite
+    // * @param factory
+    // * @param bindingMode
+    // */
+    // public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
+    // @Nullable InternalComponentConfiguration<?> parent, InternalFactory<T> factory) {
+    // super(containerBuilder, configurationSite, BindingMode.SINGLETON, factory.function, factory.dependencies);
+    // this.parent = parent;
+    // this.initializationThread = Thread.currentThread();
+    // }
 
     /**
      * @param containerBuilder
@@ -94,7 +93,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     @Override
     public ComponentConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
-        InternalFunction<?> f = InternalFactory.from(factory).function;
+        InternalFunction<?> f = InjectSupport.toInternalFunction(factory);
         return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
 
@@ -206,14 +205,15 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     /** A special build node that is used for mixins. */
     static class MixinBuildNode extends BuildNodeDefault<Object> {
 
-        /**
-         * @param injectorBuilder
-         * @param configurationSite
-         * @param factory
-         */
-        public MixinBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, InternalFactory<Object> factory) {
-            super(injectorBuilder, configurationSite, BindingMode.SINGLETON, factory);
-        }
+        // /**
+        // * @param injectorBuilder
+        // * @param configurationSite
+        // * @param factory
+        // */
+        // public MixinBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite,
+        // InternalFactory<Object> factory) {
+        // super(injectorBuilder, configurationSite, BindingMode.SINGLETON, factory.function, factory.dependencies);
+        // }
 
         /**
          * @param injectorConfiguration

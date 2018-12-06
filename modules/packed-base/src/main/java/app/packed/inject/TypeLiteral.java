@@ -31,7 +31,7 @@ import java.util.Optional;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.InternalFactory;
+import packed.internal.inject.function.InternalFunction;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
@@ -66,12 +66,6 @@ public abstract class TypeLiteral<T> {
 
             /** {@inheritDoc} */
             @Override
-            protected <T> InternalFactory<T> toInternalFactory(Factory<T> factory) {
-                return factory.factory;
-            }
-
-            /** {@inheritDoc} */
-            @Override
             protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
                 TypeLiteral<?> tl = new TypeLiteral.CanonicalizedTypeLiteral<>(type);
                 return Key.fromTypeLiteralNullableAnnotation(type, tl, qualifier);
@@ -81,6 +75,11 @@ public abstract class TypeLiteral<T> {
             @Override
             protected TypeLiteral<?> toTypeLiteral(Type type) {
                 return new CanonicalizedTypeLiteral<>(type);
+            }
+
+            @Override
+            protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
+                return factory.factory.function;
             }
         });
     }

@@ -28,10 +28,6 @@ import java.util.function.Supplier;
 
 import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
-import packed.internal.inject.InternalFactory;
-import packed.internal.inject.function.InternalFactory0;
-import packed.internal.inject.function.InternalFactory1;
-import packed.internal.inject.function.InternalFactory2;
 import packed.internal.inject.function.InternalFactoryInstance;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -83,7 +79,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) InternalFactory2.create(function, getClass());
+        this.factory = (InternalFactory<T>) FunctionalInterfaces.create2(function, getClass());
     }
 
     /**
@@ -95,7 +91,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) InternalFactory1.create(function, getClass());
+        this.factory = (InternalFactory<T>) FunctionalInterfaces.create1(function, getClass());
     }
 
     /**
@@ -117,7 +113,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) InternalFactory0.create(supplier, getClass());
+        this.factory = (InternalFactory<T>) FunctionalInterfaces.create0(supplier, getClass());
     }
 
     /**
@@ -187,7 +183,7 @@ public class Factory<T> {
      */
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new Factory<>(factory.withLookup(lookup));
+        return new Factory<>(new InternalFactory<T>(factory.function.withLookup(lookup), factory.dependencies));
     }
 
     /**
@@ -269,7 +265,7 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(new InternalFactory<>(InternalFactoryInstance.of(instance)));
+        return new Factory<>(new InternalFactory<>(InternalFactoryInstance.of(instance), List.of()));
     }
 }
 //

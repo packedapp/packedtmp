@@ -20,28 +20,13 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.util.function.BiFunction;
 
-import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalFactory;
 
 /** An internal factory for {@link Factory2}. */
 public class InternalFactory2<T, U, R> extends InternalFunction<R> {
-
-    /** A cache of function factory definitions. */
-    static final ClassValue<FunctionalSignature> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected FunctionalSignature computeValue(Class<?> type) {
-            return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    InternalDependency.fromTypeVariables(Factory2.class, (Class) type, 0, 1));
-        }
-    };
 
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
@@ -49,12 +34,6 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
     public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral) {
         super(typeLiteral);
         this.function = requireNonNull(function);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> getLowerBound() {
-        return Object.class; // The raw bifunction return objects
     }
 
     /** {@inheritDoc} */
@@ -73,7 +52,4 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
         return instance;
     }
 
-    public static <T> InternalFactory<T> create(BiFunction<?, ?, ? extends T> supplier, Class<?> factory2Type) {
-        throw new UnsupportedOperationException();
-    }
 }

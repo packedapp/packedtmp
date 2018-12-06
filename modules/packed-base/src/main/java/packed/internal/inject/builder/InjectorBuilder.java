@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
@@ -35,14 +36,13 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalFactory;
+import packed.internal.inject.InjectSupport;
 import packed.internal.inject.Node;
 import packed.internal.inject.NodeMap;
+import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.inject.support.AtProvides;
 import packed.internal.inject.support.AtProvidesGroup;
-import packed.internal.invokers.AccessibleExecutable;
-import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.LookupDescriptorAccessor;
 import packed.internal.invokers.ServiceClassDescriptor;
 import packed.internal.util.AbstractConfiguration;
@@ -134,14 +134,17 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final <T> ServiceConfiguration<T> bindFactory(BindingMode mode, Factory<T> factory) {
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-        InternalFactory<T> f = InternalFactory.from(factory);
-        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, f = accessor.readable(f));
 
-        scan(f.getScannableType(), node);
+        InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
+
+        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, accessor.readable(func), (List) factory.getDependencies());
+
+        scan(func.getRawType(), node);
 
         return bindNode(node).as(factory.getKey());
     }
@@ -314,14 +317,14 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
             // ProvidesSupport has already validated that the specified type does not have any members that provide services with
             // the same key, so we can just add them now without checking
-            for (AccessibleField<AtProvides> field : ps.fields) {
-                AbstractBuildNode<?> providedNode = parent.provide(field);
-                providedNode.as((Key) field.metadata.key);
+            for (AtProvides field : ps.fields) {
+                AbstractBuildNode<?> providedNode = parent.provideField(field);
+                providedNode.as((Key) field.key);
                 privateNodeMap.put(providedNode);// put them directly
             }
-            for (AccessibleExecutable<AtProvides> method : ps.methods) {
-                AbstractBuildNode<?> providedNode = parent.provide(method);
-                providedNode.as((Key) method.metadata.key);
+            for (AtProvides method : ps.methods) {
+                AbstractBuildNode<?> providedNode = parent.provideMethod(method);
+                providedNode.as((Key) method.key);
                 privateNodeMap.put(providedNode);// put them directly
             }
         }

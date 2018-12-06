@@ -87,12 +87,6 @@ public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> getLowerBound() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public @Nullable T invoke(Object[] params) {
         switch (type) {
         case INSTANCE_GET:

@@ -19,13 +19,11 @@ import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
 
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -83,10 +81,6 @@ public abstract class InternalFunction<T> {
         return instance;
     }
 
-    public Class<?> getLowerBound() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns the raw type of objects this factory creates.
      *
@@ -118,25 +112,4 @@ public abstract class InternalFunction<T> {
     public InternalFunction<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
     }
-
-    static class FunctionalSignature {
-
-        final List<InternalDependency> dependencies;
-
-        final TypeLiteral<?> objectType;
-
-        FunctionalSignature(TypeLiteral<?> objectType, List<InternalDependency> dependencies) {
-            this.objectType = requireNonNull(objectType);
-            this.dependencies = requireNonNull(dependencies);
-        }
-    }
 }
-//
-/// **
-// * @param lookup
-// * the lookup object to test against
-// * @return whether or not the this factory can create using the specified lookup object
-// */
-// public boolean isAccessibleWith(Lookup lookup) {
-// return true;
-// }

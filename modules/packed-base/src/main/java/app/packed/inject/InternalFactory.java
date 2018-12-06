@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Key;
-import app.packed.inject.Provides;
 import app.packed.lifecycle.OnStart;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.function.InternalFunction;
 
 /**
  *
  */
-public final class InternalFactory<T> {
+final class InternalFactory<T> {
 
     /** A list of all of this factory's dependencies. */
     public final List<InternalDependency> dependencies;
@@ -39,10 +36,6 @@ public final class InternalFactory<T> {
 
     /** The key that this factory will be registered under by default with an injector. */
     public final Key<T> key;
-
-    public InternalFactory(InternalFunction<T> function) {
-        this(function, List.of());
-    }
 
     public InternalFactory(InternalFunction<T> function, List<InternalDependency> dependencies) {
         this.key = function.typeLiteral.toKey();
@@ -56,10 +49,6 @@ public final class InternalFactory<T> {
         this.function = requireNonNull(function);
     }
 
-    public InternalFactory<T> withLookup(Lookup lookup) {
-        return new InternalFactory<T>(function.withLookup(lookup), dependencies);
-    }
-
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
      * {@link OnStart} and {@link Provides}.
@@ -68,19 +57,5 @@ public final class InternalFactory<T> {
      */
     public Class<? super T> getScannableType() {
         return function.getRawType();
-    }
-
-    /**
-     * Converts the specified factory to an internal factory
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory convert
-     * @return the converted factory
-     */
-    public static <T> InternalFactory<T> from(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        return InjectSupport.toInternalFactory(factory);
     }
 }

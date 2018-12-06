@@ -13,27 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.inject.support;
 
-import app.packed.inject.TypeLiteral;
-import app.packed.util.Nullable;
+import static java.util.Objects.requireNonNull;
+
+import packed.internal.invokers.AccessibleMember;
 
 /**
  *
  */
-// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class InternalFactoryBindable<T> extends InternalFunction<T> {
+public class AbstractAccessibleMember {
 
-    InternalFunction<T> wrapping;
+    public final AccessibleMember<?> am;
 
-    public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public T invoke(Object[] params) {
-        return null;
+    AbstractAccessibleMember(AccessibleMember<?> am) {
+        this.am = requireNonNull(am);
     }
 }

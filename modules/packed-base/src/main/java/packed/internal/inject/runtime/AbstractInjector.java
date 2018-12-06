@@ -18,7 +18,6 @@ package packed.internal.inject.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Optional;
 
 import app.packed.container.Component;
@@ -29,7 +28,7 @@ import app.packed.inject.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.Node;
-import packed.internal.invokers.AccessibleExecutable;
+import packed.internal.inject.support.AtInject;
 import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.ServiceClassDescriptor;
 
@@ -87,8 +86,9 @@ public abstract class AbstractInjector implements Injector {
     protected final void injectMembers(ServiceClassDescriptor<?> descriptor, Object instance, @Nullable Component component) {
         // Inject fields
         if (!descriptor.inject.fields.isEmpty()) {
-            for (AccessibleField<InternalDependency> field : descriptor.inject.fields) {
-                InternalDependency dependency = field.metadata;
+            for (AtInject atInject : descriptor.inject.fields) {
+                InternalDependency dependency = atInject.dependencies.get(0);
+                AccessibleField<?> field = (AccessibleField<?>) atInject.am;
                 Node<?> node = findNode(dependency.getKey());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);
@@ -118,11 +118,10 @@ public abstract class AbstractInjector implements Injector {
 
         // Inject methods
         if (!descriptor.inject.methods.isEmpty()) {
-            for (AccessibleExecutable<List<InternalDependency>> method : descriptor.inject.methods) {
-                List<InternalDependency> dependencies = method.metadata;
-                Object[] arguments = new Object[dependencies.size()];
+            for (AtInject method : descriptor.inject.methods) {
+                Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(arguments);
-                for (InternalDependency dependency : dependencies) {
+                for (InternalDependency dependency : method.dependencies) {
                     Node<?> node = findNode(dependency.getKey());
                     System.out.println(node);
 

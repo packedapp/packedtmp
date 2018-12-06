@@ -52,12 +52,6 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
         this.checkLowerBound = false;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<T> getLowerBound() {
-        throw new UnsupportedOperationException();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     @Nullable

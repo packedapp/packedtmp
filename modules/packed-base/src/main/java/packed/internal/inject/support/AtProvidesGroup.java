@@ -44,7 +44,7 @@ public final class AtProvidesGroup {
     private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
 
     /** All fields annotated with {@link Provides}. */
-    public final List<AccessibleField<AtProvides>> fields;
+    public final List<AtProvides> fields;
 
     /** Whether or not there are any non-static fields or methods. */
     public final boolean hasInstanceMembers;
@@ -53,7 +53,7 @@ public final class AtProvidesGroup {
     public final Map<Key<?>, AtProvides> keys;
 
     /** All methods annotated with {@link Provides}. */
-    public final List<AccessibleExecutable<AtProvides>> methods;
+    public final List<AtProvides> methods;
 
     private AtProvidesGroup(Builder builder) {
         this.methods = builder.methods == null ? List.of() : List.copyOf(builder.methods);
@@ -75,7 +75,7 @@ public final class AtProvidesGroup {
     public static class Builder {
 
         /** All fields annotated with {@link Provides}. */
-        private ArrayList<AccessibleField<AtProvides>> fields;
+        private ArrayList<AtProvides> fields;
 
         /** Whether or not there are any non-static fields or methods. */
         private boolean hasInstanceMembers;
@@ -84,9 +84,9 @@ public final class AtProvidesGroup {
         private HashMap<Key<?>, AtProvides> keys;
 
         /** All methods annotated with {@link Provides}. */
-        private ArrayList<AccessibleExecutable<AtProvides>> methods;
+        private ArrayList<AtProvides> methods;
 
-        public AccessibleField<AtProvides> addIfAnnotated(Lookup lookup, Field field, Annotation[] annotations) {
+        public AtProvides addIfAnnotated(Lookup lookup, Field field, Annotation[] annotations) {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
                     InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
@@ -97,32 +97,32 @@ public final class AtProvidesGroup {
                             keys = new HashMap<>();
                         }
                     }
-                    AtProvides ap = AtProvides.from(descriptor, (Provides) a);
                     if (Modifier.isPrivate(field.getModifiers())) {
                         lookup = lookup.in(field.getDeclaringClass());
                     }
+                    AccessibleField<?> fi = new AccessibleField<>(descriptor, lookup);
+
+                    AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
 
                     // Check this
                     // if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
                     // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
                     // }
 
-                    AccessibleField<AtProvides> fi = new AccessibleField<>(descriptor, lookup, ap);
-
-                    Key<?> key = fi.metadata.key;
-                    if (keys.putIfAbsent(key, fi.metadata) != null) {
+                    Key<?> key = ap.key;
+                    if (keys.putIfAbsent(key, ap) != null) {
                         throw new InvalidDeclarationException(ErrorMessageBuilder.of(field.getDeclaringClass())
                                 .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
                                 .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
                     }
-                    fields.add(fi);
-                    return fi;
+                    fields.add(ap);
+                    return ap;
                 }
             }
             return null;
         }
 
-        public AccessibleExecutable<AtProvides> addIfAnnotated(Lookup lookup, Method method, Annotation[] annotations) {
+        public AtProvides addIfAnnotated(Lookup lookup, Method method, Annotation[] annotations) {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
                     InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
@@ -133,20 +133,21 @@ public final class AtProvidesGroup {
                             keys = new HashMap<>();
                         }
                     }
-                    AtProvides ap = AtProvides.from(descriptor, (Provides) a);
                     if (Modifier.isPrivate(method.getModifiers())) {
                         lookup = lookup.in(method.getDeclaringClass());
                     }
-                    AccessibleExecutable<AtProvides> fi = new AccessibleExecutable<>(descriptor, lookup, ap);
+                    AccessibleExecutable<?> fi = new AccessibleExecutable<>(descriptor, lookup);
 
-                    Key<?> key = fi.metadata.key;
-                    if (keys.putIfAbsent(key, fi.metadata) != null) {
+                    AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
+
+                    Key<?> key = ap.key;
+                    if (keys.putIfAbsent(key, ap) != null) {
                         throw new InvalidDeclarationException(ErrorMessageBuilder.of(method.getDeclaringClass())
                                 .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
                                 .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
                     }
-                    methods.add(fi);
-                    return fi;
+                    methods.add(ap);
+                    return ap;
                 }
             }
             return null;

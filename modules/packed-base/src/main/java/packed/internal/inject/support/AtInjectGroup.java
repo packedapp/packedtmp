@@ -37,10 +37,10 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 public final class AtInjectGroup {
 
     /** All fields annotated with {@link Inject}. */
-    public final List<AccessibleField<InternalDependency>> fields;
+    public final List<AtInject> fields;
 
     /** All non-static methods annotated with {@link Inject}. */
-    public final List<AccessibleExecutable<List<InternalDependency>>> methods;
+    public final List<AtInject> methods;
 
     /** An empty group. */
     private static final AtInjectGroup EMPTY = new AtInjectGroup(new Builder());
@@ -53,38 +53,43 @@ public final class AtInjectGroup {
     public static class Builder {
 
         /** All fields annotated with {@link Inject}. */
-        ArrayList<AccessibleField<InternalDependency>> fields;
+        ArrayList<AtInject> fields;
 
         /** All non-static methods annotated with {@link Inject}. */
-        ArrayList<AccessibleExecutable<List<InternalDependency>>> methods;
+        ArrayList<AtInject> methods;
 
         @Nullable
-        public AccessibleField<InternalDependency> createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
+        public AtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
                 Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
                 Checks.checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
-                AccessibleField<InternalDependency> fi = new AccessibleField<>(descriptor, lookup, InternalDependency.of(descriptor));
+                AccessibleField<InternalDependency> fi = new AccessibleField<>(descriptor, lookup);
+
+                AtInject ai = new AtInject(fi, InternalDependency.of(descriptor));
+
                 if (fields == null) {
                     fields = new ArrayList<>(2);
                 }
-                fields.add(fi);
-                return fi;
+                fields.add(ai);
+                return ai;
             }
             return null;
         }
 
         @Nullable
-        public AccessibleExecutable<List<InternalDependency>> createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
+        public AtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-                AccessibleExecutable<List<InternalDependency>> fi = new AccessibleExecutable<>(descriptor, lookup,
-                        InternalDependency.fromExecutable(descriptor));
+
+                AccessibleExecutable<List<InternalDependency>> fi = new AccessibleExecutable<>(descriptor, lookup);
+
+                AtInject ai = new AtInject(fi, InternalDependency.fromExecutable(descriptor));
                 if (methods == null) {
                     methods = new ArrayList<>(2);
                 }
-                methods.add(fi);
-                return fi;
+                methods.add(ai);
+                return ai;
             }
             return null;
         }

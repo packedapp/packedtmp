@@ -29,7 +29,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalFactory;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -78,7 +77,8 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
     @Override
     public <T> ComponentConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return install0(InternalFactory.from(factory));
+        throw new UnsupportedOperationException();
+        // return install0(InternalFactory.from(factory));
     }
 
     /** {@inheritDoc} */
@@ -109,14 +109,14 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         return configuration;
     }
 
-    private <T> InternalComponentConfiguration<T> install0(InternalFactory<T> factory) {
-        InternalFactory<T> f = factory;
-        f = accessor.readable(factory);
-        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), root, f);
-        bindNode(icc).as(factory.key);
-        return install0(icc);
-    }
+    // private <T> InternalComponentConfiguration<T> install0(InternalFactory<T> factory) {
+    // InternalFactory<T> f = factory;
+    // f = accessor.readable(factory);
+    // InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
+    // getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), root, f);
+    // bindNode(icc).as(factory.key);
+    // return install0(icc);
+    // }
 
     /** {@inheritDoc} */
     @Override

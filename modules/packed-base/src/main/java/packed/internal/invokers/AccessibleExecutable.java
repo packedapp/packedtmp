@@ -26,7 +26,7 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
 /**
  *
  */
-public class AccessibleExecutable<T> {
+public class AccessibleExecutable<T> extends AccessibleMember<T> {
 
     /** The descriptor of the executable. */
     public final InternalExecutableDescriptor descriptor;
@@ -36,6 +36,16 @@ public class AccessibleExecutable<T> {
 
     /** The method handle of the executable. */
     private final MethodHandle methodHandle;
+
+    public AccessibleExecutable(InternalExecutableDescriptor descriptor, Lookup lookup) {
+        this.metadata = null;
+        this.descriptor = descriptor;
+        try {
+            this.methodHandle = descriptor.unreflect(lookup);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException(descriptor.descriptorTypeName() + " " + descriptor + " is not accessible for lookup object " + lookup, e);
+        }
+    }
 
     public AccessibleExecutable(InternalExecutableDescriptor descriptor, Lookup lookup, T t) {
         this.metadata = requireNonNull(t);

@@ -35,6 +35,16 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
     /** The var handle of the field. */
     private final VarHandle varHandle;
 
+    public AccessibleField(InternalFieldDescriptor descriptor, Lookup lookup) {
+        this.descriptor = descriptor;
+        try {
+            this.varHandle = descriptor.unreflect(lookup);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("Field " + descriptor + " is not accessible for lookup object " + lookup, e);
+        }
+        this.isVolatile = descriptor.isVolatile();
+    }
+
     public AccessibleField(InternalFieldDescriptor descriptor, Lookup lookup, T t) {
         super(t);
         this.descriptor = descriptor;

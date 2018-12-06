@@ -33,12 +33,6 @@ public final class InternalFactoryInstance<T> extends InternalFunction<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> getLowerBound() {
-        return instance.getClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public T invoke(Object[] ignore) {
         return instance;
     }

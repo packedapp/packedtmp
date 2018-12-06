@@ -20,28 +20,13 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.util.function.Function;
 
-import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
-import packed.internal.inject.InternalFactory;
 
 /** An internal factory for {@link Factory1}. */
 public class InternalFactory1<T, R> extends InternalFunction<R> {
-
-    /** A cache of function factory definitions. */
-    static final ClassValue<FunctionalSignature> TYPE_PARAMETERS = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected FunctionalSignature computeValue(Class<?> type) {
-            return new FunctionalSignature(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0));
-        }
-    };
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
@@ -50,16 +35,9 @@ public class InternalFactory1<T, R> extends InternalFunction<R> {
      * @param supplier
      * @param functionalSignature
      */
-    @SuppressWarnings("unchecked")
-    private InternalFactory1(Function<?, ? extends T> function, FunctionalSignature fs) {
-        super((TypeLiteral<R>) fs.objectType);
-        this.function = (Function<? super T, ? extends R>) requireNonNull(function, "function is null");
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> getLowerBound() {
-        return Object.class; // The raw function return objects
+    public InternalFactory1(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
+        super(type);
+        this.function = requireNonNull(function, "function is null");
     }
 
     @SuppressWarnings("unchecked")
@@ -74,10 +52,5 @@ public class InternalFactory1<T, R> extends InternalFunction<R> {
                             + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
-    }
-
-    public static <T, R> InternalFactory<R> create(Function<?, ? extends T> supplier, Class<?> typeInfo) {
-        FunctionalSignature fs = TYPE_PARAMETERS.get(typeInfo);
-        return new InternalFactory<>(new InternalFactory1<>(supplier, fs), fs.dependencies);
     }
 }

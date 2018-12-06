@@ -20,12 +20,10 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.util.function.Supplier;
 
-import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalFactory;
 
 /**
  * An internal factory for {@link Factory0}.
@@ -34,17 +32,6 @@ import packed.internal.inject.InternalFactory;
  *            the type of elements the factory produces
  */
 public final class InternalFactory0<T> extends InternalFunction<T> {
-
-    /** A cache of extracted type variables. */
-    private static final ClassValue<TypeLiteral<?>> TYPE_PARAMETER_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        @Override
-        protected TypeLiteral<?> computeValue(Class<?> type) {
-            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
-        }
-    };
 
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;
@@ -58,15 +45,9 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
      *            the class to extract type info from.
      * @return the new factory
      */
-    @SuppressWarnings("unchecked")
-    public InternalFactory0(Supplier<? extends T> supplier, Class<?> typeInfo) {
-        super((TypeLiteral<T>) TYPE_PARAMETER_CACHE.get(typeInfo));
+    public InternalFactory0(TypeLiteral<T> type, Supplier<? extends T> supplier) {
+        super(type);
         this.supplier = requireNonNull(supplier, "supplier is null");
-    }
-
-    @Override
-    public Class<?> getLowerBound() {
-        return Object.class; // The raw supplier generate objects
     }
 
     /** {@inheritDoc} */
@@ -80,9 +61,5 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
                             + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
-    }
-
-    public static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> typeInfo) {
-        return new InternalFactory<>(new InternalFactory0<>(supplier, typeInfo));
     }
 }
