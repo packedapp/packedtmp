@@ -15,18 +15,20 @@
  */
 package packed.internal.inject.support;
 
-import static java.util.Objects.requireNonNull;
-
-import packed.internal.invokers.AccessibleMember;
+import packed.internal.inject.function.InternalFactoryMember;
 
 /**
  *
  */
 public class AbstractAccessibleMember {
 
-    public final AccessibleMember<?> am;
+    @Deprecated
+    public final AccessibleMember am;
 
-    AbstractAccessibleMember(AccessibleMember<?> am) {
-        this.am = requireNonNull(am);
+    public InternalFactoryMember<?> ifm;
+
+    AbstractAccessibleMember(AccessibleMember am, InternalFactoryMember<?> ifm) {
+        this.am = am;
+        this.ifm = ifm;
     }
 }

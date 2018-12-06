@@ -28,8 +28,8 @@ import app.packed.inject.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.Node;
+import packed.internal.inject.function.FieldInvoker;
 import packed.internal.inject.support.AtInject;
-import packed.internal.invokers.AccessibleField;
 import packed.internal.invokers.ServiceClassDescriptor;
 
 /** An abstract implementation of an injector. */
@@ -88,7 +88,7 @@ public abstract class AbstractInjector implements Injector {
         if (!descriptor.inject.fields.isEmpty()) {
             for (AtInject atInject : descriptor.inject.fields) {
                 InternalDependency dependency = atInject.dependencies.get(0);
-                AccessibleField<?> field = (AccessibleField<?>) atInject.am;
+                FieldInvoker<?> field = (FieldInvoker<?>) atInject.ifm;
                 Node<?> node = findNode(dependency.getKey());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);

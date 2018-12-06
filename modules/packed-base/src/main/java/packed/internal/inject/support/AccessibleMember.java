@@ -13,31 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
-
-import static java.util.Objects.requireNonNull;
-
-import app.packed.util.Nullable;
+package packed.internal.inject.support;
 
 /**
  * An accessible field, constructor or method with a metadata object.
  */
 
 // Maybe we are going to use it again?
-public abstract class AccessibleMember<T> {
+public abstract class AccessibleMember {
 
-    /** An metadata object, can probably change to non-null */
-    @Nullable
-    public final T metadata;
-
-    AccessibleMember() {
-        this.metadata = null;
-    }
-
-    /**
-     * @param metadata
-     */
-    AccessibleMember(T metadata) {
-        this.metadata = requireNonNull(metadata);
-    }
 }

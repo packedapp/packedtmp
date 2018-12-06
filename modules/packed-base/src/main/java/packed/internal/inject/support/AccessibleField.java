@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
+package packed.internal.inject.support;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,7 @@ import app.packed.inject.IllegalAccessRuntimeException;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** An accessible field. */
-public final class AccessibleField<T> extends AccessibleMember<T> {
+public final class AccessibleField extends AccessibleMember {
 
     /** The descriptor of the field. */
     public final InternalFieldDescriptor descriptor;
@@ -45,17 +45,6 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
         this.isVolatile = descriptor.isVolatile();
     }
 
-    public AccessibleField(InternalFieldDescriptor descriptor, Lookup lookup, T t) {
-        super(t);
-        this.descriptor = descriptor;
-        try {
-            this.varHandle = descriptor.unreflect(lookup);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Field " + descriptor + " is not accessible for lookup object " + lookup, e);
-        }
-        this.isVolatile = descriptor.isVolatile();
-    }
-
     /**
      * Creates a new field invoker.
      * 
@@ -65,21 +54,6 @@ public final class AccessibleField<T> extends AccessibleMember<T> {
      *            the lookup object to use for access
      */
     public AccessibleField(InternalFieldDescriptor descriptor, VarHandle varHandle) {
-        this.descriptor = descriptor;
-        this.varHandle = requireNonNull(varHandle);
-        this.isVolatile = descriptor.isVolatile();
-    }
-
-    /**
-     * Creates a new field invoker.
-     * 
-     * @param descriptor
-     *            the field descriptor
-     * @param lookup
-     *            the lookup object to use for access
-     */
-    public AccessibleField(InternalFieldDescriptor descriptor, VarHandle varHandle, T t) {
-        super(t);
         this.descriptor = descriptor;
         this.varHandle = requireNonNull(varHandle);
         this.isVolatile = descriptor.isVolatile();

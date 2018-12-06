@@ -26,8 +26,6 @@ import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.invokers.AccessibleExecutable;
-import packed.internal.invokers.AccessibleField;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -64,7 +62,7 @@ public final class AtInjectGroup {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
                 Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
                 Checks.checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
-                AccessibleField<InternalDependency> fi = new AccessibleField<>(descriptor, lookup);
+                AccessibleField fi = new AccessibleField(descriptor, lookup);
 
                 AtInject ai = new AtInject(fi, InternalDependency.of(descriptor));
 
@@ -82,7 +80,7 @@ public final class AtInjectGroup {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
 
-                AccessibleExecutable<List<InternalDependency>> fi = new AccessibleExecutable<>(descriptor, lookup);
+                AccessibleExecutable fi = new AccessibleExecutable(descriptor, lookup);
 
                 AtInject ai = new AtInject(fi, InternalDependency.fromExecutable(descriptor));
                 if (methods == null) {

@@ -26,17 +26,16 @@ import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.function.FieldInvoker;
 import packed.internal.inject.function.InternalFactoryExecutable;
-import packed.internal.inject.function.InternalFactoryField;
 import packed.internal.inject.function.InternalFactoryMember;
 import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
+import packed.internal.inject.support.AccessibleExecutable;
 import packed.internal.inject.support.AtProvides;
-import packed.internal.invokers.AccessibleExecutable;
-import packed.internal.invokers.AccessibleField;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -194,18 +193,20 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
         Object instance = atProvides.isStaticMember ? null : this.instance;
         return new BuildNodeDefault<>(icss, atProvides,
-                new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, ((AccessibleExecutable<?>) atProvides.am).methodHandle(), instance), this);
+                new InternalFactoryExecutable<>(m.getReturnTypeLiteral(), m, ((AccessibleExecutable) atProvides.am).methodHandle(), instance), this);
     }
 
     public AbstractBuildNode<?> provideField(AtProvides atProvides) {
-        InternalFieldDescriptor m = (InternalFieldDescriptor) atProvides.annotatedMember;
+        InternalFieldDescriptor descriptor = (InternalFieldDescriptor) atProvides.annotatedMember;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.annotatedMember.getAnnotation(Provides.class), m);
+                atProvides.annotatedMember.getAnnotation(Provides.class), descriptor);
 
-        Object instance = atProvides.isStaticMember ? null : this.instance;
-
-        return new BuildNodeDefault<>(icss, atProvides,
-                new InternalFactoryField<>(m.getTypeLiteral(), m, ((AccessibleField<?>) atProvides.am).varHandle(), instance), this);
+        FieldInvoker<?> fi = ((FieldInvoker<?>) atProvides.ifm);
+        if (!atProvides.isStaticMember) {
+            getInstance(null);
+            fi = fi.withInstance(this.instance);
+        }
+        return new BuildNodeDefault<>(icss, atProvides, fi, this);
     }
 
     @Override

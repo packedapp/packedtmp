@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
+package packed.internal.inject.support;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,29 +26,15 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
 /**
  *
  */
-public class AccessibleExecutable<T> extends AccessibleMember<T> {
+public class AccessibleExecutable extends AccessibleMember {
 
     /** The descriptor of the executable. */
     public final InternalExecutableDescriptor descriptor;
-
-    /** An metadata object, can probably change to non-null */
-    public final T metadata;
 
     /** The method handle of the executable. */
     private final MethodHandle methodHandle;
 
     public AccessibleExecutable(InternalExecutableDescriptor descriptor, Lookup lookup) {
-        this.metadata = null;
-        this.descriptor = descriptor;
-        try {
-            this.methodHandle = descriptor.unreflect(lookup);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException(descriptor.descriptorTypeName() + " " + descriptor + " is not accessible for lookup object " + lookup, e);
-        }
-    }
-
-    public AccessibleExecutable(InternalExecutableDescriptor descriptor, Lookup lookup, T t) {
-        this.metadata = requireNonNull(t);
         this.descriptor = descriptor;
         try {
             this.methodHandle = descriptor.unreflect(lookup);
@@ -66,21 +52,6 @@ public class AccessibleExecutable<T> extends AccessibleMember<T> {
      *            the lookup object to use for access
      */
     public AccessibleExecutable(InternalExecutableDescriptor descriptor, MethodHandle methodHandle) {
-        this.metadata = null;
-        this.descriptor = descriptor;
-        this.methodHandle = requireNonNull(methodHandle);
-    }
-
-    /**
-     * Creates a new field invoker.
-     * 
-     * @param descriptor
-     *            the field descriptor
-     * @param lookup
-     *            the lookup object to use for access
-     */
-    public AccessibleExecutable(InternalExecutableDescriptor descriptor, MethodHandle methodHandle, T t) {
-        this.metadata = requireNonNull(t);
         this.descriptor = descriptor;
         this.methodHandle = requireNonNull(methodHandle);
     }

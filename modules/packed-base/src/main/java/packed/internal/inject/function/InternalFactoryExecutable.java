@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Modifier;
 
 import app.packed.inject.Factory;
 import app.packed.inject.IllegalAccessRuntimeException;
@@ -94,6 +95,9 @@ public class InternalFactoryExecutable<T> extends InternalFactoryMember<T> {
     public InternalFunction<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
+            if (Modifier.isPrivate(executable.getModifiers())) {
+                lookup = lookup.in(executable.getDeclaringClass());
+            }
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException(

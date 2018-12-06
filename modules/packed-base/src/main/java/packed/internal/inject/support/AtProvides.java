@@ -28,7 +28,7 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.invokers.AccessibleMember;
+import packed.internal.inject.function.FieldInvoker;
 import packed.internal.util.descriptor.InternalAnnotatedElement;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -55,8 +55,8 @@ public final class AtProvides extends AbstractAccessibleMember {
     /** whether or not the field or method on which the annotation is present is a static field or method. */
     public final boolean isStaticMember;
 
-    AtProvides(AccessibleMember<?> am, InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
-        super(am);
+    AtProvides(AccessibleMember am, InternalAnnotatedElement annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        super(am, null);
         this.annotatedMember = requireNonNull(annotatedMember);
         this.key = requireNonNull(key, "key is null");
         this.description = provides.description().length() > 0 ? provides.description() : null;
@@ -66,29 +66,31 @@ public final class AtProvides extends AbstractAccessibleMember {
                 : ((MethodDescriptor) annotatedMember).isStatic();
     }
 
-    static AtProvides from(AccessibleMember<?> am, InternalFieldDescriptor field, Provides p) {
-        Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
-        Key<?> key = Key.fromTypeLiteralNullableAnnotation(field, field.getTypeLiteral(), annotation);
-
-        return new AtProvides(am, field, key, p, List.of());
-
-        // Extract key
-        // Men vi skal jo have informationer om hvorfor
-
-        // Saa metoder ved hvorfor, the caller knows where/what
-        // WHERE/What could not because of why...
-        // Maybe have a isValidKey(Type) or <T> checkValidKey(T extends RuntimeException, String message) throws T;
-        // Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
-        // because it "xxxxxx"
-
+    AtProvides(AccessibleMember am, FieldInvoker<?> fi, InternalFieldDescriptor annotatedMember, Key<?> key, Provides provides) {
+        super(null, fi);
+        this.annotatedMember = requireNonNull(annotatedMember);
+        this.key = requireNonNull(key, "key is null");
+        this.description = provides.description().length() > 0 ? provides.description() : null;
+        this.bindingMode = provides.bindingMode();
+        this.dependencies = List.of();
+        this.isStaticMember = annotatedMember.isStatic();
     }
 
-    static AtProvides from(AccessibleMember<?> am, InternalMethodDescriptor method, Provides p) {
+    static AtProvides from(AccessibleMember am, InternalMethodDescriptor method, Provides p) {
         Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(method, method.getReturnTypeLiteral(), annotation);
 
         return new AtProvides(am, method, key, p, List.of());
     }
+
+    // Extract key
+    // Men vi skal jo have informationer om hvorfor
+
+    // Saa metoder ved hvorfor, the caller knows where/what
+    // WHERE/What could not because of why...
+    // Maybe have a isValidKey(Type) or <T> checkValidKey(T extends RuntimeException, String message) throws T;
+    // Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
+    // because it "xxxxxx"
 
     // public static Optional<AtProvides> find(InternalMethodDescriptor method) {
     // for (Annotation a : method.getAnnotationsUnsafe()) {

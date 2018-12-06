@@ -52,6 +52,8 @@ public class ServiceClassDescriptor<T> {
      */
     ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup, MemberScanner scanner) {
         // Do we need to store lookup??? I think yes. And then collect all annotated Fields in a list
+        // Or do we validate everything up front?????? With Hooks and stufff...
+
         // We then run through each of them
         // Or maybe just throw it in an invoker?? The classes you register, are normally there for a reason.
         // Meaning the annotations are probablye

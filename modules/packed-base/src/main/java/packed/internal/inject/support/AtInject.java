@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.AccessibleMember;
 
 /**
  *
@@ -32,13 +31,13 @@ public final class AtInject extends AbstractAccessibleMember {
     /**
      * @param am
      */
-    AtInject(AccessibleMember<?> am, List<InternalDependency> dependencies) {
-        super(am);
+    AtInject(AccessibleMember am, List<InternalDependency> dependencies) {
+        super(am, null);
         this.dependencies = requireNonNull(dependencies);
     }
 
-    AtInject(AccessibleMember<?> am, InternalDependency dependency) {
-        super(am);
+    AtInject(AccessibleMember am, InternalDependency dependency) {
+        super(am, null);
         this.dependencies = List.of(dependency);
     }
 }

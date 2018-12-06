@@ -28,8 +28,7 @@ import java.util.Map;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.invokers.AccessibleExecutable;
-import packed.internal.invokers.AccessibleField;
+import packed.internal.inject.function.FieldInvoker;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -89,27 +88,31 @@ public final class AtProvidesGroup {
         public AtProvides addIfAnnotated(Lookup lookup, Field field, Annotation[] annotations) {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
+                    Key<?> key = Key.fromField(field);
+
                     InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+
+                    FieldInvoker<?> fii = new FieldInvoker<>(descriptor);
+
                     hasInstanceMembers |= !descriptor.isStatic();
-                    if (fields == null) {
-                        fields = new ArrayList<>(1);
-                        if (keys == null) {
-                            keys = new HashMap<>();
-                        }
-                    }
+
                     if (Modifier.isPrivate(field.getModifiers())) {
                         lookup = lookup.in(field.getDeclaringClass());
                     }
-                    AccessibleField<?> fi = new AccessibleField<>(descriptor, lookup);
-
-                    AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
+                    AtProvides ap = new AtProvides(null, fii.withLookup(lookup), descriptor, key, (Provides) a);
 
                     // Check this
                     // if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
                     // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
                     // }
 
-                    Key<?> key = ap.key;
+                    ///////// Add the field
+                    if (fields == null) {
+                        fields = new ArrayList<>(1);
+                        if (keys == null) {
+                            keys = new HashMap<>();
+                        }
+                    }
                     if (keys.putIfAbsent(key, ap) != null) {
                         throw new InvalidDeclarationException(ErrorMessageBuilder.of(field.getDeclaringClass())
                                 .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")
@@ -127,20 +130,22 @@ public final class AtProvidesGroup {
                 if (a.annotationType() == Provides.class) {
                     InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
                     hasInstanceMembers |= !descriptor.isStatic();
+
+                    if (Modifier.isPrivate(method.getModifiers())) {
+                        lookup = lookup.in(method.getDeclaringClass());
+                    }
+                    AccessibleExecutable fi = new AccessibleExecutable(descriptor, lookup);
+
+                    AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
+
+                    Key<?> key = ap.key;
+
                     if (methods == null) {
                         methods = new ArrayList<>(1);
                         if (keys == null) {
                             keys = new HashMap<>();
                         }
                     }
-                    if (Modifier.isPrivate(method.getModifiers())) {
-                        lookup = lookup.in(method.getDeclaringClass());
-                    }
-                    AccessibleExecutable<?> fi = new AccessibleExecutable<>(descriptor, lookup);
-
-                    AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
-
-                    Key<?> key = ap.key;
                     if (keys.putIfAbsent(key, ap) != null) {
                         throw new InvalidDeclarationException(ErrorMessageBuilder.of(method.getDeclaringClass())
                                 .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")

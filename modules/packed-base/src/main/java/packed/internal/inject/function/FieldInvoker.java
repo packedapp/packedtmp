@@ -30,41 +30,70 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 
 /** An internal factory that reads a field. Is mainly used in connection with {@link Provides}. */
-public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
+public final class FieldInvoker<T> extends InternalFactoryMember<T> {
 
-    private static final int INSTANCE_GET = 0;
-    private static final int INSTANCE_GET_VOLATILE = 1;
-    private static final int STATIC_GET = 2;
+    /** The field we invoke. */
+    public final FieldDescriptor field;
 
-    // private final int STATIC_GET_VOLATILE = 3;
-
-    /** The field to read. */
-    private final FieldDescriptor field;
-
-    /** Whether or not the field is volatile. */
-    private final int type;
-
-    /** The var handle used for reading the field. */
+    /** A var handle that can be used to read the field. */
+    @Nullable
     private final VarHandle varHandle;
 
-    public InternalFactoryField(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
+    /** Whether or not the field is volatile. */
+    public final boolean isVolatile;
+
+    /** Whether or not the field is static. */
+    public final boolean isStatic;
+
+    /**
+     * Sets the value of the field
+     * 
+     * @param instance
+     *            the instance for which to set the value
+     * @param value
+     *            the value to set
+     * @see VarHandle#set(Object...)
+     */
+    public void setField(Object instance, Object value) {
+        if (isVolatile) {
+            varHandle.setVolatile(instance, value);
+        } else {
+            varHandle.set(instance, value);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public FieldInvoker(FieldDescriptor field) {
+        super((TypeLiteral<T>) field.getTypeLiteral(), null);
+        this.field = field;
+        this.varHandle = null;
+        this.isVolatile = Modifier.isVolatile(field.getModifiers());
+        this.isStatic = Modifier.isStatic(field.getModifiers());
+    }
+
+    public FieldInvoker(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
         super(typeLiteralOrKey, instance);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
-        this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0 + (field.isStatic() ? 2 : 0);
+        this.isVolatile = Modifier.isVolatile(field.getModifiers());
+        this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    public InternalFactoryField(InternalFactoryField<T> other, Object instance) {
+    private FieldInvoker(FieldInvoker<T> other, Object instance) {
         super(other.getType(), requireNonNull(instance));
         this.field = other.field;
         this.varHandle = other.varHandle;
-        this.type = Modifier.isVolatile(field.getModifiers()) ? 1 : 0;
+        this.isVolatile = Modifier.isVolatile(field.getModifiers());
+        this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
     @Override
-    public InternalFactoryField<T> withInstance(Object instance) {
+    public FieldInvoker<T> withInstance(Object instance) {
         requireNonNull(instance, "instance is null");
-        return new InternalFactoryField<>(this, instance);
+        if (this.instance != null) {
+            throw new IllegalStateException("An instance has already been set");
+        }
+        return new FieldInvoker<>(this, instance);
     }
 
     @Override
@@ -88,16 +117,18 @@ public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
     /** {@inheritDoc} */
     @Override
     public @Nullable T invoke(Object[] params) {
-        switch (type) {
-        case INSTANCE_GET:
-            requireNonNull(instance);
-            return (T) varHandle.get(instance);
-        case INSTANCE_GET_VOLATILE:
+        if (isStatic) {
+            if (isVolatile) {
+                return (T) varHandle.getVolatile();
+            } else {
+                return (T) varHandle.get();
+            }
+        }
+        requireNonNull(instance);
+        if (isVolatile) {
             return (T) varHandle.getVolatile(instance);
-        case STATIC_GET:
-            return (T) varHandle.get();
-        default:
-            return (T) varHandle.getVolatile();
+        } else {
+            return (T) varHandle.get(instance);
         }
     }
 
@@ -109,13 +140,16 @@ public final class InternalFactoryField<T> extends InternalFactoryMember<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public InternalFunction<T> withLookup(Lookup lookup) {
+    public FieldInvoker<T> withLookup(Lookup lookup) {
         VarHandle handle;
         try {
+            if (Modifier.isPrivate(field.getModifiers())) {
+                lookup = lookup.in(field.getDeclaringClass());
+            }
             handle = field.unreflect(lookup);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new InternalFactoryField<>(getType(), field, handle, instance);
+        return new FieldInvoker<>(getType(), field, handle, instance);
     }
 }

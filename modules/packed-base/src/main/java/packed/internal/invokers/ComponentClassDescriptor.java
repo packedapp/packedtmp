@@ -27,6 +27,11 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
  */
 public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
 
+    // Need the lookup....
+    // Also with regards to ComponentMethod....
+    // Access might fail at runtime.... For example, if we stream all component methods....
+    // And one is private, the lookup didn't not allow it. I think its find just to throw a runtime exception
+
     /** A cached map of all fields for a particular annotation. */
     final ConcurrentHashMap<Class<? extends Annotation>, List<InternalFieldDescriptor>> annotatedFields = new ConcurrentHashMap<>();
 
