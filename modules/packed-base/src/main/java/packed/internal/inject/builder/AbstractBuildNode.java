@@ -24,9 +24,9 @@ import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
-import packed.internal.inject.CommonKeys;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.Node;
+import packed.internal.inject.KeyBuilder;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -35,10 +35,10 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class AbstractBuildNode<T> extends AbstractConfiguration implements Node<T>, ServiceConfiguration<T> {
+public abstract class AbstractBuildNode<T> extends AbstractConfiguration implements ServiceNode<T>, ServiceConfiguration<T> {
 
     /** An empty array of nodes */
-    private static final Node<?>[] EMPTY_ARRAY = new Node<?>[0];
+    private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
 
     /** The dependencies of this node. */
     public final List<InternalDependency> dependencies;
@@ -61,7 +61,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
     private Key<T> key;
 
     /** The resolved dependencies of this node. */
-    public final Node<?>[] resolvedDependencies;
+    public final ServiceNode<?>[] resolvedDependencies;
 
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
@@ -71,12 +71,12 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
         super(configurationSite);
         this.injectorBuilder = requireNonNull(injectorBuilder);
         this.dependencies = requireNonNull(dependencies);
-        this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new Node<?>[dependencies.size()];
+        this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceNode<?>[dependencies.size()];
 
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
             for (InternalDependency e : dependencies) {
-                if (e.getKey().equals(CommonKeys.INJECTION_SITE_KEY)) {
+                if (e.getKey().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;
                 }
@@ -112,7 +112,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
 
     public final void checkResolved() {
         for (int i = 0; i < resolvedDependencies.length; i++) {
-            Node<?> n = resolvedDependencies[i];
+            ServiceNode<?> n = resolvedDependencies[i];
             if (n == null && !dependencies.get(i).isOptional()) {
                 throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
             }

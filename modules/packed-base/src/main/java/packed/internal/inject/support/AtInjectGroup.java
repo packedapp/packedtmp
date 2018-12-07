@@ -67,7 +67,7 @@ public final class AtInjectGroup {
 
                 FieldInvoker<?> fii = new FieldInvoker<>(descriptor).withLookup(lookup);
 
-                AtInject ai = new AtInject(fii, InternalDependency.of(descriptor));
+                AtInject ai = new AtInject(fii, List.of(InternalDependency.of(descriptor)));
 
                 if (fields == null) {
                     fields = new ArrayList<>(2);

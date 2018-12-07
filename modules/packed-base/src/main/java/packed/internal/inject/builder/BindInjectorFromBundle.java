@@ -23,7 +23,7 @@ import app.packed.bundle.InjectorBundle;
 import app.packed.bundle.InjectorExportStage;
 import app.packed.inject.Key;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
@@ -60,7 +60,7 @@ final class BindInjectorFromBundle extends BindInjector {
                 if (newConfiguration.privateNodeMap.containsKey(k)) {
                     throw new RuntimeException("OOPS already there " + k);
                 }
-                Node<?> node = injectorConfiguration.privateNodeMap.getRecursive(k);
+                ServiceNode<?> node = injectorConfiguration.privateNodeMap.getRecursive(k);
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }

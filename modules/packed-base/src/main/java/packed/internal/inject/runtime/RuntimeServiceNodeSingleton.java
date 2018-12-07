@@ -24,7 +24,7 @@ import packed.internal.inject.builder.AbstractBuildNode;
 
 /**
  * An runtime service node holding {@link BindingMode#SINGLETON} instances. This node also holds
- * {@link BindingMode#LAZY} instances that are created at configuration.
+ * {@link BindingMode#LAZY} instances that was created at configuration time.
  */
 public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> implements Provider<T> {
 
@@ -38,15 +38,19 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
     private final T instance;
 
     /**
-     * Creates a new instance node from the specified build node.
+     * Creates a new node.
      *
      * @param buildNode
      *            the node to create this node from
+     * @param instance
+     *            the singleton instance
+     * @param bindingMode
+     *            the binding mode of this node
      */
-    public RuntimeServiceNodeSingleton(AbstractBuildNode<T> buildNode, T instance, BindingMode bindingMode) {
+    public RuntimeServiceNodeSingleton(AbstractBuildNode<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
-        this.bindingMode = requireNonNull(bindingMode);
+        this.bindingMode = buildNode.getBindingMode();
     }
 
     /** {@inheritDoc} */
@@ -63,7 +67,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(InjectionSite site) {
+    public T getInstance(InjectionSite ignore) {
         return instance;
     }
 

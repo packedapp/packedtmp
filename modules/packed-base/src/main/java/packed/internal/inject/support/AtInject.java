@@ -20,26 +20,19 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.ExecutableInvoker;
-import packed.internal.invokers.FieldInvoker;
+import packed.internal.invokers.InvokableMember;
 
-/**
- *
- */
-public final class AtInject extends AbstractAccessibleMember {
+/** A descriptor of the {@link Inject} annotation. */
+public final class AtInject {
 
+    /** All dependencies that must be injected. Is usually a list of size 1. */
     public final List<InternalDependency> dependencies;
 
-    /**
-     * @param am
-     */
-    AtInject(ExecutableInvoker<?> am, List<InternalDependency> dependencies) {
-        super(am);
-        this.dependencies = requireNonNull(dependencies);
-    }
+    /** The invokable member. */
+    public final InvokableMember<?> invokable;
 
-    AtInject(FieldInvoker<?> fi, InternalDependency dependency) {
-        super(fi);
-        this.dependencies = List.of(dependency);
+    AtInject(InvokableMember<?> invokable, List<InternalDependency> dependencies) {
+        this.invokable = requireNonNull(invokable);
+        this.dependencies = requireNonNull(dependencies);
     }
 }

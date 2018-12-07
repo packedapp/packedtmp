@@ -31,7 +31,7 @@ import packed.internal.inject.runtime.RuntimeServiceNode;
  * at runtime.
  */
 // BuildNode also implements Service, because it must available at some point???Tjah...
-public interface Node<T> extends ServiceDescriptor {
+public interface ServiceNode<T> extends ServiceDescriptor {
     //
     // default Provider<T> createProvider(Injector injector, Container container, Component component, Key<T> key) {
     // InjectionSite site = InternalInjectionSite.of(injector, container, component, key);
@@ -65,7 +65,7 @@ public interface Node<T> extends ServiceDescriptor {
     RuntimeServiceNode<T> toRuntimeNode();
 
     default boolean isPrivate() {
-        return getKey().equals(CommonKeys.INJECTOR_KEY) || getKey().equals(CommonKeys.CONTAINER_KEY);
+        return getKey().equals(KeyBuilder.INJECTOR_KEY) || getKey().equals(KeyBuilder.CONTAINER_KEY);
     }
 }
 

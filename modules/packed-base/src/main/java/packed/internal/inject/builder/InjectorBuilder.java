@@ -39,8 +39,8 @@ import app.packed.util.Nullable;
 import packed.internal.classscan.LookupDescriptorAccessor;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.Node;
-import packed.internal.inject.NodeMap;
+import packed.internal.inject.ServiceNodeMap;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.inject.support.AtProvides;
 import packed.internal.inject.support.AtProvidesGroup;
@@ -70,7 +70,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     AbstractBuildNode<?> privateLatestNode;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    final NodeMap privateNodeMap;
+    final ServiceNodeMap privateNodeMap;
 
     InternalInjector publicInjector;
 
@@ -78,7 +78,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     final ArrayList<BuildNodeExposed<?>> publicNodeList;
 
     /** The runtime nodes that will be available in the injector. */
-    final NodeMap publicNodeMap;
+    final ServiceNodeMap publicNodeMap;
 
     HashSet<Key<?>> requiredServicesMandatory;
 
@@ -93,15 +93,15 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     public InjectorBuilder(InternalConfigurationSite configurationSite) {
         super(configurationSite);
         this.bundle = null;
-        publicNodeMap = privateNodeMap = new NodeMap();
+        publicNodeMap = privateNodeMap = new ServiceNodeMap();
         publicNodeList = null;
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite);
         this.bundle = requireNonNull(bundle);
-        publicNodeMap = new NodeMap();
-        privateNodeMap = new NodeMap();
+        publicNodeMap = new ServiceNodeMap();
+        privateNodeMap = new ServiceNodeMap();
         publicNodeList = new ArrayList<>();
     }
 
@@ -212,7 +212,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
-        Node<T> node = privateNodeMap.getRecursive(key);
+        ServiceNode<T> node = privateNodeMap.getRecursive(key);
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }

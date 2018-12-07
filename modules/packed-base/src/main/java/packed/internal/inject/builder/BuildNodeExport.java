@@ -23,7 +23,7 @@ import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -32,13 +32,13 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 public class BuildNodeExport<T> extends AbstractBuildNode<T> {
 
     /** The node to import. */
-    final Node<T> other;
+    final ServiceNode<T> other;
 
     /** The bind injector source. */
     final BindInjector source;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildNodeExport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector source, Node<T> node) {
+    BuildNodeExport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector source, ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.source = requireNonNull(source);

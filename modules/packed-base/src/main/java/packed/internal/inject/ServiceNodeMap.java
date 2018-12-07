@@ -31,19 +31,19 @@ import app.packed.util.Nullable;
 /**
  *
  */
-public class NodeMap implements Iterable<Node<?>> {
+public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
 
-    private final HashMap<Key<?>, Node<?>> nodes = new HashMap<>();
+    private final HashMap<Key<?>, ServiceNode<?>> nodes = new HashMap<>();
 
     /** Any parent this node map might have */
     @Nullable
-    public final NodeMap parent;
+    public final ServiceNodeMap parent;
 
-    public NodeMap() {
+    public ServiceNodeMap() {
         this.parent = null;
     }
 
-    public NodeMap(NodeMap parent) {
+    public ServiceNodeMap(ServiceNodeMap parent) {
         this.parent = requireNonNull(parent);
     }
 
@@ -51,24 +51,24 @@ public class NodeMap implements Iterable<Node<?>> {
         return nodes.containsKey(key);
     }
 
-    public List<Node<?>> copyNodes() {
+    public List<ServiceNode<?>> copyNodes() {
         return new ArrayList<>(nodes.values());
     }
 
     @Override
-    public void forEach(Consumer<? super Node<?>> action) {
+    public void forEach(Consumer<? super ServiceNode<?>> action) {
         nodes.values().forEach(action);
     }
 
-    public Node<?> getNode(Dependency dependency) {
+    public ServiceNode<?> getNode(Dependency dependency) {
         return getRecursive(dependency.getKey());
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Node<T> getRecursive(Key<T> type) {
+    public <T> ServiceNode<T> getRecursive(Key<T> type) {
         // System.out.println("Looking for " + type);
         // System.out.println("Contents " + map.keySet());
-        Node<T> node = (Node<T>) nodes.get(type);
+        ServiceNode<T> node = (ServiceNode<T>) nodes.get(type);
         if (node == null && parent != null) {
             return parent.getRecursive(type);
         }
@@ -77,21 +77,21 @@ public class NodeMap implements Iterable<Node<?>> {
 
     /** {@inheritDoc} */
     @Override
-    public Iterator<Node<?>> iterator() {
+    public Iterator<ServiceNode<?>> iterator() {
         return nodes.values().iterator();
     }
 
-    public void put(Node<?> node) {
+    public void put(ServiceNode<?> node) {
         requireNonNull(node.getKey());
         nodes.put(node.getKey(), node);
     }
 
-    public boolean putIfAbsent(Node<?> node) {
+    public boolean putIfAbsent(ServiceNode<?> node) {
         requireNonNull(node.getKey());
         return nodes.putIfAbsent(node.getKey(), node) == null;
     }
 
-    public Stream<Node<?>> stream() {
+    public Stream<ServiceNode<?>> stream() {
         return nodes.values().stream();
     }
 

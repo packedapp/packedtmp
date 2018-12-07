@@ -23,7 +23,7 @@ import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.util.Nullable;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -54,7 +54,7 @@ final class BindInjectorFromInjector extends BindInjector {
         InternalInjector ii = (InternalInjector) injector;
 
         // All the nodes we potentially want to import
-        List<Node<?>> allNodes = ii.copyNodes();// immutable
+        List<ServiceNode<?>> allNodes = ii.copyNodes();// immutable
         processNodes(allNodes);
     }
 }

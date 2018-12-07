@@ -26,7 +26,7 @@ import app.packed.inject.Dependency;
 import app.packed.inject.InjectionException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
@@ -41,7 +41,7 @@ class DependencyGraphResolver {
     static void resolveAllDependencies(DependencyGraph b) {
         b.detectCyclesFor = new ArrayList<>();
 
-        for (Node<?> nn : b.root.privateNodeMap) {
+        for (ServiceNode<?> nn : b.root.privateNodeMap) {
             AbstractBuildNode<?> node = (AbstractBuildNode<?>) nn;
             node.freeze();// Should be frozen, maybe change to an assert
 
@@ -50,7 +50,7 @@ class DependencyGraphResolver {
                 List<InternalDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     Dependency dependency = dependencies.get(i);
-                    Node<?> resolveTo = null;
+                    ServiceNode<?> resolveTo = null;
 
                     // See if we have a matching service in the node map.
                     if (resolveTo == null) {

@@ -28,7 +28,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
@@ -59,8 +59,7 @@ abstract class BindInjector {
         this.bundle = null;
     }
 
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            ImportExportStage[] stages) {
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, ImportExportStage[] stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.stages = List.of(stages); // checks for null
@@ -70,11 +69,11 @@ abstract class BindInjector {
     /**
      * 
      */
-    void processNodes(List<? extends Node<?>> existingNodes) {
+    void processNodes(List<? extends ServiceNode<?>> existingNodes) {
         BuildNodeImport<?>[] importNodes = new BuildNodeImport[existingNodes.size()];
 
         for (int i = 0; i < importNodes.length; i++) {
-            Node<?> n = existingNodes.get(i);
+            ServiceNode<?> n = existingNodes.get(i);
             if (!n.isPrivate()) {
                 importNodes[i] = new BuildNodeImport<>(injectorConfiguration, configurationSite.replaceParent(n.getConfigurationSite()), this, n);
             }

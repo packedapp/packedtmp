@@ -21,7 +21,7 @@ import app.packed.util.Nullable;
 /**
  * An internal factory
  */
-public abstract class InternalFactoryMember<T> extends InternalFunction<T> {
+public abstract class InvokableMember<T> extends InternalFunction<T> {
 
     @Nullable
     final Object instance;
@@ -30,12 +30,12 @@ public abstract class InternalFactoryMember<T> extends InternalFunction<T> {
      * @param typeLiteralOrKey
      * @param dependencies
      */
-    public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
+    public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
         super(typeLiteralOrKey);
         this.instance = instance;
     }
 
-    public abstract InternalFactoryMember<T> withInstance(Object instance);
+    public abstract InvokableMember<T> withInstance(Object instance);
 
     public abstract boolean isMissingInstance();
 }

@@ -28,7 +28,7 @@ import app.packed.inject.Key;
 import app.packed.util.Nullable;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.support.AtInject;
 import packed.internal.invokers.FieldInvoker;
 
@@ -36,13 +36,13 @@ import packed.internal.invokers.FieldInvoker;
 public abstract class AbstractInjector implements Injector {
 
     @Nullable
-    protected <T> Node<T> findNode(Class<T> key) {
+    protected <T> ServiceNode<T> findNode(Class<T> key) {
         requireNonNull(key, "key is null");
         return findNode(Key.of(key));
     }
 
     @Nullable
-    protected abstract <T> Node<T> findNode(Key<T> key);
+    protected abstract <T> ServiceNode<T> findNode(Key<T> key);
 
     /** {@inheritDoc} */
     @Override
@@ -64,7 +64,7 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     final <T> T getInstanceOrNull(Key<T> key) {
-        Node<T> n = findNode(key);
+        ServiceNode<T> n = findNode(key);
         if (n == null) {
             return null;
         }
@@ -88,8 +88,8 @@ public abstract class AbstractInjector implements Injector {
         if (!descriptor.inject.fields.isEmpty()) {
             for (AtInject atInject : descriptor.inject.fields) {
                 InternalDependency dependency = atInject.dependencies.get(0);
-                FieldInvoker<?> field = (FieldInvoker<?>) atInject.ifm;
-                Node<?> node = findNode(dependency.getKey());
+                FieldInvoker<?> field = (FieldInvoker<?>) atInject.invokable;
+                ServiceNode<?> node = findNode(dependency.getKey());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);
                     value = dependency.wrapIfOptional(value);
@@ -122,7 +122,7 @@ public abstract class AbstractInjector implements Injector {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(arguments);
                 for (InternalDependency dependency : method.dependencies) {
-                    Node<?> node = findNode(dependency.getKey());
+                    ServiceNode<?> node = findNode(dependency.getKey());
                     System.out.println(node);
 
                 }

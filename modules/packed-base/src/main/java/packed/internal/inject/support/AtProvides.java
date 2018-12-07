@@ -24,16 +24,13 @@ import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.InternalFactoryMember;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** A descriptor of the {@link Provides} annotation. */
-public final class AtProvides extends AbstractAccessibleMember {
-
-    /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
-    public final InternalMemberDescriptor annotatedMember;
+public final class AtProvides {
 
     /** The binding mode from {@link Provides#bindingMode()}. */
     public final BindingMode bindingMode;
@@ -45,19 +42,25 @@ public final class AtProvides extends AbstractAccessibleMember {
     @Nullable
     public final String description;
 
-    /** The key under which the provided service will be made available. */
-    public final Key<?> key;
+    /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
+    public final InternalMemberDescriptor descriptor;
+
+    /** The invokable member. */
+    public final InvokableMember<?> invokable;
 
     /** whether or not the field or method on which the annotation is present is a static field or method. */
     public final boolean isStaticMember;
 
-    AtProvides(InternalFactoryMember<?> fi, InternalMemberDescriptor annotatedMember, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
-        super(fi);
-        this.annotatedMember = requireNonNull(annotatedMember);
-        this.key = requireNonNull(key, "key is null");
+    /** The key under which the provided service will be made available. */
+    public final Key<?> key;
+
+    AtProvides(InvokableMember<?> invokable, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        this.invokable = requireNonNull(invokable);
+        this.descriptor = requireNonNull(descriptor);
+        this.key = requireNonNull(key);
+        this.dependencies = requireNonNull(dependencies);
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.bindingMode = provides.bindingMode();
-        this.dependencies = requireNonNull(dependencies);
-        this.isStaticMember = annotatedMember.isStatic();
+        this.isStaticMember = descriptor.isStatic();
     }
 }

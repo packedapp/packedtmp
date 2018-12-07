@@ -22,24 +22,24 @@ import java.util.Set;
 import app.packed.inject.Key;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.AbstractBuildNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** A node that represents a service at runtime. */
-public abstract class RuntimeServiceNode<T> implements Node<T> {
+public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
 
     /** The point where this node was registered. */
     private final InternalConfigurationSite configurationSite;
 
-    /** The description of the service */
+    /** An (optionally) description of the service. */
     @Nullable
     private final String description;
 
-    /** The key of the service */
+    /** The key under which the service is available. */
     private final Key<T> key;
 
-    /** The tags of the service. */
+    /** Any tags that might be present on the service. */
     private final Set<String> tags;
 
     /**
@@ -101,6 +101,13 @@ public abstract class RuntimeServiceNode<T> implements Node<T> {
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        return getKey() + "[" + getBindingMode() + "]: " + getDescription();
+        StringBuilder sb = new StringBuilder();
+        sb.append(getKey());
+        sb.append("[").append(getBindingMode()).append(']');
+        if (description != null) {
+            sb.append(":").append(description);
+
+        }
+        return sb.toString();
     }
 }

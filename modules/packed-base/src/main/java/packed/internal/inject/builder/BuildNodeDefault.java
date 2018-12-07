@@ -31,7 +31,7 @@ import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
 import packed.internal.inject.support.AtProvides;
-import packed.internal.invokers.InternalFactoryMember;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -152,7 +152,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     private InternalFunction<T> fac() {
         if (parent != null) {
-            InternalFactoryMember<T> ff = (InternalFactoryMember<T>) function;
+            InvokableMember<T> ff = (InvokableMember<T>) function;
             if (ff.isMissingInstance()) {
                 function = ff.withInstance(parent.getInstance(null));
             }
@@ -165,11 +165,11 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     final RuntimeServiceNode<T> newRuntimeNode() {
         T i = instance;
         if (i != null) {
-            return new RuntimeServiceNodeSingleton<>(this, i, getBindingMode());
+            return new RuntimeServiceNodeSingleton<>(this, i);
         }
 
         if (parent == null || parent.getBindingMode() == BindingMode.SINGLETON || parent.instance != null
-                || (function instanceof InternalFactoryMember && !((InternalFactoryMember<?>) function).isMissingInstance())) {
+                || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
             if (bindingMode == BindingMode.PROTOTYPE) {
                 return new RuntimeServiceNodePrototype<>(this, fac());
             } else {
@@ -183,11 +183,11 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     }
 
     public AbstractBuildNode<?> provide(AtProvides atProvides) {
-        InternalMemberDescriptor descriptor = atProvides.annotatedMember;
+        InternalMemberDescriptor descriptor = atProvides.descriptor;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.annotatedMember.getAnnotation(Provides.class), descriptor);
+                atProvides.descriptor.getAnnotation(Provides.class), descriptor);
 
-        InternalFactoryMember<?> fi = atProvides.ifm;
+        InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {
             getInstance(null);
             fi = fi.withInstance(this.instance);

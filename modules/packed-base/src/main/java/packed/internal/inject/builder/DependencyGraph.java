@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Key;
-import packed.internal.inject.CommonKeys;
-import packed.internal.inject.Node;
+import packed.internal.inject.KeyBuilder;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.InternalInjector;
 
@@ -50,7 +50,7 @@ final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(InjectorBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.privateNodeMap);
-        builder.privateNodeMap.put(new BuildNodeDefault<>(builder, builder.getConfigurationSite(), builder.privateInjector).as((Key) CommonKeys.INJECTOR_KEY));
+        builder.privateNodeMap.put(new BuildNodeDefault<>(builder, builder.getConfigurationSite(), builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {
@@ -109,7 +109,7 @@ final class DependencyGraph {
         analyze(root);
 
         // Instantiate all singletons
-        for (Node<?> node : root.privateNodeMap) {
+        for (ServiceNode<?> node : root.privateNodeMap) {
             if (node instanceof BuildNodeDefault) {
                 BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
                 if (s.getBindingMode() == BindingMode.SINGLETON) {

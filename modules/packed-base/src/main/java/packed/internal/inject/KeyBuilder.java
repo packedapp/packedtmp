@@ -21,8 +21,8 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 
-/** Various common keys. */
-public final class CommonKeys {
+/** A builder of keys, mainly useful for creating proper error messages. */
+public final class KeyBuilder {
 
     /** The {@link Component} interface as a key. */
     public static final Key<Component> COMPONENT_KEY = Key.of(Component.class);
@@ -37,5 +37,5 @@ public final class CommonKeys {
     public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);
 
     /** Cannot instantiate. */
-    private CommonKeys() {}
+    private KeyBuilder() {}
 }

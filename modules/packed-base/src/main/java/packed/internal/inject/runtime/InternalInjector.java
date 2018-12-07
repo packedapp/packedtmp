@@ -25,9 +25,9 @@ import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.CommonKeys;
-import packed.internal.inject.Node;
-import packed.internal.inject.NodeMap;
+import packed.internal.inject.KeyBuilder;
+import packed.internal.inject.ServiceNodeMap;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -42,7 +42,7 @@ public final class InternalInjector extends AbstractInjector {
     private final String description;
 
     /** A map of all services. */
-    private final NodeMap nodes;
+    private final ServiceNodeMap nodes;
 
     /** This injector's parent, or null if this is a top-level injector. */
     @Nullable
@@ -51,7 +51,7 @@ public final class InternalInjector extends AbstractInjector {
     /** This injector's tags. */
     private final Set<String> tags;
 
-    public InternalInjector(InjectorBuilder injectorConfiguration, NodeMap nodes) {
+    public InternalInjector(InjectorBuilder injectorConfiguration, ServiceNodeMap nodes) {
         this.parent = null;
         this.nodes = requireNonNull(nodes);
         this.tags = injectorConfiguration.immutableCopyOfTags();
@@ -63,7 +63,7 @@ public final class InternalInjector extends AbstractInjector {
     protected void failedGet(Key<?> key) {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
-        for (Node<?> n : nodes) {
+        for (ServiceNode<?> n : nodes) {
             System.out.println(n);
             // if (n instanceof RuntimeNode<T>)
         }
@@ -73,7 +73,7 @@ public final class InternalInjector extends AbstractInjector {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    protected <T> Node<T> findNode(Key<T> key) {
+    protected <T> ServiceNode<T> findNode(Key<T> key) {
         return nodes.getRecursive(key);
     }
 
@@ -94,7 +94,7 @@ public final class InternalInjector extends AbstractInjector {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) nodes.stream().filter(e -> !e.getKey().equals(CommonKeys.INJECTOR_KEY));
+        return (Stream) nodes.stream().filter(e -> !e.getKey().equals(KeyBuilder.INJECTOR_KEY));
     }
 
     /** {@inheritDoc} */
@@ -103,7 +103,7 @@ public final class InternalInjector extends AbstractInjector {
         return tags;
     }
 
-    public List<Node<?>> copyNodes() {
+    public List<ServiceNode<?>> copyNodes() {
         return nodes.copyNodes();
     }
 }

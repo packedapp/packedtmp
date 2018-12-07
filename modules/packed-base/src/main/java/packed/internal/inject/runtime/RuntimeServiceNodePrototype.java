@@ -25,13 +25,17 @@ import packed.internal.inject.builder.AbstractBuildNode;
 import packed.internal.invokers.InternalFunction;
 
 /** A runtime service node for prototypes. */
+// 3 typer??
+// No params
+// No InjectionSite parameters
+// InjectionSite parameters
 public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     /** The factory used for creating new instances. */
-    private final InternalFunction<T> function;
+    private final InternalFunction<T> invoker;
 
     Provider<?>[] providers;
 
@@ -40,7 +44,7 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
      */
     public RuntimeServiceNodePrototype(AbstractBuildNode<T> node, InternalFunction<T> function) {
         super(node);
-        this.function = requireNonNull(function);
+        this.invoker = requireNonNull(function);
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
@@ -89,6 +93,6 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
                 params[i] = providers[i].get();
             }
         }
-        return function.invoke(params);
+        return invoker.invoke(params);
     }
 }

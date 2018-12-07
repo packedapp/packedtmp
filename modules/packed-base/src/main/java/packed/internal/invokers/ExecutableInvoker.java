@@ -32,7 +32,7 @@ import packed.internal.util.ThrowableUtil;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** The backing class of {@link Factory}. */
-public class ExecutableInvoker<T> extends InternalFactoryMember<T> {
+public class ExecutableInvoker<T> extends InvokableMember<T> {
 
     /**
      * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for

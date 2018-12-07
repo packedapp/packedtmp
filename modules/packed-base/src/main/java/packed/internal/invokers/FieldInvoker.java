@@ -29,7 +29,7 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.Nullable;
 
 /** An invoker that can read and write fields. */
-public final class FieldInvoker<T> extends InternalFactoryMember<T> {
+public final class FieldInvoker<T> extends InvokableMember<T> {
 
     /** The field we invoke. */
     public final FieldDescriptor field;

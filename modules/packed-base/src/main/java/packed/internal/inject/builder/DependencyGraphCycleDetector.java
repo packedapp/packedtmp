@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.inject.InjectionException;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 
 /** A utility class that can find cycles in a dependency graph. */
 final class DependencyGraphCycleDetector {
@@ -42,7 +42,7 @@ final class DependencyGraphCycleDetector {
     static DependencyCycle detectCycle(AbstractBuildNode<?> node, ArrayDeque<AbstractBuildNode<?>> stack, ArrayDeque<AbstractBuildNode<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
-            Node<?> dependency = node.resolvedDependencies[i];
+            ServiceNode<?> dependency = node.resolvedDependencies[i];
             if (dependency instanceof AbstractBuildNode) {
                 AbstractBuildNode<?> to = (AbstractBuildNode<?>) dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node

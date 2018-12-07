@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.util.Nullable;
-import packed.internal.inject.Node;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -32,7 +32,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  */
 public final class BuildNodeExposed<T> extends AbstractBuildNode<T> {
 
-    final Node<T> exposureOf;
+    final ServiceNode<T> exposureOf;
 
     /**
      * @param configuration
@@ -40,7 +40,7 @@ public final class BuildNodeExposed<T> extends AbstractBuildNode<T> {
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public BuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, Node<T> exposureOf) {
+    public BuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
         super(configuration, configurationSite, List.of());
         this.exposureOf = requireNonNull(exposureOf);
     }
