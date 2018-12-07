@@ -24,7 +24,8 @@ import app.packed.container.Container;
 import app.packed.inject.Injector;
 
 /**
- * Used to annotate methods that should be invoked whenever a component is being started.
+ * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
+ * {@link LifecycleState#STARTING} state.
  *
  * <p>
  * A simple usage example:

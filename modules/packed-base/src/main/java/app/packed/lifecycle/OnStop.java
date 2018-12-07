@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used for annotating methods that should be invoked whenever a component is being stopped (state =
- * {@link LifecycleState#STOPPING}).
+ * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
+ * {@link LifecycleState#STOPPING} state.
  * <p>
  * Static methods annotated with OnStop are ignore.
  *
@@ -33,6 +33,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-//@MetaAnnotation(states = LifecycleState.STOPPING)
-//@After("STOPPING") // STOPPING maa jo vaere container og ikke component...
+// @MetaAnnotation(states = LifecycleState.STOPPING)
+// @After("STOPPING") // STOPPING maa jo vaere container og ikke component...
 public @interface OnStop {}

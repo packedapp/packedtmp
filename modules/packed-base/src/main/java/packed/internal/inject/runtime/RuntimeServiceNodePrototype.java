@@ -25,7 +25,7 @@ import packed.internal.inject.builder.ServiceBuildNode;
 import packed.internal.invokers.InternalFunction;
 
 /** A runtime service node for prototypes. */
-// 3 typer??
+// 3 typer?? Saa kan de foerste to implementere Provider
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters

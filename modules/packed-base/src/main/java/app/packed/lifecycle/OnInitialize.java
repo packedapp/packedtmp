@@ -24,9 +24,9 @@ import app.packed.inject.Inject;
 import app.packed.inject.Injector;
 
 /**
- * A method annotation that can be used to indicate that a method must be executed <b>after</b> the method's declaring
- * entity has transitioned to the {@link LifecycleState#INITIALIZING} state. But before it transitions to the
- * {@link LifecycleState#INITIALIZED} state.
+ * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
+ * {@link LifecycleState#INITIALIZING} state.
+ * 
  * <p>
  * This annotation can, for example, be used on the method of a component instance, such as:
  *
