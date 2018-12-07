@@ -43,8 +43,8 @@ public class InternalBundleDescriptor {
 
         //////////////// Create the builder
         BundleDescriptorBuilder builder = new BundleDescriptorBuilder();
-        for (AbstractBuildNode<?> n : conf.publicNodeList) {
-            if (n instanceof BuildNodeExposed) {
+        for (ServiceBuildNode<?> n : conf.publicNodeList) {
+            if (n instanceof ServiceBuildNodeExposed) {
                 builder.addExposed((ServiceConfiguration<?>) n);
             }
         }

@@ -35,7 +35,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class AbstractBuildNode<T> extends AbstractConfiguration implements ServiceNode<T>, ServiceConfiguration<T> {
+public abstract class ServiceBuildNode<T> extends AbstractConfiguration implements ServiceNode<T>, ServiceConfiguration<T> {
 
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
@@ -67,7 +67,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    AbstractBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
+    ServiceBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         super(configurationSite);
         this.injectorBuilder = requireNonNull(injectorBuilder);
         this.dependencies = requireNonNull(dependencies);
@@ -86,7 +86,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
     }
 
     @Override
-    public AbstractBuildNode<T> as(Class<? super T> key) {
+    public ServiceBuildNode<T> as(Class<? super T> key) {
         requireNonNull(key, "key is null");
         return as(Key.of(key));
     }
@@ -94,7 +94,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public AbstractBuildNode<T> as(Key<? super T> key) {
+    public ServiceBuildNode<T> as(Key<? super T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         // validateKey(key);
@@ -126,7 +126,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
      * @return
      */
     @Nullable
-    AbstractBuildNode<?> declaringNode() {
+    ServiceBuildNode<?> declaringNode() {
         return null;
     }
 
@@ -158,7 +158,7 @@ public abstract class AbstractBuildNode<T> extends AbstractConfiguration impleme
 
     /** {@inheritDoc} */
     @Override
-    public AbstractBuildNode<T> setDescription(String description) {
+    public ServiceBuildNode<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }

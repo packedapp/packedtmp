@@ -44,7 +44,7 @@ final class BindInjectorFromBundle extends BindInjector {
      */
     void process() {
         BundleSupport.configure(bundle, newConfiguration, true);
-        processNodes(newConfiguration.publicNodeList);
+        processImport(newConfiguration.publicNodeList);
     }
 
     void processExport() {
@@ -54,7 +54,7 @@ final class BindInjectorFromBundle extends BindInjector {
             }
         }
 
-        List<BuildNodeExport<?>> exports = new ArrayList<>();
+        List<ServiceBuildNodeExport<?>> exports = new ArrayList<>();
         if (newConfiguration.requiredServicesMandatory != null) {
             for (Key<?> k : newConfiguration.requiredServicesMandatory) {
                 if (newConfiguration.privateNodeMap.containsKey(k)) {
@@ -64,7 +64,7 @@ final class BindInjectorFromBundle extends BindInjector {
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }
-                BuildNodeExport<?> e = new BuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this, node);
+                ServiceBuildNodeExport<?> e = new ServiceBuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this, node);
                 exports.add(e);
                 newConfiguration.privateNodeMap.put(e);
             }

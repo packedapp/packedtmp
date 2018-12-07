@@ -17,6 +17,7 @@ package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,19 +33,20 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * An abstract class for the various injector bind methods such as
- * {@link InjectorConfiguration#injectorBind(Class, ImportExportStage...)} and
+ * An abstract class for the injector bind methods
+ * {@link InjectorConfiguration#injectorBind(Class, ImportExportStage...)},
+ * {@link InjectorConfiguration#injectorBind(InjectorBundle, ImportExportStage...)}, and
  * {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
  */
 abstract class BindInjector {
 
-    /** The configuration site where the injector was imported. */
+    /** The configuration site of binding. */
     final InternalConfigurationSite configurationSite;
 
-    /** The configuration of the injector that is import/exporting services. */
+    /** The configuration of the injector that binding another bundle or injector. */
     final InjectorBuilder injectorConfiguration;
 
-    /** The import stages. */
+    /** The import export stages arguments. */
     final List<ImportExportStage> stages;
 
     final Set<Key<?>> requiredKeys = new HashSet<>();
@@ -67,51 +69,55 @@ abstract class BindInjector {
     }
 
     /**
-     * 
+     * @param importableNodes
+     *            all nodes that are available for import from bound injector or bundle
      */
-    void processNodes(List<? extends ServiceNode<?>> existingNodes) {
-        BuildNodeImport<?>[] importNodes = new BuildNodeImport[existingNodes.size()];
+    void processImport(List<? extends ServiceNode<?>> importableNodes) {
+        // A working array of nodes that we want to import
+        ArrayList<ServiceBuildNodeImport<?>> nodes = new ArrayList<>(importableNodes.size());
 
-        for (int i = 0; i < importNodes.length; i++) {
-            ServiceNode<?> n = existingNodes.get(i);
+        for (ServiceNode<?> n : importableNodes) {
             if (!n.isPrivate()) {
-                importNodes[i] = new BuildNodeImport<>(injectorConfiguration, configurationSite.replaceParent(n.getConfigurationSite()), this, n);
+                nodes.add(new ServiceBuildNodeImport<>(injectorConfiguration, configurationSite.replaceParent(n.getConfigurationSite()), this, n));
             }
         }
-
         for (ImportExportStage s : stages) {
             if (s instanceof InjectorImportStage) {
-                InjectorImportStage stage = (InjectorImportStage) s;
-                // Find @Provides, lookup class
-                boolean rebinds = false;
-                for (int i = 0; i < importNodes.length; i++) {
-                    BuildNodeImport<?> importNode = importNodes[i];
-                    if (importNode != null) {
-                        Key<?> existing = importNode.getKey();
-
-                        stage.importService(importNode);
-
-                        if (importNode.getKey() == null) {
-                            importNodes[i] = null;
-                        } else {
-                            if (!importNode.getKey().equals(existing)) {
-                                rebinds = true;
-                                // Should make new, with new configuration site
-                            }
-                        }
-                    }
-                }
-                if (rebinds) {
-                    // TODO check that we do not have multiple nodes with the same key now....
-                    // put them in a map...
-                }
+                processImportStage((InjectorImportStage) s, nodes);
             }
         }
-        for (int i = 0; i < importNodes.length; i++) {
-            if (importNodes[i] != null) {
-                // TODO check non existing
-                injectorConfiguration.privateNodeMap.put(importNodes[i]);
+        for (ServiceBuildNodeImport<?> i : nodes) {
+            if (i != null) {
+                injectorConfiguration.privateNodeMap.put(i);
             }
         }
     }
+
+    void processImportStage(InjectorImportStage stage, ArrayList<ServiceBuildNodeImport<?>> nodes) {
+        // Find @Provides, lookup class
+        boolean rebinds = false;
+
+        for (int i = 0; i < nodes.size(); i++) {
+            ServiceBuildNodeImport<?> importNode = nodes.get(i);
+            if (importNode != null) {
+                Key<?> existing = importNode.getKey();
+
+                stage.importService(importNode);
+
+                if (importNode.getKey() == null) {
+                    nodes.set(i, null);
+                } else {
+                    if (!importNode.getKey().equals(existing)) {
+                        rebinds = true;
+                        // Should make new, with new configuration site
+                    }
+                }
+            }
+        }
+        if (rebinds) {
+            // TODO check that we do not have multiple nodes with the same key now....
+            // put them in a map...
+        }
+    }
+
 }

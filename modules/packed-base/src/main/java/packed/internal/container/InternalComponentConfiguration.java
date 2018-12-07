@@ -26,14 +26,14 @@ import app.packed.inject.Key;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.builder.BuildNodeDefault;
+import packed.internal.inject.builder.ServiceBuildNodeDefault;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.util.Checks;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link ComponentConfiguration}. */
-public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> implements ComponentConfiguration<T> {
+public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T> implements ComponentConfiguration<T> {
 
     /** A list of all children that have been added (lazily initialized). */
     ArrayList<InternalComponentConfiguration<?>> children;
@@ -203,7 +203,7 @@ public class InternalComponentConfiguration<T> extends BuildNodeDefault<T> imple
     }
 
     /** A special build node that is used for mixins. */
-    static class MixinBuildNode extends BuildNodeDefault<Object> {
+    static class MixinBuildNode extends ServiceBuildNodeDefault<Object> {
 
         // /**
         // * @param injectorBuilder

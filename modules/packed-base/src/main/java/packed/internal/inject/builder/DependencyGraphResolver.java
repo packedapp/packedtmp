@@ -42,7 +42,7 @@ class DependencyGraphResolver {
         b.detectCyclesFor = new ArrayList<>();
 
         for (ServiceNode<?> nn : b.root.privateNodeMap) {
-            AbstractBuildNode<?> node = (AbstractBuildNode<?>) nn;
+            ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
             node.freeze();// Should be frozen, maybe change to an assert
 
             if (node.needsResolving()) {
@@ -102,6 +102,6 @@ class DependencyGraphResolver {
                 // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
             }
         }
-        b.root.privateNodeMap.forEach(n -> ((AbstractBuildNode<?>) n).checkResolved());
+        b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
     }
 }

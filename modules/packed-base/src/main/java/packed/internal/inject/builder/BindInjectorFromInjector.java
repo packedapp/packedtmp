@@ -55,6 +55,6 @@ final class BindInjectorFromInjector extends BindInjector {
 
         // All the nodes we potentially want to import
         List<ServiceNode<?>> allNodes = ii.copyNodes();// immutable
-        processNodes(allNodes);
+        processImport(allNodes);
     }
 }

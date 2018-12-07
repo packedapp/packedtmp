@@ -31,7 +31,7 @@ import packed.internal.inject.runtime.InternalInjector;
 final class DependencyGraph {
 
     /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<AbstractBuildNode<?>> detectCyclesFor;
+    ArrayList<ServiceBuildNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
     final InjectorBuilder root;
@@ -50,7 +50,7 @@ final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(InjectorBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.privateNodeMap);
-        builder.privateNodeMap.put(new BuildNodeDefault<>(builder, builder.getConfigurationSite(), builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
+        builder.privateNodeMap.put(new ServiceBuildNodeDefault<>(builder, builder.getConfigurationSite(), builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {
@@ -92,9 +92,9 @@ final class DependencyGraph {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<AbstractBuildNode<?>> stack = new ArrayDeque<>();
-        ArrayDeque<AbstractBuildNode<?>> dependencies = new ArrayDeque<>();
-        for (AbstractBuildNode<?> node : detectCyclesFor) {
+        ArrayDeque<ServiceBuildNode<?>> stack = new ArrayDeque<>();
+        ArrayDeque<ServiceBuildNode<?>> dependencies = new ArrayDeque<>();
+        for (ServiceBuildNode<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
@@ -110,8 +110,8 @@ final class DependencyGraph {
 
         // Instantiate all singletons
         for (ServiceNode<?> node : root.privateNodeMap) {
-            if (node instanceof BuildNodeDefault) {
-                BuildNodeDefault<?> s = (BuildNodeDefault<?>) node;
+            if (node instanceof ServiceBuildNodeDefault) {
+                ServiceBuildNodeDefault<?> s = (ServiceBuildNodeDefault<?>) node;
                 if (s.getBindingMode() == BindingMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }

@@ -67,7 +67,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     InternalInjector privateInjector;
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
-    AbstractBuildNode<?> privateLatestNode;
+    ServiceBuildNode<?> privateLatestNode;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     final ServiceNodeMap privateNodeMap;
@@ -75,7 +75,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     InternalInjector publicInjector;
 
     @Nullable
-    final ArrayList<BuildNodeExposed<?>> publicNodeList;
+    final ArrayList<ServiceBuildNodeExposed<?>> publicNodeList;
 
     /** The runtime nodes that will be available in the injector. */
     final ServiceNodeMap publicNodeMap;
@@ -123,7 +123,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
-        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
         scan(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
@@ -142,7 +142,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
-        BuildNodeDefault<T> node = new BuildNodeDefault<>(this, frame, mode, accessor.readable(func), (List) factory.getDependencies());
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, mode, accessor.readable(func), (List) factory.getDependencies());
 
         scan(func.getRawType(), node);
 
@@ -165,7 +165,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
     }
 
-    protected final <T> AbstractBuildNode<T> bindNode(AbstractBuildNode<T> node) {
+    protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
         assert privateLatestNode == null;
         privateLatestNode = node;
         return node;
@@ -216,7 +216,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }
-        BuildNodeExposed<T> bn = new BuildNodeExposed<>(this, cs, node);
+        ServiceBuildNodeExposed<T> bn = new ServiceBuildNodeExposed<>(this, cs, node);
         bn.as(key);
         publicNodeList.add(bn);
         return bn;
@@ -299,7 +299,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void scan(Class<?> type, BuildNodeDefault<?> parent) {
+    private void scan(Class<?> type, ServiceBuildNodeDefault<?> parent) {
         ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
 
         AtProvidesGroup ps = serviceDesc.provides;
@@ -318,12 +318,12 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
             // ProvidesSupport has already validated that the specified type does not have any members that provide services with
             // the same key, so we can just add them now without checking
             for (AtProvides field : ps.fields) {
-                AbstractBuildNode<?> providedNode = parent.provide(field);
+                ServiceBuildNode<?> providedNode = parent.provide(field);
                 providedNode.as((Key) field.key);
                 privateNodeMap.put(providedNode);// put them directly
             }
             for (AtProvides method : ps.methods) {
-                AbstractBuildNode<?> providedNode = parent.provide(method);
+                ServiceBuildNode<?> providedNode = parent.provide(method);
                 providedNode.as((Key) method.key);
                 privateNodeMap.put(providedNode);// put them directly
             }

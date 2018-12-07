@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
-import packed.internal.inject.builder.AbstractBuildNode;
+import packed.internal.inject.builder.ServiceBuildNode;
 
 /**
  * An runtime service node holding {@link BindingMode#SINGLETON} instances. This node also holds
@@ -47,7 +47,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
      * @param bindingMode
      *            the binding mode of this node
      */
-    public RuntimeServiceNodeSingleton(AbstractBuildNode<T> buildNode, T instance) {
+    public RuntimeServiceNodeSingleton(ServiceBuildNode<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
         this.bindingMode = buildNode.getBindingMode();

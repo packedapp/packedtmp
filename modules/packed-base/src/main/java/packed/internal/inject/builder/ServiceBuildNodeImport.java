@@ -21,63 +21,65 @@ import java.util.List;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
-/**
- * A build node that is created when a service is exposed.
- */
-public final class BuildNodeExposed<T> extends AbstractBuildNode<T> {
+/** A build node that imports a service from another injector. */
+public class ServiceBuildNodeImport<T> extends ServiceBuildNode<T> {
 
-    final ServiceNode<T> exposureOf;
+    /** The node to import. */
+    final ServiceNode<T> other;
 
-    /**
-     * @param configuration
-     *            the injector configuration this node is being added to
-     * @param configurationSite
-     *            the configuration site of the exposure
-     */
-    public BuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
-        super(configuration, configurationSite, List.of());
-        this.exposureOf = requireNonNull(exposureOf);
-    }
+    /** The bind injector source. */
+    final BindInjector binding;
 
-    @Override
-    @Nullable
-    AbstractBuildNode<?> declaringNode() {
-        return (exposureOf instanceof AbstractBuildNode) ? ((AbstractBuildNode<?>) exposureOf).declaringNode() : null;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    ServiceBuildNodeImport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector binding, ServiceNode<T> node) {
+        super(injectorConfiguration, configurationSite, List.of());
+        this.other = requireNonNull(node);
+        this.binding = requireNonNull(binding);
+        this.as((Key) node.getKey());
+        this.setDescription(node.getDescription());
+        this.tags().addAll(node.tags());
     }
 
     /** {@inheritDoc} */
     @Override
     public BindingMode getBindingMode() {
-        return exposureOf.getBindingMode();
+        return other.getBindingMode();
+    }
+
+    @Override
+    @Nullable
+    ServiceBuildNode<?> declaringNode() {
+        return (other instanceof ServiceBuildNode) ? ((ServiceBuildNode<?>) other).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(InjectionSite site) {
-        return null;
+        return other.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return false;
+        return other.needsInjectionSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return false;
+        return other.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
     RuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeServiceNodeAlias<>(this, exposureOf);
+        return new RuntimeServiceNodeAlias<T>(this, other);
     }
 }

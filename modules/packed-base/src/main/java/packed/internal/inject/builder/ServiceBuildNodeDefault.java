@@ -41,7 +41,7 @@ import packed.internal.util.descriptor.InternalMemberDescriptor;
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
  * makes extending it with {@link ComponentConfiguration} much easier.
  */
-public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
+public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -58,9 +58,9 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     private T instance;
 
     /** The parent, if this node is the result of a member annotated with {@link Provides}. */
-    private final BuildNodeDefault<?> parent;
+    private final ServiceBuildNodeDefault<?> parent;
 
-    BuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory, BuildNodeDefault<?> parent) {
+    ServiceBuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory, ServiceBuildNodeDefault<?> parent) {
         super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -68,7 +68,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
         setDescription(atProvides.description);
     }
 
-    public BuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory,
+    public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory,
             List<InternalDependency> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
         this.function = requireNonNull(factory, "factory is null");
@@ -80,7 +80,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
     }
 
     @Override
-    AbstractBuildNode<?> declaringNode() {
+    ServiceBuildNode<?> declaringNode() {
         return parent;
     }
 
@@ -94,7 +94,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, T instance) {
+    public ServiceBuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
@@ -182,7 +182,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     }
 
-    public AbstractBuildNode<?> provide(AtProvides atProvides) {
+    public ServiceBuildNode<?> provide(AtProvides atProvides) {
         InternalMemberDescriptor descriptor = atProvides.descriptor;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
                 atProvides.descriptor.getAnnotation(Provides.class), descriptor);
@@ -192,7 +192,7 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
             getInstance(null);
             fi = fi.withInstance(this.instance);
         }
-        return new BuildNodeDefault<>(icss, atProvides, fi, this);
+        return new ServiceBuildNodeDefault<>(icss, atProvides, fi, this);
     }
 
     @Override
