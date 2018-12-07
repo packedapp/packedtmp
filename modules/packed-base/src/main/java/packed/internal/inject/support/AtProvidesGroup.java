@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +37,8 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  * Information about fields and methods annotated with {@link Provides}. Used for both services, components, import and
  * export stages.
  */
+
+// TODO: merge fields + methods?
 public final class AtProvidesGroup {
 
     /** An empty group. */
@@ -131,13 +132,7 @@ public final class AtProvidesGroup {
 
                     ExecutableInvoker<?> fii = new ExecutableInvoker<Object>(descriptor).withLookup(lookup);
 
-                    if (Modifier.isPrivate(method.getModifiers())) {
-                        lookup = lookup.in(method.getDeclaringClass());
-                    }
-
                     AtProvides ap = new AtProvides(fii, descriptor, key, (Provides) a, List.of());
-
-                    // AtProvides ap = AtProvides.from(fi, descriptor, (Provides) a);
 
                     if (methods == null) {
                         methods = new ArrayList<>(1);
