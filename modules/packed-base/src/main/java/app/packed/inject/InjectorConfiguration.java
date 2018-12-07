@@ -23,6 +23,7 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.Bundles;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.InjectorImportStage;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
@@ -196,6 +197,9 @@ public interface InjectorConfiguration extends Taggable {
      *            the injector to import services from
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
+     * @throws IllegalArgumentException
+     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
+     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
      */
     void injectorBind(Injector injector, ImportExportStage... stages);
 

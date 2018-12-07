@@ -397,6 +397,7 @@ public abstract class Key<T> {
         CanonicalizedKey(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
             super(typeLiteral, qualifier);
         }
+
     }
 }
 

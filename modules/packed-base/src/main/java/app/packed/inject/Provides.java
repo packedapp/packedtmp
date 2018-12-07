@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Methods and fields can be annotated with {@link Provides}
+ * An annotation indicating that the method or field provides a service.
  * <p>
  * The annotation can be used on both static and non-static fields and methods. However, if you use a non-static field
  * or method you implicitly introduces a dependency to an instance of the type on which the field or method is located.

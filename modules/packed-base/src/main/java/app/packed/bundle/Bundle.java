@@ -216,7 +216,10 @@ public abstract class Bundle {
      * @param stages
      *            any number of filters that restricts the services that are imported. Or makes them available under
      *            different keys
-     * @see InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)
+     * @see InjectorConfiguration#injectorBind(Injector, ImportExportStage...)
+     * @throws IllegalArgumentException
+     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
+     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
      */
     protected final void injectorBind(Injector injector, ImportExportStage... stages) {
         configuration().injectorBind(injector, stages);
