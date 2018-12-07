@@ -13,43 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.invokers;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
-import app.packed.inject.Factory2;
+import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 
-/** An internal factory for {@link Factory2}. */
-public class InternalFactory2<T, U, R> extends InternalFunction<R> {
+/**
+ * An internal factory for {@link Factory0}.
+ * 
+ * @param <T>
+ *            the type of elements the factory produces
+ */
+public final class InternalFactory0<T> extends InternalFunction<T> {
 
-    /** The function responsible for creating the actual objects. */
-    private final BiFunction<? super T, ? super U, ? extends R> function;
+    /** The supplier that creates the actual objects. */
+    private final Supplier<? extends T> supplier;
 
-    public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral) {
-        super(typeLiteral);
-        this.function = requireNonNull(function);
+    /**
+     * Creates a factory0 instance.
+     * 
+     * @param supplier
+     *            the supplier that creates the actual values
+     * @param typeInfo
+     *            the class to extract type info from.
+     * @return the new factory
+     */
+    public InternalFactory0(TypeLiteral<T> type, Supplier<? extends T> supplier) {
+        super(type);
+        this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public R invoke(Object[] params) {
-        T t = (T) params[0];
-        U u = (U) params[1];
-        R instance = function.apply(t, u);
+    public T invoke(Object[] ignore) {
+        T instance = supplier.get();
         if (!getRawType().isInstance(instance)) {
             throw new InjectionException(
-                    "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce instances of '"
+                    "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce instances of '"
                             + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
     }
-
 }

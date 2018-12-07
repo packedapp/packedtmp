@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.invokers;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,15 +21,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
-import app.packed.inject.IllegalAccessRuntimeException;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.ConstructorDescriptor;
+import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.Nullable;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
-public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
+public final class ConstructorInvoker<T> extends InternalFunction<T> {
 
     /** A factory with an executable as a target. */
     private final ConstructorDescriptor<T> constructor;
@@ -41,7 +41,7 @@ public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
     @Nullable
     private final MethodHandle methodHandle;
 
-    public InternalFactoryConstructor(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, MethodHandle methodHandle) {
+    public ConstructorInvoker(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, MethodHandle methodHandle) {
         super(key);
         this.constructor = requireNonNull(constructor, "constructor is null");
         this.methodHandle = methodHandle;
@@ -83,6 +83,6 @@ public final class InternalFactoryConstructor<T> extends InternalFunction<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the constructor " + constructor + " using the specified lookup", e);
         }
-        return new InternalFactoryConstructor<>(getType(), constructor, handle);
+        return new ConstructorInvoker<>(getType(), constructor, handle);
     }
 }

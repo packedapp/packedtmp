@@ -26,8 +26,8 @@ import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.inject.function.ExecutableInvoker;
-import packed.internal.inject.function.FieldInvoker;
+import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokers.FieldInvoker;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 

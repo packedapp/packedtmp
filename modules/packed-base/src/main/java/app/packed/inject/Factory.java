@@ -28,7 +28,8 @@ import java.util.function.Supplier;
 
 import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
-import packed.internal.inject.function.InternalFactoryInstance;
+import app.packed.util.IllegalAccessRuntimeException;
+import packed.internal.invokers.InstanceInvoker;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
@@ -265,7 +266,7 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(new InternalFactory<>(InternalFactoryInstance.of(instance), List.of()));
+        return new Factory<>(new InternalFactory<>(InstanceInvoker.of(instance), List.of()));
     }
 }
 //

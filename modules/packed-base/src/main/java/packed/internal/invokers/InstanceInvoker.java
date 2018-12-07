@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.invokers;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,12 +21,12 @@ import app.packed.inject.Factory;
 import app.packed.inject.TypeLiteral;
 
 /** A factory that returns the same instance on every invocation. */
-public final class InternalFactoryInstance<T> extends InternalFunction<T> {
+public final class InstanceInvoker<T> extends InternalFunction<T> {
 
     /** The instance that is returned every time. */
     private final T instance;
 
-    private InternalFactoryInstance(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
+    private InstanceInvoker(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
         super(typeLiteralOrKey, actualType);
         this.instance = instance;
     }
@@ -51,6 +51,6 @@ public final class InternalFactoryInstance<T> extends InternalFunction<T> {
     public static <T> InternalFunction<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
-        return new InternalFactoryInstance<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
+        return new InstanceInvoker<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
     }
 }

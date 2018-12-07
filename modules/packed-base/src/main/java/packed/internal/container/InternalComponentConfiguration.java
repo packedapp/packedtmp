@@ -28,7 +28,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.builder.BuildNodeDefault;
 import packed.internal.inject.builder.InjectorBuilder;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.invokers.InternalFunction;
 import packed.internal.util.Checks;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 

@@ -15,16 +15,30 @@
  */
 package packed.internal.invokers;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Method;
+import app.packed.inject.TypeLiteral;
 
 /**
  *
  */
-public interface MethodVisitor {
+public interface Invokable<T> {
 
-    // Ved ikke med den boolean, det der er vi skal checke for f.eks. @Inject+@Provides
-    // @Inject + LifecycleAnnotations,...
-    boolean forMethod(Lookup lookup, Method method, Annotation[] annotations);
+    TypeLiteral<T> getType();
+
+    @SuppressWarnings("unchecked")
+    default Class<T> getRawType() {
+        return (Class<T>) getType().getRawType();
+    }
+
+    boolean isNullable();
+
+    boolean isFailable();
+
+    T invoke(Object[] arguments);
+
+    enum Type {
+        UNSAFE_NULLABLE, /**/
+        SUPER_SAFE_NULLABLE, /**/
+        FIXED;
+    }
 }
+// should invoke

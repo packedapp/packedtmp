@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
+package packed.internal.classscan;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,6 +32,7 @@ import packed.internal.inject.support.AtProvidesGroup;
  *
  */
 // Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
+// https://github.com/classgraph/classgraph
 class MemberScanner {
 
     final Class<?> clazz;

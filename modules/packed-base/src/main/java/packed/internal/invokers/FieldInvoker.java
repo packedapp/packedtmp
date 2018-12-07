@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.invokers;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,58 +23,32 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 
-import app.packed.inject.IllegalAccessRuntimeException;
-import app.packed.inject.Provides;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.Nullable;
 
-/** An internal factory that reads a field. Is mainly used in connection with {@link Provides}. */
+/** An invoker that can read and write fields. */
 public final class FieldInvoker<T> extends InternalFactoryMember<T> {
 
     /** The field we invoke. */
     public final FieldDescriptor field;
 
-    /** A var handle that can be used to read the field. */
-    @Nullable
-    private final VarHandle varHandle;
+    /** Whether or not the field is static. */
+    public final boolean isStatic;
 
     /** Whether or not the field is volatile. */
     public final boolean isVolatile;
 
-    /** Whether or not the field is static. */
-    public final boolean isStatic;
-
-    /**
-     * Sets the value of the field
-     * 
-     * @param instance
-     *            the instance for which to set the value
-     * @param value
-     *            the value to set
-     * @see VarHandle#set(Object...)
-     */
-    public void setField(Object instance, Object value) {
-        if (isVolatile) {
-            varHandle.setVolatile(instance, value);
-        } else {
-            varHandle.set(instance, value);
-        }
-    }
+    /** A var handle that can be used to read the field. */
+    @Nullable
+    private final VarHandle varHandle;
 
     @SuppressWarnings("unchecked")
     public FieldInvoker(FieldDescriptor field) {
         super((TypeLiteral<T>) field.getTypeLiteral(), null);
         this.field = field;
         this.varHandle = null;
-        this.isVolatile = Modifier.isVolatile(field.getModifiers());
-        this.isStatic = Modifier.isStatic(field.getModifiers());
-    }
-
-    public FieldInvoker(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
-        super(typeLiteralOrKey, instance);
-        this.field = requireNonNull(field);
-        this.varHandle = varHandle;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
@@ -87,18 +61,12 @@ public final class FieldInvoker<T> extends InternalFactoryMember<T> {
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    @Override
-    public FieldInvoker<T> withInstance(Object instance) {
-        requireNonNull(instance, "instance is null");
-        if (this.instance != null) {
-            throw new IllegalStateException("An instance has already been set");
-        }
-        return new FieldInvoker<>(this, instance);
-    }
-
-    @Override
-    public boolean isMissingInstance() {
-        return !field.isStatic() && instance == null;
+    public FieldInvoker(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
+        super(typeLiteralOrKey, instance);
+        this.field = requireNonNull(field);
+        this.varHandle = varHandle;
+        this.isVolatile = Modifier.isVolatile(field.getModifiers());
+        this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
     /**
@@ -130,6 +98,44 @@ public final class FieldInvoker<T> extends InternalFactoryMember<T> {
         } else {
             return (T) varHandle.get(instance);
         }
+    }
+
+    @Override
+    public boolean isMissingInstance() {
+        return !field.isStatic() && instance == null;
+    }
+
+    /**
+     * Sets the value of the field
+     * 
+     * @param instance
+     *            the instance for which to set the value
+     * @param value
+     *            the value to set
+     * @see VarHandle#set(Object...)
+     * @throws UnsupportedOperationException
+     *             if the underlying method is a static method
+     */
+    public void setOnInstance(Object instance, Object value) {
+        if (isStatic) {
+            throw new UnsupportedOperationException("Underlying field " + field + " is static");
+        }
+        if (isVolatile) {
+            varHandle.setVolatile(instance, value);
+        } else {
+            varHandle.set(instance, value);
+        }
+    }
+
+    @Override
+    public FieldInvoker<T> withInstance(Object instance) {
+        requireNonNull(instance, "instance is null");
+        if (this.instance != null) {
+            throw new IllegalStateException("An instance has already been set");
+        } else if (isStatic) {
+            throw new IllegalStateException("The field is static");
+        }
+        return new FieldInvoker<>(this, instance);
     }
 
     /**

@@ -26,6 +26,8 @@ import java.util.function.Predicate;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
+import packed.internal.util.descriptor.InternalMemberDescriptor;
+import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * The interface used internally for a configuration. This method includes methods that we are not yet ready to put out
@@ -69,6 +71,14 @@ public interface InternalConfigurationSite extends ConfigurationSite {
             return UNKNOWN;
         }
         return new AnnotatedFieldConfigurationSite(this, cst, field, annotation);
+    }
+
+    default InternalConfigurationSite spawnAnnotatedMember(ConfigurationSiteType cst, Annotation annotation, InternalMemberDescriptor member) {
+        if (member instanceof InternalMethodDescriptor) {
+            return spawnAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
+        } else {
+            return spawnAnnotatedField(cst, annotation, (FieldDescriptor) member);
+        }
     }
 
     default InternalConfigurationSite spawnAnnotatedMethod(ConfigurationSiteType cst, Annotation annotation, MethodDescriptor method) {

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokers;
+package packed.internal.classscan;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.inject.function.ExecutableInvoker;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokers.InternalFunction;
 
 /**
  * 

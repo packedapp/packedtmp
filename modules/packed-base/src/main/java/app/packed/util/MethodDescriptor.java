@@ -42,9 +42,7 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      * @return whether or not this method is a static method
      * @see Modifier#isStatic(int)
      */
-    default boolean isStatic() {
-        return Modifier.isStatic(getModifiers());
-    }
+    boolean isStatic();
 
     /**
      * Returns a new method from this descriptor.

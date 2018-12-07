@@ -21,7 +21,7 @@ import java.util.List;
 
 import app.packed.lifecycle.OnStart;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.invokers.InternalFunction;
 
 /**
  *

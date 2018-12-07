@@ -30,7 +30,7 @@ import app.packed.util.Nullable;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
-public final class InternalFieldDescriptor extends InternalVariableDescriptor implements FieldDescriptor {
+public final class InternalFieldDescriptor extends InternalVariableDescriptor implements FieldDescriptor, InternalMemberDescriptor {
 
     /** The field that is being wrapped. */
     private final Field field;
@@ -123,6 +123,12 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
     @Override
     public boolean isPrimitiveType() {
         return field.getType().isPrimitive();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isStatic() {
+        return Modifier.isStatic(getModifiers());
     }
 
     /** {@inheritDoc} */

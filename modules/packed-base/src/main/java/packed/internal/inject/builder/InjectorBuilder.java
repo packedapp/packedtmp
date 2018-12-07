@@ -36,15 +36,15 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
+import packed.internal.classscan.LookupDescriptorAccessor;
+import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.Node;
 import packed.internal.inject.NodeMap;
-import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.inject.support.AtProvides;
 import packed.internal.inject.support.AtProvidesGroup;
-import packed.internal.invokers.LookupDescriptorAccessor;
-import packed.internal.invokers.ServiceClassDescriptor;
+import packed.internal.invokers.InternalFunction;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -318,12 +318,12 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
             // ProvidesSupport has already validated that the specified type does not have any members that provide services with
             // the same key, so we can just add them now without checking
             for (AtProvides field : ps.fields) {
-                AbstractBuildNode<?> providedNode = parent.provideField(field);
+                AbstractBuildNode<?> providedNode = parent.provide(field);
                 providedNode.as((Key) field.key);
                 privateNodeMap.put(providedNode);// put them directly
             }
             for (AtProvides method : ps.methods) {
-                AbstractBuildNode<?> providedNode = parent.provideMethod(method);
+                AbstractBuildNode<?> providedNode = parent.provide(method);
                 providedNode.as((Key) method.key);
                 privateNodeMap.put(providedNode);// put them directly
             }

@@ -22,7 +22,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Provider;
 import packed.internal.inject.builder.AbstractBuildNode;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.invokers.InternalFunction;
 
 /** A runtime service node for prototypes. */
 public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> implements Provider<T> {

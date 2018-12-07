@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.invokable;
+package packed.internal.invokers;
 
 import app.packed.inject.TypeLiteral;
+import app.packed.util.Nullable;
 
 /**
  *
  */
-public interface Invokable<T> {
+// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
+public class InternalFactoryBindable<T> extends InternalFunction<T> {
 
-    TypeLiteral<T> getType();
+    InternalFunction<T> wrapping;
 
-    @SuppressWarnings("unchecked")
-    default Class<T> getRawType() {
-        return (Class<T>) getType().getRawType();
+    public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
+        super(typeLiteral);
     }
 
-    boolean isNullable();
-
-    boolean isFailable();
-
-    T invoke(Object[] arguments);
-
-    enum Type {
-        UNSAFE_NULLABLE, /**/
-        SUPER_SAFE_NULLABLE, /**/
-        FIXED;
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public T invoke(Object[] params) {
+        return null;
     }
 }
-// should invoke

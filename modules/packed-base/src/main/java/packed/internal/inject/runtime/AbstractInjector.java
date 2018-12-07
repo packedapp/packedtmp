@@ -26,11 +26,11 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.inject.Key;
 import app.packed.util.Nullable;
+import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.Node;
-import packed.internal.inject.function.FieldInvoker;
 import packed.internal.inject.support.AtInject;
-import packed.internal.invokers.ServiceClassDescriptor;
+import packed.internal.invokers.FieldInvoker;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
@@ -93,7 +93,7 @@ public abstract class AbstractInjector implements Injector {
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);
                     value = dependency.wrapIfOptional(value);
-                    field.setField(instance, value);
+                    field.setOnInstance(instance, value);
                 } else if (dependency.isOptional()) {
                     // 3 Valgmuligheder
 

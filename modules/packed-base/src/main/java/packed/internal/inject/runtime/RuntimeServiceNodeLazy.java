@@ -24,7 +24,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.AbstractBuildNode;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.invokers.InternalFunction;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */

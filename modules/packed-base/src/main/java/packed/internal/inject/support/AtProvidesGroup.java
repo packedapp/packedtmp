@@ -28,8 +28,8 @@ import java.util.Map;
 import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.inject.function.ExecutableInvoker;
-import packed.internal.inject.function.FieldInvoker;
+import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokers.FieldInvoker;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -95,7 +95,7 @@ public final class AtProvidesGroup {
                     hasInstanceMembers |= !descriptor.isStatic();
 
                     FieldInvoker<?> fii = new FieldInvoker<>(descriptor).withLookup(lookup);
-                    AtProvides ap = new AtProvides(fii, descriptor, key, (Provides) a);
+                    AtProvides ap = new AtProvides(fii, descriptor, key, (Provides) a, List.of());
 
                     // Check this
                     // if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {

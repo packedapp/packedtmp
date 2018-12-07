@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.support;
 
-import packed.internal.inject.function.InternalFactoryMember;
+import packed.internal.invokers.InternalFactoryMember;
 
 /**
  *

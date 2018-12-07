@@ -13,51 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.invokers;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
-import app.packed.inject.Factory0;
+import app.packed.inject.Factory1;
 import app.packed.inject.InjectionException;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 
-/**
- * An internal factory for {@link Factory0}.
- * 
- * @param <T>
- *            the type of elements the factory produces
- */
-public final class InternalFactory0<T> extends InternalFunction<T> {
+/** An internal factory for {@link Factory1}. */
+public class InternalFactory1<T, R> extends InternalFunction<R> {
 
-    /** The supplier that creates the actual objects. */
-    private final Supplier<? extends T> supplier;
+    /** The function that creates the actual objects. */
+    private final Function<? super T, ? extends R> function;
 
     /**
-     * Creates a factory0 instance.
-     * 
      * @param supplier
-     *            the supplier that creates the actual values
-     * @param typeInfo
-     *            the class to extract type info from.
-     * @return the new factory
+     * @param functionalSignature
      */
-    public InternalFactory0(TypeLiteral<T> type, Supplier<? extends T> supplier) {
+    public InternalFactory1(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
         super(type);
-        this.supplier = requireNonNull(supplier, "supplier is null");
+        this.function = requireNonNull(function, "function is null");
     }
 
-    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    public T invoke(Object[] ignore) {
-        T instance = supplier.get();
+    public R invoke(Object[] params) {
+        T t = (T) params[0];
+        R instance = function.apply(t);
         if (!getRawType().isInstance(instance)) {
             throw new InjectionException(
-                    "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce instances of '"
+                    "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce instances of '"
                             + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;

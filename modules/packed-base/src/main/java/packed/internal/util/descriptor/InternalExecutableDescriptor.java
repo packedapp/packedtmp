@@ -20,13 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 import app.packed.util.ExecutableDescriptor;
 
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
-public abstract class InternalExecutableDescriptor extends InternalAnnotatedElement implements ExecutableDescriptor {
+public abstract class InternalExecutableDescriptor extends InternalAnnotatedElement implements ExecutableDescriptor, InternalMemberDescriptor {
 
     /** The executable */
     final Executable executable;
@@ -58,6 +59,12 @@ public abstract class InternalExecutableDescriptor extends InternalAnnotatedElem
     @Override
     public final Class<?> getDeclaringClass() {
         return executable.getDeclaringClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isStatic() {
+        return Modifier.isStatic(getModifiers());
     }
 
     /** {@inheritDoc} */

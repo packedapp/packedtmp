@@ -26,19 +26,16 @@ import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.function.ExecutableInvoker;
-import packed.internal.inject.function.FieldInvoker;
-import packed.internal.inject.function.InternalFactoryMember;
-import packed.internal.inject.function.InternalFunction;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
 import packed.internal.inject.support.AtProvides;
+import packed.internal.invokers.InternalFactoryMember;
+import packed.internal.invokers.InternalFunction;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
+import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
@@ -185,26 +182,12 @@ public class BuildNodeDefault<T> extends AbstractBuildNode<T> {
 
     }
 
-    public AbstractBuildNode<?> provideMethod(AtProvides atProvides) {
-        InternalMethodDescriptor m = (InternalMethodDescriptor) atProvides.annotatedMember;
-        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMethod(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.annotatedMember.getAnnotation(Provides.class), m);
-
-        ExecutableInvoker<?> fi = ((ExecutableInvoker<?>) atProvides.ifm);
-        if (!atProvides.isStaticMember) {
-            getInstance(null);
-            fi = fi.withInstance(this.instance);
-        }
-
-        return new BuildNodeDefault<>(icss, atProvides, fi, this);
-    }
-
-    public AbstractBuildNode<?> provideField(AtProvides atProvides) {
-        InternalFieldDescriptor descriptor = (InternalFieldDescriptor) atProvides.annotatedMember;
-        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedField(ConfigurationSiteType.INJECTOR_PROVIDE,
+    public AbstractBuildNode<?> provide(AtProvides atProvides) {
+        InternalMemberDescriptor descriptor = atProvides.annotatedMember;
+        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
                 atProvides.annotatedMember.getAnnotation(Provides.class), descriptor);
 
-        FieldInvoker<?> fi = ((FieldInvoker<?>) atProvides.ifm);
+        InternalFactoryMember<?> fi = atProvides.ifm;
         if (!atProvides.isStaticMember) {
             getInstance(null);
             fi = fi.withInstance(this.instance);

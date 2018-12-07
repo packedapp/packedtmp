@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.classscan;
 
-import app.packed.inject.TypeLiteral;
-import app.packed.util.Nullable;
+import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Method;
 
 /**
  *
  */
-// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class InternalFactoryBindable<T> extends InternalFunction<T> {
+public interface MethodVisitor {
 
-    InternalFunction<T> wrapping;
-
-    public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public T invoke(Object[] params) {
-        return null;
-    }
+    // Ved ikke med den boolean, det der er vi skal checke for f.eks. @Inject+@Provides
+    // @Inject + LifecycleAnnotations,...
+    boolean forMethod(Lookup lookup, Method method, Annotation[] annotations);
 }

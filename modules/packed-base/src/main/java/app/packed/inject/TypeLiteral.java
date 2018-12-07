@@ -31,7 +31,7 @@ import java.util.Optional;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.function.InternalFunction;
+import packed.internal.invokers.InternalFunction;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalParameterDescriptor;

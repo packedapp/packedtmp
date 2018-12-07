@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.function.ExecutableInvoker;
-import packed.internal.inject.function.FieldInvoker;
+import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokers.FieldInvoker;
 
 /**
  *

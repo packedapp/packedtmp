@@ -400,6 +400,17 @@ public abstract class Key<T> {
     }
 }
 
+// Maybe have an internal KeyFactory..... That makes proper error Messages
+
+// Extract key
+// Men vi skal jo have informationer om hvorfor
+
+// Saa metoder ved hvorfor, the caller knows where/what
+// WHERE/What could not because of why...
+// Maybe have a isValidKey(Type) or <T> checkValidKey(T extends RuntimeException, String message) throws T;
+// Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
+// because it "xxxxxx"
+
 /// **
 // * Returns a key matching the specified type.
 // *

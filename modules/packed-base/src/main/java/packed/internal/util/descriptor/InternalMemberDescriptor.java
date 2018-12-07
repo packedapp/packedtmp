@@ -15,13 +15,14 @@
  */
 package packed.internal.util.descriptor;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member {
+public interface InternalMemberDescriptor extends Member, AnnotatedElement {
 
     /**
      * Returns whether or not this field is a static field.
@@ -29,8 +30,6 @@ public interface InternalMemberDescriptor extends Member {
      * @return whether or not this field is a static field
      * @see Modifier#isStatic(int)
      */
-    default boolean isStatic() {
-        return Modifier.isStatic(getModifiers());
-    }
+    boolean isStatic();
 
 }

@@ -23,8 +23,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.function.InternalFactory0;
-import packed.internal.inject.function.InternalFactory1;
+import packed.internal.invokers.InternalFactory0;
+import packed.internal.invokers.InternalFactory1;
 
 /**
  *

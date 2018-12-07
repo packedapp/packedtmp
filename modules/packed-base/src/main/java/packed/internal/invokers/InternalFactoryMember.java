@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.function;
+package packed.internal.invokers;
 
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
@@ -33,10 +33,6 @@ public abstract class InternalFactoryMember<T> extends InternalFunction<T> {
     public InternalFactoryMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
         super(typeLiteralOrKey);
         this.instance = instance;
-    }
-
-    public boolean hasInstance() {
-        return instance != null;
     }
 
     public abstract InternalFactoryMember<T> withInstance(Object instance);
