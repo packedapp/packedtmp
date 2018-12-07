@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.inject.BindingMode;
-import app.packed.inject.Key;
 import app.packed.inject.Provides;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InvokableMember;

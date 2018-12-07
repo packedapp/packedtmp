@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,8 +37,7 @@ import java.util.OptionalLong;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
-import app.packed.util.InvalidDeclarationException;
+import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
 import support.stubs.annotation.AnnotationInstances;
 
 /** Tests {@link TypeLiteral}. */
@@ -446,12 +445,12 @@ public class TypeLiteralTest {
         assertThatThrownBy(() -> new TypeLiteral() {}).hasNoCause();
         assertThatThrownBy(() -> new TypeLiteral() {}).isExactlyInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new TypeLiteral() {})
-                .hasMessageStartingWith("Cannot determine type variable <T> for TypeLiteral<T> on class app.packed.inject.TypeLiteralTest");
+                .hasMessageStartingWith("Cannot determine type variable <T> for TypeLiteral<T> on class app.packed.util.TypeLiteralTest");
 
         /** A custom type literal to check that T is passed down to super classes. */
         class MyTypeLiteral<T> extends TypeLiteral<T> {}
         assertThatThrownBy(() -> new MyTypeLiteral() {})
-                .hasMessageStartingWith("Cannot determine type variable <T> for TypeLiteral<T> on class app.packed.inject.TypeLiteralTest");
+                .hasMessageStartingWith("Cannot determine type variable <T> for TypeLiteral<T> on class app.packed.util.TypeLiteralTest");
 
     }
 }

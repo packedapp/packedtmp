@@ -23,11 +23,11 @@ import java.lang.reflect.Modifier;
 
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 

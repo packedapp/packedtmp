@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.lifecycle.OnStart;
+import app.packed.util.Key;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InternalFunction;
 

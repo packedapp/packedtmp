@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.container.Component;
+import app.packed.util.Key;
 
 /**
  * An injection site extends the dependency interface with runtime information about which injector requested the

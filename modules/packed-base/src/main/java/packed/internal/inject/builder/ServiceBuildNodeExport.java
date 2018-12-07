@@ -21,7 +21,7 @@ import java.util.List;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionSite;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;

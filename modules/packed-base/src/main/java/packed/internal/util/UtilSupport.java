@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.Factory;
-import packed.internal.invokers.InternalFunction;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import app.packed.util.Key;
+import app.packed.util.TypeLiteral;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
-public final class InjectSupport {
+public final class UtilSupport {
 
-    /**
-     * Extracts the internal factory from the specified factory
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory to extract from
-     * @return the internal factory
-     */
-    public static <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
-        return SingletonHolder.SINGLETON.toInternalFunction(factory);
+    public static Helper invoke() {
+        return SingletonHolder.SINGLETON;
     }
 
     /** Holder of the singleton. */
@@ -43,7 +37,7 @@ public final class InjectSupport {
         static final Helper SINGLETON;
 
         static {
-            Factory.ofInstance("foo");
+            TypeLiteral.of(Object.class); // Initializes TypeLiteral, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }
@@ -54,16 +48,20 @@ public final class InjectSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
+        // Take a Source??? For example, a method to use for error message.
+        // When creating the key
+        public abstract Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
+
         /**
-         * Extracts the internal factory from the specified factory
+         * Converts the type to a type literal.
          * 
-         * @param <T>
-         *            the type of elements the factory produces
-         * @param factory
-         *            the factory to extract from
-         * @return the internal factory
+         * @param type
+         *            the type to convert
+         * @return the type literal
          */
-        protected abstract <T> InternalFunction<T> toInternalFunction(Factory<T> factory);
+        public abstract TypeLiteral<?> toTypeLiteral(Type type);
+
+        public abstract boolean isCanonicalized(TypeLiteral<?> typeLiteral);
 
         /**
          * Initializes this class.
@@ -71,9 +69,9 @@ public final class InjectSupport {
          * @param support
          *            an implementation of this class
          */
-        public static void init(Helper support) {
+        public static synchronized void init(Helper support) {
             if (SUPPORT != null) {
-                throw new Error("Can only be initialized ince");
+                throw new ExceptionInInitializerError("Can only be initialized once");
             }
             SUPPORT = requireNonNull(support);
         }

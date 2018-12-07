@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.bundle.BundleDescriptor;
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.BindingMode;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 
 /**
  *

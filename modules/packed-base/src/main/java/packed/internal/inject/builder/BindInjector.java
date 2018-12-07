@@ -29,7 +29,7 @@ import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.ServiceNode;

@@ -22,6 +22,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.util.TypeLiteral;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InternalFactory0;
 import packed.internal.invokers.InternalFactory1;

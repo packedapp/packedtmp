@@ -23,6 +23,8 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.util.Qualifier;
+
 /** Test of {@link Factory}. */
 public class FactoryTest {
 

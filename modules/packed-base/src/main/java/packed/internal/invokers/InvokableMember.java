@@ -15,8 +15,8 @@
  */
 package packed.internal.invokers;
 
-import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /**
  * An internal factory

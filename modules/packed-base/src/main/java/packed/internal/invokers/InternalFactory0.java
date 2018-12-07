@@ -22,8 +22,8 @@ import java.util.function.Supplier;
 
 import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /**
  * An internal factory for {@link Factory0}.

@@ -24,7 +24,7 @@ import app.packed.container.Component;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;

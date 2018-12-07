@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 

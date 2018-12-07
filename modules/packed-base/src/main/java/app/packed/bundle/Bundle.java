@@ -22,11 +22,11 @@ import app.packed.container.Container;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.Key;
-import app.packed.inject.Qualifier;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.TypeLiteral;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
+import app.packed.util.Qualifier;
+import app.packed.util.TypeLiteral;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**

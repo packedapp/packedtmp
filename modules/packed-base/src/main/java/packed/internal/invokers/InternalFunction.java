@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /**
  * The internal version of the {@link Factory} class.

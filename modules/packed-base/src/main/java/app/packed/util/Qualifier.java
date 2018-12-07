@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.util;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
 
 /**
  * Qualifiers are used to distinguish different objects of the same type.
- * 
  * 
  * <p>
  * This annotation basically works identical to the Qualifier annotation in javax.inject. And both of them can be used

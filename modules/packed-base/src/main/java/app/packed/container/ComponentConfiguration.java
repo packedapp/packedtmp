@@ -18,10 +18,10 @@ package app.packed.container;
 import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.TypeLiteral;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /**
  * The configuration of a components. A component configuration instance is usually obtained by calling one of the

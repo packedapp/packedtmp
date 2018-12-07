@@ -25,10 +25,10 @@ import java.util.Set;
 
 import app.packed.bundle.BundleDescriptor;
 import app.packed.inject.BindingMode;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.ConfigurationSite;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /** A builder object for {@link BundleDescriptor}. */

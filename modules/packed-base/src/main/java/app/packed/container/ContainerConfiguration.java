@@ -24,10 +24,10 @@ import app.packed.bundle.ImportExportStage;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /**
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via

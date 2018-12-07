@@ -26,11 +26,15 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.util.Key;
+import app.packed.util.TypeLiteral;
+import packed.internal.inject.InjectSupport;
 import packed.internal.invokers.InstanceInvoker;
+import packed.internal.invokers.InternalFunction;
 import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.UtilSupport;
 
 /**
  * Factories are used for creating new instances of a particular type.
@@ -41,6 +45,16 @@ import packed.internal.util.TypeVariableExtractorUtil;
  */
 // TODO Qualifiers on Methods, Types together with findInjectable????
 public class Factory<T> {
+
+    static {
+        InjectSupport.Helper.init(new InjectSupport.Helper() {
+
+            @Override
+            protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
+                return factory.factory.function;
+            }
+        });
+    }
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
     private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_CLASS_CACHE = new ClassValue<>() {
@@ -64,7 +78,7 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FindInjectableExecutable.find(new CanonicalizedTypeLiteral<>(t)));
+            return new Factory(FindInjectableExecutable.find(UtilSupport.invoke().toTypeLiteral(t)));
         }
     };
 
@@ -245,7 +259,8 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (implementation.getClass() != CanonicalizedTypeLiteral.class) {
+        if (!UtilSupport.invoke().isCanonicalized(implementation)) {
+            // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
         Type t = implementation.getType();

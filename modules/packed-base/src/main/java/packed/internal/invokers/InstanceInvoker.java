@@ -18,7 +18,7 @@ package packed.internal.invokers;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.Factory;
-import app.packed.inject.TypeLiteral;
+import app.packed.util.TypeLiteral;
 
 /** A factory that returns the same instance on every invocation. */
 public final class InstanceInvoker<T> extends InternalFunction<T> {

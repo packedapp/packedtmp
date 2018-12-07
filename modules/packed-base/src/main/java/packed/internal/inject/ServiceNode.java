@@ -19,8 +19,8 @@ import app.packed.container.Component;
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 

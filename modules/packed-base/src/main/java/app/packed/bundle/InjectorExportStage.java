@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.inject.Key;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 
 /**
  *

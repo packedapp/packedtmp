@@ -21,7 +21,7 @@ import java.util.List;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
 import app.packed.bundle.InjectorExportStage;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;

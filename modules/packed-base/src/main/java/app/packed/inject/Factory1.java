@@ -18,6 +18,7 @@ package app.packed.inject;
 import java.util.function.Function;
 
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Qualifier;
 
 /**
  * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input

@@ -22,8 +22,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
 import java.util.Set;
 
-import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 

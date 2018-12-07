@@ -28,10 +28,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 
 /**
  * A stage that is executed during the import phase of an injector or module. A typically usage is to restrict what

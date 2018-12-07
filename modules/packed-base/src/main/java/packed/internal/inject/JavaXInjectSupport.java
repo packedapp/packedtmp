@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Provider;
-import app.packed.inject.Qualifier;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
+import app.packed.util.Qualifier;
 import packed.internal.util.AnnotationUtil;
 
 /** Limited support for javax.inject classes. */

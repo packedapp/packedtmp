@@ -23,10 +23,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.inject.TypeLiteral;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
+import app.packed.util.TypeLiteral;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ParameterDescriptor}. */

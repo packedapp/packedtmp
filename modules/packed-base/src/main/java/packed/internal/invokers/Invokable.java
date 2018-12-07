@@ -15,7 +15,7 @@
  */
 package packed.internal.invokers;
 
-import app.packed.inject.TypeLiteral;
+import app.packed.util.TypeLiteral;
 
 /**
  *

@@ -22,10 +22,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */

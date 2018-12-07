@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.inject.Injector;
-import app.packed.inject.Key;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.KeyBuilder;
 import packed.internal.inject.ServiceNodeMap;

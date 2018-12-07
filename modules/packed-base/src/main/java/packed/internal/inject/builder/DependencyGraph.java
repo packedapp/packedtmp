@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import packed.internal.inject.KeyBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;

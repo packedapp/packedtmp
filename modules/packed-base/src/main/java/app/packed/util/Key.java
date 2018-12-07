@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.packed.inject;
+package app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -30,12 +30,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.inject.TypeLiteral.CanonicalizedTypeLiteral;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.InvalidDeclarationException;
-import app.packed.util.MethodDescriptor;
-import app.packed.util.Nullable;
-import app.packed.util.ParameterDescriptor;
+import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
 

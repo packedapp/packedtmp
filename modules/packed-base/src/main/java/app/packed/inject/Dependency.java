@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;

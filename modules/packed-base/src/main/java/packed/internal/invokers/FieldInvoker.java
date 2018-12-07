@@ -23,10 +23,10 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 
-import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /** An invoker that can read and write fields. */
 public final class FieldInvoker<T> extends InvokableMember<T> {

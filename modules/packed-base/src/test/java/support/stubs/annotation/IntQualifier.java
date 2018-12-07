@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.inject.Qualifier;
+import app.packed.util.Qualifier;
 
 /**
  *

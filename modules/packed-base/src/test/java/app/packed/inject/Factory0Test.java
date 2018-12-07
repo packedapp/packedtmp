@@ -24,6 +24,8 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.util.TypeLiteral;
+
 /** Tests {@link Factory0}. */
 public class Factory0Test {
 

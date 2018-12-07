@@ -17,8 +17,8 @@ package support.assertj.packed.inject.factory;
 
 import org.assertj.core.api.AbstractAssert;
 
-import app.packed.inject.Key;
-import app.packed.inject.TypeLiteral;
+import app.packed.util.Key;
+import app.packed.util.TypeLiteral;
 import packed.internal.invokers.InternalFunction;
 
 /**

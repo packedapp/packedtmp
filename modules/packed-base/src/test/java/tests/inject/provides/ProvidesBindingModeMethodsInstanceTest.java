@@ -30,8 +30,8 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Provides;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.TypeLiteral;
 
 /** Tests {@link Provides#bindingMode()}. */
 public class ProvidesBindingModeMethodsInstanceTest {

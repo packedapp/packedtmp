@@ -20,8 +20,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Parameter;
 
-import app.packed.inject.TypeLiteral;
-
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
  * (non-static {@link Field fields}) and {@link Parameter parameter} variables.

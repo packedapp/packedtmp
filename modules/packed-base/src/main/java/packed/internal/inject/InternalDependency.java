@@ -32,17 +32,18 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.inject.Dependency;
-import app.packed.inject.Key;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
+import app.packed.util.TypeLiteral;
 import app.packed.util.VariableDescriptor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.UtilSupport;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
@@ -268,7 +269,7 @@ public final class InternalDependency implements Dependency {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(InjectSupport.toKeyNullableQualifier(type, qa), optionalType, null);
+        return new InternalDependency(UtilSupport.invoke().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -323,7 +324,7 @@ public final class InternalDependency implements Dependency {
         } else if (rawType == Optional.class) {
             optionalType = Optional.class;
             Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
-            tl = InjectSupport.toTypeLiteral(cl);
+            tl = UtilSupport.invoke().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.getRawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
             }

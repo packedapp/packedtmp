@@ -18,8 +18,8 @@ package app.packed.bundle;
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Provides;
-import app.packed.inject.TypeLiteral;
 import app.packed.lifecycle.OnStart;
+import app.packed.util.TypeLiteral;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**

@@ -25,9 +25,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.BindingMode;
 import app.packed.inject.Injector;
-import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Key;
 import support.stubs.annotation.StringQualifier;
 
 /**

@@ -19,7 +19,7 @@ import static support.assertj.Assertions.assertThatInternalFactory;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Key;
+import app.packed.util.Key;
 import packed.internal.invokers.InstanceInvoker;
 import packed.internal.invokers.InternalFunction;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.packed.inject;
+package app.packed.util;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -28,12 +28,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Nullable;
-import packed.internal.inject.InjectSupport;
-import packed.internal.invokers.InternalFunction;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.UtilSupport;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
@@ -62,24 +59,24 @@ public abstract class TypeLiteral<T> {
     };
 
     static {
-        InjectSupport.Helper.init(new InjectSupport.Helper() {
+        UtilSupport.Helper.init(new UtilSupport.Helper() {
 
             /** {@inheritDoc} */
             @Override
-            protected Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
+            public Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
                 TypeLiteral<?> tl = new TypeLiteral.CanonicalizedTypeLiteral<>(type);
                 return Key.fromTypeLiteralNullableAnnotation(type, tl, qualifier);
             }
 
             /** {@inheritDoc} */
             @Override
-            protected TypeLiteral<?> toTypeLiteral(Type type) {
+            public TypeLiteral<?> toTypeLiteral(Type type) {
                 return new CanonicalizedTypeLiteral<>(type);
             }
 
             @Override
-            protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
-                return factory.factory.function;
+            public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {
+                return typeLiteral.getClass() == CanonicalizedTypeLiteral.class;
             }
         });
     }

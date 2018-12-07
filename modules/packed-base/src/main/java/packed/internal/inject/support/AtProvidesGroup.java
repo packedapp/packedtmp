@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.inject.Key;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Key;
 import packed.internal.invokers.ExecutableInvoker;
 import packed.internal.invokers.FieldInvoker;
 import packed.internal.util.ErrorMessageBuilder;

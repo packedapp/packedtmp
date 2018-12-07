@@ -21,6 +21,7 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.container.Component;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.VariableDescriptor;
 

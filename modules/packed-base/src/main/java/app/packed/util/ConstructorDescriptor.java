@@ -21,7 +21,6 @@ import static packed.internal.util.StringFormatter.formatSimple;
 import java.lang.reflect.Constructor;
 
 import app.packed.inject.Factory;
-import app.packed.inject.TypeLiteral;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
 
 /**

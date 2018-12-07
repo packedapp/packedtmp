@@ -19,7 +19,7 @@ import app.packed.container.Component;
 import app.packed.container.Container;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
-import app.packed.inject.Key;
+import app.packed.util.Key;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
 public final class KeyBuilder {

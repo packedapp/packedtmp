@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
+import app.packed.util.TypeLiteral;
 
 /** Tests {@link InternalParameterDescriptor}. */
 public class InternalParameterDescriptorTest {
