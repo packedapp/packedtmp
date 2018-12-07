@@ -27,7 +27,6 @@ import app.packed.inject.Qualifier;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.Nullable;
-import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**
@@ -50,28 +49,6 @@ import packed.internal.inject.builder.InjectorBuilder;
 
 // Descriptor does not freeze, Injector+Container freezes
 public abstract class Bundle {
-
-    static {
-        BundleSupport.Helper.init(new BundleSupport.Helper() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder configuration, boolean freeze) {
-                bundle.configure(configuration, freeze);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void stageOnFinish(ImportExportStage stage) {
-                stage.onFinish();
-            }
-
-            @Override
-            public void stageOnService(ImportExportStage stage, ServiceConfiguration<?> sc) {
-                stage.onService(sc);
-            }
-        });
-    }
 
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
@@ -236,17 +213,17 @@ public abstract class Bundle {
      *
      * @param injector
      *            the injector to import services from
-     * @param filters
+     * @param stages
      *            any number of filters that restricts the services that are imported. Or makes them available under
      *            different keys
      * @see InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)
      */
-    protected final void injectorBind(Injector injector, InjectorImportStage... filters) {
-        configuration().injectorBind(injector, filters);
+    protected final void injectorBind(Injector injector, ImportExportStage... stages) {
+        configuration().injectorBind(injector, stages);
     }
 
-    protected final void injectorBind(InjectorBundle bundle, ImportExportStage... filters) {
-        configuration().injectorBind(bundle, filters);
+    protected final void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
+        configuration().injectorBind(bundle, stages);
     }
 
     /**

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -45,7 +46,7 @@ final class BindInjectorFromInjector extends BindInjector {
      * @param stages
      */
     BindInjectorFromInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
-            InjectorImportStage[] stages) {
+            List<ImportExportStage> stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
     }

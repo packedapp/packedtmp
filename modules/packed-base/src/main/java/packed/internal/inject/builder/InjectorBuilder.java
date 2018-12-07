@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.BindingMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -36,11 +35,12 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
+import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.LookupDescriptorAccessor;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.ServiceNode;
+import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.inject.support.AtProvides;
 import packed.internal.inject.support.AtProvidesGroup;
@@ -123,7 +123,8 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this,
+                getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
         scan(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
@@ -240,13 +241,14 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
     /** {@inheritDoc} */
     @Override
-    public final void injectorBind(Injector injector, InjectorImportStage... stages) {
+    public final void injectorBind(Injector injector, ImportExportStage... stages) {
         requireNonNull(injector, "injector is null");
         requireNonNull(stages, "stages is null");
+        List<ImportExportStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, stages);
+        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, listOfStages);
         is.importServices();
     }
 
@@ -255,10 +257,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     public void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
         requireNonNull(bundle, "bundle is null");
         requireNonNull(stages, "stages is null");// We should probably validates stages for null, before freezeLatest
+        List<ImportExportStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, stages);
+        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
         is.processImport();
         if (injectorBundleBindings == null) {
             injectorBundleBindings = new ArrayList<>(1);

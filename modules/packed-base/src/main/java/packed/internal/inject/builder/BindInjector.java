@@ -57,17 +57,17 @@ abstract class BindInjector {
     /** The import export stages arguments. */
     final List<ImportExportStage> stages;
 
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, ImportExportStage[] stages) {
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, List<ImportExportStage> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.stages = List.of(stages); // checks for null
+        this.stages = requireNonNull(stages);
         this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorImportStage[] stages) {
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<ImportExportStage> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.stages = List.of(stages); // checks for null
+        this.stages = requireNonNull(stages);
         this.bundle = null;
     }
 

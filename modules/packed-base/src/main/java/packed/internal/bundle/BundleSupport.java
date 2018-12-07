@@ -17,10 +17,14 @@ package packed.internal.bundle;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+
+import app.packed.bundle.ContainerBundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.InjectorImportStage;
+import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.TypeLiteral;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
@@ -41,7 +45,7 @@ public final class BundleSupport {
         static final Helper SINGLETON;
 
         static {
-            TypeLiteral.of(Object.class); // Initializes TypeLiteral, which in turn will call SupportInject#init
+            new InjectorImportStage() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }
@@ -57,6 +61,14 @@ public final class BundleSupport {
         public abstract void stageOnService(ImportExportStage stage, ServiceConfiguration<?> sc);
 
         public abstract void stageOnFinish(ImportExportStage stage);
+
+        /**
+         * @param stages
+         * @param type
+         *            either {@link Injector}, {@link InjectorBundle} or {@link ContainerBundle}
+         * @return
+         */
+        public abstract List<ImportExportStage> stagesExtract(ImportExportStage[] stages, Class<?> type);
 
         /**
          * Initializes this class.

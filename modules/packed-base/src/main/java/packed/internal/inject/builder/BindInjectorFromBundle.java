@@ -34,8 +34,8 @@ final class BindInjectorFromBundle extends BindInjector {
     final InjectorBuilder newConfiguration;
 
     BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            ImportExportStage[] filters) {
-        super(injectorConfiguration, configurationSite, bundle, filters);
+            List<ImportExportStage> stages) {
+        super(injectorConfiguration, configurationSite, bundle, stages);
         this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }
 
@@ -64,7 +64,8 @@ final class BindInjectorFromBundle extends BindInjector {
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }
-                ServiceBuildNodeExport<?> e = new ServiceBuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this, node);
+                ServiceBuildNodeExport<?> e = new ServiceBuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this,
+                        node);
                 exports.add(e);
                 newConfiguration.privateNodeMap.put(e);
             }
