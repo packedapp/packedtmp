@@ -19,6 +19,8 @@ package app.packed.bundle;
  *
  */
 // Hmm
-public class ContainerImportStage extends InjectorImportStage {
+public abstract class ContainerImportStage extends ImportExportStage {
+    public static final ContainerImportStage NO_STARTING_POINTS = null;
+    public static final ContainerImportStage NO_STOPPING_POINTS = null;
 
 }

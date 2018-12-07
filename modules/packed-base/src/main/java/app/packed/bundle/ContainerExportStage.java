@@ -18,6 +18,6 @@ package app.packed.bundle;
 /**
  *
  */
-public class ContainerExportStage {
+public abstract class ContainerExportStage {
 
 }

@@ -50,7 +50,7 @@ import app.packed.inject.ServiceDescriptor;
 // Maa koere en BundleDescriptor hvis man vil se..
 // Vi er strictly flow.....Eller det behoever vi jo saadan ikke at vaere.....
 // Ellers k
-public class InjectorExportStage extends ImportExportStage {
+public abstract class InjectorExportStage extends ImportExportStage {
 
     /** An export stage, that ignores all optional dependencies */
     public static final InjectorExportStage IGNORE_OPTIONAL = null;
@@ -81,13 +81,14 @@ public class InjectorExportStage extends ImportExportStage {
      * @param sc
      *            the service configuration
      */
-    public void process(ServiceConfiguration<?> sc) {}
+    @Override
+    public void onService(ServiceConfiguration<?> sc) {}
 
     public static InjectorExportStage peek(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
         return new InjectorExportStage() {
             @Override
-            public void process(ServiceConfiguration<?> sc) {
+            public void onService(ServiceConfiguration<?> sc) {
                 action.accept(ServiceDescriptor.of(sc));
             }
         };

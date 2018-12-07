@@ -259,7 +259,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, stages);
-        is.process();
+        is.processImport();
         if (injectorBundleBindings == null) {
             injectorBundleBindings = new ArrayList<>(1);
         }

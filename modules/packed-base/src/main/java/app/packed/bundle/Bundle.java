@@ -56,14 +56,19 @@ public abstract class Bundle {
 
             /** {@inheritDoc} */
             @Override
-            protected void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder configuration, boolean freeze) {
+            public void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder configuration, boolean freeze) {
                 bundle.configure(configuration, freeze);
             }
 
             /** {@inheritDoc} */
             @Override
-            protected void importExportStageOnFinish(ImportExportStage stage) {
+            public void stageOnFinish(ImportExportStage stage) {
                 stage.onFinish();
+            }
+
+            @Override
+            public void stageOnService(ImportExportStage stage, ServiceConfiguration<?> sc) {
+                stage.onService(sc);
             }
         });
     }

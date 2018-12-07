@@ -51,10 +51,10 @@ public abstract class InjectorImportStage extends ImportExportStage {
      */
     // Rename to noImports() method -> will be much easier to make stages mutable if needed
     // Skal vi have noget med services med?????
-    public static final InjectorImportStage NONE = new InjectorImportStage() {
+    public static final InjectorImportStage NO_SERVICE = new InjectorImportStage() {
 
         @Override
-        public void importService(ServiceConfiguration<?> sc) {
+        public void onService(ServiceConfiguration<?> sc) {
             sc.asNone();
         }
     };
@@ -79,7 +79,8 @@ public abstract class InjectorImportStage extends ImportExportStage {
      * @param sc
      *            the service configuration
      */
-    public void importService(ServiceConfiguration<?> sc) {}
+    @Override
+    protected void onService(ServiceConfiguration<?> sc) {}
 
     /**
      * Returns a new import stage that only accepts the services accepted by the specified predicate.
@@ -95,7 +96,7 @@ public abstract class InjectorImportStage extends ImportExportStage {
         requireNonNull(predicate, "predicate is null");
         return new InjectorImportStage() {
             @Override
-            public void importService(ServiceConfiguration<?> sc) {
+            public void onService(ServiceConfiguration<?> sc) {
                 if (!predicate.test(ServiceDescriptor.of(sc))) {
                     sc.asNone();
                 }
@@ -149,7 +150,7 @@ public abstract class InjectorImportStage extends ImportExportStage {
         requireNonNull(action, "action is null");
         return new InjectorImportStage() {
             @Override
-            public void importService(ServiceConfiguration<?> sc) {
+            public void onService(ServiceConfiguration<?> sc) {
                 action.accept(ServiceDescriptor.of(sc));
             }
         };
@@ -171,7 +172,7 @@ public abstract class InjectorImportStage extends ImportExportStage {
         return new InjectorImportStage() {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
-            public void importService(ServiceConfiguration<?> sc) {
+            public void onService(ServiceConfiguration<?> sc) {
                 if (sc.getKey().equals(from)) {
                     sc.as((Key) to);
                 }

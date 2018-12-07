@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Provides;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
 
 /**
@@ -49,7 +50,9 @@ import app.packed.util.Nullable;
 
 // Interface (maybe ditch it for now) + Description
 
-//
+// OKAY, den her er parent for alle 4.
+// bindInjector(Injector) + bindInjector(bundle) tager alle ImportExportStage saa vi kan bruge andThen()
+// Men fejler med en IAE
 public abstract class ImportExportStage {
 
     /** A Lookup object. */
@@ -73,4 +76,16 @@ public abstract class ImportExportStage {
 
     /** Performs cleanup or post processing validation of the stage. The default implementation does nothing. */
     protected void onFinish() {};
+
+    protected abstract void onService(ServiceConfiguration<?> sc);
+
+    public ImportExportStage andThen(ImportExportStage next) {
+        return this;
+    }
+
+    // Fordi vi ikke har en ServiceConfiguration
+    static class StartStopPointImportExport {
+
+    }
+
 }

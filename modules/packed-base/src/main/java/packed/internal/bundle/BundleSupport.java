@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.TypeLiteral;
 import packed.internal.inject.builder.InjectorBuilder;
 
@@ -27,6 +28,10 @@ public final class BundleSupport {
 
     public static final void configure(InjectorBundle bundle, InjectorBuilder builder, boolean freeze) {
         SingletonHolder.SINGLETON.configureInjectorBundle(bundle, builder, freeze);
+    }
+
+    public static Helper invoke() {
+        return SingletonHolder.SINGLETON;
     }
 
     /** Holder of the singleton. */
@@ -47,9 +52,11 @@ public final class BundleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        protected abstract void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder builder, boolean freeze);
+        public abstract void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder builder, boolean freeze);
 
-        protected abstract void importExportStageOnFinish(ImportExportStage stage);
+        public abstract void stageOnService(ImportExportStage stage, ServiceConfiguration<?> sc);
+
+        public abstract void stageOnFinish(ImportExportStage stage);
 
         /**
          * Initializes this class.

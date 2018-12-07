@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importexports;
+package tests.inject.bindinjector.bundle;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

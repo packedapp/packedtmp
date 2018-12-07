@@ -42,6 +42,8 @@ public final class BundleDescriptor {
     /** A Services object. */
     private final Services services;
 
+    private StartingPoints startingPoints = null;
+
     /**
      * Creates a new descriptor.
      * 
@@ -98,6 +100,11 @@ public final class BundleDescriptor {
         return services;
     }
 
+    // Er detn bare tom for en injector bundle???? Det er den vel
+    public StartingPoints startingPoints() {
+        return startingPoints;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {
@@ -127,6 +134,10 @@ public final class BundleDescriptor {
     public static BundleDescriptor of(Class<? extends Bundle> bundleType) {
         return of(Bundles.instantiate(bundleType));
     }
+
+    public static final class StartingPoints {}
+
+    public static final class StoppingPoints {}
 
     /** An object representing the services the bundle exposes. As well as any required or optional services. */
     public static final class Services {

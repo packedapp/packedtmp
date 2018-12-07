@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importexports;
+package tests.inject.injectorbind.injector;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
@@ -39,7 +39,7 @@ public class SimpleInjectorImportsTest {
         npe(() -> Injector.of(c -> c.injectorBind(i, (InjectorImportStage[]) null)), "stages");
 
         // TODO test error message
-        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.injectorBind(i, InjectorImportStage.NONE, null)));
+        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.injectorBind(i, InjectorImportStage.NO_SERVICE, null)));
     }
 
     /** Tests that we can import no services. */
@@ -51,7 +51,7 @@ public class SimpleInjectorImportsTest {
         });
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(i1, InjectorImportStage.NONE);
+            c.injectorBind(i1, InjectorImportStage.NO_SERVICE);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -59,13 +59,9 @@ public class SimpleInjectorImportsTest {
     /** Tests that we can import a single service. */
     @Test
     public void import1() {
-        Injector i1 = Injector.of(c -> {
-            c.bind("X");
-        });
+        Injector i1 = Injector.of(c -> c.bind("X"));
 
-        Injector i = Injector.of(c -> {
-            c.injectorBind(i1);
-        });
+        Injector i = Injector.of(c -> c.injectorBind(i1));
         assertThat(i.with(String.class)).isEqualTo("X");
 
     }

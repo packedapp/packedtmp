@@ -42,7 +42,7 @@ final class BindInjectorFromBundle extends BindInjector {
     /**
      * 
      */
-    void process() {
+    void processImport() {
         BundleSupport.configure(bundle, newConfiguration, true);
         processImport(newConfiguration.publicNodeList);
     }
