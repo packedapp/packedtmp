@@ -88,11 +88,11 @@ import java.lang.annotation.Target;
 public @interface Provides {
 
     /**
-     * The binding mode of the providing method or field, the default is {@link BindingMode#SINGLETON}.
+     * The binding mode of the providing method or field, the default is {@link InstantiationMode#SINGLETON}.
      * 
      * @return the binding mode
      */
-    BindingMode bindingMode() default BindingMode.SINGLETON;
+    InstantiationMode instantionMode() default InstantiationMode.SINGLETON;
 
     /**
      * Returns a description of the service provided by the annotated method or field.

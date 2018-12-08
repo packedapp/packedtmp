@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionException;
 import app.packed.util.Key;
-import packed.internal.inject.KeyBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.InternalInjector;
+import packed.internal.util.KeyBuilder;
 
 final class DependencyGraph {
 
@@ -112,7 +112,7 @@ final class DependencyGraph {
         for (ServiceNode<?> node : root.privateNodeMap) {
             if (node instanceof ServiceBuildNodeDefault) {
                 ServiceBuildNodeDefault<?> s = (ServiceBuildNodeDefault<?>) node;
-                if (s.getBindingMode() == BindingMode.SINGLETON) {
+                if (s.getInstantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
             }

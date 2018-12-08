@@ -27,8 +27,7 @@ import app.packed.util.Key;
  * injection. And if used within a container which component requested the injection.
  * <p>
  * This class is typically used together with the {@link Provides} annotation to provide custom injection depending on
- * attributes of the requestor. <pre> {@code
- *  _@Provides
+ * attributes of the requestor. <pre> {@code  @Provides
  *  public static Logger provideLogger(InjectionSite site) {
  *    if (site.getComponent().isPresent()) {
  *      return Logger.getLogger(site.getComponent().get().getPath().toString());
@@ -104,4 +103,6 @@ public interface InjectionSite extends Dependency {
     static InjectionSite of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));
     }
+
+    // withTags();// A way to provide info to @Provides....ahh bare mere boebl
 }

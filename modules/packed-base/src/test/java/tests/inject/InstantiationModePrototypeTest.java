@@ -16,6 +16,6 @@
 package tests.inject;
 
 /** Tests binding mode on initialization. */
-public class BindingModePrototypeTest {
+public class InstantiationModePrototypeTest {
 
 }

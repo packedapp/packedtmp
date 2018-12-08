@@ -16,7 +16,7 @@
 package app.packed.lifecycle;
 
 /**
- * The various states a lifecycle enabled entity can be in an.
+ * An enum containing all valid lifecycle states.
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *

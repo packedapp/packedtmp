@@ -17,7 +17,7 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.ServiceBuildNode;
@@ -44,8 +44,8 @@ public final class RuntimeServiceNodeAlias<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public BindingMode getBindingMode() {
-        return aliasOf.getBindingMode();
+    public InstantiationMode getInstantiationMode() {
+        return aliasOf.getInstantiationMode();
     }
 
     /** {@inheritDoc} */

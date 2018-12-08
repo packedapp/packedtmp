@@ -103,7 +103,7 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
     public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getKey());
-        sb.append("[").append(getBindingMode()).append(']');
+        sb.append("[").append(getInstantiationMode()).append(']');
         if (description != null) {
             sb.append(":").append(description);
 

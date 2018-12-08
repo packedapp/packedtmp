@@ -58,18 +58,6 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     /** The parent of this configuration, or null for the root component. */
     final @Nullable InternalComponentConfiguration<?> parent;
 
-    // /**
-    // * @param containerBuilder
-    // * @param configurationSite
-    // * @param factory
-    // * @param bindingMode
-    // */
-    // public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
-    // @Nullable InternalComponentConfiguration<?> parent, InternalFactory<T> factory) {
-    // super(containerBuilder, configurationSite, BindingMode.SINGLETON, factory.function, factory.dependencies);
-    // this.parent = parent;
-    // this.initializationThread = Thread.currentThread();
-    // }
 
     /**
      * @param containerBuilder

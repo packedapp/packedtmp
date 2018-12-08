@@ -25,10 +25,10 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
-import packed.internal.inject.KeyBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.util.AbstractConfiguration;
+import packed.internal.util.KeyBuilder;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -32,8 +32,8 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 /** A descriptor of the {@link Provides} annotation. */
 public final class AtProvides {
 
-    /** The binding mode from {@link Provides#bindingMode()}. */
-    public final BindingMode bindingMode;
+    /** The binding mode from {@link Provides#instantionMode()}. */
+    public final InstantiationMode instantionMode;
 
     /** Any dependencies (parameters) the annotated member has, is always empty for fields. */
     public final List<InternalDependency> dependencies;
@@ -60,7 +60,7 @@ public final class AtProvides {
         this.key = requireNonNull(key);
         this.dependencies = requireNonNull(dependencies);
         this.description = provides.description().length() > 0 ? provides.description() : null;
-        this.bindingMode = provides.bindingMode();
+        this.instantionMode = provides.instantionMode();
         this.isStaticMember = descriptor.isStatic();
     }
 }

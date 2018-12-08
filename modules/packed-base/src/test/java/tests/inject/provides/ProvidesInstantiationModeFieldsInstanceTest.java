@@ -26,7 +26,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -34,10 +34,10 @@ import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link Provides#bindingMode()} on fields. */
-public class ProvidesBindingModeFieldsInstanceTest {
+/** Tests {@link Provides#instantionMode()} on fields. */
+public class ProvidesInstantiationModeFieldsInstanceTest {
 
-    /** Tests lazy {@link Provides#bindingMode()} on instance fields. */
+    /** Tests lazy {@link Provides#instantionMode()} on instance fields. */
     @Test
     public void bindLazy() {
         MixedFields.test(c -> c.bindLazy(MixedFields.class));
@@ -46,7 +46,7 @@ public class ProvidesBindingModeFieldsInstanceTest {
     }
 
     /**
-     * An extra test for lazy {@link Provides#bindingMode()} on instance fields. Which makes sure that the lazy parent is
+     * An extra test for lazy {@link Provides#instantionMode()} on instance fields. Which makes sure that the lazy parent is
      * not created before it is needed by the provided fields.
      */
     @Test
@@ -110,7 +110,7 @@ public class ProvidesBindingModeFieldsInstanceTest {
         // TODO check message
     }
 
-    /** Tests default {@link Provides#bindingMode()} on instance fields. */
+    /** Tests default {@link Provides#instantionMode()} on instance fields. */
     @Test
     public void bindSingleton() {
         MixedFields.test(c -> c.bind(new MixedFields()));
@@ -121,7 +121,7 @@ public class ProvidesBindingModeFieldsInstanceTest {
 
     static class LazyField {
 
-        @Provides(bindingMode = BindingMode.LAZY)
+        @Provides(instantionMode = InstantiationMode.LAZY)
         Short s = 1;
 
         LazyField(AtomicBoolean b) {
@@ -131,13 +131,13 @@ public class ProvidesBindingModeFieldsInstanceTest {
 
     static class MixedFields {
 
-        @Provides(bindingMode = BindingMode.LAZY)
+        @Provides(instantionMode = InstantiationMode.LAZY)
         Long l = 1L;
 
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         Integer p = 1;
 
-        @Provides(bindingMode = BindingMode.SINGLETON)
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         Short s = 1;
 
         static void test(Consumer<? super InjectorConfiguration> configurator) {
@@ -164,7 +164,7 @@ public class ProvidesBindingModeFieldsInstanceTest {
 
     static class PrototypeField {
 
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         Short s = 1;
 
         PrototypeField(AtomicBoolean b) {
@@ -174,7 +174,7 @@ public class ProvidesBindingModeFieldsInstanceTest {
 
     static class SingletonField {
 
-        @Provides(bindingMode = BindingMode.SINGLETON)
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         Short s = 1;
 
         SingletonField(AtomicBoolean b) {

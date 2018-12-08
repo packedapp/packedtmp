@@ -30,24 +30,8 @@ import packed.internal.inject.builder.InjectorBuilder;
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class BundleSupport {
 
-    public static final void configure(InjectorBundle bundle, InjectorBuilder builder, boolean freeze) {
-        SingletonHolder.SINGLETON.configureInjectorBundle(bundle, builder, freeze);
-    }
-
     public static Helper invoke() {
         return SingletonHolder.SINGLETON;
-    }
-
-    /** Holder of the singleton. */
-    static class SingletonHolder {
-
-        /** The singleton instance. */
-        static final Helper SINGLETON;
-
-        static {
-            new InjectorImportStage() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
-            SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
-        }
     }
 
     /** An abstract class that must be implemented by a class in app.packed.inject. */
@@ -58,9 +42,9 @@ public final class BundleSupport {
 
         public abstract void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder builder, boolean freeze);
 
-        public abstract void stageOnService(ImportExportStage stage, ServiceConfiguration<?> sc);
-
         public abstract void stageOnFinish(ImportExportStage stage);
+
+        public abstract void stageOnService(ImportExportStage stage, ServiceConfiguration<?> sc);
 
         /**
          * @param stages
@@ -81,6 +65,18 @@ public final class BundleSupport {
                 throw new Error("Can only be initialized ince");
             }
             SUPPORT = requireNonNull(support);
+        }
+    }
+
+    /** Holder of the singleton. */
+    static class SingletonHolder {
+
+        /** The singleton instance. */
+        static final Helper SINGLETON;
+
+        static {
+            new InjectorImportStage() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
+            SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }
 }

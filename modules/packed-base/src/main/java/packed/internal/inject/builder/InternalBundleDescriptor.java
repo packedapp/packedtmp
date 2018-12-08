@@ -36,23 +36,24 @@ public class InternalBundleDescriptor {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         InjectorBuilder conf = new InjectorBuilder(ics, bundle);
 
-        BundleSupport.configure((InjectorBundle) bundle, conf, false);
+        BundleSupport.invoke().configureInjectorBundle((InjectorBundle) bundle, conf, false);
 
         DependencyGraph injectorBuilder = new DependencyGraph(conf);
         injectorBuilder.analyze(conf);
 
         //////////////// Create the builder
         BundleDescriptorBuilder builder = new BundleDescriptorBuilder();
+        builder.description = conf.getDescription();
         for (ServiceBuildNode<?> n : conf.publicNodeList) {
             if (n instanceof ServiceBuildNodeExposed) {
-                builder.addExposed((ServiceConfiguration<?>) n);
+                builder.services.addExposed((ServiceConfiguration<?>) n);
             }
         }
         if (conf.requiredServicesOptionally != null) {
-            builder.addOptionalServices(conf.requiredServicesOptionally);
+            builder.services.addOptionalServices(conf.requiredServicesOptionally);
         }
         if (conf.requiredServicesMandatory != null) {
-            builder.addRequiredServices(conf.requiredServicesMandatory);
+            builder.services.addRequiredServices(conf.requiredServicesMandatory);
         }
         return builder;
     }

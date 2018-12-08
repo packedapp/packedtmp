@@ -30,10 +30,9 @@ import java.lang.annotation.Target;
  * throwing an {@link InjectionException}.
  * <p>
  * The annotation can also be applied to
- *
- * USed on annotation types, to avoid having used inject to
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// Used on annotation types, to avoid having to use @Inject @QA("sdsd") to
 public @interface Inject {}

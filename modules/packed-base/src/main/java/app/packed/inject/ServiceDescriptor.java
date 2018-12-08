@@ -14,11 +14,11 @@ import app.packed.util.Taggable;
 public interface ServiceDescriptor extends Taggable {
 
     /**
-     * Returns the binding mode of the service.
+     * Returns the instantiation mode of the service.
      *
-     * @return the binding mode of the service
+     * @return the instantiation mode of the service
      */
-    BindingMode getBindingMode();
+    InstantiationMode getInstantiationMode();
 
     /**
      * Returns the configuration site of the service.
@@ -55,6 +55,69 @@ public interface ServiceDescriptor extends Taggable {
     static ServiceDescriptor of(ServiceConfiguration<?> configuration) {
         return new ImmutableServiceDescriptorAdaptor(configuration);
     }
+
+    static ServiceDescriptor ofCopy(ServiceConfiguration<?> configuration) {
+        return new CopyOfConfiguration(configuration);
+    }
+}
+
+class CopyOfConfiguration implements ServiceDescriptor {
+    private final InstantiationMode instantionMode;
+    private final ConfigurationSite configurationSite;
+    private final @Nullable String description;
+    private final Key<?> key;
+
+    private final Set<String> tags;
+
+    CopyOfConfiguration(ServiceConfiguration<?> bne) {
+        this.key = bne.getKey();
+        this.tags = Set.copyOf(bne.tags());
+        this.instantionMode = bne.getInstantiationMode();
+        this.configurationSite = bne.getConfigurationSite();
+        this.description = bne.getDescription();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InstantiationMode getInstantiationMode() {
+        return instantionMode;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigurationSite getConfigurationSite() {
+        return configurationSite;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable String getDescription() {
+        return description;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Key<?> getKey() {
+        return key;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> tags() {
+        return tags;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[Key = " + getKey().toStringSimple());
+        sb.append(", instantionMode = " + getInstantiationMode());
+        if (!tags.isEmpty()) {
+            sb.append(", tags = " + tags);
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }
 
 class ImmutableServiceDescriptorAdaptor implements ServiceDescriptor {
@@ -71,8 +134,8 @@ class ImmutableServiceDescriptorAdaptor implements ServiceDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public BindingMode getBindingMode() {
-        return configuration.getBindingMode();
+    public InstantiationMode getInstantiationMode() {
+        return configuration.getInstantiationMode();
     }
 
     /** {@inheritDoc} */

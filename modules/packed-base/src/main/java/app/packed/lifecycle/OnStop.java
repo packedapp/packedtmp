@@ -33,6 +33,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// @MetaAnnotation(states = LifecycleState.STOPPING)
-// @After("STOPPING") // STOPPING maa jo vaere container og ikke component...
-public @interface OnStop {}
+public @interface OnStop {
+    String[] after() default {};
+
+    String[] before() default {};
+}

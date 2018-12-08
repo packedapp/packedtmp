@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.BundleDescriptor;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
@@ -44,9 +44,9 @@ public class InjectorDescriptorTest {
                 expose(A.class);
             }
         });
-        ServiceDescriptor sd = d.services().exposedServices().values().iterator().next();
+        ServiceDescriptor sd = d.services().exposed().values().iterator().next();
 
-        assertThat(sd.getBindingMode()).isSameAs(BindingMode.SINGLETON);
+        assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
         assertThat(sd.getDescription()).isNull();
         assertThat(sd.getKey()).isEqualTo(Key.of(A.class));
         assertThat(sd.tags()).isEmpty();

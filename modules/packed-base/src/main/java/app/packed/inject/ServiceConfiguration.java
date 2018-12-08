@@ -62,11 +62,11 @@ public interface ServiceConfiguration<T> extends Taggable {
     ServiceConfiguration<?> asNone();
 
     /**
-     * Returns the binding mode of the service.
+     * Returns the instantiation mode of the service.
      *
-     * @return the binding mode of the service
+     * @return the instantiation mode of the service
      */
-    BindingMode getBindingMode();
+    InstantiationMode getInstantiationMode();
 
     /**
      * Returns the configuration site where this configuration was created.

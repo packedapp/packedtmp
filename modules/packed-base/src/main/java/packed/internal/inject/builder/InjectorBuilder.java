@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -108,13 +108,13 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
-        return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
+        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
-        return bindFactory(BindingMode.SINGLETON, requireNonNull(factory, "factory is null"));
+        return bindFactory(InstantiationMode.SINGLETON, requireNonNull(factory, "factory is null"));
     }
 
     @Override
@@ -132,11 +132,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
-        return bindFactory(BindingMode.SINGLETON, Factory.findInjectable(implementation));
+        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final <T> ServiceConfiguration<T> bindFactory(BindingMode mode, Factory<T> factory) {
+    protected final <T> ServiceConfiguration<T> bindFactory(InstantiationMode mode, Factory<T> factory) {
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
@@ -152,18 +152,18 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
     @Override
     public final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
-        return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
+        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
-        return bindFactory(BindingMode.LAZY, requireNonNull(factory, "factory is null"));
+        return bindFactory(InstantiationMode.LAZY, requireNonNull(factory, "factory is null"));
     }
 
     @Override
     public final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
-        return bindFactory(BindingMode.LAZY, Factory.findInjectable(implementation));
+        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
     }
 
     protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
@@ -175,19 +175,19 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
-        return bindFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
+        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
-        return bindFactory(BindingMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
+        return bindFactory(InstantiationMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
     }
 
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
-        return bindFactory(BindingMode.PROTOTYPE, Factory.findInjectable(implementation));
+        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
     public Injector build() {
@@ -307,7 +307,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
         AtProvidesGroup ps = serviceDesc.provides;
         if (!ps.isEmpty()) {
-            if (parent.getBindingMode() == BindingMode.PROTOTYPE && ps.hasInstanceMembers) {
+            if (parent.getInstantiationMode() == InstantiationMode.PROTOTYPE && ps.hasInstanceMembers) {
                 throw new InvalidDeclarationException("OOOPS");
             }
 

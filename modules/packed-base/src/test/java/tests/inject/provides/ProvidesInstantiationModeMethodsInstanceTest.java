@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -33,10 +33,10 @@ import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link Provides#bindingMode()}. */
-public class ProvidesBindingModeMethodsInstanceTest {
+/** Tests {@link Provides#instantionMode()}. */
+public class ProvidesInstantiationModeMethodsInstanceTest {
 
-    /** Tests default {@link Provides#bindingMode()} on instance methods. */
+    /** Tests default {@link Provides#instantionMode()} on instance methods. */
     @Test
     public void bindSingleton() {
         MixedMethods.test(c -> c.bind(new MixedMethods()));
@@ -45,7 +45,7 @@ public class ProvidesBindingModeMethodsInstanceTest {
         MixedMethods.test(c -> c.bind(new TypeLiteral<MixedMethods>() {}));
     }
 
-    /** Tests lazy {@link Provides#bindingMode()} on instance methods. */
+    /** Tests lazy {@link Provides#instantionMode()} on instance methods. */
     @Test
     public void bindLazy() {
         MixedMethods.test(c -> c.bindLazy(MixedMethods.class));
@@ -92,17 +92,17 @@ public class ProvidesBindingModeMethodsInstanceTest {
 
         Short s = 1;
 
-        @Provides(bindingMode = BindingMode.LAZY)
+        @Provides(instantionMode = InstantiationMode.LAZY)
         Long l() {
             return l;
         }
 
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         Integer p() {
             return p;
         }
 
-        @Provides(bindingMode = BindingMode.SINGLETON)
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         Short s() {
             return s;
         }
@@ -137,7 +137,7 @@ public class ProvidesBindingModeMethodsInstanceTest {
             b.set(true);
         }
 
-        @Provides(bindingMode = BindingMode.LAZY)
+        @Provides(instantionMode = InstantiationMode.LAZY)
         public Short s() {
             return s;
         }
@@ -151,7 +151,7 @@ public class ProvidesBindingModeMethodsInstanceTest {
             b.set(true);
         }
 
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         public Short s() {
             return s;
         }
@@ -165,7 +165,7 @@ public class ProvidesBindingModeMethodsInstanceTest {
             b.set(true);
         }
 
-        @Provides(bindingMode = BindingMode.SINGLETON)
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         public Short s() {
             return s;
         }

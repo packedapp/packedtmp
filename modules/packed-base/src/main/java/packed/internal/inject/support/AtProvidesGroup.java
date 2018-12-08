@@ -99,7 +99,7 @@ public final class AtProvidesGroup {
                     AtProvides ap = new AtProvides(fii, descriptor, key, (Provides) a, List.of());
 
                     // Check this
-                    // if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
+                    // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
                     // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
                     // }
 

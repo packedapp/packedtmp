@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
@@ -67,7 +67,7 @@ public class InjectorConfiguationBindTest {
     public void bindInstance() {
         Injector i = Injector.of(e -> {
             ServiceConfiguration<A> sc = e.bind(A0);
-            testConfiguration(sc, BindingMode.SINGLETON, Key.of(A.class));
+            testConfiguration(sc, InstantiationMode.SINGLETON, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
 
@@ -84,9 +84,9 @@ public class InjectorConfiguationBindTest {
         }
     }
 
-    static void testConfiguration(ServiceConfiguration<?> sc, BindingMode bindingMode, Key<?> key) {
+    static void testConfiguration(ServiceConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
 
-        assertThat(sc.getBindingMode()).isSameAs(BindingMode.SINGLETON);
+        assertThat(sc.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
         // ConfigurationSite;
         assertThat(sc.getDescription()).isNull();
         assertThat(sc.getKey()).isEqualTo(Key.of(A.class));

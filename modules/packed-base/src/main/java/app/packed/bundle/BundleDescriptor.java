@@ -20,10 +20,12 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 
@@ -36,13 +38,19 @@ import packed.internal.inject.builder.InternalBundleDescriptor;
  */
 public final class BundleDescriptor {
 
+    // I think add @Description as annotation??? IDK
+
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
+
+    private final @Nullable String description;
 
     /** A Services object. */
     private final Services services;
 
-    private StartingPoints startingPoints = null;
+    private final LifecyclePoints startingPoints = null;
+
+    private final LifecyclePoints stoppingPoints = null;
 
     /**
      * Creates a new descriptor.
@@ -54,7 +62,8 @@ public final class BundleDescriptor {
      */
     BundleDescriptor(Class<? extends Bundle> bundleType, BundleDescriptorBuilder builder) {
         this.bundleType = bundleType;
-        this.services = new Services(builder);
+        this.description = builder.description;
+        this.services = new Services(builder.services);
     }
 
     /**
@@ -64,6 +73,36 @@ public final class BundleDescriptor {
      */
     public AnnotatedElement annotations() {
         return bundleType;
+    }
+
+    /**
+     * Returns an optional description of the bundle as set by {@link Bundle#setDescription(String)}.
+     * 
+     * @return a optional description of the bundle
+     * 
+     * @see Bundle#setDescription(String)
+     */
+    public Optional<String> bundleDescription() {
+        return Optional.ofNullable(description);
+    }
+
+    /**
+     * Returns the name of the bundle.
+     * 
+     * @return the name of the bundle
+     */
+    // BundleName???? problemet er lidt i forhold til container navn... Rimlig forvirrende. Omvendt taenker jeg man godt vil
+    // have navngivet containere???maaske ikke
+
+    // Maybe this is bundleId????
+    public String bundleName() {
+
+        // BundleName = Module + getClass().getSimpleName();<--- Not always identical to the class name
+        // If unnamed module... Just getClass().getSimpleName()
+        if (getModule().isNamed()) {
+            return getModule().getName() + "." + bundleType.getSimpleName();
+        }
+        return bundleType.getSimpleName();
     }
 
     /**
@@ -85,7 +124,7 @@ public final class BundleDescriptor {
      * @return the module that the bundle is a member of
      * @see Class#getModule()
      */
-    public Module getModule() {
+    Module getModule() {
         // Gider bi bruge denne metode????? Maaske bare skip den
         return bundleType.getModule();
     }
@@ -101,8 +140,12 @@ public final class BundleDescriptor {
     }
 
     // Er detn bare tom for en injector bundle???? Det er den vel
-    public StartingPoints startingPoints() {
+    public LifecyclePoints startingPoints() {
         return startingPoints;
+    }
+
+    public LifecyclePoints stoppingPoints() {
+        return stoppingPoints;
     }
 
     /** {@inheritDoc} */
@@ -135,9 +178,20 @@ public final class BundleDescriptor {
         return of(Bundles.instantiate(bundleType));
     }
 
-    public static final class StartingPoints {}
+    public static final class LifecyclePoints {
+        // Navn + Description, alternative, Map<String, Optional<String>> name+ description
+        public Map<String, Optional<String>> exposed() {
+            return Map.of();
+        }
 
-    public static final class StoppingPoints {}
+        public Set<String> optional() {
+            return Set.of();
+        }
+
+        public Set<String> required() {
+            return Set.of();
+        }
+    }
 
     /** An object representing the services the bundle exposes. As well as any required or optional services. */
     public static final class Services {
@@ -157,10 +211,10 @@ public final class BundleDescriptor {
          * @param builder
          *            the builder object
          */
-        Services(BundleDescriptorBuilder builder) {
-            this.exposedServices = Map.copyOf(builder.exposedServices);
-            this.optionalServices = requireNonNull(builder.optionalServices);
-            this.requiredServices = requireNonNull(builder.requiredServices);
+        Services(BundleDescriptorBuilder.Services builder) {
+            this.exposedServices = Map.copyOf(builder.exposed);
+            this.optionalServices = requireNonNull(builder.optional);
+            this.requiredServices = requireNonNull(builder.required);
         }
 
         /**
@@ -168,8 +222,26 @@ public final class BundleDescriptor {
          *
          * @return an immutable map of all the services the bundle exposes
          */
-        public Map<Key<?>, ServiceDescriptor> exposedServices() {
+        public Map<Key<?>, ServiceDescriptor> exposed() {
             return exposedServices;
+        }
+
+        /**
+         * if all exposed services in the previous services are also exposed in this services. And if all required services in
+         * this are also required services in the previous.
+         * 
+         * @param previous
+         * @return whether or not the specified service are back
+         */
+        public boolean isBackwardsCompatibleWith(Services previous) {
+            requireNonNull(previous, "previous is null");
+            if (!previous.requiredServices.containsAll(requiredServices)) {
+                return false;
+            }
+            if (!exposedServices.keySet().containsAll(previous.exposedServices.keySet())) {
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -177,7 +249,7 @@ public final class BundleDescriptor {
          * 
          * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
          */
-        public Set<Key<?>> optionalServices() {
+        public Set<Key<?>> optional() {
             return optionalServices;
         }
 
@@ -186,7 +258,7 @@ public final class BundleDescriptor {
          * 
          * @return an immutable set of all service keys that <b>must</b> be made available to the entity
          */
-        public Set<Key<?>> requiredServices() {
+        public Set<Key<?>> required() {
             return requiredServices;
         }
     }

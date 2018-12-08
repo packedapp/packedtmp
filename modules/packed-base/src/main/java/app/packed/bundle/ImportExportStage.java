@@ -30,12 +30,12 @@ import packed.internal.inject.builder.InjectorBuilder;
 
 /**
  * A shared superclass for {@link InjectorImportStage}, {@link ImportExportStage}, {@link ContainerImportStage} and
- * {@link ContainerExportStage}.
+ * {@link ContainerExportStage}. It is not possible to extend this class outside of this package.
  */
 
 // Kunne vaere rart, hvis man f.eks. kunne
-// bindInjector(SomeBundle.class, JaxRSSpec.2_1);
-// bindInjector(SomeBundle.class, JettySpec.23_1);
+// bindInjector(SomeBundle.class, JaxRSSpec.2_1.strict());
+// bindInjector(SomeBundle.class, JettySpec.23_1.strict());
 
 /// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
 // ComponentInstanceHook
@@ -52,12 +52,9 @@ import packed.internal.inject.builder.InjectorBuilder;
 // AnnotatedMethodActivator
 
 // ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
-
 // Interface (maybe ditch it for now) + Description
 
-// OKAY, den her er parent for alle 4.
-// bindInjector(Injector) + bindInjector(bundle) tager alle ImportExportStage saa vi kan bruge andThen()
-// Men fejler med en IAE
+// BundleActivationStage
 public abstract class ImportExportStage {
 
     static {
@@ -114,6 +111,15 @@ public abstract class ImportExportStage {
     protected void onFinish() {};
 
     protected void onService(ServiceConfiguration<?> sc) {}
+
+    // protected Configuration onConfiguration(@Nullable Configuration<?> configuration) {} or
+    // protected void onConfiguration(ConfigurationBuilder configuration) {} and then we check for overrides.
+    // ImportExportStage configuration.extractChild("jetty"); installContainer(XBundle.class, ConfigurationTransformer<>
+    // Kan ogsaa vaere en alm service, og saa naa den er der saa blive annoteringerne aktiveret....
+    /// Men ihvertfal conf bliver skubbet op fra roden... Man kan aldrig exportere en Configuration.. Eller det kan man vel
+    // godt.
+    // Optional Configuration-> You may provide a configuration if you want, mandatory you must provide a Confgiuration.
+    // A configuration is always bound with singleton scope, not lazy, not prototype
 
     static List<ImportExportStage> stagesExtract(ImportExportStage[] stages, Class<?> type) {
         requireNonNull(stages, "stages is null");

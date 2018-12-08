@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package app.packed.inject;
+
+import app.packed.bundle.BundleDescriptor;
+import app.packed.bundle.InjectorBundle;
 
 /**
  *
  */
-public abstract class ContainerExportStage {
-    public static final ContainerImportStage NO_STARTING_POINTS = null;
-    public static final ContainerImportStage NO_STOPPING_POINTS = null;
+public class Mybb extends InjectorBundle {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        setDescription("Nice Bundle");
+    }
+
+    public static void main(String[] args) {
+        BundleDescriptor bd = BundleDescriptor.of(Mybb.class);
+
+        System.out.println(bd.bundleName());
+
+        System.out.println(bd.bundleDescription());
+    }
 }

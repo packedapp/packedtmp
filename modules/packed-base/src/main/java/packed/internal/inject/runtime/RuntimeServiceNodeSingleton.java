@@ -17,14 +17,14 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
 import packed.internal.inject.builder.ServiceBuildNode;
 
 /**
- * An runtime service node holding {@link BindingMode#SINGLETON} instances. This node also holds
- * {@link BindingMode#LAZY} instances that was created at configuration time.
+ * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
+ * {@link InstantiationMode#LAZY} instances that was created at configuration time.
  */
 public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> implements Provider<T> {
 
@@ -32,7 +32,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
      * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
      * initialized while building the injector.
      */
-    private final BindingMode bindingMode;
+    private final InstantiationMode instantionMode;
 
     /** The singleton instance. */
     private final T instance;
@@ -44,13 +44,13 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
      *            the node to create this node from
      * @param instance
      *            the singleton instance
-     * @param bindingMode
+     * @param instantionMode
      *            the binding mode of this node
      */
     public RuntimeServiceNodeSingleton(ServiceBuildNode<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
-        this.bindingMode = buildNode.getBindingMode();
+        this.instantionMode = buildNode.getInstantiationMode();
     }
 
     /** {@inheritDoc} */
@@ -61,8 +61,8 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public BindingMode getBindingMode() {
-        return bindingMode;
+    public InstantiationMode getInstantiationMode() {
+        return instantionMode;
     }
 
     /** {@inheritDoc} */

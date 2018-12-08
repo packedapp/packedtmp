@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Injector;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
@@ -134,15 +134,15 @@ public class ProvidesQualifierTest {
 
     static class Stub {
 
-        @Provides(bindingMode = BindingMode.LAZY)
+        @Provides(instantionMode = InstantiationMode.LAZY)
         @StringQualifier("A")
         private static Long A;
 
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         @StringQualifier("B")
         private static Long B;
 
-        @Provides(bindingMode = BindingMode.SINGLETON)
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         @StringQualifier("C")
         private static Long C;
 

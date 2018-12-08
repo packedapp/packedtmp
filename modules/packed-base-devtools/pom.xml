@@ -6,6 +6,7 @@
     <groupId>org.cakeframework</groupId>
     <artifactId>cked-modules</artifactId>
     <version>0.1-SNAPSHOT</version>
+    <relativePath>..</relativePath>
   </parent>
 
   <artifactId>cked-base-devtools</artifactId>
@@ -17,8 +18,9 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.cakeframework</groupId>
       <artifactId>cked-base</artifactId>
-      <version>${project.version}</version>
+      <version>0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
   

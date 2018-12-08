@@ -285,7 +285,7 @@ public interface Injector extends Taggable {
     static Injector of(InjectorBundle bundle) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
-        BundleSupport.configure(bundle, builder, true);
+        BundleSupport.invoke().configureInjectorBundle(bundle, builder, true);
         return builder.build();
     }
 

@@ -86,4 +86,8 @@ import app.packed.inject.Injector;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnStart {}
+public @interface OnStart {
+    String[] after() default {};
+
+    String[] before() default {};
+}

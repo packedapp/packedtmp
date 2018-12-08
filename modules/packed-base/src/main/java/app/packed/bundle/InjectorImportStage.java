@@ -146,6 +146,7 @@ public abstract class InjectorImportStage extends ImportExportStage {
      * 
      * @return the new stage
      */
+    // PeekBinding
     public static InjectorImportStage peek(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
         return new InjectorImportStage() {
@@ -155,6 +156,9 @@ public abstract class InjectorImportStage extends ImportExportStage {
             }
         };
     }
+
+    // process(Key<K>, Consumer<K, K>); <- Som @Provides X process(X x) {return x}
+    // process(Key<K>, Function<K, K>); <- Som @Provides X process(X x) {return something}
 
     /**
      * Creates a new stage that will rebind any service with the specified {@code from} key to the specified {@code from}

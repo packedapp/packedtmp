@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.BundleDescriptor;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 
@@ -40,7 +40,7 @@ public class BundleDescriptorTest {
                 @Override
                 protected void configure() {}
             });
-            assertThat(d.services().exposedServices()).isEmpty();
+            assertThat(d.services().exposed()).isEmpty();
 
             d = BundleDescriptor.of(new InjectorBundle() {
                 @Override
@@ -48,7 +48,7 @@ public class BundleDescriptorTest {
                     bind("non-exposed service is not in descriptor");
                 }
             });
-            assertThat(d.services().exposedServices()).isEmpty();
+            assertThat(d.services().exposed()).isEmpty();
         }
 
         @Test
@@ -62,10 +62,10 @@ public class BundleDescriptorTest {
             };
 
             BundleDescriptor d = BundleDescriptor.of(ib);
-            assertThat(d.services().exposedServices()).containsOnlyKeys(Key.of(String.class));
-            ServiceDescriptor sd = d.services().exposedServices().get(Key.of(String.class));
+            assertThat(d.services().exposed()).containsOnlyKeys(Key.of(String.class));
+            ServiceDescriptor sd = d.services().exposed().get(Key.of(String.class));
 
-            assertThat(sd.getBindingMode()).isSameAs(BindingMode.SINGLETON);
+            assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
             assertThat(sd.getDescription()).isEqualTo("fooDesc");
             assertThat(sd.getKey()).isEqualTo(Key.of(String.class));
             assertThat(sd.tags()).isEmpty();

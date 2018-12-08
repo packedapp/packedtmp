@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Semaphore;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provider;
 import app.packed.util.Nullable;
@@ -53,8 +53,8 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public BindingMode getBindingMode() {
-        return BindingMode.LAZY;
+    public InstantiationMode getInstantiationMode() {
+        return InstantiationMode.LAZY;
     }
 
     /** {@inheritDoc} */

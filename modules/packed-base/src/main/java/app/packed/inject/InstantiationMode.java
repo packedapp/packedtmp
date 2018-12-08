@@ -16,13 +16,13 @@
 package app.packed.inject;
 
 /**
- * The binding mode of a service.
+ * The instantiation mode of a service or component.
  */
-public enum BindingMode {
+public enum InstantiationMode {
 
     /**
-     * A single instance of the service is created when the injector where the service is registered is created. This is the
-     * default mode used throughout the framework.
+     * A single instance of the service or component is created when the injector or container where the entity is
+     * registered is created. This is the default mode used throughout the framework.
      */
     SINGLETON,
 

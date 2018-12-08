@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.ComponentConfiguration;
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
@@ -47,7 +47,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     /** The binding mode of this node. */
-    private final BindingMode bindingMode;
+    private final InstantiationMode instantionMode;
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
@@ -64,17 +64,17 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
-        this.bindingMode = atProvides.bindingMode;
+        this.instantionMode = atProvides.instantionMode;
         setDescription(atProvides.description);
     }
 
-    public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, BindingMode bindingMode, InternalFunction<T> factory,
+    public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, InstantiationMode instantionMode, InternalFunction<T> factory,
             List<InternalDependency> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
         this.function = requireNonNull(factory, "factory is null");
         this.parent = null;
-        this.bindingMode = requireNonNull(bindingMode);
-        if (bindingMode != BindingMode.PROTOTYPE && hasDependencyOnInjectionSite) {
+        this.instantionMode = requireNonNull(instantionMode);
+        if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
     }
@@ -98,20 +98,20 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
-        this.bindingMode = BindingMode.SINGLETON;
+        this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final BindingMode getBindingMode() {
-        return bindingMode;
+    public final InstantiationMode getInstantiationMode() {
+        return instantionMode;
     }
 
     /** {@inheritDoc} */
     @Override
     public final T getInstance(InjectionSite ignore) {
-        if (bindingMode == BindingMode.PROTOTYPE) {
+        if (instantionMode == InstantiationMode.PROTOTYPE) {
             return newInstance();
         }
 
@@ -168,15 +168,15 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
             return new RuntimeServiceNodeSingleton<>(this, i);
         }
 
-        if (parent == null || parent.getBindingMode() == BindingMode.SINGLETON || parent.instance != null
+        if (parent == null || parent.getInstantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
                 || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
-            if (bindingMode == BindingMode.PROTOTYPE) {
+            if (instantionMode == InstantiationMode.PROTOTYPE) {
                 return new RuntimeServiceNodePrototype<>(this, fac());
             } else {
                 return new RuntimeServiceNodeLazy<>(this, fac(), null);
             }
         }
-        // parent==LAZY and not initialized, this.bindingMode=Lazy or Prototype
+        // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
 
         return new RuntimeServiceNodeLazy<>(this, fac(), null);
 

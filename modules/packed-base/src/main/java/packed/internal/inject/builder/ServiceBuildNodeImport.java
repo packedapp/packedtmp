@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -49,8 +49,8 @@ public class ServiceBuildNodeImport<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public BindingMode getBindingMode() {
-        return other.getBindingMode();
+    public InstantiationMode getInstantiationMode() {
+        return other.getInstantiationMode();
     }
 
     @Override

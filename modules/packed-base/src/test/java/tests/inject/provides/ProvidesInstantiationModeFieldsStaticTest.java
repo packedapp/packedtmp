@@ -22,69 +22,60 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.BindingMode;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Provides;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link Provides#bindingMode()} on static methods. */
-public class ProvidesBindingModeMethodsStaticTest {
+/**
+ * Tests {@link Provides#instantionMode()} on static fields. In general we do not need to create an instance of the parent
+ * if we have static {@link Provides} fields. Unlike for instance fields.
+ */
+public class ProvidesInstantiationModeFieldsStaticTest {
 
-    /** Tests lazy {@link Provides#bindingMode()} on static methods. */
-    @Test
-    public void bindLazy() {
-        MixedMethodsNoInstantiation.test(c -> c.bindLazy(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.bindLazy(Factory.findInjectable(MixedMethodsNoInstantiation.class)));
-        MixedMethodsNoInstantiation.test(c -> c.bindLazy(new TypeLiteral<MixedMethodsNoInstantiation>() {}));
-    }
-
-    /** Tests prototype {@link Provides#bindingMode()} on static methods. */
-    @Test
-    public void bindPrototype() {
-        MixedMethodsNoInstantiation.test(c -> c.bindPrototype(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.bindPrototype(Factory.findInjectable(MixedMethodsNoInstantiation.class)));
-        MixedMethodsNoInstantiation.test(c -> c.bindPrototype(new TypeLiteral<MixedMethodsNoInstantiation>() {}));
-    }
-
-    /** Tests default {@link Provides#bindingMode()} on static methods. */
+    /** Tests default {@link Provides#instantionMode()} on static fields. */
     @Test
     public void bindSingleton() {
-        MixedMethodsInstantiable.test(c -> c.bind(new MixedMethodsInstantiable()));
-        MixedMethodsInstantiable.test(c -> c.bind(MixedMethodsInstantiable.class));
-        MixedMethodsInstantiable.test(c -> c.bind(Factory.findInjectable(MixedMethodsInstantiable.class)));
-        MixedMethodsInstantiable.test(c -> c.bind(new TypeLiteral<MixedMethodsInstantiable>() {}));
+        MixedFieldsInstantiable.test(c -> c.bind(new MixedFieldsInstantiable()));
+        MixedFieldsInstantiable.test(c -> c.bind(MixedFieldsInstantiable.class));
+        MixedFieldsInstantiable.test(c -> c.bind(Factory.findInjectable(MixedFieldsInstantiable.class)));
+        MixedFieldsInstantiable.test(c -> c.bind(new TypeLiteral<MixedFieldsInstantiable>() {}));
+    }
+
+    /** Tests lazy {@link Provides#instantionMode()} on static fields. */
+    @Test
+    public void bindLazy() {
+        MixedFieldsNoInstantiation.test(c -> c.bindLazy(MixedFieldsNoInstantiation.class));
+        MixedFieldsNoInstantiation.test(c -> c.bindLazy(Factory.findInjectable(MixedFieldsNoInstantiation.class)));
+        MixedFieldsNoInstantiation.test(c -> c.bindLazy(new TypeLiteral<MixedFieldsNoInstantiation>() {}));
+    }
+
+    /** Tests prototype {@link Provides#instantionMode()} on static fields. */
+    @Test
+    public void bindPrototype() {
+        MixedFieldsNoInstantiation.test(c -> c.bindPrototype(MixedFieldsNoInstantiation.class));
+        MixedFieldsNoInstantiation.test(c -> c.bindPrototype(Factory.findInjectable(MixedFieldsNoInstantiation.class)));
+        MixedFieldsNoInstantiation.test(c -> c.bindPrototype(new TypeLiteral<MixedFieldsNoInstantiation>() {}));
     }
 
     /** A helper class that can be instantiated. */
-    static class MixedMethodsInstantiable {
+    static class MixedFieldsInstantiable {
 
+        @Provides(instantionMode = InstantiationMode.LAZY)
         private static Long L;
 
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         private static Integer P;
 
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         private static Short S;
 
-        MixedMethodsInstantiable() {
+        MixedFieldsInstantiable() {
             assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
-        }
-
-        @Provides(bindingMode = BindingMode.LAZY)
-        static Long l() {
-            return L;
-        }
-
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
-        static Integer p() {
-            return P;
-        }
-
-        @Provides(bindingMode = BindingMode.SINGLETON)
-        static Short s() {
-            return S;
         }
 
         static void test(Consumer<? super InjectorConfiguration> configurator) {
@@ -95,7 +86,7 @@ public class ProvidesBindingModeMethodsStaticTest {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
-            assertThat(i.with(MixedMethodsInstantiable.class)).isNotNull();
+            assertThat(i.with(MixedFieldsInstantiable.class)).isNotNull();
             L = 2L;
             S = 2;
             P = 2;
@@ -116,31 +107,19 @@ public class ProvidesBindingModeMethodsStaticTest {
      * A helper class that should never be instantiated. Because we can read the value of the fields without an instance of
      * BindStaticNoInstantiation.
      */
-    static class MixedMethodsNoInstantiation {
+    static class MixedFieldsNoInstantiation {
 
+        @Provides(instantionMode = InstantiationMode.LAZY)
         private static Long L;
 
+        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
         private static Integer P;
 
+        @Provides(instantionMode = InstantiationMode.SINGLETON)
         private static Short S;
 
-        public MixedMethodsNoInstantiation() {
+        public MixedFieldsNoInstantiation() {
             throw new AssertionError("Cannot instantiate");
-        }
-
-        @Provides(bindingMode = BindingMode.LAZY)
-        static Long l() {
-            return L;
-        }
-
-        @Provides(bindingMode = BindingMode.PROTOTYPE)
-        static Integer p() {
-            return P;
-        }
-
-        @Provides(bindingMode = BindingMode.SINGLETON)
-        static Short s() {
-            return S;
         }
 
         static void test(Consumer<? super InjectorConfiguration> configurator) {
