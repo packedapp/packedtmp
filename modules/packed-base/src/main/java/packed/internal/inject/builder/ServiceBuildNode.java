@@ -159,6 +159,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     /** {@inheritDoc} */
     @Override
     public ServiceBuildNode<T> setDescription(String description) {
+        checkConfigurable();
         super.setDescription(description);
         return this;
     }

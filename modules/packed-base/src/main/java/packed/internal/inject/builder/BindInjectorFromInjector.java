@@ -29,7 +29,7 @@ import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * Represents an imported injector via {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
+ * Represents an imported injector via {@link InjectorConfiguration#bindInjector(Injector, InjectorImportStage...)}.
  */
 final class BindInjectorFromInjector extends BindInjector {
 

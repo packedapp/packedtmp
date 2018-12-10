@@ -177,7 +177,7 @@ public interface Container extends Injector {
 
     static Container of(Consumer<? super ContainerConfiguration> configurator) {
         requireNonNull(configurator, "configurator is null");
-        ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null);
+        ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
         configurator.accept(c);
         return c.build();
     }

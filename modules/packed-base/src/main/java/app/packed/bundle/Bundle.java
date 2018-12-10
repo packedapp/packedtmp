@@ -86,6 +86,31 @@ public abstract class Bundle {
         return configuration().bind(implementation);
     }
 
+    protected final void bindInjector(Class<? extends InjectorBundle> bundleType, ImportExportStage... filters) {
+        configuration().bindInjector(bundleType, filters);
+    }
+
+    /**
+     * Imports the services that are available in the specified injector.
+     *
+     * @param injector
+     *            the injector to import services from
+     * @param stages
+     *            any number of filters that restricts the services that are imported. Or makes them available under
+     *            different keys
+     * @see InjectorConfiguration#bindInjector(Injector, ImportExportStage...)
+     * @throws IllegalArgumentException
+     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
+     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
+     */
+    protected final void bindInjector(Injector injector, ImportExportStage... stages) {
+        configuration().bindInjector(injector, stages);
+    }
+
+    protected final void bindInjector(InjectorBundle bundle, ImportExportStage... stages) {
+        configuration().bindInjector(bundle, stages);
+    }
+
     protected final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
         return configuration().bindLazy(implementation);
     }
@@ -204,31 +229,6 @@ public abstract class Bundle {
         return configuration().expose(configuration);
     }
 
-    protected final void injectorBind(Class<? extends InjectorBundle> bundleType, ImportExportStage... filters) {
-        configuration().injectorBind(bundleType, filters);
-    }
-
-    /**
-     * Imports the services that are available in the specified injector.
-     *
-     * @param injector
-     *            the injector to import services from
-     * @param stages
-     *            any number of filters that restricts the services that are imported. Or makes them available under
-     *            different keys
-     * @see InjectorConfiguration#injectorBind(Injector, ImportExportStage...)
-     * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
-     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
-     */
-    protected final void injectorBind(Injector injector, ImportExportStage... stages) {
-        configuration().injectorBind(injector, stages);
-    }
-
-    protected final void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
-        configuration().injectorBind(bundle, stages);
-    }
-
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
@@ -239,6 +239,14 @@ public abstract class Bundle {
      */
     protected final void lookup(Lookup lookup) {
         configuration().lookup(lookup);
+    }
+
+    protected void requireMandatory(Class<?> key) {
+        configuration().requireMandatory(key);
+    }
+
+    protected void requireMandatory(Key<?> key) {
+        configuration().requireMandatory(key);
     }
 
     /**
@@ -255,14 +263,6 @@ public abstract class Bundle {
 
     protected final Set<String> tags() {
         return configuration().tags();
-    }
-
-    protected void requireMandatory(Class<?> key) {
-        configuration().requireMandatory(key);
-    }
-
-    protected void requireMandatory(Key<?> key) {
-        configuration().requireMandatory(key);
     }
 
 }

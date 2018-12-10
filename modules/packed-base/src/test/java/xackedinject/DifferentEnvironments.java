@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.injector.importexports;
+package xackedinject;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Injector;
-import tests.injector.importexports.DifferentEnvironments.BaseEnvironment;
-import tests.injector.importexports.DifferentEnvironments.ProdEnvironment;
-import tests.injector.importexports.DifferentEnvironments.TestEnvironment;
+import xackedinject.DifferentEnvironments.BaseEnvironment;
+import xackedinject.DifferentEnvironments.ProdEnvironment;
+import xackedinject.DifferentEnvironments.TestEnvironment;
 
 /**
  *

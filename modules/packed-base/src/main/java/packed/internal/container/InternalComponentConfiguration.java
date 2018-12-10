@@ -17,17 +17,22 @@ package packed.internal.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.classscan.ComponentClassDescriptor;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.builder.ServiceBuildNodeDefault;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.builder.ServiceBuildNodeDefault;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.util.Checks;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
@@ -45,12 +50,13 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     InternalComponent component;
 
     /**
-     * The thread that was used to create this configuration, is needed, because some operations are only allowed from the
-     * installing thread.
+     * The thread that was used to create this configuration. This is needed, because some operations are only allowed from
+     * the installing thread.
      */
     final Thread initializationThread;
 
-    ArrayList<MixinBuildNode> mixins;
+    /** A list of all mixins that have been added (lazily initialized). */
+    ArrayList<MixinNode> mixins;
 
     @Nullable
     String name;
@@ -58,17 +64,52 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     /** The parent of this configuration, or null for the root component. */
     final @Nullable InternalComponentConfiguration<?> parent;
 
+    /** The object instances of the component, the array will be passed along to InternalComponent. */
+    Object[] instances;
+
+    /**
+     * @param containerBuilder
+     * @param configurationSite
+     * @param factory
+     * @param bindingMode
+     */
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+            @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependency> dependencies) {
+        super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
+        this.parent = parent;
+        this.initializationThread = Thread.currentThread();
+    }
 
     /**
      * @param containerBuilder
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, T instance) {
-        super(containerBuilder, configurationSite, instance);
+        super(containerBuilder, configurationSite, descriptor, instance);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
+    }
+
+    /**
+     * Invokes the specified action for this configuration as well any child configuration.
+     *
+     * @param action
+     *            the action to invoke
+     */
+    public void forEachRecursively(Consumer<? super InternalComponentConfiguration<?>> action) {
+        action.accept(this);
+        if (children != null) {
+            for (InternalComponentConfiguration<?> child : children) {
+                child.forEachRecursively(action);
+            }
+        }
+    }
+
+    @Override
+    protected ComponentClassDescriptor descriptor() {
+        return (ComponentClassDescriptor) super.descriptor();
     }
 
     /** {@inheritDoc} */
@@ -82,17 +123,17 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     public ComponentConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
         InternalFunction<?> f = InjectSupport.toInternalFunction(factory);
-        return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
+        return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration<T> addMixin(Object instance) {
         checkConfigurable();
-        return addMixin0(new MixinBuildNode(injectorBuilder, configurationSite, instance));
+        return addMixin0(new MixinNode(injectorBuilder, configurationSite, instance));
     }
 
-    private ComponentConfiguration<T> addMixin0(MixinBuildNode node) {
+    private ComponentConfiguration<T> addMixin0(MixinNode node) {
         if (mixins == null) {
             mixins = new ArrayList<>(1);
         }
@@ -136,6 +177,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     /** {@inheritDoc} */
     @Override
     public <S> ComponentConfiguration<S> install(Factory<S> factory) {
+        // Man kan installere child components indtil bundlen er faerdig...
         return null;
     }
 
@@ -162,6 +204,10 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     public InternalComponentConfiguration<T> setDescription(String description) {
         super.setDescription(description);
         return this;
+    }
+
+    public boolean isRuntimeComponent() {
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -191,7 +237,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     }
 
     /** A special build node that is used for mixins. */
-    static class MixinBuildNode extends ServiceBuildNodeDefault<Object> {
+    static class MixinNode extends ServiceBuildNodeDefault<Object> {
 
         // /**
         // * @param injectorBuilder
@@ -208,8 +254,22 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
          * @param configurationSite
          * @param instance
          */
-        public MixinBuildNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
-            super(injectorConfiguration, configurationSite, instance);
+        public MixinNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
+            // Null should probably be service class descriptor... or its own...
+            super(injectorConfiguration, configurationSite, null, instance);
+        }
+    }
+
+    /**
+     * @param internalContainer
+     * @return
+     */
+    void init(InternalContainer container) {
+        if (parent == null) {
+            component = new InternalComponent(container, this, null, false, getName());
+        } else {
+            component = new InternalComponent(container, this, parent.component, false, getName());
+            parent.component.children.put(component.getName(), component);
         }
     }
 }

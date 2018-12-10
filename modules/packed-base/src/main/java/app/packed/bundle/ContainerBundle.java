@@ -20,15 +20,17 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provides;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.container.ContainerBuilder;
 
 /**
  *
  */
 public abstract class ContainerBundle extends Bundle {
 
-    protected final void containerInstall(ContainerBundle bundle, ImportExportStage... stages) {
-
+    /** {@inheritDoc} */
+    @Override
+    ContainerBuilder configuration() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -43,8 +45,7 @@ public abstract class ContainerBundle extends Bundle {
      * @return a component configuration that can be use to configure the component in greater detail
      */
     protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        // return builder.installable().install(implementation, currentStackFrame());
-        throw new UnsupportedOperationException();
+        return configuration().install(implementation);
     }
 
     /**
@@ -59,8 +60,7 @@ public abstract class ContainerBundle extends Bundle {
      * @return the configuration of the component that was installed
      */
     protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        // return builder.installable().install(factory, currentStackFrame());
-        throw new UnsupportedOperationException();
+        return configuration().install(factory);
     }
 
     /**
@@ -81,19 +81,18 @@ public abstract class ContainerBundle extends Bundle {
      * @return this configuration
      */
     protected final <T> ComponentConfiguration<T> install(T instance) {
-        // return builder.installable().install(instance, currentStackFrame());
-        throw new UnsupportedOperationException();
+        return configuration().install(instance);
     }
 
     protected final <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
-        // return builder.installable().install(implementation, currentStackFrame());
-        throw new UnsupportedOperationException();
+        return configuration().install(implementation);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    InjectorBuilder configuration() {
-        throw new UnsupportedOperationException();
+    protected final void installContainer(Class<? extends ContainerBundle> bundleType, ImportExportStage... stages) {
+        configuration().installContainer(bundleType, stages);
     }
 
+    protected final void installContainer(ContainerBundle bundle, ImportExportStage... stages) {
+        configuration().installContainer(bundle, stages);
+    }
 }

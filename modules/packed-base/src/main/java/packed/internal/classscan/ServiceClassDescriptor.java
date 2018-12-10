@@ -26,7 +26,7 @@ import packed.internal.inject.support.AtProvidesGroup;
  * A service class descriptor contains information about injectable fields and methods.
  */
 // Qualifier, default key...
-public class ServiceClassDescriptor<T> {
+public class ServiceClassDescriptor {
 
     /** A group of all members annotated with {@link Inject}. */
     public final AtInjectGroup inject;
@@ -38,7 +38,7 @@ public class ServiceClassDescriptor<T> {
     public final String simpleName;
 
     /** The class this descriptor is created from. */
-    public final Class<T> type;
+    public final Class<?> type;
 
     /**
      * Creates a new descriptor.
@@ -50,7 +50,7 @@ public class ServiceClassDescriptor<T> {
      * @param scanner
      *            a member scanner
      */
-    ServiceClassDescriptor(Class<T> clazz, MethodHandles.Lookup lookup, MemberScanner scanner) {
+    ServiceClassDescriptor(Class<?> clazz, MethodHandles.Lookup lookup, MemberScanner scanner) {
         // Do we need to store lookup??? I think yes. And then collect all annotated Fields in a list
         // Or do we validate everything up front?????? With Hooks and stufff...
 
@@ -75,7 +75,7 @@ public class ServiceClassDescriptor<T> {
      *            the type
      * @return a service class descriptor for the specified lookup and type
      */
-    public static <T> ServiceClassDescriptor<T> from(MethodHandles.Lookup lookup, Class<T> type) {
+    public static ServiceClassDescriptor from(MethodHandles.Lookup lookup, Class<?> type) {
         return LookupDescriptorAccessor.get(lookup).getServiceDescriptor(type);
     }
 }

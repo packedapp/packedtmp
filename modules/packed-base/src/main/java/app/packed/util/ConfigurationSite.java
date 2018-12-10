@@ -62,6 +62,8 @@ public interface ConfigurationSite {
      * 
      * @return the configuration operation that was performed
      */
+    // If open up for custom operations... We should probably have a naming scheme...
+    // maybe prefix all with packed.injectorBind
     String operation();
 
     /**
@@ -74,6 +76,7 @@ public interface ConfigurationSite {
     default void print() {
         forEach(e -> System.out.println(e));
     }
+    // visit(ConfigurationSiteVisitor visitor)
 }
 // Example with Provides
 // The exist because the "inject.provides" because of field xxxxx

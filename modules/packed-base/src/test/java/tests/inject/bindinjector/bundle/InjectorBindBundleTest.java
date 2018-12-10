@@ -40,8 +40,8 @@ public class InjectorBindBundleTest {
             protected void configure() {}
         };
 
-        npe(() -> Injector.of(c -> c.injectorBind((InjectorBundle) null)), "bundle");
-        npe(() -> Injector.of(c -> c.injectorBind(b, (InjectorImportStage[]) null)), "stages");
+        npe(() -> Injector.of(c -> c.bindInjector((InjectorBundle) null)), "bundle");
+        npe(() -> Injector.of(c -> c.bindInjector(b, (InjectorImportStage[]) null)), "stages");
     }
 
     /** Tests that we can import no services. */
@@ -55,7 +55,7 @@ public class InjectorBindBundleTest {
         };
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(b);
+            c.bindInjector(b);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -72,7 +72,7 @@ public class InjectorBindBundleTest {
         };
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(b);
+            c.bindInjector(b);
         });
         assertThat(i.with(String.class)).isEqualTo("X");
     }
@@ -90,7 +90,7 @@ public class InjectorBindBundleTest {
         };
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(b);
+            c.bindInjector(b);
         });
         assertThat(i.with(Long.class)).isEqualTo(1L);
         assertThat(i.with(Long.class)).isEqualTo(2L);

@@ -129,7 +129,7 @@ public interface ComponentStream extends Stream<Component> {
         return filter(e -> e.tags().contains(tag));
     }
 
-    /********** Overridden to provide a ComponentStream as a return value. **********/
+    /********** Overridden to provide co-a ComponentStream as a return value. **********/
 
     /** {@inheritDoc} */
     @Override

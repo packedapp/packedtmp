@@ -28,18 +28,18 @@ import app.packed.util.Key;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)} method. */
+/** Tests the {@link InjectorConfiguration#bindInjector(Injector, InjectorImportStage...)} method. */
 public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
         Injector i = Injector.of(c -> c.bind("X"));
-        npe(() -> Injector.of(c -> c.injectorBind((Injector) null)), "injector");
-        npe(() -> Injector.of(c -> c.injectorBind(i, (InjectorImportStage[]) null)), "stages");
+        npe(() -> Injector.of(c -> c.bindInjector((Injector) null)), "injector");
+        npe(() -> Injector.of(c -> c.bindInjector(i, (InjectorImportStage[]) null)), "stages");
 
         // TODO test error message
-        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.injectorBind(i, InjectorImportStage.NO_SERVICE, null)));
+        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.bindInjector(i, InjectorImportStage.NO_SERVICE, null)));
     }
 
     /** Tests that we can import no services. */
@@ -51,7 +51,7 @@ public class SimpleInjectorImportsTest {
         });
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(i1, InjectorImportStage.NO_SERVICE);
+            c.bindInjector(i1, InjectorImportStage.NO_SERVICE);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -61,7 +61,7 @@ public class SimpleInjectorImportsTest {
     public void import1() {
         Injector i1 = Injector.of(c -> c.bind("X"));
 
-        Injector i = Injector.of(c -> c.injectorBind(i1));
+        Injector i = Injector.of(c -> c.bindInjector(i1));
         assertThat(i.with(String.class)).isEqualTo("X");
 
     }
@@ -72,7 +72,7 @@ public class SimpleInjectorImportsTest {
         Injector i1 = Injector.of(c -> c.bind("X"));
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
+            c.bindInjector(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
                     InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
         });
         assertThat(i.hasService(String.class)).isFalse();
@@ -87,8 +87,8 @@ public class SimpleInjectorImportsTest {
         Injector i2 = Injector.of(c -> c.bind("Y"));
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}));
-            c.injectorBind(i2, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Right String>() {}));
+            c.bindInjector(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}));
+            c.bindInjector(i2, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Right String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
@@ -102,16 +102,16 @@ public class SimpleInjectorImportsTest {
         Injector i2 = Injector.of(c -> c.bind("Y").as(new Key<@Right String>() {}));
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(i1);
-            c.injectorBind(i2);
+            c.bindInjector(i1);
+            c.bindInjector(i2);
         });
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
         assertThat(i.with(new Key<@Right String>() {})).isEqualTo("Y");
 
         // Now let us switch them around
         i = Injector.of(c -> {
-            c.injectorBind(i1, InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
-            c.injectorBind(i2, InjectorImportStage.rebind(new Key<@Right String>() {}, new Key<@Left String>() {}));
+            c.bindInjector(i1, InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.bindInjector(i2, InjectorImportStage.rebind(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("Y");

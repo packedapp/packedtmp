@@ -32,8 +32,7 @@ public class Mybb extends InjectorBundle {
     public static void main(String[] args) {
         BundleDescriptor bd = BundleDescriptor.of(Mybb.class);
 
-        System.out.println(bd.bundleName());
-
+        System.out.println(bd.bundleId());
         System.out.println(bd.bundleDescription());
     }
 }

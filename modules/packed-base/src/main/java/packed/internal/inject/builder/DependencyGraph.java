@@ -17,12 +17,14 @@ package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionException;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
+import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.InternalInjector;
@@ -46,11 +48,14 @@ final class DependencyGraph {
         this.root = requireNonNull(root);
     }
 
+    static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), InternalInjector.class);
+
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(InjectorBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.privateNodeMap);
-        builder.privateNodeMap.put(new ServiceBuildNodeDefault<>(builder, builder.getConfigurationSite(), builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
+        builder.privateNodeMap
+                .put(new ServiceBuildNodeDefault<>(builder, builder.getConfigurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {

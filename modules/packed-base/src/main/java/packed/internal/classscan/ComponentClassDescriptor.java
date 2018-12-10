@@ -25,7 +25,7 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
 /**
  *
  */
-public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
+public class ComponentClassDescriptor extends ServiceClassDescriptor {
 
     // Need the lookup....
     // Also with regards to ComponentMethod....
@@ -42,7 +42,7 @@ public class ComponentClassDescriptor<T> extends ServiceClassDescriptor<T> {
      * @param clazz
      * @param lookup
      */
-    ComponentClassDescriptor(Class<T> clazz, Lookup lookup, MemberScanner scanner) {
+    ComponentClassDescriptor(Class<?> clazz, Lookup lookup, MemberScanner scanner) {
         super(clazz, lookup, scanner);
     }
 }

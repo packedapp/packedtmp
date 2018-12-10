@@ -26,10 +26,10 @@ import java.util.function.Consumer;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -85,7 +85,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     HashSet<Key<?>> requiredServicesOptionally;
 
     /**
-     * Creates a new configuration.
+     * Creates a new builder.
      * 
      * @param configurationSite
      *            the configuration site
@@ -123,8 +123,9 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
+        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(instance.getClass());
         ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this,
-                getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), instance);
+                getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
         scan(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
@@ -140,10 +141,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, mode, accessor.readable(func), (List) factory.getDependencies());
+        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(func.getRawType());
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func),
+                (List) factory.getDependencies());
 
         scan(func.getRawType(), node);
 
@@ -231,17 +233,22 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     }
 
     protected void freezeLatest() {
+        // Skal vi egentlig ikke ogsaa frysse noden????
         if (privateLatestNode != null) {
-            if (!privateNodeMap.putIfAbsent(privateLatestNode)) {
-                System.err.println("OOPS");
+            Key<?> key = privateLatestNode.getKey();
+            if (key != null) {
+                if (!privateNodeMap.putIfAbsent(privateLatestNode)) {
+                    System.err.println("OOPS");
+                }
             }
+            privateLatestNode.freeze();
             privateLatestNode = null;
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public final void injectorBind(Injector injector, ImportExportStage... stages) {
+    public final void bindInjector(Injector injector, ImportExportStage... stages) {
         requireNonNull(injector, "injector is null");
         requireNonNull(stages, "stages is null");
         List<ImportExportStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
@@ -254,7 +261,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
     /** {@inheritDoc} */
     @Override
-    public void injectorBind(InjectorBundle bundle, ImportExportStage... stages) {
+    public void bindInjector(InjectorBundle bundle, ImportExportStage... stages) {
         requireNonNull(bundle, "bundle is null");
         requireNonNull(stages, "stages is null");// We should probably validates stages for null, before freezeLatest
         List<ImportExportStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
@@ -302,8 +309,8 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void scan(Class<?> type, ServiceBuildNodeDefault<?> parent) {
-        ServiceClassDescriptor<?> serviceDesc = accessor.getServiceDescriptor(type);
+    protected void scan(Class<?> type, ServiceBuildNodeDefault<?> parent) {
+        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(type);
 
         AtProvidesGroup ps = serviceDesc.provides;
         if (!ps.isEmpty()) {
@@ -339,6 +346,4 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         super.setDescription(description);
         return this;
     }
-
-    // public void require(Predicate<? super Dependency> p);
 }

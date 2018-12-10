@@ -38,8 +38,8 @@ public class ImportTest {
     public static void main(String[] args) {
 
         Injector i = Injector.of(c -> {
-            c.injectorBind(London.class, InjectorImportStage.rebind(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
-            c.injectorBind(London.class, InjectorImportStage.rebind(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
+            c.bindInjector(London.class, InjectorImportStage.rebind(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
+            c.bindInjector(London.class, InjectorImportStage.rebind(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
         });
 
         i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));

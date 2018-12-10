@@ -88,6 +88,15 @@ import app.packed.inject.Injector;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnStart {
     String[] after() default {};
-
-    String[] before() default {};
 }
+// Problemet med at have baade after og before er at det er forskellige modeller.
+// Hvis tilfoejer en before <- Saa virker den paa den maade at skal med en beforeX skal vaere faerdige inde vi kan
+// begyndede...
+// Maaske kun have starting points til at starte med???
+
+// Maaske gaa over til XXX og *XXX
+// XXX venter man paa en, *XXX venter paa alle er faerdige, flere end en kan complete den...
+
+// OnStart()
+// @StartPoint();<- fields and methods
+// public CompletableFuture<>

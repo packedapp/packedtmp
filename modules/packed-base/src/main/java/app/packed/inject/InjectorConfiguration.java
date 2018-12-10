@@ -100,6 +100,65 @@ public interface InjectorConfiguration extends Taggable {
     <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation);
 
     /**
+     * @param bundleType
+     *            the type of bundle to instantiate
+     * @param stages
+     *            optional stages
+     */
+    default void bindInjector(Class<? extends InjectorBundle> bundleType, ImportExportStage... stages) {
+        bindInjector(Bundles.instantiate(bundleType), stages);
+    }
+
+    /**
+     * Binds all services from the specified injector.
+     * <p>
+     * A simple example, importing a singleton {@code String} service from one injector into another:
+     * 
+     * <pre> {@code
+     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
+     * 
+     * Injector importTo = Injector.of(c -&gt; {
+     *   c.bind(12345); 
+     *   c.injectorBind(importFrom);
+     * );
+     * 
+     * System.out.println(importTo.with(String.class));// prints "foostring"}}
+     * </pre>
+     * <p>
+     * It is possible to specify one or import stages that can restrict or transform the imported services.
+     * <p>
+     * For example, the following example takes the injector we created in the previous example, and creates a new injector
+     * that only imports the {@code String.class} service.
+     * 
+     * <pre>
+     * Injector i = Injector.of(c -&gt; {
+     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
+     * });
+     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
+     * Injector i = Injector.of(c -&gt; {
+     *   c.injectorBind(importTo, InjectorImportStage.reject(Integer.class));
+     * });
+     * </pre> @param injector the injector to bind services from
+     * 
+     * @param injector
+     *            the injector to import services from
+     * @param stages
+     *            any number of stages that restricts or transforms the services that are imported
+     * @throws IllegalArgumentException
+     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
+     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
+     */
+    void bindInjector(Injector injector, ImportExportStage... stages);
+
+    /**
+     * @param bundle
+     *            the bundle to bind
+     * @param stages
+     *            optional import/export stages
+     */
+    void bindInjector(InjectorBundle bundle, ImportExportStage... stages);
+
+    /**
      * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will
      * not be instantiatied until it is requested, possible never.
      * 
@@ -153,65 +212,6 @@ public interface InjectorConfiguration extends Taggable {
      */
     @Nullable
     String getDescription();
-
-    /**
-     * @param bundleType
-     *            the type of bundle to instantiate
-     * @param stages
-     *            optional stages
-     */
-    default void injectorBind(Class<? extends InjectorBundle> bundleType, ImportExportStage... stages) {
-        injectorBind(Bundles.instantiate(bundleType), stages);
-    }
-
-    /**
-     * Binds all services from the specified injector.
-     * <p>
-     * A simple example, importing a singleton {@code String} service from one injector into another:
-     * 
-     * <pre> {@code
-     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
-     * 
-     * Injector importTo = Injector.of(c -&gt; {
-     *   c.bind(12345); 
-     *   c.injectorBind(importFrom);
-     * );
-     * 
-     * System.out.println(importTo.with(String.class));// prints "foostring"}}
-     * </pre>
-     * <p>
-     * It is possible to specify one or import stages that can restrict or transform the imported services.
-     * <p>
-     * For example, the following example takes the injector we created in the previous example, and creates a new injector
-     * that only imports the {@code String.class} service.
-     * 
-     * <pre>
-     * Injector i = Injector.of(c -&gt; {
-     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
-     * });
-     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
-     * Injector i = Injector.of(c -&gt; {
-     *   c.injectorBind(importTo, InjectorImportStage.reject(Integer.class));
-     * });
-     * </pre> @param injector the injector to bind services from
-     * 
-     * @param injector
-     *            the injector to import services from
-     * @param stages
-     *            any number of stages that restricts or transforms the services that are imported
-     * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
-     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
-     */
-    void injectorBind(Injector injector, ImportExportStage... stages);
-
-    /**
-     * @param bundle
-     *            the bundle to bind
-     * @param stages
-     *            optional import/export stages
-     */
-    void injectorBind(InjectorBundle bundle, ImportExportStage... stages);
 
     /**
      * Sets a {@link Lookup lookup object} that will be used to access members (fields, constructors and methods) on

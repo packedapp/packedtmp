@@ -37,9 +37,9 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * An abstract class for the injector bind methods
- * {@link InjectorConfiguration#injectorBind(Class, ImportExportStage...)},
- * {@link InjectorConfiguration#injectorBind(InjectorBundle, ImportExportStage...)}, and
- * {@link InjectorConfiguration#injectorBind(Injector, InjectorImportStage...)}.
+ * {@link InjectorConfiguration#bindInjector(Class, ImportExportStage...)},
+ * {@link InjectorConfiguration#bindInjector(InjectorBundle, ImportExportStage...)}, and
+ * {@link InjectorConfiguration#bindInjector(Injector, InjectorImportStage...)}.
  */
 abstract class BindInjector {
 

@@ -83,7 +83,7 @@ public abstract class AbstractInjector implements Injector {
         return findNode(key) != null;
     }
 
-    protected final void injectMembers(ServiceClassDescriptor<?> descriptor, Object instance, @Nullable Component component) {
+    protected final void injectMembers(ServiceClassDescriptor descriptor, Object instance, @Nullable Component component) {
         // Inject fields
         if (!descriptor.inject.fields.isEmpty()) {
             for (AtInject atInject : descriptor.inject.fields) {
@@ -136,7 +136,7 @@ public abstract class AbstractInjector implements Injector {
     public final <T> T injectMembers(T instance, MethodHandles.Lookup lookup) {
         requireNonNull(instance, "instance is null");
         requireNonNull(lookup, "lookup is null");
-        ServiceClassDescriptor<?> scd = ServiceClassDescriptor.from(lookup, instance.getClass());
+        ServiceClassDescriptor scd = ServiceClassDescriptor.from(lookup, instance.getClass());
         injectMembers(scd, instance, null);
         return instance;
     }

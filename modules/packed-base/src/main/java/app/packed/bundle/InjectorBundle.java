@@ -113,7 +113,7 @@ public abstract class InjectorBundle extends Bundle {
     // We probably want to null this out...
     // If we install the bundle as a component....
     // We do not not want any more garbage then needed.
-    private InjectorBuilder delegate;
+    private InjectorBuilder builder;
 
     protected final <T> T asDeprecated(T t, String reason) {
         return t;
@@ -124,7 +124,7 @@ public abstract class InjectorBundle extends Bundle {
     }
 
     /**
-     * @param configuration
+     * @param builder
      *            the injector configuration to delagate to
      * @param freeze
      * @apiNote we take an AbstractBundleConfigurator instead of a BundleConfigurator to make sure we never parse an
@@ -132,21 +132,21 @@ public abstract class InjectorBundle extends Bundle {
      *          {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
      *          object escape.
      */
-    final void configure(InjectorBuilder configuration, boolean freeze) {
+    final void configure(InjectorBuilder builder, boolean freeze) {
 
         // Maybe we can do some access checkes on the Configurator. To allow for testing....
 
-        if (this.delegate != null) {
+        if (this.builder != null) {
             throw new IllegalStateException();
         } else if (isFrozen && freeze) {
             // vi skal have love til f.eks. at koere en gang descriptor af, saa det er kun hvis vi skal freeze den ogsaa doer.
             throw new IllegalStateException("Cannot configure this bundle, after it has been been frozen");
         }
-        this.delegate = requireNonNull(configuration);
+        this.builder = requireNonNull(builder);
         try {
             configure();
         } finally {
-            this.delegate = null;
+            this.builder = null;
             if (freeze) {
                 isFrozen = true;
             }
@@ -163,10 +163,10 @@ public abstract class InjectorBundle extends Bundle {
 
     @Override
     InjectorBuilder configuration() {
-        if (delegate == null) {
+        if (builder == null) {
             throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
         }
-        return delegate;
+        return builder;
     }
 
     // Ideen er at man man extend et Bundle, med et nyt bundle der har test information

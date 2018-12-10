@@ -20,19 +20,20 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.ComponentConfiguration;
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
+import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
 import packed.internal.inject.support.AtProvides;
-import packed.internal.invokers.InvokableMember;
 import packed.internal.invokers.InternalFunction;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
@@ -46,8 +47,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-    /** The binding mode of this node. */
-    private final InstantiationMode instantionMode;
+    final ServiceClassDescriptor descriptor;
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
@@ -57,31 +57,26 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     @Nullable
     private T instance;
 
+    /** The binding mode of this node. */
+    private final InstantiationMode instantionMode;
+
     /** The parent, if this node is the result of a member annotated with {@link Provides}. */
     private final ServiceBuildNodeDefault<?> parent;
 
-    ServiceBuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory, ServiceBuildNodeDefault<?> parent) {
-        super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
-        this.parent = parent;
-        this.function = requireNonNull(factory, "factory is null");
-        this.instantionMode = atProvides.instantionMode;
-        setDescription(atProvides.description);
+    protected ServiceClassDescriptor descriptor() {
+        return descriptor;
     }
 
-    public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, InstantiationMode instantionMode, InternalFunction<T> factory,
-            List<InternalDependency> dependencies) {
+    public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+            InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependency> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
-        this.function = requireNonNull(factory, "factory is null");
+        this.function = requireNonNull(function, "factory is null");
         this.parent = null;
+        this.descriptor = requireNonNull(descriptor);
         this.instantionMode = requireNonNull(instantionMode);
         if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
-    }
-
-    @Override
-    ServiceBuildNode<?> declaringNode() {
-        return parent;
     }
 
     /**
@@ -94,18 +89,39 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
      * @param instance
      *            the instance
      */
-    public ServiceBuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, T instance) {
+    public ServiceBuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+            T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
+        this.descriptor = requireNonNull(descriptor);
         this.parent = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
     }
 
-    /** {@inheritDoc} */
+    ServiceBuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory,
+            ServiceBuildNodeDefault<?> parent) {
+        super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
+        this.parent = parent;
+        this.function = requireNonNull(factory, "factory is null");
+        this.instantionMode = atProvides.instantionMode;
+        this.descriptor = null;
+        setDescription(atProvides.description);
+    }
+
     @Override
-    public final InstantiationMode getInstantiationMode() {
-        return instantionMode;
+    ServiceBuildNode<?> declaringNode() {
+        return parent;
+    }
+
+    private InternalFunction<T> fac() {
+        if (parent != null) {
+            InvokableMember<T> ff = (InvokableMember<T>) function;
+            if (ff.isMissingInstance()) {
+                function = ff.withInstance(parent.getInstance(null));
+            }
+        }
+        return function;
     }
 
     /** {@inheritDoc} */
@@ -120,6 +136,12 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
             instance = i = newInstance();
         }
         return i;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final InstantiationMode getInstantiationMode() {
+        return instantionMode;
     }
 
     /** {@inheritDoc} */
@@ -148,16 +170,6 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         T t = fac().invoke(params);
         requireNonNull(t);
         return t;
-    }
-
-    private InternalFunction<T> fac() {
-        if (parent != null) {
-            InvokableMember<T> ff = (InvokableMember<T>) function;
-            if (ff.isMissingInstance()) {
-                function = ff.withInstance(parent.getInstance(null));
-            }
-        }
-        return function;
     }
 
     /** {@inheritDoc} */

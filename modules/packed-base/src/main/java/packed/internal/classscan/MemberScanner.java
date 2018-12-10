@@ -104,7 +104,11 @@ class MemberScanner {
     }
 
     public static MemberScanner forComponent(Class<?> clazz, Lookup lookup) {
-        throw new UnsupportedOperationException();
+        // TODO fix
+        MemberScanner ms = new MemberScanner(lookup, clazz);
+        ms.scanFields();
+        ms.scanMethods();
+        return ms;
     }
 
     static MemberScanner forService(Class<?> clazz, Lookup lookup) {

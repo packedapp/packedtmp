@@ -102,4 +102,6 @@ public interface Component extends Taggable {
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream();
+
+    // installContainer(Bundle...) <-man kan ikke ting fra den paa runtime... kun den anden vej...
 }

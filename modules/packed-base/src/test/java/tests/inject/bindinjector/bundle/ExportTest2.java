@@ -32,7 +32,7 @@ public class ExportTest2 {
 
         Injector i = Injector.of(c -> {
             c.bind(ZoneId.systemDefault()).as(ZoneId.class);
-            c.injectorBind(I.class);
+            c.bindInjector(I.class);
         });
 
         i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));

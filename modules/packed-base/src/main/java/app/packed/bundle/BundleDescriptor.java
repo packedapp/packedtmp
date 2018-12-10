@@ -95,7 +95,7 @@ public final class BundleDescriptor {
     // have navngivet containere???maaske ikke
 
     // Maybe this is bundleId????
-    public String bundleName() {
+    public String bundleId() {
 
         // BundleName = Module + getClass().getSimpleName();<--- Not always identical to the class name
         // If unnamed module... Just getClass().getSimpleName()

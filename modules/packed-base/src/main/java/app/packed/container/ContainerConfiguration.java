@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundles;
 import app.packed.bundle.ContainerBundle;
 import app.packed.bundle.ImportExportStage;
 import app.packed.inject.Factory;
@@ -41,20 +42,6 @@ import app.packed.util.TypeLiteral;
  * </ul>
  */
 public interface ContainerConfiguration extends InjectorConfiguration {
-
-    void containerInstall(Class<? extends ContainerBundle> bundleType, ImportExportStage... stages);
-
-    /**
-     * Installs the specified container bundle in the container. The container created from the bundle, will have the latest
-     * installed component as parent of the root in the new container. If no components have been installed, the root of the
-     * bundle will be the root of the container. And no more components can be installed
-     * 
-     * @param bundle
-     *            the bundle to install
-     * @param stages
-     *            import export stages
-     */
-    void containerInstall(ContainerBundle bundle, ImportExportStage... stages);
 
     /**
      * Returns the name of the container or null if the name has not been set.
@@ -114,6 +101,22 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      *             if some property of the implementation prevents it from being installed as a component
      */
     <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation);
+
+    default void installContainer(Class<? extends ContainerBundle> bundleType, ImportExportStage... stages) {
+        installContainer(Bundles.instantiate(bundleType), stages);
+    }
+
+    /**
+     * Installs the specified container bundle in the container. The container created from the bundle, will have the latest
+     * installed component as parent of the root in the new container. If no components have been installed, the root of the
+     * bundle will be the root of the container. And no more components can be installed
+     * 
+     * @param bundle
+     *            the bundle to install
+     * @param stages
+     *            import export stages
+     */
+    void installContainer(ContainerBundle bundle, ImportExportStage... stages);
 
     /**
      * @param state

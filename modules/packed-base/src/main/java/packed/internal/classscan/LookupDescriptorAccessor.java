@@ -31,13 +31,12 @@ public final class LookupDescriptorAccessor {
     public static final LookupDescriptorAccessor PUBLIC = new LookupDescriptorAccessor(MethodHandles.publicLookup());
 
     /** A cache of service class descriptors. */
-    private final ClassValue<ComponentClassDescriptor<?>> componentClassCache = new ClassValue<>() {
+    private final ClassValue<ComponentClassDescriptor> componentClassCache = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected ComponentClassDescriptor<?> computeValue(Class<?> type) {
-            return new ComponentClassDescriptor(type, lookup, null);
+        protected ComponentClassDescriptor computeValue(Class<?> type) {
+            return new ComponentClassDescriptor(type, lookup, MemberScanner.forComponent(type, lookup));
         }
     };
 
@@ -45,12 +44,11 @@ public final class LookupDescriptorAccessor {
     private final MethodHandles.Lookup lookup;
 
     /** A cache of service class descriptors. */
-    private final ClassValue<ServiceClassDescriptor<?>> serviceClassCache = new ClassValue<>() {
+    private final ClassValue<ServiceClassDescriptor> serviceClassCache = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected ServiceClassDescriptor<?> computeValue(Class<?> type) {
+        protected ServiceClassDescriptor computeValue(Class<?> type) {
             return new ServiceClassDescriptor(type, lookup, MemberScanner.forService(type, lookup));
         }
     };
@@ -59,9 +57,8 @@ public final class LookupDescriptorAccessor {
         this.lookup = requireNonNull(lookup);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> ComponentClassDescriptor<T> getComponentDescriptor(Class<T> implementation) {
-        return (ComponentClassDescriptor<T>) componentClassCache.get(requireNonNull(implementation, "implementation is null"));
+    public <T> ComponentClassDescriptor getComponentDescriptor(Class<T> implementation) {
+        return componentClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 
     /**
@@ -73,9 +70,8 @@ public final class LookupDescriptorAccessor {
      *            the implementation type to return a descriptor for
      * @return a service descriptor for the specified implementation type
      */
-    @SuppressWarnings("unchecked")
-    public <T> ServiceClassDescriptor<T> getServiceDescriptor(Class<T> implementation) {
-        return (ServiceClassDescriptor<T>) serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
+    public ServiceClassDescriptor getServiceDescriptor(Class<?> implementation) {
+        return serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 
     public <T> InternalFunction<T> readable(InternalFunction<T> factory) {

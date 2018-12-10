@@ -33,7 +33,7 @@ public class Xs {
         });
 
         Injector i2 = Injector.of(c -> {
-            c.injectorBind(i, InjectorImportStage.peek(e -> System.out.println("Available " + e.getKey())), InjectorImportStage.acceptKeys(String.class));
+            c.bindInjector(i, InjectorImportStage.peek(e -> System.out.println("Available " + e.getKey())), InjectorImportStage.acceptKeys(String.class));
         });
 
         System.out.println();
