@@ -23,10 +23,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.container.Container;
+import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleDescriptorBuilder;
+import packed.internal.bundle.Bundles;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 
 /**
@@ -36,6 +39,7 @@ import packed.internal.inject.builder.InternalBundleDescriptor;
  * {@code BundleDescriptor} objects are immutable and safe for use by multiple concurrent threads.
  * </p>
  */
+// Pretty pringting http://www.lihaoyi.com/post/CompactStreamingPrettyPrintingofHierarchicalData.html
 public final class BundleDescriptor {
 
     // I think add @Description as annotation??? IDK
@@ -43,6 +47,9 @@ public final class BundleDescriptor {
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
+    /** The (optional) description of the bundle. */
+    // Altsaa taenker den er anderledes en hvad vil container.description lig med.
+    // This bundle is xxxx
     private final @Nullable String description;
 
     /** A Services object. */
@@ -87,18 +94,22 @@ public final class BundleDescriptor {
     }
 
     /**
-     * Returns the name of the bundle.
+     * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.
      * 
-     * @return the name of the bundle
+     * @return the runtime type of the bundle
      */
-    // BundleName???? problemet er lidt i forhold til container navn... Rimlig forvirrende. Omvendt taenker jeg man godt vil
-    // have navngivet containere???maaske ikke
+    public Class<?> runtimeType() {
+        return ContainerBundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
+    }
 
-    // Maybe this is bundleId????
+    /**
+     * Returns the id of the bundle. If the bundle is in a named module it the name of the module concatenated with
+     * {@code "." + bundleType.getSimpleName()}. If this bundle is not in a named module it is just
+     * {bundleType.getSimpleName()}
+     * 
+     * @return the id of the bundle
+     */
     public String bundleId() {
-
-        // BundleName = Module + getClass().getSimpleName();<--- Not always identical to the class name
-        // If unnamed module... Just getClass().getSimpleName()
         if (getModule().isNamed()) {
             return getModule().getName() + "." + bundleType.getSimpleName();
         }
@@ -125,8 +136,7 @@ public final class BundleDescriptor {
      * @see Class#getModule()
      */
     Module getModule() {
-        // Gider bi bruge denne metode????? Maaske bare skip den
-        return bundleType.getModule();
+        return bundleType.getModule(); // Gider bi bruge denne metode????? Maaske bare skip den
     }
 
     /**
@@ -194,6 +204,8 @@ public final class BundleDescriptor {
     }
 
     /** An object representing the services the bundle exposes. As well as any required or optional services. */
+    // Prototype vs singleton is actually also part of the API. Because changing a instantiation mode from
+    // singleton to prototype can result in a dependent service to fail.
     public static final class Services {
 
         /** An immutable map of all the services the bundle exposes. */
@@ -258,6 +270,7 @@ public final class BundleDescriptor {
          * 
          * @return an immutable set of all service keys that <b>must</b> be made available to the entity
          */
+        // rename to requirements.
         public Set<Key<?>> required() {
             return requiredServices;
         }

@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 import app.packed.util.ConstructorDescriptor;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */
@@ -118,5 +119,11 @@ public final class InternalConstructorDescriptor<T> extends InternalExecutableDe
      */
     public static <T> InternalConstructorDescriptor<T> of(Constructor<T> constructor) {
         return new InternalConstructorDescriptor<T>(constructor);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InvokableMember<?> newInvoker(Lookup lookup) {
+        throw new UnsupportedOperationException();
     }
 }

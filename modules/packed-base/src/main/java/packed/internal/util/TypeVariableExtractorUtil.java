@@ -25,7 +25,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.StringJoiner;
 
 /**
- *
+ * A utility class for extracting information about the type parameters of a class.
  */
 public class TypeVariableExtractorUtil {
 

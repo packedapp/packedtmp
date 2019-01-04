@@ -23,15 +23,18 @@ import java.util.function.Consumer;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * A configuration site is the location where an object was configured/registered. This is typically either a
- * combination of method and a line number, or a filename and a line number. A configuration site can have are parent,
- * for example, the parent of a service registration will be the registration point where the injector in which the
- * service is registered in was created.
+ * A configuration site represents the location where an object was configured/registered. This is typically either a
+ * combination of a method and a line number, or a filename and a line number.
+ * <p>
+ * A configuration site can have a parent, for example, the parent of a service registration will be the registration
+ * point of its injector.
  */
 public interface ConfigurationSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
     ConfigurationSite UNKNOWN = InternalConfigurationSite.UNKNOWN;
+
+    // ConfigurationSite STACK_TRACE_MISSING
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.

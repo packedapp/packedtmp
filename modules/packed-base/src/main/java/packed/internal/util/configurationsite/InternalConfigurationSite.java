@@ -36,6 +36,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 public interface InternalConfigurationSite extends ConfigurationSite {
 
     static final boolean DISABLED = true;
+
     /** A site that is used if a location of configuration site could not be determined. */
     InternalConfigurationSite UNKNOWN = new InternalConfigurationSite() {
 

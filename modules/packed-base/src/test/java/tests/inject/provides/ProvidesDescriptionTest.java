@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.Provides;
 import tests.inject.AbstractInjectorTest;
@@ -28,9 +29,31 @@ import tests.inject.AbstractInjectorTest;
 /** Tests {@link Provides#description()}. */
 public class ProvidesDescriptionTest extends AbstractInjectorTest {
 
+    /** Tests components with description on {@link Provides}. */
+    @Test
+    public void containerWithDescription() {
+        Container i = Container.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.install(new WithDescription());
+        });
+        assertThat(i.getService(Long.class).getDescription()).isEqualTo("niceField");
+        assertThat(i.getService(Integer.class).getDescription()).isEqualTo("niceMethod");
+    }
+
     /** Tests service with description on {@link Provides}. */
     @Test
-    public void withDescription() {
+    public void containerWithoutDescription() {
+        Container i = Container.of(c -> {
+            c.lookup(MethodHandles.lookup());
+            c.install(new WithoutDescription());
+        });
+        assertThat(i.getService(Long.class).getDescription()).isNull();
+        assertThat(i.getService(Integer.class).getDescription()).isNull();
+    }
+
+    /** Tests service with description on {@link Provides}. */
+    @Test
+    public void injectorWithDescription() {
         Injector i = Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.bind(new WithDescription());
@@ -41,7 +64,7 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
 
     /** Tests service without description on {@link Provides}. */
     @Test
-    public void withoutDescription() {
+    public void injectorWithoutDescription() {
         Injector i = Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.bind(new WithoutDescription());

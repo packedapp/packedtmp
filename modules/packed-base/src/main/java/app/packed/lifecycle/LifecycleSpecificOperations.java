@@ -35,6 +35,7 @@ import app.packed.container.Container;
 // start/stop/stop(Throwable)
 // uninstall()/uninstall(Throwable) / or stop(Throwable).uninstall(); (Stopping return a StopFuture with uninstall)
 // TODO LifecycleExpansion
+// Startup points, shutdown points. startup().now(); shutdown().in(10, TimeUnit.SECONDS)
 // Nu har vi syncpoints paa en container, men ikke paa en component...
 // Maaske er det bare for containeren???? Eller maaske smider de unsupported operation exception.
 // Virker lidt maerkeligt at "inititalized" bleviver haandteret af component, men "dddd" bliver haandteret af

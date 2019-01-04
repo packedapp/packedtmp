@@ -23,9 +23,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
+import app.packed.inject.ServiceBundlingStages;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 
@@ -38,8 +38,8 @@ public class ImportTest {
     public static void main(String[] args) {
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(London.class, InjectorImportStage.rebind(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
-            c.bindInjector(London.class, InjectorImportStage.rebind(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
+            c.bindInjector(London.class, ServiceBundlingStages.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
+            c.bindInjector(London.class, ServiceBundlingStages.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
         });
 
         i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));

@@ -23,23 +23,26 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.BundlingStage;
+import app.packed.bundle.BundlingImportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleSupport;
+import packed.internal.classscan.ImportExportDescriptor;
+import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
+import packed.internal.inject.support.AtProvides;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * An abstract class for the injector bind methods
- * {@link InjectorConfiguration#bindInjector(Class, ImportExportStage...)},
- * {@link InjectorConfiguration#bindInjector(InjectorBundle, ImportExportStage...)}, and
- * {@link InjectorConfiguration#bindInjector(Injector, InjectorImportStage...)}.
+ * {@link InjectorConfiguration#bindInjector(Class, BundlingStage...)},
+ * {@link InjectorConfiguration#bindInjector(InjectorBundle, BundlingStage...)}, and
+ * {@link InjectorConfiguration#bindInjector(Injector, BundlingImportStage...)}.
  */
 abstract class BindInjector {
 
@@ -55,16 +58,16 @@ abstract class BindInjector {
     final Set<Key<?>> requiredKeys = new HashSet<>();
 
     /** The import export stages arguments. */
-    final List<ImportExportStage> stages;
+    final List<BundlingStage> stages;
 
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, List<ImportExportStage> stages) {
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, List<BundlingStage> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.stages = requireNonNull(stages);
         this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<ImportExportStage> stages) {
+    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<BundlingStage> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.stages = requireNonNull(stages);
@@ -84,9 +87,9 @@ abstract class BindInjector {
             }
         }
         // Process each stage
-        for (ImportExportStage stage : stages) {
-            if (stage instanceof InjectorImportStage) {
-                nodes = processImportStage((InjectorImportStage) stage, nodes);
+        for (BundlingStage stage : stages) {
+            if (stage instanceof BundlingImportStage) {
+                nodes = processImportStage((BundlingImportStage) stage, nodes);
                 BundleSupport.invoke().stageOnFinish(stage);
             }
         }
@@ -99,8 +102,22 @@ abstract class BindInjector {
         }
     }
 
-    private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(InjectorImportStage stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
+    private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(BundlingImportStage stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
         // Find @Provides, lookup class
+
+        ImportExportDescriptor ied = ImportExportDescriptor.from(BundleSupport.invoke().stageLookup(stage), stage.getClass());
+
+        for (AtProvides m : ied.provides.members.values()) {
+            for (InternalDependency s : m.dependencies) {
+                if (!nodes.containsKey(s.getKey())) {
+                    throw new InjectionException("not good man, " + s.getKey() + " is not in the set of incoming services");
+                }
+            }
+        }
+
+        // Make runtime nodes....
+
+        // System.out.println("Any provides " + !ied.provides.isEmpty());
 
         HashMap<Key<?>, ServiceBuildNodeImport<?>> newNodes = new HashMap<>();
 

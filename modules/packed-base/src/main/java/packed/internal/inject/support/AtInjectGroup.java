@@ -27,7 +27,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.invokers.ExecutableInvoker;
-import packed.internal.invokers.FieldInvoker;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -65,7 +65,7 @@ public final class AtInjectGroup {
                 Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
                 Checks.checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
 
-                FieldInvoker<?> fii = new FieldInvoker<>(descriptor).withLookup(lookup);
+                InvokableMember<?> fii = descriptor.newInvoker(lookup);
 
                 AtInject ai = new AtInject(fii, List.of(InternalDependency.of(descriptor)));
 

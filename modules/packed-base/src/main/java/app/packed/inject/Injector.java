@@ -22,13 +22,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.bundle.Bundles;
 import app.packed.bundle.InjectorBundle;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 import packed.internal.bundle.BundleSupport;
+import packed.internal.bundle.Bundles;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;

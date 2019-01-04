@@ -29,6 +29,8 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.StringFormatter;
 
@@ -95,6 +97,12 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
+    public TypeLiteral<?> getReturnTypeLiteral() {
+        return TypeLiteral.fromMethodReturnType(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         return method.hashCode();
     }
@@ -103,6 +111,12 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
     @Override
     public Executable newExecutable() {
         return newMethod();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InvokableMember<?> newInvoker(Lookup lookup) {
+        return new ExecutableInvoker<>(this).withLookup(lookup);
     }
 
     /** {@inheritDoc} */
@@ -160,11 +174,5 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
      */
     public static InternalMethodDescriptor of(Method method) {
         return new InternalMethodDescriptor(method);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TypeLiteral<?> getReturnTypeLiteral() {
-        return TypeLiteral.fromMethodReturnType(method);
     }
 }

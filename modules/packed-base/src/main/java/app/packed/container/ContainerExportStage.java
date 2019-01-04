@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package app.packed.container;
 
 /**
  *
  */
-// Hmm
-public abstract class ContainerImportStage extends ImportExportStage {
+public abstract class ContainerExportStage {
     public static final ContainerImportStage NO_STARTING_POINTS = null;
     public static final ContainerImportStage NO_STOPPING_POINTS = null;
-
-    public ContainerImportStage renameStartingPoint(String existingName, String newName) {
-        // I think we should fail
-        // Expected to rename stage, but no
-        throw new UnsupportedOperationException();
-    }
-
-    public static void main(String[] args) {
-        ContainerImportStage.NO_STARTING_POINTS.andThen(ContainerImportStage.NO_STOPPING_POINTS);
-    }
 }

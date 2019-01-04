@@ -17,6 +17,7 @@ package packed.internal.inject.support;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
 import app.packed.inject.InstantiationMode;
@@ -29,11 +30,8 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
-/** A descriptor of the {@link Provides} annotation. */
+/** A descriptor for a member annotated with {@link Provides}. */
 public final class AtProvides {
-
-    /** The binding mode from {@link Provides#instantionMode()}. */
-    public final InstantiationMode instantionMode;
 
     /** Any dependencies (parameters) the annotated member has, is always empty for fields. */
     public final List<InternalDependency> dependencies;
@@ -45,22 +43,25 @@ public final class AtProvides {
     /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
     public final InternalMemberDescriptor descriptor;
 
+    /** The instantiation mode from {@link Provides#instantionMode()}. */
+    public final InstantiationMode instantionMode;
+
     /** The invokable member. */
     public final InvokableMember<?> invokable;
 
-    /** whether or not the field or method on which the annotation is present is a static field or method. */
+    /** Whether or not the field or method on which the annotation is present is a static field or method. */
     public final boolean isStaticMember;
 
     /** The key under which the provided service will be made available. */
     public final Key<?> key;
 
-    AtProvides(InvokableMember<?> invokable, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
-        this.invokable = requireNonNull(invokable);
-        this.descriptor = requireNonNull(descriptor);
-        this.key = requireNonNull(key);
+    AtProvides(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
         this.dependencies = requireNonNull(dependencies);
         this.description = provides.description().length() > 0 ? provides.description() : null;
+        this.descriptor = requireNonNull(descriptor);
         this.instantionMode = provides.instantionMode();
+        this.invokable = descriptor.newInvoker(lookup);
         this.isStaticMember = descriptor.isStatic();
+        this.key = requireNonNull(key);
     }
 }

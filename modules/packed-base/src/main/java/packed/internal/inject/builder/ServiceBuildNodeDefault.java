@@ -24,6 +24,7 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;
@@ -57,7 +58,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     @Nullable
     private T instance;
 
-    /** The binding mode of this node. */
+    /** The instantiation mode of this node. */
     private final InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provides}. */
@@ -163,7 +164,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorBuilder.publicInjector, dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
             }
         }
 
@@ -194,6 +195,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ServiceBuildNode<?> provide(AtProvides atProvides) {
         InternalMemberDescriptor descriptor = atProvides.descriptor;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
@@ -204,7 +206,9 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
             getInstance(null);
             fi = fi.withInstance(this.instance);
         }
-        return new ServiceBuildNodeDefault<>(icss, atProvides, fi, this);
+        ServiceBuildNodeDefault<?> node = new ServiceBuildNodeDefault<>(icss, atProvides, fi, this);
+        node.as((Key) atProvides.key);
+        return node;
     }
 
     @Override

@@ -27,6 +27,8 @@ import java.lang.reflect.Type;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.invokers.FieldInvoker;
+import packed.internal.invokers.InvokableMember;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -220,5 +222,11 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
      */
     public static InternalFieldDescriptor of(FieldDescriptor descriptor) {
         return descriptor instanceof InternalFieldDescriptor ? (InternalFieldDescriptor) descriptor : of(descriptor.newField());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InvokableMember<?> newInvoker(Lookup lookup) {
+        return new FieldInvoker<>(this).withLookup(lookup);
     }
 }

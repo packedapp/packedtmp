@@ -28,7 +28,7 @@ import app.packed.inject.Injector;
  * {@link LifecycleState#INITIALIZING} state.
  * 
  * <p>
- * This annotation can, for example, be used on the method of a component instance, such as:
+ * This annotation can, for example, be used on a method on a component instance:
  *
  * <pre>{@code  @OnInitialize
  * public void onInit() {
@@ -45,17 +45,19 @@ import app.packed.inject.Injector;
  * }}
  * </pre>
  * <p>
- * To find out exactly what kind of services that can be injected into an annotated method use an {@link Injector}.
+ * To find out exactly what kind of services that can be injected into an annotated method, an instance of an
+ * {@link Injector} can be used:
  *
  * <pre>{@code  @OnInitialize
  * public void onInit(Injector injector) {
  *   System.out.println("The following services can be injected into this method");
- *   injector.printServices();
+ *   injector.services().forEach(e -> System.out.println(e.getKey()));
  * }}
  * </pre>
  * <p>
  * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
- * fail, and the state of the entity change from {@link LifecycleState#INITIALIZING} to {@link LifecycleState#STOPPING}.
+ * fail, and the state of the entity change from {@link LifecycleState#INITIALIZING} to
+ * {@link LifecycleState#TERMINATED}.
  * <p>
  * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
  * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's
@@ -64,7 +66,20 @@ import app.packed.inject.Injector;
  * @see OnStart
  * @see OnStop
  */
-// TODO update example with injector.printServices()
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnInitialize {}
+// TODO just make a check for the @Inject+@Initialize, and skip the paragraph
+public @interface OnInitialize {
+
+    /**
+     * If the lifecycle enabled entities are ordered in some kind of hierarchy this attribute can be used to indicate
+     * whether or not a particular method should be executed before any of its children and initialized or after all of its
+     * children has been successfully initialized.
+     * <p>
+     * If the lifecycle enabled entities on which this annotation is placed does not make use of a hierarchy, the value of
+     * this attribute is ignored
+     * 
+     * @return
+     */
+    boolean runBeforeChildren() default true;
+}

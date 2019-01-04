@@ -54,7 +54,7 @@ public final class FieldInvoker<T> extends InvokableMember<T> {
     }
 
     private FieldInvoker(FieldInvoker<T> other, Object instance) {
-        super(other.getType(), requireNonNull(instance));
+        super(other.getReturnType(), requireNonNull(instance));
         this.field = other.field;
         this.varHandle = other.varHandle;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
@@ -156,7 +156,7 @@ public final class FieldInvoker<T> extends InvokableMember<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldInvoker<>(getType(), field, handle, instance);
+        return new FieldInvoker<>(getReturnType(), field, handle, instance);
     }
 }
 /**

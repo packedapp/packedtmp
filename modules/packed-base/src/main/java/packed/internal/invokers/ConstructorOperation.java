@@ -29,7 +29,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
-public final class ConstructorInvoker<T> extends InternalFunction<T> {
+public final class ConstructorOperation<T> extends InternalFunction<T> {
 
     /** A factory with an executable as a target. */
     private final ConstructorDescriptor<T> constructor;
@@ -41,7 +41,7 @@ public final class ConstructorInvoker<T> extends InternalFunction<T> {
     @Nullable
     private final MethodHandle methodHandle;
 
-    public ConstructorInvoker(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, MethodHandle methodHandle) {
+    public ConstructorOperation(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, MethodHandle methodHandle) {
         super(key);
         this.constructor = requireNonNull(constructor, "constructor is null");
         this.methodHandle = methodHandle;
@@ -83,6 +83,6 @@ public final class ConstructorInvoker<T> extends InternalFunction<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the constructor " + constructor + " using the specified lookup", e);
         }
-        return new ConstructorInvoker<>(getType(), constructor, handle);
+        return new ConstructorOperation<>(getReturnType(), constructor, handle);
     }
 }

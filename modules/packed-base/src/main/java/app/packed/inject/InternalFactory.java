@@ -57,6 +57,6 @@ final class InternalFactory<T> {
      * @return the scannable type of this factory
      */
     public Class<? super T> getScannableType() {
-        return function.getRawType();
+        return function.getReturnTypeRaw();
     }
 }

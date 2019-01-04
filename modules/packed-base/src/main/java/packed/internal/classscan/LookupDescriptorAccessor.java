@@ -31,6 +31,16 @@ public final class LookupDescriptorAccessor {
     public static final LookupDescriptorAccessor PUBLIC = new LookupDescriptorAccessor(MethodHandles.publicLookup());
 
     /** A cache of service class descriptors. */
+    private final ClassValue<ImportExportDescriptor> importExportStageClassCache = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected ImportExportDescriptor computeValue(Class<?> type) {
+            return new ImportExportDescriptor(type, lookup, MemberScanner.forImportExportStage(type, lookup));
+        }
+    };
+
+    /** A cache of service class descriptors. */
     private final ClassValue<ComponentClassDescriptor> componentClassCache = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -55,6 +65,10 @@ public final class LookupDescriptorAccessor {
 
     private LookupDescriptorAccessor(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup);
+    }
+
+    public <T> ImportExportDescriptor getImportExportStage(Class<T> implementation) {
+        return importExportStageClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 
     public <T> ComponentClassDescriptor getComponentDescriptor(Class<T> implementation) {

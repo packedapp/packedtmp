@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package packed.internal.operations;
 
-/**
- *
- */
-public abstract class ContainerExportStage {
-    public static final ContainerImportStage NO_STARTING_POINTS = null;
-    public static final ContainerImportStage NO_STOPPING_POINTS = null;
+import java.lang.invoke.MethodHandle;
+
+/** An operation that invokes a method via a {@link MethodHandle}. */
+public final class FieldOperation {
+
 }

@@ -22,18 +22,27 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.TypeLiteral;
 
 /**
- * Tests {@link Provides#instantionMode()} on static fields. In general we do not need to create an instance of the parent
- * if we have static {@link Provides} fields. Unlike for instance fields.
+ * Tests {@link Provides#instantionMode()} on static fields. In general we do not need to create an instance of the
+ * parent if we have static {@link Provides} fields. Unlike for instance fields.
  */
 public class ProvidesInstantiationModeFieldsStaticTest {
+
+    /** Tests default {@link Provides#instantionMode()} on static fields on components. */
+    @Test
+    public void install() {
+        // MixedFieldsInstantiable.test(c -> c.install(new MixedFieldsInstantiable()));
+        MixedFieldsInstantiable.test(c -> c.bind(MixedFieldsInstantiable.class));
+        MixedFieldsInstantiable.test(c -> c.bind(Factory.findInjectable(MixedFieldsInstantiable.class)));
+        MixedFieldsInstantiable.test(c -> c.bind(new TypeLiteral<MixedFieldsInstantiable>() {}));
+    }
 
     /** Tests default {@link Provides#instantionMode()} on static fields. */
     @Test

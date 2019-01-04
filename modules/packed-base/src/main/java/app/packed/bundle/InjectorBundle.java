@@ -113,7 +113,7 @@ public abstract class InjectorBundle extends Bundle {
     // We probably want to null this out...
     // If we install the bundle as a component....
     // We do not not want any more garbage then needed.
-    private InjectorBuilder builder;
+    private InjectorBuilder injectorBuilder;
 
     protected final <T> T asDeprecated(T t, String reason) {
         return t;
@@ -136,17 +136,17 @@ public abstract class InjectorBundle extends Bundle {
 
         // Maybe we can do some access checkes on the Configurator. To allow for testing....
 
-        if (this.builder != null) {
+        if (this.injectorBuilder != null) {
             throw new IllegalStateException();
         } else if (isFrozen && freeze) {
             // vi skal have love til f.eks. at koere en gang descriptor af, saa det er kun hvis vi skal freeze den ogsaa doer.
             throw new IllegalStateException("Cannot configure this bundle, after it has been been frozen");
         }
-        this.builder = requireNonNull(builder);
+        this.injectorBuilder = requireNonNull(builder);
         try {
             configure();
         } finally {
-            this.builder = null;
+            this.injectorBuilder = null;
             if (freeze) {
                 isFrozen = true;
             }
@@ -162,11 +162,11 @@ public abstract class InjectorBundle extends Bundle {
     }
 
     @Override
-    InjectorBuilder configuration() {
-        if (builder == null) {
+    InjectorBuilder injectorBuilder() {
+        if (injectorBuilder == null) {
             throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
         }
-        return builder;
+        return injectorBuilder;
     }
 
     // Ideen er at man man extend et Bundle, med et nyt bundle der har test information

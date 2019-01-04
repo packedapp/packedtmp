@@ -18,9 +18,9 @@ package packed.internal.inject.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.BundlingStage;
+import app.packed.bundle.BundlingExportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorExportStage;
 import app.packed.util.Key;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.ServiceNode;
@@ -34,7 +34,7 @@ final class BindInjectorFromBundle extends BindInjector {
     final InjectorBuilder newConfiguration;
 
     BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            List<ImportExportStage> stages) {
+            List<BundlingStage> stages) {
         super(injectorConfiguration, configurationSite, bundle, stages);
         this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }
@@ -48,8 +48,8 @@ final class BindInjectorFromBundle extends BindInjector {
     }
 
     void processExport() {
-        for (ImportExportStage s : stages) {
-            if (s instanceof InjectorExportStage) {
+        for (BundlingStage s : stages) {
+            if (s instanceof BundlingExportStage) {
                 throw new UnsupportedOperationException();
             }
         }

@@ -61,6 +61,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @see Parameter#getType()
      * @see Field#getType()
      */
+    // getRawType? d
     Class<?> getType();
 
     /**

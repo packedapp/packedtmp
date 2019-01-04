@@ -45,16 +45,7 @@ import app.packed.util.Qualifier;
  * example, if a component with the path {@code /jobs/MyJob} requests a logger, a logger with the name
  * {@code jobs.MyJob} is returned. If it is not a component that requests the logger, an anonymous logger is returned.
  *
- *
- *
- * <p>
- * As an alternative one of the static factory methods can be used:
- *
- * <pre>{@code
- *   InjectorBuilder builder = new InjectorBuilder();
- *   builder.bind(SupplierFactory.of(System::currentTimeMillis, Long.class)).setDescription("Startup Time");}
- * </pre>
- *
+ * 
  * @param <T>
  *            the type of objects this factory constructs
  * @see Factory0
@@ -75,3 +66,12 @@ public abstract class Factory1<T, R> extends Factory<R> {
         super(function);
     }
 }
+// *
+// * <p>
+// * As an alternative one of the static factory methods can be used:
+// *
+// * <pre>{@code
+// * InjectorBuilder builder = new InjectorBuilder();
+// * builder.bind(SupplierFactory.of(System::currentTimeMillis, Long.class)).setDescription("Startup Time");}
+// * </pre>
+// *

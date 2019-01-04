@@ -46,10 +46,10 @@ public class InternalFactory1<T, R> extends InternalFunction<R> {
     public R invoke(Object[] params) {
         T t = (T) params[0];
         R instance = function.apply(t);
-        if (!getRawType().isInstance(instance)) {
+        if (!getReturnTypeRaw().isInstance(instance)) {
             throw new InjectionException(
                     "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce instances of '"
-                            + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+                            + format(getReturnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
     }

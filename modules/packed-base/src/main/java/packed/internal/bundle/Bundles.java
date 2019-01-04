@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package packed.internal.bundle;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.Constructor;
 
+import app.packed.bundle.Bundle;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.util.TypeUtil;
 

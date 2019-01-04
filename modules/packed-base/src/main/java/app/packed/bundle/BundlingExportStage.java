@@ -50,17 +50,17 @@ import app.packed.util.Key;
 // Maa koere en BundleDescriptor hvis man vil se..
 // Vi er strictly flow.....Eller det behoever vi jo saadan ikke at vaere.....
 // Ellers k
-public abstract class InjectorExportStage extends ImportExportStage {
+public abstract class BundlingExportStage extends BundlingStage {
+
+    public static final BundlingExportStage ACCEPT_REQUIRED = null;
+
+    public static final BundlingExportStage ACCEPT_REQUIRED_MANDATORYs = null;
 
     /** An export stage, that ignores all optional dependencies */
-    public static final InjectorExportStage IGNORE_OPTIONAL = null;
+    public static final BundlingExportStage IGNORE_OPTIONAL = null;
 
-    public static final InjectorExportStage ACCEPT_REQUIRED = null;
-
-    public static final InjectorExportStage ACCEPT_REQUIRED_MANDATORYs = null;
-
-    protected final boolean isRequired(Key<?> key) {
-        return false;
+    protected void filter(ServiceConfiguration<?> configuration) {
+        // if (configuration.getKey() isN)
     }
 
     protected void filterMandatory(ServiceConfiguration<?> configuration) {
@@ -71,8 +71,8 @@ public abstract class InjectorExportStage extends ImportExportStage {
         filter(configuration);
     }
 
-    protected void filter(ServiceConfiguration<?> configuration) {
-        // if (configuration.getKey() isN)
+    protected final boolean isRequired(Key<?> key) {
+        return false;
     }
 
     /**
@@ -82,13 +82,13 @@ public abstract class InjectorExportStage extends ImportExportStage {
      *            the service configuration
      */
     @Override
-    public void onService(ServiceConfiguration<?> sc) {}
+    public void onEachService(ServiceConfiguration<?> sc) {}
 
-    public static InjectorExportStage peek(Consumer<? super ServiceDescriptor> action) {
+    public static BundlingExportStage peek(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
-        return new InjectorExportStage() {
+        return new BundlingExportStage() {
             @Override
-            public void onService(ServiceConfiguration<?> sc) {
+            public void onEachService(ServiceConfiguration<?> sc) {
                 action.accept(ServiceDescriptor.of(sc));
             }
         };

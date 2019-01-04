@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.BundlingStage;
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -126,7 +126,7 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(instance.getClass());
         ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this,
                 getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
-        scan(instance.getClass(), node);
+        scanForProvides(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
 
@@ -143,13 +143,41 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
-        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(func.getRawType());
+        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(func.getReturnTypeRaw());
         ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func),
                 (List) factory.getDependencies());
 
-        scan(func.getRawType(), node);
+        scanForProvides(func.getReturnTypeRaw(), node);
 
         return bindNode(node).as(factory.getKey());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void bindInjector(Injector injector, BundlingStage... stages) {
+        requireNonNull(injector, "injector is null");
+        List<BundlingStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
+        checkConfigurable();
+        freezeLatest();
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, listOfStages);
+        is.importServices();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindInjector(InjectorBundle bundle, BundlingStage... stages) {
+        requireNonNull(bundle, "bundle is null");
+        List<BundlingStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
+        checkConfigurable();
+        freezeLatest();
+        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
+        is.processImport();
+        if (injectorBundleBindings == null) {
+            injectorBundleBindings = new ArrayList<>(1);
+        }
+        injectorBundleBindings.add(is);
     }
 
     @Override
@@ -248,36 +276,6 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
 
     /** {@inheritDoc} */
     @Override
-    public final void bindInjector(Injector injector, ImportExportStage... stages) {
-        requireNonNull(injector, "injector is null");
-        requireNonNull(stages, "stages is null");
-        List<ImportExportStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
-        checkConfigurable();
-        freezeLatest();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, listOfStages);
-        is.importServices();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void bindInjector(InjectorBundle bundle, ImportExportStage... stages) {
-        requireNonNull(bundle, "bundle is null");
-        requireNonNull(stages, "stages is null");// We should probably validates stages for null, before freezeLatest
-        List<ImportExportStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
-        checkConfigurable();
-        freezeLatest();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
-        is.processImport();
-        if (injectorBundleBindings == null) {
-            injectorBundleBindings = new ArrayList<>(1);
-        }
-        injectorBundleBindings.add(is);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         checkConfigurable();
@@ -308,34 +306,24 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         requiredServicesOptionally.add(key);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected void scan(Class<?> type, ServiceBuildNodeDefault<?> parent) {
-        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(type);
-
-        AtProvidesGroup ps = serviceDesc.provides;
-        if (!ps.isEmpty()) {
-            if (parent.getInstantiationMode() == InstantiationMode.PROTOTYPE && ps.hasInstanceMembers) {
-                throw new InvalidDeclarationException("OOOPS");
+    protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
+        AtProvidesGroup provides = accessor.getServiceDescriptor(type).provides;
+        if (!provides.members.isEmpty()) {
+            if (owner.getInstantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+                throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
             }
 
-            // First check that the class does not provide services that have already been registered
-            for (Key<?> k : ps.keys.keySet()) {
+            // First check that we do not have existing services with any of the provided keys
+            for (Key<?> k : provides.members.keySet()) {
                 if (privateNodeMap.containsKey(k)) {
                     throw new IllegalArgumentException("At service with key " + k + " has already been registered");
                 }
             }
 
-            // ProvidesSupport has already validated that the specified type does not have any members that provide services with
-            // the same key, so we can just add them now without checking
-            for (AtProvides field : ps.fields) {
-                ServiceBuildNode<?> providedNode = parent.provide(field);
-                providedNode.as((Key) field.key);
-                privateNodeMap.put(providedNode);// put them directly
-            }
-            for (AtProvides method : ps.methods) {
-                ServiceBuildNode<?> providedNode = parent.provide(method);
-                providedNode.as((Key) method.key);
-                privateNodeMap.put(providedNode);// put them directly
+            // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
+            // the same key, so we can just add them now without any verification
+            for (AtProvides member : provides.members.values()) {
+                privateNodeMap.put(owner.provide(member));// put them directly
             }
         }
     }

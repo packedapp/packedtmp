@@ -39,3 +39,40 @@ public final class KeyBuilder {
     /** Cannot instantiate. */
     private KeyBuilder() {}
 }
+
+// Saa metoder ved hvorfor, the caller knows where/what
+// WHERE/What could not because of why...
+// Maybe have a isValidKey(Type) or <T> checkValidKey(T extends RuntimeException, String message) throws T;
+// Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
+// because it "xxxxxx"
+
+//
+/// **
+// * Returns the type of qualifier this key have, or null if this key has no qualifier.
+// *
+// * @return the type of qualifier this key have, or null if this key has no qualifier
+// */
+// @Nullable
+// public final Class<? extends Annotation> getQualifierType() {
+// return qualifier == null ? null : qualifier.annotationType();
+// }
+// An easy way to create annotations with one value, or maybe put it on TypeLiteral
+// withNamedAnnotations(type, String name, Object value)
+// withNamedAnnotations(type, String name1, Object value1, String name2, Object value2)
+// withNamedAnnotations(type, String name1, Object value1, String name2, Object value2, String name3, Object value3);
+// public static <T> Key<T> withAnnotation(Type type, Class<? extends Annotation> cl, Object value) {
+// withAnnotation(Integer.class, Named.class, "left");
+// throw new UnsupportedOperationException();
+// }
+//// @Provides method cannot have void return type.
+// if (descriptor().getReturnType() == void.class) {
+// throw new IllegalArgumentException("@Provides method " + description + " cannot have void return type");
+// }
+//
+//// TODO check not reserved return types
+//
+//// TODO check return type is not optional
+//// Or maybe they can.
+//// If a Provides wants to provide null to someone the return type of the method should be Optional<XXXXX>
+//// Null indicates look in next injector...
+//

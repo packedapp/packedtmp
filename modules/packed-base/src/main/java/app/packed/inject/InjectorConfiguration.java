@@ -20,14 +20,14 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.Bundles;
-import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.BundlingStage;
+import app.packed.bundle.BundlingImportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorImportStage;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
+import packed.internal.bundle.Bundles;
 
 /**
  * A configuration object for an {@link Injector}. This interface is typically used when configuring a new injector via
@@ -105,7 +105,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional stages
      */
-    default void bindInjector(Class<? extends InjectorBundle> bundleType, ImportExportStage... stages) {
+    default void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingStage... stages) {
         bindInjector(Bundles.instantiate(bundleType), stages);
     }
 
@@ -145,10 +145,10 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
-     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
+     *             if the specified stages are not instance all instance of {@link BundlingImportStage} or combinations (via
+     *             {@link BundlingStage#andThen(BundlingStage)} thereof
      */
-    void bindInjector(Injector injector, ImportExportStage... stages);
+    void bindInjector(Injector injector, BundlingStage... stages);
 
     /**
      * @param bundle
@@ -156,7 +156,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional import/export stages
      */
-    void bindInjector(InjectorBundle bundle, ImportExportStage... stages);
+    void bindInjector(InjectorBundle bundle, BundlingStage... stages);
 
     /**
      * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will

@@ -24,14 +24,13 @@ import java.lang.annotation.Target;
 
 /**
  * Qualifiers are used to distinguish different objects of the same type.
- * 
  * <p>
- * This annotation basically works identical to the Qualifier annotation in javax.inject. And both of them can be used
+ * This semantics of this annotation is identical to that of javax.inject.Qualifier. And both of them can be used
  * interchangeable.
  */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
 public @interface Qualifier {}
-// Allow multiple Qualifiers
+// Allow multiple Qualifiers?
 // Allow ignoring attributes? String[] ignoreAttributesForComparison() default {};

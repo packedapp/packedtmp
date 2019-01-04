@@ -65,10 +65,16 @@ class MemberScanner {
             for (Method method : c.getDeclaredMethods()) {
                 Annotation[] annotations = method.getAnnotations();
                 if (annotations.length > 0) {
+
+                    // Taenker vi maaske har et map istedet for?????
+
+                    // Vi kan ogsaa have noget bitfitleri her, vi masker alle annoteringer.
+                    // Og saa koeret noget or val && INJECT_MASK > INJECT (alle annoteringen som
+                    // vi ikke vil kombinere
                     // Multiple annotations
                     AtInject fInject = inject.createIfInjectable(lookup, method, annotations);
 
-                    provides.addIfAnnotated(lookup, method, annotations);
+                    provides.tryAddMethod(lookup, method, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
@@ -90,7 +96,7 @@ class MemberScanner {
                     // Multiple annotations
                     AtInject fInject = inject.createIfInjectable(lookup, field, annotations);
 
-                    provides.addIfAnnotated(lookup, field, annotations);
+                    provides.tryAddField(lookup, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
@@ -101,6 +107,14 @@ class MemberScanner {
                 }
             }
         }
+    }
+
+    public static MemberScanner forImportExportStage(Class<?> clazz, Lookup lookup) {
+        // TODO fix
+        MemberScanner ms = new MemberScanner(lookup, clazz);
+        ms.scanFields();
+        ms.scanMethods();
+        return ms;
     }
 
     public static MemberScanner forComponent(Class<?> clazz, Lookup lookup) {

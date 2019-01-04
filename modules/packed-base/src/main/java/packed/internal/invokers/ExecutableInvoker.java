@@ -112,12 +112,12 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new ExecutableInvoker<>(getType(), executable, handle, instance);
+        return new ExecutableInvoker<>(getReturnType(), executable, handle, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public ExecutableInvoker<T> withInstance(Object instance) {
-        return new ExecutableInvoker<>(getType(), executable, methodHandle, instance);
+        return new ExecutableInvoker<>(getReturnType(), executable, methodHandle, instance);
     }
 }

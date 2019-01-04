@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.BundlingImportStage;
 import app.packed.bundle.InjectorBundle;
-import app.packed.bundle.InjectorImportStage;
 import app.packed.inject.Factory0;
 import app.packed.inject.Injector;
 
@@ -41,7 +41,7 @@ public class InjectorBindBundleTest {
         };
 
         npe(() -> Injector.of(c -> c.bindInjector((InjectorBundle) null)), "bundle");
-        npe(() -> Injector.of(c -> c.bindInjector(b, (InjectorImportStage[]) null)), "stages");
+        npe(() -> Injector.of(c -> c.bindInjector(b, (BundlingImportStage[]) null)), "stages");
     }
 
     /** Tests that we can import no services. */

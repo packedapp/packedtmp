@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package app.packed.container;
 
 /**
  *
  */
-public class FileConfigurationSite {
+// Maybe just ContainerDescriptor....
+// But not if we
+// ContainerDescriptor-> on runtime, nej det er jo bare metoder....
+
+// Maake fint.. det hedder jo heller ikke en ContainerInjector.... Bare fordi Injector er en slags container
+public class ContainerBundleDescriptor {
+
+    // InjectorBundleDescriptor...
 
 }

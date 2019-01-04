@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ContainerBundle;
-import app.packed.bundle.ImportExportStage;
+import app.packed.bundle.BundlingStage;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
@@ -73,7 +73,9 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
 
     @Override
     public Container build() {
-
+        if (root == null) {
+            throw new IllegalStateException("Must install at least one component");
+        }
         if (root.name == null) {
             root.name = root.descriptor().simpleName;
         }
@@ -105,7 +107,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
 
     /** {@inheritDoc} */
     @Override
-    public void installContainer(ContainerBundle bundle, ImportExportStage... stages) {
+    public void installContainer(ContainerBundle bundle, BundlingStage... stages) {
 
     }
 
@@ -130,11 +132,11 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         freezeLatest();
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
-        ComponentClassDescriptor cdesc = accessor.getComponentDescriptor(func.getRawType());
+        ComponentClassDescriptor cdesc = accessor.getComponentDescriptor(func.getReturnTypeRaw());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.getDependencies());
         ComponentConfiguration<T> cc = install0(icc);
-        scan(func.getRawType(), icc);
+        scanForProvides(func.getReturnTypeRaw(), icc);
         bindNode(icc).as(factory.getKey());
         return cc;
     }
@@ -150,7 +152,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 getConfigurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
         ComponentConfiguration<T> cc = install0(icc);
-        scan(instance.getClass(), icc);
+        scanForProvides(instance.getClass(), icc);
         bindNode(icc).as((Class) instance.getClass());
         return cc;
     }

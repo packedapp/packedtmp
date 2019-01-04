@@ -28,9 +28,9 @@ import packed.internal.invokers.InternalFactory0;
 import packed.internal.invokers.InternalFactory1;
 
 /**
- *
+ * Helper methods for {@link Factory}.
  */
-class FunctionalInterfaces {
+class FactoryHelper {
 
     /** A cache of extracted type variables. */
     private static final ClassValue<TypeLiteral<?>> FACTORY0_CACHE = new ClassValue<>() {
@@ -82,6 +82,7 @@ class FunctionalInterfaces {
         return new InternalFactory<>(new InternalFactory0<>(tt, supplier), List.of());
     }
 
+    // TODO replace with Map.Entry????
     static class FunctionalSignature {
 
         final List<InternalDependency> dependencies;

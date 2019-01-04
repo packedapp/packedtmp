@@ -50,6 +50,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     final boolean hasDependencyOnInjectionSite;
 
     /** The injector configuration this node is registered with. */
+    @Nullable // Is nullable for stages for now
     protected final InjectorBuilder injectorBuilder;
 
     /**
@@ -69,7 +70,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
 
     ServiceBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
         super(configurationSite);
-        this.injectorBuilder = requireNonNull(injectorBuilder);
+        this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceNode<?>[dependencies.size()];
 

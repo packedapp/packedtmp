@@ -44,7 +44,6 @@ class FindInjectableExecutable {
     static <T> InternalFactory<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.getRawType());
-
         return new InternalFactory<>(new ExecutableInvoker<>(implementation, executable, null, null), InternalDependency.fromExecutable(executable));
     }
 

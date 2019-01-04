@@ -103,4 +103,7 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @see ServiceDescriptor#getDescription()
      */
     ServiceConfiguration<T> setDescription(@Nullable String description);
+
+    // lazy();
+    // prototype();
 }

@@ -55,10 +55,10 @@ public final class InternalFactory0<T> extends InternalFunction<T> {
     @Nullable
     public T invoke(Object[] ignore) {
         T instance = supplier.get();
-        if (!getRawType().isInstance(instance)) {
+        if (!getReturnTypeRaw().isInstance(instance)) {
             throw new InjectionException(
                     "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce instances of '"
-                            + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+                            + format(getReturnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
     }

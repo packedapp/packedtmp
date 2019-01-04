@@ -350,6 +350,8 @@ public final class InternalDependency implements Dependency {
 
         // TL is free from Optional
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(variable, tl, a);
+        System.out.println(key);
+
         return new InternalDependency(key, optionalType, variable);
     }
 }

@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.lang.reflect.Modifier;
-
-import packed.internal.invokers.InvokableMember;
+package app.packed.bundle;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
+// Ideen er at vi har sådan en fætter inde i en bundle....
+// with
 
-    /**
-     * Returns whether or not this field is a static field.
-     *
-     * @return whether or not this field is a static field
-     * @see Modifier#isStatic(int)
-     */
-    boolean isStatic();
+// Man skal kunne definere sine egne bundle type...
+// Komplet med hjaelp
+public class BundleFactory {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+    // Should it take a methods handle?????
+    // Or is just putting the class in a private package enought
+    public <T> T with(Class<T> type) {
+        throw new UnsupportedOperationException();
+
+        // with(InjectorBuilder.class);
+
+        // Bliver jo noedt til at komme ind naar vi kalder configure()....
+    }
+
+    // configure()
 }

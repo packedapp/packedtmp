@@ -21,14 +21,15 @@ import static support.assertj.Assertions.npe;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.InjectorImportStage;
+import app.packed.bundle.BundlingImportStage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.ServiceBundlingStages;
 import app.packed.util.Key;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfiguration#bindInjector(Injector, InjectorImportStage...)} method. */
+/** Tests the {@link InjectorConfiguration#bindInjector(Injector, BundlingImportStage...)} method. */
 public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */
@@ -36,10 +37,10 @@ public class SimpleInjectorImportsTest {
     public void nullArguments() {
         Injector i = Injector.of(c -> c.bind("X"));
         npe(() -> Injector.of(c -> c.bindInjector((Injector) null)), "injector");
-        npe(() -> Injector.of(c -> c.bindInjector(i, (InjectorImportStage[]) null)), "stages");
+        npe(() -> Injector.of(c -> c.bindInjector(i, (BundlingImportStage[]) null)), "stages");
 
         // TODO test error message
-        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.bindInjector(i, InjectorImportStage.NO_SERVICE, null)));
+        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.bindInjector(i, BundlingImportStage.NO_SERVICES, null)));
     }
 
     /** Tests that we can import no services. */
@@ -51,7 +52,7 @@ public class SimpleInjectorImportsTest {
         });
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1, InjectorImportStage.NO_SERVICE);
+            c.bindInjector(i1, BundlingImportStage.NO_SERVICES);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -72,8 +73,8 @@ public class SimpleInjectorImportsTest {
         Injector i1 = Injector.of(c -> c.bind("X"));
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}),
-                    InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.bindInjector(i1, ServiceBundlingStages.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
+                    ServiceBundlingStages.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
         });
         assertThat(i.hasService(String.class)).isFalse();
         assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
@@ -87,8 +88,8 @@ public class SimpleInjectorImportsTest {
         Injector i2 = Injector.of(c -> c.bind("Y"));
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Left String>() {}));
-            c.bindInjector(i2, InjectorImportStage.rebind(new Key<String>() {}, new Key<@Right String>() {}));
+            c.bindInjector(i1, ServiceBundlingStages.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
+            c.bindInjector(i2, ServiceBundlingStages.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
@@ -110,8 +111,8 @@ public class SimpleInjectorImportsTest {
 
         // Now let us switch them around
         i = Injector.of(c -> {
-            c.bindInjector(i1, InjectorImportStage.rebind(new Key<@Left String>() {}, new Key<@Right String>() {}));
-            c.bindInjector(i2, InjectorImportStage.rebind(new Key<@Right String>() {}, new Key<@Left String>() {}));
+            c.bindInjector(i1, ServiceBundlingStages.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.bindInjector(i2, ServiceBundlingStages.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("Y");

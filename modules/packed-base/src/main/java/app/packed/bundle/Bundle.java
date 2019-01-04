@@ -53,9 +53,6 @@ public abstract class Bundle {
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
 
-    /** Prevent users from extending this class. */
-    Bundle() {}
-
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
      * find a valid constructor or method to instantiate the service instance once the injector is created.
@@ -71,23 +68,23 @@ public abstract class Bundle {
      * @see InjectorConfiguration#bind(Class)
      */
     protected final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
-        return configuration().bind(implementation);
+        return injectorBuilder().bind(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
-        return configuration().bind(factory);
+        return injectorBuilder().bind(factory);
     }
 
     protected final <T> ServiceConfiguration<T> bind(T instance) {
-        return configuration().bind(instance);
+        return injectorBuilder().bind(instance);
     }
 
     protected final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
-        return configuration().bind(implementation);
+        return injectorBuilder().bind(implementation);
     }
 
-    protected final void bindInjector(Class<? extends InjectorBundle> bundleType, ImportExportStage... filters) {
-        configuration().bindInjector(bundleType, filters);
+    protected final void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingStage... filters) {
+        injectorBuilder().bindInjector(bundleType, filters);
     }
 
     /**
@@ -98,41 +95,41 @@ public abstract class Bundle {
      * @param stages
      *            any number of filters that restricts the services that are imported. Or makes them available under
      *            different keys
-     * @see InjectorConfiguration#bindInjector(Injector, ImportExportStage...)
+     * @see InjectorConfiguration#bindInjector(Injector, BundlingStage...)
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link InjectorImportStage} or combinations (via
-     *             {@link ImportExportStage#andThen(ImportExportStage)} thereof
+     *             if the specified stages are not instance all instance of {@link BundlingImportStage} or combinations (via
+     *             {@link BundlingStage#andThen(BundlingStage)} thereof
      */
-    protected final void bindInjector(Injector injector, ImportExportStage... stages) {
-        configuration().bindInjector(injector, stages);
+    protected final void bindInjector(Injector injector, BundlingStage... stages) {
+        injectorBuilder().bindInjector(injector, stages);
     }
 
-    protected final void bindInjector(InjectorBundle bundle, ImportExportStage... stages) {
-        configuration().bindInjector(bundle, stages);
+    protected final void bindInjector(InjectorBundle bundle, BundlingStage... stages) {
+        injectorBuilder().bindInjector(bundle, stages);
     }
 
     protected final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
-        return configuration().bindLazy(implementation);
+        return injectorBuilder().bindLazy(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
-        return configuration().bindLazy(factory);
+        return injectorBuilder().bindLazy(factory);
     }
 
     protected final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
-        return configuration().bindLazy(implementation);
+        return injectorBuilder().bindLazy(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
-        return configuration().bindPrototype(implementation);
+        return injectorBuilder().bindPrototype(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
-        return configuration().bindPrototype(factory);
+        return injectorBuilder().bindPrototype(factory);
     }
 
     protected final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
-        return configuration().bindPrototype(implementation);
+        return injectorBuilder().bindPrototype(implementation);
     }
 
     /**
@@ -161,9 +158,9 @@ public abstract class Bundle {
      * 
      * @return the configuration object that we delegate to
      */
-    abstract InjectorBuilder configuration();
+    abstract InjectorBuilder injectorBuilder();
 
-    /** Configures the bundle using the various protected methods. */
+    /** Configures the bundle using the various methods from the inherited class. */
     protected abstract void configure();
 
     /**
@@ -196,7 +193,7 @@ public abstract class Bundle {
      * @see #expose(Key)
      */
     protected final <T> ServiceConfiguration<T> expose(Class<T> key) {
-        return configuration().expose(key);
+        return injectorBuilder().expose(key);
     }
 
     /**
@@ -222,11 +219,11 @@ public abstract class Bundle {
      * @see #expose(Key)
      */
     protected final <T> ServiceConfiguration<T> expose(Key<T> key) {
-        return configuration().expose(key);
+        return injectorBuilder().expose(key);
     }
 
     protected final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
-        return configuration().expose(configuration);
+        return injectorBuilder().expose(configuration);
     }
 
     /**
@@ -238,15 +235,15 @@ public abstract class Bundle {
      * @see InjectorConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
-        configuration().lookup(lookup);
+        injectorBuilder().lookup(lookup);
     }
 
     protected void requireMandatory(Class<?> key) {
-        configuration().requireMandatory(key);
+        injectorBuilder().requireMandatory(key);
     }
 
     protected void requireMandatory(Key<?> key) {
-        configuration().requireMandatory(key);
+        injectorBuilder().requireMandatory(key);
     }
 
     /**
@@ -258,11 +255,10 @@ public abstract class Bundle {
      * @see Injector#getDescription()
      */
     protected final void setDescription(@Nullable String description) {
-        configuration().setDescription(description);
+        injectorBuilder().setDescription(description);
     }
 
     protected final Set<String> tags() {
-        return configuration().tags();
+        return injectorBuilder().tags();
     }
-
 }

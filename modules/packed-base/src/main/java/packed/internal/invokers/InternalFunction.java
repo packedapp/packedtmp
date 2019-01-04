@@ -82,21 +82,21 @@ public abstract class InternalFunction<T> {
     }
 
     /**
-     * Returns the raw type of objects this factory creates.
+     * Returns the type of objects this operation returns on invocation.
      *
-     * @return the raw type of objects this factory creates
+     * @return the type of objects this operation returns on invocation
      */
-    public final Class<? super T> getRawType() {
-        return type;
+    public final TypeLiteral<T> getReturnType() {
+        return typeLiteral;
     }
 
     /**
-     * Returns the type of objects this factory creates.
+     * Returns the raw type of objects this operation returns on invocation.
      *
-     * @return the type of objects this factory creates
+     * @return the raw type of objects this operation returns on invocation
      */
-    public final TypeLiteral<T> getType() {
-        return typeLiteral;
+    public final Class<? super T> getReturnTypeRaw() {
+        return type;
     }
 
     /**

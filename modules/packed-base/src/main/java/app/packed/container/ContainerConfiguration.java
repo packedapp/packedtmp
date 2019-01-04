@@ -19,9 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.Bundles;
+import app.packed.bundle.BundlingStage;
 import app.packed.bundle.ContainerBundle;
-import app.packed.bundle.ImportExportStage;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -29,6 +28,7 @@ import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.bundle.Bundles;
 
 /**
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
@@ -102,7 +102,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      */
     <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation);
 
-    default void installContainer(Class<? extends ContainerBundle> bundleType, ImportExportStage... stages) {
+    default void installContainer(Class<? extends ContainerBundle> bundleType, BundlingStage... stages) {
         installContainer(Bundles.instantiate(bundleType), stages);
     }
 
@@ -116,7 +116,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * @param stages
      *            import export stages
      */
-    void installContainer(ContainerBundle bundle, ImportExportStage... stages);
+    void installContainer(ContainerBundle bundle, BundlingStage... stages);
 
     /**
      * @param state

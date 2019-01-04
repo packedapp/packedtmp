@@ -18,15 +18,28 @@ package app.packed.util;
 import java.lang.annotation.Annotation;
 
 /**
- *
+ * A configuration site visitor can be used to get detailed information about the configuration site.
  */
 interface ConfigurationSiteVisitor {
+
+    /**
+     * @param configurationSite
+     *            the configuration site
+     * @param method
+     *            the annotated method
+     * @param annotation
+     *            the annotated that caused the visit
+     */
 
     default void visitAnnotatedMethod(ConfigurationSite configurationSite, MethodDescriptor method, Class<? extends Annotation> annotation) {}
 
     default void visitAnnotatedField(ConfigurationSite configurationSite, FieldDescriptor method, Class<? extends Annotation> annotation) {}
 
-    default void visitStackTrace() {} // Always only the top one?????
+    /**
+     * This method is visited whenever.
+     * 
+     */
+    default void visitTopStackFrame(ConfigurationSite configurationSite) {} // Always only the top one, we can always add a method a visitAllStackFrames
 
     //// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere
     // default void visitConfiguration(ConfigurationNode....)visitConfiguration

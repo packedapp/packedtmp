@@ -35,13 +35,13 @@ import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
 
 /**
- * A key defines a unique identifier for a binding in an injector. It consists of two parts: a mandatory type literal
- * and an optional annotation called a qualifier. It does so by requiring user to create a subclass of this class which
- * enables retrieval of the type information even at runtime. Some examples of non-qualified keys are:
+ * A key defines a unique identifier with two parts: a mandatory type literal and an optional annotation called a
+ * qualifier. It does so by requiring users to create a subclass of this class which enables retrieval of the type
+ * information even at runtime. Some examples of non-qualified keys are:
  *
  * <pre> {@code
  * Key<List<String>> list = new Key<List<String>>() {};
- * Key<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
+ * Key<Map<Integer, List<Integer>>> list = new Key<>() {};}
  * </pre>
  * 
  * Given a custom defined qualifier: <pre> {@code
@@ -49,7 +49,7 @@ import packed.internal.util.TypeUtil;
  * public @interface Name {
  *    String value() default "noname";
  * }}
- * </pre> Some examples of qualified keys are: <pre> {@code
+ * </pre> Some examples of qualified keys: <pre> {@code
  * Key<List<String>> list = new Key<@Name("foo") List<String>>() {};
  * Key<List<String>> list = new Key<@Name List<String>>() {}; //uses default value}
  * </pre>
@@ -57,7 +57,7 @@ import packed.internal.util.TypeUtil;
  * In order for a key to be valid, it must:
  * <ul>
  * <li><b>Not be an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
- * {@link OptionalLong} or {@link OptionalDouble} as they are reserved.</li>
+ * {@link OptionalLong} or {@link OptionalDouble} as they are a reserved type.</li>
  * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
  * {@link Qualifier}</li>
  * </ul>
@@ -67,7 +67,7 @@ import packed.internal.util.TypeUtil;
  */
 public abstract class Key<T> {
 
-    /** A cache of factories used by {@link #findInjectable(Class)}. */
+    /** A cache of keys used by {@link Key#Key()}. */
     private static final ClassValue<Key<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -77,7 +77,8 @@ public abstract class Key<T> {
             return fromTypeVariable((Class) implementation, Key.class, 0);
         }
     };
-    /** A cache of factories used by {@link #findInjectable(Class)}. */
+
+    /** A cache of factories used by {@link #of(Class)}. */
     private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -86,6 +87,7 @@ public abstract class Key<T> {
             return TypeLiteral.of(implementation).box().toKey();
         }
     };
+
     /**
      * The computed hash code, not lazy because we are probably always going to use it for comparison against other keys.
      */
@@ -204,7 +206,7 @@ public abstract class Key<T> {
 
     /**
      * Returns a string where all the class names are replaced by their simple names. For example this method will return
-     * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as {@link #toString()} does.
+     * {@code List<String>} instead of {@code java.util.List<java.lang.String>} as returned by {@link #toString()}.
      * 
      * @return a simple string
      */
@@ -217,9 +219,9 @@ public abstract class Key<T> {
 
     /**
      * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
-     * ({@code hasQualifier == null}), returns this key.
+     * ({@code hasQualifier() == false}), returns this key.
      * 
-     * @return the key with no qualifier
+     * @return this key with no qualifier
      */
     public final Key<T> withNoQualifier() {
         return qualifier == null ? this : new CanonicalizedKey<>(typeLiteral, null);
@@ -232,7 +234,7 @@ public abstract class Key<T> {
      *            the new key's qualifier
      * @return the new key
      * @throws InvalidDeclarationException
-     *             if the specified annotation is not annotation with {@link Qualifier}.
+     *             if the specified annotation is not annotated with {@link Qualifier}.
      */
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
@@ -250,7 +252,7 @@ public abstract class Key<T> {
      * @throws IllegalArgumentException
      *             if the specified qualifier type does not have default values for every attribute
      * @throws InvalidDeclarationException
-     *             if the specified qualifier type is not annotation with {@link Qualifier}.
+     *             if the specified qualifier type is not annotated with {@link Qualifier}.
      */
     public final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierType);
@@ -264,8 +266,8 @@ public abstract class Key<T> {
      *            the field to return a key for
      * @return a key matching the type of the field and any qualifier that may be present on the field
      * @throws InvalidDeclarationException
-     *             if the type is an optional type such as {@link Optional} or {@link OptionalInt}. Or if there are more
-     *             than 1 qualifier present on the field
+     *             if the field does not represent a valid key. For example, if the type is an optional type such as
+     *             {@link Optional} or {@link OptionalInt}. Or if there are more than 1 qualifier present on the field
      * @see Field#getType()
      * @see Field#getGenericType()
      */
@@ -351,12 +353,11 @@ public abstract class Key<T> {
      * Returns a key matching the specified type with no qualifiers.
      *
      * @param <T>
-     *            the type to return a key for
+     *            the type to construct a key of
      * @param type
-     *            the type to return a key for
+     *            the type to construct a key of
      * @return a key matching the specified type with no qualifiers
      */
-    // TODO rename type to key?????
     @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
@@ -367,12 +368,12 @@ public abstract class Key<T> {
      * Returns a key of the specified type and with the specified qualifier.
      *
      * @param <T>
-     *            the type to return a key for
+     *            the type to construct a key of
      * @param type
-     *            the type to return a key for
+     *            the type to construct a key of
      * @param qualifier
      *            the qualifier of the key
-     * @return a key of the specified type wuth the specified qualifier
+     * @return a key of the specified type with the specified qualifier
      */
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
         return TypeLiteral.of(type).box().toKey(qualifier);
@@ -382,7 +383,7 @@ public abstract class Key<T> {
     static final class CanonicalizedKey<T> extends Key<T> {
 
         /**
-         * Creates a new key
+         * Creates a new canonicalized key.
          * 
          * @param typeLiteral
          *            the type literal
@@ -392,101 +393,5 @@ public abstract class Key<T> {
         CanonicalizedKey(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
             super(typeLiteral, qualifier);
         }
-
     }
 }
-
-// Maybe have an internal KeyFactory..... That makes proper error Messages
-
-// Extract key
-// Men vi skal jo have informationer om hvorfor
-
-// Saa metoder ved hvorfor, the caller knows where/what
-// WHERE/What could not because of why...
-// Maybe have a isValidKey(Type) or <T> checkValidKey(T extends RuntimeException, String message) throws T;
-// Maybe have a string with "%s, %s".. Maybe A consumer with the message because XYZ
-// because it "xxxxxx"
-
-/// **
-// * Returns a key matching the specified type.
-// *
-// * @param <T>
-// * the type to return a key for
-// * @param type
-// * the type to return a key for
-// * @return a key matching the specified type
-// */
-// @SuppressWarnings({ "unchecked" })
-// static <T> Key<T> of(Type type) {
-// requireNonNull(type, "type is null");
-// if (type instanceof Class) {
-// return of((Class<T>) type);
-// }
-// return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(new CanonicalizedTypeLiteral<>(type), null);
-// }
-//
-/// **
-// * Returns a key matching the specified type and qualifier.
-// *
-// * @param <T>
-// * the type to return a key for
-// * @param type
-// * the type to return a key for
-// * @param qualifier
-// * the qualifier of the key
-// * @return a key matching the specified type and qualifier
-// */
-// @SuppressWarnings({ "unchecked" })
-// static <T> Key<T> of(Type type, Annotation qualifier) {
-// requireNonNull(type, "type is null");
-// requireNonNull(qualifier, "qualifier is null");
-// JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
-// return (Key<T>) fromCheckedTypeAndCheckedNullableAnnotation(new CanonicalizedTypeLiteral<>(type), qualifier);
-// }
-
-//
-// /**
-// * Returns the type of qualifier this key have, or null if this key has no qualifier.
-// *
-// * @return the type of qualifier this key have, or null if this key has no qualifier
-// */
-// @Nullable
-// public final Class<? extends Annotation> getQualifierType() {
-// return qualifier == null ? null : qualifier.annotationType();
-// }
-// An easy way to create annotations with one value, or maybe put it on TypeLiteral
-// withNamedAnnotations(type, String name, Object value)
-// withNamedAnnotations(type, String name1, Object value1, String name2, Object value2)
-// withNamedAnnotations(type, String name1, Object value1, String name2, Object value2, String name3, Object value3);
-// public static <T> Key<T> withAnnotation(Type type, Class<? extends Annotation> cl, Object value) {
-// withAnnotation(Integer.class, Named.class, "left");
-// throw new UnsupportedOperationException();
-// }
-// private Class<?> getReturnTypeIgnoringOptionalBoxed() {
-// InternalMethodDescriptor method = this.descriptor();
-// Class<?> type = method.getReturnType();
-// if (type == Optional.class) {
-// return (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
-// } else if (type == OptionalLong.class) {
-// return Long.class;
-// } else if (type == OptionalInt.class) {
-// return Integer.class;
-// } else if (type == OptionalDouble.class) {
-// return Double.class;
-// } else {
-// return TypeUtil.boxClass(type);
-// }
-// }
-
-//// @Provides method cannot have void return type.
-// if (descriptor().getReturnType() == void.class) {
-// throw new IllegalArgumentException("@Provides method " + description + " cannot have void return type");
-// }
-//
-//// TODO check not reserved return types
-//
-//// TODO check return type is not optional
-//// Or maybe they can.
-//// If a Provides wants to provide null to someone the return type of the method should be Optional<XXXXX>
-//// Null indicates look in next injector...
-//

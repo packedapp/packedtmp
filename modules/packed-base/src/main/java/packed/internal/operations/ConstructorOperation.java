@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package packed.internal.operations;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.lang.reflect.Modifier;
+import java.lang.invoke.MethodHandle;
 
-import packed.internal.invokers.InvokableMember;
+/** An operation that calls a constructor via a {@link MethodHandle}. */
+public final class ConstructorOperation {
 
-/**
- *
- */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
-
-    /**
-     * Returns whether or not this field is a static field.
-     *
-     * @return whether or not this field is a static field
-     * @see Modifier#isStatic(int)
-     */
-    boolean isStatic();
-
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
 }

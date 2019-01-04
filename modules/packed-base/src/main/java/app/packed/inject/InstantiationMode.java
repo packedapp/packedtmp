@@ -16,29 +16,29 @@
 package app.packed.inject;
 
 /**
- * The instantiation mode of a service or component.
+ * The instantiation mode of a service.
  */
 public enum InstantiationMode {
+
+    /**
+     * A single instance is created the first time it is requested. Concurrent calls by other threads while constructing the
+     * value will block. Guaranteeing that only a single instance will ever be created.
+     */
+    LAZY,
+
+    /** A new instance is created every time an instance is requested. */
+    PROTOTYPE,
 
     /**
      * A single instance of the service or component is created when the injector or container where the entity is
      * registered is created. This is the default mode used throughout the framework.
      */
-    SINGLETON,
+    SINGLETON;
 
     /**
-     * A single service instance is created the f. Concurrent calls by other threads while constructing the value will
-     * block.
-     */
-    LAZY,
-
-    /** A new instance is created every time the service is requested. An injector will never attempt to cache it. */
-    PROTOTYPE;
-
-    /**
-     * Returns true if the binding mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
+     * Returns true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false.
      * 
-     * @return true if the binding mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
+     * @return true if the instantiation mode is either {@link #SINGLETON} or {@link #LAZY}, otherwise false
      */
     public boolean isSingleton() {
         return this != PROTOTYPE;

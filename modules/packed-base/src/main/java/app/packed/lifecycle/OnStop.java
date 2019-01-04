@@ -36,3 +36,5 @@ import java.lang.annotation.Target;
 public @interface OnStop {
     String[] before() default {};
 }
+// The only guarantee we make is that if an entity has transitioned to the starting state.
+// OnStop will run...

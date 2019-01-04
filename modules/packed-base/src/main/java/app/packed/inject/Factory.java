@@ -94,7 +94,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) FunctionalInterfaces.create2(function, getClass());
+        this.factory = (InternalFactory<T>) FactoryHelper.create2(function, getClass());
     }
 
     /**
@@ -106,7 +106,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) FunctionalInterfaces.create1(function, getClass());
+        this.factory = (InternalFactory<T>) FactoryHelper.create1(function, getClass());
     }
 
     /**
@@ -128,7 +128,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) FunctionalInterfaces.create0(supplier, getClass());
+        this.factory = (InternalFactory<T>) FactoryHelper.create0(supplier, getClass());
     }
 
     /**
@@ -175,7 +175,7 @@ public class Factory<T> {
      * @return the type of objects this factory creates
      */
     public final TypeLiteral<T> getTypeLiteral() {
-        return factory.function.getType();
+        return factory.function.getReturnType();
     }
 
     /**

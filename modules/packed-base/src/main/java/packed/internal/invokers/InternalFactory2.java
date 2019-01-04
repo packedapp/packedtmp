@@ -44,10 +44,10 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
         T t = (T) params[0];
         U u = (U) params[1];
         R instance = function.apply(t, u);
-        if (!getRawType().isInstance(instance)) {
+        if (!getReturnTypeRaw().isInstance(instance)) {
             throw new InjectionException(
                     "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce instances of '"
-                            + format(getRawType()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+                            + format(getReturnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
     }

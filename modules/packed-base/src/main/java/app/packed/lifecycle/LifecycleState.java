@@ -35,13 +35,14 @@ public enum LifecycleState {
 
     /**
      * The initial state in the lifecycle of an entity. This state is typically used for reading and validating the
-     * configuration of the entity. Throwing and runtime exception or error if some invariant is broken. When the entity
-     * successfully finishes this phase it will move to the {@link #INITIALIZED} state.
+     * configuration of the entity. Throwing an exception or error if some invariant is broken. If the entity successfully
+     * finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it fails, it will move to the
+     * {@link #TERMINATED} state.
      */
     INITIALIZING,
 
     /**
-     * A state indicating that an entity has been successfully initialized.
+     * This state indicating that the entity has been successfully initialized.
      * <p>
      * The entity will remain in this state until it is started by an external action of some kind. For example, if a user
      * calls some kind of {@code start} function. After which the state of entity transitions to the {@link #STARTING}
@@ -50,15 +51,14 @@ public enum LifecycleState {
     INITIALIZED,
 
     /**
-     * The container has been started by an external action. However, all components have not yet completed startup. When
-     * all components have been properly started the container will transition to the {@link #RUNNING} state. If any
-     * component fails to start up properly. The container will automatically shutdown and move to the {@link #STOPPING}
-     * phase.
+     * The entity has been started by some external action. However, all components have not yet completed startup. When all
+     * components have been properly started the container will transition to the {@link #RUNNING} state. If any component
+     * fails to start up properly. The container will automatically shutdown and move to the {@link #STOPPING} phase.
      */
     STARTING,
 
     /**
-     * The entity is running normally. The entity will remain in this state until it is shutdown by some kind of stop
+     * The entity is running normally. The entity will remain in this state until it is shutdown by some kind of external
      * action, after which it will transition to the {@link #STOPPING} state.
      */
     RUNNING,
@@ -69,7 +69,7 @@ public enum LifecycleState {
      */
     STOPPING,
 
-    /** The final lifecycle state of an entity, it cannot transition to any other state. */
+    /** The final lifecycle state of an entity. Once it reaches this state it will never transition to any other state. */
     TERMINATED;
 
     /**

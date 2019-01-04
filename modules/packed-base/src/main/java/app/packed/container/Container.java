@@ -22,12 +22,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import app.packed.bundle.Bundles;
 import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
+import packed.internal.bundle.Bundles;
 import packed.internal.container.ContainerBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
