@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package packed.internal.inject;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.function.Consumer;
-
+import app.packed.bundle.BundlingExportOperation;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 
 /**
@@ -50,14 +46,14 @@ import app.packed.util.Key;
 // Maa koere en BundleDescriptor hvis man vil se..
 // Vi er strictly flow.....Eller det behoever vi jo saadan ikke at vaere.....
 // Ellers k
-public abstract class BundlingExportStage extends BundlingStage {
+public class BundlingServiceExportStage {
 
-    public static final BundlingExportStage ACCEPT_REQUIRED = null;
+    public static final BundlingExportOperation ACCEPT_REQUIRED = null;
 
-    public static final BundlingExportStage ACCEPT_REQUIRED_MANDATORYs = null;
+    public static final BundlingExportOperation ACCEPT_REQUIRED_MANDATORYs = null;
 
     /** An export stage, that ignores all optional dependencies */
-    public static final BundlingExportStage IGNORE_OPTIONAL = null;
+    public static final BundlingExportOperation IGNORE_OPTIONAL = null;
 
     protected void filter(ServiceConfiguration<?> configuration) {
         // if (configuration.getKey() isN)
@@ -75,22 +71,13 @@ public abstract class BundlingExportStage extends BundlingStage {
         return false;
     }
 
-    /**
-     * Process each
-     * 
-     * @param sc
-     *            the service configuration
-     */
-    @Override
-    public void onEachService(ServiceConfiguration<?> sc) {}
-
-    public static BundlingExportStage peek(Consumer<? super ServiceDescriptor> action) {
-        requireNonNull(action, "action is null");
-        return new BundlingExportStage() {
-            @Override
-            public void onEachService(ServiceConfiguration<?> sc) {
-                action.accept(ServiceDescriptor.of(sc));
-            }
-        };
-    }
+    // public static BundlingExportStage peek(Consumer<? super ServiceDescriptor> action) {
+    // requireNonNull(action, "action is null");
+    // return new BundlingExportStage() {
+    // @Override
+    // public void onEachService(ServiceConfiguration<?> sc) {
+    // action.accept(ServiceDescriptor.of(sc));
+    // }
+    // };
+    // }
 }

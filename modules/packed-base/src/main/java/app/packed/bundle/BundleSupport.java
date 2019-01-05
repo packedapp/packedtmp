@@ -26,7 +26,7 @@ import packed.internal.inject.builder.BaseBuilder;
 /**
  *
  */
-// BundleContext context
+// rename to BundleContext, Or BundleFactory and then have Injector#
 public final class BundleSupport {
 
     private final BaseBuilder[] elements;
@@ -35,27 +35,8 @@ public final class BundleSupport {
         this.elements = elements;
     }
 
-    /**
-     * Returns a support class of the specified type.
-     * 
-     * @param type
-     *            the type of support class
-     * @throws UnsupportedOperationException
-     *             if the specified is not supported
-     */
-    @SuppressWarnings("unchecked")
-    public final <T> T withs(Class<? super T> type) {
-        for (Object o : elements) {
-            if (o.getClass() == type) {
-                return (T) o;
-            }
-        }
-        throw new UnsupportedOperationException("Does not support " + type);
-    }
-
-    /** {@inheritDoc} */
-    final void lookup(Lookup lookup) {
-        this.elements[0].accessor = LookupDescriptorAccessor.get(lookup);
+    public boolean freezeConfiguration() {
+        return false;
     }
 
     public void configure(Bundle b) {
@@ -68,12 +49,36 @@ public final class BundleSupport {
         }
     }
 
+    /** {@inheritDoc} */
+    final void lookup(Lookup lookup) {
+        this.elements[0].accessor = LookupDescriptorAccessor.get(lookup);
+    }
+
+    /**
+     * Returns a support class of the specified type.
+     * 
+     * @param type
+     *            the type of support class
+     * @throws UnsupportedOperationException
+     *             if the specified is not supported
+     */
+    @SuppressWarnings("unchecked")
+    // Maybe just make it abstract
+    public final <T> T with(Class<? super T> type) {
+        for (Object o : elements) {
+            if (o.getClass() == type) {
+                return (T) o;
+            }
+        }
+        throw new UnsupportedOperationException("Does not support " + type);
+    }
+
     public static BundleSupport of(BaseBuilder... elements) {
         List.of(elements); // null check
         return new BundleSupport(elements);
     }
 
-    public enum Stage {
-        DESCRIPTOR, IMAGE_GENERATION, NEW_RUNTIME;
+    enum Stage {
+        GENERATE_DESCRIPTOR, GENERATE_IMAGE, CREATE_RUNTIME;
     }
 }

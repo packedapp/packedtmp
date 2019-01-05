@@ -17,9 +17,9 @@ package packed.internal.inject.builder;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.BundlingImportStage;
-import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.BundlingImportOperation;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.Provides;
 
 /**
@@ -37,7 +37,7 @@ public class Xxx {
 
     }
 
-    static class MyImportStage extends BundlingImportStage {
+    static class MyImportStage extends BundlingImportOperation {
         MyImportStage() {
             super(MethodHandles.lookup());
         }
@@ -55,6 +55,5 @@ public class Xxx {
         protected void configure() {
             expose(bind("Foooo"));
         }
-
     }
 }

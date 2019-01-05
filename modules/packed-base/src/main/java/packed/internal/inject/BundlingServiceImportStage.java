@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package packed.internal.inject;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Date;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import app.packed.bundle.BundlingImportStage;
+import app.packed.bundle.BundlingImportOperation;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
@@ -36,24 +36,10 @@ import app.packed.util.Nullable;
  * 
  * 
  */
-public abstract class BundlingImportStage extends BundlingStage {
-
-    /**
-     * An import stage that imports no services by invoking {@link ServiceConfiguration#asNone()} on every processed
-     * configuration.
-     */
-    // Rename to noImports() method -> will be much easier to make stages mutable if needed
-    // Skal vi have noget med services med?????
-    public static final BundlingImportStage NO_SERVICES = new BundlingImportStage() {
-
-        @Override
-        public void onEachService(ServiceConfiguration<?> sc) {
-            sc.asNone();
-        }
-    };
+public abstract class BundlingServiceImportStage extends BundlingImportOperation {
 
     /** Creates a new stage */
-    protected BundlingImportStage() {}
+    protected BundlingServiceImportStage() {}
 
     /**
      * Creates a new stage with a lookup object. This constructor is only needed if the extending class makes use of the
@@ -62,12 +48,8 @@ public abstract class BundlingImportStage extends BundlingStage {
      * @param lookup
      *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
      */
-    protected BundlingImportStage(MethodHandles.Lookup lookup) {
+    protected BundlingServiceImportStage(MethodHandles.Lookup lookup) {
         super(lookup);
-    }
-
-    protected String injectorDescription(@Nullable String injectorDescription) {
-        return injectorDescription;
     }
 
     /**
@@ -76,15 +58,19 @@ public abstract class BundlingImportStage extends BundlingStage {
      * @param sc
      *            the service configuration
      */
-    @Override
     // IDeen er lidt at kalde alle der procerere mere end en entity onEachX, og resten onX
-    protected void onEachService(ServiceConfiguration<?> sc) {}
+    public void onEachService(ServiceConfiguration<?> sc) {}
 }
 
 class XImportVer2 {
 
     protected final ServiceConfiguration<?> clone(ServiceConfiguration<?> sc) {
         return sc;// Do we ever need to make a service available under two different keys
+    }
+
+    // Det er jo ikke noget man importere.....at nogle der flowe mellem bundlen..
+    protected String injectorDescription(@Nullable String injectorDescription) {
+        return injectorDescription;
     }
 
     /**
@@ -101,7 +87,7 @@ class XImportVer2 {
         throw new UnsupportedOperationException();
     }
 
-    public static <T, S> BundlingImportStage adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
+    public static <T, S> BundlingImportOperation adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
         // Nahhh kun supporte provides her.. Evt. Factory...
         throw new UnsupportedOperationException();
 

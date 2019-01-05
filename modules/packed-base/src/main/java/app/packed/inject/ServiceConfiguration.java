@@ -15,7 +15,6 @@
  */
 package app.packed.inject;
 
-import app.packed.bundle.InjectorBundle;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

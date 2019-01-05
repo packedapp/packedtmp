@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.bundle.InjectorBundle;
 import app.packed.util.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

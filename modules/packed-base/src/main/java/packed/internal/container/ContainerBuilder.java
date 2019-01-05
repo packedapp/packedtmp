@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.ContainerBundle;
-import app.packed.bundle.BundlingStage;
+import app.packed.bundle.BundlingOperation;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
@@ -107,7 +107,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
 
     /** {@inheritDoc} */
     @Override
-    public void installContainer(ContainerBundle bundle, BundlingStage... stages) {
+    public void installContainer(ContainerBundle bundle, BundlingOperation... stages) {
 
     }
 

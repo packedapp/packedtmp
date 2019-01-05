@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package app.packed.inject;
 
 import java.util.Set;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundlingImportOperation;
+import app.packed.bundle.BundlingOperation;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
@@ -152,7 +151,7 @@ public abstract class InjectorBundle extends Bundle {
         return injectorBuilder().bind(implementation);
     }
 
-    protected final void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingStage... filters) {
+    protected final void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingOperation... filters) {
         injectorBuilder().bindInjector(bundleType, filters);
     }
 
@@ -164,16 +163,16 @@ public abstract class InjectorBundle extends Bundle {
      * @param stages
      *            any number of filters that restricts the services that are imported. Or makes them available under
      *            different keys
-     * @see InjectorConfiguration#bindInjector(Injector, BundlingStage...)
+     * @see InjectorConfiguration#bindInjector(Injector, BundlingOperation...)
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link BundlingImportStage} or combinations (via
-     *             {@link BundlingStage#andThen(BundlingStage)} thereof
+     *             if the specified stages are not instance all instance of {@link BundlingImportOperation} or combinations (via
+     *             {@link BundlingOperation#andThen(BundlingOperation)} thereof
      */
-    protected final void bindInjector(Injector injector, BundlingStage... stages) {
+    protected final void bindInjector(Injector injector, BundlingOperation... stages) {
         injectorBuilder().bindInjector(injector, stages);
     }
 
-    protected final void bindInjector(InjectorBundle bundle, BundlingStage... stages) {
+    protected final void bindInjector(InjectorBundle bundle, BundlingOperation... stages) {
         injectorBuilder().bindInjector(bundle, stages);
     }
 
@@ -233,7 +232,7 @@ public abstract class InjectorBundle extends Bundle {
     }
 
     InjectorBuilder injectorBuilder() {
-        return support().withs(InjectorBuilder.class);
+        return support().with(InjectorBuilder.class);
         // if (injectorBuilder == null) {
         // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
         // call Bundle.configure directly");

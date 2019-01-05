@@ -18,12 +18,14 @@ package app.packed.bundle;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.lang.reflect.AnnotatedElement;
+import java.lang.module.ModuleDescriptor;
+import java.lang.module.ModuleDescriptor.Version;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import app.packed.container.Container;
+import app.packed.container.ContainerBundle;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -40,6 +42,7 @@ import packed.internal.inject.builder.InternalBundleDescriptor;
  * </p>
  */
 // Pretty pringting http://www.lihaoyi.com/post/CompactStreamingPrettyPrintingofHierarchicalData.html
+// Abstract Bundle Descriptor
 public final class BundleDescriptor {
 
     // I think add @Description as annotation??? IDK
@@ -74,15 +77,6 @@ public final class BundleDescriptor {
     }
 
     /**
-     * Returns any annotations that are present on the bundle. For example, {@link Deprecated}
-     * 
-     * @return any annotations that are present on the bundle
-     */
-    public AnnotatedElement annotations() {
-        return bundleType;
-    }
-
-    /**
      * Returns an optional description of the bundle as set by {@link Bundle#setDescription(String)}.
      * 
      * @return a optional description of the bundle
@@ -101,10 +95,24 @@ public final class BundleDescriptor {
      * @return the id of the bundle
      */
     public String bundleId() {
-        if (getModule().isNamed()) {
-            return getModule().getName() + "." + bundleType.getSimpleName();
+        // Think we are going to drop this....
+        if (bundleModule().isNamed()) {
+            return bundleModule().getName() + "." + bundleType.getSimpleName();
         }
         return bundleType.getSimpleName();
+    }
+
+    /**
+     * Returns the module that this bundle is a member of. This is always the module in which the bundle type is located in.
+     * <p>
+     * If the bundle is in an unnamed module then the {@linkplain ClassLoader#getUnnamedModule() unnamed} {@code Module} of
+     * the class loader for the bundle implementation is returned.
+     *
+     * @return the module that the bundle is a member of
+     * @see Class#getModule()
+     */
+    public Module bundleModule() {
+        return bundleType.getModule();
     }
 
     /**
@@ -117,17 +125,14 @@ public final class BundleDescriptor {
     }
 
     /**
-     * Returns the module that the bundle is a member of. This is normally, the module in which the class extending
-     * {@link Bundle} is located.
-     * <p>
-     * If the bundle is in an unnamed module then the {@linkplain ClassLoader#getUnnamedModule() unnamed} {@code Module} of
-     * the class loader for the bundle implementation is returned.
-     *
-     * @return the module that the bundle is a member of
-     * @see Class#getModule()
+     * Returns the version of this bundle. The version of a bundle is always identical to the version of the module to which
+     * the bundle belongs. If the bundle is in the unnamed module this method returns {@link Optional#empty()}.
+     * 
+     * @return the version of the bundle
+     * @see ModuleDescriptor#version()
      */
-    Module getModule() {
-        return bundleType.getModule(); // Gider bi bruge denne metode????? Maaske bare skip den
+    public Optional<Version> bundleVersion() {
+        return bundleModule().getDescriptor().version();
     }
 
     /**
@@ -164,8 +169,8 @@ public final class BundleDescriptor {
         StringBuilder sb = new StringBuilder();
 
         sb.append("bundle { type: ").append(format(bundleType));
-        if (getModule().isNamed()) {
-            sb.append(", module: ").append(getModule().getName());
+        if (bundleModule().isNamed()) {
+            sb.append(", module: ").append(bundleModule().getName());
         }
 
         sb.append(" }");
@@ -234,7 +239,7 @@ public final class BundleDescriptor {
          *
          * @return an immutable map of all the services the bundle exposes
          */
-        public Map<Key<?>, ServiceDescriptor> exposed() {
+        public Map<Key<?>, ServiceDescriptor> exports() {
             return exposedServices;
         }
 
@@ -286,3 +291,13 @@ public final class BundleDescriptor {
 
     // The union of exposedServices, optionalService and requiredService must be empty
 }
+//
+/// **
+// * Returns any annotations that are present on the bundle. For example, {@link Deprecated}
+// *
+// * @return any annotations that are present on the bundle
+// */
+//// Nah lad os ditche dest
+// public AnnotatedElement annotations() {
+// return bundleType;
+// }

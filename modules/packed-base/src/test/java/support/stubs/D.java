@@ -25,6 +25,7 @@ import support.stubs.annotation.CharQualifiers;
  *
  */
 public class D {
+
     public static void main(String[] args) {
         Optional<Field> findFirst = Arrays.stream(CharQualifiers.class.getDeclaredFields()).filter(e -> e.getName().equals("X")).findFirst();
         System.out.println(findFirst.get().getAnnotations().length);

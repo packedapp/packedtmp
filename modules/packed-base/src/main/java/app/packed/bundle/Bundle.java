@@ -20,7 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.container.Container;
+import app.packed.container.ContainerBundle;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.InjectorConfiguration;
 
 /**

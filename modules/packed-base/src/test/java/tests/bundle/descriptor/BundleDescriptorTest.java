@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.BundleDescriptor;
-import app.packed.bundle.InjectorBundle;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -40,7 +40,7 @@ public class BundleDescriptorTest {
                 @Override
                 protected void configure() {}
             });
-            assertThat(d.services().exposed()).isEmpty();
+            assertThat(d.services().exports()).isEmpty();
 
             d = BundleDescriptor.of(new InjectorBundle() {
                 @Override
@@ -48,7 +48,7 @@ public class BundleDescriptorTest {
                     bind("non-exposed service is not in descriptor");
                 }
             });
-            assertThat(d.services().exposed()).isEmpty();
+            assertThat(d.services().exports()).isEmpty();
         }
 
         @Test
@@ -62,8 +62,8 @@ public class BundleDescriptorTest {
             };
 
             BundleDescriptor d = BundleDescriptor.of(ib);
-            assertThat(d.services().exposed()).containsOnlyKeys(Key.of(String.class));
-            ServiceDescriptor sd = d.services().exposed().get(Key.of(String.class));
+            assertThat(d.services().exports()).containsOnlyKeys(Key.of(String.class));
+            ServiceDescriptor sd = d.services().exports().get(Key.of(String.class));
 
             assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
             assertThat(sd.getDescription()).isEqualTo("fooDesc");

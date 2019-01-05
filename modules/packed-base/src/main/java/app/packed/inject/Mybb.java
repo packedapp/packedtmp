@@ -16,7 +16,6 @@
 package app.packed.inject;
 
 import app.packed.bundle.BundleDescriptor;
-import app.packed.bundle.InjectorBundle;
 
 /**
  *

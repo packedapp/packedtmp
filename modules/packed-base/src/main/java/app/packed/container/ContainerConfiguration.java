@@ -19,8 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.bundle.BundlingStage;
-import app.packed.bundle.ContainerBundle;
+import app.packed.bundle.BundlingOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -102,7 +101,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      */
     <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation);
 
-    default void installContainer(Class<? extends ContainerBundle> bundleType, BundlingStage... stages) {
+    default void installContainer(Class<? extends ContainerBundle> bundleType, BundlingOperation... stages) {
         installContainer(Bundles.instantiate(bundleType), stages);
     }
 
@@ -116,7 +115,7 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      * @param stages
      *            import export stages
      */
-    void installContainer(ContainerBundle bundle, BundlingStage... stages);
+    void installContainer(ContainerBundle bundle, BundlingOperation... stages);
 
     /**
      * @param state

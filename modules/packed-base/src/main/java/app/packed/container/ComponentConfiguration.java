@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.ServiceConfiguration;

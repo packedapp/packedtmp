@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.bundle.BundlingStage;
-import app.packed.bundle.BundlingImportStage;
+import app.packed.bundle.BundlingImportOperation;
+import app.packed.bundle.BundlingOperation;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.util.Nullable;
@@ -29,7 +29,7 @@ import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * Represents an imported injector via {@link InjectorConfiguration#bindInjector(Injector, BundlingImportStage...)}.
+ * Represents an imported injector via {@link InjectorConfiguration#bindInjector(Injector, BundlingImportOperation...)}.
  */
 final class BindInjectorFromInjector extends BindInjector {
 
@@ -46,7 +46,7 @@ final class BindInjectorFromInjector extends BindInjector {
      * @param stages
      */
     BindInjectorFromInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
-            List<BundlingStage> stages) {
+            List<BundlingOperation> stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
     }

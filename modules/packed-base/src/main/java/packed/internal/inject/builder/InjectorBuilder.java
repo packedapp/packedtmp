@@ -23,10 +23,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundlingStage;
-import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.BundlingOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
@@ -143,9 +143,9 @@ public class InjectorBuilder extends BaseBuilder implements InjectorConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public final void bindInjector(Injector injector, BundlingStage... stages) {
+    public final void bindInjector(Injector injector, BundlingOperation... stages) {
         requireNonNull(injector, "injector is null");
-        List<BundlingStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
+        List<BundlingOperation> listOfStages = BundleSupport.invoke().extractBundlingOperations(stages, InjectorBundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
@@ -155,9 +155,9 @@ public class InjectorBuilder extends BaseBuilder implements InjectorConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public void bindInjector(InjectorBundle bundle, BundlingStage... stages) {
+    public void bindInjector(InjectorBundle bundle, BundlingOperation... stages) {
         requireNonNull(bundle, "bundle is null");
-        List<BundlingStage> listOfStages = BundleSupport.invoke().stagesExtract(stages, InjectorBundle.class);
+        List<BundlingOperation> listOfStages = BundleSupport.invoke().extractBundlingOperations(stages, InjectorBundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);

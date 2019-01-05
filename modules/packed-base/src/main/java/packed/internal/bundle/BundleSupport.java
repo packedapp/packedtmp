@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bundle.BundlingImportStage;
-import app.packed.bundle.BundlingStage;
-import app.packed.bundle.ContainerBundle;
-import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.BundlingImportOperation;
+import app.packed.bundle.BundlingOperation;
+import app.packed.container.ContainerBundle;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.ServiceConfiguration;
 import packed.internal.inject.builder.InjectorBuilder;
 
@@ -44,11 +44,11 @@ public final class BundleSupport {
         @Deprecated
         public abstract void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder builder, boolean freeze);
 
-        public abstract void stageOnFinish(BundlingStage stage);
+        public abstract void bundleOperationFinish(BundlingOperation stage);
 
-        public abstract void stageOnService(BundlingStage stage, ServiceConfiguration<?> sc);
+        public abstract void stageOnService(BundlingOperation stage, ServiceConfiguration<?> sc);
 
-        public abstract MethodHandles.Lookup stageLookup(BundlingStage stage);
+        public abstract MethodHandles.Lookup stageLookup(BundlingOperation stage);
 
         /**
          * @param stages
@@ -56,7 +56,7 @@ public final class BundleSupport {
          *            either {@link Injector}, {@link InjectorBundle} or {@link ContainerBundle}
          * @return
          */
-        public abstract List<BundlingStage> stagesExtract(BundlingStage[] stages, Class<?> type);
+        public abstract List<BundlingOperation> extractBundlingOperations(BundlingOperation[] stages, Class<?> type);
 
         /**
          * Initializes this class.
@@ -79,7 +79,7 @@ public final class BundleSupport {
         static final Helper SINGLETON;
 
         static {
-            new BundlingImportStage() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
+            new BundlingImportOperation() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }

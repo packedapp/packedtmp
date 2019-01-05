@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.BundleDescriptor;
-import app.packed.bundle.InjectorBundle;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -44,7 +44,8 @@ public class InjectorDescriptorTest {
                 expose(A.class);
             }
         });
-        ServiceDescriptor sd = d.services().exposed().values().iterator().next();
+
+        ServiceDescriptor sd = d.services().exports().values().iterator().next();
 
         assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
         assertThat(sd.getDescription()).isNull();

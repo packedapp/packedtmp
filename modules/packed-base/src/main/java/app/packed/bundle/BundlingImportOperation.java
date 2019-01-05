@@ -15,25 +15,26 @@
  */
 package app.packed.bundle;
 
+import java.lang.invoke.MethodHandles;
+
+import app.packed.inject.Provides;
+
 /**
  *
  */
-// Ideen er at vi har sådan en fætter inde i en bundle....
-// with
+public abstract class BundlingImportOperation extends BundlingOperation {
 
-// Man skal kunne definere sine egne bundle type...
-// Komplet med hjaelp
-public class BundleFactory {
+    /** Creates a new stage */
+    protected BundlingImportOperation() {}
 
-    // Should it take a methods handle?????
-    // Or is just putting the class in a private package enought
-    public <T> T with(Class<T> type) {
-        throw new UnsupportedOperationException();
-
-        // with(InjectorBuilder.class);
-
-        // Bliver jo noedt til at komme ind naar vi kalder configure()....
+    /**
+     * Creates a new stage with a lookup object. This constructor is only needed if the extending class makes use of the
+     * {@link Provides} annotation.
+     * 
+     * @param lookup
+     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
+     */
+    protected BundlingImportOperation(MethodHandles.Lookup lookup) {
+        super(lookup);
     }
-
-    // configure()
 }

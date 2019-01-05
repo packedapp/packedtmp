@@ -18,9 +18,9 @@ package tests.inject.bindinjector.bundle;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorBundle;
 
 /**
  *

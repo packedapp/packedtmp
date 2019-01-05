@@ -18,7 +18,7 @@ package support.stubs;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceBundlingStages;
+import app.packed.inject.ServiceBundlingOperations;
 
 /**
  *
@@ -33,8 +33,10 @@ public class Xs {
         });
 
         Injector i2 = Injector.of(c -> {
-            c.bindInjector(i, ServiceBundlingStages.peekImports(e -> System.out.println("Available " + e.getKey())),
-                    ServiceBundlingStages.retainImports(String.class));
+            c.bindInjector(i, ServiceBundlingOperations.peekImports(e -> {
+                new Exception().printStackTrace();
+                // System.out.println("Available " + e.getKey() + new Exception().printStackTrace());
+            }), ServiceBundlingOperations.retainImports(String.class));
         });
 
         System.out.println();

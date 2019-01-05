@@ -20,9 +20,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundlingStage;
-import app.packed.bundle.BundlingImportStage;
-import app.packed.bundle.InjectorBundle;
+import app.packed.bundle.BundlingImportOperation;
+import app.packed.bundle.BundlingOperation;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
@@ -105,7 +104,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional stages
      */
-    default void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingStage... stages) {
+    default void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingOperation... stages) {
         bindInjector(Bundles.instantiate(bundleType), stages);
     }
 
@@ -145,10 +144,10 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link BundlingImportStage} or combinations (via
-     *             {@link BundlingStage#andThen(BundlingStage)} thereof
+     *             if the specified stages are not instance all instance of {@link BundlingImportOperation} or combinations (via
+     *             {@link BundlingOperation#andThen(BundlingOperation)} thereof
      */
-    void bindInjector(Injector injector, BundlingStage... stages);
+    void bindInjector(Injector injector, BundlingOperation... stages);
 
     /**
      * @param bundle
@@ -156,7 +155,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional import/export stages
      */
-    void bindInjector(InjectorBundle bundle, BundlingStage... stages);
+    void bindInjector(InjectorBundle bundle, BundlingOperation... stages);
 
     /**
      * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will

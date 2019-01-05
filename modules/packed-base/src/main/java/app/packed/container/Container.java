@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import app.packed.bundle.ContainerBundle;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;

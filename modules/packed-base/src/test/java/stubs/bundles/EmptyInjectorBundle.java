@@ -15,7 +15,7 @@
  */
 package stubs.bundles;
 
-import app.packed.bundle.InjectorBundle;
+import app.packed.inject.InjectorBundle;
 
 /**
  *

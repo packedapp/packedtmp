@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package app.packed.container;
 
-import app.packed.container.ComponentConfiguration;
+import app.packed.bundle.BundlingOperation;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectorBundle;
 import app.packed.inject.Provides;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.TypeLiteral;
 import packed.internal.container.ContainerBuilder;
+import packed.internal.inject.builder.InjectorBuilder;
 
 /**
  *
  */
 public abstract class ContainerBundle extends InjectorBundle {
 
-    /** {@inheritDoc} */
-    @Override
-    ContainerBuilder injectorBuilder() {
-        throw new UnsupportedOperationException();
+    ContainerBuilder containerBuilder() {
+        return support().with(InjectorBuilder.class);
+        // if (injectorBuilder == null) {
+        // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
+        // call Bundle.configure directly");
+        // }
+        // return injectorBuilder;
     }
 
     /**
@@ -45,7 +50,7 @@ public abstract class ContainerBundle extends InjectorBundle {
      * @return a component configuration that can be use to configure the component in greater detail
      */
     protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        return injectorBuilder().install(implementation);
+        return containerBuilder().install(implementation);
     }
 
     /**
@@ -60,7 +65,7 @@ public abstract class ContainerBundle extends InjectorBundle {
      * @return the configuration of the component that was installed
      */
     protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        return injectorBuilder().install(factory);
+        return containerBuilder().install(factory);
     }
 
     /**
@@ -78,18 +83,18 @@ public abstract class ContainerBundle extends InjectorBundle {
      * @return this configuration
      */
     protected final <T> ComponentConfiguration<T> install(T instance) {
-        return injectorBuilder().install(instance);
+        return containerBuilder().install(instance);
     }
 
     protected final <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
-        return injectorBuilder().install(implementation);
+        return containerBuilder().install(implementation);
     }
 
-    protected final void installContainer(Class<? extends ContainerBundle> bundleType, BundlingStage... stages) {
-        injectorBuilder().installContainer(bundleType, stages);
+    protected final void installContainer(Class<? extends ContainerBundle> bundleType, BundlingOperation... stages) {
+        containerBuilder().installContainer(bundleType, stages);
     }
 
-    protected final void installContainer(ContainerBundle bundle, BundlingStage... stages) {
-        injectorBuilder().installContainer(bundle, stages);
+    protected final void installContainer(ContainerBundle bundle, BundlingOperation... stages) {
+        containerBuilder().installContainer(bundle, stages);
     }
 }

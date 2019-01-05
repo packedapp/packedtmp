@@ -23,32 +23,32 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import app.packed.bundle.BundlingImportStage;
+import app.packed.bundle.BundlingImportOperation;
 import app.packed.util.Key;
+import packed.internal.inject.BundlingServiceImportStage;
 
 /**
- * A number of utility methods
+ * A number of utility stages for services
  */
-// Could also name it importPeek().... exportPeek();
-// And then we would only have one class
-// InjectorBindingStages
-// ServiceBindingStages
+// InjectorBundlingOperations.....
+public final class ServiceBundlingOperations {
 
-// BindingStages
+    /**
+     * An import stage that imports no services by invoking {@link ServiceConfiguration#asNone()} on every processed
+     * configuration.
+     */
+    // Rename to noImports() method -> will be much easier to make stages mutable if needed
+    // Skal vi have noget med services med?????
+    public static final BundlingImportOperation NO_SERVICE_IMPORTS = new BundlingServiceImportStage() {
 
-// BindingStages.importsPeek
-// BindingStages.exportsPeek
-
-// StartingStages.
-// BindingFilters
-
-// ServiceFilters
-
-// ServiceBundlingFilters
-public final class ServiceBundlingStages {
+        @Override
+        public void onEachService(ServiceConfiguration<?> sc) {
+            sc.asNone();
+        }
+    };
 
     // public static IIS PRINT_KEY = peek(
-    private ServiceBundlingStages() {}
+    private ServiceBundlingOperations() {}
 
     /**
      * This method exists mainly to support debugging, where you want to see which services are available at a particular
@@ -67,9 +67,9 @@ public final class ServiceBundlingStages {
      *            the action to perform for each service descriptor
      * @return a peeking stage
      */
-    public static BundlingImportStage peekImports(Consumer<? super ServiceDescriptor> action) {
+    public static BundlingImportOperation peekImports(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
-        return new BundlingImportStage() {
+        return new BundlingServiceImportStage() {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
                 action.accept(ServiceDescriptor.of(sc));
@@ -87,10 +87,10 @@ public final class ServiceBundlingStages {
      *            the key that the service should be rebound to
      * @return the new filter
      */
-    public static BundlingImportStage rebindImport(Key<?> from, Key<?> to) {
+    public static BundlingImportOperation rebindImport(Key<?> from, Key<?> to) {
         requireNonNull(from, "from is null");
         requireNonNull(to, "to is null");
-        return new BundlingImportStage() {
+        return new BundlingServiceImportStage() {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
@@ -108,7 +108,7 @@ public final class ServiceBundlingStages {
      *            the keys that should be rejected
      * @return the new import stage
      */
-    public static BundlingImportStage removeImports(Class<?>... keys) {
+    public static BundlingImportOperation removeImports(Class<?>... keys) {
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return removeImports(d -> set.contains(d.getKey()));
     }
@@ -120,7 +120,7 @@ public final class ServiceBundlingStages {
      *            the keys that should be rejected
      * @return the new import stage
      */
-    public static BundlingImportStage removeImports(Key<?>... keys) {
+    public static BundlingImportOperation removeImports(Key<?>... keys) {
         Set<Key<?>> set = Set.of(keys);
         return removeImports(d -> set.contains(d.getKey()));
     }
@@ -135,7 +135,7 @@ public final class ServiceBundlingStages {
      *            the predicate to test against
      * @return the new import stage
      */
-    public static BundlingImportStage removeImports(Predicate<? super ServiceDescriptor> predicate) {
+    public static BundlingImportOperation removeImports(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
         return retainImports(e -> !predicate.test(e));
     }
@@ -147,7 +147,7 @@ public final class ServiceBundlingStages {
      *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static BundlingImportStage retainImports(Class<?>... keys) {
+    public static BundlingImportOperation retainImports(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return retainImports(d -> set.contains(d.getKey()));
@@ -160,7 +160,7 @@ public final class ServiceBundlingStages {
      *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static BundlingImportStage retainImports(Key<?>... keys) {
+    public static BundlingImportOperation retainImports(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Set.of(keys);
         return retainImports(d -> set.contains(d.getKey()));
@@ -176,9 +176,9 @@ public final class ServiceBundlingStages {
      *            the predicate that selects which services are accepted by this stage
      * @return the new import stage
      */
-    public static BundlingImportStage retainImports(Predicate<? super ServiceDescriptor> predicate) {
+    public static BundlingImportOperation retainImports(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
-        return new BundlingImportStage() {
+        return new BundlingServiceImportStage() {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
                 if (!predicate.test(ServiceDescriptor.of(sc))) {
