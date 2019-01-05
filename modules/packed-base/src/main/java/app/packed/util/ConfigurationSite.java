@@ -29,6 +29,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * A configuration site can have a parent, for example, the parent of a service registration will be the registration
  * point of its injector.
  */
+// ConfigSite
 public interface ConfigurationSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */

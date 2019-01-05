@@ -94,15 +94,6 @@ public final class BundleDescriptor {
     }
 
     /**
-     * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.
-     * 
-     * @return the runtime type of the bundle
-     */
-    public Class<?> runtimeType() {
-        return ContainerBundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
-    }
-
-    /**
      * Returns the id of the bundle. If the bundle is in a named module it the name of the module concatenated with
      * {@code "." + bundleType.getSimpleName()}. If this bundle is not in a named module it is just
      * {bundleType.getSimpleName()}
@@ -137,6 +128,15 @@ public final class BundleDescriptor {
      */
     Module getModule() {
         return bundleType.getModule(); // Gider bi bruge denne metode????? Maaske bare skip den
+    }
+
+    /**
+     * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.
+     * 
+     * @return the runtime type of the bundle
+     */
+    public Class<?> runtimeType() {
+        return ContainerBundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
     }
 
     /**
@@ -223,7 +223,7 @@ public final class BundleDescriptor {
          * @param builder
          *            the builder object
          */
-        Services(BundleDescriptorBuilder.Services builder) {
+        public Services(BundleDescriptorBuilder.Services builder) {
             this.exposedServices = Map.copyOf(builder.exposed);
             this.optionalServices = requireNonNull(builder.optional);
             this.requiredServices = requireNonNull(builder.required);
@@ -257,22 +257,22 @@ public final class BundleDescriptor {
         }
 
         /**
+         * Returns an immutable set of all the keys for which a service that <b>must</b> be made available to the entity.
+         * 
+         * @return an immutable set of all keys that <b>must</b> be made available to the entity
+         */
+        // rename to requirements.
+        public Set<Key<?>> requires() {
+            return requiredServices;
+        }
+
+        /**
          * Returns an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity.
          * 
          * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
          */
-        public Set<Key<?>> optional() {
+        public Set<Key<?>> requiresOptionally() {
             return optionalServices;
-        }
-
-        /**
-         * Returns an immutable set of all service keys that <b>must</b> be made available to the entity.
-         * 
-         * @return an immutable set of all service keys that <b>must</b> be made available to the entity
-         */
-        // rename to requirements.
-        public Set<Key<?>> required() {
-            return requiredServices;
         }
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.support;
+package packed.internal.annotations;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,43 +25,35 @@ import app.packed.inject.Provides;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.InvokableMember;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** A descriptor for a member annotated with {@link Provides}. */
-public final class AtProvides {
-
-    /** Any dependencies (parameters) the annotated member has, is always empty for fields. */
-    public final List<InternalDependency> dependencies;
+public final class AtProvides extends AtDependable {
 
     /** An (optional) description from {@link Provides#description()}. */
     @Nullable
     public final String description;
 
-    /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
-    public final InternalMemberDescriptor descriptor;
-
     /** The instantiation mode from {@link Provides#instantionMode()}. */
     public final InstantiationMode instantionMode;
 
-    /** The invokable member. */
-    public final InvokableMember<?> invokable;
-
-    /** Whether or not the field or method on which the annotation is present is a static field or method. */
+    /** Whether or not the member on which the annotation is present is a static member. */
     public final boolean isStaticMember;
 
     /** The key under which the provided service will be made available. */
     public final Key<?> key;
 
-    AtProvides(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
-        this.dependencies = requireNonNull(dependencies);
+    /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
+    public final InternalMemberDescriptor member;
+
+    AtProvides(Lookup lookup, InternalMemberDescriptor member, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        super(member.newInvoker(lookup), dependencies);
         this.description = provides.description().length() > 0 ? provides.description() : null;
-        this.descriptor = requireNonNull(descriptor);
+        this.member = requireNonNull(member);
         this.instantionMode = provides.instantionMode();
-        this.invokable = descriptor.newInvoker(lookup);
-        this.isStaticMember = descriptor.isStatic();
+        this.isStaticMember = member.isStatic();
         this.key = requireNonNull(key);
     }
 }

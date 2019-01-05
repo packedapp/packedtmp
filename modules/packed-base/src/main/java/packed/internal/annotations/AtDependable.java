@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.support;
+package packed.internal.annotations;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,15 +23,15 @@ import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InvokableMember;
 
 /** A descriptor of the {@link Inject} annotation. */
-public final class AtInject {
+public class AtDependable {
 
-    /** All dependencies that must be injected. Is usually a list of size 1. */
+    /** Any dependencies (parameters) the annotated member has. */
     public final List<InternalDependency> dependencies;
 
     /** The invokable member. */
     public final InvokableMember<?> invokable;
 
-    AtInject(InvokableMember<?> invokable, List<InternalDependency> dependencies) {
+    AtDependable(InvokableMember<?> invokable, List<InternalDependency> dependencies) {
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);
     }

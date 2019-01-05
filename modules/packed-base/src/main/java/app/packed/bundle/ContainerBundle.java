@@ -25,7 +25,7 @@ import packed.internal.container.ContainerBuilder;
 /**
  *
  */
-public abstract class ContainerBundle extends Bundle {
+public abstract class ContainerBundle extends InjectorBundle {
 
     /** {@inheritDoc} */
     @Override

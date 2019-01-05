@@ -16,10 +16,8 @@
 package packed.internal.inject.builder;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.InjectorBundle;
 import app.packed.inject.ServiceConfiguration;
 import packed.internal.bundle.BundleDescriptorBuilder;
-import packed.internal.bundle.BundleSupport;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -36,7 +34,10 @@ public class InternalBundleDescriptor {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         InjectorBuilder conf = new InjectorBuilder(ics, bundle);
 
-        BundleSupport.invoke().configureInjectorBundle((InjectorBundle) bundle, conf, false);
+        app.packed.bundle.BundleSupport bs = app.packed.bundle.BundleSupport.of(conf);
+        bs.configure(bundle);
+
+        // BundleSupport.invoke().configureInjectorBundle((InjectorBundle) bundle, conf, false);
 
         DependencyGraph injectorBuilder = new DependencyGraph(conf);
         injectorBuilder.analyze(conf);

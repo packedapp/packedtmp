@@ -24,9 +24,9 @@ import java.lang.reflect.Method;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Provides;
-import packed.internal.inject.support.AtInject;
-import packed.internal.inject.support.AtInjectGroup;
-import packed.internal.inject.support.AtProvidesGroup;
+import packed.internal.annotations.AtDependable;
+import packed.internal.annotations.AtInjectGroup;
+import packed.internal.annotations.AtProvidesGroup;
 
 /**
  *
@@ -72,7 +72,7 @@ class MemberScanner {
                     // Og saa koeret noget or val && INJECT_MASK > INJECT (alle annoteringen som
                     // vi ikke vil kombinere
                     // Multiple annotations
-                    AtInject fInject = inject.createIfInjectable(lookup, method, annotations);
+                    AtDependable fInject = inject.createIfInjectable(lookup, method, annotations);
 
                     provides.tryAddMethod(lookup, method, annotations);
 
@@ -94,7 +94,7 @@ class MemberScanner {
                 Annotation[] annotations = field.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    AtInject fInject = inject.createIfInjectable(lookup, field, annotations);
+                    AtDependable fInject = inject.createIfInjectable(lookup, field, annotations);
 
                     provides.tryAddField(lookup, field, annotations);
 

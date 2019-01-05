@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundlingStage;
@@ -35,6 +34,8 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.annotations.AtProvides;
+import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.LookupDescriptorAccessor;
 import packed.internal.classscan.ServiceClassDescriptor;
@@ -42,24 +43,14 @@ import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
-import packed.internal.inject.support.AtProvides;
-import packed.internal.inject.support.AtProvidesGroup;
 import packed.internal.invokers.InternalFunction;
-import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfiguration}.
  */
-public class InjectorBuilder extends AbstractConfiguration implements InjectorConfiguration {
-
-    /** The lookup object. We default to public access */
-    public LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
-
-    /** The bundle we are building an injector for, null for {@link Injector#of(Consumer)}. */
-    @Nullable
-    final Bundle bundle;
+public class InjectorBuilder extends BaseBuilder implements InjectorConfiguration {
 
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
@@ -92,14 +83,12 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
      */
     public InjectorBuilder(InternalConfigurationSite configurationSite) {
         super(configurationSite);
-        this.bundle = null;
         publicNodeMap = privateNodeMap = new ServiceNodeMap();
         publicNodeList = null;
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
-        super(configurationSite);
-        this.bundle = requireNonNull(bundle);
+        super(configurationSite, bundle);
         publicNodeMap = new ServiceNodeMap();
         privateNodeMap = new ServiceNodeMap();
         publicNodeList = new ArrayList<>();
@@ -282,11 +271,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         this.accessor = LookupDescriptorAccessor.get(lookup);
     }
 
-    public final void requireMandatory(Class<?> key) {
-        requireMandatory(Key.of(key));
+    public final void requireService(Class<?> key) {
+        requireService(Key.of(key));
     }
 
-    public final void requireMandatory(Key<?> key) {
+    public final void requireService(Key<?> key) {
         requireNonNull(key, "key is null");
         if (requiredServicesMandatory == null) {
             requiredServicesMandatory = new HashSet<>();
@@ -294,11 +283,11 @@ public class InjectorBuilder extends AbstractConfiguration implements InjectorCo
         requiredServicesMandatory.add(key);
     }
 
-    public final void requireOptionally(Class<?> key) {
-        requireOptionally(Key.of(key));
+    public final void requireServiceOptionally(Class<?> key) {
+        requireServiceOptionally(Key.of(key));
     }
 
-    public final void requireOptionally(Key<?> key) {
+    public final void requireServiceOptionally(Key<?> key) {
         requireNonNull(key, "key is null");
         if (requiredServicesOptionally == null) {
             requiredServicesOptionally = new HashSet<>();

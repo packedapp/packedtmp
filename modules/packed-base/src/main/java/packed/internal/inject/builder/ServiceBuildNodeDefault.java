@@ -26,13 +26,13 @@ import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
-import packed.internal.inject.support.AtProvides;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.invokers.InvokableMember;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
@@ -197,9 +197,9 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ServiceBuildNode<?> provide(AtProvides atProvides) {
-        InternalMemberDescriptor descriptor = atProvides.descriptor;
+        InternalMemberDescriptor descriptor = atProvides.member;
         InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.descriptor.getAnnotation(Provides.class), descriptor);
+                atProvides.member.getAnnotation(Provides.class), descriptor);
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {

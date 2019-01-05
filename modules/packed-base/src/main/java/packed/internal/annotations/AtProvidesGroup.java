@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.support;
+package packed.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -34,8 +34,8 @@ import packed.internal.util.descriptor.InternalMemberDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
- * Information about fields and methods annotated with {@link Provides}. Used for both services, components, import and
- * export stages.
+ * Information about fields and methods annotated with {@link Provides}, typically on a single class. Used for both
+ * services, components, import and export stages.
  */
 public final class AtProvidesGroup {
 

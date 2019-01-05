@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bundle.ContainerBundle;
-import app.packed.bundle.BundlingStage;
 import app.packed.bundle.BundlingImportStage;
+import app.packed.bundle.BundlingStage;
+import app.packed.bundle.ContainerBundle;
 import app.packed.bundle.InjectorBundle;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
@@ -41,6 +41,7 @@ public final class BundleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
+        @Deprecated
         public abstract void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder builder, boolean freeze);
 
         public abstract void stageOnFinish(BundlingStage stage);

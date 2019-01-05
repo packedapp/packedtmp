@@ -45,7 +45,8 @@ public class ExportTest2 {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            requireMandatory(ZoneId.class);
+            // Requirements
+            requireService(ZoneId.class);
             expose(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }

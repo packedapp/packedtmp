@@ -21,17 +21,17 @@ package app.packed.inject;
 public enum InstantiationMode {
 
     /**
-     * A single instance is created the first time it is requested. Concurrent calls by other threads while constructing the
-     * value will block. Guaranteeing that only a single instance will ever be created.
+     * A single instance of the service is created the first time it is requested. Concurrent calls by other threads while
+     * constructing the value will block. Guaranteeing that only a single instance will ever be created.
      */
     LAZY,
 
-    /** A new instance is created every time an instance is requested. */
+    /** A new instance of the service is created every time the service is requested. */
     PROTOTYPE,
 
     /**
-     * A single instance of the service or component is created when the injector or container where the entity is
-     * registered is created. This is the default mode used throughout the framework.
+     * A single instance of the service is created when the injector or container where the entity is registered is created.
+     * This is the default mode used throughout Packed.
      */
     SINGLETON;
 

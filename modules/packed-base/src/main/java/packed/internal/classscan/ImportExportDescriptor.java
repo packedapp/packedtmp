@@ -18,7 +18,7 @@ package packed.internal.classscan;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Provides;
-import packed.internal.inject.support.AtProvidesGroup;
+import packed.internal.annotations.AtProvidesGroup;
 
 /**
  *

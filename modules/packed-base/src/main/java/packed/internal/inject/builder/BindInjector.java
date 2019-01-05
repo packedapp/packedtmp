@@ -31,11 +31,11 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.support.AtProvides;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**

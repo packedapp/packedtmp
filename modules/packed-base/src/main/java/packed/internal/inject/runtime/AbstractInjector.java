@@ -26,10 +26,10 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.annotations.AtDependable;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.support.AtInject;
 import packed.internal.invokers.FieldInvoker;
 
 /** An abstract implementation of an injector. */
@@ -86,7 +86,7 @@ public abstract class AbstractInjector implements Injector {
     protected final void injectMembers(ServiceClassDescriptor descriptor, Object instance, @Nullable Component component) {
         // Inject fields
         if (!descriptor.inject.fields.isEmpty()) {
-            for (AtInject atInject : descriptor.inject.fields) {
+            for (AtDependable atInject : descriptor.inject.fields) {
                 InternalDependency dependency = atInject.dependencies.get(0);
                 FieldInvoker<?> field = (FieldInvoker<?>) atInject.invokable;
                 ServiceNode<?> node = findNode(dependency.getKey());
@@ -118,7 +118,7 @@ public abstract class AbstractInjector implements Injector {
 
         // Inject methods
         if (!descriptor.inject.methods.isEmpty()) {
-            for (AtInject method : descriptor.inject.methods) {
+            for (AtDependable method : descriptor.inject.methods) {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(arguments);
                 for (InternalDependency dependency : method.dependencies) {

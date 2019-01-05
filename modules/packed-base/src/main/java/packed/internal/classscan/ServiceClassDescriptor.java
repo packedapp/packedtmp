@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Inject;
 import app.packed.inject.Provides;
-import packed.internal.inject.support.AtInjectGroup;
-import packed.internal.inject.support.AtProvidesGroup;
+import packed.internal.annotations.AtInjectGroup;
+import packed.internal.annotations.AtProvidesGroup;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.support;
+package packed.internal.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -37,10 +37,10 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 public final class AtInjectGroup {
 
     /** All fields annotated with {@link Inject}. */
-    public final List<AtInject> fields;
+    public final List<AtDependable> fields;
 
     /** All non-static methods annotated with {@link Inject}. */
-    public final List<AtInject> methods;
+    public final List<AtDependable> methods;
 
     /** An empty group. */
     private static final AtInjectGroup EMPTY = new AtInjectGroup(new Builder());
@@ -53,13 +53,13 @@ public final class AtInjectGroup {
     public static class Builder {
 
         /** All fields annotated with {@link Inject}. */
-        ArrayList<AtInject> fields;
+        ArrayList<AtDependable> fields;
 
         /** All non-static methods annotated with {@link Inject}. */
-        ArrayList<AtInject> methods;
+        ArrayList<AtDependable> methods;
 
         @Nullable
-        public AtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
+        public AtDependable createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
                 Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
@@ -67,7 +67,7 @@ public final class AtInjectGroup {
 
                 InvokableMember<?> fii = descriptor.newInvoker(lookup);
 
-                AtInject ai = new AtInject(fii, List.of(InternalDependency.of(descriptor)));
+                AtDependable ai = new AtDependable(fii, List.of(InternalDependency.of(descriptor)));
 
                 if (fields == null) {
                     fields = new ArrayList<>(2);
@@ -79,13 +79,13 @@ public final class AtInjectGroup {
         }
 
         @Nullable
-        public AtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
+        public AtDependable createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
 
                 ExecutableInvoker<?> fii = new ExecutableInvoker<>(descriptor).withLookup(lookup);
 
-                AtInject ai = new AtInject(fii, InternalDependency.fromExecutable(descriptor));
+                AtDependable ai = new AtDependable(fii, InternalDependency.fromExecutable(descriptor));
                 if (methods == null) {
                     methods = new ArrayList<>(2);
                 }

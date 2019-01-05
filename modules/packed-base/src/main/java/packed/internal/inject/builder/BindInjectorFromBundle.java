@@ -18,11 +18,10 @@ package packed.internal.inject.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.bundle.BundlingStage;
 import app.packed.bundle.BundlingExportStage;
+import app.packed.bundle.BundlingStage;
 import app.packed.bundle.InjectorBundle;
 import app.packed.util.Key;
-import packed.internal.bundle.BundleSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
@@ -43,7 +42,9 @@ final class BindInjectorFromBundle extends BindInjector {
      * 
      */
     void processImport() {
-        BundleSupport.invoke().configureInjectorBundle(bundle, newConfiguration, true);
+        app.packed.bundle.BundleSupport bs = app.packed.bundle.BundleSupport.of(newConfiguration);
+        bs.configure(bundle);
+        // BundleSupport.invoke().configureInjectorBundle(bundle, newConfiguration, true);
         processImport(newConfiguration.publicNodeList);
     }
 
