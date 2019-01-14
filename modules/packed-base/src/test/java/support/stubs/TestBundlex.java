@@ -32,7 +32,6 @@ public class TestBundlex extends Bundle {
     public void main() {
         BundleDescriptor bd = BundleDescriptor.of(TestBundlex.class);
 
-        System.out.println(TestBundlex.class.getModule().getLayer().parents());
         System.out.println(bd);
 
         Injector i = Injector.of(TestBundlex.class);

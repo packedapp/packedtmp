@@ -285,8 +285,7 @@ public class BundleDescriptor {
         }
 
         public BundleDescriptor build() {
-            throw new UnsupportedOperationException();
-            // return new BundleDescriptor(this);
+            return new BundleDescriptor(this);
         }
 
         /**
