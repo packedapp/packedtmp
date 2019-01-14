@@ -19,7 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.util.ConfigurationSite;
+import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigurationSiteVisitor;
 import app.packed.util.MethodDescriptor;
 
 /**
@@ -45,5 +46,11 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
     @Override
     public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void visit(ConfigurationSiteVisitor visitor) {
+        visitor.visitAnnotatedMethod(this, method, annotation);
     }
 }

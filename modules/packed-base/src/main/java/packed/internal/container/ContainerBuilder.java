@@ -25,10 +25,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
@@ -41,8 +40,7 @@ import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * A builder of {@link Container containers}. Is both used via {@link ContainerBundle} and
- * {@link ContainerConfiguration}.
+ * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link ContainerConfiguration}.
  */
 public final class ContainerBuilder extends InjectorBuilder implements ContainerConfiguration {
 
@@ -67,7 +65,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         super(configurationSite);
     }
 
-    public ContainerBuilder(InternalConfigurationSite configurationSite, ContainerBundle bundle) {
+    public ContainerBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite, bundle);
     }
 
@@ -107,7 +105,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
 
     /** {@inheritDoc} */
     @Override
-    public void installContainer(ContainerBundle bundle, BundlingOperation... stages) {
+    public void wireContainer(Bundle bundle, WiringOperation... stages) {
 
     }
 

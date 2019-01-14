@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorBundle;
-import app.packed.inject.ServiceBundlingOperations;
+import app.packed.inject.ServiceWiringOperations;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 
@@ -38,8 +38,8 @@ public class ImportTest {
     public static void main(String[] args) {
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(London.class, ServiceBundlingOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
-            c.bindInjector(London.class, ServiceBundlingOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
+            c.wireInjector(London.class, ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
+            c.wireInjector(London.class, ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
         });
 
         i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));
@@ -50,8 +50,8 @@ public class ImportTest {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            expose(bind(ZoneId.systemDefault()).as(ZoneId.class));
-            expose(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            export(bind(ZoneId.systemDefault()).as(ZoneId.class));
+            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }
 
@@ -61,7 +61,7 @@ public class ImportTest {
         @Override
         protected void configure() {
             bind(ZoneId.of("Europe/London")).as(ZoneId.class);
-            expose(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }
 
@@ -71,7 +71,7 @@ public class ImportTest {
         @Override
         protected void configure() {
             bind(ZoneId.of("Europe/Berlin")).as(ZoneId.class);
-            expose(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }
 

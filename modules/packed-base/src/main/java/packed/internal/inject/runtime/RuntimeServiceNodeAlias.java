@@ -17,8 +17,8 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.InstantiationMode;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.ServiceBuildNode;
 

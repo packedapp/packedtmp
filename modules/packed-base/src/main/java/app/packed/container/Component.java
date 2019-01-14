@@ -17,8 +17,8 @@ package app.packed.container;
 
 import java.util.Collection;
 
+import app.packed.config.ConfigurationSite;
 import app.packed.inject.Injector;
-import app.packed.util.ConfigurationSite;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 

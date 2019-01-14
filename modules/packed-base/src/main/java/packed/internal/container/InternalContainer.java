@@ -23,13 +23,13 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import app.packed.config.ConfigurationSite;
 import app.packed.container.Component;
 import app.packed.container.ComponentPath;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
-import app.packed.util.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 

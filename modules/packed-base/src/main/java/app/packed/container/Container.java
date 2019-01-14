@@ -22,6 +22,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import app.packed.bundle.Bundle;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
@@ -157,7 +159,7 @@ public interface Container extends Injector {
      * @throws RuntimeException
      *             if the container could not be created
      */
-    static Container of(ContainerBundle bundle) {
+    static Container of(Bundle bundle) {
         throw new UnsupportedOperationException();
     }
 
@@ -170,11 +172,11 @@ public interface Container extends Injector {
      * @throws RuntimeException
      *             if the container could not be created
      */
-    static Container of(Class<? extends ContainerBundle> bundleType) {
+    static Container of(Class<? extends Bundle> bundleType) {
         return of(Bundles.instantiate(bundleType));
     }
 
-    static Container of(Consumer<? super ContainerConfiguration> configurator) {
+    static Container of(Consumer<? super ContainerConfiguration> configurator, WiringOperation... operations) {
         requireNonNull(configurator, "configurator is null");
         ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
         configurator.accept(c);

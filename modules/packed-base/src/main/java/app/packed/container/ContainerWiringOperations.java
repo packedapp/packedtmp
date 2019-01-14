@@ -15,12 +15,12 @@
  */
 package app.packed.container;
 
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.WiringOperation;
 
 /**
  *
  */
-public abstract class ContainerBundlingOperations {
+public abstract class ContainerWiringOperations {
     public static final ContainerImportStage NO_STARTING_POINTS = null;
     public static final ContainerImportStage NO_STOPPING_POINTS = null;
 
@@ -28,7 +28,12 @@ public abstract class ContainerBundlingOperations {
     // Maaske endda have den some en ekstra metode
     // installContainer(JettyServer.class, nameRoot("foobar)
     // or rootName, rootNamePeek?
-    public static BundlingOperation nameRoot(String newName) {
+    public static WiringOperation nameRoot(String newName) {
+        throw new UnsupportedOperationException();
+    }
+
+    // I guess this also means you cannot import services from it....
+    public static WiringOperation allowUnwiring() {
         throw new UnsupportedOperationException();
     }
 
@@ -44,4 +49,5 @@ public abstract class ContainerBundlingOperations {
     // Hooks burde jo ogsaa vaere AOP....
     // Og hvad med AOP paa injectorer.... Ja det er vel der den bliver foedt...
     //
+
 }

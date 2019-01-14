@@ -23,24 +23,24 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.inject.ServiceBundlingOperations;
+import app.packed.inject.ServiceWiringOperations;
 import app.packed.util.Key;
-import packed.internal.inject.BundlingServiceImportStage;
+import packed.internal.inject.ServiceWiringImportOperation;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfiguration#bindInjector(Injector, BundlingServiceImportStage...)} method. */
+/** Tests the {@link InjectorConfiguration#wireInjector(Injector, ServiceWiringImportOperation...)} method. */
 public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
         Injector i = Injector.of(c -> c.bind("X"));
-        npe(() -> Injector.of(c -> c.bindInjector((Injector) null)), "injector");
-        npe(() -> Injector.of(c -> c.bindInjector(i, (BundlingServiceImportStage[]) null)), "operations");
+        npe(() -> Injector.of(c -> c.wireInjector((Injector) null)), "injector");
+        npe(() -> Injector.of(c -> c.wireInjector(i, (ServiceWiringImportOperation[]) null)), "operations");
 
         // TODO test error message
-        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.bindInjector(i, ServiceBundlingOperations.NO_SERVICE_IMPORTS, null)));
+        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.wireInjector(i, ServiceWiringOperations.NO_IMPORTS, null)));
     }
 
     /** Tests that we can import no services. */
@@ -52,7 +52,7 @@ public class SimpleInjectorImportsTest {
         });
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1, ServiceBundlingOperations.NO_SERVICE_IMPORTS);
+            c.wireInjector(i1, ServiceWiringOperations.NO_IMPORTS);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -62,7 +62,7 @@ public class SimpleInjectorImportsTest {
     public void import1() {
         Injector i1 = Injector.of(c -> c.bind("X"));
 
-        Injector i = Injector.of(c -> c.bindInjector(i1));
+        Injector i = Injector.of(c -> c.wireInjector(i1));
         assertThat(i.with(String.class)).isEqualTo("X");
 
     }
@@ -73,8 +73,8 @@ public class SimpleInjectorImportsTest {
         Injector i1 = Injector.of(c -> c.bind("X"));
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1, ServiceBundlingOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
-                    ServiceBundlingOperations.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.wireInjector(i1, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
+                    ServiceWiringOperations.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
         });
         assertThat(i.hasService(String.class)).isFalse();
         assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
@@ -88,8 +88,8 @@ public class SimpleInjectorImportsTest {
         Injector i2 = Injector.of(c -> c.bind("Y"));
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1, ServiceBundlingOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
-            c.bindInjector(i2, ServiceBundlingOperations.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
+            c.wireInjector(i1, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
+            c.wireInjector(i2, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
@@ -103,16 +103,16 @@ public class SimpleInjectorImportsTest {
         Injector i2 = Injector.of(c -> c.bind("Y").as(new Key<@Right String>() {}));
 
         Injector i = Injector.of(c -> {
-            c.bindInjector(i1);
-            c.bindInjector(i2);
+            c.wireInjector(i1);
+            c.wireInjector(i2);
         });
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
         assertThat(i.with(new Key<@Right String>() {})).isEqualTo("Y");
 
         // Now let us switch them around
         i = Injector.of(c -> {
-            c.bindInjector(i1, ServiceBundlingOperations.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
-            c.bindInjector(i2, ServiceBundlingOperations.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
+            c.wireInjector(i1, ServiceWiringOperations.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.wireInjector(i2, ServiceWiringOperations.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });
 
         assertThat(i.with(new Key<@Left String>() {})).isEqualTo("Y");

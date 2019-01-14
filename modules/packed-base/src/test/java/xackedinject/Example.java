@@ -33,7 +33,7 @@ public class Example {
             e.lookup(MethodHandles.lookup());
             e.bind(Example.class);
             e.bind("foxxxx");
-            e.bindInjector(x1);
+            e.wireInjector(x1);
         });
 
         System.out.println(i.with(String.class));

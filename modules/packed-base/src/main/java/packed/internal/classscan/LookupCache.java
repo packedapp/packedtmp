@@ -15,65 +15,116 @@
  */
 package packed.internal.classscan;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
+import packed.internal.container.LookupValue;
+import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokers.InternalFunction;
+
 /**
- *
+ * A cache for lookup objects
  */
-public class LookupCache<T> {
+public final class LookupCache {
 
-    // Problemet er at vi ikke har adgang til lookup objektet....
-    // Maybe ThreadLocal
+    /** A cache of service class descriptors. */
+    private static final LookupValue<LookupCache> LOOKUP_CACHE = new LookupValue<>() {
 
-    private static final Entry[] ENTRIES;
-
-    static {
-        ENTRIES = new Entry[64];
-        for (int i = 0; i < ENTRIES.length; i++) {
-            ENTRIES[i] = new Entry();
+        @Override
+        protected LookupCache computeValue(Lookup lookup) {
+            return new LookupCache(lookup);
         }
-    }
+    };
 
-    public T get(Lookup l) {
-        throw new UnsupportedOperationException();
-    }
+    /** The default public accessor object. */
+    public static final LookupCache PUBLIC = get(MethodHandles.publicLookup());
 
-    public static void main(String[] args) {
-        System.out.println(Lookup.UNCONDITIONAL);
-        System.out.println(Lookup.PUBLIC | Lookup.PRIVATE | Lookup.PROTECTED | Lookup.PACKAGE | Lookup.MODULE | Lookup.UNCONDITIONAL);
-    }
-
-    static class Entry extends ClassValue<LookupDescriptorAccessor> {
+    /** A cache of service class descriptors. */
+    private final ClassValue<ComponentClassDescriptor> componentClassCache = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected LookupDescriptorAccessor computeValue(Class<?> type) {
-            return null;
+        protected ComponentClassDescriptor computeValue(Class<?> type) {
+            return new ComponentClassDescriptor(type, lookup, MemberScanner.forComponent(type, lookup));
         }
+    };
+
+    /** A cache of service class descriptors. */
+    private final ClassValue<ImportExportDescriptor> importExportStageClassCache = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected ImportExportDescriptor computeValue(Class<?> type) {
+            return new ImportExportDescriptor(type, lookup, MemberScanner.forImportExportStage(type, lookup));
+        }
+    };
+
+    /** The lookup object. */
+    private final MethodHandles.Lookup lookup;
+
+    /** A cache of service class descriptors. */
+    private final ClassValue<ServiceClassDescriptor> serviceClassCache = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected ServiceClassDescriptor computeValue(Class<?> type) {
+            return new ServiceClassDescriptor(type, lookup, MemberScanner.forService(type, lookup));
+        }
+    };
+
+    private LookupCache(MethodHandles.Lookup lookup) {
+        this.lookup = requireNonNull(lookup);
     }
 
-    final class LookupAccessFactory {
-
-        // private static volatile X[] INFOS = new X[10];
-        //
-        // VarHandle[] fieldHandles;
-        //
-        // MethodHandle[] methodHandles;
-        //
-        // public static LookupAccessor get(MethodHandles.Lookup l) {
-        // X x = INFOS[l.lookupModes()];
-        //
-        // return x.get(l.lookupClass());
-        // }
-        //
-        // static class X extends ClassValue<LookupAccessor> {
-        //
-        // /** {@inheritDoc} */
-        // @Override
-        // protected LookupAccessor computeValue(Class<?> type) {
-        // return null;
-        // }
-        // }
+    public <T> ComponentClassDescriptor getComponentDescriptor(Class<T> implementation) {
+        return componentClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 
+    public <T> ImportExportDescriptor getImportExportStage(Class<T> implementation) {
+        return importExportStageClassCache.get(requireNonNull(implementation, "implementation is null"));
+    }
+
+    /**
+     * Returns a service class descriptor for the specified implementation type.
+     * 
+     * @param <T>
+     *            the type of the descriptor
+     * @param implementation
+     *            the implementation type to return a descriptor for
+     * @return a service descriptor for the specified implementation type
+     */
+    public ServiceClassDescriptor getServiceDescriptor(Class<?> implementation) {
+        return serviceClassCache.get(requireNonNull(implementation, "implementation is null"));
+    }
+
+    public <T> InternalFunction<T> readable(InternalFunction<T> factory) {
+        // TODO add field...
+        if (factory instanceof ExecutableInvoker) {
+            ExecutableInvoker<T> e = (ExecutableInvoker<T>) factory;
+            if (!e.hasMethodHandle()) {
+                return e.withLookup(lookup);
+            }
+        }
+        return factory;
+    }
+    // install as component class
+    // install as component instance
+    // install as mixin class
+    // install as mixin instance
+    // install as service class
+    // install as service instance
+    // newInstance()
+
+    public static LookupCache get(MethodHandles.Lookup lookup) {
+        return LOOKUP_CACHE.get(lookup);
+    }
+
+    // Naar vi laver factoriet ved vi ikke hvordan det skal bruges....
+    // Det er heller ikke fordi vi kender noget til Lookup objektet...
+
+    // Saa vi skal have en special struktur til det. Der er uafhaendig af hele invokerings cirkuset....
+
+    // InternalFactory, kan heller ikke vide noget om det, med mindre vi laver en withLookup();
 }

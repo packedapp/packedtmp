@@ -47,4 +47,5 @@ import app.packed.inject.Factory2;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
 @Documented
+// app.packed.lang
 public @interface Nullable {}

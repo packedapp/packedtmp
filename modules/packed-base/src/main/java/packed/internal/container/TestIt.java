@@ -15,6 +15,7 @@
  */
 package packed.internal.container;
 
+import app.packed.bundle.OtherWiringOperation;
 import app.packed.container.Container;
 
 /**
@@ -32,14 +33,16 @@ public class TestIt {
             c.install(132L);
             c.install(132L).asNone();
             c.install(132L).asNone();
-            for (int i = 0; i < 1_000; i++) {
+            for (int i = 0; i < 1_000_000; i++) {
                 c.install(132L).asNone();
             }
-        });
+        }, OtherWiringOperation.disableConfigurationSite());
         System.out.println("Done");
         co.components().forEach(e -> {
-            // System.out.println(e.getPath());
+            System.out.println(e.getConfigurationSite());
+            System.out.println(e.getPath());
         });
+        System.out.println(co.components().count());
 
         // Jeg tror vi skal have et sorteret Map....
 

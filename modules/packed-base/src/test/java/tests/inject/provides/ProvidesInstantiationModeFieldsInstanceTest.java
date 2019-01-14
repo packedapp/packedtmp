@@ -26,10 +26,10 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;

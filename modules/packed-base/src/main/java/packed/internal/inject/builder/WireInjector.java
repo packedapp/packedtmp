@@ -19,23 +19,21 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.bundle.BundlingImportOperation;
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
-import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * Represents an imported injector via {@link InjectorConfiguration#bindInjector(Injector, BundlingImportOperation...)}.
+ * Represents an imported injector via {@link InjectorConfiguration#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
-final class BindInjectorFromInjector extends BindInjector {
+final class WireInjector extends AbstractWiring {
 
-    /** The injector to bind. */
-    @Nullable
-    Injector injector;
+    /** The injector we are wiring. */
+    final Injector injector;
 
     /**
      * Creates a new
@@ -45,8 +43,7 @@ final class BindInjectorFromInjector extends BindInjector {
      * @param injector
      * @param stages
      */
-    BindInjectorFromInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector,
-            List<BundlingOperation> stages) {
+    WireInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<WiringOperation> stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
     }

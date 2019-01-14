@@ -17,8 +17,8 @@ package app.packed.inject;
 
 import java.util.function.Function;
 
+import app.packed.hook.Hook;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Qualifier;
 
 /**
  * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input
@@ -31,8 +31,8 @@ import app.packed.util.Qualifier;
  *   builder.bind(new FunctionFactory<>(System::currentTimeMillis)).setDescription("Startup Time");}
  * </pre>
  * <p>
- * You can also use annotations on the dependency's type parameter. For example, say you have a {@link Qualifier} that
- * can read system properties, you can use something like this:
+ * You can also use annotations on the dependency's type parameter. For example, say you have a {@link Hook} that can
+ * read system properties, you can use something like this:
  *
  * <pre>{@code
  *   InjectorBuilder builder = new InjectorBuilder();

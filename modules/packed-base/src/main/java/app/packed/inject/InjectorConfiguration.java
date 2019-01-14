@@ -20,10 +20,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundlingImportOperation;
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
+import app.packed.hook.Hook;
 import app.packed.util.Nullable;
-import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
 import packed.internal.bundle.Bundles;
@@ -40,8 +40,8 @@ public interface InjectorConfiguration extends Taggable {
      * {@link Factory#findInjectable(Class)} to find the constructor or method used for instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the specified {@code Class} is
-     * annotated with a {@link Qualifier qualifier annotation}, the default key will include the qualifier. For example,
-     * given this implementation: <pre>
+     * annotated with a {@link Hook qualifier annotation}, the default key will include the qualifier. For example, given
+     * this implementation: <pre>
      * &#64;SomeQualifier
      * public class SomeService {}
      * </pre>
@@ -85,7 +85,7 @@ public interface InjectorConfiguration extends Taggable {
      * Binds the specified instance as a new service.
      * <p>
      * The default key for the service will be {@code instance.getClass()}. If the type returned by
-     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
+     * {@code instance.getClass()} is annotated with a {@link Hook qualifier annotation}, the default key will have the
      * qualifier annotation added.
      *
      * @param <T>
@@ -104,8 +104,8 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional stages
      */
-    default void bindInjector(Class<? extends InjectorBundle> bundleType, BundlingOperation... stages) {
-        bindInjector(Bundles.instantiate(bundleType), stages);
+    default void wireInjector(Class<? extends InjectorBundle> bundleType, WiringOperation... stages) {
+        wireInjector(Bundles.instantiate(bundleType), stages);
     }
 
     /**
@@ -144,10 +144,10 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link BundlingImportOperation} or combinations (via
-     *             {@link BundlingOperation#andThen(BundlingOperation)} thereof
+     *             if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
+     *             (via {@link WiringOperation#andThen(WiringOperation)} thereof
      */
-    void bindInjector(Injector injector, BundlingOperation... stages);
+    void wireInjector(Injector injector, WiringOperation... stages);
 
     /**
      * @param bundle
@@ -155,7 +155,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional import/export stages
      */
-    void bindInjector(InjectorBundle bundle, BundlingOperation... stages);
+    void wireInjector(InjectorBundle bundle, WiringOperation... stages);
 
     /**
      * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will

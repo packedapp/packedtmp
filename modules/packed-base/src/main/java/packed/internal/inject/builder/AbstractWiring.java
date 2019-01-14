@@ -18,13 +18,11 @@ package packed.internal.inject.builder;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import app.packed.bundle.BundlingImportOperation;
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorBundle;
@@ -36,14 +34,16 @@ import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
+import packed.internal.inject.ServiceWiringImportOperation;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
- * An abstract class for the injector bind methods {@link InjectorConfiguration#bindInjector(Class, BundlingOperation...)},
- * {@link InjectorConfiguration#bindInjector(InjectorBundle, BundlingOperation...)}, and
- * {@link InjectorConfiguration#bindInjector(Injector, BundlingImportOperation...)}.
+ * An abstract class for the injector bind methods
+ * {@link InjectorConfiguration#wireInjector(Class, WiringOperation...)},
+ * {@link InjectorConfiguration#wireInjector(InjectorBundle, WiringOperation...)}, and
+ * {@link InjectorConfiguration#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
-abstract class BindInjector {
+abstract class AbstractWiring {
 
     @Nullable
     final InjectorBundle bundle;
@@ -54,22 +54,20 @@ abstract class BindInjector {
     /** The configuration of the injector that binding another bundle or injector. */
     final InjectorBuilder injectorConfiguration;
 
-    final Set<Key<?>> requiredKeys = new HashSet<>();
+    /** The wiring operations. */
+    final List<WiringOperation> operations;
 
-    /** The import export stages arguments. */
-    final List<BundlingOperation> stages;
-
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, List<BundlingOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, List<WiringOperation> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.stages = requireNonNull(stages);
+        this.operations = requireNonNull(stages);
         this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
-    BindInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<BundlingOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOperation> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.stages = requireNonNull(stages);
+        this.operations = requireNonNull(stages);
         this.bundle = null;
     }
 
@@ -86,10 +84,11 @@ abstract class BindInjector {
             }
         }
         // Process each stage
-        for (BundlingOperation stage : stages) {
-            if (stage instanceof BundlingImportOperation) {
-                nodes = processImportStage((BundlingImportOperation) stage, nodes);
-                BundleSupport.invoke().bundleOperationFinish(stage);
+        for (WiringOperation operation : operations) {
+            if (operation instanceof UpstreamWiringOperation) {
+                BundleSupport.invoke().startWireOperation(operation);
+                nodes = processImportStage((UpstreamWiringOperation) operation, nodes);
+                BundleSupport.invoke().finishWireOperation(operation);
             }
         }
 
@@ -101,10 +100,10 @@ abstract class BindInjector {
         }
     }
 
-    private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(BundlingImportOperation stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
+    private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(UpstreamWiringOperation stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
         // Find @Provides, lookup class
 
-        ImportExportDescriptor ied = ImportExportDescriptor.from(BundleSupport.invoke().stageLookup(stage), stage.getClass());
+        ImportExportDescriptor ied = ImportExportDescriptor.from(BundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {
             for (InternalDependency s : m.dependencies) {
@@ -125,7 +124,9 @@ abstract class BindInjector {
             Key<?> existing = node.getKey();
 
             // invoke the import function on the stage
-            BundleSupport.invoke().stageOnService(stage, node);
+            if (stage instanceof ServiceWiringImportOperation) {
+                ((ServiceWiringImportOperation) stage).onEachService(node);
+            }
 
             if (node.getKey() == null) {
                 iterator.remove();

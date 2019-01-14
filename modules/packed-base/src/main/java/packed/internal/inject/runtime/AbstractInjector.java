@@ -152,6 +152,12 @@ public abstract class AbstractInjector implements Injector {
         throw new UnsupportedOperationException("No service with the specified key could  be found, key = " + key);
     }
 
+    /**
+     * Ideen er egentlig at vi kan lave en detaljeret fejlbesked, f.eks, vi har en X type, men den har en qualifier. Eller
+     * vi har en qualifier med navnet DDooo og du skrev PDooo
+     * 
+     * @param key
+     */
     protected void failedGet(Key<?> key) {}
 
     /** {@inheritDoc} */

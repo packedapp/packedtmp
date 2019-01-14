@@ -20,22 +20,21 @@ import java.lang.invoke.MethodHandles;
 import app.packed.inject.Provides;
 
 /**
- * A bundling operation that
+ *
  */
-public abstract class BundlingExportOperation extends BundlingOperation {
+public abstract class UpstreamWiringOperation extends WiringOperation {
 
-    /** Creates a new operation. */
-    protected BundlingExportOperation() {}
+    /** Creates a new stage */
+    protected UpstreamWiringOperation() {}
 
     /**
-     * Creates a new operation with a lookup object. This constructor is only needed if the extending class makes use of the
+     * Creates a new stage with a lookup object. This constructor is only needed if the extending class makes use of the
      * {@link Provides} annotation.
      * 
      * @param lookup
-     *            a lookup object that can be used for accessing member on subclasses, such as methods annotated with
-     *            {@link Provides}.
+     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
      */
-    protected BundlingExportOperation(MethodHandles.Lookup lookup) {
+    protected UpstreamWiringOperation(MethodHandles.Lookup lookup) {
         super(lookup);
     }
 }

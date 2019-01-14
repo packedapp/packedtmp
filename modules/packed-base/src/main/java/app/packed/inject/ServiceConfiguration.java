@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-import app.packed.util.ConfigurationSite;
+import app.packed.config.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;

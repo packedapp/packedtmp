@@ -15,14 +15,12 @@
  */
 package packed.internal.inject;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Date;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import app.packed.bundle.BundlingImportOperation;
-import app.packed.inject.Provides;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -36,21 +34,7 @@ import app.packed.util.Nullable;
  * 
  * 
  */
-public abstract class BundlingServiceImportStage extends BundlingImportOperation {
-
-    /** Creates a new stage */
-    protected BundlingServiceImportStage() {}
-
-    /**
-     * Creates a new stage with a lookup object. This constructor is only needed if the extending class makes use of the
-     * {@link Provides} annotation.
-     * 
-     * @param lookup
-     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
-     */
-    protected BundlingServiceImportStage(MethodHandles.Lookup lookup) {
-        super(lookup);
-    }
+public abstract class ServiceWiringImportOperation extends UpstreamWiringOperation {
 
     /**
      * Processes each service.
@@ -87,7 +71,7 @@ class XImportVer2 {
         throw new UnsupportedOperationException();
     }
 
-    public static <T, S> BundlingImportOperation adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
+    public static <T, S> UpstreamWiringOperation adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
         // Nahhh kun supporte provides her.. Evt. Factory...
         throw new UnsupportedOperationException();
 

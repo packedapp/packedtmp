@@ -13,28 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
-
-import java.lang.invoke.MethodHandles;
-
-import app.packed.inject.Provides;
+package app.packed.util;
 
 /**
  *
  */
-public abstract class BundlingImportOperation extends BundlingOperation {
-
-    /** Creates a new stage */
-    protected BundlingImportOperation() {}
+public interface MethodOperator {
 
     /**
-     * Creates a new stage with a lookup object. This constructor is only needed if the extending class makes use of the
-     * {@link Provides} annotation.
+     * Returns the fields descriptor.
      * 
-     * @param lookup
-     *            a lookup object that will be used for invoking methods annotated with {@link Provides}.
+     * @return the fields descriptor
      */
-    protected BundlingImportOperation(MethodHandles.Lookup lookup) {
-        super(lookup);
-    }
+    MethodDescriptor descriptor();
+
 }

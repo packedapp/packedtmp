@@ -37,8 +37,8 @@ public class BTest {
         System.out.println(String.class.getModule().getDescriptor());
 
         i = Injector.of(c -> {
-            c.bindInjector(MyBundle.class);
-            c.bindInjector(MyBundle4.class);
+            c.wireInjector(MyBundle.class);
+            c.wireInjector(MyBundle4.class);
             c.bind("123");
         });
         System.out.println("");

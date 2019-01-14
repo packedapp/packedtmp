@@ -22,112 +22,107 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorBundle;
+import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Provides;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.inject.BundlingServiceImportStage;
-import packed.internal.inject.builder.InjectorBuilder;
 
-// Kunne vaere rart, hvis man f.eks. kunne
-// bindInjector(SomeBundle.class, JaxRSSpec.2_1.strict());
-// bindInjector(SomeBundle.class, JettySpec.23_1.strict());
-
-/// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
-// ComponentInstanceHook
-// AnnotatedComponentTypeHook
-// AnnotatedComponentMethodHook
-
-/// activeInstance(Startable.class)
-/// activeAnnotatedMethod(onStart.class)...
-//// De skal vaere en del af specifikationen
-// Activators
-// InstanceOfActivator (Component+<T>)
-// AnnotatedTypeActivator
-// AnnotatedMethodActivator
-// ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
-// Bundling -> import pipeline and an export pipeline where each element of the exposed api is processed through
 /**
- * A bundling operation is an operation that can be performed when bundles and/or runtimes are bundled together.
+ * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
+ * {@link InjectorConfiguration#wireInjector(Injector, WiringOperation...)} or
+ * {@link ContainerConfiguration#wireContainer(app.packed.container.ContainerBundle, WiringOperation...)}.
+ * <p>
+ * A typical usage for wiring operations is for rebinding services under another key when wiring an injector into
+ * another injector.
  * 
- * A shared superclass for {@link BundlingImportOperation} and {@link BundlingExportOperation}.
+ * start with peek, then import with peek around a service Available as {@code X} in one injector available under a key
+ * {@code Y}
+ * 
+ * Show example where we rebind X to Y, and Y to X, maybe with a peek inbetween
+ * 
+ * Operations is order Example with rebind
+ * 
+ * 
+ * Pipeline
  */
 // https://martinfowler.com/articles/collection-pipeline/
 // A bundling always has a bundle (source) and a target???
-// The process of connected two modules is called wiring
-// WiringOperation
-// BundleWiringOperation
-public abstract class BundlingOperation {
+public abstract class WiringOperation {
 
     static {
         BundleSupport.Helper.init(new BundleSupport.Helper() {
 
-            /** {@inheritDoc} */
             @Override
-            public void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder configuration, boolean freeze) {
-                // bundle.configure(configuration, freeze);
-            }
-
-            @Override
-            public Lookup stageLookup(BundlingOperation stage) {
-                return stage.lookup;
+            public List<WiringOperation> extractWiringOperations(WiringOperation[] operations, Class<?> type) {
+                return AggregatedWiringOperation.operationsExtract(operations, type);
             }
 
             /** {@inheritDoc} */
             @Override
-            public void bundleOperationFinish(BundlingOperation operation) {
+            public void finishWireOperation(WiringOperation operation) {
                 operation.onFinish();
             }
 
             @Override
-            public void stageOnService(BundlingOperation stage, ServiceConfiguration<?> sc) {
-                if (stage instanceof BundlingServiceImportStage) {
-                    ((BundlingServiceImportStage) stage).onEachService(sc);
-                }
+            public Lookup lookupFromWireOperation(WiringOperation operation) {
+                return operation.lookup;
             }
 
+            /** {@inheritDoc} */
             @Override
-            public List<BundlingOperation> extractBundlingOperations(BundlingOperation[] operations, Class<?> type) {
-                return AggregatedBundlingOperation.operationsExtract(operations, type);
+            public void startWireOperation(WiringOperation operation) {
+                operation.onStart();
             }
         });
     }
+
     /** A Lookup object. */
     @Nullable
     final MethodHandles.Lookup lookup;
 
-    /** Creates a new operation. */
-    BundlingOperation() {
+    /** Creates a new wiring operation. */
+    WiringOperation() {
         this.lookup = MethodHandles.publicLookup();
     }
 
     /**
-     * Creates a new operation.
+     * Creates a new wiring operation.
      * 
      * @param lookup
      *            a lookup object that will be used, for example, for invoking methods annotated with {@link Provides}.
      */
-    BundlingOperation(MethodHandles.Lookup lookup) {
+    WiringOperation(MethodHandles.Lookup lookup) {
         this.lookup = requireNonNull(lookup, "lookup is null");
     }
 
     /**
-     * Returns a new operation which will first use this operation for execution and then the specified operation for
-     * execution
+     * Returns a new operation which will first use this operation for execution and then the specified operation.
      * 
      * @param next
      *            the operation to execute after this operation
      * @return a new operation that combines this operation and the specified operation
-     * @see #of(BundlingOperation...)
+     * @see #of(WiringOperation...)
      */
-    public BundlingOperation andThen(BundlingOperation next) {
+    public WiringOperation andThen(WiringOperation next) {
         return of(this, requireNonNull(next, "next is null"));
-    };
+    }
 
     /** Performs cleanup or post processing validation of this operation. The default implementation does nothing. */
     protected void onFinish() {}
+
+    /** Performs any post processing that is needed for the operation. The default implementation does nothing. */
+    protected void onStart() {}
+
+    static List<WiringOperation> expandRecursively(WiringOperation... operations) {
+        // Maybe just return an array... then we can wrap it ourself
+        // could check if we have any aggregated wiring operations
+        // Nice to wrap in a list, so we make sure we do not parse along the specified array.
+        // Users could modify it
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Combine multiple operations into a single operation.
@@ -135,19 +130,19 @@ public abstract class BundlingOperation {
      * @param operations
      *            the operations to combine
      * @return a new combined operation
-     * @see #andThen(BundlingOperation)
+     * @see #andThen(WiringOperation)
      */
-    public static BundlingOperation of(BundlingOperation... operations) {
-        return new AggregatedBundlingOperation(operations);
+    public static WiringOperation of(WiringOperation... operations) {
+        return new AggregatedWiringOperation(operations);
     }
 
-    /** An operation that combines multiple bundling operations. */
-    static final class AggregatedBundlingOperation extends BundlingOperation {
+    /** An operation that combines multiple operations. */
+    static final class AggregatedWiringOperation extends WiringOperation {
 
         /** The stages that have been combined */
-        private final List<BundlingOperation> operations;
+        private final List<WiringOperation> operations;
 
-        AggregatedBundlingOperation(BundlingOperation... operations) {
+        AggregatedWiringOperation(WiringOperation... operations) {
             this.operations = List.of(requireNonNull(operations, "operations is null"));
         }
 
@@ -164,34 +159,34 @@ public abstract class BundlingOperation {
             return sb.toString();
         }
 
-        static List<BundlingOperation> operationsExtract(BundlingOperation[] operations, Class<?> type) {
+        static List<WiringOperation> operationsExtract(WiringOperation[] operations, Class<?> type) {
             requireNonNull(operations, "operations is null");
             if (operations.length == 0) {
                 return List.of();
             }
-            ArrayList<BundlingOperation> result = new ArrayList<>(operations.length);
-            for (BundlingOperation s : operations) {
+            ArrayList<WiringOperation> result = new ArrayList<>(operations.length);
+            for (WiringOperation s : operations) {
                 requireNonNull(s, "The specified array of operations contained a null");
                 operationsExtract0(s, type, result);
             }
             return List.copyOf(result);
         }
 
-        private static void operationsExtract0(BundlingOperation o, Class<?> type, ArrayList<BundlingOperation> result) {
-            if (o instanceof AggregatedBundlingOperation) {
-                for (BundlingOperation ies : ((AggregatedBundlingOperation) o).operations) {
+        private static void operationsExtract0(WiringOperation o, Class<?> type, ArrayList<WiringOperation> result) {
+            if (o instanceof AggregatedWiringOperation) {
+                for (WiringOperation ies : ((AggregatedWiringOperation) o).operations) {
                     operationsExtract0(ies, type, result);
                 }
             } else {
                 if (type == Injector.class) {
-                    if (!(o instanceof BundlingImportOperation)) {
+                    if (!(o instanceof UpstreamWiringOperation)) {
                         throw new IllegalArgumentException(
-                                "Only operations extending " + BundlingImportOperation.class + " are allowed for this method, operation = " + o.getClass());
+                                "Only operations extending " + UpstreamWiringOperation.class + " are allowed for this method, operation = " + o.getClass());
                     }
                 } else if (type == InjectorBundle.class) {
-                    if (!(o instanceof BundlingImportOperation)) {
-                        throw new IllegalArgumentException("Only operation extending " + BundlingImportOperation.class.getSimpleName() + " or "
-                                + BundlingExportOperation.class.getSimpleName() + " are allowed for this method, operation = " + o.getClass());
+                    if (!(o instanceof UpstreamWiringOperation)) {
+                        throw new IllegalArgumentException("Only operation extending " + UpstreamWiringOperation.class.getSimpleName() + " or "
+                                + DownstreamWiringOperation.class.getSimpleName() + " are allowed for this method, operation = " + o.getClass());
                     }
                 }
                 result.add(o);
@@ -199,6 +194,25 @@ public abstract class BundlingOperation {
         }
 
     }
+
+    // Kunne vaere rart, hvis man f.eks. kunne
+    // bindInjector(SomeBundle.class, JaxRSSpec.2_1.strict());
+    // bindInjector(SomeBundle.class, JettySpec.23_1.strict());
+
+    /// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
+    // ComponentInstanceHook
+    // AnnotatedComponentTypeHook
+    // AnnotatedComponentMethodHook
+
+    /// activeInstance(Startable.class)
+    /// activeAnnotatedMethod(onStart.class)...
+    //// De skal vaere en del af specifikationen
+    // Activators
+    // InstanceOfActivator (Component+<T>)
+    // AnnotatedTypeActivator
+    // AnnotatedMethodActivator
+    // ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
+    // Bundling -> import pipeline and an export pipeline where each element of the exposed api is processed through
 
     // protected Configuration onConfiguration(@Nullable Configuration<?> configuration) {} or
     // protected void onConfiguration(ConfigurationBuilder configuration) {} and then we check for overrides.

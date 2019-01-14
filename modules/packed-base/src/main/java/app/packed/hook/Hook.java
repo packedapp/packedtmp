@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.hook;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- *
+ * Hooks are used for callbacks.
+ * <p>
  */
-// Maybe just ContainerDescriptor....
-// But not if we
-// ContainerDescriptor-> on runtime, nej det er jo bare metoder....
-
-// Maake fint.. det hedder jo heller ikke en ContainerInjector.... Bare fordi Injector er en slags container
-public class ContainerBundleDescriptor {
-
-    // InjectorBundleDescriptor...
+@Target(ANNOTATION_TYPE)
+@Retention(RUNTIME)
+@Documented
+// Vi behoever den saadan set kun for
+public @interface Hook {
 
 }
+// allowFieldWrite..
+// exportHooks().... <-Patch this, for testing????
+//

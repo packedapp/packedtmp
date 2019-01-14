@@ -32,7 +32,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ConstructorOperation<T> extends InternalFunction<T> {
 
     /** A factory with an executable as a target. */
-    private final ConstructorDescriptor<T> constructor;
+    private final ConstructorDescriptor<T> descriptor;
 
     /**
      * A method handle that can be used for invoking the constructor, is initially null, for example, for
@@ -41,9 +41,9 @@ public final class ConstructorOperation<T> extends InternalFunction<T> {
     @Nullable
     private final MethodHandle methodHandle;
 
-    public ConstructorOperation(TypeLiteral<T> key, ConstructorDescriptor<T> constructor, MethodHandle methodHandle) {
+    public ConstructorOperation(TypeLiteral<T> key, ConstructorDescriptor<T> descriptor, MethodHandle methodHandle) {
         super(key);
-        this.constructor = requireNonNull(constructor, "constructor is null");
+        this.descriptor = requireNonNull(descriptor, "constructor is null");
         this.methodHandle = methodHandle;
     }
 
@@ -56,14 +56,14 @@ public final class ConstructorOperation<T> extends InternalFunction<T> {
             return (T) methodHandle.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new InjectionException("Failed to inject constructor " + constructor, e);
+            throw new InjectionException("Failed to inject constructor " + descriptor, e);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return constructor.toString();
+        return descriptor.toString();
     }
 
     /**
@@ -79,10 +79,10 @@ public final class ConstructorOperation<T> extends InternalFunction<T> {
     public InternalFunction<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
-            handle = constructor.unreflect(lookup);
+            handle = descriptor.unreflect(lookup);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("No access to the constructor " + constructor + " using the specified lookup", e);
+            throw new IllegalAccessRuntimeException("No access to the constructor " + descriptor + " using the specified lookup", e);
         }
-        return new ConstructorOperation<>(getReturnType(), constructor, handle);
+        return new ConstructorOperation<>(getReturnType(), descriptor, handle);
     }
 }

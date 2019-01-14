@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorBundle;
@@ -37,20 +37,21 @@ import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.classscan.LookupDescriptorAccessor;
+import packed.internal.classscan.LookupCache;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokers.InternalFunction;
+import packed.internal.runtime.RuntimeBuilder;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfiguration}.
  */
-public class InjectorBuilder extends BaseBuilder implements InjectorConfiguration {
+public class InjectorBuilder extends RuntimeBuilder implements InjectorConfiguration {
 
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
@@ -143,21 +144,21 @@ public class InjectorBuilder extends BaseBuilder implements InjectorConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public final void bindInjector(Injector injector, BundlingOperation... stages) {
+    public final void wireInjector(Injector injector, WiringOperation... operations) {
         requireNonNull(injector, "injector is null");
-        List<BundlingOperation> listOfStages = BundleSupport.invoke().extractBundlingOperations(stages, InjectorBundle.class);
+        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, InjectorBundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromInjector is = new BindInjectorFromInjector(this, cs, injector, listOfStages);
+        WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
         is.importServices();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void bindInjector(InjectorBundle bundle, BundlingOperation... stages) {
+    public void wireInjector(InjectorBundle bundle, WiringOperation... stages) {
         requireNonNull(bundle, "bundle is null");
-        List<BundlingOperation> listOfStages = BundleSupport.invoke().extractBundlingOperations(stages, InjectorBundle.class);
+        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, InjectorBundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
@@ -268,7 +269,7 @@ public class InjectorBuilder extends BaseBuilder implements InjectorConfiguratio
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         checkConfigurable();
-        this.accessor = LookupDescriptorAccessor.get(lookup);
+        this.accessor = LookupCache.get(lookup);
     }
 
     public final void requireService(Class<?> key) {

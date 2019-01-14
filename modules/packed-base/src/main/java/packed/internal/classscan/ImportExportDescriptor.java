@@ -65,6 +65,6 @@ public class ImportExportDescriptor {
      * @return a service class descriptor for the specified lookup and type
      */
     public static ImportExportDescriptor from(MethodHandles.Lookup lookup, Class<?> type) {
-        return LookupDescriptorAccessor.get(lookup).getImportExportStage(type);
+        return LookupCache.get(lookup).getImportExportStage(type);
     }
 }

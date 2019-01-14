@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
@@ -35,10 +35,10 @@ public class ServiceBuildNodeExport<T> extends ServiceBuildNode<T> {
     final ServiceNode<T> other;
 
     /** The bind injector source. */
-    final BindInjector source;
+    final AbstractWiring source;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ServiceBuildNodeExport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjector source, ServiceNode<T> node) {
+    ServiceBuildNodeExport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring source, ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.source = requireNonNull(source);

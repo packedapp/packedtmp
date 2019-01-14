@@ -200,7 +200,7 @@ public abstract class TypeLiteral<T> {
      * @return a key with the specified qualifier and the same type as this instance
      * @throws InvalidDeclarationException
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             qualifier type is not annotated with {@link Qualifier}.
+     *             qualifier type is not annotated with {@link Hook}.
      */
     public final Key<T> toKey(Annotation qualifier) {
         return Key.fromTypeLiteral(this, qualifier);

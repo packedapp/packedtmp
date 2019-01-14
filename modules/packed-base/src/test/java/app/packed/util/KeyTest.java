@@ -31,8 +31,6 @@ import java.util.Optional;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Key;
 import support.stubs.annotation.CharQualifier;
 import support.stubs.annotation.CharQualifiers;
 import support.stubs.annotation.IntQualifier;

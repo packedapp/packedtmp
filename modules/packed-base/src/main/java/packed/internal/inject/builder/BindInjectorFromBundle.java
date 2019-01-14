@@ -18,8 +18,9 @@ package packed.internal.inject.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.bundle.BundlingExportOperation;
-import app.packed.bundle.BundlingOperation;
+import app.packed.bundle.BundleConfigurationContext;
+import app.packed.bundle.DownstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.InjectorBundle;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceNode;
@@ -28,12 +29,12 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
 /**
  *
  */
-final class BindInjectorFromBundle extends BindInjector {
+final class BindInjectorFromBundle extends AbstractWiring {
 
     final InjectorBuilder newConfiguration;
 
     BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            List<BundlingOperation> stages) {
+            List<WiringOperation> stages) {
         super(injectorConfiguration, configurationSite, bundle, stages);
         this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }
@@ -42,15 +43,24 @@ final class BindInjectorFromBundle extends BindInjector {
      * 
      */
     void processImport() {
-        app.packed.bundle.BundleSupport bs = app.packed.bundle.BundleSupport.of(newConfiguration);
+        BundleConfigurationContext bs = new BundleConfigurationContext() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T> T with(Class<? super T> type) {
+                if (type == InjectorBuilder.class) {
+                    return (T) newConfiguration;
+                }
+                return super.with(type);
+            }
+        };
         bs.configure(bundle);
         // BundleSupport.invoke().configureInjectorBundle(bundle, newConfiguration, true);
         processImport(newConfiguration.publicNodeList);
     }
 
     void processExport() {
-        for (BundlingOperation s : stages) {
-            if (s instanceof BundlingExportOperation) {
+        for (WiringOperation s : operations) {
+            if (s instanceof DownstreamWiringOperation) {
                 throw new UnsupportedOperationException();
             }
         }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.ContainerBundle;
+import app.packed.bundle.Bundle;
 import app.packed.inject.Injector;
 
 /**
@@ -44,7 +44,7 @@ public class TetIt {
         NeedsString(String s) {}
     }
 
-    public static class MyContainer extends ContainerBundle {
+    public static class MyContainer extends Bundle {
 
         /** {@inheritDoc} */
         @Override

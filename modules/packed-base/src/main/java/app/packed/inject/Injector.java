@@ -22,7 +22,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.util.ConfigurationSite;
+import app.packed.bundle.BundleConfigurationContext;
+import app.packed.bundle.WiringOperation;
+import app.packed.config.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
@@ -280,19 +282,28 @@ public interface Injector extends Taggable {
      *            a bundle to create an injector from
      * @return the new injector
      */
-    static Injector of(InjectorBundle bundle) {
+    static Injector of(InjectorBundle bundle, WiringOperation... operations) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
 
-        app.packed.bundle.BundleSupport bs = app.packed.bundle.BundleSupport.of(builder);
+        BundleConfigurationContext bs = new BundleConfigurationContext() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T> T with(Class<? super T> type) {
+                if (type == InjectorBuilder.class) {
+                    return (T) builder;
+                }
+                return super.with(type);
+            }
+        };
         bs.configure(bundle);
 
         // BundleSupport.invoke().configureInjectorBundle(bundle, builder, true);
         return builder.build();
     }
 
-    static Injector of(Class<? extends InjectorBundle> bundleType) {
-        return of(Bundles.instantiate(bundleType));
+    static Injector of(Class<? extends InjectorBundle> bundleType, WiringOperation... operations) {
+        return of(Bundles.instantiate(bundleType), operations);
     }
 
     default void print() {

@@ -26,11 +26,11 @@ import java.util.Map.Entry;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.config.ConfigurationSite;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.util.ConfigurationSite;
 import app.packed.util.TypeLiteral;
 import packed.internal.util.configurationsite.ConfigurationSiteType;
 import support.stubs.Letters.A;
@@ -113,7 +113,7 @@ public class InjectorConfigurationSiteTest {
 
         Injector i2 = Injector.of(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
-            c.bindInjector(i);
+            c.wireInjector(i);
         });
 
         ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
@@ -126,7 +126,7 @@ public class InjectorConfigurationSiteTest {
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.of(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
-            c.bindInjector(i2);
+            c.wireInjector(i2);
         });
 
         cs = i3.getService(Integer.class).getConfigurationSite();

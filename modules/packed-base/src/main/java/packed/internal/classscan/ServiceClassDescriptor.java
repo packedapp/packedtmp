@@ -76,6 +76,6 @@ public class ServiceClassDescriptor {
      * @return a service class descriptor for the specified lookup and type
      */
     public static ServiceClassDescriptor from(MethodHandles.Lookup lookup, Class<?> type) {
-        return LookupDescriptorAccessor.get(lookup).getServiceDescriptor(type);
+        return LookupCache.get(lookup).getServiceDescriptor(type);
     }
 }

@@ -20,27 +20,27 @@ import static java.util.Objects.requireNonNull;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import app.packed.bundle.BundlingImportOperation;
+import app.packed.bundle.DownstreamWiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.util.Key;
-import packed.internal.inject.BundlingServiceImportStage;
+import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
- * A number of utility stages for services
+ * A number of wiring operations for services.
  */
-// InjectorBundlingOperations.....
-public final class ServiceBundlingOperations {
+// InjectorWiringOperations.....Eneste grund til jeg ikke bruger dem
+// Er at starting/stopping wiring operations maaske kommer i app.packed.lifecycle package
+// Omvendt gider vi jo ikke have en hel klasse til rename af en injector...
+public final class ServiceWiringOperations {
 
-    /**
-     * An import stage that imports no services by invoking {@link ServiceConfiguration#asNone()} on every processed
-     * configuration.
-     */
-    // Rename to noImports() method -> will be much easier to make stages mutable if needed
-    // Skal vi have noget med services med?????
-    public static final BundlingImportOperation NO_SERVICE_IMPORTS = new BundlingServiceImportStage() {
+    /** An wiring operation that removes every service in the import pipeline. */
+    public static final UpstreamWiringOperation NO_IMPORTS = new ServiceWiringImportOperation() {
 
+        /** {@inheritDoc} */
         @Override
         public void onEachService(ServiceConfiguration<?> sc) {
             sc.asNone();
@@ -48,7 +48,7 @@ public final class ServiceBundlingOperations {
     };
 
     // public static IIS PRINT_KEY = peek(
-    private ServiceBundlingOperations() {}
+    private ServiceWiringOperations() {}
 
     /**
      * This method exists mainly to support debugging, where you want to see which services are available at a particular
@@ -67,9 +67,9 @@ public final class ServiceBundlingOperations {
      *            the action to perform for each service descriptor
      * @return a peeking stage
      */
-    public static BundlingImportOperation peekImports(Consumer<? super ServiceDescriptor> action) {
+    public static UpstreamWiringOperation peekImports(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
-        return new BundlingServiceImportStage() {
+        return new ServiceWiringImportOperation() {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
                 action.accept(ServiceDescriptor.of(sc));
@@ -87,10 +87,12 @@ public final class ServiceBundlingOperations {
      *            the key that the service should be rebound to
      * @return the new filter
      */
-    public static BundlingImportOperation rebindImport(Key<?> from, Key<?> to) {
+    // rebindToParent
+    // rebindToChild
+    public static UpstreamWiringOperation rebindImport(Key<?> from, Key<?> to) {
         requireNonNull(from, "from is null");
         requireNonNull(to, "to is null");
-        return new BundlingServiceImportStage() {
+        return new ServiceWiringImportOperation() {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
@@ -108,7 +110,7 @@ public final class ServiceBundlingOperations {
      *            the keys that should be rejected
      * @return the new import stage
      */
-    public static BundlingImportOperation removeImports(Class<?>... keys) {
+    public static UpstreamWiringOperation removeImports(Class<?>... keys) {
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return removeImports(d -> set.contains(d.getKey()));
     }
@@ -120,7 +122,7 @@ public final class ServiceBundlingOperations {
      *            the keys that should be rejected
      * @return the new import stage
      */
-    public static BundlingImportOperation removeImports(Key<?>... keys) {
+    public static UpstreamWiringOperation removeImports(Key<?>... keys) {
         Set<Key<?>> set = Set.of(keys);
         return removeImports(d -> set.contains(d.getKey()));
     }
@@ -135,7 +137,7 @@ public final class ServiceBundlingOperations {
      *            the predicate to test against
      * @return the new import stage
      */
-    public static BundlingImportOperation removeImports(Predicate<? super ServiceDescriptor> predicate) {
+    public static UpstreamWiringOperation removeImports(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
         return retainImports(e -> !predicate.test(e));
     }
@@ -147,7 +149,7 @@ public final class ServiceBundlingOperations {
      *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static BundlingImportOperation retainImports(Class<?>... keys) {
+    public static UpstreamWiringOperation retainImports(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return retainImports(d -> set.contains(d.getKey()));
@@ -160,7 +162,7 @@ public final class ServiceBundlingOperations {
      *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static BundlingImportOperation retainImports(Key<?>... keys) {
+    public static UpstreamWiringOperation retainImports(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Set.of(keys);
         return retainImports(d -> set.contains(d.getKey()));
@@ -176,9 +178,9 @@ public final class ServiceBundlingOperations {
      *            the predicate that selects which services are accepted by this stage
      * @return the new import stage
      */
-    public static BundlingImportOperation retainImports(Predicate<? super ServiceDescriptor> predicate) {
+    public static UpstreamWiringOperation retainImports(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
-        return new BundlingServiceImportStage() {
+        return new ServiceWiringImportOperation() {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
                 if (!predicate.test(ServiceDescriptor.of(sc))) {
@@ -187,4 +189,25 @@ public final class ServiceBundlingOperations {
             }
         };
     }
+
+    /**
+     * 
+     * The service that is provided will have no description and no tags.
+     * 
+     * @param instance
+     *            the instance to bind
+     * @return the wiring operation
+     */
+    public static <T, R> DownstreamWiringOperation bindDownstream(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T, R> DownstreamWiringOperation bindDownstream(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T, R> UpstreamWiringOperation mapOutgoing(Key<T> from, Key<R> to, Function<? super T, ? extends R> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
 }

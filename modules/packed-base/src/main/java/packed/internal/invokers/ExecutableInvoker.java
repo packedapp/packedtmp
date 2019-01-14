@@ -62,6 +62,10 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
         this.checkLowerBound = false;
     }
 
+    public boolean hasMethodHandle() {
+        return methodHandle != null;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     @Nullable
@@ -89,8 +93,10 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
         return executable.toString();
     }
 
-    public boolean hasMethodHandle() {
-        return methodHandle != null;
+    /** {@inheritDoc} */
+    @Override
+    public ExecutableInvoker<T> withInstance(Object instance) {
+        return new ExecutableInvoker<>(getReturnType(), executable, methodHandle, instance);
     }
 
     /**
@@ -110,14 +116,8 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException(
-                    "No access to the " + executable.descriptorTypeName() + " " + executable + ", use lookup(MethodHandles.Lookup) to give access", e);
+                    "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
         return new ExecutableInvoker<>(getReturnType(), executable, handle, instance);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ExecutableInvoker<T> withInstance(Object instance) {
-        return new ExecutableInvoker<>(getReturnType(), executable, methodHandle, instance);
     }
 }

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.util.ConfigurationSite;
+import app.packed.config.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;

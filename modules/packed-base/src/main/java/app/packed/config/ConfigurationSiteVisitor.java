@@ -13,27 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.config;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.inject.Provides;
+import app.packed.util.FieldDescriptor;
+import app.packed.util.MethodDescriptor;
+
 /**
- * A configuration site visitor can be used to get detailed information about the configuration site.
+ * While the {@link ConfigurationSite} class contains all common information about a configuration site, this visitor
+ * can be used to get details that are specific to a specific type of a configuration site.
+ * <p>
+ * Unlike the configuration site class this
  */
-interface ConfigurationSiteVisitor {
+public interface ConfigurationSiteVisitor {
+
+    default void visitAnnotatedField(ConfigurationSite configurationSite, FieldDescriptor field, Annotation annotation) {}
 
     /**
+     * Visits an annotated method that was the origin of a configuration action. For example, a service provided via a
+     * method annotated with {@link Provides}.
+     * 
      * @param configurationSite
      *            the configuration site
      * @param method
      *            the annotated method
      * @param annotation
-     *            the annotated that caused the visit
+     *            the annotation that resulted in the configuration
      */
-
-    default void visitAnnotatedMethod(ConfigurationSite configurationSite, MethodDescriptor method, Class<? extends Annotation> annotation) {}
-
-    default void visitAnnotatedField(ConfigurationSite configurationSite, FieldDescriptor method, Class<? extends Annotation> annotation) {}
+    default void visitAnnotatedMethod(ConfigurationSite configurationSite, MethodDescriptor method, Annotation annotation) {}
 
     /**
      * This method is visited whenever.

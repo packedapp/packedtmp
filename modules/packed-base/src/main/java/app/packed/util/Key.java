@@ -59,7 +59,7 @@ import packed.internal.util.TypeUtil;
  * <li><b>Not be an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
  * {@link OptionalLong} or {@link OptionalDouble} as they are a reserved type.</li>
  * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
- * {@link Qualifier}</li>
+ * {@link Hook}</li>
  * </ul>
  * Furthermore, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding
  * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
@@ -234,7 +234,7 @@ public abstract class Key<T> {
      *            the new key's qualifier
      * @return the new key
      * @throws InvalidDeclarationException
-     *             if the specified annotation is not annotated with {@link Qualifier}.
+     *             if the specified annotation is not annotated with {@link Hook}.
      */
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
@@ -252,7 +252,7 @@ public abstract class Key<T> {
      * @throws IllegalArgumentException
      *             if the specified qualifier type does not have default values for every attribute
      * @throws InvalidDeclarationException
-     *             if the specified qualifier type is not annotated with {@link Qualifier}.
+     *             if the specified qualifier type is not annotated with {@link Hook}.
      */
     public final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierType);
@@ -314,7 +314,7 @@ public abstract class Key<T> {
      * @return a key with the specified qualifier and the same type as this instance
      * @throws InvalidDeclarationException
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             qualifier type is not annotated with {@link Qualifier}.
+     *             qualifier type is not annotated with {@link Hook}.
      */
     static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");

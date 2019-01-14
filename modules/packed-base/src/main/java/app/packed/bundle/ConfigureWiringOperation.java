@@ -1,0 +1,95 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.bundle;
+
+import java.lang.invoke.MethodHandles;
+
+import app.packed.inject.Provides;
+
+/**
+ * Configure wiring operations are invoked immediately after a bundle has been {@link Bundle#configure() configured}.
+ * There are two typical use cases:
+ * 
+ * The first one involves some light modifications to the runtime the bundle creates. They typically fall into
+ * description of runtime, name for container (maybe also injector), and tags. If a wiring operation requires over
+ * requiresPatch
+ * 
+ * 
+ * 
+ * 
+ * The other use case is for patching the bundle, this is typically done via the exchange of the For example, here we
+ * switchd
+ *
+ * 
+ */
+// ConfigureBundleWiringOperation
+
+// Two types of operations
+// Operations that requires that a bundle is patchable
+// Operations that does not require it
+public class ConfigureWiringOperation extends WiringOperation {
+
+    /** Creates a new operation. */
+    protected ConfigureWiringOperation() {}
+
+    /**
+     * Creates a new operation with a lookup object. This constructor is only needed if the extending class makes use of the
+     * {@link Provides} annotation.
+     * 
+     * @param lookup
+     *            a lookup object that can be used for accessing member on subclasses, such as methods annotated with
+     *            {@link Provides}.
+     */
+    protected ConfigureWiringOperation(MethodHandles.Lookup lookup) {
+        super(lookup);
+    }
+
+    /**
+     * Returns a wiring operation that opens a bundle.
+     * 
+     * @return a wiring operation that opens a bundle
+     */
+    // Maybe still open??? Hmm
+    // makePatchable();
+    public static ConfigureWiringOperation patchBundle() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a wiring operation that opens a bundle.
+     * 
+     * @return a wiring operation that opens a bundle
+     */
+    public static ConfigureWiringOperation patchBundle(MethodHandles.Lookup lookup) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static ConfigureWiringOperation redescribe(String newDescription) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static ConfigureWiringOperation rename(String newName) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static ConfigureWiringOperation retag(String... newTags) {
+        throw new UnsupportedOperationException();
+        // Can extend all 3 versions with retag(Function<Set<String>, Set<String>>);
+        // rename(Function<String, String>);
+    }
+
+    // protected boolean requiresPatchable();
+}

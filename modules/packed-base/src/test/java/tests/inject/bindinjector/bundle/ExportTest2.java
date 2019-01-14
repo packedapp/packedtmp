@@ -32,7 +32,7 @@ public class ExportTest2 {
 
         Injector i = Injector.of(c -> {
             c.bind(ZoneId.systemDefault()).as(ZoneId.class);
-            c.bindInjector(I.class);
+            c.wireInjector(I.class);
         });
 
         i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));
@@ -47,7 +47,7 @@ public class ExportTest2 {
         protected void configure() {
             // Requirements
             requireService(ZoneId.class);
-            expose(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }
 

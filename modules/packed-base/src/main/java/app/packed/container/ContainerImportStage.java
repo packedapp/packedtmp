@@ -17,13 +17,13 @@ package app.packed.container;
 
 import java.util.function.Function;
 
-import app.packed.bundle.BundlingImportOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 
 /**
  *
  */
 // Hmm
-public abstract class ContainerImportStage extends BundlingImportOperation {
+public abstract class ContainerImportStage extends UpstreamWiringOperation {
     public static final ContainerImportStage NO_STARTING_POINTS = null;
     public static final ContainerImportStage NO_STOPPING_POINTS = null;
 

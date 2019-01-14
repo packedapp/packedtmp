@@ -20,13 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bundle.BundlingImportOperation;
-import app.packed.bundle.BundlingOperation;
-import app.packed.container.ContainerBundle;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
-import app.packed.inject.ServiceConfiguration;
-import packed.internal.inject.builder.InjectorBuilder;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class BundleSupport {
@@ -41,22 +38,19 @@ public final class BundleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        @Deprecated
-        public abstract void configureInjectorBundle(InjectorBundle bundle, InjectorBuilder builder, boolean freeze);
+        public abstract void finishWireOperation(WiringOperation operation);
 
-        public abstract void bundleOperationFinish(BundlingOperation stage);
+        public abstract void startWireOperation(WiringOperation operation);
 
-        public abstract void stageOnService(BundlingOperation stage, ServiceConfiguration<?> sc);
-
-        public abstract MethodHandles.Lookup stageLookup(BundlingOperation stage);
+        public abstract MethodHandles.Lookup lookupFromWireOperation(WiringOperation operation);
 
         /**
          * @param stages
          * @param type
-         *            either {@link Injector}, {@link InjectorBundle} or {@link ContainerBundle}
+         *            either {@link Injector}, {@link Bundle} or {@link Bundle}
          * @return
          */
-        public abstract List<BundlingOperation> extractBundlingOperations(BundlingOperation[] stages, Class<?> type);
+        public abstract List<WiringOperation> extractWiringOperations(WiringOperation[] stages, Class<?> type);
 
         /**
          * Initializes this class.
@@ -79,7 +73,7 @@ public final class BundleSupport {
         static final Helper SINGLETON;
 
         static {
-            new BundlingImportOperation() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
+            new UpstreamWiringOperation() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }

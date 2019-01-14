@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.config;
 
 import static java.util.Objects.requireNonNull;
 
@@ -80,9 +80,17 @@ public interface ConfigurationSite {
     default void print() {
         forEach(e -> System.out.println(e));
     }
-    // visit(ConfigurationSiteVisitor visitor)
+
+    void visit(ConfigurationSiteVisitor visitor);
+
 }
 // Example with Provides
 // The exist because the "inject.provides" because of field xxxxx
 // This annotation was scanned, because an object was registered at this point
 // It was registered in the container xyz
+
+// Actions that returns new configuration site by modifying the old ones.
+// replace parent...
+// splice.
+// withOperation -> Changes the operation
+// Many things we can do

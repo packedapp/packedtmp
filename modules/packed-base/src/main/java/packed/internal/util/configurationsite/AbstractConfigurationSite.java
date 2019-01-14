@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.util.ConfigurationSite;
+import app.packed.config.ConfigurationSite;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 

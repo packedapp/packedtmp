@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.InjectionSite;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;

@@ -23,7 +23,8 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import app.packed.util.ConfigurationSite;
+import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigurationSiteVisitor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
@@ -60,6 +61,10 @@ public interface InternalConfigurationSite extends ConfigurationSite {
             return "Unknown";
         }
 
+        @Override
+        public void visit(ConfigurationSiteVisitor visitor) {
+            visitor.visitUnknown();
+        }
     };
 
     InternalConfigurationSite replaceParent(ConfigurationSite newParent);
@@ -130,6 +135,12 @@ public interface InternalConfigurationSite extends ConfigurationSite {
         @Override
         public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
             return new StackFrameConfigurationSite(newParent, super.operation, stackFrame);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void visit(ConfigurationSiteVisitor visitor) {
+            visitor.visitTopStackFrame(this);
         }
     }
 

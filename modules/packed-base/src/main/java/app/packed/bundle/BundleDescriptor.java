@@ -18,6 +18,7 @@ package app.packed.bundle;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.annotation.Annotation;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.Map;
@@ -25,10 +26,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.container.Container;
-import app.packed.container.ContainerBundle;
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.util.Key;
+import app.packed.inject.InjectorBundleDescriptor.Services;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.bundle.Bundles;
@@ -43,7 +42,24 @@ import packed.internal.inject.builder.InternalBundleDescriptor;
  */
 // Pretty pringting http://www.lihaoyi.com/post/CompactStreamingPrettyPrintingofHierarchicalData.html
 // Abstract Bundle Descriptor
-public final class BundleDescriptor {
+
+// Description, Tags, runtimeType = {Container/Injector}, BundleFactory.class, Descriptor=InjectorBundleDescriptor
+// (maaske faas den fra BundleFactory)
+//Bundles do now support selectively deciding which bundles can import other bundles.
+//This is supported by modularity.
+//For example, that only ZBundle can import CXbundle. This is modules..
+/**
+ * A bundle descriptor.
+ *
+ * <p>
+ * A bundle descriptor describes a bundle and defines methods to obtain each of its components. The bundle descriptor
+ * for a bundle is obtained by invoking the {@link java.lang.Module Module}'s {@link java.lang.Module#getDescriptor
+ * getDescriptor} method.
+ *
+ * <p>
+ * In other words a bundle must provide descriptors that are equivalent on each run.
+ */
+public class BundleDescriptor {
 
     // I think add @Description as annotation??? IDK
 
@@ -136,12 +152,19 @@ public final class BundleDescriptor {
     }
 
     /**
+     * Prints this descriptor
+     */
+    public void print() {
+        System.out.println(toString());
+    }
+
+    /**
      * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.
      * 
      * @return the runtime type of the bundle
      */
     public Class<?> runtimeType() {
-        return ContainerBundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
+        return Bundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
     }
 
     /**
@@ -161,6 +184,10 @@ public final class BundleDescriptor {
 
     public LifecyclePoints stoppingPoints() {
         return stoppingPoints;
+    }
+
+    public Hooks hooks() {
+        return new Hooks();
     }
 
     /** {@inheritDoc} */
@@ -193,6 +220,23 @@ public final class BundleDescriptor {
         return of(Bundles.instantiate(bundleType));
     }
 
+    public static final class Hooks {
+
+        // Permissions-> For AOP, For Invocation, for da shizzla
+
+        public Set<Class<? extends Annotation>> annotatedFields() {
+            return Set.of();
+        }
+
+        public Set<Class<? extends Annotation>> annotatedMethods() {
+            return Set.of();
+        }
+
+        public Set<Class<? extends Annotation>> annotatedTypes() {
+            return Set.of();
+        }
+    }
+
     public static final class LifecyclePoints {
         // Navn + Description, alternative, Map<String, Optional<String>> name+ description
         public Map<String, Optional<String>> exposed() {
@@ -207,89 +251,6 @@ public final class BundleDescriptor {
             return Set.of();
         }
     }
-
-    /** An object representing the services the bundle exposes. As well as any required or optional services. */
-    // Prototype vs singleton is actually also part of the API. Because changing a instantiation mode from
-    // singleton to prototype can result in a dependent service to fail.
-    public static final class Services {
-
-        /** An immutable map of all the services the bundle exposes. */
-        private final Map<Key<?>, ServiceDescriptor> exposedServices;
-
-        /** A set of all optional service keys. */
-        private final Set<Key<?>> optionalServices;
-
-        /** A set of all required service keys. */
-        private final Set<Key<?>> requiredServices;
-
-        /**
-         * Creates a new Services object
-         * 
-         * @param builder
-         *            the builder object
-         */
-        public Services(BundleDescriptorBuilder.Services builder) {
-            this.exposedServices = Map.copyOf(builder.exposed);
-            this.optionalServices = requireNonNull(builder.optional);
-            this.requiredServices = requireNonNull(builder.required);
-        }
-
-        /**
-         * Returns an immutable map of all the services the bundle exposes.
-         *
-         * @return an immutable map of all the services the bundle exposes
-         */
-        public Map<Key<?>, ServiceDescriptor> exports() {
-            return exposedServices;
-        }
-
-        /**
-         * if all exposed services in the previous services are also exposed in this services. And if all required services in
-         * this are also required services in the previous.
-         * 
-         * @param previous
-         * @return whether or not the specified service are back
-         */
-        public boolean isBackwardsCompatibleWith(Services previous) {
-            requireNonNull(previous, "previous is null");
-            if (!previous.requiredServices.containsAll(requiredServices)) {
-                return false;
-            }
-            if (!exposedServices.keySet().containsAll(previous.exposedServices.keySet())) {
-                return false;
-            }
-            return true;
-        }
-
-        /**
-         * Returns an immutable set of all the keys for which a service that <b>must</b> be made available to the entity.
-         * 
-         * @return an immutable set of all keys that <b>must</b> be made available to the entity
-         */
-        // rename to requirements.
-        public Set<Key<?>> requires() {
-            return requiredServices;
-        }
-
-        /**
-         * Returns an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity.
-         * 
-         * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
-         */
-        public Set<Key<?>> requiresOptionally() {
-            return optionalServices;
-        }
-    }
-
-    // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
-    // Og dermed kun importere praecis de interfaces den definere...
-    // Deploy(someSpec?) ved ikke lige med API'en /
-    // FooBarBundle.API$2_2
-    // FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
-    // Maaske hellere have den markeret med @Preview :D
-    /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
-
-    // The union of exposedServices, optionalService and requiredService must be empty
 }
 //
 /// **

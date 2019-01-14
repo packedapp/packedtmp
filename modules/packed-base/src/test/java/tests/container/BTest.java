@@ -18,8 +18,8 @@ package tests.container;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.container.ContainerBundle;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorBundle;
 import app.packed.inject.ServiceDescriptor;
@@ -38,9 +38,10 @@ public class BTest {
         System.out.println(String.class.getModule().getDescriptor());
 
         i = Injector.of(c -> {
-            c.bindInjector(MyBundle4.class);
+            c.wireInjector(MyBundle4.class);
             c.bind("123");
         });
+
         System.out.println("");
         for (ServiceDescriptor d : i.services().collect(Collectors.toList())) {
             System.out.println(d);
@@ -48,12 +49,13 @@ public class BTest {
 
     }
 
-    public static class MyBundle extends ContainerBundle {
+    public static class MyBundle extends Bundle {
 
         @Override
         protected void configure() {
             lookup(MethodHandles.lookup());
             install(Private.class).install(PrivateImplementation.class);
+
         }
     }
 

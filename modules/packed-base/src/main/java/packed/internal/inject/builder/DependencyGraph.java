@@ -32,6 +32,8 @@ import packed.internal.util.KeyBuilder;
 
 final class DependencyGraph {
 
+    static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), InternalInjector.class);
+
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<ServiceBuildNode<?>> detectCyclesFor;
 
@@ -47,8 +49,6 @@ final class DependencyGraph {
     DependencyGraph(InjectorBuilder root) {
         this.root = requireNonNull(root);
     }
-
-    static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), InternalInjector.class);
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -13,35 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Consumer;
-
 import app.packed.bundle.Bundle;
-import app.packed.inject.Injector;
 import app.packed.util.Nullable;
-import packed.internal.classscan.LookupDescriptorAccessor;
+import packed.internal.classscan.LookupCache;
 import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  *
  */
-public abstract class BaseBuilder extends AbstractConfiguration {
+public abstract class RuntimeBuilder extends AbstractConfiguration {
 
     /** The lookup object. We default to public access */
-    public LookupDescriptorAccessor accessor = LookupDescriptorAccessor.PUBLIC;
+    public LookupCache accessor = LookupCache.PUBLIC;
 
-    /** The bundle we are building an injector for, null for {@link Injector#of(Consumer)}. */
+    /**
+     * The (optional) bundle we are creating a runtime instance for, if null then we using a {@code XConfiguration} to
+     * create the runtime.
+     */
     @Nullable
-    final Bundle bundle;
+    public final Bundle bundle;
 
     /**
      * @param configurationSite
      */
-    protected BaseBuilder(InternalConfigurationSite configurationSite) {
+    protected RuntimeBuilder(InternalConfigurationSite configurationSite) {
         super(configurationSite);
         this.bundle = null;
     }
@@ -49,8 +49,9 @@ public abstract class BaseBuilder extends AbstractConfiguration {
     /**
      * @param configurationSite
      */
-    protected BaseBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
+    protected RuntimeBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite);
         this.bundle = requireNonNull(bundle);
     }
+
 }

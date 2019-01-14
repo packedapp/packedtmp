@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import app.packed.bundle.Bundle;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.ServiceConfiguration;
@@ -24,8 +25,8 @@ import app.packed.util.TypeLiteral;
 
 /**
  * The configuration of a components. A component configuration instance is usually obtained by calling one of the
- * install methods on {@link ComponentConfiguration} or {@link ContainerBundle} at configuration time. Or one of the
- * install methods on {@link Component} at runtime.
+ * install methods on {@link ComponentConfiguration} or {@link Bundle} at configuration time. Or one of the install
+ * methods on {@link Component} at runtime.
  */
 // add getChildren()?
 // add getComponentType() <- The type
