@@ -15,13 +15,13 @@
  */
 package support.stubs;
 
+import app.packed.bundle.Bundle;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 
 /**
  *
  */
-public class TestBundle extends InjectorBundle {
+public class TestBundle extends Bundle {
 
     public static void main(String[] args) {
         System.out.println(Injector.of(TestBundle.class).with(String.class));

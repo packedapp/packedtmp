@@ -15,7 +15,7 @@
  */
 package xxx;
 
-import app.packed.inject.InjectorBundle;
+import app.packed.bundle.Bundle;
 import xxx.Xxx.PModule.DBService;
 
 /**
@@ -24,7 +24,7 @@ import xxx.Xxx.PModule.DBService;
 public class Xxx {
 
     static class PModule {
-        static class PBundle extends InjectorBundle {
+        static class PBundle extends Bundle {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
@@ -36,7 +36,7 @@ public class Xxx {
     }
 
     static class DModule {
-        static class DBundle extends InjectorBundle {
+        static class DBundle extends Bundle {
             /** {@inheritDoc} */
             @Override
             protected void configure() {

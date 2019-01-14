@@ -19,14 +19,14 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 
 /**
  *
  */
-public class TestBundlex extends InjectorBundle {
+public class TestBundlex extends Bundle {
 
     @Test
     public void main() {

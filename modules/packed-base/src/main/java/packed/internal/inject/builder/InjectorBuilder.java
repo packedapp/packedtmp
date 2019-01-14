@@ -26,7 +26,6 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
@@ -146,7 +145,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
     @Override
     public final void wireInjector(Injector injector, WiringOperation... operations) {
         requireNonNull(injector, "injector is null");
-        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, InjectorBundle.class);
+        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
@@ -156,9 +155,9 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
 
     /** {@inheritDoc} */
     @Override
-    public void wireInjector(InjectorBundle bundle, WiringOperation... stages) {
+    public void wireInjector(Bundle bundle, WiringOperation... stages) {
         requireNonNull(bundle, "bundle is null");
-        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, InjectorBundle.class);
+        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);

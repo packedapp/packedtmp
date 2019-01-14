@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -40,13 +40,13 @@ import packed.internal.inject.ServiceWiringImportOperation;
 /**
  * An abstract class for the injector bind methods
  * {@link InjectorConfiguration#wireInjector(Class, WiringOperation...)},
- * {@link InjectorConfiguration#wireInjector(InjectorBundle, WiringOperation...)}, and
+ * {@link InjectorConfiguration#wireInjector(Bundle, WiringOperation...)}, and
  * {@link InjectorConfiguration#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
 abstract class AbstractWiring {
 
     @Nullable
-    final InjectorBundle bundle;
+    final Bundle bundle;
 
     /** The configuration site of binding. */
     final InternalConfigurationSite configurationSite;
@@ -57,7 +57,7 @@ abstract class AbstractWiring {
     /** The wiring operations. */
     final List<WiringOperation> operations;
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle, List<WiringOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOperation> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);

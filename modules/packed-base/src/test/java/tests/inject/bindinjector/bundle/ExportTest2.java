@@ -18,9 +18,9 @@ package tests.inject.bindinjector.bundle;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import app.packed.bundle.Bundle;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 
 /**
  *
@@ -40,7 +40,7 @@ public class ExportTest2 {
         System.out.println(i.with(ZonedDateTime.class));
     }
 
-    public static final class I extends InjectorBundle {
+    public static final class I extends Bundle {
 
         /** {@inheritDoc} */
         @Override

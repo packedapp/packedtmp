@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -36,13 +36,13 @@ public class BundleDescriptorTest {
 
         @Test
         public void emptyBundle() {
-            BundleDescriptor d = BundleDescriptor.of(new InjectorBundle() {
+            BundleDescriptor d = BundleDescriptor.of(new Bundle() {
                 @Override
                 protected void configure() {}
             });
             assertThat(d.services().exports()).isEmpty();
 
-            d = BundleDescriptor.of(new InjectorBundle() {
+            d = BundleDescriptor.of(new Bundle() {
                 @Override
                 protected void configure() {
                     bind("non-exposed service is not in descriptor");
@@ -53,7 +53,7 @@ public class BundleDescriptorTest {
 
         @Test
         public void simple() {
-            InjectorBundle ib = new InjectorBundle() {
+            Bundle ib = new Bundle() {
                 @Override
                 protected void configure() {
                     bind("foo").setDescription("fooDesc");

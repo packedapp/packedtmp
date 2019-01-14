@@ -17,9 +17,9 @@ package xxx;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.Provides;
 
 /**
@@ -48,7 +48,7 @@ public class Xxx3 {
         }
     }
 
-    public static class StringBundle extends InjectorBundle {
+    public static class StringBundle extends Bundle {
 
         /** {@inheritDoc} */
         @Override

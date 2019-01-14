@@ -17,13 +17,14 @@ package app.packed.inject;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
 import app.packed.bundle.ConfigureWiringOperation;
 
 /**
  *
  */
-public class Mybb extends InjectorBundle {
+public class Mybb extends Bundle {
 
     /** {@inheritDoc} */
     @Override

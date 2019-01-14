@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfigurationContext;
 import app.packed.bundle.WiringOperation;
 import app.packed.config.ConfigurationSite;
@@ -282,7 +283,7 @@ public interface Injector extends Taggable {
      *            a bundle to create an injector from
      * @return the new injector
      */
-    static Injector of(InjectorBundle bundle, WiringOperation... operations) {
+    static Injector of(Bundle bundle, WiringOperation... operations) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
 
@@ -302,7 +303,7 @@ public interface Injector extends Taggable {
         return builder.build();
     }
 
-    static Injector of(Class<? extends InjectorBundle> bundleType, WiringOperation... operations) {
+    static Injector of(Class<? extends Bundle> bundleType, WiringOperation... operations) {
         return of(Bundles.instantiate(bundleType), operations);
     }
 

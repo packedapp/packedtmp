@@ -105,7 +105,6 @@ public @interface Provides {
      * Returns the tags of the service.
      * 
      * @return the tags of the service
-     * @see ServiceDescriptor#tags()
      */
     String[] tags() default {};
 }

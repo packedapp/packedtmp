@@ -15,12 +15,12 @@
  */
 package stubs.bundles;
 
-import app.packed.inject.InjectorBundle;
+import app.packed.bundle.Bundle;
 
 /**
  *
  */
-public class EmptyInjectorBundle extends InjectorBundle {
+public class EmptyInjectorBundle extends Bundle {
 
     /** {@inheritDoc} */
     @Override

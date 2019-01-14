@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.Bundle;
 import app.packed.inject.Factory0;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
@@ -35,19 +35,19 @@ public class InjectorBindBundleTest {
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
-        InjectorBundle b = new InjectorBundle() {
+        Bundle b = new Bundle() {
             @Override
             protected void configure() {}
         };
 
-        npe(() -> Injector.of(c -> c.wireInjector((InjectorBundle) null)), "bundle");
+        npe(() -> Injector.of(c -> c.wireInjector((Bundle) null)), "bundle");
         npe(() -> Injector.of(c -> c.wireInjector(b, (ServiceWiringImportOperation[]) null)), "operations");
     }
 
     /** Tests that we can import no services. */
     @Test
     public void cannotImportNonExposed() {
-        InjectorBundle b = new InjectorBundle() {
+        Bundle b = new Bundle() {
             @Override
             protected void configure() {
                 bind("X");
@@ -63,7 +63,7 @@ public class InjectorBindBundleTest {
     /** Tests that we can import no services. */
     @Test
     public void OneImport() {
-        InjectorBundle b = new InjectorBundle() {
+        Bundle b = new Bundle() {
             @Override
             protected void configure() {
                 bind("X");
@@ -81,7 +81,7 @@ public class InjectorBindBundleTest {
     @Test
     public void protoTypeImport() {
         AtomicLong al = new AtomicLong();
-        InjectorBundle b = new InjectorBundle() {
+        Bundle b = new Bundle() {
             @Override
             protected void configure() {
                 bindPrototype(new Factory0<>(al::incrementAndGet) {});

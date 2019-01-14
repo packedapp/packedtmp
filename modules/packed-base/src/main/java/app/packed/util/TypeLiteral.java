@@ -28,6 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
+import app.packed.hook.Hook;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.UtilSupport;

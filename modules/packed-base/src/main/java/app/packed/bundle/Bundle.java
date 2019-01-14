@@ -25,7 +25,6 @@ import app.packed.container.Container;
 import app.packed.hook.Hook;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
@@ -156,7 +155,7 @@ public abstract class Bundle {
         return injectorBuilder().bind(implementation);
     }
 
-    protected final void wireInjector(Class<? extends InjectorBundle> bundleType, WiringOperation... operations) {
+    protected final void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... operations) {
         injectorBuilder().wireInjector(bundleType, operations);
     }
 
@@ -177,7 +176,7 @@ public abstract class Bundle {
         injectorBuilder().wireInjector(injector, operations);
     }
 
-    protected final void wireInjector(InjectorBundle bundle, WiringOperation... operations) {
+    protected final void wireInjector(Bundle bundle, WiringOperation... operations) {
         injectorBuilder().wireInjector(bundle, operations);
     }
 
@@ -413,6 +412,47 @@ public abstract class Bundle {
         containerBuilderX().wireContainer(bundle, stages);
     }
 }
+/**
+ * A injector bundle provides a simple way to package services into a resuable container nice little thingy.
+ * 
+ * Bundles provide a simply way to package components and service. For example, so they can be used easily across
+ * multiple containers. Or simply for organizing a complex project into distinct sections, such that each section
+ * addresses a separate concern.
+ * <p>
+ * Bundle are useually
+ *
+ * <pre>
+ * class WebServerBundle extends Bundle {
+ *
+ *     private port = 8080; //default port
+ *
+ *     protected void configure() {
+ *        install(new WebServer(port));
+ *     }
+ *
+ *     public WebServerBundle setPort(int port) {
+ *         checkNotFrozen();
+ *         this.port = port;
+ *         return this;
+ *     }
+ * }
+ * </pre>
+ *
+ * The bundle is used like this:
+ *
+ * <pre>
+ * ContainerBuilder b = new ContainerBuilder();
+ * b.use(WebServiceBundle.class).setPort(8080);
+ *
+ * Container c = cc.newContainer();
+ * </pre>
+ * <p>
+ * Bundles must have a single public no argument constructor.
+ * <p>
+ * Bundles are strictly a configuration and initialization time concept. Bundles are not available
+ */
+
+// ID256 BundleHash????? API wise. SpecHash..
 
 // protected void lookup(Lookup lookup, LookupAccessController accessController) {}
 // protected final void checkNotNativeRuntime() {

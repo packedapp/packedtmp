@@ -18,10 +18,10 @@ package packed.internal.inject.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfigurationContext;
 import app.packed.bundle.DownstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
-import app.packed.inject.InjectorBundle;
 import app.packed.util.Key;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -33,8 +33,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
 
     final InjectorBuilder newConfiguration;
 
-    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, InjectorBundle bundle,
-            List<WiringOperation> stages) {
+    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOperation> stages) {
         super(injectorConfiguration, configurationSite, bundle, stages);
         this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }

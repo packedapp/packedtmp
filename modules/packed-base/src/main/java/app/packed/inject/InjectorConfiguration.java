@@ -104,7 +104,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional stages
      */
-    default void wireInjector(Class<? extends InjectorBundle> bundleType, WiringOperation... stages) {
+    default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
         wireInjector(Bundles.instantiate(bundleType), stages);
     }
 
@@ -155,7 +155,7 @@ public interface InjectorConfiguration extends Taggable {
      * @param stages
      *            optional import/export stages
      */
-    void wireInjector(InjectorBundle bundle, WiringOperation... stages);
+    void wireInjector(Bundle bundle, WiringOperation... stages);
 
     /**
      * Binds the specified implementation lazily. This is equivalent to {@link #bind(Class)} except that the instance will

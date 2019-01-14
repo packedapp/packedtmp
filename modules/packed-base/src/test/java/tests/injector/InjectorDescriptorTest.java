@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -35,7 +35,7 @@ public class InjectorDescriptorTest {
 
     @Test
     public void testBasicService() {
-        BundleDescriptor d = BundleDescriptor.of(new InjectorBundle() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
 
             @Override
             protected void configure() {

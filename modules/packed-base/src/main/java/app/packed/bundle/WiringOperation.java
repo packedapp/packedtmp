@@ -24,7 +24,6 @@ import java.util.List;
 
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorBundle;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.Provides;
 import app.packed.util.Nullable;
@@ -183,7 +182,7 @@ public abstract class WiringOperation {
                         throw new IllegalArgumentException(
                                 "Only operations extending " + UpstreamWiringOperation.class + " are allowed for this method, operation = " + o.getClass());
                     }
-                } else if (type == InjectorBundle.class) {
+                } else if (type == Bundle.class) {
                     if (!(o instanceof UpstreamWiringOperation)) {
                         throw new IllegalArgumentException("Only operation extending " + UpstreamWiringOperation.class.getSimpleName() + " or "
                                 + DownstreamWiringOperation.class.getSimpleName() + " are allowed for this method, operation = " + o.getClass());

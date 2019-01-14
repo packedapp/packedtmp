@@ -30,6 +30,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.hook.Hook;
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
