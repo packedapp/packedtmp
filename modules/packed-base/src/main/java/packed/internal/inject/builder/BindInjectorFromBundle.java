@@ -23,8 +23,8 @@ import app.packed.bundle.DownstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
 import app.packed.inject.InjectorBundle;
 import app.packed.util.Key;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  *

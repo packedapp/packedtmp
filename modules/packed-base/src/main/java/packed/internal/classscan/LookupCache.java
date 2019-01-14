@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import packed.internal.container.LookupValue;
 import packed.internal.invokers.ExecutableInvoker;
 import packed.internal.invokers.InternalFunction;
+import packed.internal.util.LookupValue;
 
 /**
  * A cache for lookup objects

@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.bundle.Bundle;
 import app.packed.util.Nullable;
 import packed.internal.classscan.LookupCache;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.util.AbstractConfiguration;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  *
@@ -53,5 +53,4 @@ public abstract class RuntimeBuilder extends AbstractConfiguration {
         super(configurationSite);
         this.bundle = requireNonNull(bundle);
     }
-
 }

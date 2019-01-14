@@ -29,13 +29,13 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.classscan.ComponentClassDescriptor;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.inject.builder.ServiceBuildNodeDefault;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.util.Checks;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link ComponentConfiguration}. */
 public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T> implements ComponentConfiguration<T> {

@@ -23,7 +23,7 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  *

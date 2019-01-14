@@ -32,7 +32,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.TypeLiteral;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
+import packed.internal.config.site.ConfigurationSiteType;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.D;

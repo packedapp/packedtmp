@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import app.packed.util.Nullable;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  * An abstract configuration object. That provides basic support for strings tags, setting a description, and freezing a

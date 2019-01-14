@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This is typically either a
@@ -30,6 +30,7 @@ import packed.internal.util.configurationsite.InternalConfigurationSite;
  * point of its injector.
  */
 // ConfigSite
+// we capture a configurating
 public interface ConfigurationSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
@@ -45,7 +46,7 @@ public interface ConfigurationSite {
      */
     default void forEach(Consumer<? super ConfigurationSite> action) {
         requireNonNull(action, "action is null");
-        ConfigurationSite cs = this;
+        var cs = this;
         while (cs != null) {
             action.accept(cs);
             cs = cs.parent().orElse(null);
@@ -81,8 +82,16 @@ public interface ConfigurationSite {
         forEach(e -> System.out.println(e));
     }
 
+    /**
+     * Visits t
+     * 
+     * @param visitor
+     */
     void visit(ConfigurationSiteVisitor visitor);
 
+    default void visitEach(ConfigurationSiteVisitor visitor) {
+        forEach(s -> s.visit(visitor));
+    }
 }
 // Example with Provides
 // The exist because the "inject.provides" because of field xxxxx

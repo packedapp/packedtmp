@@ -23,9 +23,9 @@ import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * Represents an imported injector via {@link InjectorConfiguration#wireInjector(Injector, UpstreamWiringOperation...)}.

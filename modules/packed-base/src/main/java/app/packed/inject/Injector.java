@@ -29,9 +29,9 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 import packed.internal.bundle.Bundles;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.builder.InjectorBuilder;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.

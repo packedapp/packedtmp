@@ -29,9 +29,9 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
 import packed.internal.bundle.Bundles;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.ContainerBuilder;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * The main purpose of this interface is to manage and control the life cycle of components.

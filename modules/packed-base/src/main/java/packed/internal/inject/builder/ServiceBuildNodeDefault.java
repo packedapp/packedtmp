@@ -28,6 +28,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
@@ -35,8 +37,6 @@ import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.invokers.InvokableMember;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /**

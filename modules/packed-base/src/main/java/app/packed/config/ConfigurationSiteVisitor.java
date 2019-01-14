@@ -24,11 +24,20 @@ import app.packed.util.MethodDescriptor;
 /**
  * While the {@link ConfigurationSite} class contains all common information about a configuration site, this visitor
  * can be used to get details that are specific to a specific type of a configuration site.
- * <p>
- * Unlike the configuration site class this
  */
 public interface ConfigurationSiteVisitor {
 
+    /**
+     * Visits an annotated field that was the origin of a configuration action. For example, a service provided via a field
+     * annotated with {@link Provides}.
+     * 
+     * @param configurationSite
+     *            the configuration site
+     * @param field
+     *            the annotated field
+     * @param annotation
+     *            the annotation that resulted in the configuration
+     */
     default void visitAnnotatedField(ConfigurationSite configurationSite, FieldDescriptor field, Annotation annotation) {}
 
     /**
@@ -52,6 +61,9 @@ public interface ConfigurationSiteVisitor {
 
     //// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere
     // default void visitConfiguration(ConfigurationNode....)visitConfiguration
+    /**
+     * Visits a unknown configuration site, for example, if the capturing of configuration sites has been disabled.
+     */
     default void visitUnknown() {}
 
     // Look at ConfigurationSource in some closed project. Has a number of options as well

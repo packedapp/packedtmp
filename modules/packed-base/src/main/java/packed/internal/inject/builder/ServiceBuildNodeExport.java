@@ -23,10 +23,10 @@ import app.packed.inject.InjectionSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** A build node that imports a service from another injector. */
 public class ServiceBuildNodeExport<T> extends ServiceBuildNode<T> {

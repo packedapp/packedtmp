@@ -22,9 +22,9 @@ import java.util.Set;
 import app.packed.config.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.ServiceBuildNode;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** A node that represents a service at runtime. */
 public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {

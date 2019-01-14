@@ -33,11 +33,11 @@ import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.classscan.ComponentClassDescriptor;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.invokers.InternalFunction;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link ContainerConfiguration}.

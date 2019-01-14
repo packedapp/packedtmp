@@ -32,10 +32,10 @@ import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * An abstract class for the injector bind methods

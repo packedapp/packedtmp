@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.configurationsite;
+package packed.internal.config.site;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,24 +21,25 @@ import java.lang.annotation.Annotation;
 
 import app.packed.config.ConfigurationSite;
 import app.packed.config.ConfigurationSiteVisitor;
+import app.packed.util.MethodDescriptor;
 
 /**
  *
  */
-public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationSite {
+public final class AnnotatedMethodConfigurationSite extends AbstractConfigurationSite {
 
-    private final Class<?> clazz;
+    private final MethodDescriptor method;
 
     final Annotation annotation;
 
-    AnnotatedTypeConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Class<?> clazz, Annotation annotation) {
+    AnnotatedMethodConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
         super(parent, operation);
-        this.clazz = requireNonNull(clazz);
+        this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
     }
 
-    public Class<?> getAnnotatedType() {
-        return clazz;
+    public MethodDescriptor getAnnotatedMethod() {
+        return method;
     }
 
     /** {@inheritDoc} */
@@ -50,6 +51,6 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
     /** {@inheritDoc} */
     @Override
     public void visit(ConfigurationSiteVisitor visitor) {
-        throw new UnsupportedOperationException();
+        visitor.visitAnnotatedMethod(this, method, annotation);
     }
 }

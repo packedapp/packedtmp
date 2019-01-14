@@ -25,11 +25,11 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.util.KeyBuilder;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /** The default implementation of {@link Injector}. */
 public final class InternalInjector extends AbstractInjector {

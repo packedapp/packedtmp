@@ -19,8 +19,8 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfigurationContext;
 import app.packed.inject.ServiceConfiguration;
 import packed.internal.bundle.BundleDescriptorBuilder;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  *

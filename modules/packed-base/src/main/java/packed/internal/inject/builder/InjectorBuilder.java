@@ -39,14 +39,14 @@ import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.LookupCache;
 import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.runtime.RuntimeBuilder;
-import packed.internal.util.configurationsite.ConfigurationSiteType;
-import packed.internal.util.configurationsite.InternalConfigurationSite;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfiguration}.
