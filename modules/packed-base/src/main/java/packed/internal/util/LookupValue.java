@@ -18,10 +18,7 @@ package packed.internal.util;
 import java.lang.invoke.MethodHandles;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Lazily associate a computed value with a lookup object.
- * 
- */
+/** Lazily associate a computed value with a lookup object much like {@link ClassValue} but for lookup objects. */
 public abstract class LookupValue<T> {
 
     /** The cache of values. */
@@ -34,6 +31,18 @@ public abstract class LookupValue<T> {
         }
     };
 
+    /**
+     * Computes the given lookup objects's derived value for this {@code LookupValue}.
+     * <p>
+     * This method will be invoked within the first thread that accesses the value with the {@link #get get} method.
+     * <p>
+     * If this method throws an exception, the corresponding call to {@code get} will terminate abnormally with that
+     * exception, and no lookup value will be recorded.
+     *
+     * @param lookup
+     *            the lookup object for which a value must be computed
+     * @return the newly computed value associated with this {@code LookupValue}, for the given lookup object
+     */
     protected abstract T computeValue(MethodHandles.Lookup lookup);
 
     /**
@@ -46,11 +55,11 @@ public abstract class LookupValue<T> {
      */
     public final T get(MethodHandles.Lookup lookup) {
         ConcurrentHashMap<Integer, T> chm = LOOKUP_CACHE.get(lookup.lookupClass());
-        Integer mode = lookup.lookupModes();
-        T ll = chm.get(mode);
-        if (ll == null) {
-            ll = chm.computeIfAbsent(mode, m -> computeValue(lookup));
+        Integer lookupMode = Integer.valueOf(lookup.lookupModes());
+        T value = chm.get(lookupMode);
+        if (value == null) {
+            value = chm.computeIfAbsent(lookupMode, ignore -> computeValue(lookup));
         }
-        return ll;
+        return value;
     }
 }

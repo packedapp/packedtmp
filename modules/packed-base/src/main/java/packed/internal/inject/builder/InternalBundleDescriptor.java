@@ -17,8 +17,8 @@ package packed.internal.inject.builder;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleConfigurationContext;
+import app.packed.bundle.BundleDescriptor;
 import app.packed.inject.ServiceConfiguration;
-import packed.internal.bundle.BundleDescriptorBuilder;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 
@@ -31,7 +31,7 @@ public class InternalBundleDescriptor {
      * @param bundle
      * @return
      */
-    public static BundleDescriptorBuilder of(Bundle bundle) {
+    public static BundleDescriptor.Builder of(Bundle bundle) {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         InjectorBuilder conf = new InjectorBuilder(ics, bundle);
 
@@ -53,18 +53,18 @@ public class InternalBundleDescriptor {
         injectorBuilder.analyze(conf);
 
         //////////////// Create the builder
-        BundleDescriptorBuilder builder = new BundleDescriptorBuilder();
-        builder.description = conf.getDescription();
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
         for (ServiceBuildNode<?> n : conf.publicNodeList) {
             if (n instanceof ServiceBuildNodeExposed) {
-                builder.services.addExposed((ServiceConfiguration<?>) n);
+                builder.addServiceExport((ServiceConfiguration<?>) n);
             }
         }
         if (conf.requiredServicesOptionally != null) {
-            builder.services.addOptionalServices(conf.requiredServicesOptionally);
+            builder.addServiceRequirementsOptionally(conf.requiredServicesOptionally);
         }
         if (conf.requiredServicesMandatory != null) {
-            builder.services.addRequiredServices(conf.requiredServicesMandatory);
+            builder.addServiceRequirements(conf.requiredServicesMandatory);
         }
         return builder;
     }

@@ -65,7 +65,17 @@ import packed.internal.util.TypeUtil;
  * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
  * This means that, for example, {@code Key.of(int.class) is equivalent to Key.of(Integer.class)}.
  */
-public abstract class Key<T> {
+public abstract class Key<T> /* implements Comparable<Key<?>> */ {
+
+    /** A cache of factories used by {@link #of(Class)}. */
+    private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected Key<?> computeValue(Class<?> implementation) {
+            return TypeLiteral.of(implementation).box().toKey();
+        }
+    };
 
     /** A cache of keys used by {@link Key#Key()}. */
     private static final ClassValue<Key<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
@@ -75,16 +85,6 @@ public abstract class Key<T> {
         @Override
         protected Key<?> computeValue(Class<?> implementation) {
             return fromTypeVariable((Class) implementation, Key.class, 0);
-        }
-    };
-
-    /** A cache of factories used by {@link #of(Class)}. */
-    private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @Override
-        protected Key<?> computeValue(Class<?> implementation) {
-            return TypeLiteral.of(implementation).box().toKey();
         }
     };
 
@@ -137,6 +137,12 @@ public abstract class Key<T> {
         }
         return new CanonicalizedKey<>(typeLiteral, qualifier);
     }
+
+    // @Override
+    // public final int compareTo(Key<?> o) {
+    // // TODO create one, TypeLiteral should probably also be comparable
+    // return hash;
+    // }
 
     /** {@inheritDoc} */
     @Override

@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.bundle.BundleDescriptor;
 import app.packed.util.Key;
-import packed.internal.bundle.BundleDescriptorBuilder;
 
 /**
  *
@@ -48,10 +48,10 @@ public class InjectorBundleDescriptor {
          * @param builder
          *            the builder object
          */
-        public Services(BundleDescriptorBuilder.Services builder) {
-            this.exposedServices = Map.copyOf(builder.exposed);
-            this.optionalServices = requireNonNull(builder.optional);
-            this.requiredServices = requireNonNull(builder.required);
+        public Services(BundleDescriptor.Builder builder) {
+            this.exposedServices = Map.copyOf(builder.serviceExports);
+            this.optionalServices = requireNonNull(builder.servicesOptional);
+            this.requiredServices = requireNonNull(builder.serviceRequired);
         }
 
         /**
