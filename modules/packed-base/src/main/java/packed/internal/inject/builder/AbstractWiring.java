@@ -79,8 +79,8 @@ abstract class AbstractWiring {
         HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : importableNodes) {
             if (!node.isPrivate()) {
-                nodes.put(node.getKey(),
-                        new ServiceBuildNodeImport<>(injectorConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this, node));
+                nodes.put(node.key(),
+                        new ServiceBuildNodeImport<>(injectorConfiguration, configurationSite.replaceParent(node.configurationSite()), this, node));
             }
         }
         // Process each stage
@@ -95,7 +95,7 @@ abstract class AbstractWiring {
         // Add all to the private node map
         for (ServiceBuildNodeImport<?> node : nodes.values()) {
             if (!injectorConfiguration.privateNodeMap.putIfAbsent(node)) {
-                throw new InjectionException("oops for " + node.getKey()); // Tried to import a service with a key that was already present
+                throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }
     }
@@ -121,19 +121,19 @@ abstract class AbstractWiring {
 
         for (Iterator<ServiceBuildNodeImport<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
             ServiceBuildNodeImport<?> node = iterator.next();
-            Key<?> existing = node.getKey();
+            Key<?> existing = node.key();
 
             // invoke the import function on the stage
             if (stage instanceof ServiceWiringImportOperation) {
                 ((ServiceWiringImportOperation) stage).onEachService(node);
             }
 
-            if (node.getKey() == null) {
+            if (node.key() == null) {
                 iterator.remove();
-            } else if (!node.getKey().equals(existing)) {
+            } else if (!node.key().equals(existing)) {
                 iterator.remove();
                 // TODO check if a node is already present
-                newNodes.put(node.getKey(), node); // Should make new, with new configuration site
+                newNodes.put(node.key(), node); // Should make new, with new configuration site
             }
         }
         // Put all remaining nodes in newNodes;

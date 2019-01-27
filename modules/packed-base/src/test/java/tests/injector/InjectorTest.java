@@ -35,7 +35,7 @@ public class InjectorTest {
 
     @Test
     public void description() {
-        assertThat(EMPTY.getDescription()).isNull();
+        assertThat(EMPTY.description().orElse(null)).isNull();
 
         Injector i = Injector.of(c -> {
             assertThat(c.getDescription()).isNull();
@@ -48,7 +48,7 @@ public class InjectorTest {
 
             c.setDescription("final_desc");
         });
-        assertThat(i.getDescription()).isEqualTo("final_desc");
+        assertThat(i.description().orElse(null)).isEqualTo("final_desc");
     }
 
     @Test

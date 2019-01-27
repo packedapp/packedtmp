@@ -42,15 +42,15 @@ public class ServiceBuildNodeExport<T> extends ServiceBuildNode<T> {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.source = requireNonNull(source);
-        this.as((Key) node.getKey());
-        this.setDescription(node.getDescription());
+        this.as((Key) node.key());
+        this.setDescription(node.description().orElse(null));
         this.tags().addAll(node.tags());
     }
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode getInstantiationMode() {
-        return other.getInstantiationMode();
+    public InstantiationMode instantiationMode() {
+        return other.instantiationMode();
     }
 
     @Override

@@ -17,7 +17,6 @@ package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -36,7 +35,6 @@ import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.bundle.BundleSupport;
-import packed.internal.classscan.LookupCache;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -45,12 +43,12 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokers.InternalFunction;
-import packed.internal.runtime.RuntimeBuilder;
+import packed.internal.runtime.ImageBuilder;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfiguration}.
  */
-public class InjectorBuilder extends RuntimeBuilder implements InjectorConfiguration {
+public class InjectorBuilder extends ImageBuilder implements InjectorConfiguration {
 
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
@@ -113,8 +111,8 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
         checkConfigurable();
         freezeLatest();
         ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(instance.getClass());
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this,
-                getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND),
+                serviceDesc, instance);
         scanForProvides(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
@@ -129,7 +127,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
     protected final <T> ServiceConfiguration<T> bindFactory(InstantiationMode mode, Factory<T> factory) {
         checkConfigurable();
         freezeLatest();
-        InternalConfigurationSite frame = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
         ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(func.getReturnTypeRaw());
@@ -148,7 +146,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
         List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
         checkConfigurable();
         freezeLatest();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
         is.importServices();
     }
@@ -160,7 +158,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
         List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
         checkConfigurable();
         freezeLatest();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
         is.processImport();
         if (injectorBundleBindings == null) {
@@ -230,7 +228,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
     public final <T> ServiceConfiguration<T> expose(Key<T> key) {
         checkConfigurable();
         freezeLatest();
-        InternalConfigurationSite cs = getConfigurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
+        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
         ServiceNode<T> node = privateNodeMap.getRecursive(key);
         if (node == null) {
@@ -252,7 +250,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
     protected void freezeLatest() {
         // Skal vi egentlig ikke ogsaa frysse noden????
         if (privateLatestNode != null) {
-            Key<?> key = privateLatestNode.getKey();
+            Key<?> key = privateLatestNode.key();
             if (key != null) {
                 if (!privateNodeMap.putIfAbsent(privateLatestNode)) {
                     System.err.println("OOPS");
@@ -261,14 +259,6 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
             privateLatestNode.freeze();
             privateLatestNode = null;
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        checkConfigurable();
-        this.accessor = LookupCache.get(lookup);
     }
 
     public final void requireService(Class<?> key) {
@@ -298,7 +288,7 @@ public class InjectorBuilder extends RuntimeBuilder implements InjectorConfigura
     protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
         AtProvidesGroup provides = accessor.getServiceDescriptor(type).provides;
         if (!provides.members.isEmpty()) {
-            if (owner.getInstantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+            if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
                 throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
             }
 

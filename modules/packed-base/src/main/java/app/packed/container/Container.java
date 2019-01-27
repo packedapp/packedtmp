@@ -22,13 +22,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import app.packed.app.App;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
-import packed.internal.bundle.Bundles;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.ContainerBuilder;
@@ -61,6 +61,15 @@ import packed.internal.container.ContainerBuilder;
 public interface Container extends Injector {
 
     /**
+     * Returns the application this container belongs to.
+     * 
+     * @return the application this container belongs to
+     */
+    default App app() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Returns a stream of all the components in the container in no particular order.
      * <p>
      * Invoking this method is equivalent to calling {@code container.root().components()}.
@@ -71,6 +80,8 @@ public interface Container extends Injector {
     default ComponentStream components() {
         return root().stream();
     }
+
+    // ListenerManager listenerManager(); // listeners()...???, container.jobs().
 
     /**
      * Returns a component corresponding to the specified the path.
@@ -94,9 +105,7 @@ public interface Container extends Injector {
      *
      * @return the name of this container
      */
-    String getName();
-
-    // ListenerManager listenerManager(); // listeners()...???, container.jobs().
+    String name();
 
     /**
      * Returns the root component of this container.
@@ -124,7 +133,7 @@ public interface Container extends Injector {
      * @param cause
      *            the cause of the shutdown
      * @return a future that can be used to query whether the container has completed shutdown. Or is still in the process
-     *         of shutting down the container.
+     *         of being shutdown.
      */
     CompletableFuture<Container> shutdown(Throwable cause);
 
@@ -163,18 +172,18 @@ public interface Container extends Injector {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Creates a new container from a bundle of the specified type.
-     *
-     * @param bundleType
-     *            the type of bundle to create the container from
-     * @return a new container
-     * @throws RuntimeException
-     *             if the container could not be created
-     */
-    static Container of(Class<? extends Bundle> bundleType) {
-        return of(Bundles.instantiate(bundleType));
-    }
+    // /**
+    // * Creates a new container from a bundle of the specified type.
+    // *
+    // * @param bundleType
+    // * the type of bundle to create the container from
+    // * @return a new container
+    // * @throws RuntimeException
+    // * if the container could not be created
+    // */
+    // static Container of(Class<? extends Bundle> bundleType) {
+    // return of(Bundles.instantiate(bundleType));
+    // }
 
     static Container of(Consumer<? super ContainerConfiguration> configurator, WiringOperation... operations) {
         requireNonNull(configurator, "configurator is null");

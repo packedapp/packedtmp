@@ -33,19 +33,18 @@ public class Mybb extends Bundle {
     }
 
     public static void main(String[] args) {
-        BundleDescriptor bd = BundleDescriptor.of(Mybb.class);
+        BundleDescriptor bd = BundleDescriptor.of(new Mybb());
 
         System.out.println(bd.bundleId());
         System.out.println(bd.bundleDescription());
 
-        Injector.of(Mybb.class, ConfigureWiringOperation.patchBundle(), ServiceRebinder.rewrite(Long.class).as(123L));
+        Injector.of(new Mybb(), ConfigureWiringOperation.patchBundle(), ServiceRebinder.rewrite(Long.class).as(123L));
 
-        Injector.of(Mybb.class, new ConfigureWiringOperation(MethodHandles.lookup()) {
+        Injector.of(new Mybb(), new ConfigureWiringOperation(MethodHandles.lookup()) {
             @Provides(instantionMode = InstantiationMode.PROTOTYPE)
             public Long foo() {
                 return System.nanoTime();
             }
         });
-
     }
 }

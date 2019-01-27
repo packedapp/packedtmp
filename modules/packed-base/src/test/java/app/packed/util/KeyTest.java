@@ -113,24 +113,24 @@ public class KeyTest {
         npe(() -> Key.fromField(null), "field");
 
         Field f = Tmpx.class.getDeclaredField("ok");
-        assertThat(Key.fromField(f).getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromField(f).hasQualifier()).isFalse();
-        assertThat(Key.fromField(f).getQualifier().isPresent()).isFalse();
+        assertThat(Key.fromField(f).qualifier().isPresent()).isFalse();
 
         f = Tmpx.class.getDeclaredField("okQualified");
-        assertThat(Key.fromField(f).getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromField(f).hasQualifier()).isTrue();
-        assertThat(Key.fromField(f).getQualifier().get()).isEqualTo(CharQualifiers.X);
+        assertThat(Key.fromField(f).qualifier().get()).isEqualTo(CharQualifiers.X);
 
         f = Tmpx.class.getDeclaredField("primitive");
-        assertThat(Key.fromField(f).getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromField(f).hasQualifier()).isFalse();
-        assertThat(Key.fromField(f).getQualifier().isPresent()).isFalse();
+        assertThat(Key.fromField(f).qualifier().isPresent()).isFalse();
 
         f = Tmpx.class.getDeclaredField("primitiveQualified");
-        assertThat(Key.fromField(f).getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromField(f).hasQualifier()).isTrue();
-        assertThat(Key.fromField(f).getQualifier().get()).isEqualTo(CharQualifiers.X);
+        assertThat(Key.fromField(f).qualifier().get()).isEqualTo(CharQualifiers.X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(Tmpx.class.getDeclaredField("notTypeParameterFree")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -193,24 +193,24 @@ public class KeyTest {
         npe(() -> Key.fromMethodReturnType(null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
-        assertThat(Key.fromMethodReturnType(m).getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
-        assertThat(Key.fromMethodReturnType(m).getQualifier().isPresent()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).qualifier().isPresent()).isFalse();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
-        assertThat(Key.fromMethodReturnType(m).getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
-        assertThat(Key.fromMethodReturnType(m).getQualifier().get()).isEqualTo(CharQualifiers.X);
+        assertThat(Key.fromMethodReturnType(m).qualifier().get()).isEqualTo(CharQualifiers.X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
-        assertThat(Key.fromMethodReturnType(m).getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
-        assertThat(Key.fromMethodReturnType(m).getQualifier().isPresent()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).qualifier().isPresent()).isFalse();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
-        assertThat(Key.fromMethodReturnType(m).getTypeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
-        assertThat(Key.fromMethodReturnType(m).getQualifier().get()).isEqualTo(CharQualifiers.X);
+        assertThat(Key.fromMethodReturnType(m).qualifier().get()).isEqualTo(CharQualifiers.X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -230,18 +230,18 @@ public class KeyTest {
 
     @Test
     public void getQualifier() {
-        assertThat(KEY_INTEGER.getQualifier()).isEmpty();
-        assertThat(KEY_INTEGER_X.getQualifier().get()).isEqualTo(CharQualifiers.X);
+        assertThat(KEY_INTEGER.qualifier()).isEmpty();
+        assertThat(KEY_INTEGER_X.qualifier().get()).isEqualTo(CharQualifiers.X);
     }
 
     /** Tests {@link Key#getTypeLiteral()}. */
     @Test
     public void getTypeLiteral() {
-        assertThat(KEY_INT_OF.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_INTEGER.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_INTEGER_X.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_LIST_WILDCARD.getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KEY_LIST_WILDCARD_X.getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_INT_OF.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_INTEGER.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_INTEGER_X.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_LIST_WILDCARD.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD_X.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
     }
 
     @Test
@@ -302,7 +302,7 @@ public class KeyTest {
 
     @Test
     public void typeParameters() {
-        assertThat(KEY_LIST_WILDCARD.getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KEY_LIST_WILDCARD_X.getTypeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD_X.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
     }
 }

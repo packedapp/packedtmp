@@ -124,7 +124,7 @@ public final class InternalDependency implements Dependency {
         if (variable instanceof FieldDescriptor) {
             return Optional.of(((FieldDescriptor) variable));
         } else if (variable instanceof ParameterDescriptor) {
-            return Optional.of(((ParameterDescriptor) variable).getDeclaringExecutable());
+            return Optional.of(((ParameterDescriptor) variable).declaringExecutable());
         } else {
             return Optional.empty();
         }

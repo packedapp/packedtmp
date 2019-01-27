@@ -50,7 +50,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
     public RuntimeServiceNodeSingleton(ServiceBuildNode<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
-        this.instantionMode = buildNode.getInstantiationMode();
+        this.instantionMode = buildNode.instantiationMode();
     }
 
     /** {@inheritDoc} */
@@ -61,7 +61,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode getInstantiationMode() {
+    public InstantiationMode instantiationMode() {
         return instantionMode;
     }
 

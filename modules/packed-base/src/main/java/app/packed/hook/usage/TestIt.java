@@ -15,8 +15,9 @@
  */
 package app.packed.hook.usage;
 
-import app.packed.hook.AnnotatedComponentMethod;
-import app.packed.hook.ProcessHook;
+import app.packed.container.AnnotatedFieldHook;
+import app.packed.container.AnnotatedMethodHook;
+import app.packed.container.Hook;
 import app.packed.lifecycle.OnStart;
 
 /**
@@ -25,8 +26,16 @@ import app.packed.lifecycle.OnStart;
 public class TestIt {
 
     // https://en.wikipedia.org/wiki/Hooking
-    @ProcessHook
-    public void foo(AnnotatedComponentMethod<OnStart> method) {
+
+    @Hook
+    public void foo(AnnotatedFieldHook<OnStart> method) {
+        for (String s : method.annotation().after()) {
+            System.out.println(s);
+        }
+    }
+
+    @Hook
+    public void foo(AnnotatedMethodHook<OnStart> method) {
         for (String s : method.annotation().after()) {
             System.out.println(s);
         }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook.various;
 
 import app.packed.container.Component;
 import app.packed.container.Container;
@@ -105,6 +105,8 @@ public interface ComponentMethod /* extends Contextualizable, BindableMethod */ 
         // checkAllBound();
         return this;
     }
+
+    // Take ideas from FailSafe
 
     // Er vel en slags AOP...
     // interruptOnShutdown();

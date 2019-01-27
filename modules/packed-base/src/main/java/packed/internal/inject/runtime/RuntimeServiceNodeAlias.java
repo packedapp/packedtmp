@@ -44,8 +44,8 @@ public final class RuntimeServiceNodeAlias<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode getInstantiationMode() {
-        return aliasOf.getInstantiationMode();
+    public InstantiationMode instantiationMode() {
+        return aliasOf.instantiationMode();
     }
 
     /** {@inheritDoc} */

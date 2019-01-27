@@ -39,8 +39,8 @@ public class TestIt {
         }, OtherWiringOperation.disableConfigurationSite());
         System.out.println("Done");
         co.components().forEach(e -> {
-            System.out.println(e.getConfigurationSite());
-            System.out.println(e.getPath());
+            System.out.println(e.configurationSite());
+            System.out.println(e.path());
         });
         System.out.println(co.components().count());
 

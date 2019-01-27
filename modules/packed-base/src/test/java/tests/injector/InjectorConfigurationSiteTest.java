@@ -44,7 +44,7 @@ import support.stubs.Letters.I;
 import support.stubs.Letters.J;
 
 /**
- * Tests {@link ServiceConfiguration#getConfigurationSite()} and {@link Injector#getConfigurationSite()}.
+ * Tests {@link ServiceConfiguration#configurationSite()} and {@link Injector#configurationSite()}.
  * <p>
  * Most of the test are pretty hackish.
  */
@@ -82,23 +82,23 @@ public class InjectorConfigurationSiteTest {
             binding0(conf.bindPrototype(TypeLiteral.of(J.class)));
         });
         for (Entry<Class<?>, ConfigurationSite> e : sites.entrySet()) {
-            ConfigurationSite cs = inj.getService(e.getKey()).getConfigurationSite();
+            ConfigurationSite cs = inj.getService(e.getKey()).configurationSite();
             assertThat(cs).isSameAs(e.getValue());
-            assertThat(cs.parent().get()).isSameAs(inj.getConfigurationSite());
+            assertThat(cs.parent().get()).isSameAs(inj.configurationSite());
         }
     }
 
     /** A helper method for {@link #binding()}. */
     private void binding0(ServiceConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
-        int index = sc.getKey().getTypeLiteral().getRawType().getSimpleName().toString().charAt(0) - 'A';
-        ConfigurationSite cs = sc.getConfigurationSite();
+        int index = sc.getKey().typeLiteral().getRawType().getSimpleName().toString().charAt(0) - 'A';
+        ConfigurationSite cs = sc.configurationSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
         assertThat(cs.operation()).isEqualTo(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND.operation());
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
-        sites.put(sc.getKey().getTypeLiteral().getRawType(), cs);
+        sites.put(sc.getKey().typeLiteral().getRawType(), cs);
     }
 
     /**
@@ -116,12 +116,12 @@ public class InjectorConfigurationSiteTest {
             c.wireInjector(i);
         });
 
-        ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
+        ConfigurationSite cs = i2.getService(Integer.class).configurationSite();
         // First site is "c.importServicesFrom(i);"
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).getConfigurationSite());
+        assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).configurationSite());
 
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.of(c -> {
@@ -129,12 +129,12 @@ public class InjectorConfigurationSiteTest {
             c.wireInjector(i2);
         });
 
-        cs = i3.getService(Integer.class).getConfigurationSite();
+        cs = i3.getService(Integer.class).configurationSite();
         // First site is "c.importServicesFrom(i);"
         line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i2.getService(Integer.class).getConfigurationSite());
+        assertThat(cs.parent().get()).isSameAs(i2.getService(Integer.class).configurationSite());
     }
 
     @Test

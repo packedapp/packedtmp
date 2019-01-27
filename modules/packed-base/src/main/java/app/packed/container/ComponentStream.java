@@ -147,7 +147,7 @@ public interface ComponentStream extends Stream<Component> {
 
     default <T> ComponentStream filterOnType(Class<T> type) {
         return filter(c -> {
-            return c.getInstance().getClass().isAssignableFrom(type);
+            return c.instance().getClass().isAssignableFrom(type);
         });
     }
 
@@ -167,10 +167,10 @@ public interface ComponentStream extends Stream<Component> {
     @Override
     ComponentStream skip(long n);
 
-    /** Returns a new component stream where components are sorted by their {@link Component#getPath()}. */
+    /** Returns a new component stream where components are sorted by their {@link Component#path()}. */
     @Override
     default ComponentStream sorted() {
-        return sorted((a, b) -> a.getPath().compareTo(b.getPath()));
+        return sorted((a, b) -> a.path().compareTo(b.path()));
     }
 
     /** {@inheritDoc} */

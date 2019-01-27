@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
@@ -66,7 +67,7 @@ public class InternalComponent implements Component {
     InternalComponent(InternalContainer container, InternalComponentConfiguration<?> configuration, InternalComponent parent, boolean isRuntime, String name) {
         this.container = requireNonNull(container);
         this.configuration = requireNonNull(configuration);
-        this.configurationSite = configuration.getConfigurationSite();
+        this.configurationSite = configuration.configurationSite();
         this.parent = parent;
         this.description = configuration.getDescription();
         this.name = requireNonNull(name);
@@ -81,25 +82,25 @@ public class InternalComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigurationSite getConfigurationSite() {
+    public ConfigurationSite configurationSite() {
         return configurationSite;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Container getContainer() {
+    public Container container() {
         return container;
     }
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable String getDescription() {
-        return description;
+    public Optional<String> description() {
+        return Optional.ofNullable(description);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Object getInstance() {
+    public Object instance() {
         // TODO we need to check the state of the component O think
         // If the component was terminated without ever being initialized we should return any instance
         return instances()[0];
@@ -119,7 +120,7 @@ public class InternalComponent implements Component {
             InternalComponentConfiguration<?> configuration = this.configuration;
             if (configuration != null) {
                 if (Thread.currentThread() != configuration.initializationThread && getState() == LifecycleState.INITIALIZING) {
-                    throw new IllegalStateException("The Component instance has not been instantiated yet, component = " + getPath());
+                    throw new IllegalStateException("The Component instance has not been instantiated yet, component = " + path());
                 } else {
                     return configuration.instances;
                 }
@@ -146,13 +147,13 @@ public class InternalComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
+    public String name() {
         return name;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath getPath() {
+    public ComponentPath path() {
         return new InternalComponentPath(this);
     }
 

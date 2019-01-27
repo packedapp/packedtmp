@@ -17,9 +17,11 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.config.ConfigurationSite;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -49,28 +51,34 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
      *            the build node to create the runtime node from
      */
     RuntimeServiceNode(ServiceBuildNode<T> node) {
-        this.configurationSite = requireNonNull(node.getConfigurationSite());
+        this.configurationSite = requireNonNull(node.configurationSite());
         this.description = node.getDescription();
-        this.key = requireNonNull(node.getKey());
+        this.key = requireNonNull(node.key());
         this.tags = node.immutableCopyOfTags();
     }
 
+    @Override
+    public abstract InstantiationMode instantiationMode();
+
     /** {@inheritDoc} */
     @Override
-    public final ConfigurationSite getConfigurationSite() {
+    public final ConfigurationSite configurationSite() {
         return configurationSite;
     }
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
+    public final Optional<String> description() {
+        return Optional.ofNullable(description);
+    }
+
     public final String getDescription() {
         return description;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final Key<T> getKey() {
+    public final Key<T> key() {
         return key;
     }
 
@@ -102,8 +110,8 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getKey());
-        sb.append("[").append(getInstantiationMode()).append(']');
+        sb.append(key());
+        sb.append("[").append(instantiationMode()).append(']');
         if (description != null) {
             sb.append(":").append(description);
 

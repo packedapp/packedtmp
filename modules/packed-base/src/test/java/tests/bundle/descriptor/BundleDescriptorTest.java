@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 
@@ -65,9 +64,9 @@ public class BundleDescriptorTest {
             assertThat(d.services().exports()).containsOnlyKeys(Key.of(String.class));
             ServiceDescriptor sd = d.services().exports().get(Key.of(String.class));
 
-            assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
-            assertThat(sd.getDescription()).isEqualTo("fooDesc");
-            assertThat(sd.getKey()).isEqualTo(Key.of(String.class));
+            // assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
+            assertThat(sd.description()).isEqualTo("fooDesc");
+            assertThat(sd.key()).isEqualTo(Key.of(String.class));
             assertThat(sd.tags()).isEmpty();
         }
     }

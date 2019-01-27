@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.bundle.Bundle;
+import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 
 /**
@@ -32,7 +33,7 @@ public class TetIt {
         for (int i = 0; i < 1_000_000; i++) {
             Injector inj = Injector.of(c -> {
                 c.lookup(MethodHandles.lookup());
-                c.bind("foo");
+                c.bind(Factory.ofInstance("foo"));
                 c.bind(NeedsString.class);
             });
             requireNonNull(inj.with(NeedsString.class));
@@ -49,9 +50,9 @@ public class TetIt {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            install("Root").asNone();
-            install("Child1").asNone();
-            install("Child2").asNone();
+            install(Factory.ofInstance("Root")).asNone();
+            install(Factory.ofInstance("Child1")).asNone();
+            install(Factory.ofInstance("Child2")).asNone();
         }
     }
 }

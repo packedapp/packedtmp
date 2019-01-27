@@ -49,7 +49,7 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
 
     @SuppressWarnings("unchecked")
     public ExecutableInvoker(InternalMethodDescriptor methodDescriptor) {
-        super((TypeLiteral<T>) methodDescriptor.getReturnTypeLiteral(), null);
+        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), null);
         this.executable = methodDescriptor;
         this.methodHandle = null;
         this.checkLowerBound = false;

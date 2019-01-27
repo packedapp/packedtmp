@@ -138,6 +138,12 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
 
     /** {@inheritDoc} */
     @Override
+    public final Key<T> key() {
+        return key;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final Key<T> getKey() {
         return key;
     }

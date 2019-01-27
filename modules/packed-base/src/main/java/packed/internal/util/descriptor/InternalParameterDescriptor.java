@@ -85,7 +85,7 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
 
     /** {@inheritDoc} */
     @Override
-    public ExecutableDescriptor getDeclaringExecutable() {
+    public ExecutableDescriptor declaringExecutable() {
         return declaringExecutable;
     }
 

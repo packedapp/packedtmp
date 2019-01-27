@@ -36,8 +36,8 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
             c.lookup(MethodHandles.lookup());
             c.install(new WithDescription());
         });
-        assertThat(i.getService(Long.class).getDescription()).isEqualTo("niceField");
-        assertThat(i.getService(Integer.class).getDescription()).isEqualTo("niceMethod");
+        assertThat(i.getService(Long.class).description()).isEqualTo("niceField");
+        assertThat(i.getService(Integer.class).description()).isEqualTo("niceMethod");
     }
 
     /** Tests service with description on {@link Provides}. */
@@ -47,8 +47,8 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
             c.lookup(MethodHandles.lookup());
             c.install(new WithoutDescription());
         });
-        assertThat(i.getService(Long.class).getDescription()).isNull();
-        assertThat(i.getService(Integer.class).getDescription()).isNull();
+        assertThat(i.getService(Long.class).description()).isNull();
+        assertThat(i.getService(Integer.class).description()).isNull();
     }
 
     /** Tests service with description on {@link Provides}. */
@@ -58,8 +58,8 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
             c.lookup(MethodHandles.lookup());
             c.bind(new WithDescription());
         });
-        assertThat(i.getService(Long.class).getDescription()).isEqualTo("niceField");
-        assertThat(i.getService(Integer.class).getDescription()).isEqualTo("niceMethod");
+        assertThat(i.getService(Long.class).description()).isEqualTo("niceField");
+        assertThat(i.getService(Integer.class).description()).isEqualTo("niceMethod");
     }
 
     /** Tests service without description on {@link Provides}. */
@@ -69,8 +69,8 @@ public class ProvidesDescriptionTest extends AbstractInjectorTest {
             c.lookup(MethodHandles.lookup());
             c.bind(new WithoutDescription());
         });
-        assertThat(i.getService(Long.class).getDescription()).isNull();
-        assertThat(i.getService(Integer.class).getDescription()).isNull();
+        assertThat(i.getService(Long.class).description()).isNull();
+        assertThat(i.getService(Integer.class).description()).isNull();
     }
 
     static class WithDescription {

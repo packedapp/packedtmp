@@ -15,6 +15,8 @@
  */
 package app.packed.util;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
@@ -85,5 +87,10 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
      * @see Lookup#unreflectVarHandle(Field)
      */
     // TODO not sure I want this on an interface?????? Maybe put back on internal class again...
-    VarHandle unreflect(Lookup lookup) throws IllegalAccessException;
+    VarHandle unreflectVarHandle(MethodHandles.Lookup lookup) throws IllegalAccessException;
+
+    MethodHandle unreflectGetter(MethodHandles.Lookup lookup) throws IllegalAccessException;
+
+    MethodHandle unreflectSetter(MethodHandles.Lookup lookup) throws IllegalAccessException;
+
 }

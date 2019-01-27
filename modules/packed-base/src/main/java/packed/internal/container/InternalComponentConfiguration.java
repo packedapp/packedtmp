@@ -269,7 +269,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
             component = new InternalComponent(container, this, null, false, getName());
         } else {
             component = new InternalComponent(container, this, parent.component, false, getName());
-            parent.component.children.put(component.getName(), component);
+            parent.component.children.put(component.name(), component);
         }
     }
 }

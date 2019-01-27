@@ -16,10 +16,10 @@
 package app.packed.container;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import app.packed.config.ConfigurationSite;
 import app.packed.inject.Injector;
-import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 
 /**
@@ -40,14 +40,14 @@ public interface Component extends Taggable {
      * 
      * @return the configuration site of the component
      */
-    ConfigurationSite getConfigurationSite();
+    ConfigurationSite configurationSite();
 
     /**
      * Returns the container that this component is installed in.
      *
      * @return the container that this component is installed in
      */
-    Container getContainer();
+    Container container();
 
     /**
      * Returns the description of this component Or null if no description has been set
@@ -56,8 +56,15 @@ public interface Component extends Taggable {
      *
      * @see ComponentConfiguration#setDescription(String)
      */
-    @Nullable
-    String getDescription();
+    Optional<String> description();
+
+    /**
+     * Returns the private injector of this component.
+     *
+     * @return the private injector of this component
+     */
+    // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
+    Injector injector();
 
     /**
      * Returns the component instance.
@@ -67,7 +74,7 @@ public interface Component extends Taggable {
      *             if invoking this method before the component has been initialized from another thread then the thread
      *             that is initializing the component.
      */
-    Object getInstance();
+    Object instance();
 
     /**
      * Returns the name of this component.
@@ -79,22 +86,14 @@ public interface Component extends Taggable {
      *
      * @see ComponentConfiguration#setName(String)
      */
-    String getName();
+    String name();
 
     /**
      * Returns the path of this component.
      *
      * @return the path of this component
      */
-    ComponentPath getPath();
-
-    /**
-     * Returns the private injector of this component.
-     *
-     * @return the private injector of this component
-     */
-    // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
-    Injector injector();
+    ComponentPath path();
 
     /**
      * Returns a component stream consisting of this component and all of its descendants in any order.

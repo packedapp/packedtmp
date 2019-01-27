@@ -16,7 +16,7 @@
 package packed.internal.inject.builder;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleConfigurationContext;
+import app.packed.bundle.BuildContext;
 import app.packed.bundle.BundleDescriptor;
 import app.packed.inject.ServiceConfiguration;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -35,7 +35,7 @@ public class InternalBundleDescriptor {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         InjectorBuilder conf = new InjectorBuilder(ics, bundle);
 
-        BundleConfigurationContext bs = new BundleConfigurationContext() {
+        BuildContext bs = new BuildContext() {
             @SuppressWarnings("unchecked")
             @Override
             public <T> T with(Class<? super T> type) {

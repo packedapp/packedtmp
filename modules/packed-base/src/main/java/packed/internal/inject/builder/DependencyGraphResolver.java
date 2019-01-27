@@ -68,7 +68,7 @@ class DependencyGraphResolver {
                             if (dependency.getVariable() != null) {
 
                                 InternalExecutableDescriptor e = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.getVariable().get())
-                                        .getDeclaringExecutable();
+                                        .declaringExecutable();
                                 sb.append(e.descriptorTypeName()).append(": ");
                                 sb.append(e.getDeclaringClass().getCanonicalName());
                                 if (e instanceof MethodDescriptor) {
@@ -81,7 +81,7 @@ class DependencyGraphResolver {
                                         if (j == i) {
                                             sj.add("-> " + dependency.getKey().toString() + " <-");
                                         } else {
-                                            sj.add(dependencies.get(j).getKey().getTypeLiteral().getRawType().getSimpleName());
+                                            sj.add(dependencies.get(j).getKey().typeLiteral().getRawType().getSimpleName());
                                         }
                                     }
                                     sb.append(sj.toString());
@@ -92,7 +92,7 @@ class DependencyGraphResolver {
                                 }
                                 sb.append(")");
                             }
-                            System.err.println(b.root.privateNodeMap.stream().map(e -> e.getKey()).collect(Collectors.toList()));
+                            System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                             throw new InjectionException(sb.toString());
                         }
 

@@ -22,7 +22,7 @@ import java.util.List;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InvokableMember;
 
-/** A descriptor of the {@link Inject} annotation. */
+/** A descriptor of an annotated member that requires any kind of dependencies injected. */
 public class AtDependable {
 
     /** Any dependencies (parameters) the annotated member has. */

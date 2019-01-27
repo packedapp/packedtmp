@@ -18,6 +18,7 @@ package app.packed.inject;
 /**
  * The instantiation mode of a service.
  */
+// lazy, prototype, no_cache
 public enum InstantiationMode {
 
     /**

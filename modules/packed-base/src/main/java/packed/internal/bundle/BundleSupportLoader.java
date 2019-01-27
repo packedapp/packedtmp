@@ -17,7 +17,7 @@ package packed.internal.bundle;
 
 import java.util.ServiceLoader;
 
-import app.packed.bundle.PackedProvider;
+import app.packed.bundle.ModuleEnv;
 
 /**
  *
@@ -25,7 +25,7 @@ import app.packed.bundle.PackedProvider;
 public class BundleSupportLoader {
 
     public static void main(String[] args) {
-        for (PackedProvider bs : ServiceLoader.load(PackedProvider.class, BundleSupportLoader.class.getClassLoader())) {
+        for (ModuleEnv bs : ServiceLoader.load(ModuleEnv.class, BundleSupportLoader.class.getClassLoader())) {
             System.out.println(bs);
 
         }

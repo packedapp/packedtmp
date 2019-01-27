@@ -18,6 +18,7 @@ package packed.internal.inject.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -56,7 +57,7 @@ public final class InternalInjector extends AbstractInjector {
         this.nodes = requireNonNull(nodes);
         this.tags = injectorConfiguration.immutableCopyOfTags();
         this.description = injectorConfiguration.getDescription();
-        this.configurationSite = injectorConfiguration.getConfigurationSite();
+        this.configurationSite = injectorConfiguration.configurationSite();
     }
 
     @Override
@@ -79,22 +80,21 @@ public final class InternalInjector extends AbstractInjector {
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite getConfigurationSite() {
+    public InternalConfigurationSite configurationSite() {
         return configurationSite;
     }
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public String getDescription() {
-        return description;
+    public Optional<String> description() {
+        return Optional.ofNullable(description);
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) nodes.stream().filter(e -> !e.getKey().equals(KeyBuilder.INJECTOR_KEY));
+        return (Stream) nodes.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
     }
 
     /** {@inheritDoc} */

@@ -50,12 +50,14 @@ public class AtLifecycleGroup {
 
     /** A builder for an {@link AtProvidesGroup}. */
     public final static class Builder {
+
+        /** All non-static methods annotated with {@link OnInitialize}. */
         List<AtLifecycle> onInitialize;
 
-        /** All non-static methods annotated with {@link OnInitialize}. */
+        /** All non-static methods annotated with {@link OnStart}. */
         List<AtLifecycle> onStart;
 
-        /** All non-static methods annotated with {@link OnInitialize}. */
+        /** All non-static methods annotated with {@link OnStop}. */
         List<AtLifecycle> onStop;
     }
 }

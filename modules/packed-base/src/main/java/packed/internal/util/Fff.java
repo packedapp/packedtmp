@@ -13,28 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.util;
 
-import java.lang.annotation.Annotation;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
  */
+public class Fff {
+    public static void main(String[] args) throws URISyntaxException {
+        System.out.println(Fff.class.getModule());
+        System.out.println(Fff.class.getModule().getClassLoader());
 
-// Analysis
+        System.out.println(Integer.class.getModule().getDescriptor());
 
-// On Initialize
+        URI resource = Fff.class.getResource("/modules").toURI();
 
-// @Inject <- Inject phase ..... Saa burde det vel ogsaa virke i injector:!>>!!! only, on non-provided methods...
-// betyder det vi ogsaa har hooks....??? Naaah, maaske vi goer det paa en anden maade
-// @OnInitialize
-// @OnStart
-// @OnStop
-// @OnNative.....
-public @interface AnnotatedXHook {
-    Class<? extends Annotation> annotation();
+    }
 }
-
-// Maaske allow it..... on non-provided methods.... Its
-
-// Okay

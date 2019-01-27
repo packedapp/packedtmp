@@ -30,7 +30,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.hook.Hook;
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
@@ -60,7 +59,7 @@ import packed.internal.util.TypeUtil;
  * <li><b>Not be an optional type.</b> The key cannot be of type {@link Optional}, {@link OptionalInt},
  * {@link OptionalLong} or {@link OptionalDouble} as they are a reserved type.</li>
  * <li><b>Have 0 or 1 qualifier.</b> A valid key cannot have more than 1 annotations whose type is annotated with
- * {@link Hook}</li>
+ * {@link Qualifier}</li>
  * </ul>
  * Furthermore, keys do <b>not</b> differentiate between primitive types (long, double, etc.) and their corresponding
  * wrapper types (Long, Double, etc.). Primitive types will be replaced with their wrapper types when keys are created.
@@ -157,24 +156,6 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         return Objects.equals(qualifier, other.qualifier) && typeLiteral.equals(other.typeLiteral);
     }
 
-    /**
-     * Returns any qualifier this key might have, or an empty optional if this key has no qualifier.
-     *
-     * @return any qualifier this key might have, or an empty optional if this key has no qualifier
-     */
-    public final Optional<Annotation> getQualifier() {
-        return Optional.ofNullable(qualifier);
-    }
-
-    /**
-     * Returns the generic type of this key.
-     * 
-     * @return the generic type of this key
-     */
-    public final TypeLiteral<T> getTypeLiteral() {
-        return typeLiteral;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
@@ -202,6 +183,15 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         return qualifier != null && qualifier.annotationType() == qualifierType;
     }
 
+    /**
+     * Returns any qualifier this key might have, or an empty optional if this key has no qualifier.
+     *
+     * @return any qualifier this key might have, or an empty optional if this key has no qualifier
+     */
+    public final Optional<Annotation> qualifier() {
+        return Optional.ofNullable(qualifier);
+    }
+
     /** {@inheritDoc} */
     @Override
     public final String toString() {
@@ -225,6 +215,15 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
     }
 
     /**
+     * Returns the generic type of this key.
+     * 
+     * @return the generic type of this key
+     */
+    public final TypeLiteral<T> typeLiteral() {
+        return typeLiteral;
+    }
+
+    /**
      * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
      * ({@code hasQualifier() == false}), returns this key.
      * 
@@ -241,7 +240,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      *            the new key's qualifier
      * @return the new key
      * @throws InvalidDeclarationException
-     *             if the specified annotation is not annotated with {@link Hook}.
+     *             if the specified annotation is not annotated with {@link Qualifier}.
      */
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
@@ -259,7 +258,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      * @throws IllegalArgumentException
      *             if the specified qualifier type does not have default values for every attribute
      * @throws InvalidDeclarationException
-     *             if the specified qualifier type is not annotated with {@link Hook}.
+     *             if the specified qualifier type is not annotated with {@link Qualifier}.
      */
     public final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
         JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierType);
@@ -321,7 +320,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      * @return a key with the specified qualifier and the same type as this instance
      * @throws InvalidDeclarationException
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             qualifier type is not annotated with {@link Hook}.
+     *             qualifier type is not annotated with {@link Qualifier}.
      */
     static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");

@@ -22,11 +22,9 @@ import java.util.function.Consumer;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
-import app.packed.hook.Hook;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
-import packed.internal.bundle.Bundles;
 
 /**
  * A configuration object for an {@link Injector}. This interface is typically used when configuring a new injector via
@@ -40,8 +38,8 @@ public interface InjectorConfiguration extends Taggable {
      * {@link Factory#findInjectable(Class)} to find the constructor or method used for instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the specified {@code Class} is
-     * annotated with a {@link Hook qualifier annotation}, the default key will include the qualifier. For example, given
-     * this implementation: <pre>
+     * annotated with a {@link Qualifier qualifier annotation}, the default key will include the qualifier. For example,
+     * given this implementation: <pre>
      * &#64;SomeQualifier
      * public class SomeService {}
      * </pre>
@@ -85,7 +83,7 @@ public interface InjectorConfiguration extends Taggable {
      * Binds the specified instance as a new service.
      * <p>
      * The default key for the service will be {@code instance.getClass()}. If the type returned by
-     * {@code instance.getClass()} is annotated with a {@link Hook qualifier annotation}, the default key will have the
+     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
      * qualifier annotation added.
      *
      * @param <T>
@@ -98,15 +96,15 @@ public interface InjectorConfiguration extends Taggable {
 
     <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation);
 
-    /**
-     * @param bundleType
-     *            the type of bundle to instantiate
-     * @param stages
-     *            optional stages
-     */
-    default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-        wireInjector(Bundles.instantiate(bundleType), stages);
-    }
+    // /**
+    // * @param bundleType
+    // * the type of bundle to instantiate
+    // * @param stages
+    // * optional stages
+    // */
+    // default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
+    // wireInjector(Bundles.instantiate(bundleType), stages);
+    // }
 
     /**
      * Binds all services from the specified injector.

@@ -54,7 +54,7 @@ final class InternalComponentStream extends AbstractDelegatingStream<Component> 
 
     @Override
     public Stream<Object> instances() {
-        return map(e -> e.getInstance());
+        return map(e -> e.instance());
     }
 
     @SuppressWarnings("unchecked")

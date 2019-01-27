@@ -82,13 +82,13 @@ public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
     }
 
     public void put(ServiceNode<?> node) {
-        requireNonNull(node.getKey());
-        nodes.put(node.getKey(), node);
+        requireNonNull(node.key());
+        nodes.put(node.key(), node);
     }
 
     public boolean putIfAbsent(ServiceNode<?> node) {
-        requireNonNull(node.getKey());
-        return nodes.putIfAbsent(node.getKey(), node) == null;
+        requireNonNull(node.key());
+        return nodes.putIfAbsent(node.key(), node) == null;
     }
 
     public Stream<ServiceNode<?>> stream() {

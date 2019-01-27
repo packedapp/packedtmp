@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.bundle;
 
 /**
  *
  */
+// What's the lifecycle of this faetter....
+// Den er tilgaengelig fra Bundle.configure()....
+// AppWiringContext, AppBootContext
+// Vi kan jo godt klare os uden for the time being...
+// WireContext
+public class XBuildContext {
 
-// So apps are a thing.....
-// Environment... would also be something
-
-public class AppConfigurationContext {
+    public enum Stage {
+        CREATE_RUNTIME, GENERATE_DESCRIPTOR, GENERATE_IMAGE;
+    }
 
     // Allow fallback services in some way
 
@@ -31,17 +36,7 @@ public class AppConfigurationContext {
     // Logging
     // Threads. startup shutdown
 
-    public static void main(String[] args) {
-        System.out.println("HelloWorld");
-        // Injector.of(c -> {
-        // c.bind("foo");
-        // });
-    }
-
     // I forhold til environment
-    public enum Stage {
-        CREATE_RUNTIME, GENERATE_DESCRIPTOR, GENERATE_IMAGE;
-    }
 
     // Rename to wireInjector, wireContainer
 
@@ -50,6 +45,7 @@ public class AppConfigurationContext {
     // Require MessageConsumer
 
     // Ideen er at man kan f.eks. binde services.....
-
-    // App.launch(Class<? extends Bundle>,
 }
+
+// So apps are a thing.....
+// Environment... would also be something

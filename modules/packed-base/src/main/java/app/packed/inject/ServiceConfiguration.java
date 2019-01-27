@@ -61,18 +61,11 @@ public interface ServiceConfiguration<T> extends Taggable {
     ServiceConfiguration<?> asNone();
 
     /**
-     * Returns the instantiation mode of the service.
-     *
-     * @return the instantiation mode of the service
-     */
-    InstantiationMode getInstantiationMode();
-
-    /**
      * Returns the configuration site where this configuration was created.
      * 
      * @return the configuration site where this configuration was created
      */
-    ConfigurationSite getConfigurationSite();
+    ConfigurationSite configurationSite();
 
     /**
      * Returns the description of this service. Or null if no description has been set.
@@ -93,13 +86,19 @@ public interface ServiceConfiguration<T> extends Taggable {
     Key<?> getKey();
 
     /**
+     * Returns the instantiation mode of the service.
+     *
+     * @return the instantiation mode of the service
+     */
+    InstantiationMode instantiationMode();
+
+    /**
      * Sets the description of this service.
      *
      * @param description
      *            the description of the service
      * @return this configuration
      * @see #getDescription()
-     * @see ServiceDescriptor#getDescription()
      */
     ServiceConfiguration<T> setDescription(@Nullable String description);
 

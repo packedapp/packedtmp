@@ -152,7 +152,7 @@ public final class FieldInvoker<T> extends InvokableMember<T> {
             if (Modifier.isPrivate(field.getModifiers())) {
                 lookup = lookup.in(field.getDeclaringClass());
             }
-            handle = field.unreflect(lookup);
+            handle = field.unreflectVarHandle(lookup);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }

@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bundle;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 
-import app.packed.bundle.Bundle;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.util.TypeUtil;
 
@@ -28,6 +29,7 @@ import packed.internal.util.TypeUtil;
  * Various bundle utility methods.
  */
 // Hvis vi kun har en kan vi jo smide den paa bundle
+@Deprecated
 public class Bundles {
 
     /**
@@ -52,6 +54,23 @@ public class Bundles {
             }
             throw new InvalidDeclarationException(
                     "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
+        }
+    }
+
+    public static <T extends Bundle> T instantiate(Class<T> bundleType, MethodHandles.Lookup lookup) {
+        requireNonNull(bundleType, "bundleType is null");
+        try {
+            Constructor<T> c = bundleType.getDeclaredConstructor();
+            MethodHandle mh = lookup.unreflectConstructor(c);
+            return (T) mh.invoke();
+        } catch (ReflectiveOperationException e) {
+            if (TypeUtil.isInnerOrLocalClass(bundleType)) {
+                throw new InvalidDeclarationException("The specified bundle type is a inner (non-static) class, bundle type = " + format(bundleType), e);
+            }
+            throw new InvalidDeclarationException(
+                    "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -40,7 +40,7 @@ public class Xs {
         });
 
         System.out.println();
-        i2.getService(String.class).getConfigurationSite().print();
+        i2.getService(String.class).configurationSite().print();
 
     }
 }

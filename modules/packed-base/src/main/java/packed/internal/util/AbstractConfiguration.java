@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.AbstractSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.util.Nullable;
@@ -64,7 +65,7 @@ public abstract class AbstractConfiguration {
      * 
      * @return the configuration site of this configuration
      */
-    public final InternalConfigurationSite getConfigurationSite() {
+    public final InternalConfigurationSite configurationSite() {
         return configurationSite;
     }
 
@@ -75,6 +76,10 @@ public abstract class AbstractConfiguration {
      */
     public final String getDescription() {
         return description;
+    }
+
+    public final Optional<String> description() {
+        return Optional.ofNullable(description);
     }
 
     /**

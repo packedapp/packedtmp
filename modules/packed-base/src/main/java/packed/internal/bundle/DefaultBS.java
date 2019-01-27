@@ -15,11 +15,11 @@
  */
 package packed.internal.bundle;
 
-import app.packed.bundle.PackedProvider;
+import app.packed.bundle.ModuleEnv;
 
 /**
  *
  */
-public class DefaultBS extends PackedProvider {
+public class DefaultBS extends ModuleEnv {
 
 }

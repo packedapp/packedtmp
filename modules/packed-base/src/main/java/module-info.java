@@ -1,4 +1,5 @@
 module app.packed.base {
+    exports app.packed.app;
     exports app.packed.bundle;
     exports app.packed.config;
     exports app.packed.container;
@@ -16,7 +17,7 @@ module app.packed.base {
     exports packed.internal.util.descriptor to app.packed.base.devtools;
     exports packed.internal.config.site to app.packed.base.devtools;
 
-    uses app.packed.bundle.PackedProvider;
+    uses app.packed.bundle.ModuleEnv;
 
-    provides app.packed.bundle.PackedProvider with packed.internal.bundle.DefaultBS;
+    provides app.packed.bundle.ModuleEnv with packed.internal.bundle.DefaultBS;
 }

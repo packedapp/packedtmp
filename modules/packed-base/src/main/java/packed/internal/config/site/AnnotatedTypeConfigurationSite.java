@@ -25,9 +25,10 @@ import app.packed.config.ConfigurationSiteVisitor;
 /**
  *
  */
+// Hmm er den brugt nogen steder???
 public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationSite {
 
-    private final Class<?> clazz;
+    final Class<?> clazz;
 
     final Annotation annotation;
 
@@ -35,10 +36,6 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
         super(parent, operation);
         this.clazz = requireNonNull(clazz);
         this.annotation = requireNonNull(annotation);
-    }
-
-    public Class<?> getAnnotatedType() {
-        return clazz;
     }
 
     /** {@inheritDoc} */

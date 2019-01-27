@@ -17,6 +17,8 @@ package packed.internal.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
+
 import app.packed.bundle.Bundle;
 import app.packed.util.Nullable;
 import packed.internal.classscan.LookupCache;
@@ -26,7 +28,7 @@ import packed.internal.util.AbstractConfiguration;
 /**
  *
  */
-public abstract class RuntimeBuilder extends AbstractConfiguration {
+public abstract class ImageBuilder extends AbstractConfiguration {
 
     /** The lookup object. We default to public access */
     public LookupCache accessor = LookupCache.PUBLIC;
@@ -41,7 +43,7 @@ public abstract class RuntimeBuilder extends AbstractConfiguration {
     /**
      * @param configurationSite
      */
-    protected RuntimeBuilder(InternalConfigurationSite configurationSite) {
+    protected ImageBuilder(InternalConfigurationSite configurationSite) {
         super(configurationSite);
         this.bundle = null;
     }
@@ -49,8 +51,15 @@ public abstract class RuntimeBuilder extends AbstractConfiguration {
     /**
      * @param configurationSite
      */
-    protected RuntimeBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
+    protected ImageBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite);
         this.bundle = requireNonNull(bundle);
+    }
+
+    /** {@inheritDoc} */
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        checkConfigurable();
+        this.accessor = LookupCache.get(lookup);
     }
 }

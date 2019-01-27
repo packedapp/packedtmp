@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -112,7 +113,7 @@ public final class ServiceWiringOperations {
      */
     public static UpstreamWiringOperation removeImports(Class<?>... keys) {
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
-        return removeImports(d -> set.contains(d.getKey()));
+        return removeImports(d -> set.contains(d.key()));
     }
 
     /**
@@ -124,7 +125,7 @@ public final class ServiceWiringOperations {
      */
     public static UpstreamWiringOperation removeImports(Key<?>... keys) {
         Set<Key<?>> set = Set.of(keys);
-        return removeImports(d -> set.contains(d.getKey()));
+        return removeImports(d -> set.contains(d.key()));
     }
 
     // process(Key<K>, Consumer<K, K>); <- Som @Provides X process(X x) {return x}
@@ -152,7 +153,7 @@ public final class ServiceWiringOperations {
     public static UpstreamWiringOperation retainImports(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
-        return retainImports(d -> set.contains(d.getKey()));
+        return retainImports(d -> set.contains(d.key()));
     }
 
     /**
@@ -165,7 +166,7 @@ public final class ServiceWiringOperations {
     public static UpstreamWiringOperation retainImports(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Set.of(keys);
-        return retainImports(d -> set.contains(d.getKey()));
+        return retainImports(d -> set.contains(d.key()));
     }
 
     /**
@@ -199,6 +200,7 @@ public final class ServiceWiringOperations {
      * @return the wiring operation
      */
     public static <T, R> DownstreamWiringOperation bindDownstream(Object instance) {
+        MethodHandles.lookup();
         throw new UnsupportedOperationException();
     }
 

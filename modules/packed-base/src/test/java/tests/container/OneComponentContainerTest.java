@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.Component;
 import app.packed.container.ComponentPath;
 import app.packed.container.Container;
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 
@@ -63,14 +62,14 @@ public class OneComponentContainerTest {
         // Verify component
 
         assertThat(root.children()).isEmpty();
-        assertThat(root.getContainer()).isSameAs(con);
-        assertThat(root.getDescription()).isNull();
+        assertThat(root.container()).isSameAs(con);
+        assertThat(root.description()).isNull();
         // assertThat(c.getInstance()).isSameAs(foo);
-        assertThat(root.getName()).isNotNull();
+        assertThat(root.name()).isNotNull();
 
         // We cast the component path to CharSquence because AssertJ have trouble handling objects that both implement
         // CharSequence and Comparable.
-        CharSequence cs = root.getPath();
+        CharSequence cs = root.path();
         assertThat(cs).isEqualTo(ComponentPath.ROOT);
         assertThat(cs.toString()).isEqualTo("/");
 
@@ -85,16 +84,16 @@ public class OneComponentContainerTest {
         assertThat(con.with(String.class)).isSameAs(FOO);
 
         con.services().forEach(e -> {
-            System.out.println(e.getKey());
+            System.out.println(e.key());
         });
 
         Component c = con.root();
         ServiceDescriptor s = con.getService(String.class);
 
-        assertThat(c.getConfigurationSite()).isSameAs(s.getConfigurationSite());
-        assertThat(c.getDescription()).isSameAs(s.getDescription());
-        assertThat(s.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
-        assertThat(s.getKey()).isEqualTo(Key.of(String.class));
+        assertThat(c.configurationSite()).isSameAs(s.configurationSite());
+        assertThat(c.description()).isSameAs(s.description());
+        // assertThat(s.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
+        assertThat(s.key()).isEqualTo(Key.of(String.class));
         assertThat(s.tags()).isEmpty();
     }
     // TODO test lifecycle

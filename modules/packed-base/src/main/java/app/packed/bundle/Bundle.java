@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
+import app.packed.app.AppLaunch;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
-import app.packed.hook.Hook;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfiguration;
@@ -59,7 +59,22 @@ public abstract class Bundle {
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
 
-    BundleConfigurationContext context;
+    BuildContext context;
+
+    protected final Restrictions restrictions = null;
+
+    public interface Restrictions {
+        void service(Class<?> clazz);
+    }
+
+    protected ComponentConfiguration<?> installBundle() {
+        return containerBuilderX().install(this);
+    }
+
+    protected void buildWithBundle() {
+        // Insta
+        // NativeImageWriter
+    }
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
@@ -90,9 +105,9 @@ public abstract class Bundle {
      * 
      * @return the bundle support object
      */
-    protected final BundleConfigurationContext context() {
+    protected final BuildContext context() {
         // Vi laver en bundle nyt per configuration.....
-        BundleConfigurationContext s = context;
+        BuildContext s = context;
         if (s == null) {
             throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
         }
@@ -130,7 +145,7 @@ public abstract class Bundle {
      * find a valid constructor or method to instantiate the service instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
-     * a {@link Hook qualifier annotation}, the default key will have the qualifier annotation added.
+     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
      *
      * @param <T>
      *            the type of service to bind
@@ -155,9 +170,9 @@ public abstract class Bundle {
         return injectorBuilder().bind(implementation);
     }
 
-    protected final void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... operations) {
-        injectorBuilder().wireInjector(bundleType, operations);
-    }
+    // protected final void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... operations) {
+    // injectorBuilder().wireInjector(bundleType, operations);
+    // }
 
     /**
      * Imports the services that are available in the specified injector.
@@ -374,42 +389,54 @@ public abstract class Bundle {
         return containerBuilderX().install(factory);
     }
 
-    /**
-     * Install the specified component instance.
-     * <p>
-     * If this install operation is the first install operation of the container. The component will be installed as the
-     * root component of the container. All subsequent install operations on this bundle will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ComponentConfiguration} can be used to specify a specific parent.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param instance
-     *            the component instance to install
-     * @return this configuration
-     */
-    protected final <T> ComponentConfiguration<T> install(T instance) {
-        return containerBuilderX().install(instance);
-    }
+    // /**
+    // * Install the specified component instance.
+    // * <p>
+    // * If this install operation is the first install operation of the container. The component will be installed as the
+    // * root component of the container. All subsequent install operations on this bundle will have have component as its
+    // * parent. If you wish to have a specific component as a parent, the various install methods on
+    // * {@link ComponentConfiguration} can be used to specify a specific parent.
+    // *
+    // * @param <T>
+    // * the type of component to install
+    // * @param instance
+    // * the component instance to install
+    // * @return this configuration
+    // */
+    // protected final <T> ComponentConfiguration<T> install(T instance) {
+    // return containerBuilderX().install(instance);
+    // }
 
     protected final <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
         return containerBuilderX().install(implementation);
     }
 
-    protected final void wire(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-        containerBuilderX().wireContainer(bundleType, stages);
-    }
+    // protected final void wire(Class<? extends Bundle> bundleType, WiringOperation... stages) {
+    // containerBuilderX().wireContainer(bundleType, stages);
+    // }
 
     protected final void wire(Bundle bundle, WiringOperation... stages) {
         containerBuilderX().wireContainer(bundle, stages);
     }
 
-    protected final void wireContainer(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-        containerBuilderX().wireContainer(bundleType, stages);
-    }
+    // protected final void wireContainer(Class<? extends Bundle> bundleType, WiringOperation... stages) {
+    // containerBuilderX().wireContainer(bundleType, stages);
+    // }
 
     protected final void wireContainer(Bundle bundle, WiringOperation... stages) {
         containerBuilderX().wireContainer(bundle, stages);
+    }
+
+    static protected void run(Bundle b, WiringOperation... operations) {
+        AppLaunch.of(b, operations).run();
+    }
+
+    static protected void run(Bundle b, String[] args, WiringOperation... operations) {
+        AppLaunch.of(b, args, operations).run();
+    }
+
+    protected static void printDescriptor(Bundle bundle) {
+        BundleDescriptor.of(bundle).print();
     }
 }
 /**

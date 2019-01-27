@@ -141,7 +141,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final InstantiationMode getInstantiationMode() {
+    public final InstantiationMode instantiationMode() {
         return instantionMode;
     }
 
@@ -181,7 +181,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
             return new RuntimeServiceNodeSingleton<>(this, i);
         }
 
-        if (parent == null || parent.getInstantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
+        if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
                 || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
             if (instantionMode == InstantiationMode.PROTOTYPE) {
                 return new RuntimeServiceNodePrototype<>(this, fac());
@@ -198,7 +198,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ServiceBuildNode<?> provide(AtProvides atProvides) {
         InternalMemberDescriptor descriptor = atProvides.member;
-        InternalConfigurationSite icss = getConfigurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
+        InternalConfigurationSite icss = configurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
                 atProvides.member.getAnnotation(Provides.class), descriptor);
 
         InvokableMember<?> fi = atProvides.invokable;

@@ -91,13 +91,13 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> getReturnType() {
+    public Class<?> returnType() {
         return method.getReturnType();
     }
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<?> getReturnTypeLiteral() {
+    public TypeLiteral<?> returnTypeLiteral() {
         return TypeLiteral.fromMethodReturnType(method);
     }
 
@@ -174,5 +174,11 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
      */
     public static InternalMethodDescriptor of(Method method) {
         return new InternalMethodDescriptor(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException {
+        return lookup.unreflectSpecial(method, specialCaller);
     }
 }

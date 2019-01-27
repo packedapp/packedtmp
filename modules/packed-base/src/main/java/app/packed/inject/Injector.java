@@ -22,14 +22,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.bundle.BuildContext;
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleConfigurationContext;
 import app.packed.bundle.WiringOperation;
 import app.packed.config.ConfigurationSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
-import packed.internal.bundle.Bundles;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.builder.InjectorBuilder;
@@ -101,6 +100,21 @@ import packed.internal.inject.builder.InjectorBuilder;
 public interface Injector extends Taggable {
 
     /**
+     * Returns the configuration site of this injector.
+     * 
+     * @return the configuration site of this injector
+     */
+    ConfigurationSite configurationSite();
+
+    /**
+     * Returns the (nullable) description of this injector. Or null if no description was set when it was configured.
+     *
+     * @return the (nullable) description of this injector. Or null if no description was set when it was configured.
+     * @see InjectorConfiguration#setDescription(String)
+     */
+    Optional<String> description();
+
+    /**
      * Returns a service instance for the given injection key if available, otherwise an empty optional. If you know for
      * certain that a service exists for the specified, {@link #with(Class)} usually leads to prettier code.
      *
@@ -118,22 +132,6 @@ public interface Injector extends Taggable {
 
     <T> Optional<T> get(Key<T> key);
 
-    /**
-     * Returns the configuration site of this injector.
-     * 
-     * @return the configuration site of this injector
-     */
-    ConfigurationSite getConfigurationSite();
-
-    /**
-     * Returns the (nullable) description of this injector. Or null if no description was set when it was configured.
-     *
-     * @return the (nullable) description of this injector. Or null if no description was set when it was configured.
-     * @see InjectorConfiguration#setDescription(String)
-     */
-    @Nullable
-    String getDescription();
-
     @Nullable
     default <T> ServiceDescriptor getService(Class<T> serviceType) {
         return getService(Key.of(serviceType));
@@ -142,7 +140,7 @@ public interface Injector extends Taggable {
     @Nullable
     default <T> ServiceDescriptor getService(Key<T> key) {
         requireNonNull(key, "key is null");
-        Optional<ServiceDescriptor> o = services().filter(d -> d.getKey().equals(key)).findFirst();
+        Optional<ServiceDescriptor> o = services().filter(d -> d.key().equals(key)).findFirst();
         return o.orElse(null);
     }
 
@@ -185,6 +183,10 @@ public interface Injector extends Taggable {
      *             if any of the injectable members of the specified instance could not be injected
      */
     <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
+
+    default void print() {
+        services().forEach(s -> System.out.println(s));
+    }
 
     /**
      * Returns a unordered {@code Stream} over all the services that are available from this injector.
@@ -259,24 +261,6 @@ public interface Injector extends Taggable {
     }
 
     /**
-     * Creates a new injector via the specified configurator.
-     *
-     * @param configurator
-     *            a consumer used for configuring the injector
-     * @return the new injector
-     */
-    // Maa have noget Bootstrap??? ogsaa med stages o.s.v., vi gider ihvertfald ikke bliver noedt til at lave en
-    // container hvor vi skal importere den anden container. Og saa staar vi ved med to.
-    // Nej vi skal have noget boot agtigt noget. InjectorBooter?
-    // /* , Object... requirements */
-    static Injector of(Consumer<InjectorConfiguration> configurator) {
-        requireNonNull(configurator, "configurator is null");
-        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
-        configurator.accept(builder);
-        return builder.build();
-    }
-
-    /**
      * Creates a new injector from the specified bundle.
      *
      * @param bundle
@@ -287,7 +271,7 @@ public interface Injector extends Taggable {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
 
-        BundleConfigurationContext bs = new BundleConfigurationContext() {
+        BuildContext bs = new BuildContext() {
             @SuppressWarnings("unchecked")
             @Override
             public <T> T with(Class<? super T> type) {
@@ -303,12 +287,26 @@ public interface Injector extends Taggable {
         return builder.build();
     }
 
-    static Injector of(Class<? extends Bundle> bundleType, WiringOperation... operations) {
-        return of(Bundles.instantiate(bundleType), operations);
-    }
+    // static Injector of(Class<? extends Bundle> bundleType, WiringOperation... operations) {
+    // return of(Bundles.instantiate(bundleType), operations);
+    // }
 
-    default void print() {
-        services().forEach(s -> System.out.println(s));
+    /**
+     * Creates a new injector via the specified configurator.
+     *
+     * @param configurator
+     *            a consumer used for configuring the injector
+     * @return the new injector
+     */
+    // Maa have noget Bootstrap??? ogsaa med stages o.s.v., vi gider ihvertfald ikke bliver noedt til at lave en
+    // container hvor vi skal importere den anden container. Og saa staar vi ved med to.
+    // Nej vi skal have noget boot agtigt noget. InjectorBooter?
+    // /* , Object... requirements */
+    static Injector of(Consumer<InjectorConfiguration> configurator) {
+        requireNonNull(configurator, "configurator is null");
+        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
+        configurator.accept(builder);
+        return builder.build();
     }
 }
 

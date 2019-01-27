@@ -19,6 +19,7 @@ import app.packed.container.Component;
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Injector;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -43,6 +44,8 @@ public interface ServiceNode<T> extends ServiceDescriptor {
         return getInstance(InjectionSite.of(injector, dependency));
     }
 
+    InstantiationMode instantiationMode();
+
     default T getInstance(Injector injector, Key<T> key, @Nullable Component component) {
         return getInstance(InjectionSite.of(injector, key));
     }
@@ -66,7 +69,7 @@ public interface ServiceNode<T> extends ServiceDescriptor {
     RuntimeServiceNode<T> toRuntimeNode();
 
     default boolean isPrivate() {
-        return getKey().equals(KeyBuilder.INJECTOR_KEY) || getKey().equals(KeyBuilder.CONTAINER_KEY);
+        return key().equals(KeyBuilder.INJECTOR_KEY) || key().equals(KeyBuilder.CONTAINER_KEY);
     }
 }
 

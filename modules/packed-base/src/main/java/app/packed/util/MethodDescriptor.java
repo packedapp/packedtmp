@@ -15,6 +15,9 @@
  */
 package app.packed.util;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -26,14 +29,6 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  * Unlike the {@link Method} class, this interface contains no mutable operations, so it can be freely shared.
  */
 public interface MethodDescriptor extends ExecutableDescriptor {
-
-    /**
-     * Returns a {@code Class} object that represents the formal return type of this method .
-     *
-     * @return the return type of this method
-     * @see Method#getReturnType()
-     */
-    Class<?> getReturnType();
 
     /**
      * Returns whether or not this method is a static method.
@@ -51,12 +46,34 @@ public interface MethodDescriptor extends ExecutableDescriptor {
     Method newMethod();
 
     /**
+     * Returns a {@code Class} object that represents the formal return type of this method .
+     *
+     * @return the return type of this method
+     * @see Method#getReturnType()
+     */
+    Class<?> returnType();
+
+    /**
      * Returns a type literal that identifies the generic type return type of the method.
      *
      * @return a type literal that identifies the generic type return type of the method
      * @see Method#getGenericReturnType()
      */
-    TypeLiteral<?> getReturnTypeLiteral();
+    TypeLiteral<?> returnTypeLiteral();
+
+    /**
+     * @param lookup
+     *            the lookup object
+     * @param specialCaller
+     *            the class nominally calling the method
+     * @return a method handle which can invoke the reflected method
+     * @throws IllegalAccessException
+     *             if access checking fails, or if the method is {@code static}, or if the method's variable arity modifier
+     *             bit is set and {@code asVarargsCollector} fails
+     * @see {@link Lookup#unreflectSpecial(Method, Class)}
+     */
+    // Drop checked exception... Har svaert ved at se at den skulle vaere recovable
+    MethodHandle unreflectSpecial(MethodHandles.Lookup lookup, Class<?> specialCaller) throws IllegalAccessException;
 
     public static MethodDescriptor of(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
         throw new UnsupportedOperationException();

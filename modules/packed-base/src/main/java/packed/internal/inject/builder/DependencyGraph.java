@@ -55,7 +55,7 @@ final class DependencyGraph {
     void analyze(InjectorBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.privateNodeMap);
         builder.privateNodeMap
-                .put(new ServiceBuildNodeDefault<>(builder, builder.getConfigurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
+                .put(new ServiceBuildNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {
@@ -117,7 +117,7 @@ final class DependencyGraph {
         for (ServiceNode<?> node : root.privateNodeMap) {
             if (node instanceof ServiceBuildNodeDefault) {
                 ServiceBuildNodeDefault<?> s = (ServiceBuildNodeDefault<?>) node;
-                if (s.getInstantiationMode() == InstantiationMode.SINGLETON) {
+                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
             }

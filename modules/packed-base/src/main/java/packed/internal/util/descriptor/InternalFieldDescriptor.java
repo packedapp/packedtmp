@@ -18,6 +18,7 @@ package packed.internal.util.descriptor;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
@@ -161,22 +162,31 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
+    public InvokableMember<?> newInvoker(Lookup lookup) {
+        return new FieldInvoker<>(this).withLookup(lookup);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString() {
         return format(field);
     }
 
-    /**
-     * Unreflects this field.
-     * 
-     * @param lookup
-     *            the lookup object to use for unreflecting this field
-     * @return a VarHandle corresponding to this field
-     * @throws IllegalAccessException
-     *             if the lookup object does not have access to the field
-     * @see Lookup#unreflectVarHandle(Field)
-     */
+    /** {@inheritDoc} */
     @Override
-    public VarHandle unreflect(Lookup lookup) throws IllegalAccessException {
+    public MethodHandle unreflectGetter(Lookup lookup) throws IllegalAccessException {
+        return lookup.unreflectGetter(field);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle unreflectSetter(Lookup lookup) throws IllegalAccessException {
+        return lookup.unreflectSetter(field);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public VarHandle unreflectVarHandle(Lookup lookup) throws IllegalAccessException {
         requireNonNull(lookup, "lookup is null");
         return lookup.unreflectVarHandle(field);
     }
@@ -222,11 +232,5 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
      */
     public static InternalFieldDescriptor of(FieldDescriptor descriptor) {
         return descriptor instanceof InternalFieldDescriptor ? (InternalFieldDescriptor) descriptor : of(descriptor.newField());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InvokableMember<?> newInvoker(Lookup lookup) {
-        return new FieldInvoker<>(this).withLookup(lookup);
     }
 }

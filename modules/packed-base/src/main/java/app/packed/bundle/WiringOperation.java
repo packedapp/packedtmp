@@ -56,7 +56,7 @@ public abstract class WiringOperation {
 
             @Override
             public List<WiringOperation> extractWiringOperations(WiringOperation[] operations, Class<?> type) {
-                return AggregatedWiringOperation.operationsExtract(operations, type);
+                return ComposedWiringOperation.operationsExtract(operations, type);
             }
 
             /** {@inheritDoc} */
@@ -103,10 +103,10 @@ public abstract class WiringOperation {
      * @param next
      *            the operation to execute after this operation
      * @return a new operation that combines this operation and the specified operation
-     * @see #of(WiringOperation...)
+     * @see #compose(WiringOperation...)
      */
     public WiringOperation andThen(WiringOperation next) {
-        return of(this, requireNonNull(next, "next is null"));
+        return compose(this, requireNonNull(next, "next is null"));
     }
 
     /** Performs cleanup or post processing validation of this operation. The default implementation does nothing. */
@@ -124,24 +124,24 @@ public abstract class WiringOperation {
     }
 
     /**
-     * Combine multiple operations into a single operation.
+     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
      * 
      * @param operations
      *            the operations to combine
      * @return a new combined operation
      * @see #andThen(WiringOperation)
      */
-    public static WiringOperation of(WiringOperation... operations) {
-        return new AggregatedWiringOperation(operations);
+    public static WiringOperation compose(WiringOperation... operations) {
+        return new ComposedWiringOperation(operations);
     }
 
     /** An operation that combines multiple operations. */
-    static final class AggregatedWiringOperation extends WiringOperation {
+    static final class ComposedWiringOperation extends WiringOperation {
 
         /** The stages that have been combined */
         private final List<WiringOperation> operations;
 
-        AggregatedWiringOperation(WiringOperation... operations) {
+        ComposedWiringOperation(WiringOperation... operations) {
             this.operations = List.of(requireNonNull(operations, "operations is null"));
         }
 
@@ -172,8 +172,8 @@ public abstract class WiringOperation {
         }
 
         private static void operationsExtract0(WiringOperation o, Class<?> type, ArrayList<WiringOperation> result) {
-            if (o instanceof AggregatedWiringOperation) {
-                for (WiringOperation ies : ((AggregatedWiringOperation) o).operations) {
+            if (o instanceof ComposedWiringOperation) {
+                for (WiringOperation ies : ((ComposedWiringOperation) o).operations) {
                     operationsExtract0(ies, type, result);
                 }
             } else {

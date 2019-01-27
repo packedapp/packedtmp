@@ -55,8 +55,8 @@ public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode getInstantiationMode() {
-        return exposureOf.getInstantiationMode();
+    public InstantiationMode instantiationMode() {
+        return exposureOf.instantiationMode();
     }
 
     /** {@inheritDoc} */

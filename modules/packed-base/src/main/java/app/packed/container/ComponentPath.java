@@ -58,7 +58,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, CharSequence {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentPath getParent() {
+        public ComponentPath parent() {
             return null;
         }
 
@@ -103,7 +103,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, CharSequence {
      *
      * @return a path representing the path's parent
      */
-    ComponentPath getParent();
+    ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
 
     /**
      * Returns whether or not this component is the root component in a container hierarchy.

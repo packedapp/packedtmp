@@ -32,10 +32,10 @@ public class ExportTest2 {
 
         Injector i = Injector.of(c -> {
             c.bind(ZoneId.systemDefault()).as(ZoneId.class);
-            c.wireInjector(I.class);
+            c.wireInjector(new I());
         });
 
-        i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));
+        i.services().forEach(e -> System.out.println(e.key().toStringSimple()));
 
         System.out.println(i.with(ZonedDateTime.class));
     }

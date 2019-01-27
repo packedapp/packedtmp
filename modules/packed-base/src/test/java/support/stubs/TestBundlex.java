@@ -30,11 +30,11 @@ public class TestBundlex extends Bundle {
 
     @Test
     public void main() {
-        BundleDescriptor bd = BundleDescriptor.of(TestBundlex.class);
+        BundleDescriptor bd = BundleDescriptor.of(new TestBundlex());
 
         System.out.println(bd);
 
-        Injector i = Injector.of(TestBundlex.class);
+        Injector i = Injector.of(new TestBundlex());
         i.services().forEach(e -> System.out.println(e));
     }
 

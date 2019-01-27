@@ -18,7 +18,6 @@ package packed.internal.util.descriptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
 import java.lang.reflect.Proxy;
 
 import org.junit.jupiter.api.Test;
@@ -26,21 +25,18 @@ import org.junit.jupiter.api.Test;
 import app.packed.util.FieldDescriptor;
 
 /** Tests {@link InternalFieldDescriptor}. */
-public class InternalFieldDescriptorTest {
+public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
     static final Class<?> C = InternalFieldDescriptorTest.class;
-    String string;
+
     String never;
 
-    static void validateField(Field f, InternalVariableDescriptor d) {
-        // d.
-    }
+    String string;
 
-    static void validateMember(Member m, Member element) {
-        assertThat(m.getDeclaringClass()).isSameAs(element.getDeclaringClass());
-        assertThat(m.getModifiers()).isEqualTo(element.getModifiers());
-        assertThat(m.getName()).isEqualTo(element.getName());
-        assertThat(m.isSynthetic()).isEqualTo(element.isSynthetic());
+    @Test
+    public void basics() throws Exception {
+        validateField(C.getDeclaredField("string"), InternalFieldDescriptor.of(C, "string"));
+        validateField(C.getDeclaredField("C"), InternalFieldDescriptor.of(C, "C"));
     }
 
     static void validateField(Field f, InternalFieldDescriptor d) {
@@ -74,9 +70,4 @@ public class InternalFieldDescriptorTest {
         assertThat(d.toString()).isEqualTo(packageName + "#" + f.getName());
     }
 
-    @Test
-    public void basics() throws Exception {
-        validateField(C.getDeclaredField("string"), InternalFieldDescriptor.of(C, "string"));
-        validateField(C.getDeclaredField("C"), InternalFieldDescriptor.of(C, "C"));
-    }
 }

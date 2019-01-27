@@ -13,26 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook.various;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
 
 /**
- * Hooks are used for callbacks.
- * <p>
+ *
  */
-@Target(ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-// Vi behoever den saadan set kun for
-public @interface Hook {
 
+public @interface AnnotatedXHook {
+    Class<? extends Annotation> annotation();
 }
-// allowFieldWrite..
-// exportHooks().... <-Patch this, for testing????
-//
+
+// Maaske allow it..... on non-provided methods.... Its
+
+// Okay

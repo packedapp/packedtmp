@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
@@ -47,9 +46,9 @@ public class InjectorDescriptorTest {
 
         ServiceDescriptor sd = d.services().exports().values().iterator().next();
 
-        assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
-        assertThat(sd.getDescription()).isNull();
-        assertThat(sd.getKey()).isEqualTo(Key.of(A.class));
+        // assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
+        assertThat(sd.description()).isNull();
+        assertThat(sd.key()).isEqualTo(Key.of(A.class));
         assertThat(sd.tags()).isEmpty();
 
         // BundleDescriptor er saa meget en AssertThatTarget

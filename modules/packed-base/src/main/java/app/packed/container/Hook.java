@@ -13,26 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.container;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- *
+ * Hooks are used for callbacks.
  */
+@Target(ElementType.METHOD)
 @Retention(RUNTIME)
-public @interface ProcessHook {
+@Documented
+public @interface Hook {
 
-    Class<? extends Annotation>[] methodsAnnotatedWith() default {};
+    // Class<? extends Annotation>[] methodsAnnotatedWith() default {};
 
     /**
      * Will attempt to compile the resulting very aggressively. For example, via lambda factory.
      * 
      * @return
      */
+    // Or Class<? extends SomeOptimizer>
     boolean attemptCompilation() default false;
 
     // If true AnnotatedMethodHook.methodHandle returns non-null;
@@ -46,10 +51,25 @@ public @interface ProcessHook {
      * 
      * @return
      */
-    Class<? extends AOPRewriter> rewriter() default AOPRewriter.class;
+    // Class<? extends AOPRewriter> rewriter() default AOPRewriter.class;
 }
+// boolean disableForOwnContainer
+// transient?? Containers of Containers...Or Apps of Apps... meaning it will hook down the food chain...
+
+// Analysis
+
+// On Initialize
+// Lifecycle....
+// @Inject <- Inject phase ..... Saa burde det vel ogsaa virke i injector:!>>!!! only, on non-provided methods...
+// betyder det vi ogsaa har hooks....??? Naaah, maaske vi goer det paa en anden maade
+// @OnInitialize
+// @OnStart
+// @OnStop
+// @OnNative.....
 
 class AOPRewriter {
-
+    // Taenker vi hellere vil have en alternativ klasse til AnnotatedComponentMethod...
+    // Saa det er paa parameteren vi kender forskel og ikke paa @Hook annoteringen
 }
 // Kunne jo saadan set godt tillade, metoder der returnerede CompletableFuture....
+// allowFieldWrite..

@@ -26,7 +26,11 @@ import packed.internal.inject.builder.InjectorBuilder;
  * A context object that is available via {@link Bundle#context} from within the invocation of
  * {@link Bundle#configure()}.
  */
-public abstract class BundleConfigurationContext {
+
+// Per app or per container. Maybe two??
+// BuildAppContext Bundle.app()
+// BuildContainerContext Bundle.container()
+public abstract class BuildContext {
 
     public final void configure(Bundle b) {
         requireNonNull(b);

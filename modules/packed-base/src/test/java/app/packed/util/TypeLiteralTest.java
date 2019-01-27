@@ -399,9 +399,9 @@ public class TypeLiteralTest {
         Key<Integer> k1 = tl1.toKey();
         Key<Integer> k2 = TL_INTEGER.toKey();
 
-        assertThat(k1.getTypeLiteral()).isSameAs(tl1);
-        assertThat(k2.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(k2.getTypeLiteral()).isNotSameAs(TL_INTEGER);
+        assertThat(k1.typeLiteral()).isSameAs(tl1);
+        assertThat(k2.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(k2.typeLiteral()).isNotSameAs(TL_INTEGER);
 
         assertThat(k1.hasQualifier()).isFalse();
         assertThat(k2.hasQualifier()).isFalse();
@@ -435,8 +435,8 @@ public class TypeLiteralTest {
                 .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
 
         Key<Integer> key = TL_INTEGER.toKey(AnnotationInstances.NO_VALUE_QUALIFIER);
-        assertThat(key.getTypeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(key.getQualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
+        assertThat(key.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(key.qualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
     }
 
     @SuppressWarnings("rawtypes")

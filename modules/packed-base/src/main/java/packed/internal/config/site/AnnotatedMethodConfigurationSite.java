@@ -38,10 +38,6 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
         this.annotation = requireNonNull(annotation);
     }
 
-    public MethodDescriptor getAnnotatedMethod() {
-        return method;
-    }
-
     /** {@inheritDoc} */
     @Override
     public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {

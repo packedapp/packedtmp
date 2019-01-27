@@ -23,29 +23,22 @@ import app.packed.config.ConfigurationSite;
 import app.packed.config.ConfigurationSiteVisitor;
 import app.packed.util.FieldDescriptor;
 
-/** A configuration point originating from an annotated method. */
+/** A configuration site originating from an annotated method. */
 public final class AnnotatedFieldConfigurationSite extends AbstractConfigurationSite {
 
     // Maybe just a reference to AnnotatedField
 
     /** The annotation. */
-    final Annotation annotation;
+    private final Annotation annotation;
 
     /** The field. */
-    final FieldDescriptor field;
+    private final FieldDescriptor field;
 
+    // TODO do we just want to keep a reference to the Class<? extends Annotation>?
     AnnotatedFieldConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
         super(parent, operation);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
-    }
-
-    public FieldDescriptor field() {
-        return field;
-    }
-
-    public Annotation getAnnotation() {
-        return annotation;
     }
 
     /** {@inheritDoc} */

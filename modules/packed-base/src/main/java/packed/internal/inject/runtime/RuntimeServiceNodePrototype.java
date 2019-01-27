@@ -64,7 +64,7 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode getInstantiationMode() {
+    public InstantiationMode instantiationMode() {
         return InstantiationMode.PROTOTYPE;
     }
 

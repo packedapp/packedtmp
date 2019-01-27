@@ -78,7 +78,7 @@ public class InjectorConfiguationBindTest {
         assertThat(i.with(key)).isSameAs(instance);
         if (!key.hasQualifier()) {
             @SuppressWarnings("unchecked")
-            Class<T> rawType = (Class<T>) key.getTypeLiteral().getRawType();
+            Class<T> rawType = (Class<T>) key.typeLiteral().getRawType();
             assertThat(i.get(rawType)).containsSame(instance);
             assertThat(i.with(rawType)).isSameAs(instance);
         }
@@ -86,7 +86,7 @@ public class InjectorConfiguationBindTest {
 
     static void testConfiguration(ServiceConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
 
-        assertThat(sc.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
+        assertThat(sc.instantiationMode()).isSameAs(InstantiationMode.SINGLETON);
         // ConfigurationSite;
         assertThat(sc.getDescription()).isNull();
         assertThat(sc.getKey()).isEqualTo(Key.of(A.class));

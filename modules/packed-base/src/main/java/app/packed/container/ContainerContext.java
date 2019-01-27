@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import java.lang.annotation.Annotation;
-
-import app.packed.container.Component;
-import app.packed.util.MethodDescriptor;
+package app.packed.container;
 
 /**
  *
  */
-// Kan ikke hedde AnnotatedMethodHook syntes jeg
-public interface AnnotatedComponentMethod<T extends Annotation> {
 
-    T annotation();
+// Always one per container, not exposed per default....
 
-    Component component();
+// Løser også voews problem med interne services vs externe services...
 
-    MethodDescriptor method();
+// Saa injector/container er altid externe services.....
+public interface ContainerContext extends Container {
+
+    // lots of lifecycle
+    // shutdown
+    // start
 }
+
+// En almindelig Injector, har ikke export/imports....

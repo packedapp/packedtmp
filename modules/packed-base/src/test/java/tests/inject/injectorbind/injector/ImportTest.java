@@ -38,11 +38,11 @@ public class ImportTest {
     public static void main(String[] args) {
 
         Injector i = Injector.of(c -> {
-            c.wireInjector(London.class, ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
-            c.wireInjector(London.class, ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
+            c.wireInjector(new London(), ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
+            c.wireInjector(new London(), ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
         });
 
-        i.services().forEach(e -> System.out.println(e.getKey().toStringSimple()));
+        i.services().forEach(e -> System.out.println(e.key().toStringSimple()));
     }
 
     public static final class I extends Bundle {
@@ -72,6 +72,7 @@ public class ImportTest {
         protected void configure() {
             bind(ZoneId.of("Europe/Berlin")).as(ZoneId.class);
             export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+
         }
     }
 

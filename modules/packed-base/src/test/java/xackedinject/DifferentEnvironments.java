@@ -18,7 +18,6 @@ package xackedinject;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.Bundle;
-import app.packed.inject.Injector;
 import xackedinject.DifferentEnvironments.BaseEnvironment;
 import xackedinject.DifferentEnvironments.ProdEnvironment;
 import xackedinject.DifferentEnvironments.TestEnvironment;
@@ -34,7 +33,7 @@ public class DifferentEnvironments {
         //
         System.out.println(ParseIt.environment());
 
-        Injector.of(ParseIt.environment().getBundleType());
+        // Injector.of(ParseIt.environment().getBundleType());
     }
 
     public abstract class BaseEnvironment extends Bundle {

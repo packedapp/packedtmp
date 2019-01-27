@@ -28,7 +28,6 @@ import app.packed.lifecycle.LifecycleState;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.bundle.Bundles;
 
 /**
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
@@ -102,9 +101,9 @@ public interface ContainerConfiguration extends InjectorConfiguration {
      */
     <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation);
 
-    default void wireContainer(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-        wireContainer(Bundles.instantiate(bundleType), stages);
-    }
+    // default void wireContainer(Class<? extends Bundle> bundleType, WiringOperation... stages) {
+    // wireContainer(Bundles.instantiate(bundleType), stages);
+    // }
 
     /**
      * Installs the specified container bundle in the container. The container created from the bundle, will have the latest

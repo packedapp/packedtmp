@@ -62,13 +62,13 @@ public class InternalContainer implements Container {
     }
 
     @Override
-    public ConfigurationSite getConfigurationSite() {
-        return injector.getConfigurationSite();
+    public ConfigurationSite configurationSite() {
+        return injector.configurationSite();
     }
 
     @Override
-    public @Nullable String getDescription() {
-        return injector.getDescription();
+    public Optional<String> description() {
+        return injector.description();
     }
 
     @Override
@@ -129,7 +129,7 @@ public class InternalContainer implements Container {
 
     /** {@inheritDoc} */
     @Override
-    public String getName() {
+    public String name() {
         // Det eneste jeg ved er at man godt kan have 2 containere med det samme navn som sieblings.
         // installContainer(Jetty.class); //Maaske man kan bestemme root component navnet???
         // installContainer(Jetty.class);//Maaske man kan bestemme root component navnet???

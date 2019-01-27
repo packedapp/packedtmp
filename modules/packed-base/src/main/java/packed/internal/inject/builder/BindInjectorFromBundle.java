@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleConfigurationContext;
+import app.packed.bundle.BuildContext;
 import app.packed.bundle.DownstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
 import app.packed.util.Key;
@@ -42,7 +42,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
      * 
      */
     void processImport() {
-        BundleConfigurationContext bs = new BundleConfigurationContext() {
+        BuildContext bs = new BuildContext() {
             @SuppressWarnings("unchecked")
             @Override
             public <T> T with(Class<? super T> type) {
@@ -74,7 +74,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }
-                ServiceBuildNodeExport<?> e = new ServiceBuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.getConfigurationSite()), this,
+                ServiceBuildNodeExport<?> e = new ServiceBuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()), this,
                         node);
                 exports.add(e);
                 newConfiguration.privateNodeMap.put(e);

@@ -30,10 +30,10 @@ public class Xxx3 {
     public static void main(String[] args) {
 
         Injector i = Injector.of(c -> {
-            c.wireInjector(StringBundle.class, new MyImportStage());
+            c.wireInjector(new StringBundle(), new MyImportStage());
         });
 
-        i.services().forEach(e -> System.out.println(e.getKey()));
+        i.services().forEach(e -> System.out.println(e.key()));
 
     }
 

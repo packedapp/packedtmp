@@ -33,7 +33,7 @@ public interface ParameterDescriptor extends VariableDescriptor {
      * @return a descriptor of the executable declaring this parameter
      * @see Parameter#getDeclaringExecutable()
      */
-    ExecutableDescriptor getDeclaringExecutable();
+    ExecutableDescriptor declaringExecutable();
 
     /**
      * Returns the index of the parameter.
@@ -64,7 +64,7 @@ public interface ParameterDescriptor extends VariableDescriptor {
      * Returns a descriptor from the specified parameter.
      *
      * @param parameter
-     *            the parameter to return a descriptor for 
+     *            the parameter to return a descriptor for
      * @return a descriptor from the specified parameter
      */
     static ParameterDescriptor of(Parameter parameter) {

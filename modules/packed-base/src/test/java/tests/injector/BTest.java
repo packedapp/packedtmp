@@ -29,16 +29,16 @@ import app.packed.inject.ServiceDescriptor;
 public class BTest {
 
     public static void main(String[] args) {
-        Injector i = Injector.of(MyBundle.class);
+        Injector i = Injector.of(new MyBundle());
 
-        i.getService(PrivateImplementation.class).getConfigurationSite().print();
+        i.getService(PrivateImplementation.class).configurationSite().print();
 
-        System.out.println(BundleDescriptor.of(MyBundle.class));
+        System.out.println(BundleDescriptor.of(new MyBundle()));
         System.out.println(String.class.getModule().getDescriptor());
 
         i = Injector.of(c -> {
-            c.wireInjector(MyBundle.class);
-            c.wireInjector(MyBundle4.class);
+            c.wireInjector(new MyBundle());
+            c.wireInjector(new MyBundle4());
             c.bind("123");
         });
         System.out.println("");

@@ -69,9 +69,9 @@ final class InternalComponentPath implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath getParent() {
+    public ComponentPath parent() {
         InternalComponent parent = component.parent;
-        return parent == null ? null : parent.getPath();
+        return parent == null ? null : parent.path();
     }
 
     @Override
@@ -125,7 +125,7 @@ final class InternalComponentPath implements ComponentPath {
         if (component.parent != null) {
             toString(component.parent, sb);
             sb.append("/");
-            sb.append(component.getName());
+            sb.append(component.name());
         }
     }
 }

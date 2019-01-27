@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.container;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.container.Component;
-import app.packed.util.FieldDescriptor;
+import app.packed.util.MethodDescriptor;
 
 /**
- * A hooking on an annotated field.
+ *
  */
-public interface AnnotatedFieldHook<T extends Annotation> {
+public interface AnnotatedMethodHook<T extends Annotation> {
 
     /**
      * Returns the annotation value.
@@ -40,17 +39,9 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     Component component();
 
     /**
-     * Returns the annotated field.
+     * Returns the annotated method.
      * 
-     * @return the annotated field
+     * @return the annotated method
      */
-    FieldDescriptor field();
-
-    Object get();
-
-    void set(Object value);
-
-    // VarHandle
-    // Get
-    // Set
+    MethodDescriptor method();
 }

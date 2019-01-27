@@ -28,13 +28,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.app.Main;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.bundle.Bundles;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 
 /**
@@ -72,6 +72,9 @@ public class BundleDescriptor {
 
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
+
+    @Nullable
+    private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
 
     /** A Services object. */
     private final Services services;
@@ -154,8 +157,19 @@ public class BundleDescriptor {
         return bundleModule().getDescriptor().version();
     }
 
-    public final Hooks hooks() {
-        return new Hooks();
+    public final Fasteners hooks() {
+        return new Fasteners();
+    }
+
+    /**
+     * Returns (optional) the main entry point. A bundle defines at maximum one such entry point using the {@link Main}
+     * annotation.
+     * 
+     * @return any main entry point that the bundle defines
+     */
+    // Maybe just main()?
+    public Optional<String> mainEntryPoint() {
+        return Optional.ofNullable(mainEntryPoint);
     }
 
     /** Prints this descriptor to {@code system.out}. */
@@ -217,16 +231,38 @@ public class BundleDescriptor {
         return InternalBundleDescriptor.of(bundle).build();
     }
 
-    /**
-     * Returns a descriptor for the specified type of bundle.
-     * 
-     * @param bundleType
-     *            the type of bundle to return a descriptor from
-     * @return a descriptor for the specified type of bundle
-     */
-    public static BundleDescriptor of(Class<? extends Bundle> bundleType) {
-        return of(Bundles.instantiate(bundleType));
-    }
+    // /**
+    // * Returns a descriptor for the specified type of bundle.
+    // *
+    // * @param bundleType
+    // * the type of bundle to return a descriptor from
+    // * @return a descriptor for the specified type of bundle
+    // */
+    // @Deprecated
+    // public static BundleDescriptor of(Class<? extends Bundle> bundleType) {
+    // return of(Bundles.instantiate(bundleType));
+    // }
+
+    // /**
+    // * <p>A stream builder has a lifecycle, which starts in a building
+    // * phase, during which elements can be added, and then transitions to a built
+    // * phase, after which elements may not be added. The built phase begins
+    // * when the {@link #build()} method is called, which creates an ordered
+    // * {@code Stream} whose elements are the elements that were added to the stream
+    // * builder, in the order they were added.
+    //
+    // /**
+    // * Builds the stream, transitioning this builder to the built state.
+    // * An {@code IllegalStateException} is thrown if there are further attempts
+    // * to operate on the builder after it has entered the built state.
+    // *
+    // * @return the built stream
+    // * @throws IllegalStateException if the builder has already transitioned to
+    // * the built state
+    // */
+    // Stream<T> build();
+    //
+    // }
 
     /**
      *
@@ -245,26 +281,24 @@ public class BundleDescriptor {
 
         public final HashMap<Key<?>, ServiceDescriptor> serviceExports = new HashMap<>();
 
+        public final HashSet<Key<?>> serviceRequired = new HashSet<>();
+
         public final HashSet<Key<?>> servicesOptional = new HashSet<>();
 
-        public final HashSet<Key<?>> serviceRequired = new HashSet<>();
+        public Builder(Class<? extends Bundle> bundleType) {
+            this.bundleType = requireNonNull(bundleType, "bundleType is null");
+        }
 
         public Builder addServiceExport(ServiceConfiguration<?> configuration) {
             requireNonNull(configuration, "configuration is null");
-            return addServiceExport(ServiceDescriptor.ofCopy(configuration));
+            return addServiceExport(ServiceDescriptor.copyOf(configuration));
         }
 
         public Builder addServiceExport(ServiceDescriptor descriptor) {
             requireNonNull(descriptor, "descriptor is null");
-            if (serviceExports.putIfAbsent(descriptor.getKey(), descriptor) != null) {
-                throw new IllegalStateException("A service descriptor with the same key has already been added, key = " + descriptor.getKey());
+            if (serviceExports.putIfAbsent(descriptor.key(), descriptor) != null) {
+                throw new IllegalStateException("A service descriptor with the same key has already been added, key = " + descriptor.key());
             }
-            return this;
-        }
-
-        public Builder addServiceRequirementsOptionally(Collection<Key<?>> keys) {
-            requireNonNull(keys, "keys is null");
-            servicesOptional.addAll(keys);
             return this;
         }
 
@@ -280,8 +314,10 @@ public class BundleDescriptor {
             return this;
         }
 
-        public Builder(Class<? extends Bundle> bundleType) {
-            this.bundleType = requireNonNull(bundleType, "bundleType is null");
+        public Builder addServiceRequirementsOptionally(Collection<Key<?>> keys) {
+            requireNonNull(keys, "keys is null");
+            servicesOptional.addAll(keys);
+            return this;
         }
 
         public BundleDescriptor build() {
@@ -306,11 +342,11 @@ public class BundleDescriptor {
         }
     }
 
-    public static final class Hooks {
+    public static final class Fasteners {
 
         // Permissions-> For AOP, For Invocation, for da shizzla
 
-        public Set<Class<? extends Annotation>> annotatedFields() {
+        public Set<Class<? extends Annotation>> annotatedFieldsHooks() {
             return Set.of();
         }
 

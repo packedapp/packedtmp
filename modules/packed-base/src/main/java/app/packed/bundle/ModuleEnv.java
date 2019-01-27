@@ -17,23 +17,33 @@ package app.packed.bundle;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.hook.Hook;
-
 /**
- * A static module
+ * Provides an environment per module
  */
-public abstract class PackedProvider {
+// ModuleEnv, ModuleEnvironment
 
-    protected PackedProvider() {
+// Taenker om man kan have flere....
+// F.eks. et der er enabled naar man koerer tests....
+// Og hvad med unnamed modules...
+// GlobalEnv
+/// Skal module env vaere public????
+// GlobalEnv ... Der kan kun vaere en af disse.....
+// GlovalEvn.with(Class<? extends ModuleEnv>)
+// Attributable??????
+public abstract class ModuleEnv {
+
+    protected ModuleEnv() {
         this(false);// Module only is that we should only check stuff from bundles with the module?
     }
 
-    protected PackedProvider(boolean moduleOnly) {}
+    // Is always module only!!!!
+    // But We may allow. registerGlobalListener(...) from the module that defines the listener interface
+    protected ModuleEnv(boolean moduleOnly) {}
 
-    protected PackedProvider(Class<? extends Bundle> bundles) {}
+    protected ModuleEnv(Class<? extends Bundle> bundles) {}
 
     /**
-     * Registered a qualifier annotation that is not annotated with {@link Hook}.
+     * Registered a qualifier annotation that is not annotated with {@link HookOld}.
      * <p>
      * Sometimes you just do not have
      * 
