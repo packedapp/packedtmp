@@ -99,8 +99,8 @@ public class InternalParameterDescriptorTest {
 
         Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
-            c.bind(X.class);
-            c.bind(this);
+            c.provide(X.class);
+            c.provide(this);
         });
     }
 }

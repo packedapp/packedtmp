@@ -21,11 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A application can have a single main entry point is which is first instructions in a program are executed, Must be
+ * A application can have a single main entry point which the is first instructions in a program are executed, Must be
  * placed on a non-static method on a bundle. Why not static....??
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+// @InterruptOnStop
 public @interface Main {
 
     /**
@@ -33,6 +34,9 @@ public @interface Main {
      * 
      * @return or not the application should be shutdown when this method completes. The default value is true
      */
-    boolean shutdownOnCompletion() default true;
+    // Syntes ikke den er god, hvad hvis man kalder run()....
+    boolean shutdownOnCompletion() default true; // Taenker hellere det maa vaere noget @OnRunning()...
+
+    boolean overridable() default true;
 }
 // https://en.wikipedia.org/wiki/Entry_point

@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -195,7 +195,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
 
     /** {@inheritDoc} */
     @Override
-    public InjectorConfiguration privates() {
+    public InjectorConfigurator privates() {
         return null;
     }
 

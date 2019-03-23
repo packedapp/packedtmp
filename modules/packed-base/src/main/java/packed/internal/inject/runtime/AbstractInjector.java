@@ -89,7 +89,7 @@ public abstract class AbstractInjector implements Injector {
             for (AtDependable atInject : descriptor.inject.fields) {
                 InternalDependency dependency = atInject.dependencies.get(0);
                 FieldInvoker<?> field = (FieldInvoker<?>) atInject.invokable;
-                ServiceNode<?> node = findNode(dependency.getKey());
+                ServiceNode<?> node = findNode(dependency.key());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);
                     value = dependency.wrapIfOptional(value);
@@ -110,7 +110,7 @@ public abstract class AbstractInjector implements Injector {
                     // Hmm, should we override existing value???
                     // For consistentsee reason yes, but hmm it is useful not to override
                 } else {
-                    String msg = "Could not find a valid value for " + dependency.getKey() + " on field " + field.toString();
+                    String msg = "Could not find a valid value for " + dependency.key() + " on field " + field.toString();
                     throw new InjectionException(msg);
                 }
             }
@@ -122,7 +122,7 @@ public abstract class AbstractInjector implements Injector {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(arguments);
                 for (InternalDependency dependency : method.dependencies) {
-                    ServiceNode<?> node = findNode(dependency.getKey());
+                    ServiceNode<?> node = findNode(dependency.key());
                     System.out.println(node);
 
                 }

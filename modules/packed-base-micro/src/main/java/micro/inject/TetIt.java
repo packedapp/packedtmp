@@ -33,8 +33,8 @@ public class TetIt {
         for (int i = 0; i < 1_000_000; i++) {
             Injector inj = Injector.of(c -> {
                 c.lookup(MethodHandles.lookup());
-                c.bind(Factory.ofInstance("foo"));
-                c.bind(NeedsString.class);
+                c.provide(Factory.ofInstance("foo"));
+                c.provide(NeedsString.class);
             });
             requireNonNull(inj.with(NeedsString.class));
         }

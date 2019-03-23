@@ -17,7 +17,7 @@ package app.packed.container;
 
 import java.util.function.Function;
 
-import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.x.UpstreamWiringOperation;
 
 /**
  *

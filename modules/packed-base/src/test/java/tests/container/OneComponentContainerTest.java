@@ -15,16 +15,6 @@
  */
 package tests.container;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-
-import app.packed.container.Component;
-import app.packed.container.ComponentPath;
-import app.packed.container.Container;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.util.Key;
-
 /**
  *
  */
@@ -40,61 +30,61 @@ import app.packed.util.Key;
 public class OneComponentContainerTest {
 
     static final String FOO = "foo";
-
-    public void fromInstanceX() {
-        test(Container.of(c -> c.install(FOO)));
-    }
-
-    private void test(Container c) {
-
-    }
-
-    @Test
-    public void fromInstance() {
-        Container con = Container.of(c -> c.install(FOO));
-        Component root = con.root();
-
-        assertThat(con.components().toList()).containsExactly(root);
-
-        assertThat(con.getComponent("/").get()).isSameAs(root);
-        assertThat(con.getComponent(ComponentPath.ROOT).get()).isSameAs(root);
-
-        // Verify component
-
-        assertThat(root.children()).isEmpty();
-        assertThat(root.container()).isSameAs(con);
-        assertThat(root.description()).isNull();
-        // assertThat(c.getInstance()).isSameAs(foo);
-        assertThat(root.name()).isNotNull();
-
-        // We cast the component path to CharSquence because AssertJ have trouble handling objects that both implement
-        // CharSequence and Comparable.
-        CharSequence cs = root.path();
-        assertThat(cs).isEqualTo(ComponentPath.ROOT);
-        assertThat(cs.toString()).isEqualTo("/");
-
-        assertThat(root.stream().count()).isEqualTo(1);
-        assertThat(root.tags()).isEmpty();
-    }
-
-    @Test
-    public void service() {
-        Container con = Container.of(c -> c.install(FOO));
-
-        assertThat(con.with(String.class)).isSameAs(FOO);
-
-        con.services().forEach(e -> {
-            System.out.println(e.key());
-        });
-
-        Component c = con.root();
-        ServiceDescriptor s = con.getService(String.class);
-
-        assertThat(c.configurationSite()).isSameAs(s.configurationSite());
-        assertThat(c.description()).isSameAs(s.description());
-        // assertThat(s.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
-        assertThat(s.key()).isEqualTo(Key.of(String.class));
-        assertThat(s.tags()).isEmpty();
-    }
+    //
+    // public void fromInstanceX() {
+    // test(App.of(c -> c.install(FOO)));
+    // }
+    //
+    // private void test(Container c) {
+    //
+    // }
+    //
+    // @Test
+    // public void fromInstance() {
+    // App con = App.of(c -> c.install(FOO));
+    // Component root = con.root();
+    //
+    // assertThat(con.components().toList()).containsExactly(root);
+    //
+    // assertThat(con.getComponent("/").get()).isSameAs(root);
+    // assertThat(con.getComponent(ComponentPath.ROOT).get()).isSameAs(root);
+    //
+    // // Verify component
+    //
+    // assertThat(root.children()).isEmpty();
+    // assertThat(root.container()).isSameAs(con);
+    // assertThat(root.description()).isNull();
+    // // assertThat(c.getInstance()).isSameAs(foo);
+    // assertThat(root.name()).isNotNull();
+    //
+    // // We cast the component path to CharSquence because AssertJ have trouble handling objects that both implement
+    // // CharSequence and Comparable.
+    // CharSequence cs = root.path();
+    // assertThat(cs).isEqualTo(ComponentPath.ROOT);
+    // assertThat(cs.toString()).isEqualTo("/");
+    //
+    // assertThat(root.stream().count()).isEqualTo(1);
+    // assertThat(root.tags()).isEmpty();
+    // }
+    //
+    // @Test
+    // public void service() {
+    // Container con = Container.of(c -> c.install(FOO));
+    //
+    // assertThat(con.with(String.class)).isSameAs(FOO);
+    //
+    // con.services().forEach(e -> {
+    // System.out.println(e.key());
+    // });
+    //
+    // Component c = con.root();
+    // ServiceDescriptor s = con.getService(String.class);
+    //
+    // assertThat(c.configurationSite()).isSameAs(s.configurationSite());
+    // assertThat(c.description()).isSameAs(s.description());
+    // // assertThat(s.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);
+    // assertThat(s.key()).isEqualTo(Key.of(String.class));
+    // assertThat(s.tags()).isEmpty();
+    // }
     // TODO test lifecycle
 }

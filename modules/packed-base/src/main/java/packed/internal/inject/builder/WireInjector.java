@@ -19,16 +19,16 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.bundle.UpstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.x.UpstreamWiringOperation;
+import app.packed.bundle.x.WiringOperation;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 
 /**
- * Represents an imported injector via {@link InjectorConfiguration#wireInjector(Injector, UpstreamWiringOperation...)}.
+ * Represents an imported injector via {@link InjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
 final class WireInjector extends AbstractWiring {
 

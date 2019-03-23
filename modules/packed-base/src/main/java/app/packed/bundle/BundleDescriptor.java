@@ -22,18 +22,18 @@ import java.lang.annotation.Annotation;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import app.packed.app.Main;
+import app.packed.bundle.Contract.Services;
 import app.packed.container.Container;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.Hook;
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.util.Key;
+import app.packed.inject.ServiceContract;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 
@@ -63,6 +63,12 @@ import packed.internal.inject.builder.InternalBundleDescriptor;
  * <p>
  * In other words a bundle must provide descriptors that are equivalent on each run.
  */
+// Hvis vi extender contracten her... Boer vi vel ogsaa kunne overskrive denne... Hvad vi jo kan...
+// Problemet er at Contract er en abstract klasse....
+// Maaske en AbstractContract.....
+// Vi vil gerne kunne lave descriptors... med hjemmelavet stuff..... Har jeg lidt svaert ved at se hvordan kan fungere
+// implements Contract -> Is constructed with a Contract (Composition)
+// AbstractBundleDescriptor + BundleDescriptor...
 public class BundleDescriptor {
 
     // I think add @Description as annotation??? IDK
@@ -77,7 +83,7 @@ public class BundleDescriptor {
     private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
 
     /** A Services object. */
-    private final Services services;
+    private final ServiceContract services;
 
     private final LifecyclePoints startingPoints = null;
 
@@ -93,7 +99,7 @@ public class BundleDescriptor {
         requireNonNull(builder, "builder is null");
         this.bundleType = builder.bundleType();
         this.bundleDescription = builder.getBundleDescription();
-        this.services = new Services(builder);
+        this.services = builder.services.build();
     }
 
     /**
@@ -157,8 +163,8 @@ public class BundleDescriptor {
         return bundleModule().getDescriptor().version();
     }
 
-    public final Fasteners hooks() {
-        return new Fasteners();
+    public final Hooks hooks() {
+        return new Hooks();
     }
 
     /**
@@ -192,7 +198,7 @@ public class BundleDescriptor {
      * 
      * @return a services object
      */
-    public final Services services() {
+    public final ServiceContract services() {
         return services;
     }
 
@@ -279,45 +285,14 @@ public class BundleDescriptor {
         /** The bundleType */
         private final Class<? extends Bundle> bundleType;
 
-        public final HashMap<Key<?>, ServiceDescriptor> serviceExports = new HashMap<>();
-
-        public final HashSet<Key<?>> serviceRequired = new HashSet<>();
-
-        public final HashSet<Key<?>> servicesOptional = new HashSet<>();
-
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
-        public Builder addServiceExport(ServiceConfiguration<?> configuration) {
-            requireNonNull(configuration, "configuration is null");
-            return addServiceExport(ServiceDescriptor.copyOf(configuration));
-        }
+        private ServiceContract.Builder services = new ServiceContract.Builder();
 
-        public Builder addServiceExport(ServiceDescriptor descriptor) {
-            requireNonNull(descriptor, "descriptor is null");
-            if (serviceExports.putIfAbsent(descriptor.key(), descriptor) != null) {
-                throw new IllegalStateException("A service descriptor with the same key has already been added, key = " + descriptor.key());
-            }
-            return this;
-        }
-
-        public Builder addServiceRequirement(Key<?> key) {
-            requireNonNull(key, "key is null");
-            serviceRequired.add(key);
-            return this;
-        }
-
-        public Builder addServiceRequirements(Collection<Key<?>> keys) {
-            requireNonNull(keys, "keys is null");
-            serviceRequired.addAll(keys);
-            return this;
-        }
-
-        public Builder addServiceRequirementsOptionally(Collection<Key<?>> keys) {
-            requireNonNull(keys, "keys is null");
-            servicesOptional.addAll(keys);
-            return this;
+        public ServiceContract.Builder services() {
+            return services;
         }
 
         public BundleDescriptor build() {
@@ -342,19 +317,37 @@ public class BundleDescriptor {
         }
     }
 
-    public static final class Fasteners {
+    /** An object representing the various hooks a bundle exposes. */
+    // This is more implementation details...
+    // For example, the number of methods might change...
+    // Might as well provide
+    public static final class Hooks {
 
         // Permissions-> For AOP, For Invocation, for da shizzla
 
-        public Set<Class<? extends Annotation>> annotatedFieldsHooks() {
-            return Set.of();
+        public Map<Class<? extends Class<?>>, Collection<AnnotatedFieldHook<?>>> annotatedFieldExports() {
+            return Map.of();
         }
 
-        public Set<Class<? extends Annotation>> annotatedMethods() {
-            return Set.of();
+        /**
+         * Returns a collection of all exported annotated field hooks of the particular type.
+         * 
+         * @param annotationType
+         *            the type of field hook
+         * @return a collection of all exported annotated field hooks of the particular type
+         */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        public <T extends Annotation> Collection<AnnotatedFieldHook<T>> annotatedFieldExports(Class<T> annotationType) {
+            requireNonNull(annotationType, "annotationType is null");
+            return (Collection) annotatedFieldExports().getOrDefault(annotationType, List.of());
         }
 
-        public Set<Class<? extends Annotation>> annotatedTypes() {
+        /**
+         * Returns a collection of all hooks that the bundle exports in no particular order.
+         * 
+         * @return a collection of all hooks that the bundle exports in no particular order
+         */
+        public Collection<Hook> exports() {
             return Set.of();
         }
     }
@@ -374,78 +367,7 @@ public class BundleDescriptor {
         }
     }
 
-    /** An object representing the services the bundle exposes. As well as any required or optional services. */
-    // ServiceContract, er description med i en contract.. ja det kan der godt vaere...
-    // Men der er ihvertfald ikke configuration + instantiation mode
-    public static final class Services {
-
-        /** An immutable map of all the services the bundle exposes. */
-        private final Map<Key<?>, ServiceDescriptor> exposedServices;
-
-        /** A set of all optional service keys. */
-        private final Set<Key<?>> optionalServices;
-
-        /** A set of all required service keys. */
-        private final Set<Key<?>> requiredServices;
-
-        /**
-         * Creates a new Services object
-         * 
-         * @param builder
-         *            the builder object
-         */
-        public Services(BundleDescriptor.Builder builder) {
-            this.exposedServices = Map.copyOf(builder.serviceExports);
-            this.optionalServices = requireNonNull(builder.servicesOptional);
-            this.requiredServices = requireNonNull(builder.serviceRequired);
-        }
-
-        /**
-         * Returns an immutable map of all the services the bundle exposes.
-         *
-         * @return an immutable map of all the services the bundle exposes
-         */
-        public Map<Key<?>, ServiceDescriptor> exports() {
-            return exposedServices;
-        }
-
-        /**
-         * if all exposed services in the previous services are also exposed in this services. And if all required services in
-         * this are also required services in the previous.
-         * 
-         * @param previous
-         * @return whether or not the specified service are back
-         */
-        public boolean isBackwardsCompatibleWith(Services previous) {
-            requireNonNull(previous, "previous is null");
-            if (!previous.requiredServices.containsAll(requiredServices)) {
-                return false;
-            }
-            if (!exposedServices.keySet().containsAll(previous.exposedServices.keySet())) {
-                return false;
-            }
-            return true;
-        }
-
-        /**
-         * Returns an immutable set of all the keys for which a service that <b>must</b> be made available to the entity.
-         * 
-         * @return an immutable set of all keys that <b>must</b> be made available to the entity
-         */
-        // rename to requirements.
-        public Set<Key<?>> requires() {
-            return requiredServices;
-        }
-
-        /**
-         * Returns an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity.
-         * 
-         * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
-         */
-        public Set<Key<?>> requiresOptionally() {
-            return optionalServices;
-        }
-    }
+    //
 
     // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
     // Og dermed kun importere praecis de interfaces den definere...
@@ -468,4 +390,107 @@ public class BundleDescriptor {
 //// Nah lad os ditche dest
 // public AnnotatedElement annotations() {
 // return bundleType;
+// }
+// public Builder addServiceExport(ServiceConfiguration<?> configuration) {
+// requireNonNull(configuration, "configuration is null");
+// return addServiceExport(ServiceUtils.copyOf(configuration));
+// }
+//
+// public Builder addServiceExport(ServiceDescriptor descriptor) {
+// requireNonNull(descriptor, "descriptor is null");
+// if (serviceExports.putIfAbsent(descriptor.key(), descriptor) != null) {
+// throw new IllegalStateException("A service descriptor with the same key has already been added, key = " +
+// descriptor.key());
+// }
+// return this;
+// }
+//
+// public Builder addServiceRequirement(Key<?> key) {
+// requireNonNull(key, "key is null");
+// serviceRequired.add(key);
+// return this;
+// }
+//
+// public Builder addServiceRequirements(Collection<Key<?>> keys) {
+// requireNonNull(keys, "keys is null");
+// serviceRequired.addAll(keys);
+// return this;
+// }
+//
+// public Builder addServiceRequirementsOptionally(Collection<Key<?>> keys) {
+// requireNonNull(keys, "keys is null");
+// servicesOptional.addAll(keys);
+// return this;
+// }
+// /** An object representing the services the bundle exposes. As well as any required or optional services. */
+//// ServiceContract, er description med i en contract.. ja det kan der godt vaere...
+//// Men der er ihvertfald ikke configuration + instantiation mode
+// public static final class Services {
+//
+// /** An immutable map of all the services the bundle exposes. */
+// private final Map<Key<?>, ServiceDescriptor> exposedServices;
+//
+// /** A set of all optional service keys. */
+// private final Set<Key<?>> optionalServices;
+//
+// /** A set of all required service keys. */
+// private final Set<Key<?>> requiredServices;
+//
+// /**
+// * Creates a new Services object
+// *
+// * @param builder
+// * the builder object
+// */
+// public Services(BundleDescriptor.Builder builder) {
+// this.exposedServices = Map.copyOf(builder.serviceExports);
+// this.optionalServices = requireNonNull(builder.servicesOptional);
+// this.requiredServices = requireNonNull(builder.serviceRequired);
+// }
+//
+// /**
+// * Returns an immutable map of all the services the bundle exposes.
+// *
+// * @return an immutable map of all the services the bundle exposes
+// */
+// public Map<Key<?>, ServiceDescriptor> exports() {
+// return exposedServices;
+// }
+//
+// /**
+// * if all exposed services in the previous services are also exposed in this services. And if all required services in
+// * this are also required services in the previous.
+// *
+// * @param previous
+// * @return whether or not the specified service are back
+// */
+// public boolean isBackwardsCompatibleWith(Services previous) {
+// requireNonNull(previous, "previous is null");
+// if (!previous.requiredServices.containsAll(requiredServices)) {
+// return false;
+// }
+// if (!exposedServices.keySet().containsAll(previous.exposedServices.keySet())) {
+// return false;
+// }
+// return true;
+// }
+//
+// /**
+// * Returns an immutable set of all the keys for which a service that <b>must</b> be made available to the entity.
+// *
+// * @return an immutable set of all keys that <b>must</b> be made available to the entity
+// */
+// // rename to requirements.
+// public Set<Key<?>> requires() {
+// return requiredServices;
+// }
+//
+// /**
+// * Returns an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity.
+// *
+// * @return an immutable set of all service keys that <b>can, but do have to</b> be made available to the entity
+// */
+// public Set<Key<?>> requiresOptionally() {
+// return optionalServices;
+// }
 // }

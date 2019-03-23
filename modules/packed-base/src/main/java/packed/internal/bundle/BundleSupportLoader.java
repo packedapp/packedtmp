@@ -17,7 +17,7 @@ package packed.internal.bundle;
 
 import java.util.ServiceLoader;
 
-import app.packed.bundle.ModuleEnv;
+import app.packed.util.ModuleEnv;
 
 /**
  *

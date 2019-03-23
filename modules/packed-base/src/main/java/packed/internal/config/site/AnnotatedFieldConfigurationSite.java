@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.config.ConfigurationSite;
-import app.packed.config.ConfigurationSiteVisitor;
+import app.packed.config.ConfigSite;
+import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.FieldDescriptor;
 
 /** A configuration site originating from an annotated method. */
@@ -35,7 +35,7 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
     private final FieldDescriptor field;
 
     // TODO do we just want to keep a reference to the Class<? extends Annotation>?
-    AnnotatedFieldConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
+    AnnotatedFieldConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
         super(parent, operation);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
@@ -43,13 +43,13 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+    public InternalConfigurationSite replaceParent(ConfigSite newParent) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void visit(ConfigurationSiteVisitor visitor) {
+    public void visit(ConfigSiteVisitor visitor) {
         visitor.visitAnnotatedField(this, field, annotation);
     }
 

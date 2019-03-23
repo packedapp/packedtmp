@@ -33,8 +33,8 @@ public class InstanceMaker {
     public static void main(String[] args) {
         Injector i = Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
-            c.bind(new X());
-            c.bind(NeedIt.class);
+            c.provide(new X());
+            c.provide(NeedIt.class);
         });
 
         i.with(String.class);

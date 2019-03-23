@@ -49,37 +49,37 @@ class InjectionSiteForKey implements InjectionSite {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> getComponent() {
+    public Optional<Component> component() {
         return Optional.ofNullable(component);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int getIndex() {
+    public int index() {
         return 0;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Injector getInjector() {
+    public Injector injector() {
         return injector;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> getKey() {
+    public Key<?> key() {
         return key;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Member> getMember() {
+    public Optional<Member> member() {
         return Optional.empty();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> getVariable() {
+    public Optional<VariableDescriptor> variable() {
         return Optional.empty();
     }
 

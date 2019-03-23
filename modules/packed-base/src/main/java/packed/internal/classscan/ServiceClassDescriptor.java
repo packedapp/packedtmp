@@ -38,19 +38,19 @@ public class ServiceClassDescriptor {
     public final String simpleName;
 
     /** The class this descriptor is created from. */
-    public final Class<?> type;
+    public final Class<?> implementation;
 
     /**
      * Creates a new descriptor.
      * 
-     * @param clazz
+     * @param implementation
      *            the class to create a descriptor for
      * @param lookup
      *            the lookup object used to access fields and methods
      * @param scanner
      *            a member scanner
      */
-    ServiceClassDescriptor(Class<?> clazz, MethodHandles.Lookup lookup, MemberScanner scanner) {
+    ServiceClassDescriptor(Class<?> implementation, MethodHandles.Lookup lookup, MemberScanner scanner) {
         // Do we need to store lookup??? I think yes. And then collect all annotated Fields in a list
         // Or do we validate everything up front?????? With Hooks and stufff...
 
@@ -58,8 +58,8 @@ public class ServiceClassDescriptor {
         // Or maybe just throw it in an invoker?? The classes you register, are normally there for a reason.
         // Meaning the annotations are probablye
 
-        this.type = clazz;
-        this.simpleName = clazz.getSimpleName();
+        this.implementation = implementation;
+        this.simpleName = implementation.getSimpleName();
         this.provides = scanner.provides.build();
         this.inject = scanner.inject.build();
     }
@@ -76,6 +76,6 @@ public class ServiceClassDescriptor {
      * @return a service class descriptor for the specified lookup and type
      */
     public static ServiceClassDescriptor from(MethodHandles.Lookup lookup, Class<?> type) {
-        return LookupCache.get(lookup).getServiceDescriptor(type);
+        return DescriptorFactory.get(lookup).serviceDescriptorFor(type);
     }
 }

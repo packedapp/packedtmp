@@ -49,38 +49,38 @@ class InjectionSiteForDependency implements InjectionSite {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> getComponent() {
+    public Optional<Component> component() {
         return Optional.ofNullable(component);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int getIndex() {
-        return dependency.getIndex();
+    public int index() {
+        return dependency.index();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Injector getInjector() {
+    public Injector injector() {
         return injector;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> getKey() {
-        return dependency.getKey();
+    public Key<?> key() {
+        return dependency.key();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Member> getMember() {
-        return dependency.getMember();
+    public Optional<Member> member() {
+        return dependency.member();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> getVariable() {
-        return dependency.getVariable();
+    public Optional<VariableDescriptor> variable() {
+        return dependency.variable();
     }
 
     /** {@inheritDoc} */

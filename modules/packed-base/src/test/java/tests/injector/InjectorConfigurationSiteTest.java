@@ -26,10 +26,10 @@ import java.util.Map.Entry;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.TypeLiteral;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -61,7 +61,7 @@ public class InjectorConfigurationSiteTest {
      * We keep track of configuration sites when binding to make sure they are identical after the injector has been
      * created.
      */
-    private final IdentityHashMap<Class<?>, ConfigurationSite> sites = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<?>, ConfigSite> sites = new IdentityHashMap<>();
 
     /** Tests that the various bind operations gets the right configuration site. */
     @Test
@@ -70,19 +70,19 @@ public class InjectorConfigurationSiteTest {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
             injectorCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(2).findFirst()).get();
             conf.lookup(MethodHandles.lookup());// The letter classes are not exported
-            binding0(conf.bind(A.class));
-            binding0(conf.bind(Factory.findInjectable(B.class)));
-            binding0(conf.bind(C0));
-            binding0(conf.bind(TypeLiteral.of(D.class)));
-            binding0(conf.bindLazy(E.class));
-            binding0(conf.bindLazy(Factory.findInjectable(F.class)));
-            binding0(conf.bindLazy(TypeLiteral.of(G.class)));
-            binding0(conf.bindPrototype(H.class));
-            binding0(conf.bindPrototype(Factory.findInjectable(I.class)));
-            binding0(conf.bindPrototype(TypeLiteral.of(J.class)));
+            binding0(conf.provide(A.class));
+            binding0(conf.provide(Factory.findInjectable(B.class)));
+            binding0(conf.provide(C0));
+            binding0(conf.provide(TypeLiteral.of(D.class)));
+            binding0(conf.provideLazy(E.class));
+            binding0(conf.provideLazy(Factory.findInjectable(F.class)));
+            binding0(conf.provideLazy(TypeLiteral.of(G.class)));
+            binding0(conf.providePrototype(H.class));
+            binding0(conf.providePrototype(Factory.findInjectable(I.class)));
+            binding0(conf.providePrototype(TypeLiteral.of(J.class)));
         });
-        for (Entry<Class<?>, ConfigurationSite> e : sites.entrySet()) {
-            ConfigurationSite cs = inj.getService(e.getKey()).configurationSite();
+        for (Entry<Class<?>, ConfigSite> e : sites.entrySet()) {
+            ConfigSite cs = inj.getService(e.getKey()).get().configurationSite();
             assertThat(cs).isSameAs(e.getValue());
             assertThat(cs.parent().get()).isSameAs(inj.configurationSite());
         }
@@ -92,7 +92,7 @@ public class InjectorConfigurationSiteTest {
     private void binding0(ServiceConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
         int index = sc.getKey().typeLiteral().getRawType().getSimpleName().toString().charAt(0) - 'A';
-        ConfigurationSite cs = sc.configurationSite();
+        ConfigSite cs = sc.configurationSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
         assertThat(cs.operation()).isEqualTo(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND.operation());
@@ -103,12 +103,12 @@ public class InjectorConfigurationSiteTest {
 
     /**
      * Tests that imported service retain configuration sites when using
-     * {@link InjectorConfiguration#importServicesFrom(Injector)}.
+     * {@link InjectorConfigurator#importServicesFrom(Injector)}.
      */
     @Test
     public void importServiceFrom() {
         Injector i = Injector.of(c -> {
-            c.bind(123);
+            c.provide(123);
         });
 
         Injector i2 = Injector.of(c -> {
@@ -116,12 +116,12 @@ public class InjectorConfigurationSiteTest {
             c.wireInjector(i);
         });
 
-        ConfigurationSite cs = i2.getService(Integer.class).configurationSite();
+        ConfigSite cs = i2.getService(Integer.class).get().configurationSite();
         // First site is "c.importServicesFrom(i);"
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).configurationSite());
+        assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).get().configurationSite());
 
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.of(c -> {
@@ -129,12 +129,12 @@ public class InjectorConfigurationSiteTest {
             c.wireInjector(i2);
         });
 
-        cs = i3.getService(Integer.class).configurationSite();
+        cs = i3.getService(Integer.class).get().configurationSite();
         // First site is "c.importServicesFrom(i);"
         line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i2.getService(Integer.class).configurationSite());
+        assertThat(cs.parent().get()).isSameAs(i2.getService(Integer.class).get().configurationSite());
     }
 
     @Test

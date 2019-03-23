@@ -22,20 +22,20 @@ import static support.assertj.Assertions.npe;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.ServiceWiringOperations;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceWiringImportOperation;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfiguration#wireInjector(Injector, ServiceWiringImportOperation...)} method. */
+/** Tests the {@link InjectorConfigurator#wireInjector(Injector, ServiceWiringImportOperation...)} method. */
 public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
-        Injector i = Injector.of(c -> c.bind("X"));
+        Injector i = Injector.of(c -> c.provide("X"));
         npe(() -> Injector.of(c -> c.wireInjector((Injector) null)), "injector");
         npe(() -> Injector.of(c -> c.wireInjector(i, (ServiceWiringImportOperation[]) null)), "operations");
 
@@ -47,8 +47,8 @@ public class SimpleInjectorImportsTest {
     @Test
     public void import0() {
         Injector i1 = Injector.of(c -> {
-            c.bind("X");
-            c.bind(123);
+            c.provide("X");
+            c.provide(123);
         });
 
         Injector i = Injector.of(c -> {
@@ -60,7 +60,7 @@ public class SimpleInjectorImportsTest {
     /** Tests that we can import a single service. */
     @Test
     public void import1() {
-        Injector i1 = Injector.of(c -> c.bind("X"));
+        Injector i1 = Injector.of(c -> c.provide("X"));
 
         Injector i = Injector.of(c -> c.wireInjector(i1));
         assertThat(i.with(String.class)).isEqualTo("X");
@@ -70,7 +70,7 @@ public class SimpleInjectorImportsTest {
     /** Tests that we can chain stages. */
     @Test
     public void rebindChaining() {
-        Injector i1 = Injector.of(c -> c.bind("X"));
+        Injector i1 = Injector.of(c -> c.provide("X"));
 
         Injector i = Injector.of(c -> {
             c.wireInjector(i1, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
@@ -84,8 +84,8 @@ public class SimpleInjectorImportsTest {
     /** Tests that we can rebind imported services. */
     @Test
     public void rebindImports() {
-        Injector i1 = Injector.of(c -> c.bind("X"));
-        Injector i2 = Injector.of(c -> c.bind("Y"));
+        Injector i1 = Injector.of(c -> c.provide("X"));
+        Injector i2 = Injector.of(c -> c.provide("Y"));
 
         Injector i = Injector.of(c -> {
             c.wireInjector(i1, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
@@ -99,8 +99,8 @@ public class SimpleInjectorImportsTest {
     /** Tests that we can switch keys of two imported services. */
     @Test
     public void rebindImports2() {
-        Injector i1 = Injector.of(c -> c.bind("X").as(new Key<@Left String>() {}));
-        Injector i2 = Injector.of(c -> c.bind("Y").as(new Key<@Right String>() {}));
+        Injector i1 = Injector.of(c -> c.provide("X").as(new Key<@Left String>() {}));
+        Injector i2 = Injector.of(c -> c.provide("Y").as(new Key<@Right String>() {}));
 
         Injector i = Injector.of(c -> {
             c.wireInjector(i1);

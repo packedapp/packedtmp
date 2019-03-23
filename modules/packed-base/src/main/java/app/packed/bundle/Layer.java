@@ -18,7 +18,18 @@ package app.packed.bundle;
 /**
  *
  */
-// Bundle extends this. If yes, we cannot have public methods....
+
+// http://www.methodsandtools.com/archive/onionsoftwarearchitecture.php
 public class Layer {
+
+    public Contract incoming() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Contract outgoing() {
+        throw new UnsupportedOperationException();
+    }
+
+    // If we allow transformations w
 
 }

@@ -15,23 +15,12 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
 
 import app.packed.app.App;
-import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
-import app.packed.lifecycle.OnInitialize;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.ContainerBuilder;
 
 /**
  * The main purpose of this interface is to manage and control the life cycle of components.
@@ -61,25 +50,11 @@ import packed.internal.container.ContainerBuilder;
 public interface Container extends Injector {
 
     /**
-     * Returns the application this container belongs to.
+     * Returns the application that this container belongs to.
      * 
-     * @return the application this container belongs to
+     * @return the application that this container belongs to
      */
-    default App app() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a stream of all the components in the container in no particular order.
-     * <p>
-     * Invoking this method is equivalent to calling {@code container.root().components()}.
-     *
-     * @return a stream of all the components in the container in no particular order
-     * @see Component#stream()
-     */
-    default ComponentStream components() {
-        return root().stream();
-    }
+    App app();
 
     // ListenerManager listenerManager(); // listeners()...???, container.jobs().
 
@@ -107,92 +82,28 @@ public interface Container extends Injector {
      */
     String name();
 
-    /**
-     * Returns the root component of this container.
-     *
-     * @return the root component of this container
-     */
-    Component root();
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the container. In which currently running tasks will be executed, but
-     * no new tasks will be started. Invocation has no additional effect if the container has already been shut down.
-     * <p>
-     * There are (currently) no method similar to {@link ExecutorService#shutdownNow()}.
-     *
-     * @return a future that can be used to query whether the container has completed shutdown. Or is still in the process
-     *         of shutting down the container.
-     */
-    // Maybe shutdown().cancel() <- can be similar to ExecutorService#shutdownNow
-    CompletableFuture<Container> shutdown();
-
-    /**
-     * Initiates an orderly asynchronously shutdown of the container because of an exceptional condition. Invocation has no
-     * additional effect if the container has already been shut down.
-     *
-     * @param cause
-     *            the cause of the shutdown
-     * @return a future that can be used to query whether the container has completed shutdown. Or is still in the process
-     *         of being shutdown.
-     */
-    CompletableFuture<Container> shutdown(Throwable cause);
-
-    /**
-     * Initiates an asynchronously startup of the container. Normally, there is no need to call this methods since most
-     * methods on the container will lazily start the container whenever it is needed. For example, invoking
-     * {@link #with(Class)} will automatically start the container if it has not already been started by another action.
-     * <p>
-     * If the container is in the process of being initialized when invoking this method, for example, from a method
-     * annotated with {@link OnInitialize}. The container will automatically be started immediately after it have been
-     * constructed.
-     * <p>
-     * Invocation has no additional effect if the container has already been started or shut down.
-     *
-     * @return a future that can be used to query whether the container has completed startup or is still in the process of
-     *         starting up. Can also be used to retrieve any exception that might have prevented the container in starting
-     *         properly
-     */
-    // Gem den væk på state()
-    // Det eneste er at der altsaa er nogen forskel her paa container og component. Da man ikke stoppe en komponent....
-
-    CompletableFuture<Container> start();
+    // Path... PackedPath, URL????? Just like 192.168.3.3 <- Is clearly an ip adress 192.155.3.2/foo is clearly a website
 
     LifecycleOperations<? extends Container> state();
-
-    /**
-     * Creates a new container from the specified bundle.
-     *
-     * @param bundle
-     *            the bundle to create the container from
-     * @return a new container
-     * @throws RuntimeException
-     *             if the container could not be created
-     */
-    static Container of(Bundle bundle) {
-        throw new UnsupportedOperationException();
-    }
-
-    // /**
-    // * Creates a new container from a bundle of the specified type.
-    // *
-    // * @param bundleType
-    // * the type of bundle to create the container from
-    // * @return a new container
-    // * @throws RuntimeException
-    // * if the container could not be created
-    // */
-    // static Container of(Class<? extends Bundle> bundleType) {
-    // return of(Bundles.instantiate(bundleType));
-    // }
-
-    static Container of(Consumer<? super ContainerConfiguration> configurator, WiringOperation... operations) {
-        requireNonNull(configurator, "configurator is null");
-        ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
-        configurator.accept(c);
-        return c.build();
-    }
 }
 
+/// **
+// * Returns the root component of this container.
+// *
+// * @return the root component of this container
+// */
+// Component root();
+/// **
+// * Returns a stream of all the components in the container in no particular order.
+// * <p>
+// * Invoking this method is equivalent to calling {@code container.root().components()}.
+// *
+// * @return a stream of all the components in the container in no particular order
+// * @see Component#stream()
+// */
+// default ComponentStream components() {
+// return root().stream();
+// }
 /// **
 // * Performs the given action for each component in this container. Components are visited using depth first order.
 /// With

@@ -22,15 +22,23 @@ import java.util.List;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InvokableMember;
 
-/** A descriptor of an annotated member that requires any kind of dependencies injected. */
+/** A descriptor of an annotated member that has 0 or more service dependencies. */
 public class AtDependable {
 
-    /** Any dependencies (parameters) the annotated member has. */
+    /** The dependencies (parameters) of the member. */
     public final List<InternalDependency> dependencies;
 
     /** The invokable member. */
     public final InvokableMember<?> invokable;
 
+    /**
+     * Creates a new AtDependable.
+     * 
+     * @param invokable
+     *            the invokable member
+     * @param dependencies
+     *            a list of dependencies
+     */
     AtDependable(InvokableMember<?> invokable, List<InternalDependency> dependencies) {
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);

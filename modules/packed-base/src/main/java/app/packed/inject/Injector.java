@@ -22,10 +22,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.bundle.BuildContext;
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
-import app.packed.config.ConfigurationSite;
+import app.packed.bundle.ContainerBuildContext;
+import app.packed.bundle.x.WiringOperation;
+import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Taggable;
@@ -97,6 +97,7 @@ import packed.internal.inject.builder.InjectorBuilder;
 // getProvider(Class|Key|InjectionSite)
 // get(InjectionSite)
 // getService(Class|Key) .get(InjectionSite)<---Nah
+// hasService -> contains
 public interface Injector extends Taggable {
 
     /**
@@ -104,44 +105,54 @@ public interface Injector extends Taggable {
      * 
      * @return the configuration site of this injector
      */
-    ConfigurationSite configurationSite();
+    ConfigSite configurationSite();
 
     /**
-     * Returns the (nullable) description of this injector. Or null if no description was set when it was configured.
+     * Returns an optional description of this injector.
      *
-     * @return the (nullable) description of this injector. Or null if no description was set when it was configured.
-     * @see InjectorConfiguration#setDescription(String)
+     * @return an optional description of this injector
+     * @see InjectorConfigurator#setDescription(String)
+     * @see Bundle#setDescription(String)
      */
     Optional<String> description();
 
     /**
-     * Returns a service instance for the given injection key if available, otherwise an empty optional. If you know for
-     * certain that a service exists for the specified, {@link #with(Class)} usually leads to prettier code.
+     * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
+     * know for certain that a service exists for the specified key, use {@link #with(Class)} for more fluent code.
      *
      * @param <T>
-     *            the type of service this method returns
+     *            the type of service that this method returns
      * @param key
      *            the key for which to return a service instance
-     * @return an optional containing the service instance if present, otherwise an empty optional
+     * @return an optional containing the service instance if present, or an empty optional if not present
      * @see #with(Class)
      */
     default <T> Optional<T> get(Class<T> key) {
-        requireNonNull(key, "key is null");
-        return get(Key.of(key));
+        return get(Key.of(requireNonNull(key, "key is null")));
     }
 
+    /**
+     * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
+     * know for certain that a service exists for the specified key, use {@link #with(Class)} for more fluent code.
+     *
+     * @param <T>
+     *            the type of service that this method returns
+     * @param key
+     *            the key for which to return a service instance
+     * @return an optional containing the service instance if present, or an empty optional if not present
+     * @see #with(Class)
+     */
     <T> Optional<T> get(Key<T> key);
 
     @Nullable
-    default <T> ServiceDescriptor getService(Class<T> serviceType) {
+    default <T> Optional<ServiceDescriptor> getService(Class<T> serviceType) {
         return getService(Key.of(serviceType));
     }
 
     @Nullable
-    default <T> ServiceDescriptor getService(Key<T> key) {
+    default <T> Optional<ServiceDescriptor> getService(Key<T> key) {
         requireNonNull(key, "key is null");
-        Optional<ServiceDescriptor> o = services().filter(d -> d.key().equals(key)).findFirst();
-        return o.orElse(null);
+        return services().filter(d -> d.key().equals(key)).findFirst();
     }
 
     /**
@@ -170,41 +181,37 @@ public interface Injector extends Taggable {
     /**
      * Injects services into the fields and methods of the specified instance.
      * <p>
-     * This method is typically only needed if need to construct objects yourself.
+     * This method is typically only needed if you need to construct objects yourself.
      *
      * @param <T>
      *            the type of object to inject into
      * @param instance
-     *            the instance to inject members (fields and methods) on
+     *            the instance to inject members (fields and methods) into
      * @param lookup
-     *            A lookup object
+     *            A lookup object used to access the various members on the specified instance
      * @return the specified instance
      * @throws InjectionException
      *             if any of the injectable members of the specified instance could not be injected
      */
     <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    default void print() {
-        services().forEach(s -> System.out.println(s));
-    }
-
     /**
-     * Returns a unordered {@code Stream} over all the services that are available from this injector.
+     * Returns a unordered {@code Stream} of all the services that this injector provides.
      *
-     * @return a unordered {@code Stream} over all the services that are available from this injector
+     * @return a unordered {@code Stream} of all the services that this injector provides
      */
     Stream<ServiceDescriptor> services();
 
     /**
-     * Returns a service of the specified type. Or throws an {@link UnsupportedOperationException} if no service of the
-     * specified type is available. The semantics method is identical to {@link #get(Class)} except that an exception is
-     * thrown instead of returning if the service does not exist.
+     * Returns a service of the specified type. Or throws an {@link UnsupportedOperationException} if this injector does not
+     * provide a service with the specified key. The semantics method is identical to {@link #get(Class)} except that an
+     * exception is thrown instead of returning if the service does not exist.
      *
      * @param <T>
      *            the type of service to return
      * @param key
      *            the key of the service to return
-     * @return a service of the specified type
+     * @return a service for the specified key
      * @throws UnsupportedOperationException
      *             if no service with the specified key exist
      * @throws IllegalStateException
@@ -227,16 +234,18 @@ public interface Injector extends Taggable {
      * exists. This is typically used to create fluent APIs such as:
      *
      * <pre>
+     * Key<WebServer> key = Key.of(WebServer.class);
      * injector.with(WebServer.class).printAllLiveConnections();
      * </pre>
      *
-     * Invoking this method is roughly equivalent to:
+     * Invoking this method is equivalent to:
      *
      * <pre>
-     * if (!injector.hasService(type)) {
-     *     throw new UnsupportedOperationException("A service with the specified key could not be found, key = " + type);
-     * }
-     * return injector.get(type);
+     *  Optional<T> t = get(key);
+     *  if (!t.isPresent()) {
+     *      throw new UnsupportedOperationException();
+     *  }
+     *  return t.get();
      * </pre>
      *
      * @param <T>
@@ -247,10 +256,10 @@ public interface Injector extends Taggable {
      * @throws UnsupportedOperationException
      *             if no service with the specified key could be found
      * @throws IllegalStateException
-     *             if a service with the specified key exist, but the service has not been properly initialized yet. For
-     *             example, if injecting an injector into a constructor of a service and then using the injector to try and
-     *             access other service that have not been properly initialized yet. For example, a service that depends on
-     *             the service being constructed
+     *             if a service with the specified key exist, but the service is not ready to be consumed yet. For example,
+     *             if injecting an injector into a constructor of a service and then using the injector to try and access
+     *             other service that have not been properly initialized yet. For example, a service that depends on the
+     *             service being constructed
      */
     default <T> T with(Key<T> key) {
         Optional<T> t = get(key);
@@ -266,12 +275,14 @@ public interface Injector extends Taggable {
      * @param bundle
      *            a bundle to create an injector from
      * @return the new injector
+     * @throws IllegalArgumentException
+     *             if the bundle defines any components, or anything else that requires a lifecycle
      */
     static Injector of(Bundle bundle, WiringOperation... operations) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
 
-        BuildContext bs = new BuildContext() {
+        ContainerBuildContext bs = new ContainerBuildContext() {
             @SuppressWarnings("unchecked")
             @Override
             public <T> T with(Class<? super T> type) {
@@ -287,10 +298,6 @@ public interface Injector extends Taggable {
         return builder.build();
     }
 
-    // static Injector of(Class<? extends Bundle> bundleType, WiringOperation... operations) {
-    // return of(Bundles.instantiate(bundleType), operations);
-    // }
-
     /**
      * Creates a new injector via the specified configurator.
      *
@@ -298,11 +305,7 @@ public interface Injector extends Taggable {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    // Maa have noget Bootstrap??? ogsaa med stages o.s.v., vi gider ihvertfald ikke bliver noedt til at lave en
-    // container hvor vi skal importere den anden container. Og saa staar vi ved med to.
-    // Nej vi skal have noget boot agtigt noget. InjectorBooter?
-    // /* , Object... requirements */
-    static Injector of(Consumer<InjectorConfiguration> configurator) {
+    static Injector of(Consumer<InjectorConfigurator> configurator) {
         requireNonNull(configurator, "configurator is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
         configurator.accept(builder);
@@ -310,6 +313,23 @@ public interface Injector extends Taggable {
     }
 }
 
+// We do not put service contract on a running object, because it does not work very good.
+/// **
+// * Returns a service contract
+// *
+// * @return
+// */
+//// Hmm, vi extender jo maaske den her klasse, og vil returnere en MultiContract
+// default ServiceContract contract() {
+// // Injector.serviceContractOf(Injector i);
+// Injector.contractOf(Injector i); -> contractOf(i).services();
+// // O
+// throw new UnsupportedOperationException();
+// }
+
+// default void print() {
+// services().forEach(s -> System.out.println(s));
+// }
 /// **
 // * Creates a new injector builder with this injector with all the services available in this injector also be
 /// available

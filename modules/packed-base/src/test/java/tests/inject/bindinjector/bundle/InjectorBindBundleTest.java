@@ -50,7 +50,7 @@ public class InjectorBindBundleTest {
         Bundle b = new Bundle() {
             @Override
             protected void configure() {
-                bind("X");
+                provide("X");
             }
         };
 
@@ -66,8 +66,8 @@ public class InjectorBindBundleTest {
         Bundle b = new Bundle() {
             @Override
             protected void configure() {
-                bind("X");
-                expose(String.class);
+                provide("X");
+                export(String.class);
             }
         };
 
@@ -84,8 +84,8 @@ public class InjectorBindBundleTest {
         Bundle b = new Bundle() {
             @Override
             protected void configure() {
-                bindPrototype(new Factory0<>(al::incrementAndGet) {});
-                expose(Long.class);
+                providePrototype(new Factory0<>(al::incrementAndGet) {});
+                export(Long.class);
             }
         };
 

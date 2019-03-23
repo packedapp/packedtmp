@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.bundle.Bundle;
 import app.packed.util.Nullable;
-import packed.internal.classscan.LookupCache;
+import packed.internal.classscan.DescriptorFactory;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.util.AbstractConfiguration;
 
@@ -31,7 +31,7 @@ import packed.internal.util.AbstractConfiguration;
 public abstract class ImageBuilder extends AbstractConfiguration {
 
     /** The lookup object. We default to public access */
-    public LookupCache accessor = LookupCache.PUBLIC;
+    public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
 
     /**
      * The (optional) bundle we are creating a runtime instance for, if null then we using a {@code XConfiguration} to
@@ -58,8 +58,8 @@ public abstract class ImageBuilder extends AbstractConfiguration {
 
     /** {@inheritDoc} */
     public final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
         checkConfigurable();
-        this.accessor = LookupCache.get(lookup);
+        this.accessor = DescriptorFactory.get(lookup);
     }
 }

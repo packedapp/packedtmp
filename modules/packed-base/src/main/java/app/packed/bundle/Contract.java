@@ -15,7 +15,6 @@
  */
 package app.packed.bundle;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +30,11 @@ import app.packed.util.Key;
 // Name
 // Description
 // Version
+
+// Merge to contracts.... All fragments, needs a merge method
 public final class Contract {
+
+    // String Description.. But it is neither bundle or container. It is the description of the contract...
 
     // Metoder til at teste om en contract er opfyldt... Evt et diff....
 
@@ -45,7 +48,10 @@ public final class Contract {
         throw new UnsupportedOperationException();
     }
 
-    static class ContractFragment {
+    /**
+     * 
+     */
+    static abstract class ContractFragment {
         // Hvis vi nogensinde faar brug for en basis klasse..
         // ContractVisitor...
     }
@@ -60,29 +66,8 @@ public final class Contract {
         }
     }
 
-    public static final class Fasteners {
-
-        // Permissions-> For AOP, For Invocation, for da shizzla
-
-        public Set<Class<? extends Annotation>> annotatedFieldsHooks() {
-            return Set.of();
-        }
-
-        public Set<Class<? extends Annotation>> annotatedMethods() {
-            return Set.of();
-        }
-
-        public Set<Class<? extends Annotation>> annotatedTypes() {
-            return Set.of();
-        }
-    }
-
     // change to class
     public final class Services {
-
-        Services(ContractBuilder.Services servicesxz) {
-
-        }
 
         // Optional<String> exportDescription(Key<?> key);
         //

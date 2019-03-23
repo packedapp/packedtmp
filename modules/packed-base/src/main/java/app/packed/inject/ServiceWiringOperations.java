@@ -25,9 +25,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import app.packed.bundle.DownstreamWiringOperation;
-import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.x.DownstreamWiringOperation;
+import app.packed.bundle.x.UpstreamWiringOperation;
 import app.packed.util.Key;
+import packed.internal.inject.ServiceUtils;
 import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
@@ -73,7 +74,7 @@ public final class ServiceWiringOperations {
         return new ServiceWiringImportOperation() {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
-                action.accept(ServiceDescriptor.of(sc));
+                action.accept(ServiceUtils.wrapperOf(sc));
             }
         };
     }
@@ -184,7 +185,7 @@ public final class ServiceWiringOperations {
         return new ServiceWiringImportOperation() {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
-                if (!predicate.test(ServiceDescriptor.of(sc))) {
+                if (!predicate.test(ServiceUtils.wrapperOf(sc))) {
                     sc.asNone();
                 }
             }

@@ -61,7 +61,7 @@ public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
     }
 
     public ServiceNode<?> getNode(Dependency dependency) {
-        return getRecursive(dependency.getKey());
+        return getRecursive(dependency.key());
     }
 
     @SuppressWarnings("unchecked")

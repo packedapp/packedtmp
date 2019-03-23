@@ -15,7 +15,7 @@
  */
 package packed.internal.bundle;
 
-import app.packed.bundle.ModuleEnv;
+import app.packed.util.ModuleEnv;
 
 /**
  *

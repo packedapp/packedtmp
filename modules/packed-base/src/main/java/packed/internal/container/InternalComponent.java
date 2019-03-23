@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigSite;
 import app.packed.container.Component;
 import app.packed.container.ComponentPath;
 import app.packed.container.ComponentStream;
@@ -44,7 +44,7 @@ public class InternalComponent implements Component {
     volatile InternalComponentConfiguration<?> configuration;
 
     /** The configuration site of the component. */
-    private final ConfigurationSite configurationSite;
+    private final ConfigSite configurationSite;
 
     /** The container in which this component lives. */
     final InternalContainer container;
@@ -82,7 +82,7 @@ public class InternalComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigurationSite configurationSite() {
+    public ConfigSite configurationSite() {
         return configurationSite;
     }
 

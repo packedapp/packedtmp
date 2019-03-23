@@ -31,7 +31,7 @@ public class InternalFactory2<T, U, R> extends InternalFunction<R> {
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    public InternalFactory2(BiFunction<? super T, ? super U, ? extends R> function, TypeLiteral<R> typeLiteral) {
+    public InternalFactory2(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
         super(typeLiteral);
         this.function = requireNonNull(function);
     }

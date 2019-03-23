@@ -108,19 +108,19 @@ public final class InternalDependency implements Dependency {
 
     /** {@inheritDoc} */
     @Override
-    public int getIndex() {
+    public int index() {
         return variable == null ? 0 : variable.getIndex();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> getKey() {
+    public Key<?> key() {
         return key;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Member> getMember() {
+    public Optional<Member> member() {
         if (variable instanceof FieldDescriptor) {
             return Optional.of(((FieldDescriptor) variable));
         } else if (variable instanceof ParameterDescriptor) {
@@ -145,7 +145,7 @@ public final class InternalDependency implements Dependency {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> getVariable() {
+    public Optional<VariableDescriptor> variable() {
         return Optional.ofNullable(variable);
     }
 

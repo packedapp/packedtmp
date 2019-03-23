@@ -1,0 +1,140 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package tck.bundledescriptor;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.invoke.MethodHandles;
+
+import org.junit.jupiter.api.Test;
+
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleDescriptor;
+import app.packed.util.Key;
+import support.stubs.Letters.A;
+import support.stubs.Letters.B;
+import support.stubs.Letters.C;
+import support.stubs.Letters.NeedsA;
+import support.stubs.Letters.NeedsAOptional;
+import support.stubs.Letters.NeedsB;
+
+/**
+ * Test {@link BundleDescriptor#services()}.
+ */
+public class ServicesTest {
+
+    @Test
+    public void empty() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+
+            @Override
+            protected void configure() {}
+        });
+        assertThat(d.services()).isNotNull();
+        assertThat(d.services()).isSameAs(d.services());
+        assertThat(d.services().provides()).isEmpty();
+        assertThat(d.services().optional()).isEmpty();
+        assertThat(d.services().requires()).isEmpty();
+    }
+
+    @Test
+    public void provides() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+
+            @Override
+            protected void configure() {
+                lookup(MethodHandles.lookup());
+                provide(A.class);
+                provide(B.class);
+                export(A.class);
+            }
+        });
+        assertThat(d.services().provides()).containsExactly(Key.of(A.class));
+        assertThat(d.services().optional()).isEmpty();
+        assertThat(d.services().requires()).isEmpty();
+    }
+
+    @Test
+    public void requires() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+
+            @Override
+            protected void configure() {
+                lookup(MethodHandles.lookup());
+                serviceAutoRequire();
+                provide(NeedsA.class);
+                provide(B.class);
+            }
+        });
+        assertThat(d.services().requires()).containsExactly(Key.of(A.class));
+        assertThat(d.services().optional()).isEmpty();
+        assertThat(d.services().provides()).isEmpty();
+    }
+
+    @Test
+    public void optional() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+
+            @Override
+            protected void configure() {
+                lookup(MethodHandles.lookup());
+                serviceAutoRequire();
+                provide(NeedsAOptional.class);
+                provide(B.class);
+            }
+        });
+        assertThat(d.services().requires()).isEmpty();
+        assertThat(d.services().provides()).isEmpty();
+        assertThat(d.services().optional()).containsExactly(Key.of(A.class));
+    }
+
+    /** A service will never be both requires and optional. */
+    @Test
+    public void requiresOverrideOptional() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+
+            @Override
+            protected void configure() {
+                lookup(MethodHandles.lookup());
+                serviceAutoRequire();
+                provide(NeedsA.class);
+                provide(NeedsAOptional.class);
+                provide(B.class);
+            }
+        });
+        assertThat(d.services().requires()).containsExactly(Key.of(A.class));
+        assertThat(d.services().optional()).isEmpty();
+        assertThat(d.services().provides()).isEmpty();
+    }
+
+    @Test
+    public void all() {
+        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+
+            @Override
+            protected void configure() {
+                lookup(MethodHandles.lookup());
+                serviceAutoRequire();
+                provide(NeedsAOptional.class);
+                provide(NeedsB.class);
+                export(provide(C.class));
+            }
+        });
+        assertThat(d.services().optional()).containsExactly(Key.of(A.class));
+        assertThat(d.services().requires()).containsExactly(Key.of(B.class));
+        assertThat(d.services().provides()).containsExactly(Key.of(C.class));
+    }
+}

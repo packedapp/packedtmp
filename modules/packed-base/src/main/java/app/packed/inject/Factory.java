@@ -46,18 +46,8 @@ import packed.internal.util.UtilSupport;
 // TODO Qualifiers on Methods, Types together with findInjectable????
 public class Factory<T> {
 
-    static {
-        InjectSupport.Helper.init(new InjectSupport.Helper() {
-
-            @Override
-            protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
-                return factory.factory.function;
-            }
-        });
-    }
-
     /** A cache of factories used by {@link #findInjectable(Class)}. */
-    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> FIND_FROM_CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -71,7 +61,7 @@ public class Factory<T> {
      * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only used by subclasses of
      * TypeLiteral, never literals that are manually constructed.
      */
-    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> FIND_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -81,6 +71,16 @@ public class Factory<T> {
             return new Factory(FindInjectableExecutable.find(UtilSupport.invoke().toTypeLiteral(t)));
         }
     };
+
+    static {
+        InjectSupport.Helper.init(new InjectSupport.Helper() {
+
+            @Override
+            protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
+                return factory.factory.function;
+            }
+        });
+    }
 
     /** The internal factory that all calls are delegated to. */
     final InternalFactory<T> factory;
@@ -94,7 +94,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) FactoryHelper.create2(function, getClass());
+        this.factory = (InternalFactory<T>) FactoryNHelper.create2(function, getClass());
     }
 
     /**
@@ -106,7 +106,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) FactoryHelper.create1(function, getClass());
+        this.factory = (InternalFactory<T>) FactoryNHelper.create1(function, getClass());
     }
 
     /**
@@ -128,16 +128,17 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) FactoryHelper.create0(supplier, getClass());
+        this.factory = (InternalFactory<T>) FactoryNHelper.create0(supplier, getClass());
     }
 
     /**
-     * Returns a list of this factory's dependencies. Returns an empty list if this factory does not have any dependencies.
+     * Returns a list of all of the dependencies of this factory. Returns an empty list if this factory does not have any
+     * dependencies.
      *
-     * @return a list of this factory's dependencies
+     * @return a list of all of the dependencies of this factory
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final List<Dependency> getDependencies() {
+    public final List<Dependency> dependencies() {
         return (List) factory.dependencies;
     }
 
@@ -146,7 +147,7 @@ public class Factory<T> {
      *
      * @return the default key under which this factory will be registered
      */
-    public final Key<T> getKey() {
+    public final Key<T> key() {
         return factory.key;
     }
 
@@ -155,8 +156,8 @@ public class Factory<T> {
      *
      * @return the raw type of objects this factory creates
      */
-    public final Class<? super T> getRawType() {
-        return getTypeLiteral().getRawType();
+    public final Class<? super T> rawType() {
+        return typeLiteral().getRawType();
     }
 
     /**
@@ -165,8 +166,8 @@ public class Factory<T> {
      *
      * @return
      */
-    Class<? super T> getScannableType() {
-        return getRawType();
+    Class<? super T> scannableType() {
+        return rawType();
     }
 
     /**
@@ -174,8 +175,22 @@ public class Factory<T> {
      *
      * @return the type of objects this factory creates
      */
-    public final TypeLiteral<T> getTypeLiteral() {
+    public final TypeLiteral<T> typeLiteral() {
         return factory.function.getReturnType();
+    }
+
+    /**
+     * Returns a new factory retaining all the properties of this factory. Except that the default key this factory will be
+     * bound to will be the specified key.
+     * 
+     * @param key
+     *            the default key under which to bind the factory
+     * @return the new factory
+     * @throws ClassCastException
+     *             if the type of the key does not match this factory
+     */
+    public final Factory<T> withKey(Key<? super T> key) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -186,7 +201,7 @@ public class Factory<T> {
      * constructor.
      * <p>
      * The specified lookup object will always be used, even if registering with an injector prepended by a call to
-     * {@link InjectorConfiguration#lookup(java.lang.invoke.MethodHandles.Lookup)}.
+     * {@link InjectorConfigurator#lookup(java.lang.invoke.MethodHandles.Lookup)}.
      *
      * @param lookup
      *            the lookup object
@@ -199,18 +214,6 @@ public class Factory<T> {
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         return new Factory<>(new InternalFactory<T>(factory.function.withLookup(lookup), factory.dependencies));
-    }
-
-    /**
-     * Returns a new factory retaining all the properties of this factory. Except that the default key this factory will be
-     * bound to will be the specified key.
-     * 
-     * @param key
-     *            the default key under which to bind the factory
-     * @return the new factory
-     */
-    public final Factory<T> withKey(Key<? super T> key) {
-        throw new UnsupportedOperationException();
     }
 
     public Factory<T> withType(Class<? extends T> type) {
@@ -243,8 +246,9 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(Class<T> implementation) {
+        // Rename to find()
         requireNonNull(implementation, "implementation is null");
-        return (Factory<T>) FIND_INJECTABLE_FROM_CLASS_CACHE.get(implementation);
+        return (Factory<T>) FIND_FROM_CLASS_CACHE.get(implementation);
     }
 
     /**
@@ -261,11 +265,11 @@ public class Factory<T> {
         requireNonNull(implementation, "implementation is null");
         if (!UtilSupport.invoke().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
-            return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
+            return (Factory<T>) FIND_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
         Type t = implementation.getType();
         if (t instanceof Class) {
-            return (Factory<T>) FIND_INJECTABLE_FROM_CLASS_CACHE.get((Class<?>) t);
+            return (Factory<T>) FIND_FROM_CLASS_CACHE.get((Class<?>) t);
         } else {
             return new Factory<>(FindInjectableExecutable.find(implementation));
         }

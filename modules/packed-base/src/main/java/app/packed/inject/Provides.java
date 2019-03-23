@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * An annotation indicating that the method or field provides a service.
  * <p>
  * The annotation can be used on both static and non-static fields and methods. However, if you use a non-static field
- * or method you implicitly introduces a dependency to an instance of the type on which the field or method is located.
+ * or method you implicitly introduces a dependency to the instance of the type on which the field or method is located.
  * This is normally not a problem, however in some situations it can lead to circles in the dependency graph.
  * <p>
  * A field
@@ -86,6 +86,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Provides {
+
+    // exported()???
+    /**
+     * If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having to
+     * export it from the bundle
+     * 
+     * @return
+     */
+    boolean export() default false;
 
     /**
      * The binding mode of the providing method or field, the default is {@link InstantiationMode#SINGLETON}.

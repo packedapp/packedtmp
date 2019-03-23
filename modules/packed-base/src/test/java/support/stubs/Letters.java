@@ -17,6 +17,8 @@ package support.stubs;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 /**
  * A test stub class.
  *
@@ -82,6 +84,19 @@ public class Letters {
         }
 
         public A getA() {
+            return a;
+        }
+    }
+
+    /** A test stub. */
+    public static class NeedsAOptional {
+        private final Optional<A> a;
+
+        public NeedsAOptional(Optional<A> a) {
+            this.a = requireNonNull(a, "a");
+        }
+
+        public Optional<A> getA() {
             return a;
         }
     }

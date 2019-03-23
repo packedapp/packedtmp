@@ -28,8 +28,8 @@ public class Xs {
     @Test
     public void main() {
         Injector i = Injector.of(c -> {
-            c.bind("fooo");
-            c.bind(1234);
+            c.provide("fooo");
+            c.provide(1234);
         });
 
         Injector i2 = Injector.of(c -> {
@@ -40,7 +40,7 @@ public class Xs {
         });
 
         System.out.println();
-        i2.getService(String.class).configurationSite().print();
+        i2.getService(String.class).get().configurationSite().print();
 
     }
 }

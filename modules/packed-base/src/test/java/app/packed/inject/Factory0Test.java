@@ -32,21 +32,21 @@ public class Factory0Test {
     @Test
     public void typeParameter() {
         Factory<Integer> f = new Factory0<>(() -> 1) {};
-        assertEquals(TypeLiteral.of(Integer.class), new Factory0<>(() -> 1) {}.getTypeLiteral());
-        assertEquals(Integer.class, f.getRawType());
-        assertThat(f.getDependencies()).isEmpty();
+        assertEquals(TypeLiteral.of(Integer.class), new Factory0<>(() -> 1) {}.typeLiteral());
+        assertEquals(Integer.class, f.rawType());
+        assertThat(f.dependencies()).isEmpty();
 
-        assertEquals(new TypeLiteral<Integer>() {}, new X<String, Integer, Long>(() -> 123) {}.getTypeLiteral());
+        assertEquals(new TypeLiteral<Integer>() {}, new X<String, Integer, Long>(() -> 123) {}.typeLiteral());
     }
 
     @Test
     public void typeParameterListInteger() {
         Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
-        assertEquals(new TypeLiteral<List<Integer>>() {}, f.getTypeLiteral());
-        assertEquals(List.class, f.getRawType());
-        assertThat(f.getDependencies()).isEmpty();
+        assertEquals(new TypeLiteral<List<Integer>>() {}, f.typeLiteral());
+        assertEquals(List.class, f.rawType());
+        assertThat(f.dependencies()).isEmpty();
 
-        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.getTypeLiteral());
+        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.typeLiteral());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -61,7 +61,7 @@ public class Factory0Test {
 
     @Test
     public void typeParameterVarious() {
-        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.getTypeLiteral());
+        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.typeLiteral());
     }
 
     /** Check that we can have an intermediate abstract class. */

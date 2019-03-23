@@ -15,7 +15,6 @@
  */
 package packed.internal.util;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
@@ -28,7 +27,7 @@ public class Fff {
 
         System.out.println(Integer.class.getModule().getDescriptor());
 
-        URI resource = Fff.class.getResource("/modules").toURI();
+        // URI resource = Fff.class.getResource("/modules").toURI();
 
     }
 }

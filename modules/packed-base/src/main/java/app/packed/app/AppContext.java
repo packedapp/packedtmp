@@ -16,8 +16,27 @@
 package app.packed.app;
 
 /**
- *
+ * A context object that is shared all containers in an application. Is typically dependency injected into a service or
+ * a component.
  */
 public interface AppContext {
 
+    // SharedContext
+
+    // Allow for shutdown... Could be done from container context...
+    // shutdownApp();
+
+    /**
+     * Returns the name of the application
+     * 
+     * @return
+     */
+    String name();
+
+    /**
+     * The app of this context.
+     * 
+     * @return the app of this context.
+     */
+    App app();
 }

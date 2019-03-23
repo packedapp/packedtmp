@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.config.ConfigurationSite;
-import app.packed.config.ConfigurationSiteVisitor;
+import app.packed.config.ConfigSite;
+import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.MethodDescriptor;
 
 /**
@@ -32,7 +32,7 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
 
     final Annotation annotation;
 
-    AnnotatedMethodConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
+    AnnotatedMethodConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
         super(parent, operation);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
@@ -40,13 +40,13 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+    public InternalConfigurationSite replaceParent(ConfigSite newParent) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void visit(ConfigurationSiteVisitor visitor) {
+    public void visit(ConfigSiteVisitor visitor) {
         visitor.visitAnnotatedMethod(this, method, annotation);
     }
 }

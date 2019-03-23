@@ -234,7 +234,7 @@ public class KeyTest {
         assertThat(KEY_INTEGER_X.qualifier().get()).isEqualTo(CharQualifiers.X);
     }
 
-    /** Tests {@link Key#getTypeLiteral()}. */
+    /** Tests {@link Key#typeLiteral()}. */
     @Test
     public void getTypeLiteral() {
         assertThat(KEY_INT_OF.typeLiteral()).isEqualTo(TL_INTEGER);

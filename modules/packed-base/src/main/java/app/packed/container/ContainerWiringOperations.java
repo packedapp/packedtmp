@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.x.WiringOperation;
 
 /**
  *

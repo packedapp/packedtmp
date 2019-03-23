@@ -19,13 +19,16 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
+import java.util.function.Consumer;
 
-import app.packed.app.AppLaunch;
+import app.packed.app.App;
+import app.packed.bundle.x.AppLaunch;
+import app.packed.bundle.x.WiringOperation;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.OnStart;
@@ -36,8 +39,7 @@ import packed.internal.container.ContainerBuilder;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**
- * Bundles provide a simply way to package components and service and build modular application. This is useful, for
- * example, for:
+ * Bundles provide a simply way to package components and build modular application. This is useful, for example, for:
  * <ul>
  * <li>Sharing functionality across multiple injectors and/or containers.</li>
  * <li>Hiding implementation details from users.</li>
@@ -54,21 +56,81 @@ import packed.internal.inject.builder.InjectorBuilder;
  */
 
 // Descriptor does not freeze, Injector+Container freezes
+
+// explicitServiceRequirements(); <- You can put it in an environment to force it
+
 public abstract class Bundle {
+
+    ContainerBuildContext context;
 
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
 
-    BuildContext context;
-
     protected final Restrictions restrictions = null;
 
-    public interface Restrictions {
-        void service(Class<?> clazz);
+    /**
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
+     * find a valid constructor or method to instantiate the service instance once the injector is created.
+     * <p>
+     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
+     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param implementation
+     *            the implementation to bind
+     * @return a service configuration for the service
+     * @see InjectorConfigurator#provide(Class)
+     */
+    // Rename to Provide@
+    protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+        return injectorBuilder().provide(implementation);
     }
 
-    protected ComponentConfiguration<?> installBundle() {
-        return containerBuilderX().install(this);
+    protected final void serviceAutoRequire() {
+        injectorBuilder().serviceAutoRequire();
+    }
+
+    protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+        return injectorBuilder().provide(factory);
+    }
+
+    protected final <T> ServiceConfiguration<T> provide(T instance) {
+        return injectorBuilder().provide(instance);
+    }
+
+    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return injectorBuilder().provide(implementation);
+    }
+
+    protected final <T> ServiceConfiguration<T> provideLazy(Class<T> implementation) {
+        return injectorBuilder().provideLazy(implementation);
+    }
+
+    protected final <T> ServiceConfiguration<T> provideLazy(Factory<T> factory) {
+        return injectorBuilder().provideLazy(factory);
+    }
+
+    protected final <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation) {
+        return injectorBuilder().provideLazy(implementation);
+    }
+
+    protected final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
+        return injectorBuilder().providePrototype(implementation);
+    }
+
+    protected final <T> ServiceConfiguration<T> providePrototype(Factory<T> factory) {
+        return injectorBuilder().providePrototype(factory);
+    }
+
+    /** The internal configuration to delegate to */
+    // We probably want to null this out...
+    // If we install the bundle as a component....
+    // We do not not want any more garbage then needed.
+    // private InjectorBuilder injectorBuilder;
+
+    protected final <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation) {
+        return injectorBuilder().providePrototype(implementation);
     }
 
     protected void buildWithBundle() {
@@ -101,125 +163,6 @@ public abstract class Bundle {
     protected abstract void configure();
 
     /**
-     * Returns the bundle support object which
-     * 
-     * @return the bundle support object
-     */
-    protected final BuildContext context() {
-        // Vi laver en bundle nyt per configuration.....
-        BuildContext s = context;
-        if (s == null) {
-            throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
-        }
-        return s;
-    }
-
-    /**
-     * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     * Unless your private
-     * 
-     * @param lookup
-     *            the lookup object
-     * @see InjectorConfiguration#lookup(Lookup)
-     */
-    protected final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        context().lookup(lookup);
-    }
-
-    /**
-     * Opens the bundle for modification later on
-     */
-    protected final void open() {
-        // Nope....
-    }
-
-    /** The internal configuration to delegate to */
-    // We probably want to null this out...
-    // If we install the bundle as a component....
-    // We do not not want any more garbage then needed.
-    // private InjectorBuilder injectorBuilder;
-
-    /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
-     * find a valid constructor or method to instantiate the service instance once the injector is created.
-     * <p>
-     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
-     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param implementation
-     *            the implementation to bind
-     * @return a service configuration for the service
-     * @see InjectorConfiguration#bind(Class)
-     */
-    protected final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
-        return injectorBuilder().bind(implementation);
-    }
-
-    protected final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
-        return injectorBuilder().bind(factory);
-    }
-
-    protected final <T> ServiceConfiguration<T> bind(T instance) {
-        return injectorBuilder().bind(instance);
-    }
-
-    protected final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
-        return injectorBuilder().bind(implementation);
-    }
-
-    // protected final void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... operations) {
-    // injectorBuilder().wireInjector(bundleType, operations);
-    // }
-
-    /**
-     * Imports the services that are available in the specified injector.
-     *
-     * @param injector
-     *            the injector to import services from
-     * @param stages
-     *            any number of filters that restricts the services that are imported. Or makes them available under
-     *            different keys
-     * @see InjectorConfiguration#wireInjector(Injector, WiringOperation...)
-     * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
-     *             (via {@link WiringOperation#andThen(WiringOperation)} thereof
-     */
-    protected final void wireInjector(Injector injector, WiringOperation... operations) {
-        injectorBuilder().wireInjector(injector, operations);
-    }
-
-    protected final void wireInjector(Bundle bundle, WiringOperation... operations) {
-        injectorBuilder().wireInjector(bundle, operations);
-    }
-
-    protected final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
-        return injectorBuilder().bindLazy(implementation);
-    }
-
-    protected final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
-        return injectorBuilder().bindLazy(factory);
-    }
-
-    protected final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
-        return injectorBuilder().bindLazy(implementation);
-    }
-
-    protected final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
-        return injectorBuilder().bindPrototype(implementation);
-    }
-
-    protected final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
-        return injectorBuilder().bindPrototype(factory);
-    }
-
-    protected final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
-        return injectorBuilder().bindPrototype(implementation);
-    }
-
-    /**
      * @param builder
      *            the injector configuration to delagate to
      * @param freeze
@@ -250,13 +193,70 @@ public abstract class Bundle {
         throw new UnsupportedOperationException();
     }
 
-    InjectorBuilder injectorBuilder() {
+    ContainerBuilder containerBuilderX() {
         return context().with(InjectorBuilder.class);
         // if (injectorBuilder == null) {
         // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
         // call Bundle.configure directly");
         // }
         // return injectorBuilder;
+    }
+
+    /**
+     * Returns the bundle support object which
+     * 
+     * @return the bundle support object
+     */
+    protected final ContainerBuildContext context() {
+        // Vi laver en bundle nyt per configuration.....
+        ContainerBuildContext s = context;
+        if (s == null) {
+            throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
+        }
+        return s;
+    }
+
+    /**
+     * Exposes an internal service outside of this bundle.
+     * 
+     * 
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class);}
+     * </pre>
+     * 
+     * You can also choose to expose a service under a different key then what it is known as internally in the
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service.class);}
+     * </pre>
+     * 
+     * @param <T>
+     *            the type of the exposed service
+     * @param key
+     *            the key of the internal service to expose
+     * @return a service configuration for the exposed service
+     * @see #expose(Key)
+     */
+    protected final <T> ServiceConfiguration<T> export(Key<T> key) {
+        return injectorBuilder().expose(key);
+    }
+
+    protected final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
+        return injectorBuilder().expose(configuration);
+    }
+
+    protected final <T> ServiceConfiguration<T> exportService(Class<T> key) {
+        return injectorBuilder().expose(key);
+    }
+
+    protected final void exportHooks(Contract contract) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final void exportHooks(Class<?>... hookTypes) {
+        // interface = Instance Of Hooks
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -286,71 +286,13 @@ public abstract class Bundle {
      * @param key
      *            the key of the internal service to expose
      * @return a service configuration for the exposed service
-     * @see #expose(Key)
+     * @see #export(Key)
      */
-    protected final <T> ServiceConfiguration<T> expose(Class<T> key) {
+    protected final <T> ServiceConfiguration<T> export(Class<T> key) {
         return injectorBuilder().expose(key);
     }
 
-    /**
-     * Exposes an internal service outside of this bundle.
-     * 
-     * 
-     * <pre> {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class);}
-     * </pre>
-     * 
-     * You can also choose to expose a service under a different key then what it is known as internally in the
-     * <pre> {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class).as(Service.class);}
-     * </pre>
-     * 
-     * @param <T>
-     *            the type of the exposed service
-     * @param key
-     *            the key of the internal service to expose
-     * @return a service configuration for the exposed service
-     * @see #expose(Key)
-     */
-    protected final <T> ServiceConfiguration<T> export(Key<T> key) {
-        return injectorBuilder().expose(key);
-    }
-
-    protected final <T> ServiceConfiguration<T> exportService(Class<T> key) {
-        return injectorBuilder().expose(key);
-    }
-
-    protected final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        return injectorBuilder().expose(configuration);
-    }
-
-    protected void requireService(Key<?> key) {
-        injectorBuilder().requireService(key);
-    }
-
-    /**
-     * Sets the description of the injector or container.
-     * 
-     * @param description
-     *            the description of the injector or container
-     * @see InjectorConfiguration#setDescription(String)
-     * @see Injector#getDescription()
-     */
-    protected final void setDescription(@Nullable String description) {
-        injectorBuilder().setDescription(description);
-    }
-
-    protected final Set<String> tags() {
-        return injectorBuilder().tags();
-    }
-
-    protected void requireService(Class<?> key) {
-        injectorBuilder().requireService(key);
-    }
-
-    ContainerBuilder containerBuilderX() {
+    InjectorBuilder injectorBuilder() {
         return context().with(InjectorBuilder.class);
         // if (injectorBuilder == null) {
         // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
@@ -389,6 +331,98 @@ public abstract class Bundle {
         return containerBuilderX().install(factory);
     }
 
+    protected final <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
+        return containerBuilderX().install(implementation);
+    }
+
+    protected ComponentConfiguration<?> installBundle() {
+        return containerBuilderX().install(this);
+    }
+
+    /**
+     * The lookup object passed to this method is never made available through the public api. It is only used internally.
+     * Unless your private
+     * 
+     * @param lookup
+     *            the lookup object
+     * @see InjectorConfigurator#lookup(Lookup)
+     */
+    protected final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        context().lookup(lookup);
+    }
+
+    protected final void lookup(Lookup lookup, Object lookupController) {
+        // Ideen er at alle lookups skal godkendes at lookup controlleren...
+        // Controller/Manager/LookupAccessManager
+        // For module email, if you are paranoid.
+        // You can specify a LookupAccessManager where every lookup access.
+        // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
+    }
+
+    protected final Layer newEmptyLayer(String name, Layer... predecessors) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param name
+     *            the name of the layer, must be unique among all layers defined in the same bundle
+     * @param predecessors
+     * @return the new layer
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, "main" or if another layer with the same name has been
+     *             registered
+     */
+    protected final Layer newLayer(String name, Layer... predecessors) {
+        // maybe "" is just the main layer...
+
+        // Okay we need to able to addLayers as predessestors to the main layer....
+        // sucessotorToMainLayer, precessorToMainLayer() only available for empty layer...
+
+        // check same bundle
+        // Maybe skip name and have a setter... If you put every bundle into its own layer it is a bit annoying...
+
+        // The
+
+        throw new UnsupportedOperationException();
+    }
+
+    protected final Layer mainLayer(Layer... predecessors) {
+        // Can only be called once???
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Opens the bundle for modification later on
+     */
+    protected final void open() {
+        // Nope....
+    }
+
+    protected void requireService(Class<?> key) {
+        injectorBuilder().requireService(key);
+    }
+
+    protected void requireService(Key<?> key) {
+        injectorBuilder().requireService(key);
+    }
+
+    /**
+     * Sets the description of the injector or container.
+     * 
+     * @param description
+     *            the description of the injector or container
+     * @see InjectorConfigurator#setDescription(String)
+     * @see Injector#getDescription()
+     */
+    protected final void setDescription(@Nullable String description) {
+        injectorBuilder().setDescription(description);
+    }
+
+    protected final Set<String> tags() {
+        return injectorBuilder().tags();
+    }
+
     // /**
     // * Install the specified component instance.
     // * <p>
@@ -407,8 +441,8 @@ public abstract class Bundle {
     // return containerBuilderX().install(instance);
     // }
 
-    protected final <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
-        return containerBuilderX().install(implementation);
+    protected final WiredBundle wire(Bundle child) {
+        return new WiredBundle(this, requireNonNull(child, "child is null"));
     }
 
     // protected final void wire(Class<? extends Bundle> bundleType, WiringOperation... stages) {
@@ -419,24 +453,59 @@ public abstract class Bundle {
         containerBuilderX().wireContainer(bundle, stages);
     }
 
-    // protected final void wireContainer(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-    // containerBuilderX().wireContainer(bundleType, stages);
+    // or have mainLayer() and then
+    // newEmptyLayer(String name, includeMainAsSuccessor, BundleLayer... )
+    // newEmptyLayer("Infrastructure", false);
+
+    // Basically there are 4 types of new layer
+    // empty
+    // import from main layer
+    // export to main layer
+    // share with main layer
+
+    // protected final void wireContainer(Bundle bundle, WiringOperation... stages) {
+    // containerBuilderX().wireContainer(bundle, stages);
     // }
 
-    protected final void wireContainer(Bundle bundle, WiringOperation... stages) {
-        containerBuilderX().wireContainer(bundle, stages);
-    }
+    // protected final void wireInjector(Bundle bundle, WiringOperation... operations) {
+    // injectorBuilder().wireInjector(bundle, operations);
+    // }
+    //
+    // /**
+    // * Imports the services that are available in the specified injector.
+    // *
+    // * @param injector
+    // * the injector to import services from
+    // * @param stages
+    // * any number of filters that restricts the services that are imported. Or makes them available under
+    // * different keys
+    // * @see InjectorConfiguration#wireInjector(Injector, WiringOperation...)
+    // * @throws IllegalArgumentException
+    // * if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
+    // * (via {@link WiringOperation#andThen(WiringOperation)} thereof
+    // */
+    // protected final void wireInjector(Injector injector, WiringOperation... operations) {
+    // injectorBuilder().wireInjector(injector, operations);
+    // }
 
-    static protected void run(Bundle b, WiringOperation... operations) {
-        AppLaunch.of(b, operations).run();
+    protected static void printDescriptor(Bundle bundle) {
+        BundleDescriptor.of(bundle).print();
     }
 
     static protected void run(Bundle b, String[] args, WiringOperation... operations) {
         AppLaunch.of(b, args, operations).run();
     }
 
-    protected static void printDescriptor(Bundle bundle) {
-        BundleDescriptor.of(bundle).print();
+    static protected void run(Bundle b, WiringOperation... operations) {
+        AppLaunch.of(b, operations).run();
+    }
+
+    static protected void run(Bundle b, Consumer<App> consumer, WiringOperation... operations) {
+        AppLaunch.of(b, operations).run();
+    }
+
+    public interface Restrictions {
+        void service(Class<?> clazz);
     }
 }
 /**

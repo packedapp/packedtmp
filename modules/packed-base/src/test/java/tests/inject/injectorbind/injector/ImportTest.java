@@ -50,8 +50,8 @@ public class ImportTest {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            export(bind(ZoneId.systemDefault()).as(ZoneId.class));
-            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            export(provide(ZoneId.systemDefault()).as(ZoneId.class));
+            export(providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }
 
@@ -60,8 +60,8 @@ public class ImportTest {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            bind(ZoneId.of("Europe/London")).as(ZoneId.class);
-            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            provide(ZoneId.of("Europe/London")).as(ZoneId.class);
+            export(providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
         }
     }
 
@@ -70,8 +70,8 @@ public class ImportTest {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            bind(ZoneId.of("Europe/Berlin")).as(ZoneId.class);
-            export(bindPrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
+            provide(ZoneId.of("Europe/Berlin")).as(ZoneId.class);
+            export(providePrototype(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}));
 
         }
     }

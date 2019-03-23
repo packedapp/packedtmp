@@ -21,8 +21,8 @@ import java.util.concurrent.Semaphore;
 
 import app.packed.inject.InjectionSite;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provider;
 import app.packed.util.Nullable;
+import packed.internal.inject.Provider;
 import packed.internal.inject.builder.ServiceBuildNode;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.util.ThrowableUtil;

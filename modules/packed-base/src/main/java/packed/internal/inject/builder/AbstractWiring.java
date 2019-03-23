@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.UpstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.x.UpstreamWiringOperation;
+import app.packed.bundle.x.WiringOperation;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
@@ -39,9 +39,9 @@ import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
  * An abstract class for the injector bind methods
- * {@link InjectorConfiguration#wireInjector(Class, WiringOperation...)},
- * {@link InjectorConfiguration#wireInjector(Bundle, WiringOperation...)}, and
- * {@link InjectorConfiguration#wireInjector(Injector, UpstreamWiringOperation...)}.
+ * {@link InjectorConfigurator#wireInjector(Class, WiringOperation...)},
+ * {@link InjectorConfigurator#wireInjector(Bundle, WiringOperation...)}, and
+ * {@link InjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
 abstract class AbstractWiring {
 
@@ -107,8 +107,8 @@ abstract class AbstractWiring {
 
         for (AtProvides m : ied.provides.members.values()) {
             for (InternalDependency s : m.dependencies) {
-                if (!nodes.containsKey(s.getKey())) {
-                    throw new InjectionException("not good man, " + s.getKey() + " is not in the set of incoming services");
+                if (!nodes.containsKey(s.key())) {
+                    throw new InjectionException("not good man, " + s.key() + " is not in the set of incoming services");
                 }
             }
         }

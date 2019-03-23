@@ -22,10 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.x.WiringOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
@@ -46,9 +46,9 @@ import packed.internal.invokers.InternalFunction;
 import packed.internal.runtime.ImageBuilder;
 
 /**
- * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfiguration}.
+ * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfigurator}.
  */
-public class InjectorBuilder extends ImageBuilder implements InjectorConfiguration {
+public class InjectorBuilder extends ImageBuilder implements InjectorConfigurator {
 
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
@@ -69,9 +69,10 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
     /** The runtime nodes that will be available in the injector. */
     final ServiceNodeMap publicNodeMap;
 
-    HashSet<Key<?>> requiredServicesMandatory;
+    HashSet<Key<?>> requiredServicesMandatory = new HashSet<>();
 
-    HashSet<Key<?>> requiredServicesOptionally;
+    HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
+    boolean autoRequires;
 
     /**
      * Creates a new builder.
@@ -92,25 +93,29 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
         publicNodeList = new ArrayList<>();
     }
 
+    public final void serviceAutoRequire() {
+        autoRequires = true;
+    }
+
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bind(Class<T> implementation) {
+    public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
         return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bind(Factory<T> factory) {
+    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
         return bindFactory(InstantiationMode.SINGLETON, requireNonNull(factory, "factory is null"));
     }
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T> ServiceConfiguration<T> bind(T instance) {
+    public final <T> ServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
-        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(instance.getClass());
+        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
         ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND),
                 serviceDesc, instance);
         scanForProvides(instance.getClass(), node);
@@ -119,7 +124,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bind(TypeLiteral<T> implementation) {
+    public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
         return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
@@ -130,13 +135,12 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
         InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
-        ServiceClassDescriptor serviceDesc = accessor.getServiceDescriptor(func.getReturnTypeRaw());
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func),
-                (List) factory.getDependencies());
+        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(func.getReturnTypeRaw());
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func), (List) factory.dependencies());
 
         scanForProvides(func.getReturnTypeRaw(), node);
 
-        return bindNode(node).as(factory.getKey());
+        return bindNode(node).as(factory.key());
     }
 
     /** {@inheritDoc} */
@@ -168,18 +172,18 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
     }
 
     @Override
-    public final <T> ServiceConfiguration<T> bindLazy(Class<T> implementation) {
+    public final <T> ServiceConfiguration<T> provideLazy(Class<T> implementation) {
         return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bindLazy(Factory<T> factory) {
+    public final <T> ServiceConfiguration<T> provideLazy(Factory<T> factory) {
         return bindFactory(InstantiationMode.LAZY, requireNonNull(factory, "factory is null"));
     }
 
     @Override
-    public final <T> ServiceConfiguration<T> bindLazy(TypeLiteral<T> implementation) {
+    public final <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation) {
         return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
     }
 
@@ -191,19 +195,19 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bindPrototype(Class<T> implementation) {
+    public final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
         return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bindPrototype(Factory<T> factory) {
+    public final <T> ServiceConfiguration<T> providePrototype(Factory<T> factory) {
         return bindFactory(InstantiationMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> bindPrototype(TypeLiteral<T> implementation) {
+    public final <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation) {
         return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
@@ -286,7 +290,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurati
     }
 
     protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
-        AtProvidesGroup provides = accessor.getServiceDescriptor(type).provides;
+        AtProvidesGroup provides = accessor.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
             if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
                 throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");

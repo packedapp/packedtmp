@@ -186,7 +186,7 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
         }
 
         // parameter.index is not visible, so we need to iterate through all parameters to find the right one
-        if (em.getParameterCount() == 1) {
+        if (em.parameterCount() == 1) {
             return em.getParametersUnsafe()[0];
         } else {
             for (InternalParameterDescriptor p : em.getParametersUnsafe()) {

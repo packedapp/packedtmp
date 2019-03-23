@@ -129,22 +129,6 @@ public interface ComponentStream extends Stream<Component> {
         return filter(e -> e.tags().contains(tag));
     }
 
-    /********** Overridden to provide co-a ComponentStream as a return value. **********/
-
-    /** {@inheritDoc} */
-    @Override
-    default ComponentStream distinct() {
-        return this; // All components are distinct by default
-    }
-
-    /** {@inheritDoc} */
-    @Override // Only available from Java 9
-    ComponentStream dropWhile(Predicate<? super Component> predicate);
-
-    /** {@inheritDoc} */
-    @Override
-    ComponentStream filter(Predicate<? super Component> predicate);
-
     default <T> ComponentStream filterOnType(Class<T> type) {
         return filter(c -> {
             return c.instance().getClass().isAssignableFrom(type);
@@ -154,6 +138,22 @@ public interface ComponentStream extends Stream<Component> {
     default <T> ComponentStream filterOnInstance(Class<T> type, Predicate<T> predicate) {
         throw new UnsupportedOperationException();
     }
+
+    /********** Overridden to provide co-a ComponentStream as a return value. **********/
+
+    /** {@inheritDoc} */
+    @Override
+    default ComponentStream distinct() {
+        return this; // All components are distinct by default
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream dropWhile(Predicate<? super Component> predicate);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentStream filter(Predicate<? super Component> predicate);
 
     /** {@inheritDoc} */
     @Override

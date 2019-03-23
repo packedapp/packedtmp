@@ -15,7 +15,7 @@
  */
 package packed.internal.inject;
 
-import app.packed.bundle.DownstreamWiringOperation;
+import app.packed.bundle.x.DownstreamWiringOperation;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 

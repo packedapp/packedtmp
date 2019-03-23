@@ -15,6 +15,8 @@
  */
 package app.packed.app;
 
+import app.packed.inject.InjectionSite;
+
 /**
  * Exactly one environment exist in a single ClassLoader. Normally this is also one per JVM. But you can easily load
  * packed in multiple class loaders. In which case they each get their own environment.
@@ -58,6 +60,11 @@ public final class Environment {
 
         // Er ikke overskrevet af graal. Men bliver gemt....
     }
+
+    System.Logger defaultLogger(InjectionSite site) {
+        throw new UnsupportedOperationException();
+    }
+
 }
 // reboot (will reinitialize everything) read System properties again.
 /// The initalization list will be cleared every time we create an environment.

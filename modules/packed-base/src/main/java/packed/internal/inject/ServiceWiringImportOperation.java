@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.x.UpstreamWiringOperation;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;

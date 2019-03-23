@@ -26,15 +26,16 @@ import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.invokers.ExecutableInvoker;
-import packed.internal.invokers.InvokableMember;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
- *
+ * A group of injectable fields and methods.
  */
 public final class AtInjectGroup {
+
+    /** An empty inject group. */
+    private static final AtInjectGroup EMPTY = new AtInjectGroup(new Builder());
 
     /** All fields annotated with {@link Inject}. */
     public final List<AtDependable> fields;
@@ -42,67 +43,67 @@ public final class AtInjectGroup {
     /** All non-static methods annotated with {@link Inject}. */
     public final List<AtDependable> methods;
 
-    /** An empty group. */
-    private static final AtInjectGroup EMPTY = new AtInjectGroup(new Builder());
-
+    /**
+     * Creates a new group from a builder.
+     * 
+     * @param builder
+     *            the builder used to create the group
+     */
     private AtInjectGroup(Builder builder) {
         this.methods = builder.methods == null ? List.of() : List.copyOf(builder.methods);
         this.fields = builder.fields == null ? List.of() : List.copyOf(builder.fields);
     }
 
-    public static class Builder {
+    /** A builder object for {@link AtInjectGroup}. */
+    public static final class Builder {
 
         /** All fields annotated with {@link Inject}. */
-        ArrayList<AtDependable> fields;
+        private ArrayList<AtDependable> fields;
 
         /** All non-static methods annotated with {@link Inject}. */
-        ArrayList<AtDependable> methods;
-
-        @Nullable
-        public AtDependable createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
-            if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
-                InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-                Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
-                Checks.checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
-
-                InvokableMember<?> fii = descriptor.newInvoker(lookup);
-
-                AtDependable ai = new AtDependable(fii, List.of(InternalDependency.of(descriptor)));
-
-                if (fields == null) {
-                    fields = new ArrayList<>(2);
-                }
-                fields.add(ai);
-                return ai;
-            }
-            return null;
-        }
-
-        @Nullable
-        public AtDependable createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
-            if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
-                InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-
-                ExecutableInvoker<?> fii = new ExecutableInvoker<>(descriptor).withLookup(lookup);
-
-                AtDependable ai = new AtDependable(fii, InternalDependency.fromExecutable(descriptor));
-                if (methods == null) {
-                    methods = new ArrayList<>(2);
-                }
-                methods.add(ai);
-                return ai;
-            }
-            return null;
-        }
+        private ArrayList<AtDependable> methods;
 
         /**
-         * @return
+         * Creates a new group from this builder.
+         * 
+         * @return the new group
          */
         public AtInjectGroup build() {
             if (fields == null && methods == null) {
                 return EMPTY;
             }
             return new AtInjectGroup(this);
+        }
+
+        @Nullable
+        public AtDependable createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
+            AtDependable result = null;
+            if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+                InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
+                Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
+                Checks.checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
+
+                if (fields == null) {
+                    fields = new ArrayList<>();
+                }
+                fields.add(result = new AtDependable(descriptor.newInvoker(lookup), List.of(InternalDependency.of(descriptor))));
+            }
+            return result;
+        }
+
+        @Nullable
+        public AtDependable createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
+            AtDependable result = null;
+            if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+                InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
+                // static @Inject methods are treated like factory methods, and captured elsewhere
+
+                if (methods == null) {
+                    methods = new ArrayList<>();
+                }
+                methods.add(result = new AtDependable(descriptor.newInvoker(lookup), InternalDependency.fromExecutable(descriptor)));
+            }
+            return result;
         }
     }
 }

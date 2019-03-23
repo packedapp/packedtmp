@@ -20,18 +20,18 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
 
-import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigSite;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 
-/** An abstract implementation of {@link ConfigurationSite}. */
+/** An abstract implementation of {@link ConfigSite}. */
 public abstract class AbstractConfigurationSite implements InternalConfigurationSite {
 
     final ConfigurationSiteType operation;
 
-    final ConfigurationSite parent;
+    final ConfigSite parent;
 
-    AbstractConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation) {
+    AbstractConfigurationSite(ConfigSite parent, ConfigurationSiteType operation) {
         this.parent = parent;
         this.operation = requireNonNull(operation);
     }
@@ -43,7 +43,7 @@ public abstract class AbstractConfigurationSite implements InternalConfiguration
     }
 
     @Override
-    public Optional<ConfigurationSite> parent() {
+    public Optional<ConfigSite> parent() {
         return Optional.ofNullable(parent);
     }
 
@@ -52,11 +52,11 @@ public abstract class AbstractConfigurationSite implements InternalConfiguration
         return super.toString();
     }
 
-    public ConfigurationSite spawnOnAnnotatedField(ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
+    public ConfigSite spawnOnAnnotatedField(ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
         return new AnnotatedFieldConfigurationSite(this, operation, field, annotation);
     }
 
-    public ConfigurationSite spawnOnAnnotatedMethod(ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
+    public ConfigSite spawnOnAnnotatedMethod(ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
         return new AnnotatedMethodConfigurationSite(this, operation, method, annotation);
     }
 

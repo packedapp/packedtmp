@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.config.ConfigurationSite;
-import app.packed.config.ConfigurationSiteVisitor;
+import app.packed.config.ConfigSite;
+import app.packed.config.ConfigSiteVisitor;
 
 /**
  *
@@ -32,7 +32,7 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
 
     final Annotation annotation;
 
-    AnnotatedTypeConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, Class<?> clazz, Annotation annotation) {
+    AnnotatedTypeConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, Class<?> clazz, Annotation annotation) {
         super(parent, operation);
         this.clazz = requireNonNull(clazz);
         this.annotation = requireNonNull(annotation);
@@ -40,13 +40,13 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+    public InternalConfigurationSite replaceParent(ConfigSite newParent) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void visit(ConfigurationSiteVisitor visitor) {
+    public void visit(ConfigSiteVisitor visitor) {
         throw new UnsupportedOperationException();
     }
 }

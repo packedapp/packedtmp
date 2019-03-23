@@ -30,8 +30,8 @@ public class TestBundle extends Bundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        bind("fooo");
-        bind(this);
+        provide("fooo");
+        provide(this);
         // expose(String.class);
     }
 }

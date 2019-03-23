@@ -31,7 +31,7 @@ public class BTest {
     public static void main(String[] args) {
         Injector i = Injector.of(new MyBundle());
 
-        i.getService(PrivateImplementation.class).configurationSite().print();
+        i.getService(PrivateImplementation.class).get().configurationSite().print();
 
         System.out.println(BundleDescriptor.of(new MyBundle()));
         System.out.println(String.class.getModule().getDescriptor());
@@ -39,7 +39,7 @@ public class BTest {
         i = Injector.of(c -> {
             c.wireInjector(new MyBundle());
             c.wireInjector(new MyBundle4());
-            c.bind("123");
+            c.provide("123");
         });
         System.out.println("");
         for (ServiceDescriptor d : i.services().collect(Collectors.toList())) {
@@ -53,8 +53,8 @@ public class BTest {
         @Override
         protected void configure() {
             super.lookup(MethodHandles.lookup());
-            bind(Private.class);
-            bind(PrivateImplementation.class);
+            provide(Private.class);
+            provide(PrivateImplementation.class);
         }
     }
 
@@ -63,7 +63,7 @@ public class BTest {
         @Override
         protected void configure() {
             lookup(MethodHandles.lookup());
-            bind(123L);
+            provide(123L);
         }
     }
 

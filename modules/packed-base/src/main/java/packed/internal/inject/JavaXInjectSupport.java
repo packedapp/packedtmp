@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provider;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;

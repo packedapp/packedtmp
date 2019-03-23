@@ -53,6 +53,8 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     @Nullable // Is nullable for stages for now
     protected final InjectorBuilder injectorBuilder;
 
+    boolean autoRequires;
+
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
      * methods annotated with {@link Provides}. In which the case the declaring class might need to be constructor injected
@@ -73,11 +75,11 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceNode<?>[dependencies.size()];
-
+        this.autoRequires = injectorBuilder.autoRequires;
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
             for (InternalDependency e : dependencies) {
-                if (e.getKey().equals(KeyBuilder.INJECTION_SITE_KEY)) {
+                if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;
                 }
@@ -115,7 +117,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
         for (int i = 0; i < resolvedDependencies.length; i++) {
             ServiceNode<?> n = resolvedDependencies[i];
             if (n == null && !dependencies.get(i).isOptional()) {
-                throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
+                // throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
             }
         }
     }

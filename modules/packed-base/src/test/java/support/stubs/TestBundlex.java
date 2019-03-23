@@ -42,9 +42,9 @@ public class TestBundlex extends Bundle {
     @Override
     protected void configure() {
         lookup(MethodHandles.lookup());
-        bind(A.class);
-        bind(this);
-        expose(A.class);
+        provide(A.class);
+        provide(this);
+        export(A.class);
     }
 
     public static class A {

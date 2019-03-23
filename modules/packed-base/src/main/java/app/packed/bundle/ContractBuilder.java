@@ -17,21 +17,47 @@ package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.util.Key;
+import app.packed.bundle.Contract.ContractFragment;
+import app.packed.inject.ServiceContract;
 
 /**
  *
+ *
+ *
+ * <p>
+ * <strong>Note that this implementation is not synchronized.</strong> If multiple threads access a contract builder
+ * concurrently, and at least one of the threads modifies the contract builder structurally, it <i>must</i> be
+ * synchronized externally.
  */
+// See AbstractInternalBuilder
 public final class ContractBuilder {
 
-    public Services services() {
-        return new Services();
+    ServiceContract services;
+
+    /**
+     * Creates a new contract from this builder.s
+     * 
+     * @return
+     */
+    public Contract build() {
+        throw new UnsupportedOperationException();
+
+    }
+
+    /**
+     * Returns a object that can be used
+     * 
+     * @return
+     */
+    public ServiceContract services() {
+        ServiceContract s = services;
+        return s == null ? services = ServiceContract.EMPTY : s;
     }
 
     @SuppressWarnings("unchecked")
     <T> T with(Class<T> type) {
         requireNonNull(type, "type is null");
-        if (type == Services.class) {
+        if (type == ServiceContract.class) {
             return (T) services();
         }
         throw new UnsupportedOperationException();
@@ -40,15 +66,15 @@ public final class ContractBuilder {
     // Spoergsmaalet er om vi skal kunne fjerne ting....
     // F.eks. et requirement, det er jo primaert tiltaenkt hvis vi begynder noget med versioner....
     // Noget andet
-    public final class Services {
-        Services() {}
+    // Det virkede ikke rigtig sammen med ServiceConfiguration,
 
-        public Services requires(Class<?> key) {
-            return requires(Key.of(key));
-        }
+    // ContractBuilder b = c.toBuilder();
+    // b.services().addRequires(String.class);
+    // b.build();
 
-        public Services requires(Key<?> key) {
-            return this;
-        }
+    // Og Maybe top class ContractFragment + ContractFragment.Builder
+    static abstract class ContractBuilderFragment {
+
+        protected abstract ContractFragment build();
     }
 }

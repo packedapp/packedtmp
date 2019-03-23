@@ -34,8 +34,6 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
  *
  */
 class DependencyGraphResolver {
-    // TODO also check no injection of prototype beans into singleton, after we have resolved
-
     // Requirements -> cannot require any exposed services, or internally registered services...
 
     static void resolveAllDependencies(DependencyGraph b) {
@@ -58,50 +56,107 @@ class DependencyGraphResolver {
 
                         // Did not find service of the specified type
                         if (resolveTo == null) {
-                            // Long long error message
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("Cannot resolve dependency for ");
-                            if (dependencies.size() == 1) {
-                                sb.append("single ");
-                            }
-                            sb.append("parameter on ");
-                            if (dependency.getVariable() != null) {
-
-                                InternalExecutableDescriptor e = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.getVariable().get())
-                                        .declaringExecutable();
-                                sb.append(e.descriptorTypeName()).append(": ");
-                                sb.append(e.getDeclaringClass().getCanonicalName());
-                                if (e instanceof MethodDescriptor) {
-                                    sb.append("#").append(((MethodDescriptor) e).getName());
-                                }
-                                sb.append("(");
-                                if (dependencies.size() > 1) {
-                                    StringJoiner sj = new StringJoiner(", ");
-                                    for (int j = 0; j < dependencies.size(); j++) {
-                                        if (j == i) {
-                                            sj.add("-> " + dependency.getKey().toString() + " <-");
-                                        } else {
-                                            sj.add(dependencies.get(j).getKey().typeLiteral().getRawType().getSimpleName());
-                                        }
-                                    }
-                                    sb.append(sj.toString());
+                            if (node.autoRequires) {
+                                if (dependency.isOptional()) {
+                                    b.root.requiredServicesOptionally.add(dependency.key());
                                 } else {
-                                    sb.append(dependency.getKey().toString());
-                                    sb.append(" ");
-                                    sb.append(dependency.getVariable().get().getName());
+                                    b.root.requiredServicesMandatory.add(dependency.key());
                                 }
-                                sb.append(")");
+                            } else {
+
+                                // Long long error message
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("Cannot resolve dependency for ");
+                                if (dependencies.size() == 1) {
+                                    sb.append("single ");
+                                }
+                                sb.append("parameter on ");
+                                if (dependency.variable() != null) {
+
+                                    InternalExecutableDescriptor e = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.variable().get())
+                                            .declaringExecutable();
+                                    sb.append(e.descriptorTypeName()).append(": ");
+                                    sb.append(e.getDeclaringClass().getCanonicalName());
+                                    if (e instanceof MethodDescriptor) {
+                                        sb.append("#").append(((MethodDescriptor) e).getName());
+                                    }
+                                    sb.append("(");
+                                    if (dependencies.size() > 1) {
+                                        StringJoiner sj = new StringJoiner(", ");
+                                        for (int j = 0; j < dependencies.size(); j++) {
+                                            if (j == i) {
+                                                sj.add("-> " + dependency.key().toString() + " <-");
+                                            } else {
+                                                sj.add(dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());
+                                            }
+                                        }
+                                        sb.append(sj.toString());
+                                    } else {
+                                        sb.append(dependency.key().toString());
+                                        sb.append(" ");
+                                        sb.append(dependency.variable().get().getName());
+                                    }
+                                    sb.append(")");
+                                }
+                                // b.root.requiredServicesMandatory.add(e.get)
+                                System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
+                                throw new InjectionException(sb.toString());
                             }
-                            System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
-                            throw new InjectionException(sb.toString());
                         }
 
                     }
-                    node.resolvedDependencies[i] = requireNonNull(resolveTo);
+                    if (!node.autoRequires || resolveTo != null) {
+                        node.resolvedDependencies[i] = requireNonNull(resolveTo);
+                    }
                 }
                 // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
             }
         }
         b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
     }
+
+    static class UnresolvedDependency {
+        ServiceBuildNode<?> node;
+        Dependency dependency;
+
+        public void fail() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Cannot resolve dependency for ");
+            if (node.dependencies.size() == 1) {
+                sb.append("single ");
+            }
+            sb.append("parameter on ");
+            if (dependency.variable() != null) {
+
+                InternalExecutableDescriptor e = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.variable().get())
+                        .declaringExecutable();
+                sb.append(e.descriptorTypeName()).append(": ");
+                sb.append(e.getDeclaringClass().getCanonicalName());
+                if (e instanceof MethodDescriptor) {
+                    sb.append("#").append(((MethodDescriptor) e).getName());
+                }
+                sb.append("(");
+                if (node.dependencies.size() > 1) {
+                    StringJoiner sj = new StringJoiner(", ");
+                    for (int j = 0; j < node.dependencies.size(); j++) {
+                        if (dependency == node.dependencies.get(j) /* j == i */) {
+                            sj.add("-> " + dependency.key().toString() + " <-");
+                        } else {
+                            sj.add(node.dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());
+                        }
+                    }
+                    sb.append(sj.toString());
+                } else {
+                    sb.append(dependency.key().toString());
+                    sb.append(" ");
+                    sb.append(dependency.variable().get().getName());
+                }
+                sb.append(")");
+            }
+            // b.root.requiredServicesMandatory
+            // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
+            throw new InjectionException(sb.toString());
+        }
+    }
+
 }

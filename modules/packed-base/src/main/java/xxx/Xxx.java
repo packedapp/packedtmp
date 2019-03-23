@@ -28,7 +28,7 @@ public class Xxx {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                bind(DBService.class);
+                provide(DBService.class);
             }
         }
 
@@ -42,7 +42,7 @@ public class Xxx {
             protected void configure() {
                 requireService(DBService.class); // AutoRequireServices
 
-                bind(UsesDB.class);
+                provide(UsesDB.class);
             }
         }
 

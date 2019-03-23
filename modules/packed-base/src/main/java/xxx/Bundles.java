@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package xxx;
+
+import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.format;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
+
+import app.packed.bundle.Bundle;
+import app.packed.util.InvalidDeclarationException;
+import packed.internal.util.TypeUtil;
+
+/**
+ * Various bundle utility methods.
+ */
+// Hvis vi kun har en kan vi jo smide den paa bundle
+@Deprecated
+public class Bundles {
+
+    /**
+     * Instantiates a new bundle of the specified type.
+     * 
+     * @param <T>
+     *            the type of bundle to instantiate
+     * @param bundleType
+     *            the type of bundle to instantiate
+     * @return the new bundle
+     * @throws InvalidDeclarationException
+     *             if the specified bundle type does not have a single public constructor taking no arguments
+     */
+    public static <T extends Bundle> T instantiate(Class<T> bundleType) {
+        requireNonNull(bundleType, "bundleType is null");
+        try {
+            Constructor<T> c = bundleType.getDeclaredConstructor();
+            return c.newInstance();
+        } catch (ReflectiveOperationException e) {
+            if (TypeUtil.isInnerOrLocalClass(bundleType)) {
+                throw new InvalidDeclarationException("The specified bundle type is a inner (non-static) class, bundle type = " + format(bundleType), e);
+            }
+            throw new InvalidDeclarationException(
+                    "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
+        }
+    }
+
+    public static <T extends Bundle> T instantiate(Class<T> bundleType, MethodHandles.Lookup lookup) {
+        requireNonNull(bundleType, "bundleType is null");
+        try {
+            Constructor<T> c = bundleType.getDeclaredConstructor();
+            MethodHandle mh = lookup.unreflectConstructor(c);
+            return (T) mh.invoke();
+        } catch (ReflectiveOperationException e) {
+            if (TypeUtil.isInnerOrLocalClass(bundleType)) {
+                throw new InvalidDeclarationException("The specified bundle type is a inner (non-static) class, bundle type = " + format(bundleType), e);
+            }
+            throw new InvalidDeclarationException(
+                    "A bundle must have a single public no argument constructor, and exported if in a module, bundle type = " + format(bundleType), e);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

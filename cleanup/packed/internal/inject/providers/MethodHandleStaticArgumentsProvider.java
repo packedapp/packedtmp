@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.InjectionException;
-import app.packed.inject.Provider;
+import packed.internal.inject.Provider;
 
 /**
  *

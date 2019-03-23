@@ -29,8 +29,8 @@ import packed.internal.inject.InternalDependency;
 
 /**
  * A dependency object. This is typically created from a parameter on a constructor or method. In which case the
- * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #getVariable()}. It can
- * also be a field, in which case {@link #getVariable()} returns an instance of {@link ParameterDescriptor}.
+ * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable()}. It can
+ * also be a field, in which case {@link #variable()} returns an instance of {@link ParameterDescriptor}.
  * Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
 public interface Dependency {
@@ -41,14 +41,21 @@ public interface Dependency {
      *
      * @return the index of the dependency
      */
-    int getIndex();
+    int index();
+
+    /**
+     * Returns whether or not this dependency is optional.
+     *
+     * @return whether or not this dependency is optional
+     */
+    boolean isOptional();
 
     /**
      * Returns the key of this dependency.
      *
      * @return the key of this dependency
      */
-    Key<?> getKey();
+    Key<?> key();
 
     /**
      * The member for which this dependency was created. Or an empty {@link Optional} if this dependency was not created
@@ -60,9 +67,9 @@ public interface Dependency {
      * 
      * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         member.
-     * @see #getVariable()
+     * @see #variable()
      */
-    Optional<Member> getMember();
+    Optional<Member> member();
 
     /**
      * The variable for which this dependency was created. Or an empty {@link Optional} if this dependency was not created
@@ -73,16 +80,9 @@ public interface Dependency {
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
-     * @see #getMember()
+     * @see #member()
      */
-    Optional<VariableDescriptor> getVariable();
-
-    /**
-     * Returns whether or not this dependency is optional.
-     *
-     * @return whether or not this dependency is optional
-     */
-    boolean isOptional();
+    Optional<VariableDescriptor> variable();
 
     public static <T> Dependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         return InternalDependency.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);

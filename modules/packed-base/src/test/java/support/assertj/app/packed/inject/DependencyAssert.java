@@ -31,7 +31,7 @@ public class DependencyAssert extends AbstractAssert<DependencyAssert, InternalD
 
     public DependencyAssert keyIs(Key<?> type) {
         isNotNull();
-        Key<?> key = actual.getKey();
+        Key<?> key = actual.key();
         if (!key.equals(type)) {
             failWithMessage("\nExpecting key of type '%s' but was '%s'", key, type);
         }

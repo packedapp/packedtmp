@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BuildContext;
-import app.packed.bundle.DownstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.ContainerBuildContext;
+import app.packed.bundle.x.DownstreamWiringOperation;
+import app.packed.bundle.x.WiringOperation;
 import app.packed.util.Key;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -42,7 +42,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
      * 
      */
     void processImport() {
-        BuildContext bs = new BuildContext() {
+        ContainerBuildContext bs = new ContainerBuildContext() {
             @SuppressWarnings("unchecked")
             @Override
             public <T> T with(Class<? super T> type) {

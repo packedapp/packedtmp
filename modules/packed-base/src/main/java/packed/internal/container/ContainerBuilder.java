@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.x.WiringOperation;
+import app.packed.container.AppConfiguration;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
-import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
@@ -40,9 +40,9 @@ import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.invokers.InternalFunction;
 
 /**
- * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link ContainerConfiguration}.
+ * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link AppConfiguration}.
  */
-public final class ContainerBuilder extends InjectorBuilder implements ContainerConfiguration {
+public final class ContainerBuilder extends InjectorBuilder implements AppConfiguration {
 
     // Maybe should be able to define a namig strategy, to avoid reuse? Mostly for distributed
     // Lazy initialized...
@@ -131,12 +131,12 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         freezeLatest();
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
-        ComponentClassDescriptor cdesc = accessor.getComponentDescriptor(func.getReturnTypeRaw());
+        ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.getDependencies());
+                configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.dependencies());
         ComponentConfiguration<T> cc = install0(icc);
         scanForProvides(func.getReturnTypeRaw(), icc);
-        bindNode(icc).as(factory.getKey());
+        bindNode(icc).as(factory.key());
         return cc;
     }
 
@@ -147,7 +147,7 @@ public final class ContainerBuilder extends InjectorBuilder implements Container
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
-        ComponentClassDescriptor cdesc = accessor.getComponentDescriptor(instance.getClass());
+        ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
         ComponentConfiguration<T> cc = install0(icc);

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.container.Component;
+import app.packed.container.Container;
 import app.packed.util.Key;
 
 /**
@@ -52,7 +53,11 @@ public interface InjectionSite extends Dependency {
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
-    Optional<Component> getComponent();
+    Optional<Component> component();
+
+    default Container container() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the injector through which injection was requested. If the injection was requested via a container, the
@@ -60,7 +65,7 @@ public interface InjectionSite extends Dependency {
      *
      * @return the injector through which injection was requested
      */
-    Injector getInjector();
+    Injector injector();// HMMMMM,
 
     static InjectionSite of(Injector injector, Dependency dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);

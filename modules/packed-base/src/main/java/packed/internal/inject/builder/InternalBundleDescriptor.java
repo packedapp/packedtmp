@@ -16,9 +16,8 @@
 package packed.internal.inject.builder;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BuildContext;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.bundle.ContainerBuildContext;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 
@@ -35,7 +34,7 @@ public class InternalBundleDescriptor {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         InjectorBuilder conf = new InjectorBuilder(ics, bundle);
 
-        BuildContext bs = new BuildContext() {
+        ContainerBuildContext bs = new ContainerBuildContext() {
             @SuppressWarnings("unchecked")
             @Override
             public <T> T with(Class<? super T> type) {
@@ -57,14 +56,17 @@ public class InternalBundleDescriptor {
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
         for (ServiceBuildNode<?> n : conf.publicNodeList) {
             if (n instanceof ServiceBuildNodeExposed) {
-                builder.addServiceExport((ServiceConfiguration<?>) n);
+                builder.services().addProvides(n.getKey());
             }
         }
         if (conf.requiredServicesOptionally != null) {
-            builder.addServiceRequirementsOptionally(conf.requiredServicesOptionally);
+            if (conf.requiredServicesMandatory != null) {
+                conf.requiredServicesOptionally.removeAll(conf.requiredServicesMandatory);// cannot both be mandatory and optional
+            }
+            conf.requiredServicesOptionally.forEach(k -> builder.services().addOptional(k));
         }
         if (conf.requiredServicesMandatory != null) {
-            builder.addServiceRequirements(conf.requiredServicesMandatory);
+            conf.requiredServicesMandatory.forEach(k -> builder.services().addRequires(k));
         }
         return builder;
     }

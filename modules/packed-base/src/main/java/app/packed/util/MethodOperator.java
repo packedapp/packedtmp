@@ -26,5 +26,4 @@ public interface MethodOperator {
      * @return the fields descriptor
      */
     MethodDescriptor descriptor();
-
 }

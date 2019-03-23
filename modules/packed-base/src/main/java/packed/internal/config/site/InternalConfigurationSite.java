@@ -23,8 +23,8 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import app.packed.config.ConfigurationSite;
-import app.packed.config.ConfigurationSiteVisitor;
+import app.packed.config.ConfigSite;
+import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
@@ -34,7 +34,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  * The interface used internally for a configuration. This method includes methods that we are not yet ready to put out
  * onto the public interface.
  */
-public interface InternalConfigurationSite extends ConfigurationSite {
+public interface InternalConfigurationSite extends ConfigSite {
 
     static final boolean DISABLED = true;
 
@@ -47,12 +47,12 @@ public interface InternalConfigurationSite extends ConfigurationSite {
         }
 
         @Override
-        public Optional<ConfigurationSite> parent() {
+        public Optional<ConfigSite> parent() {
             return Optional.empty();
         }
 
         @Override
-        public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+        public InternalConfigurationSite replaceParent(ConfigSite newParent) {
             return UNKNOWN;
         }
 
@@ -62,12 +62,12 @@ public interface InternalConfigurationSite extends ConfigurationSite {
         }
 
         @Override
-        public void visit(ConfigurationSiteVisitor visitor) {
-            visitor.visitUnknown();
+        public void visit(ConfigSiteVisitor visitor) {
+            visitor.visitUnknown(this);
         }
     };
 
-    InternalConfigurationSite replaceParent(ConfigurationSite newParent);
+    InternalConfigurationSite replaceParent(ConfigSite newParent);
 
     static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
@@ -120,7 +120,7 @@ public interface InternalConfigurationSite extends ConfigurationSite {
          * @param parent
          * @param operation
          */
-        StackFrameConfigurationSite(ConfigurationSite parent, ConfigurationSiteType operation, StackFrame caller) {
+        StackFrameConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, StackFrame caller) {
             super(parent, operation);
             this.stackFrame = requireNonNull(caller);
         }
@@ -133,13 +133,13 @@ public interface InternalConfigurationSite extends ConfigurationSite {
 
         /** {@inheritDoc} */
         @Override
-        public InternalConfigurationSite replaceParent(ConfigurationSite newParent) {
+        public InternalConfigurationSite replaceParent(ConfigSite newParent) {
             return new StackFrameConfigurationSite(newParent, super.operation, stackFrame);
         }
 
         /** {@inheritDoc} */
         @Override
-        public void visit(ConfigurationSiteVisitor visitor) {
+        public void visit(ConfigSiteVisitor visitor) {
             visitor.visitTopStackFrame(this);
         }
     }

@@ -29,7 +29,6 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.invokers.FieldInvoker;
-import packed.internal.invokers.InvokableMember;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -162,7 +161,7 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
-    public InvokableMember<?> newInvoker(Lookup lookup) {
+    public FieldInvoker<?> newInvoker(Lookup lookup) {
         return new FieldInvoker<>(this).withLookup(lookup);
     }
 

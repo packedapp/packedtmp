@@ -365,6 +365,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      * @return a key matching the specified type with no qualifiers
      */
     @SuppressWarnings("unchecked")
+    // TODO rename type to key???
     public static <T> Key<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
         return (Key<T>) CLASS_CACHE.get(type);

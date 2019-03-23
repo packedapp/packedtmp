@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-import app.packed.bundle.ConfigureWiringOperation;
+import app.packed.bundle.x.ConfigureWiringOperation;
 
 /**
  *

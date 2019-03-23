@@ -56,6 +56,7 @@ public abstract class LookupValue<T> {
     public final T get(MethodHandles.Lookup lookup) {
         ConcurrentHashMap<Integer, T> chm = LOOKUP_CACHE.get(lookup.lookupClass());
         Integer lookupMode = Integer.valueOf(lookup.lookupModes());
+        // we could just to chm.computeIfAbsent(..) but thats not garbage free
         T value = chm.get(lookupMode);
         if (value == null) {
             value = chm.computeIfAbsent(lookupMode, ignore -> computeValue(lookup));

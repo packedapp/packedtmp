@@ -42,7 +42,7 @@ public final class AtProvidesGroup {
     /** An empty provides group. */
     private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
 
-    /** Whether or not there are any non-static fields or methods. */
+    /** Whether or not there are any non-static providing fields or methods. */
     public final boolean hasInstanceMembers;
 
     /** An immutable map of all providing members. */
@@ -62,14 +62,44 @@ public final class AtProvidesGroup {
     /** A builder for an {@link AtProvidesGroup}. */
     public final static class Builder {
 
-        /** Whether or not there are any non-static fields or methods. */
+        /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;
 
-        /** A set of all keys provided. */
+        /** A set of all keys for every provided service. */
         @Nullable
         private HashMap<Key<?>, AtProvides> members;
 
-        private AtProvides add(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        /**
+         * Creates a new group from this builder.
+         * 
+         * @return the new group
+         */
+        public AtProvidesGroup build() {
+            return members == null ? EMPTY : new AtProvidesGroup(this);
+        }
+
+        @Nullable
+        public AtProvides tryAdd(Lookup lookup, Field field, Annotation[] annotations) {
+            for (Annotation a : annotations) {
+                if (a.annotationType() == Provides.class) {
+                    return tryAdd0(lookup, InternalFieldDescriptor.of(field), Key.fromField(field), (Provides) a, List.of());
+                }
+            }
+            return null;
+        }
+
+        @Nullable
+        public AtProvides tryAdd(Lookup lookup, Method method, Annotation[] annotations) {
+            for (Annotation a : annotations) {
+                if (a.annotationType() == Provides.class) {
+                    InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
+                    return tryAdd0(lookup, descriptor, Key.fromMethodReturnType(method), (Provides) a, InternalDependency.fromExecutable(descriptor));
+                }
+            }
+            return null;
+        }
+
+        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
             AtProvides ap = new AtProvides(lookup, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
 
@@ -87,36 +117,6 @@ public final class AtProvidesGroup {
                         .toResolve("either remove @Provides on one of the members, or use a unique qualifier for each of the members"));
             }
             return ap;
-        }
-
-        /**
-         * Creates a new group.
-         * 
-         * @return a new group
-         */
-        public AtProvidesGroup build() {
-            return members == null ? EMPTY : new AtProvidesGroup(this);
-        }
-
-        @Nullable
-        public AtProvides tryAddField(Lookup lookup, Field field, Annotation[] annotations) {
-            for (Annotation a : annotations) {
-                if (a.annotationType() == Provides.class) {
-                    return add(lookup, InternalFieldDescriptor.of(field), Key.fromField(field), (Provides) a, List.of());
-                }
-            }
-            return null;
-        }
-
-        @Nullable
-        public AtProvides tryAddMethod(Lookup lookup, Method method, Annotation[] annotations) {
-            for (Annotation a : annotations) {
-                if (a.annotationType() == Provides.class) {
-                    InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-                    return add(lookup, descriptor, Key.fromMethodReturnType(method), (Provides) a, InternalDependency.fromExecutable(descriptor));
-                }
-            }
-            return null;
         }
     }
 }

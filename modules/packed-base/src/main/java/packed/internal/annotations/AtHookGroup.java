@@ -17,14 +17,16 @@ package packed.internal.annotations;
 
 import java.util.List;
 
-import app.packed.container.AnnotatedFieldHook;
-import app.packed.container.AnnotatedMethodHook;
-import app.packed.container.Hook;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.OnHook;
 
 /**
- * Information about methods annotated with {@link Hook}, typically on a single class. Used mainly for components.
+ * Information about methods annotated with {@link OnHook}, typically on a single class. Used mainly for components.
  */
 public class AtHookGroup {
+
+    // Allow List<AnnotatedFieldHook<Get>>
 
     /** All hook methods that takes a single {@link AnnotatedFieldHook} as a parameter. */
     public final List<AtLifecycle> annotatedFieldHooks;

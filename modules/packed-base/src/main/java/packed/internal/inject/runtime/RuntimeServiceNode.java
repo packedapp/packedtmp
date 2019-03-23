@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -62,7 +62,7 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final ConfigurationSite configurationSite() {
+    public final ConfigSite configurationSite() {
         return configurationSite;
     }
 

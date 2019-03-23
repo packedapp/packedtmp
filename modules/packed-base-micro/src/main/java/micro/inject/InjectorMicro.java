@@ -48,15 +48,15 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector injectorStringInstance() {
-        return Injector.of(c -> c.bind("foo"));
+        return Injector.of(c -> c.provide("foo"));
     }
 
     @Benchmark
     public Injector injectorNeedsString() {
         return Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
-            c.bind("foo");
-            c.bind(NeedsString.class);
+            c.provide("foo");
+            c.provide(NeedsString.class);
         });
     }
 

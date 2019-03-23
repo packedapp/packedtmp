@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 
-import app.packed.inject.Provider;
+import packed.internal.inject.Provider;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**

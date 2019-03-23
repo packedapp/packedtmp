@@ -75,7 +75,7 @@ public abstract class InternalExecutableDescriptor extends InternalAnnotatedElem
 
     /** {@inheritDoc} */
     @Override
-    public final int getParameterCount() {
+    public final int parameterCount() {
         return parameters.length;
     }
 

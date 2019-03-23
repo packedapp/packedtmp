@@ -35,4 +35,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 // Used on annotation types, to avoid having to use @Inject @QA("sdsd") to
+
+// It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
+// invoked during the injection phase
 public @interface Inject {}

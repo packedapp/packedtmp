@@ -15,9 +15,6 @@
  */
 package packed.internal.container;
 
-import app.packed.bundle.OtherWiringOperation;
-import app.packed.container.Container;
-
 /**
  *
  */
@@ -27,22 +24,22 @@ public class TestIt {
 
         System.out.println(TestIt.class.getModule().getDescriptor().version());
 
-        Container co = Container.of(c -> {
-            c.install("Hej");
-            c.install(132);
-            c.install(132L);
-            c.install(132L).asNone();
-            c.install(132L).asNone();
-            for (int i = 0; i < 1_000_000; i++) {
-                c.install(132L).asNone();
-            }
-        }, OtherWiringOperation.disableConfigurationSite());
+        // Container co = App.of(c -> {
+        // c.install("Hej");
+        // c.install(132);
+        // c.install(132L);
+        // c.install(132L).asNone();
+        // c.install(132L).asNone();
+        // for (int i = 0; i < 1_000_000; i++) {
+        // c.install(132L).asNone();
+        // }
+        // }, OtherWiringOperation.disableConfigurationSite());
         System.out.println("Done");
-        co.components().forEach(e -> {
-            System.out.println(e.configurationSite());
-            System.out.println(e.path());
-        });
-        System.out.println(co.components().count());
+        // co.components().forEach(e -> {
+        // System.out.println(e.configurationSite());
+        // System.out.println(e.path());
+        // });
+        // System.out.println(co.components().count());
 
         // Jeg tror vi skal have et sorteret Map....
 

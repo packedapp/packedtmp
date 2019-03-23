@@ -48,7 +48,7 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Method#getParameterCount()
      * @see Constructor#getParameterCount()
      */
-    int getParameterCount();
+    int parameterCount();
 
     /**
      * Returns true if the takes a variable number of arguments, otherwise false.

@@ -74,7 +74,7 @@ class MemberScanner {
                     // Multiple annotations
                     AtDependable fInject = inject.createIfInjectable(lookup, method, annotations);
 
-                    provides.tryAddMethod(lookup, method, annotations);
+                    provides.tryAdd(lookup, method, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
@@ -96,7 +96,7 @@ class MemberScanner {
                     // Multiple annotations
                     AtDependable fInject = inject.createIfInjectable(lookup, field, annotations);
 
-                    provides.tryAddField(lookup, field, annotations);
+                    provides.tryAdd(lookup, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {

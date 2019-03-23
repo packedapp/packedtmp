@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import app.packed.config.ConfigurationSite;
+import app.packed.app.App;
+import app.packed.config.ConfigSite;
 import app.packed.container.Component;
 import app.packed.container.ComponentPath;
 import app.packed.container.Container;
@@ -31,7 +31,6 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 
 /**
  *
@@ -52,6 +51,11 @@ public class InternalContainer implements Container {
     }
 
     @Override
+    public App app() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public <T> Optional<T> get(Class<T> key) {
         return injector.get(key);
     }
@@ -62,7 +66,7 @@ public class InternalContainer implements Container {
     }
 
     @Override
-    public ConfigurationSite configurationSite() {
+    public ConfigSite configurationSite() {
         return injector.configurationSite();
     }
 
@@ -72,12 +76,12 @@ public class InternalContainer implements Container {
     }
 
     @Override
-    public <T> @Nullable ServiceDescriptor getService(Class<T> serviceType) {
+    public <T> Optional<ServiceDescriptor> getService(Class<T> serviceType) {
         return injector.getService(serviceType);
     }
 
     @Override
-    public <T> @Nullable ServiceDescriptor getService(Key<T> key) {
+    public <T> Optional<ServiceDescriptor> getService(Key<T> key) {
         return injector.getService(key);
     }
 
@@ -94,11 +98,6 @@ public class InternalContainer implements Container {
     @Override
     public <T> T injectMembers(T instance, Lookup lookup) {
         return injector.injectMembers(instance, lookup);
-    }
-
-    @Override
-    public void print() {
-        injector.print();
     }
 
     @Override
@@ -138,27 +137,8 @@ public class InternalContainer implements Container {
     }
 
     /** {@inheritDoc} */
-    @Override
     public Component root() {
         return root;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<Container> shutdown() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<Container> shutdown(Throwable cause) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public CompletableFuture<Container> start() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

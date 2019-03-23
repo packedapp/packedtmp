@@ -326,7 +326,7 @@ public abstract class TypeLiteral<T> {
      * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
      * work, and has some overhead.
      * 
-     * @param type
+     * @param implementation
      *            the type to return a type literal for
      * @return a type literal from the specified type
      * @see #of(Class)

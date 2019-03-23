@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.Collection;
 import java.util.Optional;
 
-import app.packed.config.ConfigurationSite;
+import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import app.packed.util.Taggable;
 
@@ -40,7 +40,7 @@ public interface Component extends Taggable {
      * 
      * @return the configuration site of the component
      */
-    ConfigurationSite configurationSite();
+    ConfigSite configurationSite();
 
     /**
      * Returns the container that this component is installed in.
@@ -64,6 +64,7 @@ public interface Component extends Taggable {
      * @return the private injector of this component
      */
     // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
+    // Maaske skal vi bare extende Injector.....
     Injector injector();
 
     /**

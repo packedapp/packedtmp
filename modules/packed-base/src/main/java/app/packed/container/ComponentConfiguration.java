@@ -17,7 +17,7 @@ package app.packed.container;
 
 import app.packed.bundle.Bundle;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectorConfiguration;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -177,7 +177,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      */
     // Or privateInjector
     // Do example, with listener, on instance annotation
-    InjectorConfiguration privates();
+    InjectorConfigurator privates();
 
     /**
      * Sets the description of this component.
