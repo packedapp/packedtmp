@@ -22,8 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.app.App;
-import app.packed.bundle.x.AppLaunch;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.app.AppLaunch;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
 import app.packed.inject.Factory;

@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.UpstreamWiringOperation;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 
 /** A support class for calling package private methods in the app.packed.inject package. */

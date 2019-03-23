@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.UpstreamWiringOperation;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;

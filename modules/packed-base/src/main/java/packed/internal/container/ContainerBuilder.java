@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.container.AppConfiguration;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;

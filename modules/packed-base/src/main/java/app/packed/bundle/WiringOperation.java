@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle.x;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.bundle.Bundle;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provides;

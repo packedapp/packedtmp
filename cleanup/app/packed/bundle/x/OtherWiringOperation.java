@@ -15,6 +15,8 @@
  */
 package app.packed.bundle.x;
 
+import app.packed.bundle.WiringOperation;
+
 /**
  *
  */

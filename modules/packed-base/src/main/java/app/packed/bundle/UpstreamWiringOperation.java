@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle.x;
+package app.packed.bundle;
 
 import java.lang.invoke.MethodHandles;
 

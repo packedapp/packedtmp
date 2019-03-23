@@ -18,7 +18,7 @@ package xxx;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.UpstreamWiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.inject.Injector;
 import app.packed.inject.Provides;
 

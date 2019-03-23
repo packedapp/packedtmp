@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.container.AppConfiguration;
 import app.packed.container.Container;
 import app.packed.inject.Injector;

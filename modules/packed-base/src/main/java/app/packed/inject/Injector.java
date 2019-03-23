@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ContainerBuildContext;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

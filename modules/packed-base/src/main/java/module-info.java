@@ -1,7 +1,6 @@
 module app.packed.base {
     exports app.packed.app;
     exports app.packed.bundle;
-    exports app.packed.bundle.x;
     exports app.packed.config;
     exports app.packed.container;
     exports app.packed.hook;

@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
-import app.packed.bundle.x.ConfigureWiringOperation;
+import app.packed.bundle.ConfigureWiringOperation;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;

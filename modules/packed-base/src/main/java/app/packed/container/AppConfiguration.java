@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;

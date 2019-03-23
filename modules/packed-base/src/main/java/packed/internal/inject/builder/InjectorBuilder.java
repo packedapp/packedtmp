@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;

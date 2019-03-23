@@ -22,8 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.x.UpstreamWiringOperation;
-import app.packed.bundle.x.WiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;

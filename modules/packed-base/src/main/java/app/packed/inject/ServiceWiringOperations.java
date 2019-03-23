@@ -25,8 +25,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import app.packed.bundle.x.DownstreamWiringOperation;
-import app.packed.bundle.x.UpstreamWiringOperation;
+import app.packed.bundle.DownstreamWiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceUtils;
 import packed.internal.inject.ServiceWiringImportOperation;
