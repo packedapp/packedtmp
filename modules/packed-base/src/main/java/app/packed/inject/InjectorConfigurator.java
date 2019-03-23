@@ -23,6 +23,7 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.x.UpstreamWiringOperation;
 import app.packed.bundle.x.WiringOperation;
 import app.packed.util.Nullable;
+import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
 
@@ -38,7 +39,7 @@ public interface InjectorConfigurator extends Taggable {
      * Returns the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
      *
      * @return the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
-     * @see Injector#getDescription()
+     * @see Injector#description()
      * @see #setDescription(String)
      */
     @Nullable
@@ -184,13 +185,13 @@ public interface InjectorConfigurator extends Taggable {
 
     /**
      * Sets the (nullable) description of the injector, the description can later be obtained via
-     * {@link Injector#getDescription()}.
+     * {@link Injector#description()}.
      *
      * @param description
      *            a (nullable) description of this injector
      * @return this configuration
      * @see #getDescription()
-     * @see Injector#getDescription()
+     * @see Injector#description()
      */
     InjectorConfigurator setDescription(@Nullable String description);
 

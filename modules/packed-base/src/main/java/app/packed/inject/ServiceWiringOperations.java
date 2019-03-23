@@ -196,6 +196,10 @@ public final class ServiceWiringOperations {
      * 
      * The service that is provided will have no description and no tags.
      * 
+     * @param <T>
+     *            stuff
+     * @param <R>
+     *            stuff
      * @param instance
      *            the instance to bind
      * @return the wiring operation

@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by invoking {@link Container#components()} or {@link Component#stream()}.
+ * of this class is normally acquired by invoking containerComponents or componentStream.
  *
  * <pre>
  * Container c = ...

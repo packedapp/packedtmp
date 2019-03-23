@@ -31,9 +31,11 @@ public interface AnnotatedTypeHook<T extends Annotation> extends Hook {
     /**
      * Returns a collection of fields annotated with the specified hook annotation. The hooks are returned in any order.
      * 
+     * @param <S>
+     *            the type of stuff
      * @param annotationType
      *            the type of annotation
-     * @return
+     * @return stuff
      */
     /// nahhhh....Hvad hvis de ikke er eksporteret... Og vi har vel svaert ved at filtrer dem....
     <S extends Annotation> Collection<AnnotatedFieldHook<S>> annotatedFieldHooks(Class<S> annotationType);

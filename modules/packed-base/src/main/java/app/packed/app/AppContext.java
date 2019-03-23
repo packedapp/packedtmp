@@ -29,7 +29,7 @@ public interface AppContext {
     /**
      * Returns the name of the application
      * 
-     * @return
+     * @return the name of the application
      */
     String name();
 

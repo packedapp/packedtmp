@@ -92,7 +92,7 @@ public @interface Provides {
      * If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having to
      * export it from the bundle
      * 
-     * @return
+     * @return whether or not the provided service should be exported
      */
     boolean export() default false;
 

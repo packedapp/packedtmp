@@ -32,8 +32,10 @@ public class AppOptions {
      * Sets a maximum time for the application to run. When the deadline podpodf the app is shutdown.
      * 
      * @param timeout
+     *            the timeout
      * @param unit
-     * @return
+     *            the timeunit
+     * @return this option object
      */
     public AppOptions setTimeToLive(long timeout, TimeUnit unit) {
         // Container will be shutdown normally after the specified timeout

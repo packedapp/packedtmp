@@ -22,9 +22,11 @@ public interface TConsumer<T, X extends Throwable> {
 
     /**
      * Performs this operation on the given argument.
-     *
+     * 
      * @param t
      *            the input argument
+     * @throws X
+     *             stuff
      */
     void accept(T t) throws X;
 }

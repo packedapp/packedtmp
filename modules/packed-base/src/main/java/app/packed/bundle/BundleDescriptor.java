@@ -332,6 +332,8 @@ public class BundleDescriptor {
         /**
          * Returns a collection of all exported annotated field hooks of the particular type.
          * 
+         * @param <T>
+         *            the type of field annotation
          * @param annotationType
          *            the type of field hook
          * @return a collection of all exported annotated field hooks of the particular type

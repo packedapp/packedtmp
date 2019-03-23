@@ -34,6 +34,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
 import packed.internal.container.ContainerBuilder;
 import packed.internal.inject.builder.InjectorBuilder;
@@ -48,10 +49,10 @@ import packed.internal.inject.builder.InjectorBuilder;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link InjectorBundle}</b> which bundles information about services, and creates {@link Injector} instances
- * using {@link Injector#of(Class)}.</li>
+ * <li><b>{@link Bundle}</b> which bundles information about services, and creates {@link Injector} instances using
+ * .</li>
  * <li><b>{@link Bundle}</b> which bundles information about both services and components, and creates {@link Container}
- * instances using {@link Container#of(Class)}.</li>
+ * instances using .</li>
  * </ul>
  */
 
@@ -123,7 +124,7 @@ public abstract class Bundle {
         return injectorBuilder().providePrototype(factory);
     }
 
-    /** The internal configuration to delegate to */
+    // /** The internal configuration to delegate to */
     // We probably want to null this out...
     // If we install the bundle as a component....
     // We do not not want any more garbage then needed.
@@ -236,7 +237,7 @@ public abstract class Bundle {
      * @param key
      *            the key of the internal service to expose
      * @return a service configuration for the exposed service
-     * @see #expose(Key)
+     * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Key<T> key) {
         return injectorBuilder().expose(key);
@@ -368,6 +369,7 @@ public abstract class Bundle {
      * @param name
      *            the name of the layer, must be unique among all layers defined in the same bundle
      * @param predecessors
+     *            preds
      * @return the new layer
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, "main" or if another layer with the same name has been
@@ -413,7 +415,7 @@ public abstract class Bundle {
      * @param description
      *            the description of the injector or container
      * @see InjectorConfigurator#setDescription(String)
-     * @see Injector#getDescription()
+     * @see Injector#description()
      */
     protected final void setDescription(@Nullable String description) {
         injectorBuilder().setDescription(description);

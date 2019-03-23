@@ -37,12 +37,13 @@ public interface FieldOperator {
     /**
      * Returns whether or not the field can be written. For example, if the field is final it cannot be written
      * 
-     * @return
+     * @return whether or not the field can be written
      */
     boolean isSettable();
 
     /**
      * @param value
+     *            value
      * @throws UnsupportedOperationException
      *             if the field cannot be written, for example, if it is final
      * @see #isSettable()

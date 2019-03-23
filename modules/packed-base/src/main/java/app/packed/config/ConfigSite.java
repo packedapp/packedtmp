@@ -84,6 +84,7 @@ public interface ConfigSite {
      * Visits t
      * 
      * @param visitor
+     *            the visitor
      */
     void visit(ConfigSiteVisitor visitor);
 

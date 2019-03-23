@@ -233,19 +233,19 @@ public interface Injector extends Taggable {
      * Returns a service with the specified type, or throws an {@link UnsupportedOperationException} if no such service
      * exists. This is typically used to create fluent APIs such as:
      *
-     * <pre>
+     * <pre>{@code
      * Key<WebServer> key = Key.of(WebServer.class);
-     * injector.with(WebServer.class).printAllLiveConnections();
+     * injector.with(WebServer.class).printAllLiveConnections();}
      * </pre>
      *
      * Invoking this method is equivalent to:
      *
-     * <pre>
+     * <pre>{@code
      *  Optional<T> t = get(key);
      *  if (!t.isPresent()) {
      *      throw new UnsupportedOperationException();
      *  }
-     *  return t.get();
+     *  return t.get();}
      * </pre>
      *
      * @param <T>
@@ -274,6 +274,8 @@ public interface Injector extends Taggable {
      *
      * @param bundle
      *            a bundle to create an injector from
+     * @param operations
+     *            various operations
      * @return the new injector
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle

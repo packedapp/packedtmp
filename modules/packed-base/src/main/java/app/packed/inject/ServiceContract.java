@@ -25,8 +25,11 @@ import app.packed.util.Key;
 /**
  * A contract detailing.
  * 
- * requires -> Serviced that are required before the entity can be properly constructed. optional -> Optional services
- * that the entity might use if available. provides -> Service that the entity makes available.
+ * requires Serviced that are required before the entity can be properly constructed.
+ * 
+ * optional Optional services that the entity might use if available.
+ * 
+ * provides Service that the entity makes available.
  */
 // Vi dropper description...
 public final class ServiceContract {
@@ -74,9 +77,10 @@ public final class ServiceContract {
      * this are also required services in the previous.
      * 
      * @param previous
+     *            the previous contract
      * @return whether or not the specified service are back
      */
-    public boolean isBackwardsCompatibleWith(ServiceContract previous) {
+    boolean isBackwardsCompatibleWith(ServiceContract previous) {
         requireNonNull(previous, "previous is null");
         if (!previous.requires.containsAll(requires)) {
             return false;

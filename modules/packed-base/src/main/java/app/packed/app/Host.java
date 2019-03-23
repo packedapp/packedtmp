@@ -82,9 +82,8 @@ public interface Host {
      * 
      * @param bundle
      *            the bundle to deploy
-     * @param options
+     * @param args
      *            the deployment options
-     * @return the application
      * @throws IllegalStateException
      *             if this host has been closed, for example, if {@link #close()} has been invoked
      */
@@ -96,6 +95,7 @@ public interface Host {
      * 
      * @param application
      *            the application to undeploy
+     * @return the application
      * @throws IllegalArgumentException
      *             if the specified application has never been deployed in this host
      */

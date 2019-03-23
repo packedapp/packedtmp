@@ -45,11 +45,12 @@ public abstract class ModuleEnv {
     protected ModuleEnv(Class<? extends Bundle> bundles) {}
 
     /**
-     * Registered a qualifier annotation that is not annotated with {@link HookOld}.
+     * Registered a qualifier annotation that is not annotated with
      * <p>
      * Sometimes you just do not have
      * 
      * @param qualifierType
+     *            type
      */
     protected final void registerUnannotatedQualifier(Class<? extends Annotation> qualifierType) {}
 
@@ -64,6 +65,7 @@ public abstract class ModuleEnv {
      * Registers a bundle root
      * 
      * @param bundle
+     *            bundle
      */
     // Maaske noget med instantiation istedet for
     // Registers the bundle, it will always be included in the native image generation....

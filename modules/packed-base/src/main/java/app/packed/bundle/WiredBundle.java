@@ -35,8 +35,8 @@ public final class WiredBundle {
     }
 
     /**
-     * ExportTransient -> Meaning everything is exported out again from the bundle exportTransient(Filter) <-Kunne ogsaa
-     * vaere paa WiredBundle
+     * ExportTransient Meaning everything is exported out again from the bundle exportTransient(Filter) Kunne ogsaa vaere
+     * paa WiredBundle
      * 
      * @return this bundle
      */
@@ -56,7 +56,7 @@ public final class WiredBundle {
     /**
      * Returns the set of layers that the bundle is a part of. Are we always part of the main layer????
      * 
-     * @return
+     * @return the layers
      */
     public Set<Layer> getLayers() {
         throw new UnsupportedOperationException();
@@ -77,7 +77,7 @@ public final class WiredBundle {
     /**
      * After or before any transformations??? I think after
      * 
-     * @return
+     * @return the incoming contract
      */
     public Contract incoming() {
         throw new UnsupportedOperationException();

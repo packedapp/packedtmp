@@ -70,7 +70,7 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      * @throws IllegalAccessException
      *             if access checking fails, or if the method is {@code static}, or if the method's variable arity modifier
      *             bit is set and {@code asVarargsCollector} fails
-     * @see {@link Lookup#unreflectSpecial(Method, Class)}
+     * @see Lookup#unreflectSpecial(Method, Class)
      */
     // Drop checked exception... Har svaert ved at se at den skulle vaere recovable
     MethodHandle unreflectSpecial(MethodHandles.Lookup lookup, Class<?> specialCaller) throws IllegalAccessException;

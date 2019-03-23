@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.container.AppConfiguration;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provides;
@@ -33,7 +32,7 @@ import packed.internal.bundle.BundleSupport;
 /**
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
  * {@link InjectorConfigurator#wireInjector(Injector, WiringOperation...)} or
- * {@link AppConfiguration#wireContainer(app.packed.container.ContainerBundle, WiringOperation...)}.
+ * 
  * <p>
  * A typical usage for wiring operations is for rebinding services under another key when wiring an injector into
  * another injector.

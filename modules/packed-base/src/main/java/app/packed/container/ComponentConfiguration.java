@@ -113,7 +113,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      *
      * @return the description of this component. Or null if the description has not been set.
      * @see #setDescription(String)
-     * @see Component#getDescription()
+     * @see Component#description()
      */
     @Override
     @Nullable
@@ -124,7 +124,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      *
      * @return the name of the component or null if the name has not been set
      * @see #setName(String)
-     * @see Component#getName()
+     * @see Component#name()
      */
     @Nullable
     String getName();
@@ -186,14 +186,14 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      *            the description of the component
      * @return this configuration
      * @see #getDescription()
-     * @see Component#getDescription()
+     * @see Component#description()
      */
     @Override
     ComponentConfiguration<T> setDescription(String description);
 
     /**
-     * Sets the {@link Component#getName() name} of the component. The name must consists only of alphanumeric characters
-     * and '_', '-' or '.'. The name is case sensitive.
+     * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
+     * '_', '-' or '.'. The name is case sensitive.
      * <p>
      * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
      * such a way that it will have a unique path among other components in the container.
@@ -205,7 +205,7 @@ public interface ComponentConfiguration<T> extends ServiceConfiguration<T> {
      *             if the specified name is the empty string or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
      * @see #getName()
-     * @see Component#getName()
+     * @see Component#name()
      */
     ComponentConfiguration<T> setName(String name);
 

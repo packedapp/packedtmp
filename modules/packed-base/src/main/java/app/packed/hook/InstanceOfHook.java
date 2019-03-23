@@ -39,7 +39,7 @@ public interface InstanceOfHook<T> extends Hook {
     /**
      * Returns the
      * 
-     * @return
+     * @return the type we are hooked on
      */
     Class<T> type();
 }

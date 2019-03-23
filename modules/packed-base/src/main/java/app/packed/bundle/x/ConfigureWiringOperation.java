@@ -72,6 +72,8 @@ public class ConfigureWiringOperation extends WiringOperation {
     /**
      * Returns a wiring operation that opens a bundle.
      * 
+     * @param lookup
+     *            object that must have read access to the module that defines the bundle
      * @return a wiring operation that opens a bundle
      */
     public static ConfigureWiringOperation patchBundle(MethodHandles.Lookup lookup) {

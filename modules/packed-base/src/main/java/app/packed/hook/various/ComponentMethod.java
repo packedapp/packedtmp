@@ -16,16 +16,14 @@
 package app.packed.hook.various;
 
 import app.packed.container.Component;
-import app.packed.container.Container;
 
 /**
  * A component method is an immutable combination of a component, a component instance or mixin, and a single method on
- * the component instance. Instances of this class are normally acquired by calling
- * {@link Component#processMethods(java.util.function.Consumer) #methods()} or {@link Container#componentMethods()}.
+ * the component instance. Instances of this class are normally acquired by calling or .
  * <p>
- * This interface extends {@link Contextualizable} so that information can be stored per method. For example, you can
- * store information at startup time which needs to used when the component is shutdown. In this way you avoid needing
- * some kind of hash map to store these information.
+ * This interface extends Contextualizable so that information can be stored per method. For example, you can store
+ * information at startup time which needs to used when the component is shutdown. In this way you avoid needing some
+ * kind of hash map to store these information.
  */
 // ComponentInstanceMethodInvoker
 // ComponentInvocable

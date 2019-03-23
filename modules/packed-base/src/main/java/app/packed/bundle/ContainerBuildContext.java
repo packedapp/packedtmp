@@ -58,8 +58,11 @@ public abstract class ContainerBuildContext {
      * <p>
      * This method only supports exact matches, {@code wrap(Service.class)} must not return {@code ServiceImpl.class}.
      * 
+     * @param <T>
+     *            stuff
      * @param type
      *            the type of configuration class
+     * @return stuff
      * @throws UnsupportedOperationException
      *             if the specified configuration type is not supported
      */

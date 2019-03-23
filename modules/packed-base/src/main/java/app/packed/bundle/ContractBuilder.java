@@ -37,7 +37,7 @@ public final class ContractBuilder {
     /**
      * Creates a new contract from this builder.s
      * 
-     * @return
+     * @return a new contract
      */
     public Contract build() {
         throw new UnsupportedOperationException();
@@ -47,7 +47,7 @@ public final class ContractBuilder {
     /**
      * Returns a object that can be used
      * 
-     * @return
+     * @return a service contract
      */
     public ServiceContract services() {
         ServiceContract s = services;

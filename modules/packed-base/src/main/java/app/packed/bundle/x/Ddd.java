@@ -41,7 +41,7 @@ public class Ddd {
         App.runAsync(new D(), c -> c.with(List.class).size());
 
         Integer i = App.invoke(new D(), c -> c.with(List.class).size());
-
+        System.out.println(i);
         for (var h : BundleDescriptor.of(new D()).hooks().annotatedFieldExports(Deprecated.class)) {
             System.out.println(h.field() + " is " + h.annotation());
         }

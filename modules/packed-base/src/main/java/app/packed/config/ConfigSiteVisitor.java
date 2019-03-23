@@ -57,6 +57,8 @@ public interface ConfigSiteVisitor {
     /**
      * This method is visited whenever.
      * 
+     * @param configSite
+     *            the configuration site
      */
     default void visitTopStackFrame(ConfigSite configSite) {} // Always only the top one, we can always add a method a visitAllStackFrames
 
@@ -65,6 +67,9 @@ public interface ConfigSiteVisitor {
 
     /**
      * Visits a unknown configuration site, for example, if the capturing of configuration sites has been disabled.
+     * 
+     * @param configSite
+     *            the configuration site
      */
     default void visitUnknown(ConfigSite configSite) {}
 }

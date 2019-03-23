@@ -15,6 +15,7 @@
  */
 package app.packed.inject;
 
+import app.packed.bundle.Bundle;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -22,7 +23,7 @@ import app.packed.util.Taggable;
 
 /**
  * A configuration of a service. An instance of this interface is usually obtained by calling the various bind methods
- * located on {@link InjectorConfigurator} or {@link InjectorBundle}.
+ * located on {@link InjectorConfigurator} or {@link Bundle}.
  */
 public interface ServiceConfiguration<T> extends Taggable {
 

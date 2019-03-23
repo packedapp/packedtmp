@@ -79,7 +79,7 @@ public @interface OnInitialize {
      * If the lifecycle enabled entities on which this annotation is placed does not make use of a hierarchy, the value of
      * this attribute is ignored
      * 
-     * @return
+     * @return whether or not to run before children
      */
     boolean runBeforeChildren() default true;
 }

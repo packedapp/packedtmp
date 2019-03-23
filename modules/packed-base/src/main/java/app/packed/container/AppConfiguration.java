@@ -47,7 +47,7 @@ public interface AppConfiguration extends InjectorConfigurator {
      *
      * @return the name of the container or null if the name has not been set
      * @see #setName(String)
-     * @see Container#getName()
+     * @see Container#name()
      */
     @Nullable
     String getName();
@@ -165,20 +165,20 @@ public interface AppConfiguration extends InjectorConfigurator {
 
     /**
      * Sets the (nullable) description of this injector, the description can later be obtained via
-     * {@link Injector#getDescription()}.
+     * {@link Injector#description()}.
      *
      * @param description
      *            a (nullable) description of this injector
      * @return this configuration
      * @see #getDescription()
-     * @see Injector#getDescription()
+     * @see Injector#description()
      */
     @Override
     AppConfiguration setDescription(@Nullable String description);
 
     /**
-     * Sets the {@link Container#getName() name} of the container. The name must consists only of alphanumeric characters
-     * and '_' or '-'. The name is case sensitive.
+     * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
+     * '_' or '-'. The name is case sensitive.
      * <p>
      * If no name is set using this method a unique name (among sibling containers) is generated at build time.
      *
@@ -188,7 +188,7 @@ public interface AppConfiguration extends InjectorConfigurator {
      *             if the specified name is the empty string or if the name contains other characters then alphanumeric
      *             characters and '_' or '-'
      * @see #getName()
-     * @see Container#getName()
+     * @see Container#name()
      */
     void setName(@Nullable String name);
 
