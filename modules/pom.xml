@@ -90,7 +90,7 @@
         <version>3.0.1</version>
         <configuration>
           <excludePackageNames>packed.*:*.internals.*:*.test.*:*.examples.*:</excludePackageNames>
-          <additionalOptions>--frames -tag "apiNote:a:API Note:"</additionalOptions>
+          <additionalOptions>--frames -tag "apiNote:a:API Note:" -tag "implSpec:a:Implementation Requirements:" -tag "implNote:a:Implementation Note:"</additionalOptions>
         </configuration>
       </plugin>
     </plugins>
