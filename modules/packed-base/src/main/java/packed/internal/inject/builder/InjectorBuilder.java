@@ -18,7 +18,6 @@ package packed.internal.inject.builder;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
@@ -34,6 +33,8 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
+import packed.internal.box.Box;
+import packed.internal.box.BoxSource;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -69,10 +70,9 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     /** The runtime nodes that will be available in the injector. */
     final ServiceNodeMap publicNodeMap;
 
-    HashSet<Key<?>> requiredServicesMandatory = new HashSet<>();
-
-    HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
     boolean autoRequires;
+
+    final Box box;
 
     /**
      * Creates a new builder.
@@ -84,6 +84,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         super(configurationSite);
         publicNodeMap = privateNodeMap = new ServiceNodeMap();
         publicNodeList = null;
+        box = new Box(BoxSource.INJECTOR_VIA_CONFIGURATOR);
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
@@ -91,6 +92,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         publicNodeMap = new ServiceNodeMap();
         privateNodeMap = new ServiceNodeMap();
         publicNodeList = new ArrayList<>();
+        box = new Box(BoxSource.INJECTOR_VIA_BUNDLE);
     }
 
     public final void serviceAutoRequire() {
@@ -271,10 +273,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
 
     public final void requireService(Key<?> key) {
         requireNonNull(key, "key is null");
-        if (requiredServicesMandatory == null) {
-            requiredServicesMandatory = new HashSet<>();
-        }
-        requiredServicesMandatory.add(key);
+        box.services().requiredServicesMandatory.add(key);
     }
 
     public final void requireServiceOptionally(Class<?> key) {
@@ -283,10 +282,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
 
     public final void requireServiceOptionally(Key<?> key) {
         requireNonNull(key, "key is null");
-        if (requiredServicesOptionally == null) {
-            requiredServicesOptionally = new HashSet<>();
-        }
-        requiredServicesOptionally.add(key);
+        box.services().requiredServicesOptionally.add(key);
     }
 
     protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {

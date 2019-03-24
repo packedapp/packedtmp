@@ -20,6 +20,7 @@ package app.packed.inject;
  */
 // lazy, prototype, no_cache
 // Rename Prototype to Many???? The thing is it might be cached
+// ADHOC, VARIABLE, ANY, MANY, PER_REQUEST
 public enum InstantiationMode {
 
     /**

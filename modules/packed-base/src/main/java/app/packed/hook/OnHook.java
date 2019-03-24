@@ -80,6 +80,10 @@ public @interface OnHook {
     // Or Class<? extends SomeOptimizer>
     boolean attemptCompilation() default false;
 
+    //
+    // Man kan registere en eller flere MethodHandleTransformation for et Hook. Maaske via annoterering
+    //
+
     // If true AnnotatedMethodHook.methodHandle returns non-null;
     // if false AnnotatedMethodHook.methodHandle throws UnsupportedOperationException
     // boolean needsHandle default false();

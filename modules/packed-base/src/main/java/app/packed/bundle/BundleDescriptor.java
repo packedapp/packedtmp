@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +33,8 @@ import app.packed.container.Container;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.inject.Injector;
+import app.packed.inject.ServiceDescriptor;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 
@@ -86,15 +89,15 @@ public class BundleDescriptor {
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
-    @Nullable
-    private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
-
     /** A Services object. */
     private final BundleContract contract;
 
-    public List<BundleContract> children() {
-        throw new UnsupportedOperationException();
-    }
+    @Nullable
+    private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
+
+    /** A descriptor for each registered service in the bundle. */
+    // hmm exported vs
+    private final Collection<ServiceDescriptor> services;
 
     /**
      * Creates a new descriptor from the specified builder.
@@ -107,6 +110,7 @@ public class BundleDescriptor {
         this.contract = builder.contract().build();
         this.bundleType = builder.bundleType();
         this.bundleDescription = builder.getBundleDescription();
+        this.services = builder.services == null ? List.of() : List.copyOf(builder.services.values());
     }
 
     /**
@@ -118,10 +122,6 @@ public class BundleDescriptor {
      */
     public final Optional<String> bundleDescription() {
         return Optional.ofNullable(bundleDescription);
-    }
-
-    public BundleContract contract() {
-        return contract;
     }
 
     /**
@@ -174,8 +174,16 @@ public class BundleDescriptor {
         return bundleModule().getDescriptor().version();
     }
 
-    public final HookContract hooks() {
-        return new HookContract();
+    public List<BundleContract> children() {
+        throw new UnsupportedOperationException();
+    }
+
+    public BundleContract contract() {
+        return contract;
+    }
+
+    public final Hooks hooks() {
+        return new Hooks();
     }
 
     /**
@@ -201,6 +209,10 @@ public class BundleDescriptor {
      */
     public final Class<?> runtimeType() {
         return Bundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
+    }
+
+    public Collection<ServiceDescriptor> services() {
+        return services;
     }
 
     /** {@inheritDoc} */
@@ -277,14 +289,22 @@ public class BundleDescriptor {
         /** The bundleType */
         private final Class<? extends Bundle> bundleType;
 
+        private BundleContract.Builder contract = new BundleContract.Builder();
+
+        private Map<Key<?>, ServiceDescriptor> services;
+
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
-        private BundleContract.Builder contract = new BundleContract.Builder();
-
-        public BundleContract.Builder contract() {
-            return contract;
+        public Builder addServiceDescriptor(ServiceDescriptor descriptor) {
+            requireNonNull(descriptor, "descriptor is null");
+            Map<Key<?>, ServiceDescriptor> s = services;
+            if (s == null) {
+                s = services = new HashMap<>();
+            }
+            s.put(descriptor.key(), descriptor); // Do we want a defensive copy???
+            return this;
         }
 
         public BundleDescriptor build() {
@@ -298,6 +318,10 @@ public class BundleDescriptor {
             return bundleType;
         }
 
+        public BundleContract.Builder contract() {
+            return contract;
+        }
+
         @Nullable
         public final String getBundleDescription() {
             return bundleDescription;
@@ -309,17 +333,7 @@ public class BundleDescriptor {
         }
     }
 
-    public final class HookContract {
-
-        Set<Class<? extends Annotation>> annotatedFieldHooks;
-
-        public Set<Class<? extends Annotation>> exposedFieldHooks() {
-            throw new UnsupportedOperationException();
-        }
-
-        public Set<Class<? extends Annotation>> capturingFieldHooks() {
-            throw new UnsupportedOperationException();
-        }
+    public final class Hooks {
 
         // Permissions-> For AOP, For Invocation, for da shizzla
 

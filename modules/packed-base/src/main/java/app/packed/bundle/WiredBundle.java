@@ -28,6 +28,9 @@ import app.packed.util.Nullable;
  * before any other operations on the bundle are performed. Failure to do so will result in an
  * {@link IllegalStateException} being thrown from all mutable operations on this object.
  */
+// <T> so we can register it as a service in the bundle
+// for example, WiredBundle<Injector> wb = wire()
+// wb.as(new Key<@Left Injector>(){});
 public final class WiredBundle {
 
     WiredBundle(Bundle parent, Bundle child) {

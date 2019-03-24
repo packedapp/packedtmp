@@ -20,6 +20,7 @@ import app.packed.bundle.BundleDescriptor;
 import app.packed.bundle.ContainerBuildContext;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.ServiceNode;
 
 /**
  *
@@ -54,19 +55,27 @@ public class InternalBundleDescriptor {
         //////////////// Create the builder
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
+
+        for (ServiceNode<?> n : conf.privateNodeMap) {
+            if (n instanceof ServiceBuildNode) {
+                builder.addServiceDescriptor(((ServiceBuildNode<?>) n).toDescriptor());
+            }
+        }
+
         for (ServiceBuildNode<?> n : conf.publicNodeList) {
             if (n instanceof ServiceBuildNodeExposed) {
                 builder.contract().services().addProvides(n.getKey());
             }
         }
-        if (conf.requiredServicesOptionally != null) {
-            if (conf.requiredServicesMandatory != null) {
-                conf.requiredServicesOptionally.removeAll(conf.requiredServicesMandatory);// cannot both be mandatory and optional
+
+        if (conf.box.services().requiredServicesOptionally != null) {
+            if (conf.box.services().requiredServicesMandatory != null) {
+                conf.box.services().requiredServicesOptionally.removeAll(conf.box.services().requiredServicesMandatory);// cannot both be mandatory and optional
             }
-            conf.requiredServicesOptionally.forEach(k -> builder.contract().services().addOptional(k));
+            conf.box.services().requiredServicesOptionally.forEach(k -> builder.contract().services().addOptional(k));
         }
-        if (conf.requiredServicesMandatory != null) {
-            conf.requiredServicesMandatory.forEach(k -> builder.contract().services().addRequires(k));
+        if (conf.box.services().requiredServicesMandatory != null) {
+            conf.box.services().requiredServicesMandatory.forEach(k -> builder.contract().services().addRequires(k));
         }
         return builder;
     }

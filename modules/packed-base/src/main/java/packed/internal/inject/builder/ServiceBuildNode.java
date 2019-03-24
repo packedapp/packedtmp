@@ -22,6 +22,7 @@ import java.util.List;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -94,6 +95,10 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
         return as(Key.of(key));
     }
 
+    public final ServiceDescriptor toDescriptor() {
+        return new InternalServiceDescriptor(key, configurationSite, getDescription(), immutableCopyOfTags());
+    }
+
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
@@ -117,7 +122,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
         for (int i = 0; i < resolvedDependencies.length; i++) {
             ServiceNode<?> n = resolvedDependencies[i];
             if (n == null && !dependencies.get(i).isOptional()) {
-                // throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
+                throw new AssertionError("Dependency " + dependencies.get(i) + " was not resolved");
             }
         }
     }

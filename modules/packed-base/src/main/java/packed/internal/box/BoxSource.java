@@ -15,29 +15,31 @@
  */
 package packed.internal.box;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-
 /**
  *
  */
-public class Box {
+public enum BoxSource {
 
-    public BoxedHooks hooks;
+    INJECTOR_VIA_BUNDLE, INJECTOR_VIA_CONFIGURATOR;
 
-    private final BoxedServices services;
-
-    public final BoxSource source;
-
-    public final ArrayList<BoxWiring> wirings = new ArrayList<>();
-
-    public Box(BoxSource source) {
-        this.source = requireNonNull(source);
-        this.services = new BoxedServices(this);
+    public boolean privateServices() {
+        return this != INJECTOR_VIA_CONFIGURATOR;
     }
 
-    public BoxedServices services() {
-        return services;
+    public boolean unresolvedServicesAllowed() {
+        return this == INJECTOR_VIA_BUNDLE;
     }
+
+    // HOST
+    // INJECTOR - via InjectorConfigurator
+    // INJECTOR - via Bundle
+    // INJECTOR - via existing injector
+    // BundleContract - of
+    // BundleDescriptor - of
+    // App - via AppConfigurator
+    // App - via Bundle
+
+    // App - via existing app
+
+    // En app kan godt have forskellige. F.eks. En Injector fra en InjectorConfigurator der wire en Injector fra en bundle
 }

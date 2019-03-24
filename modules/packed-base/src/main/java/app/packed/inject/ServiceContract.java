@@ -199,8 +199,8 @@ public final class ServiceContract {
         }
 
         /**
-         * @param key
-         *            the key to remove
+         * @param contract
+         *            the contract to remove
          * @return this builder
          */
         public ServiceContract.Builder remove(ServiceContract contract) {

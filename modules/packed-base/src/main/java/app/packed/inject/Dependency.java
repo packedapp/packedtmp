@@ -29,9 +29,9 @@ import packed.internal.inject.InternalDependency;
 
 /**
  * A dependency object. This is typically created from a parameter on a constructor or method. In which case the
- * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable()}. It can
- * also be a field, in which case {@link #variable()} returns an instance of {@link ParameterDescriptor}.
- * Dependencies can be optional in which case {@link #isOptional()} returns true.
+ * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable()}. It can also
+ * be a field, in which case {@link #variable()} returns an instance of {@link ParameterDescriptor}. Dependencies can be
+ * optional in which case {@link #isOptional()} returns true.
  */
 public interface Dependency {
 
@@ -41,6 +41,8 @@ public interface Dependency {
      *
      * @return the index of the dependency
      */
+    // TODO change to OptionalInt??? rename to parameterIndex??? Or can we end up in situations where we do not have a
+    // parameter
     int index();
 
     /**
@@ -58,8 +60,8 @@ public interface Dependency {
     Key<?> key();
 
     /**
-     * The member for which this dependency was created. Or an empty {@link Optional} if this dependency was not created
-     * from a member.
+     * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
+     * dependency was not created from a member.
      * <p>
      * If this dependency was created from a member this method will an optional containing either a {@link FieldDescriptor}
      * in case of field injection, A {@link MethodDescriptor} in case of method injection or a {@link ConstructorDescriptor}
@@ -72,8 +74,8 @@ public interface Dependency {
     Optional<Member> member();
 
     /**
-     * The variable for which this dependency was created. Or an empty {@link Optional} if this dependency was not created
-     * from a variable.
+     * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
+     * dependency was not created from a variable.
      * <p>
      * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
      * created from a parameter this method will return a {@link ParameterDescriptor}.

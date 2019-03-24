@@ -15,8 +15,6 @@
  */
 package packed.internal.util;
 
-import java.lang.invoke.MethodHandles;
-
 /**
  *
  */
@@ -47,7 +45,7 @@ public abstract class ModuleValue<T> {
      *            the lookup object
      * @return the value for the given lookup object
      */
-    public final T get(MethodHandles.Lookup lookup) {
+    public final T get(Module module) {
         throw new UnsupportedOperationException();
     }
 
