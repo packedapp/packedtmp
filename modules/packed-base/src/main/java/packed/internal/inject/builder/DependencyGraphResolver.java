@@ -15,21 +15,13 @@
  */
 package packed.internal.inject.builder;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import app.packed.inject.Dependency;
-import app.packed.inject.InjectionException;
-import app.packed.util.MethodDescriptor;
 import packed.internal.box.Box;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
-import packed.internal.util.descriptor.InternalExecutableDescriptor;
-import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
  *
@@ -37,84 +29,31 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 class DependencyGraphResolver {
     // Requirements -> cannot require any exposed services, or internally registered services...
 
-    static void resolveAllDependencies(DependencyGraph b) {
-        b.detectCyclesFor = new ArrayList<>();
-        Box box = b.root.box;
-        for (ServiceNode<?> nn : b.root.privateNodeMap) {
+    static void resolveAllDependencies(DependencyGraph graph) {
+        graph.detectCyclesFor = new ArrayList<>();
+        Box box = graph.root.box;
+
+        for (ServiceNode<?> nn : graph.root.privateNodeMap) {
             ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
             node.freeze();// Should be frozen, maybe change to an assert
 
             if (node.needsResolving()) {
-                b.detectCyclesFor.add(node);
+                graph.detectCyclesFor.add(node);
                 List<InternalDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     Dependency dependency = dependencies.get(i);
-                    ServiceNode<?> resolveTo = null;
+                    ServiceNode<?> resolveTo = graph.root.privateNodeMap.getNode(dependency);
 
-                    // See if we have a matching service in the node map.
                     if (resolveTo == null) {
-                        resolveTo = b.root.privateNodeMap.getNode(dependency);
-
-                        // Did not find service of the specified type
-                        if (resolveTo == null) {
-                            box.services().recordMissingDependency(node, dependency);
-                            if (node.autoRequires) {
-                                if (dependency.isOptional()) {
-                                    b.root.box.services().requiredServicesOptionally.add(dependency.key());
-                                } else {
-                                    b.root.box.services().requiredServicesMandatory.add(dependency.key());
-                                }
-                            } else {
-
-                                // Long long error message
-                                StringBuilder sb = new StringBuilder();
-                                sb.append("Cannot resolve dependency for ");
-                                if (dependencies.size() == 1) {
-                                    sb.append("single ");
-                                }
-                                sb.append("parameter on ");
-                                if (dependency.variable() != null) {
-
-                                    InternalExecutableDescriptor e = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.variable().get())
-                                            .declaringExecutable();
-                                    sb.append(e.descriptorTypeName()).append(": ");
-                                    sb.append(e.getDeclaringClass().getCanonicalName());
-                                    if (e instanceof MethodDescriptor) {
-                                        sb.append("#").append(((MethodDescriptor) e).getName());
-                                    }
-                                    sb.append("(");
-                                    if (dependencies.size() > 1) {
-                                        StringJoiner sj = new StringJoiner(", ");
-                                        for (int j = 0; j < dependencies.size(); j++) {
-                                            if (j == i) {
-                                                sj.add("-> " + dependency.key().toString() + " <-");
-                                            } else {
-                                                sj.add(dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());
-                                            }
-                                        }
-                                        sb.append(sj.toString());
-                                    } else {
-                                        sb.append(dependency.key().toString());
-                                        sb.append(" ");
-                                        sb.append(dependency.variable().get().getName());
-                                    }
-                                    sb.append(")");
-                                }
-                                // b.root.requiredServicesMandatory.add(e.get)
-                                System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
-                                throw new InjectionException(sb.toString());
-                            }
-                        }
-
-                    }
-                    if (!node.autoRequires || resolveTo != null) {
-                        node.resolvedDependencies[i] = requireNonNull(resolveTo);
+                        box.services().recordMissingDependency(node, dependency);
+                    } else {
+                        node.resolvedDependencies[i] = resolveTo;
                     }
                 }
                 // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
             }
         }
-        // box.services().checkForMissingDependencies();
+        box.services().checkForMissingDependencies();
         // b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
     }
 

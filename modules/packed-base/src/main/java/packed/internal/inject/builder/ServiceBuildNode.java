@@ -54,7 +54,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     @Nullable // Is nullable for stages for now
     protected final InjectorBuilder injectorBuilder;
 
-    boolean autoRequires;
+    public boolean autoRequires;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a

@@ -68,15 +68,7 @@ public class InternalBundleDescriptor {
             }
         }
 
-        if (conf.box.services().requiredServicesOptionally != null) {
-            if (conf.box.services().requiredServicesMandatory != null) {
-                conf.box.services().requiredServicesOptionally.removeAll(conf.box.services().requiredServicesMandatory);// cannot both be mandatory and optional
-            }
-            conf.box.services().requiredServicesOptionally.forEach(k -> builder.contract().services().addOptional(k));
-        }
-        if (conf.box.services().requiredServicesMandatory != null) {
-            conf.box.services().requiredServicesMandatory.forEach(k -> builder.contract().services().addRequires(k));
-        }
+        conf.box.services().populateBuilder(builder.contract().services());
         return builder;
     }
 }

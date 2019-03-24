@@ -72,10 +72,12 @@ public class BoxedServices {
         }
         m.add(new SimpleImmutableEntry<>(node, dependency));
 
-        if (dependency.isOptional()) {
-         //   requiredServicesOptionally.add(node.key());
-        } else {
-          //  requiredServicesMandatory.add(node.key());
+        if (node.autoRequires) {
+            if (dependency.isOptional()) {
+                requiredServicesOptionally.add(dependency.key());
+            } else {
+                requiredServicesMandatory.add(dependency.key());
+            }
         }
     }
 
@@ -87,75 +89,73 @@ public class BoxedServices {
         // }
         // }
         if (missingDependencies != null) {
-            HashSet<Key<?>> required = new HashSet<>();
-            HashSet<Key<?>> requiredOptional = new HashSet<>();
             for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
-                if (e.getValue().isOptional()) {
-                    requiredOptional.add(e.getKey().key());
-                } else {
-                    required.add(e.getKey().key());
-                }
+                // if (e.getValue().isOptional()) {
+                // requiredServicesOptionally.add(e.getKey().key());
+                // } else {
+                // requiredServicesMandatory.add(e.getKey().key());
+                // }
             }
             // We remove all optional dependencies that are also mandatory.
-            requiredOptional.removeAll(required);
+            requiredServicesOptionally.removeAll(requiredServicesMandatory);
 
-            if (requiredOptional != null) {
-                requiredOptional.forEach(k -> builder.addOptional(k));
+            if (requiredServicesOptionally != null) {
+                requiredServicesOptionally.forEach(k -> builder.addOptional(k));
             }
-            if (required != null) {
-                required.forEach(k -> builder.addRequires(k));
+            if (requiredServicesMandatory != null) {
+                requiredServicesMandatory.forEach(k -> builder.addRequires(k));
             }
         }
     }
 
     public void checkForMissingDependencies() {
         if (missingDependencies != null) {
-            if (!box.source.unresolvedServicesAllowed()) {
-                for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
-                    if (!e.getValue().isOptional()) {
-                        // Long long error message
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("Cannot resolve dependency for ");
-                        List<InternalDependency> dependencies = e.getKey().dependencies;
+            // if (!box.source.unresolvedServicesAllowed()) {
+            for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
+                if (!e.getValue().isOptional() && !e.getKey().autoRequires) {
+                    // Long long error message
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Cannot resolve dependency for ");
+                    List<InternalDependency> dependencies = e.getKey().dependencies;
 
-                        if (dependencies.size() == 1) {
-                            sb.append("single ");
-                        }
-                        Dependency dependency = e.getValue();
-                        sb.append("parameter on ");
-                        if (dependency.variable() != null) {
-
-                            InternalExecutableDescriptor ed = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.variable().get())
-                                    .declaringExecutable();
-                            sb.append(ed.descriptorTypeName()).append(": ");
-                            sb.append(ed.getDeclaringClass().getCanonicalName());
-                            if (ed instanceof MethodDescriptor) {
-                                sb.append("#").append(((MethodDescriptor) ed).getName());
-                            }
-                            sb.append("(");
-                            if (dependencies.size() > 1) {
-                                StringJoiner sj = new StringJoiner(", ");
-                                for (int j = 0; j < dependencies.size(); j++) {
-                                    if (j == dependency.index()) {
-                                        sj.add("-> " + dependency.key().toString() + " <-");
-                                    } else {
-                                        sj.add(dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());
-                                    }
-                                }
-                                sb.append(sj.toString());
-                            } else {
-                                sb.append(dependency.key().toString());
-                                sb.append(" ");
-                                sb.append(dependency.variable().get().getName());
-                            }
-                            sb.append(")");
-                        }
-                        // b.root.requiredServicesMandatory.add(e.get)
-                        // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
-                        throw new InjectionException(sb.toString());
+                    if (dependencies.size() == 1) {
+                        sb.append("single ");
                     }
+                    Dependency dependency = e.getValue();
+                    sb.append("parameter on ");
+                    if (dependency.variable() != null) {
+
+                        InternalExecutableDescriptor ed = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.variable().get())
+                                .declaringExecutable();
+                        sb.append(ed.descriptorTypeName()).append(": ");
+                        sb.append(ed.getDeclaringClass().getCanonicalName());
+                        if (ed instanceof MethodDescriptor) {
+                            sb.append("#").append(((MethodDescriptor) ed).getName());
+                        }
+                        sb.append("(");
+                        if (dependencies.size() > 1) {
+                            StringJoiner sj = new StringJoiner(", ");
+                            for (int j = 0; j < dependencies.size(); j++) {
+                                if (j == dependency.index()) {
+                                    sj.add("-> " + dependency.key().toString() + " <-");
+                                } else {
+                                    sj.add(dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());
+                                }
+                            }
+                            sb.append(sj.toString());
+                        } else {
+                            sb.append(dependency.key().toString());
+                            sb.append(" ");
+                            sb.append(dependency.variable().get().getName());
+                        }
+                        sb.append(")");
+                    }
+                    // b.root.requiredServicesMandatory.add(e.get)
+                    // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
+                    throw new InjectionException(sb.toString());
                 }
             }
+            // }
         }
     }
 }
