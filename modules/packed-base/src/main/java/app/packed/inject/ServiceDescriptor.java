@@ -34,3 +34,4 @@ public interface ServiceDescriptor extends Taggable {
      */
     Key<?> key();
 }
+// Optional<Class<?>> implementation(); Does not work for @Provides...

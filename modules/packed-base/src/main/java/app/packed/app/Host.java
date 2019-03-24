@@ -35,6 +35,8 @@ import app.packed.bundle.Contract;
 
 // All exported components??? Nah... do not think you necessarily want to export these components
 // Maybe, when you embed it, you must provide a contract
+
+// AbstractHost <- Must be registered as a component... Technically you could use a runtime component as a host....
 public interface Host {
 
     /**

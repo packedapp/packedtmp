@@ -63,12 +63,21 @@ import packed.internal.inject.builder.InternalBundleDescriptor;
  * <p>
  * In other words a bundle must provide descriptors that are equivalent on each run.
  */
+// includes implementation details....
+// name, id, type, stuff I think this is in the descriptor???
+
 // Hvis vi extender contracten her... Boer vi vel ogsaa kunne overskrive denne... Hvad vi jo kan...
 // Problemet er at Contract er en abstract klasse....
 // Maaske en AbstractContract.....
 // Vi vil gerne kunne lave descriptors... med hjemmelavet stuff..... Har jeg lidt svaert ved at se hvordan kan fungere
 // implements Contract -> Is constructed with a Contract (Composition)
 // AbstractBundleDescriptor + BundleDescriptor...
+
+// Does not include dependency graf I think...
+// Maybe have a BundleDescriptor.Options object and the BundleDescriptor.of(Bundle b, Options... options);
+// BundleDescriptor.graph() throws UOE if Options.IncludeDependencyGraph has not been set.
+
+// Could be made into a Visitor instead..... Or in addition to...
 public class BundleDescriptor {
 
     // I think add @Description as annotation??? IDK
@@ -85,9 +94,9 @@ public class BundleDescriptor {
     /** A Services object. */
     private final ServiceContract services;
 
-    private final LifecyclePoints startingPoints = null;
-
-    private final LifecyclePoints stoppingPoints = null;
+    public List<BundleContract> children() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Creates a new descriptor from the specified builder.
@@ -111,6 +120,10 @@ public class BundleDescriptor {
      */
     public final Optional<String> bundleDescription() {
         return Optional.ofNullable(bundleDescription);
+    }
+
+    public BundleContract contract() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -200,15 +213,6 @@ public class BundleDescriptor {
      */
     public final ServiceContract services() {
         return services;
-    }
-
-    // Er detn bare tom for en injector bundle???? Det er den vel
-    public final LifecyclePoints startingPoints() {
-        return startingPoints;
-    }
-
-    public final LifecyclePoints stoppingPoints() {
-        return stoppingPoints;
     }
 
     /** {@inheritDoc} */

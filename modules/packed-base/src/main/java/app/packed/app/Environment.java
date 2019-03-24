@@ -30,6 +30,16 @@ import app.packed.inject.InjectionSite;
 
 //// Always just one environment, but with multiple string based profiles...
 // Profiles is _JUST_ STRINGs
+
+// -Dapp.packed.base.dumpDescriptor... Will only work for a single app...
+// -Dapp.packed.base.AppRunnerMain = org.aws.LambdaRunner
+// Vi still just use App.run()
+// But App.run() will look for "-Dapp.packed.base.AppRunnerMain" and use this as the default host.
+// Maybe
+// -Dapp.packed.base.MainHost = org.aws.LambdaRunner
+
+// Ideen er at man laver en app, uden at refererer direkte til implementation eller have den paa classpathen..
+
 public final class Environment {
 
     // reboot (Mest taenkt i test, maaske kun i devtools)

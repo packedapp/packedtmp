@@ -29,8 +29,8 @@ import support.stubs.Letters.B;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Test {@link Injector#get(Class)} and {@link Injector#get(Key)}. */
-public class InjectorGetServiceTest {
+/** Test {@link Injector#getDescriptor(Class)} and {@link Injector#getDescriptor(Key)}. */
+public class InjectorGetDescriptorTest {
 
     @Test
     public void get() {
@@ -40,22 +40,22 @@ public class InjectorGetServiceTest {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        ServiceDescriptor a = i.getService(A.class).get();
+        ServiceDescriptor a = i.getDescriptor(A.class).get();
 
         // TODO configurationSite
         assertThat(a.description()).isEmpty();
         assertThat(a.key()).isEqualTo(Key.of(A.class));
         assertThat(a.tags()).isEmpty();
 
-        ServiceDescriptor aLeft = i.getService(new Key<@Left A>() {}).get();
+        ServiceDescriptor aLeft = i.getDescriptor(new Key<@Left A>() {}).get();
         // TODO configurationSite
         assertThat(aLeft.description()).isEmpty();
         assertThat(aLeft.key()).isEqualTo(new Key<@Left A>() {});
         assertThat(aLeft.tags()).isEmpty();
 
-        assertThat(i.getService(B.class)).isEmpty();
-        assertThat(i.getService(new Key<@Left B>() {})).isEmpty();
-        assertThat(i.getService(new Key<@Right A>() {})).isEmpty();
+        assertThat(i.getDescriptor(B.class)).isEmpty();
+        assertThat(i.getDescriptor(new Key<@Left B>() {})).isEmpty();
+        assertThat(i.getDescriptor(new Key<@Right A>() {})).isEmpty();
 
     }
 }

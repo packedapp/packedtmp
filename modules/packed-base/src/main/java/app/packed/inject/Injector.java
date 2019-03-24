@@ -27,7 +27,6 @@ import app.packed.bundle.ContainerBuildContext;
 import app.packed.bundle.WiringOperation;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import app.packed.util.Taggable;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -144,13 +143,11 @@ public interface Injector extends Taggable {
      */
     <T> Optional<T> get(Key<T> key);
 
-    @Nullable
-    default <T> Optional<ServiceDescriptor> getService(Class<T> serviceType) {
-        return getService(Key.of(serviceType));
+    default <T> Optional<ServiceDescriptor> getDescriptor(Class<T> serviceType) {
+        return getDescriptor(Key.of(serviceType));
     }
 
-    @Nullable
-    default <T> Optional<ServiceDescriptor> getService(Key<T> key) {
+    default <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
         requireNonNull(key, "key is null");
         return services().filter(d -> d.key().equals(key)).findFirst();
     }

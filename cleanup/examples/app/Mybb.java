@@ -42,7 +42,7 @@ public class Mybb extends Bundle {
         System.out.println(bd.bundleId());
         System.out.println(bd.bundleDescription());
 
-        Injector.of(new Mybb(), ConfigureWiringOperation.patchBundle(), ServiceRebinder.rewrite(Long.class).as(123L));
+        Injector.of(new Mybb(), ConfigureWiringOperation.patchBundle(), ServiceRebinder.rebind(Long.class).as(123L));
 
         Injector.of(new Mybb(), new ConfigureWiringOperation(MethodHandles.lookup()) {
             @Provides(instantionMode = InstantiationMode.PROTOTYPE)

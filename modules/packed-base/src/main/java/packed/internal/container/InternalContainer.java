@@ -76,13 +76,13 @@ public class InternalContainer implements Container {
     }
 
     @Override
-    public <T> Optional<ServiceDescriptor> getService(Class<T> serviceType) {
-        return injector.getService(serviceType);
+    public <T> Optional<ServiceDescriptor> getDescriptor(Class<T> serviceType) {
+        return injector.getDescriptor(serviceType);
     }
 
     @Override
-    public <T> Optional<ServiceDescriptor> getService(Key<T> key) {
-        return injector.getService(key);
+    public <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
+        return injector.getDescriptor(key);
     }
 
     @Override

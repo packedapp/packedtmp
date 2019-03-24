@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
-
-import app.packed.bundle.ConfigureWiringOperation;
+package app.packed.app;
 
 /**
  *
  */
-// Altsaa det er jo implementation
-public interface ServiceRebinder<T> {
+// Do we need a HostDescriptor as well???
+class HostContract {
 
-    default ConfigureWiringOperation as(T type) {
-        return null;
-    }
-
-    static <T> ServiceRebinder<T> rebind(Class<T> type) {
-        return null;
-    }
 }

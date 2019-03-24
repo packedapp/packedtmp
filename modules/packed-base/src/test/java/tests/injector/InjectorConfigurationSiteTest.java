@@ -82,7 +82,7 @@ public class InjectorConfigurationSiteTest {
             binding0(conf.providePrototype(TypeLiteral.of(J.class)));
         });
         for (Entry<Class<?>, ConfigSite> e : sites.entrySet()) {
-            ConfigSite cs = inj.getService(e.getKey()).get().configurationSite();
+            ConfigSite cs = inj.getDescriptor(e.getKey()).get().configurationSite();
             assertThat(cs).isSameAs(e.getValue());
             assertThat(cs.parent().get()).isSameAs(inj.configurationSite());
         }
@@ -116,12 +116,12 @@ public class InjectorConfigurationSiteTest {
             c.wireInjector(i);
         });
 
-        ConfigSite cs = i2.getService(Integer.class).get().configurationSite();
+        ConfigSite cs = i2.getDescriptor(Integer.class).get().configurationSite();
         // First site is "c.importServicesFrom(i);"
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).get().configurationSite());
+        assertThat(cs.parent().get()).isSameAs(i.getDescriptor(Integer.class).get().configurationSite());
 
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.of(c -> {
@@ -129,12 +129,12 @@ public class InjectorConfigurationSiteTest {
             c.wireInjector(i2);
         });
 
-        cs = i3.getService(Integer.class).get().configurationSite();
+        cs = i3.getDescriptor(Integer.class).get().configurationSite();
         // First site is "c.importServicesFrom(i);"
         line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i2.getService(Integer.class).get().configurationSite());
+        assertThat(cs.parent().get()).isSameAs(i2.getDescriptor(Integer.class).get().configurationSite());
     }
 
     @Test

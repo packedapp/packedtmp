@@ -33,16 +33,16 @@ public class DescriptionTest {
     @Test
     public void injectorWithDescription() {
         Injector i = of(c -> c.provide(new WithDescription()));
-        assertThat(i.getService(Long.class).get().description()).hasValue("niceField");
-        assertThat(i.getService(Integer.class).get().description()).hasValue("niceMethod");
+        assertThat(i.getDescriptor(Long.class).get().description()).hasValue("niceField");
+        assertThat(i.getDescriptor(Integer.class).get().description()).hasValue("niceMethod");
     }
 
     /** Tests service without description on {@link Provides}. */
     @Test
     public void injectorWithoutDescription() {
         Injector i = of(c -> c.provide(new WithoutDescription()));
-        assertThat(i.getService(Long.class).get().description()).isEmpty();
-        assertThat(i.getService(Integer.class).get().description()).isEmpty();
+        assertThat(i.getDescriptor(Long.class).get().description()).isEmpty();
+        assertThat(i.getDescriptor(Integer.class).get().description()).isEmpty();
     }
 
     private static Injector of(Consumer<? super InjectorConfigurator> consumer) {

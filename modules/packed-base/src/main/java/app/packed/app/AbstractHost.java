@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.runtime;
+package app.packed.app;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.lang.invoke.MethodHandles;
-
-import org.junit.jupiter.api.Test;
-
-import app.packed.inject.Injector;
-import support.stubs.Letters.A;
+import app.packed.inject.Provides;
 
 /**
- * Tests various things that do not have their own test class.
+ *
  */
-public class InjectorGetServiceTest {
+// Must be registered as a component...
+abstract class AbstractHost {
 
-    @Test
-    public void isRuntimeServices() {
-        Injector i = Injector.of(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.provide(A.class);
-        });
+    protected Host host() {
+        throw new UnsupportedOperationException();
+    }
+}
 
-        assertThat(i.getDescriptor(A.class).get()).isInstanceOf(RuntimeServiceNode.class);
+class MyHost extends AbstractHost {
+
+    @Provides
+    public Host providedHost() {
+        return host();
     }
 }

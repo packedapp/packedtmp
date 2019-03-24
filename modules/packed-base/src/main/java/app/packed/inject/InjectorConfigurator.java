@@ -28,10 +28,11 @@ import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
 
 /**
- * A configuration object for an {@link Injector}. This is thought of a lightweight alternative to using a
- * {@link Bundle}. Unlike bundles all services are automatically exported once defined.
+ * A lightweight configuration object used to create an {@link Injector} via {@link Injector#of(Consumer). This is
+ * thought of a alternative to using a {@link Bundle}. Unlike bundles all services are automatically exported once
+ * defined.
  * <p>
- * This interface is typically used together with {@link Injector#of(Consumer)}.
+ * An instance of this interface is interface is typically used together with {@link Injector#of(Consumer)}.
  */
 public interface InjectorConfigurator extends Taggable {
 

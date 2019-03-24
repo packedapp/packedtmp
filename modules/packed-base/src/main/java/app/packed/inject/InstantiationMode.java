@@ -19,6 +19,7 @@ package app.packed.inject;
  * The instantiation mode of a service.
  */
 // lazy, prototype, no_cache
+// Rename Prototype to Many???? The thing is it might be cached
 public enum InstantiationMode {
 
     /**
