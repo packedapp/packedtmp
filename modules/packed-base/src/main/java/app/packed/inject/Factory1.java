@@ -15,10 +15,16 @@
  */
 package app.packed.inject;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Qualifier;
+import app.packed.util.TypeLiteral;
+import packed.internal.inject.InternalDependency;
+import packed.internal.invokers.InternalFactory1;
 
 /**
  * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input
@@ -53,6 +59,18 @@ import app.packed.util.Qualifier;
  */
 public abstract class Factory1<T, R> extends Factory<R> {
 
+    /** A cache of function factory definitions. */
+    private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependency>>> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected Entry<TypeLiteral<?>, List<InternalDependency>> computeValue(Class<?> type) {
+            return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
+                    InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0));
+        }
+    };
+
     /**
      * Creates a new factory.
      *
@@ -65,6 +83,13 @@ public abstract class Factory1<T, R> extends Factory<R> {
     protected Factory1(Function<? super T, ? extends R> function) {
         super(function);
     }
+
+    @SuppressWarnings("unchecked")
+    static <T, R> InternalFactory<R> create(Function<?, ? extends T> supplier, Class<?> typeInfo) {
+        Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(typeInfo);
+        return new InternalFactory<>(new InternalFactory1<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) supplier), fs.getValue());
+    }
+
 }
 // *
 // * <p>

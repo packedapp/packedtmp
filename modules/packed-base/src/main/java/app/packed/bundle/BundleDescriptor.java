@@ -28,12 +28,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.app.Main;
-import app.packed.bundle.Contract.Services;
 import app.packed.container.Container;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.Hook;
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceContract;
 import app.packed.util.Nullable;
 import packed.internal.inject.builder.InternalBundleDescriptor;
 
@@ -92,7 +90,7 @@ public class BundleDescriptor {
     private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
 
     /** A Services object. */
-    private final ServiceContract services;
+    private final BundleContract contract;
 
     public List<BundleContract> children() {
         throw new UnsupportedOperationException();
@@ -106,9 +104,9 @@ public class BundleDescriptor {
      */
     protected BundleDescriptor(BundleDescriptor.Builder builder) {
         requireNonNull(builder, "builder is null");
+        this.contract = builder.contract().build();
         this.bundleType = builder.bundleType();
         this.bundleDescription = builder.getBundleDescription();
-        this.services = builder.services.build();
     }
 
     /**
@@ -123,7 +121,7 @@ public class BundleDescriptor {
     }
 
     public BundleContract contract() {
-        throw new UnsupportedOperationException();
+        return contract;
     }
 
     /**
@@ -205,16 +203,6 @@ public class BundleDescriptor {
         return Bundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
     }
 
-    /**
-     * Return a {@link Services} object representing the services the bundle exposes. As well as any required or optional
-     * services.
-     * 
-     * @return a services object
-     */
-    public final ServiceContract services() {
-        return services;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final String toString() {
@@ -293,10 +281,10 @@ public class BundleDescriptor {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
-        private ServiceContract.Builder services = new ServiceContract.Builder();
+        private BundleContract.Builder contract = new BundleContract.Builder();
 
-        public ServiceContract.Builder services() {
-            return services;
+        public BundleContract.Builder contract() {
+            return contract;
         }
 
         public BundleDescriptor build() {

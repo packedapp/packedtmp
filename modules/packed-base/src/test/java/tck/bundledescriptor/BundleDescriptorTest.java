@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleDescriptor;
+import app.packed.bundle.BundleContract;
 import app.packed.util.Key;
 
 /**
@@ -34,24 +34,24 @@ public class BundleDescriptorTest {
 
         @Test
         public void emptyBundle() {
-            BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+            BundleContract c = BundleContract.of(new Bundle() {
                 @Override
                 protected void configure() {}
             });
-            assertThat(d.services().provides()).isEmpty();
+            assertThat(c.services().provides()).isEmpty();
 
-            d = BundleDescriptor.of(new Bundle() {
+            c = BundleContract.of(new Bundle() {
                 @Override
                 protected void configure() {
                     provide("non-exported service are not in descriptor");
                 }
             });
-            assertThat(d.services().provides()).isEmpty();
+            assertThat(c.services().provides()).isEmpty();
         }
 
         @Test
         public void simple() {
-            Bundle ib = new Bundle() {
+            Bundle b = new Bundle() {
                 @Override
                 protected void configure() {
                     provide("foo").setDescription("fooDesc");
@@ -59,8 +59,8 @@ public class BundleDescriptorTest {
                 }
             };
 
-            BundleDescriptor d = BundleDescriptor.of(ib);
-            assertThat(d.services().provides()).containsOnly(Key.of(String.class));
+            BundleContract c = BundleContract.of(b);
+            assertThat(c.services().provides()).containsOnly(Key.of(String.class));
             // ServiceDescriptor sd = d.services().provides().get(Key.of(String.class));
             //
             // // assertThat(sd.getInstantiationMode()).isSameAs(InstantiationMode.SINGLETON);

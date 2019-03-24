@@ -94,7 +94,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) FactoryNHelper.create2(function, getClass());
+        this.factory = (InternalFactory<T>) Factory2.create(function, getClass());
     }
 
     /**
@@ -106,7 +106,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) FactoryNHelper.create1(function, getClass());
+        this.factory = (InternalFactory<T>) Factory1.create(function, getClass());
     }
 
     /**
@@ -128,7 +128,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) FactoryNHelper.create0(supplier, getClass());
+        this.factory = (InternalFactory<T>) Factory0.create(supplier, getClass());
     }
 
     /**

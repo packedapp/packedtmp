@@ -15,23 +15,25 @@
  */
 package app.packed.bundle;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.bundle.BundleDescriptor.LifecyclePoints;
 import app.packed.inject.ServiceContract;
 
 /**
  * The contract of a bundle. Unlike {@link BundleDescriptor} this class does not include any implementation details.
  */
-
 public class BundleContract {
 
-    /** A Services object. */
-    private final ServiceContract services = null;
+    /** A service contract object. */
+    private final ServiceContract services;
 
     private final LifecyclePoints startingPoints = null;
 
     private final LifecyclePoints stoppingPoints = null;
+
+    BundleContract(BundleContract.Builder builder) {
+        ServiceContract.Builder s = builder.services;
+        this.services = s == null ? ServiceContract.EMPTY : s.build();
+    }
 
     /**
      * Return a service contract object representing the services the bundle exports. As well as any required or optional
@@ -60,13 +62,20 @@ public class BundleContract {
      * @return a descriptor for the specified bundle
      */
     public static BundleContract of(Bundle bundle) {
-        requireNonNull(bundle, "bundle is null");
-        throw new UnsupportedOperationException();
-        // return InternalBundleDescriptor.of(bundle).build();
+        return BundleDescriptor.of(bundle).contract();
     }
 
     // Needed if we want to allow extensions..
     public static class Builder {
+        private ServiceContract.Builder services;
 
+        public ServiceContract.Builder services() {
+            ServiceContract.Builder s = services;
+            return s == null ? services = new ServiceContract.Builder() : s;
+        }
+
+        public BundleContract build() {
+            return new BundleContract(this);
+        }
     }
 }

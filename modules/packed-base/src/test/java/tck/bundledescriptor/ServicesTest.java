@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleDescriptor;
+import app.packed.bundle.BundleContract;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
@@ -32,27 +32,27 @@ import support.stubs.Letters.NeedsAOptional;
 import support.stubs.Letters.NeedsB;
 
 /**
- * Test {@link BundleDescriptor#services()}.
+ * Test {@link BundleContract#services()}.
  */
 public class ServicesTest {
 
     @Test
     public void empty() {
-        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+        BundleContract c = BundleContract.of(new Bundle() {
 
             @Override
             protected void configure() {}
         });
-        assertThat(d.services()).isNotNull();
-        assertThat(d.services()).isSameAs(d.services());
-        assertThat(d.services().provides()).isEmpty();
-        assertThat(d.services().optional()).isEmpty();
-        assertThat(d.services().requires()).isEmpty();
+        assertThat(c.services()).isNotNull();
+        assertThat(c.services()).isSameAs(c.services());
+        assertThat(c.services().provides()).isEmpty();
+        assertThat(c.services().optional()).isEmpty();
+        assertThat(c.services().requires()).isEmpty();
     }
 
     @Test
     public void provides() {
-        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+        BundleContract d = BundleContract.of(new Bundle() {
 
             @Override
             protected void configure() {
@@ -69,7 +69,7 @@ public class ServicesTest {
 
     @Test
     public void requires() {
-        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+        BundleContract d = BundleContract.of(new Bundle() {
 
             @Override
             protected void configure() {
@@ -86,7 +86,7 @@ public class ServicesTest {
 
     @Test
     public void optional() {
-        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+        BundleContract d = BundleContract.of(new Bundle() {
 
             @Override
             protected void configure() {
@@ -104,7 +104,7 @@ public class ServicesTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+        BundleContract d = BundleContract.of(new Bundle() {
 
             @Override
             protected void configure() {
@@ -122,7 +122,7 @@ public class ServicesTest {
 
     @Test
     public void all() {
-        BundleDescriptor d = BundleDescriptor.of(new Bundle() {
+        BundleContract d = BundleContract.of(new Bundle() {
 
             @Override
             protected void configure() {

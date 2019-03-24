@@ -56,17 +56,17 @@ public class InternalBundleDescriptor {
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
         for (ServiceBuildNode<?> n : conf.publicNodeList) {
             if (n instanceof ServiceBuildNodeExposed) {
-                builder.services().addProvides(n.getKey());
+                builder.contract().services().addProvides(n.getKey());
             }
         }
         if (conf.requiredServicesOptionally != null) {
             if (conf.requiredServicesMandatory != null) {
                 conf.requiredServicesOptionally.removeAll(conf.requiredServicesMandatory);// cannot both be mandatory and optional
             }
-            conf.requiredServicesOptionally.forEach(k -> builder.services().addOptional(k));
+            conf.requiredServicesOptionally.forEach(k -> builder.contract().services().addOptional(k));
         }
         if (conf.requiredServicesMandatory != null) {
-            conf.requiredServicesMandatory.forEach(k -> builder.services().addRequires(k));
+            conf.requiredServicesMandatory.forEach(k -> builder.contract().services().addRequires(k));
         }
         return builder;
     }

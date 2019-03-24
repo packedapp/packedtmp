@@ -15,10 +15,13 @@
  */
 package app.packed.inject;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.TypeLiteral;
+import packed.internal.invokers.InternalFactory0;
 
 /**
  * A {@link Factory} type that provides an easy way to use a {@link Supplier} to dynamically provide new instances,
@@ -39,6 +42,17 @@ import app.packed.util.InvalidDeclarationException;
  */
 public abstract class Factory0<R> extends Factory<R> {
 
+    /** A cache of extracted type variables. */
+    private static final ClassValue<TypeLiteral<?>> FACTORY0_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected TypeLiteral<?> computeValue(Class<?> type) {
+            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
+        }
+    };
+
     /**
      * Creates a new factory, that uses the specified supplier to create new instances.
      *
@@ -50,5 +64,11 @@ public abstract class Factory0<R> extends Factory<R> {
      */
     protected Factory0(Supplier<? extends R> supplier) {
         super(supplier);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> typeInfo) {
+        TypeLiteral<T> tt = (TypeLiteral<T>) FACTORY0_CACHE.get(typeInfo);
+        return new InternalFactory<>(new InternalFactory0<>(tt, supplier), List.of());
     }
 }
