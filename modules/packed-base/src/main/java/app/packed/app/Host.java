@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.Contract;
+import app.packed.contract.Contract;
 
 // En Session App, kan f.eks. have en request Component... Som loebende har reqeuests som boern....
 // Men som ikke injecter nye ting som ikke er i sessionen...

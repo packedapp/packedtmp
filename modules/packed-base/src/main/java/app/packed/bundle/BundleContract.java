@@ -15,11 +15,16 @@
  */
 package app.packed.bundle;
 
-import app.packed.bundle.BundleDescriptor.LifecyclePoints;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import app.packed.inject.ServiceContract;
 
 /**
- * The contract of a bundle. Unlike {@link BundleDescriptor} this class does not include any implementation details.
+ * The contract of a bundle.
+ * <p>
+ * The main difference to {@link BundleDescriptor} is that class does not include any implementation details.
  */
 public class BundleContract {
 
@@ -67,15 +72,46 @@ public class BundleContract {
 
     // Needed if we want to allow extensions..
     public static class Builder {
+
+        /** A service contract builder object. */
         private ServiceContract.Builder services;
+
+        /**
+         * Builds and returns a new contract
+         * 
+         * @return the new contract
+         */
+        public BundleContract build() {
+            return new BundleContract(this);
+        }
 
         public ServiceContract.Builder services() {
             ServiceContract.Builder s = services;
             return s == null ? services = new ServiceContract.Builder() : s;
         }
+    }
 
-        public BundleContract build() {
-            return new BundleContract(this);
+    /** An object representing the various hooks a bundle exposes. */
+    // This is more implementation details...
+    // For example, the number of methods might change...
+    // Might as well provide
+    public static final class Hooks {
+
+    }
+
+    public static final class LifecyclePoints {
+        // Navn + Description, alternative, Map<String, Optional<String>> name+ description
+        public Map<String, Optional<String>> exposed() {
+            return Map.of();
+        }
+
+        public Set<String> optional() {
+            return Set.of();
+        }
+
+        public Set<String> required() {
+            return Set.of();
         }
     }
+
 }

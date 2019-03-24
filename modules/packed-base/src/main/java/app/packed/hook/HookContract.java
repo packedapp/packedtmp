@@ -15,7 +15,12 @@
  */
 package app.packed.hook;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,9 +38,41 @@ public final class HookContract {
         throw new UnsupportedOperationException();
     }
 
+    // Permissions-> For AOP, For Invocation, for da shizzla
+
+    public Map<Class<? extends Class<?>>, Collection<AnnotatedFieldHook<?>>> annotatedFieldExports() {
+        return Map.of();
+    }
+
+    /**
+     * Returns a collection of all exported annotated field hooks of the particular type.
+     * 
+     * @param <T>
+     *            the type of field annotation
+     * @param annotationType
+     *            the type of field hook
+     * @return a collection of all exported annotated field hooks of the particular type
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T extends Annotation> Collection<AnnotatedFieldHook<T>> annotatedFieldExports(Class<T> annotationType) {
+        requireNonNull(annotationType, "annotationType is null");
+        return (Collection) annotatedFieldExports().getOrDefault(annotationType, List.of());
+    }
+
+    /**
+     * Returns a collection of all hooks that the bundle exports in no particular order.
+     * 
+     * @return a collection of all hooks that the bundle exports in no particular order
+     */
+    public Collection<Hook> exports() {
+        return Set.of();
+    }
+
     public final class Builder {}
     // captures
     // exposes
 
     // expose hooks, capture hooks
+
+    // Another key feature is hooks.
 }

@@ -24,7 +24,7 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.InternalFactory1;
+import packed.internal.invokers.InternalFunction1;
 
 /**
  * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input
@@ -87,7 +87,7 @@ public abstract class Factory1<T, R> extends Factory<R> {
     @SuppressWarnings("unchecked")
     static <T, R> InternalFactory<R> create(Function<?, ? extends T> supplier, Class<?> typeInfo) {
         Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(typeInfo);
-        return new InternalFactory<>(new InternalFactory1<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) supplier), fs.getValue());
+        return new InternalFactory<>(new InternalFunction1<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) supplier), fs.getValue());
     }
 
 }

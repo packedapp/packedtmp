@@ -28,11 +28,9 @@ import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
 
 /**
- * A lightweight configuration object used to create an {@link Injector} via {@link Injector#of(Consumer). This is
- * thought of a alternative to using a {@link Bundle}. Unlike bundles all services are automatically exported once
+ * A lightweight configuration object used to create a simple {@link Injector} via {@link Injector#of(Consumer)}. This
+ * is thought of a alternative to using a {@link Bundle}. Unlike bundles all services are automatically exported once
  * defined.
- * <p>
- * An instance of this interface is interface is typically used together with {@link Injector#of(Consumer)}.
  */
 public interface InjectorConfigurator extends Taggable {
 
@@ -112,16 +110,6 @@ public interface InjectorConfigurator extends Taggable {
      */
     <T> ServiceConfiguration<T> provide(Factory<T> factory);
 
-    // /**
-    // * @param bundleType
-    // * the type of bundle to instantiate
-    // * @param stages
-    // * optional stages
-    // */
-    // default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-    // wireInjector(Bundles.instantiate(bundleType), stages);
-    // }
-
     /**
      * Binds the specified instance as a new service.
      * <p>
@@ -195,6 +183,16 @@ public interface InjectorConfigurator extends Taggable {
      * @see Injector#description()
      */
     InjectorConfigurator setDescription(@Nullable String description);
+
+    // /**
+    // * @param bundleType
+    // * the type of bundle to instantiate
+    // * @param stages
+    // * optional stages
+    // */
+    // default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
+    // wireInjector(Bundles.instantiate(bundleType), stages);
+    // }
 
     /**
      * @param bundle

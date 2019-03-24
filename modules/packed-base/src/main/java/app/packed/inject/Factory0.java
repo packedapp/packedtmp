@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.invokers.InternalFactory0;
+import packed.internal.invokers.InternalFunction0;
 
 /**
  * A {@link Factory} type that provides an easy way to use a {@link Supplier} to dynamically provide new instances,
@@ -32,8 +32,8 @@ import packed.internal.invokers.InternalFactory0;
  * <pre> {@code
  * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
  * <p>
- * Note: that we create a new class inheriting from Factory0 is order to capture information about the type variable (in
- * this case {@code Long}).
+ * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
+ * type variable (in this case {@code Long}).
  * 
  * @param <R>
  *            the type of objects this factory constructs
@@ -43,7 +43,7 @@ import packed.internal.invokers.InternalFactory0;
 public abstract class Factory0<R> extends Factory<R> {
 
     /** A cache of extracted type variables. */
-    private static final ClassValue<TypeLiteral<?>> FACTORY0_CACHE = new ClassValue<>() {
+    private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -57,7 +57,8 @@ public abstract class Factory0<R> extends Factory<R> {
      * Creates a new factory, that uses the specified supplier to create new instances.
      *
      * @param supplier
-     *            the supplier to use for creating new instances, the supplier should never return null
+     *            the supplier to use for creating new instances. The supplier should never return null, but should instead
+     *            throw an exception if unable to provide a value
      * @throws InvalidDeclarationException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
@@ -66,9 +67,18 @@ public abstract class Factory0<R> extends Factory<R> {
         super(supplier);
     }
 
+    /**
+     * Creates a new internal factory for the specified supplier.
+     * 
+     * @param supplier
+     *            the supplier used for creating new values
+     * @param implementation
+     *            the class extending Factory0
+     * @return a new internal factory
+     */
     @SuppressWarnings("unchecked")
-    static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> typeInfo) {
-        TypeLiteral<T> tt = (TypeLiteral<T>) FACTORY0_CACHE.get(typeInfo);
-        return new InternalFactory<>(new InternalFactory0<>(tt, supplier), List.of());
+    static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> implementation) {
+        TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
+        return new InternalFactory<>(new InternalFunction0<>(tt, supplier), List.of());
     }
 }

@@ -18,6 +18,7 @@ package app.packed.bundle;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 
 /**

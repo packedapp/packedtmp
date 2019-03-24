@@ -15,6 +15,8 @@
  */
 package app.packed.bundle;
 
+import app.packed.contract.Contract;
+
 /**
  *
  */

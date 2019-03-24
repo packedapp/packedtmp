@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package app.packed.contract;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bundle.Contract.ContractFragment;
+import app.packed.contract.Contract.ContractFragment;
 import app.packed.inject.ServiceContract;
 
 /**

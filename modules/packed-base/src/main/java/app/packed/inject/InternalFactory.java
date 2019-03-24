@@ -30,21 +30,21 @@ import packed.internal.invokers.InternalFunction;
 final class InternalFactory<T> {
 
     /** A list of all of this factory's dependencies. */
-    public final List<InternalDependency> dependencies;
+    final List<InternalDependency> dependencies;
 
     /** The function used to create a new instance. */
-    public final InternalFunction<T> function;
+    final InternalFunction<T> function;
 
     /** The key that this factory will be registered under by default with an injector. */
-    public final Key<T> key;
+    final Key<T> key;
 
-    public InternalFactory(InternalFunction<T> function, List<InternalDependency> dependencies) {
+    InternalFactory(InternalFunction<T> function, List<InternalDependency> dependencies) {
         this.key = function.typeLiteral.toKey();
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
     }
 
-    public InternalFactory(Key<T> key, List<InternalDependency> dependencies, InternalFunction<T> function) {
+    InternalFactory(Key<T> key, List<InternalDependency> dependencies, InternalFunction<T> function) {
         this.key = requireNonNull(key, "key is null");
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
@@ -56,7 +56,7 @@ final class InternalFactory<T> {
      *
      * @return the scannable type of this factory
      */
-    public Class<? super T> getScannableType() {
+    Class<? super T> getScannableType() {
         return function.getReturnTypeRaw();
     }
 }

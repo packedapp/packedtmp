@@ -26,12 +26,12 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /** An internal factory for {@link Factory2}. */
-public class InternalFactory2<T, U, R> extends InternalFunction<R> {
+public class InternalFunction2<T, U, R> extends InternalFunction<R> {
 
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    public InternalFactory2(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
+    public InternalFunction2(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
         super(typeLiteral);
         this.function = requireNonNull(function);
     }

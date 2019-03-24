@@ -22,11 +22,11 @@ import app.packed.util.TypeLiteral;
  *
  */
 // Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class InternalFactoryBindable<T> extends InternalFunction<T> {
+public class InternalFunctionBindable<T> extends InternalFunction<T> {
 
     InternalFunction<T> wrapping;
 
-    public InternalFactoryBindable(TypeLiteral<T> typeLiteral) {
+    public InternalFunctionBindable(TypeLiteral<T> typeLiteral) {
         super(typeLiteral);
     }
 

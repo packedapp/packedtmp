@@ -18,7 +18,7 @@ package app.packed.util;
 /**
  *
  */
-public interface MethodOperator {
+interface MethodOperator {
 
     /**
      * Returns the fields descriptor.

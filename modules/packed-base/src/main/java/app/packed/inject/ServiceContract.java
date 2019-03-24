@@ -23,15 +23,18 @@ import java.util.Set;
 import app.packed.util.Key;
 
 /**
- * A contract detailing.
+ * A contract detailing the types of services that an entity needs for succesful construction can provide.
  * 
  * requires Serviced that are required before the entity can be properly constructed.
  * 
  * optional Optional services that the entity might use if available.
  * 
- * provides Service that the entity makes available.
+ * provides Service that the entity makes available to users of the entity.
  */
 // Vi dropper description...
+// Bliver sgu noedt til at have APIStatus paa her paa here
+
+// Contract.setApiStatus()<- Will override
 public final class ServiceContract {
 
     /** A service contract that has no requirements (optional or mandatory) and provides no services. */
@@ -193,6 +196,16 @@ public final class ServiceContract {
 
         public ServiceContract.Builder removeRequires(Class<?> key) {
             return removeRequires(Key.of(key));
+        }
+
+        /**
+         * @param key
+         *            the key to remove
+         * @return this builder
+         */
+        public ServiceContract.Builder remove(ServiceContract contract) {
+            // Add add
+            return this;
         }
 
         /**

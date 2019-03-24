@@ -25,6 +25,7 @@ import app.packed.app.App;
 import app.packed.app.AppLaunch;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
+import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;

@@ -18,37 +18,46 @@ package packed.internal.invokers;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
-import app.packed.inject.Factory1;
+import app.packed.inject.Factory0;
 import app.packed.inject.InjectionException;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
-/** An internal factory for {@link Factory1}. */
-public class InternalFactory1<T, R> extends InternalFunction<R> {
+/**
+ * An internal factory for {@link Factory0}.
+ * 
+ * @param <T>
+ *            the type of elements the factory produces
+ */
+public final class InternalFunction0<T> extends InternalFunction<T> {
 
-    /** The function that creates the actual objects. */
-    private final Function<? super T, ? extends R> function;
+    /** The supplier that creates the actual objects. */
+    private final Supplier<? extends T> supplier;
 
     /**
+     * Creates a factory0 instance.
+     * 
      * @param supplier
-     * @param functionalSignature
+     *            the supplier that creates the actual values
+     * @param typeInfo
+     *            the class to extract type info from.
+     * @return the new factory
      */
-    public InternalFactory1(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
+    public InternalFunction0(TypeLiteral<T> type, Supplier<? extends T> supplier) {
         super(type);
-        this.function = requireNonNull(function, "function is null");
+        this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
-    @SuppressWarnings("unchecked")
+    /** {@inheritDoc} */
     @Override
     @Nullable
-    public R invoke(Object[] params) {
-        T t = (T) params[0];
-        R instance = function.apply(t);
+    public T invoke(Object[] ignore) {
+        T instance = supplier.get();
         if (!getReturnTypeRaw().isInstance(instance)) {
             throw new InjectionException(
-                    "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce instances of '"
+                    "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce instances of '"
                             + format(getReturnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
