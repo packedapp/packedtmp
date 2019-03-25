@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Dependency;
-import packed.internal.box.Box;
+import packed.internal.box.BoxedServices;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
 
@@ -31,7 +31,8 @@ class DependencyGraphResolver {
 
     static void resolveAllDependencies(DependencyGraph graph) {
         graph.detectCyclesFor = new ArrayList<>();
-        Box box = graph.root.box;
+
+        BoxedServices services = graph.root.box.services();
 
         for (ServiceNode<?> nn : graph.root.privateNodeMap) {
             ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
@@ -43,17 +44,12 @@ class DependencyGraphResolver {
                 for (int i = 0; i < dependencies.size(); i++) {
                     Dependency dependency = dependencies.get(i);
                     ServiceNode<?> resolveTo = graph.root.privateNodeMap.getNode(dependency);
-
-                    if (resolveTo == null) {
-                        box.services().recordMissingDependency(node, dependency);
-                    } else {
-                        node.resolvedDependencies[i] = resolveTo;
-                    }
+                    services.recordDependencyResolved(node, dependency, resolveTo, false);
+                    node.resolvedDependencies[i] = resolveTo;
                 }
-                // Cannot resolve dependency for constructor stubs.Letters.XY(** stubs.Letters.YX **, String, Foo)
             }
         }
-        box.services().checkForMissingDependencies();
+        services.checkForMissingDependencies();
         // b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
     }
 

@@ -29,7 +29,9 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
+import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependency;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.builder.ServiceBuildNode;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
@@ -49,7 +51,7 @@ public class BoxedServices {
 
     private final Box box;
 
-    public final HashSet<Key<?>> requiredServicesMandatory = new HashSet<>();
+    public final HashSet<Key<?>> requires = new HashSet<>();
 
     public final HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
 
@@ -63,9 +65,18 @@ public class BoxedServices {
         }
     }
 
-    public void recordMissingDependency(ServiceBuildNode<?> node, Dependency dependency) {
+    /**
+     * Record a dependency that could not be resolved
+     * 
+     * @param node
+     * @param dependency
+     */
+    public void recordDependencyResolved(ServiceBuildNode<?> node, Dependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
         requireNonNull(node);
         requireNonNull(dependency);
+        if (resolvedTo != null) {
+            return;
+        }
         ArrayList<Entry<ServiceBuildNode<?>, Dependency>> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
@@ -76,9 +87,13 @@ public class BoxedServices {
             if (dependency.isOptional()) {
                 requiredServicesOptionally.add(dependency.key());
             } else {
-                requiredServicesMandatory.add(dependency.key());
+                requires.add(dependency.key());
             }
         }
+    }
+
+    public void addRequires(Key<?> key) {
+        requires.add(requireNonNull(key, "key is null"));
     }
 
     public void populateBuilder(ServiceContract.Builder builder) {
@@ -97,13 +112,13 @@ public class BoxedServices {
                 // }
             }
             // We remove all optional dependencies that are also mandatory.
-            requiredServicesOptionally.removeAll(requiredServicesMandatory);
+            requiredServicesOptionally.removeAll(requires);
 
             if (requiredServicesOptionally != null) {
                 requiredServicesOptionally.forEach(k -> builder.addOptional(k));
             }
-            if (requiredServicesMandatory != null) {
-                requiredServicesMandatory.forEach(k -> builder.addRequires(k));
+            if (requires != null) {
+                requires.forEach(k -> builder.addRequires(k));
             }
         }
     }
@@ -155,7 +170,6 @@ public class BoxedServices {
                     throw new InjectionException(sb.toString());
                 }
             }
-            // }
         }
     }
 }

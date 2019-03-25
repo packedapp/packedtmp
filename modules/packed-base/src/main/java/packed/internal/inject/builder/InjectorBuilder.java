@@ -272,8 +272,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     }
 
     public final void requireService(Key<?> key) {
-        requireNonNull(key, "key is null");
-        box.services().requiredServicesMandatory.add(key);
+        box.services().addRequires(key);
     }
 
     public final void requireServiceOptionally(Class<?> key) {

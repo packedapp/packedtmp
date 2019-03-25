@@ -63,10 +63,9 @@ final class BindInjectorFromBundle extends AbstractWiring {
                 throw new UnsupportedOperationException();
             }
         }
-
         List<ServiceBuildNodeExport<?>> exports = new ArrayList<>();
-        if (newConfiguration.box.services().requiredServicesMandatory != null) {
-            for (Key<?> k : newConfiguration.box.services().requiredServicesMandatory) {
+        if (newConfiguration.box.services().requires != null) {
+            for (Key<?> k : newConfiguration.box.services().requires) {
                 if (newConfiguration.privateNodeMap.containsKey(k)) {
                     throw new RuntimeException("OOPS already there " + k);
                 }
