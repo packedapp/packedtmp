@@ -136,7 +136,7 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.dependencies());
         ComponentConfiguration<T> cc = install0(icc);
         scanForProvides(func.getReturnTypeRaw(), icc);
-        bindNode(icc).as(factory.key());
+        bindNode(icc).as(factory.defaultKey());
         return cc;
     }
 

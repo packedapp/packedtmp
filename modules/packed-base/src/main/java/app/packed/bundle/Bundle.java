@@ -402,11 +402,11 @@ public abstract class Bundle {
     }
 
     protected void requireService(Class<?> key) {
-        injectorBuilder().requireService(key);
+        injectorBuilder().serviceRequire(key);
     }
 
     protected void requireService(Key<?> key) {
-        injectorBuilder().requireService(key);
+        injectorBuilder().serviceRequire(key);
     }
 
     /**

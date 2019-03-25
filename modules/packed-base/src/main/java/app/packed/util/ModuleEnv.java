@@ -16,6 +16,7 @@
 package app.packed.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.bundle.Bundle;
 
@@ -43,6 +44,20 @@ public abstract class ModuleEnv {
     protected ModuleEnv(boolean moduleOnly) {}
 
     protected ModuleEnv(Class<? extends Bundle> bundles) {}
+
+    protected final void registerAbstractClass(Class<?> type, MethodHandles.Lookup lookup) {
+        // Registers full access to the class for subclasses.
+        // Is useful, for example, for having a base abstract class with @Inject in module.
+        // That is overridden in another module.
+
+        // split-module class hierarchies
+        // Visibility is controlled via modules
+
+        // registerAbstractClass(AbstractLoggable, )
+
+        // as an alternative the package should be open to Packed
+        // Finally, last scenario was to be able to add it to a bundle...
+    }
 
     /**
      * Registered a qualifier annotation that is not annotated with

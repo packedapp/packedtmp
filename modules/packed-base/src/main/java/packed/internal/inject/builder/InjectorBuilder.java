@@ -51,6 +51,10 @@ import packed.internal.runtime.ImageBuilder;
  */
 public class InjectorBuilder extends ImageBuilder implements InjectorConfigurator {
 
+    boolean autoRequires;
+
+    final Box box;
+
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
 
@@ -69,10 +73,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
 
     /** The runtime nodes that will be available in the injector. */
     final ServiceNodeMap publicNodeMap;
-
-    boolean autoRequires;
-
-    final Box box;
 
     /**
      * Creates a new builder.
@@ -95,41 +95,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         box = new Box(BoxSource.INJECTOR_VIA_BUNDLE);
     }
 
-    public final void serviceAutoRequire() {
-        autoRequires = true;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return bindFactory(InstantiationMode.SINGLETON, requireNonNull(factory, "factory is null"));
-    }
-
-    @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T> ServiceConfiguration<T> provide(T instance) {
-        requireNonNull(instance, "instance is null");
-        checkConfigurable();
-        freezeLatest();
-        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND),
-                serviceDesc, instance);
-        scanForProvides(instance.getClass(), node);
-        return bindNode(node).as((Class) instance.getClass());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final <T> ServiceConfiguration<T> bindFactory(InstantiationMode mode, Factory<T> factory) {
         checkConfigurable();
@@ -142,75 +107,13 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
 
         scanForProvides(func.getReturnTypeRaw(), node);
 
-        return bindNode(node).as(factory.key());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final void wireInjector(Injector injector, WiringOperation... operations) {
-        requireNonNull(injector, "injector is null");
-        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
-        checkConfigurable();
-        freezeLatest();
-        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
-        is.importServices();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void wireInjector(Bundle bundle, WiringOperation... stages) {
-        requireNonNull(bundle, "bundle is null");
-        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
-        checkConfigurable();
-        freezeLatest();
-        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
-        is.processImport();
-        if (injectorBundleBindings == null) {
-            injectorBundleBindings = new ArrayList<>(1);
-        }
-        injectorBundleBindings.add(is);
-    }
-
-    @Override
-    public final <T> ServiceConfiguration<T> provideLazy(Class<T> implementation) {
-        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> provideLazy(Factory<T> factory) {
-        return bindFactory(InstantiationMode.LAZY, requireNonNull(factory, "factory is null"));
-    }
-
-    @Override
-    public final <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation) {
-        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
+        return bindNode(node).as(factory.defaultKey());
     }
 
     protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
         assert privateLatestNode == null;
         privateLatestNode = node;
         return node;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
-        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> providePrototype(Factory<T> factory) {
-        return bindFactory(InstantiationMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation) {
-        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
     public Injector build() {
@@ -267,21 +170,69 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         }
     }
 
-    public final void requireService(Class<?> key) {
-        requireService(Key.of(key));
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
-    public final void requireService(Key<?> key) {
-        box.services().addRequires(key);
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+        return bindFactory(InstantiationMode.SINGLETON, requireNonNull(factory, "factory is null"));
     }
 
-    public final void requireServiceOptionally(Class<?> key) {
-        requireServiceOptionally(Key.of(key));
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public final <T> ServiceConfiguration<T> provide(T instance) {
+        requireNonNull(instance, "instance is null");
+        checkConfigurable();
+        freezeLatest();
+        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND),
+                serviceDesc, instance);
+        scanForProvides(instance.getClass(), node);
+        return bindNode(node).as((Class) instance.getClass());
     }
 
-    public final void requireServiceOptionally(Key<?> key) {
-        requireNonNull(key, "key is null");
-        box.services().requiredServicesOptionally.add(key);
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
+    }
+
+    @Override
+    public final <T> ServiceConfiguration<T> provideLazy(Class<T> implementation) {
+        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> provideLazy(Factory<T> factory) {
+        return bindFactory(InstantiationMode.LAZY, requireNonNull(factory, "factory is null"));
+    }
+
+    @Override
+    public final <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation) {
+        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
+        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> providePrototype(Factory<T> factory) {
+        return bindFactory(InstantiationMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation) {
+        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
     }
 
     protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
@@ -306,10 +257,58 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         }
     }
 
+    public final void serviceAutoRequire() {
+        autoRequires = true;
+    }
+
+    public final void serviceRequire(Class<?> key) {
+        serviceRequire(Key.of(key));
+    }
+
+    public final void serviceRequire(Key<?> key) {
+        box.services().addRequires(key);
+    }
+
+    public final void serviceRequireOptionally(Class<?> key) {
+        serviceRequireOptionally(Key.of(key));
+    }
+
+    public final void serviceRequireOptionally(Key<?> key) {
+        box.services().addOptional(key);
+    }
+
     /** {@inheritDoc} */
     @Override
     public InjectorBuilder setDescription(String description) {
         super.setDescription(description);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void wireInjector(Bundle bundle, WiringOperation... stages) {
+        requireNonNull(bundle, "bundle is null");
+        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
+        checkConfigurable();
+        freezeLatest();
+        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
+        is.processImport();
+        if (injectorBundleBindings == null) {
+            injectorBundleBindings = new ArrayList<>(1);
+        }
+        injectorBundleBindings.add(is);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void wireInjector(Injector injector, WiringOperation... operations) {
+        requireNonNull(injector, "injector is null");
+        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
+        checkConfigurable();
+        freezeLatest();
+        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
+        is.importServices();
     }
 }

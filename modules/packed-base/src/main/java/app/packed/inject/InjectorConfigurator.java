@@ -100,7 +100,7 @@ public interface InjectorConfigurator extends Taggable {
      * Binds the specified factory to a new service. When the injector is created the factory will be invoked <b>once</b> to
      * instantiate the service instance.
      * <p>
-     * The default key for the service is determined by {@link Factory#key()}.
+     * The default key for the service is determined by {@link Factory#defaultKey()}.
      * 
      * @param <T>
      *            the type of service to bind

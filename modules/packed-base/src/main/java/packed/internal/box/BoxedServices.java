@@ -42,18 +42,18 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
  */
 public class BoxedServices {
 
-    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final ServiceNodeMap nodes;
+    final Box box;
 
     public final ServiceNodeMap exportedNodes;
 
     private ArrayList<Entry<ServiceBuildNode<?>, Dependency>> missingDependencies;
 
-    private final Box box;
+    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
+    public final ServiceNodeMap nodes;
+
+    final HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
 
     public final HashSet<Key<?>> requires = new HashSet<>();
-
-    public final HashSet<Key<?>> requiredServicesOptionally = new HashSet<>();
 
     BoxedServices(Box box) {
         this.box = requireNonNull(box);
@@ -66,61 +66,23 @@ public class BoxedServices {
     }
 
     /**
-     * Record a dependency that could not be resolved
+     * Adds the specified key to the list of optional services.
      * 
-     * @param node
-     * @param dependency
+     * @param key
+     *            the key to add
      */
-    public void recordDependencyResolved(ServiceBuildNode<?> node, Dependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
-        requireNonNull(node);
-        requireNonNull(dependency);
-        if (resolvedTo != null) {
-            return;
-        }
-        ArrayList<Entry<ServiceBuildNode<?>, Dependency>> m = missingDependencies;
-        if (m == null) {
-            m = missingDependencies = new ArrayList<>();
-        }
-        m.add(new SimpleImmutableEntry<>(node, dependency));
-
-        if (node.autoRequires) {
-            if (dependency.isOptional()) {
-                requiredServicesOptionally.add(dependency.key());
-            } else {
-                requires.add(dependency.key());
-            }
-        }
+    public void addOptional(Key<?> key) {
+        requiredServicesOptionally.add(requireNonNull(key, "key is null"));
     }
 
+    /**
+     * Adds the specified key to the list of required services.
+     * 
+     * @param key
+     *            the key to add
+     */
     public void addRequires(Key<?> key) {
         requires.add(requireNonNull(key, "key is null"));
-    }
-
-    public void populateBuilder(ServiceContract.Builder builder) {
-        // Why do we need that list
-        // for (ServiceBuildNode<?> n : exportedNodes) {
-        // if (n instanceof ServiceBuildNodeExposed) {
-        // builder.addProvides(n.getKey());
-        // }
-        // }
-        if (missingDependencies != null) {
-            for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
-                // if (e.getValue().isOptional()) {
-                // requiredServicesOptionally.add(e.getKey().key());
-                // } else {
-                // requiredServicesMandatory.add(e.getKey().key());
-                // }
-            }
-            // We remove all optional dependencies that are also mandatory.
-            requiredServicesOptionally.removeAll(requires);
-
-            if (requiredServicesOptionally != null) {
-                requiredServicesOptionally.forEach(k -> builder.addOptional(k));
-            }
-            if (requires != null) {
-                requires.forEach(k -> builder.addRequires(k));
-            }
-        }
     }
 
     public void checkForMissingDependencies() {
@@ -169,6 +131,60 @@ public class BoxedServices {
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                     throw new InjectionException(sb.toString());
                 }
+            }
+        }
+    }
+
+    public void populateBuilder(ServiceContract.Builder builder) {
+        // Why do we need that list
+        // for (ServiceBuildNode<?> n : exportedNodes) {
+        // if (n instanceof ServiceBuildNodeExposed) {
+        // builder.addProvides(n.getKey());
+        // }
+        // }
+        if (missingDependencies != null) {
+            for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
+                // if (e.getValue().isOptional()) {
+                // requiredServicesOptionally.add(e.getKey().key());
+                // } else {
+                // requiredServicesMandatory.add(e.getKey().key());
+                // }
+            }
+            // We remove all optional dependencies that are also mandatory.
+            requiredServicesOptionally.removeAll(requires);
+
+            if (requiredServicesOptionally != null) {
+                requiredServicesOptionally.forEach(k -> builder.addOptional(k));
+            }
+            if (requires != null) {
+                requires.forEach(k -> builder.addRequires(k));
+            }
+        }
+    }
+
+    /**
+     * Record a dependency that could not be resolved
+     * 
+     * @param node
+     * @param dependency
+     */
+    public void recordDependencyResolved(ServiceBuildNode<?> node, Dependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
+        requireNonNull(node);
+        requireNonNull(dependency);
+        if (resolvedTo != null) {
+            return;
+        }
+        ArrayList<Entry<ServiceBuildNode<?>, Dependency>> m = missingDependencies;
+        if (m == null) {
+            m = missingDependencies = new ArrayList<>();
+        }
+        m.add(new SimpleImmutableEntry<>(node, dependency));
+
+        if (node.autoRequires) {
+            if (dependency.isOptional()) {
+                requiredServicesOptionally.add(dependency.key());
+            } else {
+                requires.add(dependency.key());
             }
         }
     }

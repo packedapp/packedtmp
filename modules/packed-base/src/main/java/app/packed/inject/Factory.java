@@ -33,6 +33,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.inject.InjectSupport;
 import packed.internal.invokers.InstanceInvoker;
 import packed.internal.invokers.InternalFunction;
+import packed.internal.invokers.InternalMapperFunction;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.UtilSupport;
 
@@ -132,6 +133,15 @@ public class Factory<T> {
     }
 
     /**
+     * Returns the default key under which this factory will be registered, if no other key is specified.
+     *
+     * @return the default key under which this factory will be registered
+     */
+    public final Key<T> defaultKey() {
+        return factory.key;
+    }
+
+    /**
      * Returns a list of all of the dependencies of this factory. Returns an empty list if this factory does not have any
      * dependencies.
      *
@@ -140,15 +150,6 @@ public class Factory<T> {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public final List<Dependency> dependencies() {
         return (List) factory.dependencies;
-    }
-
-    /**
-     * Returns the default key under which this factory will be registered.
-     *
-     * @return the default key under which this factory will be registered
-     */
-    public final Key<T> key() {
-        return factory.key;
     }
 
     /**
@@ -189,7 +190,7 @@ public class Factory<T> {
      * @throws ClassCastException
      *             if the type of the key does not match this factory
      */
-    public final Factory<T> withKey(Key<? super T> key) {
+    public final Factory<T> withDefaultKey(Key<? super T> key) {
         throw new UnsupportedOperationException();
     }
 
@@ -197,11 +198,11 @@ public class Factory<T> {
      * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
      * the specified lookup object to access the underlying member whenever the factory needs to create a new object.
      * <p>
-     * This method is useful, for example, to make a factory publically available for an class that does not a public
+     * This method is useful, for example, to make a factory publically available for an class that does not have a public
      * constructor.
      * <p>
-     * The specified lookup object will always be used, even if registering with an injector prepended by a call to
-     * {@link InjectorConfigurator#lookup(java.lang.invoke.MethodHandles.Lookup)}.
+     * The specified lookup object will always be preferred, even when, for example, being registered with a bundle who has
+     * its own lookup object.
      *
      * @param lookup
      *            the lookup object
@@ -214,6 +215,24 @@ public class Factory<T> {
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         return new Factory<>(new InternalFactory<T>(factory.function.withLookup(lookup), factory.dependencies));
+    }
+
+    /**
+     * Returns a new factory that maps the result of this factory using the specified mapper.
+     * 
+     * @param mapper
+     *            the mapper used to map the result
+     * @param type
+     *            the type of the mapped value
+     * @return a new mapped factory
+     */
+    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, Class<R> type) {
+        return mapTo(mapper, TypeLiteral.of(type));
+    }
+
+    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, TypeLiteral<R> type) {
+        InternalMapperFunction<T, R> f = new InternalMapperFunction<>(type, factory.function, mapper);
+        return new Factory<>(new InternalFactory<>(f, factory.dependencies));
     }
 
     public Factory<T> withType(Class<? extends T> type) {
