@@ -220,6 +220,8 @@ public class Factory<T> {
     /**
      * Returns a new factory that maps the result of this factory using the specified mapper.
      * 
+     * @param <R>
+     *            the type of result to map to
      * @param mapper
      *            the mapper used to map the result
      * @param type

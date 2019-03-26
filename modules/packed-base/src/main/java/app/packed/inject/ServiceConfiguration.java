@@ -66,7 +66,7 @@ public interface ServiceConfiguration<T> extends Taggable {
      * 
      * .provide(instance) cannot be lazy
      * 
-     * @return
+     * @return this configuration
      * @throws UnsupportedOperationException
      *             if the service cannot be lazy
      */
