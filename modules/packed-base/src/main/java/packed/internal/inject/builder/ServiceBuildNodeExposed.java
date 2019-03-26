@@ -21,6 +21,7 @@ import java.util.List;
 
 import app.packed.inject.InjectionSite;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -81,5 +82,11 @@ public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
     @Override
     RuntimeServiceNode<T> newRuntimeNode() {
         return new RuntimeServiceNodeAlias<>(this, exposureOf);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceConfiguration<T> lazy() {
+        throw new UnsupportedOperationException();
     }
 }

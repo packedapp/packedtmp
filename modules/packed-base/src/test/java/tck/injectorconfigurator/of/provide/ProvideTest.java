@@ -54,9 +54,9 @@ public class ProvideTest {
             ServiceConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
             ServiceConfiguration<C> c = conf.provide(C0);
             ServiceConfiguration<D> d = conf.provide(TypeLiteral.of(D.class));
-            ServiceConfiguration<E> e = conf.provideLazy(E.class);
-            ServiceConfiguration<F> f = conf.provideLazy(Factory.findInjectable(F.class));
-            ServiceConfiguration<G> g = conf.provideLazy(TypeLiteral.of(G.class));
+            ServiceConfiguration<E> e = conf.provide(E.class).lazy();
+            ServiceConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
+            ServiceConfiguration<G> g = conf.provide(TypeLiteral.of(G.class)).lazy();
             ServiceConfiguration<H> h = conf.providePrototype(H.class);
             ServiceConfiguration<I> i = conf.providePrototype(Factory.findInjectable(I.class));
             ServiceConfiguration<J> j = conf.providePrototype(TypeLiteral.of(J.class));

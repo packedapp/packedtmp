@@ -44,9 +44,9 @@ public class MethodStaticTest {
     /** Tests lazy {@link Provides#instantionMode()} on static methods. */
     @Test
     public void provideLazy() {
-        MixedMethodsNoInstantiation.test(c -> c.provideLazy(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.provideLazy(Factory.findInjectable(MixedMethodsNoInstantiation.class)));
-        MixedMethodsNoInstantiation.test(c -> c.provideLazy(new TypeLiteral<MixedMethodsNoInstantiation>() {}));
+        MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).lazy());
+        MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedMethodsNoInstantiation.class)).lazy());
+        MixedMethodsNoInstantiation.test(c -> c.provide(new TypeLiteral<MixedMethodsNoInstantiation>() {}).lazy());
     }
 
     /** Tests prototype {@link Provides#instantionMode()} on static methods. */

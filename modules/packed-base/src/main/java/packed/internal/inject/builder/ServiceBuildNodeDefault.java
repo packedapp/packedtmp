@@ -23,6 +23,7 @@ import app.packed.container.ComponentConfiguration;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -59,7 +60,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     private T instance;
 
     /** The instantiation mode of this node. */
-    private final InstantiationMode instantionMode;
+    private InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provides}. */
     private final ServiceBuildNodeDefault<?> parent;
@@ -75,9 +76,27 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         this.parent = null;
         this.descriptor = requireNonNull(descriptor);
         this.instantionMode = requireNonNull(instantionMode);
+
+        // Maaske skal vi bare smide UnsupportedOperationException istedet for???
+        // Vi faar jo problemet ved f.eks. CACHE_PER_APP.....
+        // her giver det ikke meningen at faa componenten...
+
         if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceConfiguration<T> lazy() {
+        instantiateAs(InstantiationMode.LAZY);
+        return this;
+    }
+
+    public ServiceBuildNodeDefault<T> instantiateAs(InstantiationMode mode) {
+        requireNonNull(mode, "mode is null");
+        this.instantionMode = mode;
+        return this;
     }
 
     /**

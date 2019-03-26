@@ -104,18 +104,6 @@ public abstract class Bundle {
         return injectorBuilder().provide(implementation);
     }
 
-    protected final <T> ServiceConfiguration<T> provideLazy(Class<T> implementation) {
-        return injectorBuilder().provideLazy(implementation);
-    }
-
-    protected final <T> ServiceConfiguration<T> provideLazy(Factory<T> factory) {
-        return injectorBuilder().provideLazy(factory);
-    }
-
-    protected final <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation) {
-        return injectorBuilder().provideLazy(implementation);
-    }
-
     protected final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
         return injectorBuilder().providePrototype(implementation);
     }

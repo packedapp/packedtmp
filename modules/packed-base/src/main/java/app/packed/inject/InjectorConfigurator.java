@@ -127,33 +127,35 @@ public interface InjectorConfigurator extends Taggable {
 
     <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation);
 
-    /**
-     * Binds the specified implementation lazily. This is equivalent to {@link #provide(Class)} except that the instance
-     * will not be instantiatied until it is requested, possible never.
-     * 
-     * @param <T>
-     *            the type of service
-     * @param implementation
-     *            the implementation to bind
-     * @return a service configuration object
-     */
-    <T> ServiceConfiguration<T> provideLazy(Class<T> implementation);
-
-    /**
-     * Binds the specified factory to a new service. The first time the service is requested, the factory will be invoked to
-     * instantiate the service instance. The instance produced by the factory will be used for all subsequent requests. The
-     * runtime guarantees that at most service instance is ever created, blocking concurrent requests to the instance at
-     * creation time.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param factory
-     *            the factory to bind
-     * @return a service configuration for the service
-     */
-    <T> ServiceConfiguration<T> provideLazy(Factory<T> factory);
-
-    <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
+    // /**
+    // * Binds the specified implementation lazily. This is equivalent to {@link #provide(Class)} except that the instance
+    // * will not be instantiatied until it is requested, possible never.
+    // *
+    // * @param <T>
+    // * the type of service
+    // * @param implementation
+    // * the implementation to bind
+    // * @return a service configuration object
+    // */
+    // <T> ServiceConfiguration<T> provideLazy(Class<T> implementation);
+    //
+    // /**
+    // * Binds the specified factory to a new service. The first time the service is requested, the factory will be invoked
+    // to
+    // * instantiate the service instance. The instance produced by the factory will be used for all subsequent requests.
+    // The
+    // * runtime guarantees that at most service instance is ever created, blocking concurrent requests to the instance at
+    // * creation time.
+    // *
+    // * @param <T>
+    // * the type of service to bind
+    // * @param factory
+    // * the factory to bind
+    // * @return a service configuration for the service
+    // */
+    // <T> ServiceConfiguration<T> provideLazy(Factory<T> factory);
+    //
+    // <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
 
     <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
 
@@ -243,3 +245,10 @@ public interface InjectorConfigurator extends Taggable {
      */
     void wireInjector(Injector injector, WiringOperation... stages);
 }
+// providersOnly(Class<?>)<- dont register owning object, dont instantiate itif only static Provides methods...
+// provideBy
+// provideHolder
+// Class + Instance + Factory???
+// Sleezy method on ServiceConfiguration .lazy().asNone();
+// Can also be used with hooks.... <- Well @OnHook, could be used with a service???
+// .neverInstantiate(); static @OnHook...

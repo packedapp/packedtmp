@@ -62,6 +62,17 @@ public interface ServiceConfiguration<T> extends Taggable {
     ServiceConfiguration<?> asNone();
 
     /**
+     * 
+     * 
+     * .provide(instance) cannot be lazy
+     * 
+     * @return
+     * @throws UnsupportedOperationException
+     *             if the service cannot be lazy
+     */
+    ServiceConfiguration<T> lazy();
+
+    /**
      * Returns the configuration site where this configuration was created.
      * 
      * @return the configuration site where this configuration was created

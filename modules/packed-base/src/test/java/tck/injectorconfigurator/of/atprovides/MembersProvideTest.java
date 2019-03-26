@@ -37,7 +37,7 @@ public class MembersProvideTest {
     public void fieldsAndMethods() {
         validate(of(c -> c.provide(new VisibilityStatic())));
         validate(of(c -> c.provide(VisibilityStatic.class)));
-        validate(of(c -> c.provideLazy(VisibilityStatic.class)));
+        validate(of(c -> c.provide(VisibilityStatic.class).lazy()));
         validate(of(c -> c.providePrototype(VisibilityStatic.class)));
     }
 

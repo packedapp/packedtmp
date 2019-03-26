@@ -143,13 +143,13 @@ public class BoxedServices {
         // }
         // }
         if (missingDependencies != null) {
-            for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
-                // if (e.getValue().isOptional()) {
-                // requiredServicesOptionally.add(e.getKey().key());
-                // } else {
-                // requiredServicesMandatory.add(e.getKey().key());
-                // }
-            }
+            // for (Entry<ServiceBuildNode<?>, Dependency> e : missingDependencies) {
+            // if (e.getValue().isOptional()) {
+            // requiredServicesOptionally.add(e.getKey().key());
+            // } else {
+            // requiredServicesMandatory.add(e.getKey().key());
+            // }
+            // }
             // We remove all optional dependencies that are also mandatory.
             requiredServicesOptionally.removeAll(requires);
 

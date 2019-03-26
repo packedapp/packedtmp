@@ -49,9 +49,9 @@ public class FieldInstanceTest {
     /** Tests lazy {@link Provides#instantionMode()} on instance fields. */
     @Test
     public void provideLazy() {
-        MixedFields.test(c -> c.provideLazy(MixedFields.class));
-        MixedFields.test(c -> c.provideLazy(Factory.findInjectable(MixedFields.class)));
-        MixedFields.test(c -> c.provideLazy(new TypeLiteral<MixedFields>() {}));
+        MixedFields.test(c -> c.provide(MixedFields.class).lazy());
+        MixedFields.test(c -> c.provide(Factory.findInjectable(MixedFields.class)).lazy());
+        MixedFields.test(c -> c.provide(new TypeLiteral<MixedFields>() {}).lazy());
     }
 
     /**
@@ -64,7 +64,7 @@ public class FieldInstanceTest {
         // Singleton
         Injector i = of(c -> {
             c.provide(new AtomicBoolean(false));
-            c.provideLazy(SingletonField.class);
+            c.provide(SingletonField.class).lazy();
         });
         assertThat(i.with(AtomicBoolean.class)).isTrue();
         SingletonField f = i.with(SingletonField.class);
@@ -75,7 +75,7 @@ public class FieldInstanceTest {
         // Lazy
         i = of(c -> {
             c.provide(new AtomicBoolean(false));
-            c.provideLazy(LazyField.class);
+            c.provide(LazyField.class).lazy();
         });
         assertThat(i.with(AtomicBoolean.class)).isFalse();
         assertThat(i.with(Short.class)).isEqualTo((short) 1);

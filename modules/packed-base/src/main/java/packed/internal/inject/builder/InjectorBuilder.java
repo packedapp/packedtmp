@@ -201,22 +201,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
-    @Override
-    public final <T> ServiceConfiguration<T> provideLazy(Class<T> implementation) {
-        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> provideLazy(Factory<T> factory) {
-        return bindFactory(InstantiationMode.LAZY, requireNonNull(factory, "factory is null"));
-    }
-
-    @Override
-    public final <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation) {
-        return bindFactory(InstantiationMode.LAZY, Factory.findInjectable(implementation));
-    }
-
     /** {@inheritDoc} */
     @Override
     public final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {

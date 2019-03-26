@@ -74,9 +74,9 @@ public class InjectorConfigurationSiteTest {
             binding0(conf.provide(Factory.findInjectable(B.class)));
             binding0(conf.provide(C0));
             binding0(conf.provide(TypeLiteral.of(D.class)));
-            binding0(conf.provideLazy(E.class));
-            binding0(conf.provideLazy(Factory.findInjectable(F.class)));
-            binding0(conf.provideLazy(TypeLiteral.of(G.class)));
+            binding0(conf.provide(E.class).lazy());
+            binding0(conf.provide(Factory.findInjectable(F.class)).lazy());
+            binding0(conf.provide(TypeLiteral.of(G.class)).lazy());
             binding0(conf.providePrototype(H.class));
             binding0(conf.providePrototype(Factory.findInjectable(I.class)));
             binding0(conf.providePrototype(TypeLiteral.of(J.class)));
