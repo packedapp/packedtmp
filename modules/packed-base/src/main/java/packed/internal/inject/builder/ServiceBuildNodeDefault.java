@@ -96,6 +96,12 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> prototype() {
+        if (hasDependencyOnInjectionSite) {
+            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
+        }
+        if (hasInstanceMembers) {
+            throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
+        }
         instantiateAs(InstantiationMode.PROTOTYPE);
         return this;
     }
@@ -125,6 +131,8 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
     }
+
+    boolean hasInstanceMembers;
 
     ServiceBuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory,
             ServiceBuildNodeDefault<?> parent) {
@@ -229,8 +237,8 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {
-            getInstance(null);
-            fi = fi.withInstance(this.instance);
+            // getInstance(null);
+            // fi = fi.withInstance(this.instance);
         }
         ServiceBuildNodeDefault<?> node = new ServiceBuildNodeDefault<>(icss, atProvides, fi, this);
         node.as((Key) atProvides.key);

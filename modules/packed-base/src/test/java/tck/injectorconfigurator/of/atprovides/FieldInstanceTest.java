@@ -91,17 +91,26 @@ public class FieldInstanceTest {
 
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
+    public void xxx() {
+        of(c -> {
+            c.provide(new AtomicBoolean());
+            c.provide(SingletonField.class);
+        });
+    }
+
+    /** Can never bind prototypes that have non-static provided fields. */
+    @Test
     public void providePrototype() {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> of(c -> {
             c.provide(new AtomicBoolean());
-            c.providePrototype(SingletonField.class);
+            c.provide(SingletonField.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
         a = assertThatThrownBy(() -> of(c -> {
             c.provide(new AtomicBoolean());
-            c.providePrototype(LazyField.class);
+            c.provide(LazyField.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
@@ -109,7 +118,7 @@ public class FieldInstanceTest {
         a = assertThatThrownBy(() -> Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
-            c.providePrototype(PrototypeField.class);
+            c.provide(PrototypeField.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message

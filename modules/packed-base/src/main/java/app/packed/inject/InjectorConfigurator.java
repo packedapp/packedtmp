@@ -157,22 +157,23 @@ public interface InjectorConfigurator extends Taggable {
     //
     // <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
 
-    <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
-
-    /**
-     * Binds the specified factory to a new service. When the service is requested the factory is used to create a new
-     * instance of the service. The runtime will never cache instances, once they are returned to the client requesting the
-     * service, the runtime will keep no references to them.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param factory
-     *            the factory to bind
-     * @return a service configuration for the service
-     */
-    <T> ServiceConfiguration<T> providePrototype(Factory<T> factory);
-
-    <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation);
+    // <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
+    //
+    // /**
+    // * Binds the specified factory to a new service. When the service is requested the factory is used to create a new
+    // * instance of the service. The runtime will never cache instances, once they are returned to the client requesting
+    // the
+    // * service, the runtime will keep no references to them.
+    // *
+    // * @param <T>
+    // * the type of service to bind
+    // * @param factory
+    // * the factory to bind
+    // * @return a service configuration for the service
+    // */
+    // <T> ServiceConfiguration<T> providePrototype(Factory<T> factory);
+    //
+    // <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation);
 
     /**
      * Sets the (nullable) description of the injector, the description can later be obtained via

@@ -52,9 +52,9 @@ public class MethodStaticTest {
     /** Tests prototype {@link Provides#instantionMode()} on static methods. */
     @Test
     public void providePrototype() {
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(Factory.findInjectable(MixedMethodsNoInstantiation.class)));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(new TypeLiteral<MixedMethodsNoInstantiation>() {}));
+        MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).prototype());
+        MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedMethodsNoInstantiation.class)).prototype());
+        MixedMethodsNoInstantiation.test(c -> c.provide(new TypeLiteral<MixedMethodsNoInstantiation>() {}).prototype());
     }
 
     /** A helper class that can be instantiated. */

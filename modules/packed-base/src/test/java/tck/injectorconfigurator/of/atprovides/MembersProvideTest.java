@@ -38,7 +38,7 @@ public class MembersProvideTest {
         validate(of(c -> c.provide(new VisibilityStatic())));
         validate(of(c -> c.provide(VisibilityStatic.class)));
         validate(of(c -> c.provide(VisibilityStatic.class).lazy()));
-        validate(of(c -> c.providePrototype(VisibilityStatic.class)));
+        validate(of(c -> c.provide(VisibilityStatic.class).prototype()));
     }
 
     private static Injector of(Consumer<? super InjectorConfigurator> consumer) {

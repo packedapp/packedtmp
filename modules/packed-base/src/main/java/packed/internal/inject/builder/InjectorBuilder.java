@@ -27,7 +27,6 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
@@ -201,30 +200,14 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
-        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> providePrototype(Factory<T> factory) {
-        return bindFactory(InstantiationMode.PROTOTYPE, requireNonNull(factory, "factory is null"));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation) {
-        return bindFactory(InstantiationMode.PROTOTYPE, Factory.findInjectable(implementation));
-    }
-
     protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
         AtProvidesGroup provides = accessor.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
-            if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-                throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
-            }
+            owner.hasInstanceMembers = provides.hasInstanceMembers;
+            // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+            // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
+            // prototypes");
+            // }
 
             // First check that we do not have existing services with any of the provided keys
             for (Key<?> k : provides.members.keySet()) {

@@ -103,24 +103,11 @@ public abstract class Bundle {
     protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
         return injectorBuilder().provide(implementation);
     }
-
-    protected final <T> ServiceConfiguration<T> providePrototype(Class<T> implementation) {
-        return injectorBuilder().providePrototype(implementation);
-    }
-
-    protected final <T> ServiceConfiguration<T> providePrototype(Factory<T> factory) {
-        return injectorBuilder().providePrototype(factory);
-    }
-
-    // /** The internal configuration to delegate to */
-    // We probably want to null this out...
-    // If we install the bundle as a component....
-    // We do not not want any more garbage then needed.
-    // private InjectorBuilder injectorBuilder;
-
-    protected final <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation) {
-        return injectorBuilder().providePrototype(implementation);
-    }
+    // // /** The internal configuration to delegate to */
+    // // We probably want to null this out...
+    // // If we install the bundle as a component....
+    // // We do not not want any more garbage then needed.
+    // // private InjectorBuilder injectorBuilder;
 
     protected void buildWithBundle() {
         // Insta

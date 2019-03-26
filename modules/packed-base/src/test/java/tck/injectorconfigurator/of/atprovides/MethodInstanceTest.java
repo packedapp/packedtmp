@@ -62,7 +62,7 @@ public class MethodInstanceTest {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
-            c.providePrototype(SingletonMethod.class);
+            c.provide(SingletonMethod.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
@@ -70,7 +70,7 @@ public class MethodInstanceTest {
         a = assertThatThrownBy(() -> Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
-            c.providePrototype(LazyMethod.class);
+            c.provide(LazyMethod.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
@@ -78,7 +78,7 @@ public class MethodInstanceTest {
         a = assertThatThrownBy(() -> Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
-            c.providePrototype(PrototypeMethod.class);
+            c.provide(PrototypeMethod.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
