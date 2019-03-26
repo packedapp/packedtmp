@@ -72,6 +72,8 @@ public interface ServiceConfiguration<T> extends Taggable {
      */
     ServiceConfiguration<T> lazy();
 
+    ServiceConfiguration<T> prototype();
+
     /**
      * Returns the configuration site where this configuration was created.
      * 
@@ -113,7 +115,4 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @see #getDescription()
      */
     ServiceConfiguration<T> setDescription(@Nullable String description);
-
-    // lazy();
-    // prototype();
 }

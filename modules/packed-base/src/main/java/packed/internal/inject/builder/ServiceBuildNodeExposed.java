@@ -89,4 +89,10 @@ public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
     public ServiceConfiguration<T> lazy() {
         throw new UnsupportedOperationException();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceConfiguration<T> prototype() {
+        throw new UnsupportedOperationException();
+    }
 }

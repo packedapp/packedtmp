@@ -93,6 +93,13 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         return this;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ServiceConfiguration<T> prototype() {
+        instantiateAs(InstantiationMode.PROTOTYPE);
+        return this;
+    }
+
     public ServiceBuildNodeDefault<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;

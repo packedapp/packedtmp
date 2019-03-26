@@ -244,6 +244,25 @@ public interface InjectorConfigurator extends Taggable {
      *             (via {@link WiringOperation#andThen(WiringOperation)} thereof
      */
     void wireInjector(Injector injector, WiringOperation... stages);
+
+    /**
+     * If useful, for example,
+     * 
+     * service must either be an instance, or only have static
+     * 
+     * @return
+     */
+    default void registerStatics(Class<?> staticsHolder) {
+        // addStatics(); useStatics()
+        // @OnHook
+        // @Provides
+        // I think we should replace with
+
+        // provide(Stuff).asNone();
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+    // lazy();
+    // prototype();
 }
 // providersOnly(Class<?>)<- dont register owning object, dont instantiate itif only static Provides methods...
 // provideBy
@@ -252,3 +271,5 @@ public interface InjectorConfigurator extends Taggable {
 // Sleezy method on ServiceConfiguration .lazy().asNone();
 // Can also be used with hooks.... <- Well @OnHook, could be used with a service???
 // .neverInstantiate(); static @OnHook...
+// noInstantiation()
+// provideStatics(Object instance)
