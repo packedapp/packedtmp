@@ -24,9 +24,7 @@ import app.packed.util.Key;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InternalFunction;
 
-/**
- *
- */
+/** An internal factory. */
 final class InternalFactory<T> {
 
     /** A list of all of this factory's dependencies. */
@@ -36,19 +34,19 @@ final class InternalFactory<T> {
     final InternalFunction<T> function;
 
     /** The key that this factory will be registered under by default with an injector. */
-    final Key<T> key;
+    final Key<T> defaultKey;
 
     InternalFactory(InternalFunction<T> function, List<InternalDependency> dependencies) {
-        this.key = function.typeLiteral.toKey();
+        this.defaultKey = function.typeLiteral.toKey();
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
     }
-
-    InternalFactory(Key<T> key, List<InternalDependency> dependencies, InternalFunction<T> function) {
-        this.key = requireNonNull(key, "key is null");
-        this.dependencies = requireNonNull(dependencies, "dependencies is null");
-        this.function = requireNonNull(function);
-    }
+    //
+    // InternalFactory(Key<T> defaultKey, List<InternalDependency> dependencies, InternalFunction<T> function) {
+    // this.defaultKey = requireNonNull(defaultKey, "key is null");
+    // this.dependencies = requireNonNull(dependencies, "dependencies is null");
+    // this.function = requireNonNull(function);
+    // }
 
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as

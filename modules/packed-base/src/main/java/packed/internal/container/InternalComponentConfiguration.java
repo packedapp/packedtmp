@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.container.ComponentConfiguration;
+import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
@@ -37,8 +37,8 @@ import packed.internal.inject.builder.ServiceBuildNodeDefault;
 import packed.internal.invokers.InternalFunction;
 import packed.internal.util.Checks;
 
-/** The default implementation of {@link ComponentConfiguration}. */
-public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T> implements ComponentConfiguration<T> {
+/** The default implementation of {@link ComponentServiceConfiguration}. */
+public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T> implements ComponentServiceConfiguration<T> {
 
     /** A list of all children that have been added (lazily initialized). */
     ArrayList<InternalComponentConfiguration<?>> children;
@@ -114,13 +114,13 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration<T> addMixin(Class<?> implementation) {
+    public ComponentServiceConfiguration<T> addMixin(Class<?> implementation) {
         return addMixin(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration<T> addMixin(Factory<?> factory) {
+    public ComponentServiceConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
         InternalFunction<?> f = InjectSupport.toInternalFunction(factory);
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
@@ -128,12 +128,12 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration<T> addMixin(Object instance) {
+    public ComponentServiceConfiguration<T> addMixin(Object instance) {
         checkConfigurable();
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, instance));
     }
 
-    private ComponentConfiguration<T> addMixin0(MixinNode node) {
+    private ComponentServiceConfiguration<T> addMixin0(MixinNode node) {
         if (mixins == null) {
             mixins = new ArrayList<>(1);
         }
@@ -170,27 +170,27 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
 
     /** {@inheritDoc} */
     @Override
-    public <S> ComponentConfiguration<S> install(Class<S> implementation) {
-        return install(Factory.findInjectable(implementation));
+    public <S> ComponentServiceConfiguration<S> installService(Class<S> implementation) {
+        return installService(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public <S> ComponentConfiguration<S> install(Factory<S> factory) {
+    public <S> ComponentServiceConfiguration<S> installService(Factory<S> factory) {
         // Man kan installere child components indtil bundlen er faerdig...
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <S> ComponentConfiguration<S> install(S instance) {
+    public <S> ComponentServiceConfiguration<S> installService(S instance) {
         return null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <S> ComponentConfiguration<S> install(TypeLiteral<S> implementation) {
-        return install(Factory.findInjectable(implementation));
+    public <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation) {
+        return installService(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
@@ -212,7 +212,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration<T> setName(String name) {
+    public ComponentServiceConfiguration<T> setName(String name) {
         checkConfigurable();
         if (!Objects.equals(name, this.name)) {
             if (parent != null) {

@@ -40,6 +40,7 @@ import app.packed.inject.InjectionSite;
 
 // Ideen er at man laver en app, uden at refererer direkte til implementation eller have den paa classpathen..
 
+// ComponentPathCaching(Predicate<ContainerPath>) default is to cache it
 public final class Environment {
 
     // reboot (Mest taenkt i test, maaske kun i devtools)

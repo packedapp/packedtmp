@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.WiringOperation;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
@@ -127,53 +128,27 @@ public interface InjectorConfigurator extends Taggable {
 
     <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation);
 
-    // /**
-    // * Binds the specified implementation lazily. This is equivalent to {@link #provide(Class)} except that the instance
-    // * will not be instantiatied until it is requested, possible never.
-    // *
-    // * @param <T>
-    // * the type of service
-    // * @param implementation
-    // * the implementation to bind
-    // * @return a service configuration object
-    // */
-    // <T> ServiceConfiguration<T> provideLazy(Class<T> implementation);
-    //
-    // /**
-    // * Binds the specified factory to a new service. The first time the service is requested, the factory will be invoked
-    // to
-    // * instantiate the service instance. The instance produced by the factory will be used for all subsequent requests.
-    // The
-    // * runtime guarantees that at most service instance is ever created, blocking concurrent requests to the instance at
-    // * creation time.
-    // *
-    // * @param <T>
-    // * the type of service to bind
-    // * @param factory
-    // * the factory to bind
-    // * @return a service configuration for the service
-    // */
-    // <T> ServiceConfiguration<T> provideLazy(Factory<T> factory);
-    //
-    // <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
+    /**
+     * If useful, for example,
+     * 
+     * 
+     * 
+     * service must either be an instance, or only have static
+     * 
+     * @throws InvalidDeclarationException
+     *             if, provides members are non-static
+     */
+    void registerStatics(Class<?> staticsHolder); // use statics
 
-    // <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
-    //
     // /**
-    // * Binds the specified factory to a new service. When the service is requested the factory is used to create a new
-    // * instance of the service. The runtime will never cache instances, once they are returned to the client requesting
-    // the
-    // * service, the runtime will keep no references to them.
-    // *
-    // * @param <T>
-    // * the type of service to bind
-    // * @param factory
-    // * the factory to bind
-    // * @return a service configuration for the service
+    // * @param bundleType
+    // * the type of bundle to instantiate
+    // * @param stages
+    // * optional stages
     // */
-    // <T> ServiceConfiguration<T> providePrototype(Factory<T> factory);
-    //
-    // <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation);
+    // default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
+    // wireInjector(Bundles.instantiate(bundleType), stages);
+    // }
 
     /**
      * Sets the (nullable) description of the injector, the description can later be obtained via
@@ -186,16 +161,6 @@ public interface InjectorConfigurator extends Taggable {
      * @see Injector#description()
      */
     InjectorConfigurator setDescription(@Nullable String description);
-
-    // /**
-    // * @param bundleType
-    // * the type of bundle to instantiate
-    // * @param stages
-    // * optional stages
-    // */
-    // default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-    // wireInjector(Bundles.instantiate(bundleType), stages);
-    // }
 
     /**
      * @param bundle
@@ -245,26 +210,13 @@ public interface InjectorConfigurator extends Taggable {
      *             (via {@link WiringOperation#andThen(WiringOperation)} thereof
      */
     void wireInjector(Injector injector, WiringOperation... stages);
-
-    /**
-     * If useful, for example,
-     * 
-     * service must either be an instance, or only have static
-     * 
-     * @return
-     */
-    default void registerStatics(Class<?> staticsHolder) {
-        // addStatics(); useStatics()
-        // @OnHook
-        // @Provides
-        // I think we should replace with
-
-        // provide(Stuff).asNone();
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-    // lazy();
-    // prototype();
 }
+// addStatics(); useStatics()
+// @OnHook
+// @Provides
+// I think we should replace with
+
+// provide(Stuff).asNone();
 // providersOnly(Class<?>)<- dont register owning object, dont instantiate itif only static Provides methods...
 // provideBy
 // provideHolder
@@ -274,3 +226,51 @@ public interface InjectorConfigurator extends Taggable {
 // .neverInstantiate(); static @OnHook...
 // noInstantiation()
 // provideStatics(Object instance)
+
+// /**
+// * Binds the specified implementation lazily. This is equivalent to {@link #provide(Class)} except that the instance
+// * will not be instantiatied until it is requested, possible never.
+// *
+// * @param <T>
+// * the type of service
+// * @param implementation
+// * the implementation to bind
+// * @return a service configuration object
+// */
+// <T> ServiceConfiguration<T> provideLazy(Class<T> implementation);
+//
+// /**
+// * Binds the specified factory to a new service. The first time the service is requested, the factory will be invoked
+// to
+// * instantiate the service instance. The instance produced by the factory will be used for all subsequent requests.
+// The
+// * runtime guarantees that at most service instance is ever created, blocking concurrent requests to the instance at
+// * creation time.
+// *
+// * @param <T>
+// * the type of service to bind
+// * @param factory
+// * the factory to bind
+// * @return a service configuration for the service
+// */
+// <T> ServiceConfiguration<T> provideLazy(Factory<T> factory);
+//
+// <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
+
+// <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
+//
+// /**
+// * Binds the specified factory to a new service. When the service is requested the factory is used to create a new
+// * instance of the service. The runtime will never cache instances, once they are returned to the client requesting
+// the
+// * service, the runtime will keep no references to them.
+// *
+// * @param <T>
+// * the type of service to bind
+// * @param factory
+// * the factory to bind
+// * @return a service configuration for the service
+// */
+// <T> ServiceConfiguration<T> providePrototype(Factory<T> factory);
+//
+// <T> ServiceConfiguration<T> providePrototype(TypeLiteral<T> implementation);

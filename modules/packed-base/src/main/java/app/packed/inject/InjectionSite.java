@@ -24,6 +24,9 @@ import app.packed.container.Container;
 import app.packed.util.Key;
 
 /**
+ * A service requestions has two important parts. What exactly are being requested, is it optional is the service being
+ * requested.
+ * 
  * An injection site extends the dependency interface with runtime information about which injector requested the
  * injection. And if used within a container which component requested the injection.
  * <p>
@@ -46,6 +49,10 @@ import app.packed.util.Key;
  * }
  * </pre>
  */
+// ServiceRequest
+// Who
+// What
+
 public interface InjectionSite extends Dependency {
 
     /**

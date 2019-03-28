@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
+import app.packed.container.ComponentInstaller;
 import app.packed.contract.Contract;
 
 // En Session App, kan f.eks. have en request Component... Som loebende har reqeuests som boern....
@@ -37,6 +38,15 @@ import app.packed.contract.Contract;
 // Maybe, when you embed it, you must provide a contract
 
 // AbstractHost <- Must be registered as a component... Technically you could use a runtime component as a host....
+
+// Host er bygget ovenpå en prototype component... Som viser flexibiliten....
+// Maaske er hosten en selvstaendig component, og har et enkelt prototype barn kaldet apps...
+// Ja det lyder som en god ide....
+// Skal man kunne fjerne dem??? Ja det taenker jeg...
+
+// ComponentProfile -> Kan have en listener... Der er lokal paa componenten???
+// Ja hvis vi vil have flere hosts... Saa bliver den noedt til at vaere lokal...
+
 public interface Host {
 
     /**
@@ -109,6 +119,10 @@ public interface Host {
      * @return this host
      */
     Host undeployAll();
+
+    static HostBuilder install(ComponentInstaller installer) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 //// Okay saa

@@ -13,26 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
-
-import app.packed.inject.ServiceConfiguration;
+package app.packed.component;
 
 /**
  *
  */
-public interface HostBuilder {
+public class ComponentController {
 
-    // Vi skal havde fundet ud af hvordan vi kan smide et object med...
-    // Objekter er vel mandatory???
+    // AnnotationTransformer (Class-> remove Annotations on this method, add this annotation. (reflected in method
+    // descriptor????)
+    // remove type annotations
+    // remove method/field/... annotations
+    // type annotations on mixins are added, will override according to registration order. AnnotationTransformer only has
+    // an effect on the component instance
 
-    default <T> ServiceConfiguration<T> provide(T instance) {
-        throw new UnsupportedOperationException();
-    }
+    // hvordan protype virker
 }
-// Standalone host...
-
-// Definitely some objects...
-// Hmm, should we call them something??????
-// I guess it is not components....
-
-// Component Host (maybe latere versions)

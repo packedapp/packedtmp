@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Member;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import app.packed.container.Component;
 import app.packed.util.Key;
@@ -55,7 +56,7 @@ class InjectionSiteForDependency implements InjectionSite {
 
     /** {@inheritDoc} */
     @Override
-    public int index() {
+    public OptionalInt index() {
         return dependency.index();
     }
 

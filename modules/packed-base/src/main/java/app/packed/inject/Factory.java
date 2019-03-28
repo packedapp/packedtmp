@@ -95,7 +95,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) Factory2.create(function, getClass());
+        this.factory = (InternalFactory<T>) Factory2.create(getClass(), function);
     }
 
     /**
@@ -107,7 +107,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) Factory1.create(function, getClass());
+        this.factory = (InternalFactory<T>) Factory1.create(getClass(), function);
     }
 
     /**
@@ -129,7 +129,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) Factory0.create(supplier, getClass());
+        this.factory = (InternalFactory<T>) Factory0.create(getClass(), supplier);
     }
 
     /**
@@ -138,7 +138,7 @@ public class Factory<T> {
      * @return the default key under which this factory will be registered
      */
     public final Key<T> defaultKey() {
-        return factory.key;
+        return factory.defaultKey;
     }
 
     /**

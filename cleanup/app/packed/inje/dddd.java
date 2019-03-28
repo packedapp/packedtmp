@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
-
-import app.packed.inject.ServiceConfiguration;
+package app.packed.inje;
 
 /**
  *
  */
-public interface HostBuilder {
+public class dddd {
 
-    // Vi skal havde fundet ud af hvordan vi kan smide et object med...
-    // Objekter er vel mandatory???
-
-    default <T> ServiceConfiguration<T> provide(T instance) {
+    static Transaction start() {
         throw new UnsupportedOperationException();
     }
+
+    public static void main(String[] args) throws Exception {
+        try (var t = start()) {
+
+        }
+
+    }
+
+    static class Transaction implements AutoCloseable {
+
+        /** {@inheritDoc} */
+        @Override
+        public void close() throws Exception {}
+
+    }
 }
-// Standalone host...
-
-// Definitely some objects...
-// Hmm, should we call them something??????
-// I guess it is not components....
-
-// Component Host (maybe latere versions)

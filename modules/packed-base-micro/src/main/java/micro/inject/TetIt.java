@@ -50,9 +50,9 @@ public class TetIt {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            install(Factory.ofInstance("Root")).asNone();
-            install(Factory.ofInstance("Child1")).asNone();
-            install(Factory.ofInstance("Child2")).asNone();
+            installService(Factory.ofInstance("Root")).asNone();
+            installService(Factory.ofInstance("Child1")).asNone();
+            installService(Factory.ofInstance("Child2")).asNone();
         }
     }
 }

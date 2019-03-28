@@ -113,7 +113,7 @@ public class BoxedServices {
                         if (dependencies.size() > 1) {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
-                                if (j == dependency.index()) {
+                                if (j == dependency.index().getAsInt()) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {
                                     sj.add(dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());

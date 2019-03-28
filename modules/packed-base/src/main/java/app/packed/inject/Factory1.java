@@ -19,15 +19,15 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.InternalDependency;
 import packed.internal.invokers.InternalFunction1;
 
 /**
- * A {@link Factory} type that takes a single dependency and uses a {@link Function} to create new instances. The input
+ * A special {@link Factory} type that takes a single dependency ans input and uses a {@link Function} to dynamically provide new instances. The input
  * to the function being the single dependency.
  * <p>
  * Is typically used like this:
@@ -52,14 +52,32 @@ import packed.internal.invokers.InternalFunction1;
  * {@code jobs.MyJob} is returned. If it is not a component that requests the logger, an anonymous logger is returned.
  *
  * 
+
+ * @see Factory0
+ * @see Factory2
+ */
+
+/**
+ * A special {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
+ * <p>
+ * Is typically used like this:
+ *
+ * <pre> {@code
+ * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
+ * <p>
+ * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
+ * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system.
+ * 
  * @param <T>
+ *            The type of the single dependency this factory takes
+ * @param <R>
  *            the type of objects this factory constructs
  * @see Factory0
  * @see Factory2
  */
 public abstract class Factory1<T, R> extends Factory<R> {
 
-    /** A cache of function factory definitions. */
+    /** A cache of extracted type variables and dependencies from implementations of this class. */
     private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependency>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -84,10 +102,19 @@ public abstract class Factory1<T, R> extends Factory<R> {
         super(function);
     }
 
+    /**
+     * Creates a new internal factory from an implementation of this class and a function.
+     * 
+     * @param implementation
+     *            the class extending this class
+     * @param function
+     *            the function used for creating new values
+     * @return a new internal factory
+     */
     @SuppressWarnings("unchecked")
-    static <T, R> InternalFactory<R> create(Function<?, ? extends T> supplier, Class<?> typeInfo) {
-        Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(typeInfo);
-        return new InternalFactory<>(new InternalFunction1<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) supplier), fs.getValue());
+    static <T, R> InternalFactory<R> create(Class<?> implementation, Function<?, ? extends T> function) {
+        Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(implementation);
+        return new InternalFactory<>(new InternalFunction1<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 
 }

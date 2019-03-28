@@ -18,6 +18,7 @@ package app.packed.inject;
 import java.lang.reflect.Member;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.FieldDescriptor;
@@ -43,7 +44,7 @@ public interface Dependency {
      */
     // TODO change to OptionalInt??? rename to parameterIndex??? Or can we end up in situations where we do not have a
     // parameter
-    int index();
+    OptionalInt index();
 
     /**
      * Returns whether or not this dependency is optional.

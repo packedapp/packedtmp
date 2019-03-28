@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
-import app.packed.container.AppConfiguration;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
@@ -133,7 +132,7 @@ public interface App extends Injector {
         throw new UnsupportedOperationException();
     }
 
-    static App of(Consumer<? super AppConfiguration> configurator, WiringOperation... operations) {
+    static App of(Consumer<? super AppConfigurator> configurator, WiringOperation... operations) {
         requireNonNull(configurator, "configurator is null");
         ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
         configurator.accept(c);

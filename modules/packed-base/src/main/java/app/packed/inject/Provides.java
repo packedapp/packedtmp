@@ -73,31 +73,21 @@ import java.lang.annotation.Target;
  * Or do we????
  * 
  */
-
-// Hvordan fungere den med asNone() metoden????? Der er jo ingen grund til at instantiere objekter...hvid vi ikke
-// behoever
-// saa registerer den som singleton bliver den lavet ligegyldigt hvad.
-// Lazy bliver den lavet hvis der er behov den...
-// Okay, lazy can godt have @Provides alligevel.
-// Hvis felterne er statisk paa en lazy, bliver lazy aldrig lavet?!!?!?!
-// Test med en constructor der smider en AssertionError
-
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Provides {
 
-    // exported()???
     /**
-     * If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having to
-     * export it from the bundle
+     * This If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having
+     * to export it from the bundle
      * 
      * @return whether or not the provided service should be exported
      */
     boolean export() default false;
 
     /**
-     * The binding mode of the providing method or field, the default is {@link InstantiationMode#SINGLETON}.
+     * The instantiation mode of the providing method or field, the default is {@link InstantiationMode#SINGLETON}.
      * 
      * @return the binding mode
      */
@@ -107,6 +97,7 @@ public @interface Provides {
      * Returns a description of the service provided by the annotated method or field.
      *
      * @return a description of the service provided by the annotated method or field
+     * @see ServiceDescriptor#description()
      */
     String description() default "";
 

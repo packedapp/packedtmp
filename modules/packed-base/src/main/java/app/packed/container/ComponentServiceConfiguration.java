@@ -15,29 +15,57 @@
  */
 package app.packed.container;
 
-import app.packed.app.AppConfigurator;
 import app.packed.bundle.Bundle;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectorConfigurator;
-import app.packed.util.Nullable;
+import app.packed.inject.ServiceConfiguration;
+import app.packed.util.Key;
 
 /**
- * This class represents the configuration of a component. An actual instance is usually obtained by calling one of the
- * install methods on {@link Bundle}, {@link AppConfigurator} or on another component configuration. It it also possible
- * to install components at runtime via {@link Component}.
+ * The configuration representing an entity that is both being registered as a component and as a service.
+ * 
+ * 
+ * <p>
+ * All the methods in this interface is solely added to allow
+ * 
+ * A component configuration instance is usually obtained by calling one of the install methods on
+ * {@link ComponentServiceConfiguration} or {@link Bundle} at configuration time. Or one of the install methods on
+ * {@link Component} at runtime.
  */
-// isConfigurable();
-// checkConfigurable();
-// add getChildren()?
-// add getComponentType() <- The type
-// Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
-// Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
+public interface ComponentServiceConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration {
 
-public interface ComponentConfiguration extends ComponentInstaller {
-
-    // TypeAnnotations are ignored for now...
     /**
+     * Prohibits the component for being available as a dependency to other services/components.
      * 
+     * @return this component configuration
+     */
+    @Override
+    ComponentServiceConfiguration<?> asNone();
+
+    /**
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
+     *
+     * @param key
+     *            the key to bind to
+     * @return this configuration
+     * @see #as(Key)
+     */
+    @Override
+    ComponentServiceConfiguration<T> as(Class<? super T> key);
+
+    /**
+     * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
+     * null, any existing binding is removed.
+     *
+     * @param key
+     *            the key to bind to
+     * @return this configuration
+     * @see #as(Class)
+     */
+    @Override
+    ComponentServiceConfiguration<T> as(Key<? super T> key);
+
+    /**
      * @param implementation
      *            the mixin implementation to add
      * @return this configuration
@@ -47,7 +75,8 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #addMixin(Factory)
      * @see #addMixin(Object)
      */
-    ComponentConfiguration addMixin(Class<?> implementation);
+    @Override
+    ComponentServiceConfiguration<T> addMixin(Class<?> implementation);
 
     /**
      * Adds the specified mixin to the list of mixins for the component.
@@ -61,7 +90,8 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #addMixin(Class)
      * @see #addMixin(Object)
      */
-    ComponentConfiguration addMixin(Factory<?> factory);
+    @Override
+    ComponentServiceConfiguration<T> addMixin(Factory<?> factory);
 
     /**
      * Adds the specified mixin instance to this component. The mixin can either be a class in which case it will be
@@ -77,39 +107,8 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #addMixin(Class)
      * @see #addMixin(Factory)
      */
-    ComponentConfiguration addMixin(Object instance);
-
-    /**
-     * Returns the description of this component. Or null if the description has not been set.
-     *
-     * @return the description of this component. Or null if the description has not been set.
-     * @see #setDescription(String)
-     * @see Component#description()
-     */
-    @Nullable
-    String getDescription();
-
-    /**
-     * Returns the name of the component or null if the name has not been set.
-     *
-     * @return the name of the component or null if the name has not been set
-     * @see #setName(String)
-     * @see Component#name()
-     */
-    @Nullable
-    String getName();
-
-    /**
-     * Returns the configuration of the components injector. This injector is responsible for any dependency injection
-     * needed for this component. For example, for instantiating the component instance or any of its mixins. The injector
-     * can accessed via {@link Component#injector()} at runtime.
-     * 
-     * @return a the component's injector
-     * @see Component#injector()
-     */
-    // Or privateInjector
-    // Do example, with listener, on instance annotation
-    InjectorConfigurator privates();
+    @Override
+    ComponentServiceConfiguration<T> addMixin(Object instance);
 
     /**
      * Sets the description of this component.
@@ -120,14 +119,15 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #getDescription()
      * @see Component#description()
      */
-    ComponentConfiguration setDescription(String description);
+    @Override
+    ComponentServiceConfiguration<T> setDescription(String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
      * '_', '-' or '.'. The name is case sensitive.
      * <p>
      * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
-     * such a way that it will have a unique path among other components in the same container.
+     * such a way that it will have a unique path among other components in the container.
      *
      * @param name
      *            the name of the component
@@ -138,5 +138,10 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #getName()
      * @see Component#name()
      */
-    ComponentConfiguration setName(String name);
+    @Override
+    ComponentServiceConfiguration<T> setName(String name);
+
+    // default ContainerActionable on(LifecycleState... states) {
+    // throw new UnsupportedOperationException();
+    // }
 }

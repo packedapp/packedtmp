@@ -24,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
+import app.packed.app.AppConfigurator;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
-import app.packed.container.AppConfiguration;
-import app.packed.container.ComponentConfiguration;
+import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
@@ -40,9 +40,9 @@ import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.invokers.InternalFunction;
 
 /**
- * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link AppConfiguration}.
+ * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link AppConfigurator}.
  */
-public final class ContainerBuilder extends InjectorBuilder implements AppConfiguration {
+public final class ContainerBuilder extends InjectorBuilder implements AppConfigurator {
 
     // Maybe should be able to define a namig strategy, to avoid reuse? Mostly for distributed
     // Lazy initialized...
@@ -118,14 +118,14 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
 
     /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        return install(Factory.findInjectable(implementation));
+    public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
+        return installService(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
+    public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         checkConfigurable();
         freezeLatest();
@@ -134,7 +134,7 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.dependencies());
-        ComponentConfiguration<T> cc = install0(icc);
+        ComponentServiceConfiguration<T> cc = install0(icc);
         scanForProvides(func.getReturnTypeRaw(), icc);
         bindNode(icc).as(factory.defaultKey());
         return cc;
@@ -143,14 +143,14 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public <T> ComponentConfiguration<T> install(T instance) {
+    public <T> ComponentServiceConfiguration<T> installService(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
-        ComponentConfiguration<T> cc = install0(icc);
+        ComponentServiceConfiguration<T> cc = install0(icc);
         scanForProvides(instance.getClass(), icc);
         bindNode(icc).as((Class) instance.getClass());
         return cc;
@@ -158,8 +158,8 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
 
     /** {@inheritDoc} */
     @Override
-    public <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
-        return install(Factory.findInjectable(implementation));
+    public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
+        return installService(Factory.findInjectable(implementation));
     }
 
     /**

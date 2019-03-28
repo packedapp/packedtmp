@@ -108,8 +108,9 @@ public final class InternalDependency implements Dependency {
 
     /** {@inheritDoc} */
     @Override
-    public int index() {
-        return variable == null ? 0 : variable.getIndex();
+    public OptionalInt index() {
+        // TODO cache
+        return variable == null ? OptionalInt.empty() : OptionalInt.of(variable.getIndex());
     }
 
     /** {@inheritDoc} */

@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
+package app.packed.component;
 
 /**
  *
  */
-public class dddd {
+public interface ComponentInstance<T> {
 
-    static Transaction start() {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void main(String[] args) throws Exception {
-        try (var t = start()) {
-
-        }
-
-    }
-
-    static class Transaction implements AutoCloseable {
-
-        /** {@inheritDoc} */
-        @Override
-        public void close() throws Exception {}
-
-    }
 }

@@ -13,22 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.container;
 
-import java.lang.invoke.MethodHandles;
+import app.packed.inject.Injector;
 
 /**
  *
  */
-public class A {
+// Hmm hvad med injector????, kan vi injecte i services?? ja
+// BundleContext
+public interface BundleRuntime extends Injector {
 
-    public static void main(String[] args) {
-        Injector i = Injector.of(c -> {
-            c.lookup(MethodHandles.lookup());
-            c.provide(new Factory0<>(System::nanoTime) {});
-            c.provide(new Factory0<>(System::nanoTime) {}.mapTo(String::valueOf, String.class));
-        });
-        System.out.println(i.with(Long.class));
-        System.out.println(i.with(String.class));
-    }
+    // injecting Injector -> is the public exposed injector
 }

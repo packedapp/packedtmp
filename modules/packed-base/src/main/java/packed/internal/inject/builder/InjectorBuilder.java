@@ -278,4 +278,10 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
         is.importServices();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void registerStatics(Class<?> staticsHolder) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -24,8 +24,9 @@ import app.packed.util.TypeLiteral;
 import packed.internal.invokers.InternalFunction0;
 
 /**
- * A {@link Factory} type that provides an easy way to use a {@link Supplier} to dynamically provide new instances,
- * thereby circumventing the limitations of Java's type system.
+ * A special {@link Factory} type that uses the supplied value from a {@link Supplier} to dynamically provide new
+ * factory instances.
+ * 
  * <p>
  * Is typically used like this:
  *
@@ -33,7 +34,7 @@ import packed.internal.invokers.InternalFunction0;
  * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
  * <p>
  * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
- * type variable (in this case {@code Long}).
+ * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system.
  * 
  * @param <R>
  *            the type of objects this factory constructs
@@ -42,7 +43,7 @@ import packed.internal.invokers.InternalFunction0;
  */
 public abstract class Factory0<R> extends Factory<R> {
 
-    /** A cache of extracted type variables. */
+    /** A cache of extracted type variables from implementations of this class. */
     private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -68,16 +69,16 @@ public abstract class Factory0<R> extends Factory<R> {
     }
 
     /**
-     * Creates a new internal factory for the specified supplier.
+     * Creates a new internal factory from an implementation of this class and a supplier.
      * 
+     * @param implementation
+     *            the class extending this class
      * @param supplier
      *            the supplier used for creating new values
-     * @param implementation
-     *            the class extending Factory0
      * @return a new internal factory
      */
     @SuppressWarnings("unchecked")
-    static <T> InternalFactory<T> create(Supplier<? extends T> supplier, Class<?> implementation) {
+    static <T> InternalFactory<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
         TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
         return new InternalFactory<>(new InternalFunction0<>(tt, supplier), List.of());
     }

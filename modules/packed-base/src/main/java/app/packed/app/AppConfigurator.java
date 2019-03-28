@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.app;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,13 +21,13 @@ import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
-import app.packed.inject.Factory;
+import app.packed.container.ComponentInstaller;
+import app.packed.container.Container;
+import app.packed.container.ContainerActionable;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.lifecycle.LifecycleState;
-import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
 
 /**
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
@@ -40,7 +40,7 @@ import app.packed.util.TypeLiteral;
  * <li>Setting a name for the container.</li>
  * </ul>
  */
-public interface AppConfiguration extends InjectorConfigurator {
+public interface AppConfigurator extends InjectorConfigurator, ComponentInstaller {
 
     /**
      * Returns the name of the container or null if the name has not been set.
@@ -52,70 +52,9 @@ public interface AppConfiguration extends InjectorConfigurator {
     @Nullable
     String getName();
 
-    /**
-     * Install the specified component implementation and makes it available as a service with the specified class as the
-     * key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
-     * 
-     * @param <T>
-     *            the type of component to install
-     * @param implementation
-     *            the component implementation to install
-     * @return a component configuration that can be use to configure the component in greater detail
-     * @throws InvalidDeclarationException
-     *             if some property of the implementation prevents it from being installed as a component
-     */
-    <T> ComponentConfiguration<T> install(Class<T> implementation);
-
-    <T> ComponentConfiguration<T> install(Factory<T> factory);
-
-    /**
-     * Install the specified component instance and makes it available as a service with the key
-     * {@code instance.getClass()}.
-     * <p>
-     * If this install operation is the first install operation. The component will be installed as the root component of
-     * the container. All subsequent install operations on this configuration will have the component as its parent. If you
-     * wish to use a specific component as a parent, use the various install methods on the {@link ComponentConfiguration}
-     * instead of the install methods on this interface.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param instance
-     *            the component instance to install
-     * @return the component configuration
-     * @throws InvalidDeclarationException
-     *             if some property of the instance prevents it from being installed as a component
-     */
-    <T> ComponentConfiguration<T> install(T instance);
-
-    /**
-     * Install the specified component implementation and makes it available as a service with the specified type literal as
-     * the key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
-     * 
-     * @param <T>
-     *            the type of component to install
-     * @param implementation
-     *            the component implementation to install
-     * @return component configuration that can be use to configure the component in greater detail
-     * @throws InvalidDeclarationException
-     *             if some property of the implementation prevents it from being installed as a component
-     */
-    <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation);
-
     // default void wireContainer(Class<? extends Bundle> bundleType, WiringOperation... stages) {
     // wireContainer(Bundles.instantiate(bundleType), stages);
     // }
-
-    /**
-     * Installs the specified container bundle in the container. The container created from the bundle, will have the latest
-     * installed component as parent of the root in the new container. If no components have been installed, the root of the
-     * bundle will be the root of the container. And no more components can be installed
-     * 
-     * @param bundle
-     *            the bundle to install
-     * @param stages
-     *            import export stages
-     */
-    void wireContainer(Bundle bundle, WiringOperation... stages);
 
     /**
      * @param state
@@ -174,7 +113,7 @@ public interface AppConfiguration extends InjectorConfigurator {
      * @see Injector#description()
      */
     @Override
-    AppConfiguration setDescription(@Nullable String description);
+    AppConfigurator setDescription(@Nullable String description);
 
     /**
      * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
@@ -191,6 +130,18 @@ public interface AppConfiguration extends InjectorConfigurator {
      * @see Container#name()
      */
     void setName(@Nullable String name);
+
+    /**
+     * Installs the specified container bundle in the container. The container created from the bundle, will have the latest
+     * installed component as parent of the root in the new container. If no components have been installed, the root of the
+     * bundle will be the root of the container. And no more components can be installed
+     * 
+     * @param bundle
+     *            the bundle to install
+     * @param stages
+     *            import export stages
+     */
+    void wireContainer(Bundle bundle, WiringOperation... stages);
 
     // change of() <- to async start (this includes bundles then, but then we cannot create a bundled container, without
     // starting it)

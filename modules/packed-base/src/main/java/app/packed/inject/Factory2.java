@@ -34,7 +34,7 @@ import packed.internal.invokers.InternalFunction2;
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 
-    /** A cache of function factory definitions. */
+    /** A cache of extracted type variables and dependencies from implementations of this class. */
     private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependency>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -59,10 +59,19 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
         super(function);
     }
 
+    /**
+     * Creates a new internal factory from an implementation of this class and a (bi) function.
+     * 
+     * @param implementation
+     *            the class extending this class
+     * @param function
+     *            the (bi) function used for creating new values
+     * @return a new internal factory
+     */
     @SuppressWarnings("unchecked")
-    static <T, U, R> InternalFactory<R> create(BiFunction<?, ?, ? extends T> supplier, Class<?> typeInfo) {
-        Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(typeInfo);
-        return new InternalFactory<>(new InternalFunction2<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) supplier),
+    static <T, U, R> InternalFactory<R> create(Class<?> implementation, BiFunction<?, ?, ? extends T> function) {
+        Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(implementation);
+        return new InternalFactory<>(new InternalFunction2<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function),
                 fs.getValue());
     }
 }

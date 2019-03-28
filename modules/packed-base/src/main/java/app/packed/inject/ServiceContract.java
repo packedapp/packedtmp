@@ -23,7 +23,11 @@ import java.util.Set;
 import app.packed.util.Key;
 
 /**
- * A contract detailing the types of services that an entity needs for succesful construction can provide.
+ * A service contract consists of two parts. A part detailing which services are requiremented in order to be
+ * successfull constructed. And another part that the details what kind of services the entity provides after being
+ * constructed.
+ * 
+ * detailing the types of services that an entity needs for succesful construction can provide.
  * 
  * requires Serviced that are required before the entity can be properly constructed.
  * 

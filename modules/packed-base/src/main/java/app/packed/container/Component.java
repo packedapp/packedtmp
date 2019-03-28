@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
@@ -49,12 +50,17 @@ public interface Component extends Taggable {
      */
     Container container();
 
+    default void install(Consumer<? super ComponentInstaller> installer) {
+        // Maybe have a runtime component installer???
+        // maybe just allow prototypes for now...
+    }
+
     /**
      * Returns the description of this component Or null if no description has been set
      *
      * @return the description of this component. Or null if no description has been set
      *
-     * @see ComponentConfiguration#setDescription(String)
+     * @see ComponentServiceConfiguration#setDescription(String)
      */
     Optional<String> description();
 
@@ -80,12 +86,12 @@ public interface Component extends Taggable {
     /**
      * Returns the name of this component.
      * <p>
-     * If no name was explicitly set using {@link ComponentConfiguration#setName(String)}. A unique name (among other
+     * If no name was explicitly set using {@link ComponentServiceConfiguration#setName(String)}. A unique name (among other
      * components with the same parent) has been automatically generated.
      *
      * @return the name of this component
      *
-     * @see ComponentConfiguration#setName(String)
+     * @see ComponentServiceConfiguration#setName(String)
      */
     String name();
 

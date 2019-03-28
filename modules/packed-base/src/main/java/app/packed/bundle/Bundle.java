@@ -23,7 +23,8 @@ import java.util.function.Consumer;
 
 import app.packed.app.App;
 import app.packed.app.AppLaunch;
-import app.packed.container.ComponentConfiguration;
+import app.packed.container.ComponentInstaller;
+import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
@@ -277,6 +278,11 @@ public abstract class Bundle {
         // return injectorBuilder;
     }
 
+    protected final ComponentInstaller installer() {
+        // Its here because bundle cannot implement ComponentInstaller
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Installs the specified component implementation. This method is short for
      * {@code install(Factory.findInjectable(implementation))} which basically finds a valid constructor/static method (as
@@ -288,8 +294,8 @@ public abstract class Bundle {
      *            the component implementation to install
      * @return a component configuration that can be use to configure the component in greater detail
      */
-    protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
-        return containerBuilderX().install(implementation);
+    protected final <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
+        return containerBuilderX().installService(implementation);
     }
 
     /**
@@ -303,16 +309,16 @@ public abstract class Bundle {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
-        return containerBuilderX().install(factory);
+    protected final <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
+        return containerBuilderX().installService(factory);
     }
 
-    protected final <T> ComponentConfiguration<T> install(TypeLiteral<T> implementation) {
-        return containerBuilderX().install(implementation);
+    protected final <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
+        return containerBuilderX().installService(implementation);
     }
 
-    protected ComponentConfiguration<?> installBundle() {
-        return containerBuilderX().install(this);
+    protected ComponentServiceConfiguration<?> installBundle() {
+        return containerBuilderX().installService(this);
     }
 
     /**

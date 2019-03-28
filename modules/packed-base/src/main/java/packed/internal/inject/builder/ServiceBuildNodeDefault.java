@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.container.ComponentConfiguration;
+import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.InjectionSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
@@ -42,7 +42,7 @@ import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
- * makes extending it with {@link ComponentConfiguration} much easier.
+ * makes extending it with {@link ComponentServiceConfiguration} much easier.
  */
 public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
@@ -81,9 +81,9 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         // Vi faar jo problemet ved f.eks. CACHE_PER_APP.....
         // her giver det ikke meningen at faa componenten...
 
-        if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
-            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
-        }
+        // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
+        // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
+        // }
     }
 
     /** {@inheritDoc} */

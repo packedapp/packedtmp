@@ -13,26 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
-
-import app.packed.inject.ServiceConfiguration;
+package app.packed.container;
 
 /**
  *
  */
-public interface HostBuilder {
+// Ideen er bestemmer noger om hvordan componenten bliver
 
-    // Vi skal havde fundet ud af hvordan vi kan smide et object med...
-    // Objekter er vel mandatory???
+// Hmmmm, hvis alt det skal vaere derpaa.
 
-    default <T> ServiceConfiguration<T> provide(T instance) {
+// HVis skal kunne hide ting??? F.eks. annoteringer
+
+final class ComponentFactoryBuilder<T> {
+
+    static <T> ComponentFactoryBuilder<T> of(Class<T> type) {
         throw new UnsupportedOperationException();
     }
 }
-// Standalone host...
-
-// Definitely some objects...
-// Hmm, should we call them something??????
-// I guess it is not components....
-
-// Component Host (maybe latere versions)
