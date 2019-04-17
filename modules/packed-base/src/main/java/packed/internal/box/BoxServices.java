@@ -55,7 +55,7 @@ public final class BoxServices {
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     // SKAL VI lave en cache af noder der er slaaet op i andre boxe???
-    final ServiceNodeMap nodes;
+    public final ServiceNodeMap nodes;
 
     /** A set of all explicitly registered optional service keys. */
     final HashSet<Key<?>> optional = new HashSet<>();
@@ -81,8 +81,9 @@ public final class BoxServices {
      *            the key to add
      */
     public void addOptional(Key<?> key) {
-        // checkConfigurable()
-        optional.add(requireNonNull(key, "key is null"));
+        requireNonNull(key, "key is null");
+        box.checkConfigurable();
+        optional.add(key);
     }
 
     /**
@@ -92,8 +93,9 @@ public final class BoxServices {
      *            the key to add
      */
     public void addRequired(Key<?> key) {
-        // checkConfigurable()
-        required.add(requireNonNull(key, "key is null"));
+        requireNonNull(key, "key is null");
+        box.checkConfigurable();
+        required.add(key);
     }
 
     void buildContract(ServiceContract.Builder builder) {
@@ -166,13 +168,17 @@ public final class BoxServices {
         }
     }
 
+    public void recordMissingDependency(ServiceBuildNode<?> node, DependencyDescriptor dependency, boolean fromParent) {
+
+    }
+
     /**
      * Record a dependency that could not be resolved
      * 
      * @param node
      * @param dependency
      */
-    public void recordDependencyResolved(ServiceBuildNode<?> node, DependencyDescriptor dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(ServiceBuildNode<?> node, DependencyDescriptor dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
         requireNonNull(node);
         requireNonNull(dependency);
         if (resolvedTo != null) {

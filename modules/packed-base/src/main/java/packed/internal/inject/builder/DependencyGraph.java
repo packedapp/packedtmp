@@ -59,7 +59,7 @@ final class DependencyGraph {
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {
-            builder.publicInjector = new InternalInjector(builder, builder.publicNodeMap);
+            builder.publicInjector = new InternalInjector(builder, builder.box.services().exports);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
@@ -125,8 +125,8 @@ final class DependencyGraph {
 
         // Okay we are finished, convert all nodes to runtime nodes.
         root.privateNodeMap.toRuntimeNodes();
-        if (root.privateNodeMap != root.publicNodeMap) {
-            root.publicNodeMap.toRuntimeNodes();
+        if (root.privateNodeMap != root.box.services().exports) {
+            root.box.services().exports.toRuntimeNodes();
         }
     }
 

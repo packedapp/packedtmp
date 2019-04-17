@@ -34,7 +34,7 @@ class DependencyGraphResolver {
 
         BoxServices services = graph.root.box.services();
 
-        for (ServiceNode<?> nn : graph.root.privateNodeMap) {
+        for (ServiceNode<?> nn : services.nodes) {
             ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
             node.freeze();// Should be frozen, maybe change to an assert
 
@@ -43,8 +43,8 @@ class DependencyGraphResolver {
                 List<InternalDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     DependencyDescriptor dependency = dependencies.get(i);
-                    ServiceNode<?> resolveTo = graph.root.privateNodeMap.getNode(dependency);
-                    services.recordDependencyResolved(node, dependency, resolveTo, false);
+                    ServiceNode<?> resolveTo = services.nodes.getNode(dependency);
+                    services.recordResolvedDependency(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;
                 }
             }

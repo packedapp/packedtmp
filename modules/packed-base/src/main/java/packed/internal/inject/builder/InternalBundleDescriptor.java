@@ -56,7 +56,7 @@ public class InternalBundleDescriptor {
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
 
-        for (ServiceNode<?> n : conf.privateNodeMap) {
+        for (ServiceNode<?> n : conf.box.services().nodes) {
             if (n instanceof ServiceBuildNode) {
                 builder.addServiceDescriptor(((ServiceBuildNode<?>) n).toDescriptor());
             }

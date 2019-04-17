@@ -69,9 +69,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     @Nullable
     final ArrayList<ServiceBuildNodeExposed<?>> publicNodeList;
 
-    /** The runtime nodes that will be available in the injector. */
-    final ServiceNodeMap publicNodeMap;
-
     /**
      * Creates a new builder.
      * 
@@ -80,17 +77,19 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
      */
     public InjectorBuilder(InternalConfigurationSite configurationSite) {
         super(configurationSite);
-        publicNodeMap = privateNodeMap = new ServiceNodeMap();
         publicNodeList = null;
+
         box = new Box(BoxType.INJECTOR_VIA_CONFIGURATOR);
+
+        privateNodeMap = box.services().nodes;
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite, bundle);
-        publicNodeMap = new ServiceNodeMap();
-        privateNodeMap = new ServiceNodeMap();
         publicNodeList = new ArrayList<>();
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
+
+        privateNodeMap = box.services().nodes;
     }
 
     protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {

@@ -62,6 +62,10 @@ public final class Box { /* extends Configurable???? */
         services().buildContract(builder.services());
     }
 
+    protected void checkConfigurable() {
+
+    }
+
     /**
      * Returns a service configuration object.
      * 
