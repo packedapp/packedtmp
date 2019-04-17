@@ -21,9 +21,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.inject.Factory;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.InternalFunction;
 import support.assertj.app.packed.inject.FactoryAssert;
-import support.assertj.packed.inject.factory.InternalFactoryAssert;
+import support.assertj.packed.inject.factory.InternalFunctionAssert;
 
 /**
  *
@@ -47,11 +47,11 @@ public class Assertions {
         assertThatNullPointerException().isThrownBy(() -> c.accept(t, null)).withMessage(nameU + " is null").withNoCause();
     }
 
-    public static <T> FactoryAssert<T> assertThatFactory(Factory<T> factory) {
+    public static <T> FactoryAssert<T> checkThat(Factory<T> factory) {
         return new FactoryAssert<>(factory);
     }
 
-    public static <T> InternalFactoryAssert<T> assertThatInternalFactory(InternalFunction<T> factory) {
-        return new InternalFactoryAssert<>(factory);
+    public static <T> InternalFunctionAssert<T> checkThat(InternalFunction<T> factory) {
+        return new InternalFunctionAssert<>(factory);
     }
 }

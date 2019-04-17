@@ -23,14 +23,19 @@ import java.util.Set;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 
-/**
- *
- */
+/** The default implementation of {@link ServiceDescriptor}. */
 public class InternalServiceDescriptor implements ServiceDescriptor {
 
+    /** The config site of the service. */
     private final ConfigSite configurationSite;
+
+    /** An optional description of the service. */
+    @Nullable
     private final String description;
+
+    /** The key of the service. */
     private final Key<?> key;
     private final Set<String> tags;
 

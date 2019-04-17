@@ -54,7 +54,7 @@ public class TypeVariableExtractorUtil {
             throw new UnsupportedOperationException("Child class cannot be an interface, class = " + format(baseClass));
         }
         if (baseClass.isInterface()) {
-            throw new UnsupportedOperationException("Base classes that are interfaces are currently not supported, class = " + format(baseClass));
+            throw new UnsupportedOperationException("Interface base types are currently not supported, interface = " + format(baseClass));
         }
 
         return findTypeParameterFromSuperClass(childClass, baseClass, typeVariableIndexOnBaseClass);

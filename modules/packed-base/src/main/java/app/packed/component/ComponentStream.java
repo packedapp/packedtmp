@@ -29,9 +29,9 @@ public interface ComponentStream extends Stream<Component> {
 
     ComponentInstanceStream<?> instances();
 
-    <T> ComponentInstanceStream<?> instances(Class<T> instanceType);
+    <T> ComponentInstanceStream<T> instances(Class<T> instanceType);
 
-    <T> ComponentInstanceStream<?> instances(TypeLiteral<T> instanceType);
+    <T> ComponentInstanceStream<T> instances(TypeLiteral<T> instanceType);
 
     /**
      * Returns a new list containing all of the components in this stream in the order they where encountered. Is identical

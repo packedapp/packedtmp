@@ -8,7 +8,6 @@ import app.packed.util.Taggable;
 
 /** An immutable description of a service provided by an injector or similar entity. */
 // Skal omnavngives til service hvis vi får en context...
-// Skal
 public interface ServiceDescriptor extends Taggable {
 
     /**
@@ -35,3 +34,5 @@ public interface ServiceDescriptor extends Taggable {
     Key<?> key();
 }
 // Optional<Class<?>> implementation(); Does not work for @Provides...
+// Ideen var at vi ville bruge det til at skrive XZY.
+// Men hvis vi nu ikke

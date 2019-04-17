@@ -18,7 +18,7 @@ package packed.internal.annotations;
 import java.util.List;
 
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.InvokableMember;
+import packed.internal.invokable.InvokableMember;
 
 /**
  *

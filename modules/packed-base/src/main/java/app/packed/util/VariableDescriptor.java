@@ -18,6 +18,7 @@ package app.packed.util;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 
 /**
@@ -29,9 +30,12 @@ public interface VariableDescriptor extends AnnotatedElement {
     /**
      * Returns the {@code Class} object representing the class or interface that declares the variable.
      *
+     * @apiNote
      * @return the declaring class of the variable
      * @see Field#getDeclaringClass()
      * @see Executable#getDeclaringClass()
+     * @apiNote this method is called getDeclaringClass instead of declaringClass to be compatible with
+     *          {@link Member#getDeclaringClass()}
      */
     Class<?> getDeclaringClass();
 
@@ -42,6 +46,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @return The modifier flags for this variable
      * @see Parameter#getModifiers()
      * @see Field#getModifiers()
+     * @apiNote this method is called getModifiers instead of modifiers to be compatible with {@link Member#getModifiers()}
      */
     int getModifiers();
 
@@ -51,6 +56,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @return the name of the variable
      * @see Field#getName()
      * @see Parameter#getName()
+     * @apiNote this method is called getName instead of name to be compatible with {@link Member#getName()}
      */
     String getName();
 
@@ -61,7 +67,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @see Parameter#getType()
      * @see Field#getType()
      */
-    // getRawType? d
+    // TODO rename to type
     Class<?> getType();
 
     /**
@@ -71,6 +77,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @see Parameter#getParameterizedType()
      * @see Field#getGenericType()
      */
+    // TODO rename typeLiteral
     TypeLiteral<?> getTypeLiteral();
 
     /**

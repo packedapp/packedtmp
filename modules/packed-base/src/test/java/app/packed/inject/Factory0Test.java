@@ -15,9 +15,8 @@
  */
 package app.packed.inject;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static support.assertj.Assertions.checkThat;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -29,44 +28,47 @@ import app.packed.util.TypeLiteral;
 /** Tests {@link Factory0}. */
 public class Factory0Test {
 
+    /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
     @Test
-    public void typeParameter() {
+    public void IntegerFactory0() {
         Factory<Integer> f = new Factory0<>(() -> 1) {};
-        assertEquals(TypeLiteral.of(Integer.class), new Factory0<>(() -> 1) {}.typeLiteral());
-        assertEquals(Integer.class, f.rawType());
-        assertThat(f.dependencies()).isEmpty();
+        checkThat(f).is(Integer.class);
+        checkThat(f).hasNoDependencies();
 
-        assertEquals(new TypeLiteral<Integer>() {}, new X<String, Integer, Long>(() -> 123) {}.typeLiteral());
+        f = new Intermediate<String, Integer, Long>(() -> 123) {};
+        checkThat(f).is(Integer.class);
+        checkThat(f).hasNoDependencies();
     }
 
+    /** Tests that we can capture information about a simple factory producing lists of integers instances. */
     @Test
-    public void typeParameterListInteger() {
+    public void ListIntegerFactory0() {
         Factory<List<Integer>> f = new Factory0<>(() -> List.of(1)) {};
-        assertEquals(new TypeLiteral<List<Integer>>() {}, f.typeLiteral());
-        assertEquals(List.class, f.rawType());
-        assertThat(f.dependencies()).isEmpty();
+        checkThat(f).is(new TypeLiteral<List<Integer>>() {});
+        checkThat(f).hasNoDependencies();
 
-        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.typeLiteral());
+        f = new Intermediate<>(() -> List.of(1)) {};
+        checkThat(f).is(new TypeLiteral<List<Integer>>() {});
+        checkThat(f).hasNoDependencies();
     }
 
+    /**
+     * Tests that we fail if we cannot read the type variable. We test it both when directing inheriting from Factory0, and
+     * via an intermediate class.
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
-    public void typeParameterMissing() {
+    public void typeParameterIndeterminable() {
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
                 .withMessageStartingWith("Cannot determine type variable <R> for Factory<T> on class app.packed.inject.");
 
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new X(() -> 1) {}).withNoCause()
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
                 .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
     }
 
-    @Test
-    public void typeParameterVarious() {
-        assertEquals(new TypeLiteral<List<Integer>>() {}, new X<>(() -> List.of(1)) {}.typeLiteral());
-    }
-
     /** Check that we can have an intermediate abstract class. */
-    static abstract class X<S, T, R> extends Factory0<T> {
-        protected X(Supplier<T> supplier) {
+    static abstract class Intermediate<S, T, R> extends Factory0<T> {
+        protected Intermediate(Supplier<T> supplier) {
             super(supplier);
         }
     }

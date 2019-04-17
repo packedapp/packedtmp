@@ -29,11 +29,10 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.box.Box;
-import packed.internal.box.BoxSource;
+import packed.internal.box.BoxType;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -42,7 +41,7 @@ import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.InternalFunction;
 import packed.internal.runtime.ImageBuilder;
 
 /**
@@ -83,7 +82,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         super(configurationSite);
         publicNodeMap = privateNodeMap = new ServiceNodeMap();
         publicNodeList = null;
-        box = new Box(BoxSource.INJECTOR_VIA_CONFIGURATOR);
+        box = new Box(BoxType.INJECTOR_VIA_CONFIGURATOR);
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
@@ -91,22 +90,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         publicNodeMap = new ServiceNodeMap();
         privateNodeMap = new ServiceNodeMap();
         publicNodeList = new ArrayList<>();
-        box = new Box(BoxSource.INJECTOR_VIA_BUNDLE);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final <T> ServiceConfiguration<T> bindFactory(InstantiationMode mode, Factory<T> factory) {
-        checkConfigurable();
-        freezeLatest();
-        InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-        InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
-
-        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(func.getReturnTypeRaw());
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func), (List) factory.dependencies());
-
-        scanForProvides(func.getReturnTypeRaw(), node);
-
-        return bindNode(node).as(factory.defaultKey());
+        box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
 
     protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
@@ -129,11 +113,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
      *            the key of the service that should be exposed
      * @return a configuration for the exposed service
      */
-    public final <T> ServiceConfiguration<T> expose(Class<T> key) {
-        return expose(Key.of(key));
-    }
-
-    public final <T> ServiceConfiguration<T> expose(Key<T> key) {
+    public final <T> ServiceConfiguration<T> export(Key<T> key) {
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
@@ -149,10 +129,10 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     }
 
     @SuppressWarnings("unchecked")
-    public final <T> ServiceConfiguration<T> expose(ServiceConfiguration<T> configuration) {
-        checkConfigurable();
-        freezeLatest();
-        return (ServiceConfiguration<T>) expose(configuration.getKey());
+    public final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
+        // Skal skrives lidt om, det her virker, f.eks. som export(provide(ddd).asNone).as(String.class)
+
+        return (ServiceConfiguration<T>) export(configuration.getKey());
     }
 
     protected void freezeLatest() {
@@ -169,21 +149,28 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return bindFactory(InstantiationMode.SINGLETON, requireNonNull(factory, "factory is null"));
+        requireNonNull(factory, "factory is null");
+        InstantiationMode mode = InstantiationMode.SINGLETON;
+        checkConfigurable();
+        freezeLatest();
+        InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
+
+        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(func.getReturnTypeRaw());
+        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func), (List) factory.dependencies());
+
+        scanForProvides(func.getReturnTypeRaw(), node);
+
+        return bindNode(node).as(factory.defaultKey());
     }
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> provide(T instance) {
+        // TODO lav den om til et factory....
         requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
@@ -196,8 +183,8 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return bindFactory(InstantiationMode.SINGLETON, Factory.findInjectable(implementation));
+    public void registerStatics(Class<?> staticsHolder) {
+        throw new UnsupportedOperationException();
     }
 
     protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
@@ -229,18 +216,19 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     }
 
     public final void serviceRequire(Class<?> key) {
+        // kunne strengt taget ogsaa vaere en contract...
         serviceRequire(Key.of(key));
     }
 
     public final void serviceRequire(Key<?> key) {
-        box.services().addRequires(key);
+        box.services().addRequired(key);
     }
 
-    public final void serviceRequireOptionally(Class<?> key) {
-        serviceRequireOptionally(Key.of(key));
+    public final void serviceOptional(Class<?> key) {
+        serviceOptional(Key.of(key));
     }
 
-    public final void serviceRequireOptionally(Key<?> key) {
+    public final void serviceOptional(Key<?> key) {
         box.services().addOptional(key);
     }
 
@@ -277,11 +265,5 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
         is.importServices();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void registerStatics(Class<?> staticsHolder) {
-        throw new UnsupportedOperationException();
     }
 }

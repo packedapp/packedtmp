@@ -35,7 +35,7 @@ public class BundleContract {
 
     private final LifecyclePoints stoppingPoints = null;
 
-    BundleContract(BundleContract.Builder builder) {
+    private BundleContract(BundleContract.Builder builder) {
         ServiceContract.Builder s = builder.services;
         this.services = s == null ? ServiceContract.EMPTY : s.build();
     }
@@ -71,6 +71,7 @@ public class BundleContract {
     }
 
     // Needed if we want to allow extensions..
+    // Which I think we want after AnyBundle
     public static class Builder {
 
         /** A service contract builder object. */

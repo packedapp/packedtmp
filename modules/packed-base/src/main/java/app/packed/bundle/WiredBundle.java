@@ -31,6 +31,8 @@ import app.packed.util.Nullable;
 // <T> so we can register it as a service in the bundle
 // for example, WiredBundle<Injector> wb = wire()
 // wb.as(new Key<@Left Injector>(){});
+// Eneste jeg ikke lide er Bundle til sidst. Bundle er jo som regel noget der kan extendes...
+// Maaske bare wired, writedContainer
 public final class WiredBundle {
 
     WiredBundle(Bundle parent, Bundle child) {

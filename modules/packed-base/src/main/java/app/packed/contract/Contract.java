@@ -32,6 +32,7 @@ import app.packed.util.Key;
 // Version
 
 // Merge to contracts.... All fragments, needs a merge method
+
 public final class Contract {
 
     // String Description.. But it is neither bundle or container. It is the description of the contract...
@@ -66,7 +67,6 @@ public final class Contract {
         }
     }
 
-    // change to class
     public final class Services {
 
         // Optional<String> exportDescription(Key<?> key);

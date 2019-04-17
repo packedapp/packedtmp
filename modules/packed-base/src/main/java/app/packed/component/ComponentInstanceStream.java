@@ -25,23 +25,17 @@ import java.util.stream.Stream;
 import app.packed.container.Component;
 
 /**
- *
+ * A specialized stream of component instances.
  */
 public interface ComponentInstanceStream<T> extends Stream<ComponentInstance<T>> {
 
-    default void forEachInstance(Consumer<? super T> action) {
-        instances().forEach(action);
-    }
+    // ComponentInstanceStream<T> inState
 
-    /**
-     * Returns a stream of object that the component instance wraps.
-     * 
-     * @return a stream of object that the component instance wraps
-     */
-    Stream<T> instances();
-
-    default List<T> toInstanceList() {
-        return instances().collect(Collectors.toList());
+    @SuppressWarnings("unchecked")
+    default <S> ComponentInstanceStream<S> filterOnComponent(Predicate<? super Component> predicate) {
+        return (ComponentInstanceStream<S>) filter(c -> {
+            throw new UnsupportedOperationException();
+        });
     }
 
     @SuppressWarnings("unchecked")
@@ -52,11 +46,29 @@ public interface ComponentInstanceStream<T> extends Stream<ComponentInstance<T>>
         });
     }
 
-    @SuppressWarnings("unchecked")
-    default <S> ComponentInstanceStream<S> filterOnComponent(Predicate<? super Component> predicate) {
-        return (ComponentInstanceStream<S>) filter(c -> {
-            throw new UnsupportedOperationException();
-        });
+    default void forEachInstance(Consumer<? super T> action) {
+        instances().forEach(action);
+    }
+
+    /**
+     * Returns a stream of the object that each component instance wraps.
+     * <p>
+     * This is a <em>stateful intermediate operation</em>.
+     * 
+     * @return a stream of the object that each component instance wraps
+     */
+    Stream<T> instances();
+
+    /**
+     * Returns a new list containing all of the instances of each component in this stream in the order they where
+     * encountered. Is identical to invoking {@code stream.instances().collect(Collectors.toList())}.
+     * <p>
+     * This is a <em>terminal operation</em>.
+     *
+     * @return a new list containing all of the components in this stream
+     */
+    default List<T> toInstanceList() {
+        return instances().collect(Collectors.toList());
     }
 
     /**
@@ -70,8 +82,6 @@ public interface ComponentInstanceStream<T> extends Stream<ComponentInstance<T>>
     default List<ComponentInstance<T>> toList() {
         return collect(Collectors.toList());
     }
-
-    // ComponentInstanceStream<T> inState
 
     /********** Overridden to provide a ComponentInstanceStream as return value. **********/
 

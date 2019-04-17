@@ -15,11 +15,9 @@
  */
 package app.packed.util;
 
-import app.packed.inject.Inject;
-
 /**
  * A runtime exception that is typically thrown when the runtime encounters a structural problems on some object. For
- * example, a final field annotated with {@link Inject}.
+ * example, a final field annotated with {@link app.packed.inject.Inject}.
  */
 public class InvalidDeclarationException extends RuntimeException {
 

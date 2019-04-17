@@ -15,9 +15,9 @@
  */
 package packed.internal.inject.factory;
 
-import packed.internal.invokers.InternalFunction0;
+import packed.internal.invokable.Function0Invokable;
 
-/** Tests {@link InternalFunction0}. */
+/** Tests {@link Function0Invokable}. */
 public class InternalFactory0Test {
 
 

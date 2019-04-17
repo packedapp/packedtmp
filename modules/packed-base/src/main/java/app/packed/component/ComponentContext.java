@@ -19,6 +19,8 @@ package app.packed.component;
  *
  */
 public interface ComponentContext {
+    // PrototypeContext
+
     // install(); <- installs child
     // spawn();
     // spawn(100);
@@ -36,6 +38,8 @@ public interface ComponentContext {
 
     // Role -> Pool [5-25 instance, timeout 1 minute]
 
+    // I role skulle man kun installere en slags controller...
+
     // Install
 
     // setMaxInstances();
@@ -44,4 +48,9 @@ public interface ComponentContext {
 
     // I think there are extra settings on prototype...
     // Such as caching...
+    // Because they are unthogonal, lazy has nothing todo with actors.
+
+    // But about runtime hotswap, for example, for actors...
+    // We kind of swap the type...
+
 }

@@ -298,7 +298,7 @@ public interface Injector extends Taggable {
     }
 
     /**
-     * Creates a new injector via the specified configurator.
+     * Creates a new injector using a configurator object.
      *
      * @param configurator
      *            a consumer used for configuring the injector

@@ -34,7 +34,7 @@ import packed.internal.inject.InjectSupport;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.inject.builder.ServiceBuildNodeDefault;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
 /** The default implementation of {@link ComponentServiceConfiguration}. */
@@ -195,7 +195,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
 
     /** {@inheritDoc} */
     @Override
-    public InjectorConfigurator privates() {
+    public InjectorConfigurator injector() {
         return null;
     }
 

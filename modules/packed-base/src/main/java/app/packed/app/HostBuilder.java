@@ -15,11 +15,13 @@
  */
 package app.packed.app;
 
+import app.packed.contract.Contract;
 import app.packed.inject.ServiceConfiguration;
 
 /**
  *
  */
+// HostConfiguration...
 public interface HostBuilder {
 
     // Vi skal havde fundet ud af hvordan vi kan smide et object med...
@@ -28,6 +30,14 @@ public interface HostBuilder {
     default <T> ServiceConfiguration<T> provide(T instance) {
         throw new UnsupportedOperationException();
     }
+
+    // Her er det interessant med meta data hjaelp omkring contracten....
+    // Hvad skal med i Host, for example, Her taenker jeg ogsaa paa bruger ting...
+    HostBuilder implementsAtLeast(Contract contract);
+
+    HostBuilder implementsExact(Contract contract);
+
+    // Maybe we can allow to add a specific @Provides as a mixin...
 }
 // Standalone host...
 

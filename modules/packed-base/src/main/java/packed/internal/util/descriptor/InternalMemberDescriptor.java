@@ -20,7 +20,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
-import packed.internal.invokers.InvokableMember;
+import packed.internal.invokable.InvokableMember;
 
 /**
  *

@@ -15,11 +15,22 @@
  */
 package packed.internal.bundle;
 
-import app.packed.util.ModuleEnv;
+import app.packed.bundle.Bundle;
+import app.packed.util.BaseSupport;
 
 /**
  *
  */
-public class DefaultBS extends ModuleEnv {
+public class DefaultBS extends BaseSupport {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        this.scanBundle(new Bundle() {
+
+            @Override
+            protected void configure() {}
+        });
+    }
 
 }

@@ -31,7 +31,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.inject.Dependency;
+import app.packed.inject.DependencyDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -43,16 +43,16 @@ import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.UtilSupport;
+import packed.internal.util.AppPackedUtilSupport;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /**
- * The default implementation of {@link Dependency}.
+ * The default implementation of {@link DependencyDescriptor}.
  */
-public final class InternalDependency implements Dependency {
+public final class InternalDependency implements DependencyDescriptor {
 
     /** The key of this dependency. */
     private final Key<?> key;
@@ -108,9 +108,9 @@ public final class InternalDependency implements Dependency {
 
     /** {@inheritDoc} */
     @Override
-    public OptionalInt index() {
+    public OptionalInt parameterIndex() {
         // TODO cache
-        return variable == null ? OptionalInt.empty() : OptionalInt.of(variable.getIndex());
+        return variable == null ? OptionalInt.empty() : OptionalInt.of(variable.index());
     }
 
     /** {@inheritDoc} */
@@ -270,7 +270,7 @@ public final class InternalDependency implements Dependency {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(UtilSupport.invoke().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new InternalDependency(AppPackedUtilSupport.invoke().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -325,7 +325,7 @@ public final class InternalDependency implements Dependency {
         } else if (rawType == Optional.class) {
             optionalType = Optional.class;
             Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
-            tl = UtilSupport.invoke().toTypeLiteral(cl);
+            tl = AppPackedUtilSupport.invoke().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.getRawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
             }

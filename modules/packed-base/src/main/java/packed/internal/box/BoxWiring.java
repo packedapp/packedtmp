@@ -17,12 +17,12 @@ package packed.internal.box;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- *
- */
+/** A wiring from one box to another. */
 // This class is not exported. Instead we have some wrappers that check for configurability
 public class BoxWiring {
+
     public final Box from;
+
     public final Box to;
 
     public BoxWiring(Box from, Box to) {

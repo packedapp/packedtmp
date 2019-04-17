@@ -18,8 +18,8 @@ package packed.internal.inject.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.inject.Dependency;
-import packed.internal.box.BoxedServices;
+import app.packed.inject.DependencyDescriptor;
+import packed.internal.box.BoxServices;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.ServiceNode;
 
@@ -32,7 +32,7 @@ class DependencyGraphResolver {
     static void resolveAllDependencies(DependencyGraph graph) {
         graph.detectCyclesFor = new ArrayList<>();
 
-        BoxedServices services = graph.root.box.services();
+        BoxServices services = graph.root.box.services();
 
         for (ServiceNode<?> nn : graph.root.privateNodeMap) {
             ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
@@ -42,7 +42,7 @@ class DependencyGraphResolver {
                 graph.detectCyclesFor.add(node);
                 List<InternalDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
-                    Dependency dependency = dependencies.get(i);
+                    DependencyDescriptor dependency = dependencies.get(i);
                     ServiceNode<?> resolveTo = graph.root.privateNodeMap.getNode(dependency);
                     services.recordDependencyResolved(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;

@@ -87,10 +87,11 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
      * @see Lookup#unreflectVarHandle(Field)
      */
     // TODO not sure I want this on an interface?????? Maybe put back on internal class again...
+    // maybe call it toVarHandle, toGetter, toSetter
+    // Again..
     VarHandle unreflectVarHandle(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     MethodHandle unreflectGetter(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     MethodHandle unreflectSetter(MethodHandles.Lookup lookup) throws IllegalAccessException;
-
 }

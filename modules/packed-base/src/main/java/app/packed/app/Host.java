@@ -47,6 +47,16 @@ import app.packed.contract.Contract;
 // ComponentProfile -> Kan have en listener... Der er lokal paa componenten???
 // Ja hvis vi vil have flere hosts... Saa bliver den noedt til at vaere lokal...
 
+///// Hvorfor kan du kun deploye apps der????
+/// Hvad med et actor system???:
+
+// AppHost extends AnyHost<App>
+// SessionHost!?!?@?!
+
+// Kan en host redifinere et environment...????
+//// Man burde kunne styre nogle ting ihvertfald
+// Altsaa det ville jo vaere super fedt at kunne teste ting...
+/// Ved at starte forskellige hosts op...
 public interface Host {
 
     /**
@@ -120,7 +130,14 @@ public interface Host {
      */
     Host undeployAll();
 
+    // More a configuration then a builder...
+    // Configurator -> via consumer -> When you have many lines, and is not standalone
+    // Configuration -> When you have more than 1 expected line
+    // Builder -> Standalone, no lifecycle,
+
     static HostBuilder install(ComponentInstaller installer) {
+        // We don't know exactly what service we can use yet...
+        // Her kommer
         throw new UnsupportedOperationException();
     }
 }

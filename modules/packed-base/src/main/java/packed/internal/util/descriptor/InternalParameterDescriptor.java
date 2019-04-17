@@ -91,7 +91,7 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
 
     /** {@inheritDoc} */
     @Override
-    public int getIndex() {
+    public int index() {
         return index;
     }
 
@@ -111,8 +111,8 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
     public Type getParameterizedType() {
         Class<?> dc = getDeclaringClass();
         // Works around for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
-        if (getIndex() > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
-            return declaringExecutable.executable.getGenericParameterTypes()[getIndex() - 1];
+        if (index() > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
+            return declaringExecutable.executable.getGenericParameterTypes()[index() - 1];
         } else {
             return parameter.getParameterizedType();
         }

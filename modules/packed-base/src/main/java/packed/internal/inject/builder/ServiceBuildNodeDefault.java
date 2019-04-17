@@ -36,8 +36,8 @@ import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
-import packed.internal.invokers.InternalFunction;
-import packed.internal.invokers.InvokableMember;
+import packed.internal.invokable.InternalFunction;
+import packed.internal.invokable.InvokableMember;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /**

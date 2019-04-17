@@ -22,7 +22,7 @@ import java.util.List;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.InternalFunction;
 
 /** An internal factory. */
 final class InternalFactory<T> {
@@ -37,16 +37,10 @@ final class InternalFactory<T> {
     final Key<T> defaultKey;
 
     InternalFactory(InternalFunction<T> function, List<InternalDependency> dependencies) {
-        this.defaultKey = function.typeLiteral.toKey();
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
+        this.defaultKey = function.typeLiteral.toKey();
     }
-    //
-    // InternalFactory(Key<T> defaultKey, List<InternalDependency> dependencies, InternalFunction<T> function) {
-    // this.defaultKey = requireNonNull(defaultKey, "key is null");
-    // this.dependencies = requireNonNull(dependencies, "dependencies is null");
-    // this.function = requireNonNull(function);
-    // }
 
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as

@@ -20,6 +20,7 @@ import java.io.PrintStream;
 /**
  *
  */
+// Hvorfor en specific printer???
 class BundleDescriptorPrinter {
 
     static BundleDescriptorPrinter copyOf(BundleDescriptorPrinter printer) {

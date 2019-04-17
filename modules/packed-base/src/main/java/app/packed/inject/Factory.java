@@ -26,29 +26,34 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.util.BaseSupport;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.InjectSupport;
-import packed.internal.invokers.InstanceInvoker;
-import packed.internal.invokers.InternalFunction;
-import packed.internal.invokers.InternalMapperFunction;
+import packed.internal.invokable.InstanceInvoker;
+import packed.internal.invokable.InternalFunction;
+import packed.internal.invokable.InternalMapperFunction;
+import packed.internal.util.AppPackedUtilSupport;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.UtilSupport;
 
 /**
  * Factories are used for creating new instances of a particular type.
  * <p>
- * This class currently does not publically expose any methods that actually creates new instances. This is all hidden
- * in internal classes. This might change in the future, but for now factories are created by the user and only the
- * internals of this framework can use them to create new object instances.
+ * This class does not currently expose any methods that actually creates new instances. This is all hidden in the
+ * internals of Packed. This might change in the future, but for now factories are created by the user and only the
+ * internals of Packed can use them to create new object instances.
  */
 // TODO Qualifiers on Methods, Types together with findInjectable????
+// Yes need to pick those up!!!!
+// probably rename defaultKey to key.
+
+// Split-module class hierachies, must
 public class Factory<T> {
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
-    private static final ClassValue<Factory<?>> FIND_FROM_CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -62,14 +67,14 @@ public class Factory<T> {
      * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only used by subclasses of
      * TypeLiteral, never literals that are manually constructed.
      */
-    private static final ClassValue<Factory<?>> FIND_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
+    private static final ClassValue<Factory<?>> FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FindInjectableExecutable.find(UtilSupport.invoke().toTypeLiteral(t)));
+            return new Factory(FindInjectableExecutable.find(AppPackedUtilSupport.invoke().toTypeLiteral(t)));
         }
     };
 
@@ -83,7 +88,7 @@ public class Factory<T> {
         });
     }
 
-    /** The internal factory that all calls are delegated to. */
+    /** The internal factory that all calls delegate to. */
     final InternalFactory<T> factory;
 
     /**
@@ -91,7 +96,7 @@ public class Factory<T> {
      * constructor in this class (super).
      *
      * @param function
-     *            the function
+     *            the function used to create new instances
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
@@ -103,7 +108,7 @@ public class Factory<T> {
      * constructor in this class (super).
      *
      * @param function
-     *            the function
+     *            the function used to create new instances
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
@@ -125,7 +130,7 @@ public class Factory<T> {
      * constructor in this class (super).
      *
      * @param supplier
-     *            the supplier
+     *            the supplier used to create new instances
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
@@ -133,7 +138,8 @@ public class Factory<T> {
     }
 
     /**
-     * Returns the default key under which this factory will be registered, if no other key is specified.
+     * Returns the default key under which this factory will be registered, this can be overridden, for example, by calling
+     * {@link ServiceConfiguration#as(Key)}.
      *
      * @return the default key under which this factory will be registered
      */
@@ -148,14 +154,45 @@ public class Factory<T> {
      * @return a list of all of the dependencies of this factory
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final List<Dependency> dependencies() {
+    public final List<DependencyDescriptor> dependencies() {
         return (List) factory.dependencies;
     }
 
     /**
-     * Returns the raw type of objects this factory creates.
+     * Returns a new factory that maps every object this factory create using the specified mapper.
+     * 
+     * @param <R>
+     *            the type of result to map to
+     * @param mapper
+     *            the mapper used to map the result
+     * @param type
+     *            the type of the mapped value
+     * @return a new mapped factory
+     */
+    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, Class<R> type) {
+        return mapTo(mapper, TypeLiteral.of(type));
+    }
+
+    /**
+     * Returns a new factory that maps every object this factory create using the specified mapper.
+     * 
+     * @param <R>
+     *            the type of result to map to
+     * @param mapper
+     *            the mapper used to map the result
+     * @param type
+     *            the type of the mapped value
+     * @return a new mapped factory
+     */
+    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, TypeLiteral<R> type) {
+        InternalMapperFunction<T, R> f = new InternalMapperFunction<>(type, factory.function, mapper);
+        return new Factory<>(new InternalFactory<>(f, factory.dependencies));
+    }
+
+    /**
+     * Returns the raw type of those objects that this factory creates.
      *
-     * @return the raw type of objects this factory creates
+     * @return the raw type of those objects that this factory creates
      */
     public final Class<? super T> rawType() {
         return typeLiteral().getRawType();
@@ -167,14 +204,15 @@ public class Factory<T> {
      *
      * @return
      */
+    // We should make this public...
     Class<? super T> scannableType() {
         return rawType();
     }
 
     /**
-     * Returns the type of objects this factory creates.
+     * Returns the type of those objects that this factory creates.
      *
-     * @return the type of objects this factory creates
+     * @return the type of those objects that this factory creates
      */
     public final TypeLiteral<T> typeLiteral() {
         return factory.function.getReturnType();
@@ -189,6 +227,7 @@ public class Factory<T> {
      * @return the new factory
      * @throws ClassCastException
      *             if the type of the key does not match this factory
+     * @see #defaultKey()
      */
     public final Factory<T> withDefaultKey(Key<? super T> key) {
         throw new UnsupportedOperationException();
@@ -196,14 +235,19 @@ public class Factory<T> {
 
     /**
      * If this factory was created from a member (field, constructor or method), this method returns a new factory that uses
-     * the specified lookup object to access the underlying member whenever the factory needs to create a new object.
+     * the specified lookup object to access any mem underlying member whenever this framework needs to access.
      * <p>
      * This method is useful, for example, to make a factory publically available for an class that does not have a public
      * constructor.
      * <p>
      * The specified lookup object will always be preferred, even when, for example, being registered with a bundle who has
      * its own lookup object.
-     *
+     * <p>
+     * If you have split-module class hierachies with am abstract class in one module a concrete class in another module.
+     * You can use a {@link BaseSupport} class to register a method handle with the abstract class.
+     * 
+     * Remember to register the support class via the standard service loading mechanism as outlined in ....
+     * 
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when accessing the underlying member
@@ -212,29 +256,16 @@ public class Factory<T> {
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a field, constructor or method.
      */
+    // Goddamn, what about static create method on one object, and the actuak object in another module.
+    // Her taenker jeg ogsaa paa at det lookup object bliver brugt til Hooks, o.s.v.
+    // Maaske skal vi tillade stacked MethodHandles..
+    // Maaske skal vi endda have en SelectiveMethodHandle
+    //// Ideen er at man kan pakke en method handle ind...
+    // Stacked lookups..
+    // Vi skal have en hel section omkring method handlers.
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         return new Factory<>(new InternalFactory<T>(factory.function.withLookup(lookup), factory.dependencies));
-    }
-
-    /**
-     * Returns a new factory that maps the result of this factory using the specified mapper.
-     * 
-     * @param <R>
-     *            the type of result to map to
-     * @param mapper
-     *            the mapper used to map the result
-     * @param type
-     *            the type of the mapped value
-     * @return a new mapped factory
-     */
-    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, Class<R> type) {
-        return mapTo(mapper, TypeLiteral.of(type));
-    }
-
-    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, TypeLiteral<R> type) {
-        InternalMapperFunction<T, R> f = new InternalMapperFunction<>(type, factory.function, mapper);
-        return new Factory<>(new InternalFactory<>(f, factory.dependencies));
     }
 
     public Factory<T> withType(Class<? extends T> type) {
@@ -269,7 +300,7 @@ public class Factory<T> {
     public static <T> Factory<T> findInjectable(Class<T> implementation) {
         // Rename to find()
         requireNonNull(implementation, "implementation is null");
-        return (Factory<T>) FIND_FROM_CLASS_CACHE.get(implementation);
+        return (Factory<T>) FIND_INJECTABLE_CACHE.get(implementation);
     }
 
     /**
@@ -284,13 +315,13 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (!UtilSupport.invoke().isCanonicalized(implementation)) {
+        if (!AppPackedUtilSupport.invoke().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
-            return (Factory<T>) FIND_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
+            return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
         Type t = implementation.getType();
         if (t instanceof Class) {
-            return (Factory<T>) FIND_FROM_CLASS_CACHE.get((Class<?>) t);
+            return (Factory<T>) FIND_INJECTABLE_CACHE.get((Class<?>) t);
         } else {
             return new Factory<>(FindInjectableExecutable.find(implementation));
         }

@@ -24,10 +24,10 @@ import java.util.function.Supplier;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.InternalDependency;
-import packed.internal.invokers.InternalFunction1;
+import packed.internal.invokable.Function1Invokeable;
 
 /**
- * A special {@link Factory} type that takes a single dependency ans input and uses a {@link Function} to dynamically provide new instances. The input
+ * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
  * to the function being the single dependency.
  * <p>
  * Is typically used like this:
@@ -114,16 +114,6 @@ public abstract class Factory1<T, R> extends Factory<R> {
     @SuppressWarnings("unchecked")
     static <T, R> InternalFactory<R> create(Class<?> implementation, Function<?, ? extends T> function) {
         Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(implementation);
-        return new InternalFactory<>(new InternalFunction1<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
+        return new InternalFactory<>(new Function1Invokeable<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
-
 }
-// *
-// * <p>
-// * As an alternative one of the static factory methods can be used:
-// *
-// * <pre>{@code
-// * InjectorBuilder builder = new InjectorBuilder();
-// * builder.bind(SupplierFactory.of(System::currentTimeMillis, Long.class)).setDescription("Startup Time");}
-// * </pre>
-// *

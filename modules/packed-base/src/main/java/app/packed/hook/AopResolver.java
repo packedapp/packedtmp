@@ -22,6 +22,7 @@ package app.packed.hook;
 // En bruger kan saa vaelge at registerer en AopResolver eller Consumer<AopResolver>
 // Hvor man kan saette den exact raekkefoelger.
 // Maybe just AOPInvocationManager, AOPInvoker
+// Smid den .aop
 class AopResolver {
 
 }

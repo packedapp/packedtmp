@@ -29,8 +29,14 @@ import java.lang.annotation.Target;
  * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
  * throwing an {@link InjectionException}.
  * <p>
+ * While we support direct injection onto fields and into methods. We recommend using constructor injection where ever
+ * possible. List reasons...
+ * 
+ * <p>
  * The annotation can also be applied to
  */
+// Field injection first
+// Maybe run @Inject noArgConstruct() last
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

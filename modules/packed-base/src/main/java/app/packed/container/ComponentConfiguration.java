@@ -21,11 +21,6 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Nullable;
 
-/**
- * This class represents the configuration of a component. An actual instance is usually obtained by calling one of the
- * install methods on {@link Bundle}, {@link AppConfigurator} or on another component configuration. It it also possible
- * to install components at runtime via {@link Component}.
- */
 // isConfigurable();
 // checkConfigurable();
 // add getChildren()?
@@ -33,6 +28,11 @@ import app.packed.util.Nullable;
 // Syntes stadig vi skal overskrive component annotations med mixins //non-repeat overwrite, repeat add...
 // Mixins er jo lidt limited nu. Kan jo ikke f.eks. lave
 
+/**
+ * This class represents the configuration of a component. An actual instance is usually obtained by calling one of the
+ * install methods on {@link ComponentInstaller}, {@link Bundle}, {@link AppConfigurator} or on another component
+ * configuration. It it also possible to install components at runtime via {@link Component}.
+ */
 public interface ComponentConfiguration extends ComponentInstaller {
 
     // TypeAnnotations are ignored for now...
@@ -100,16 +100,19 @@ public interface ComponentConfiguration extends ComponentInstaller {
     String getName();
 
     /**
-     * Returns the configuration of the components injector. This injector is responsible for any dependency injection
-     * needed for this component. For example, for instantiating the component instance or any of its mixins. The injector
-     * can accessed via {@link Component#injector()} at runtime.
+     * Returns an injector configurator for this component. This configurator can be used to provide service specifically to
+     * the underlying component instance or any of its mixins.
+     * 
+     * injector is responsible for any dependency injection needed for this component. For example, for instantiating the
+     * component instance or any of its mixins. The injector can accessed via {@link Component#injector()} at runtime.
      * 
      * @return a the component's injector
      * @see Component#injector()
      */
     // Or privateInjector
     // Do example, with listener, on instance annotation
-    InjectorConfigurator privates();
+    // injectorInheritable()... an injector that is inherited by all
+    InjectorConfigurator injector();
 
     /**
      * Sets the description of this component.
@@ -120,23 +123,23 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #getDescription()
      * @see Component#description()
      */
-    ComponentConfiguration setDescription(String description);
+    ComponentConfiguration setDescription(@Nullable String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
      * '_', '-' or '.'. The name is case sensitive.
      * <p>
      * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
-     * such a way that it will have a unique path among other components in the same container.
+     * such a way that it will have a unique name other sibling components.
      *
      * @param name
      *            the name of the component
      * @return this configuration
      * @throws IllegalArgumentException
-     *             if the specified name is the empty string or if the name contains other characters then alphanumeric
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
      * @see #getName()
      * @see Component#name()
      */
-    ComponentConfiguration setName(String name);
+    ComponentConfiguration setName(@Nullable String name);
 }

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.ServiceWiringOperations;
+import app.packed.inject2.ServiceWiringOperations;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceWiringImportOperation;
 import support.stubs.annotation.Left;

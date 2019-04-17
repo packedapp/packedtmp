@@ -48,7 +48,7 @@ public abstract class InternalVariableDescriptor extends InternalAnnotatedElemen
      *
      * @return index of the variable.
      */
-    public abstract int getIndex();
+    public abstract int index();
 
     /**
      * Returns the parameterizedType of the variable

@@ -18,7 +18,7 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.Factory;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.InternalFunction;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class InjectSupport {

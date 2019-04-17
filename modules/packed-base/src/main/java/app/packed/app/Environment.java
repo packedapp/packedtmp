@@ -21,6 +21,8 @@ import app.packed.inject.InjectionSite;
  * Exactly one environment exist in a single ClassLoader. Normally this is also one per JVM. But you can easily load
  * packed in multiple class loaders. In which case they each get their own environment.
  */
+// Ideally a single instance per jvm should exist.
+
 // app.packed.environment... (maaske base alligevel....)
 // Tror vi skal
 

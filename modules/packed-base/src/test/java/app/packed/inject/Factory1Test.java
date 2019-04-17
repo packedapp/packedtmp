@@ -15,9 +15,30 @@
  */
 package app.packed.inject;
 
-/**
- *
- */
+import static org.assertj.core.api.Assertions.assertThat;
+import static support.assertj.Assertions.checkThat;
+
+import org.junit.jupiter.api.Test;
+
+import app.packed.util.Key;
+
+/** Tests {@link Factory1}. */
 public class Factory1Test {
 
+    /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
+    @Test
+    public void IntegerFactory0() {
+        Factory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
+        checkThat(f).is(Integer.class);
+        assertThat(f.dependencies()).hasSize(1);
+        DependencyDescriptor d = f.dependencies().get(0);
+
+        assertThat(d.isOptional()).isFalse();
+        assertThat(d.key()).isEqualTo(Key.of(String.class));
+        // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
+        // String.class)
+        assertThat(d.member()).isEmpty();
+        assertThat(d.parameterIndex()).isEmpty();
+        assertThat(d.variable()).isEmpty();
+    }
 }

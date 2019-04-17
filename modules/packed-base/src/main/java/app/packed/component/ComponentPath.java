@@ -39,6 +39,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, CharSequence {
      * 
      * @return any instance id of the path
      */
+    /// Taenker det er lidt meget... at krave at man altid skal have en unique streng???
     Optional<String> instanceId();
 
     /**

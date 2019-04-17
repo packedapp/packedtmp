@@ -22,9 +22,20 @@ import app.packed.util.TypeLiteral;
  * A component installer that can install children
  */
 // Split into two-> RuntimeComponentInstaller extended by this class.
+/// Maybe throw UnsupportedOperationException....
 // With RuntimeComponent ju
 // Maybe ServiceableComponentInstaller
 // ComponentServiceInstaller
+
+// Den er actuel paa runtime, og maaske hvis man lavede en actor bundle...
+
+// Kunn ogsaa vaere smart, at kunne registere ngoet, som ikke er services.
+// Men noget der wrapper ComponentContext, og f.eks. ActorContext();
+// Og saa hide ComponentContext...
+
+// Uhh, kan man lave nogle cool Distributerede systemer paa den her maade???
+
+// Vi installere et job,
 public interface ComponentInstaller {
 
     /**
@@ -32,11 +43,11 @@ public interface ComponentInstaller {
      *
      * @param implementation
      *            the component implementation to install
-     * @return the configuration of the child component
+     * @return a configuration for the new component
      */
-    // @NeedsJavadoc
+    // throw some kind of missing method handle lookup instance
     default ComponentConfiguration install(Class<?> implementation) {
-        return installService(implementation);
+        return install(Factory.findInjectable(implementation));
     }
 
     /**
@@ -48,13 +59,15 @@ public interface ComponentInstaller {
      *            the factory used to instantiate the component instance
      * @return the configuration of the child component
      */
-    // @NeedsJavadoc
     default ComponentConfiguration install(Factory<?> factory) {
         return installService(factory);
     }
 
     /**
-     * Install the specified component instance as a child of this component.
+     * Installs a component a singleton component. lazy, prototype und so weiter will throw an
+     * {@link UnsupportedOperationException}.
+     * 
+     * the specified component instance as a child of this component.
      * 
      * @param <S>
      *            the type of child component to install
@@ -62,7 +75,6 @@ public interface ComponentInstaller {
      *            the component instance to install
      * @return the configuration of the child component
      */
-    // @NeedsJavadoc
     default ComponentConfiguration install(Object instance) {
         return installService(instance);
     }
@@ -75,9 +87,13 @@ public interface ComponentInstaller {
      * @param implementation
      *            the component implementation to install
      * @return the configuration of the child component
+     * @throws UnsupportedOperationException
+     *             if the installer does not support installing component services. For example, this is not allowed at
+     *             runtime.
      */
-    // @NeedsJavadoc
-    <S> ComponentServiceConfiguration<S> installService(Class<S> implementation);
+    default <S> ComponentServiceConfiguration<S> installService(Class<S> implementation) {
+        return installService(Factory.findInjectable(implementation));
+    }
 
     /**
      * Installs a new child to this configuration, which uses the specified factory to instantiate the component instance.
@@ -87,8 +103,10 @@ public interface ComponentInstaller {
      * @param factory
      *            the factory used to instantiate the component instance
      * @return the configuration of the child component
+     * @throws UnsupportedOperationException
+     *             if the installer does not support installing component services. For example, this is not allowed at
+     *             runtime.
      */
-    // @NeedsJavadoc
     <S> ComponentServiceConfiguration<S> installService(Factory<S> factory);
 
     /**
@@ -99,64 +117,13 @@ public interface ComponentInstaller {
      * @param instance
      *            the component instance to install
      * @return the configuration of the child component
+     * @throws UnsupportedOperationException
+     *             if the installer does not support installing component services. For example, this is not allowed at
+     *             runtime.
      */
-    // @NeedsJavadoc
     <S> ComponentServiceConfiguration<S> installService(S instance);
 
-    <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation);
+    default <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation) {
+        return installService(Factory.findInjectable(implementation));
+    }
 }
-
-/// **
-// * Install the specified component implementation and makes it available as a service with the specified class as the
-// * key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
-// *
-// * @param <T>
-// * the type of component to install
-// * @param implementation
-// * the component implementation to install
-// * @return a component configuration that can be use to configure the component in greater detail
-// * @throws InvalidDeclarationException
-// * if some property of the implementation prevents it from being installed as a component
-// */
-// @Override
-// <T> ComponentServiceConfiguration<T> installService(Class<T> implementation);
-//
-// @Override
-// <T> ComponentServiceConfiguration<T> installService(Factory<T> factory);
-//
-/// **
-// * Install the specified component instance and makes it available as a service with the key
-// * {@code instance.getClass()}.
-// * <p>
-// * If this install operation is the first install operation. The component will be installed as the root component of
-// * the container. All subsequent install operations on this configuration will have the component as its parent. If
-/// you
-// * wish to use a specific component as a parent, use the various install methods on the
-// * {@link ComponentServiceConfiguration} instead of the install methods on this interface.
-// *
-// * @param <T>
-// * the type of component to install
-// * @param instance
-// * the component instance to install
-// * @return the component configuration
-// * @throws InvalidDeclarationException
-// * if some property of the instance prevents it from being installed as a component
-// */
-// @Override
-// <T> ComponentServiceConfiguration<T> installService(T instance);
-//
-/// **
-// * Install the specified component implementation and makes it available as a service with the specified type literal
-/// as
-// * the key. Invoking this method is equivalent to invoking {@code Factory.findInjectable(implementation)}.
-// *
-// * @param <T>
-// * the type of component to install
-// * @param implementation
-// * the component implementation to install
-// * @return component configuration that can be use to configure the component in greater detail
-// * @throws InvalidDeclarationException
-// * if some property of the implementation prevents it from being installed as a component
-// */
-// @Override
-// <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation);

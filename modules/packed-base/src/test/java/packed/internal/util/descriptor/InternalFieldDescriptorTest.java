@@ -42,7 +42,7 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
     static void validateField(Field f, InternalFieldDescriptor d) {
         validateMember(f, d);
         assertThat(d.descriptorTypeName()).isEqualTo("field");// always field
-        assertThat(d.getIndex()).isEqualTo(0);
+        assertThat(d.index()).isEqualTo(0);
         assertThat(d.getParameterizedType()).isEqualTo(f.getGenericType());
         assertThat(d.getType()).isEqualTo(f.getType());
 

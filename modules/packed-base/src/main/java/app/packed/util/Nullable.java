@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.inject.Dependency;
+import app.packed.inject.DependencyDescriptor;
 import app.packed.inject.Factory1;
 import app.packed.inject.Factory2;
 
@@ -39,8 +39,8 @@ import app.packed.inject.Factory2;
  * resolved.<b>NOTE:</b>If the injection of a field is optional and the dependency could not be resolved. The initial
  * value of the field is never changed. This is useful, for example, to declare a default value in case the dependency
  * is missing.</li>
- * <li><b>On a type parameter,</b> {@link Dependency#fromTypeVariable(Class, Class, int)} and
- * {@link Dependency#fromTypeVariables(Class, Class, int...)} will acknowledges the annotation and mark the dependency
+ * <li><b>On a type parameter,</b> {@link DependencyDescriptor#fromTypeVariable(Class, Class, int)} and
+ * {@link DependencyDescriptor#fromTypeVariables(Class, Class, int...)} will acknowledges the annotation and mark the dependency
  * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
  * </ul>
  */

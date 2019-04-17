@@ -34,6 +34,13 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
         super(actual, FactoryAssert.class);
     }
 
+    public FactoryAssert<T> hasNoDependencies() {
+        if (!actual.dependencies().isEmpty()) {
+            failWithMessage("\nExpecting no dependencies for the factory, but was '%s'", actual.dependencies());
+        }
+        return this;
+    }
+
     public FactoryAssert<T> is(Class<?> type) {
         return is(Key.of(type));
     }
@@ -51,6 +58,10 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
         TypeLiteral<?> typeLiteral = actual.typeLiteral();
         if (!typeLiteral.equals(key.typeLiteral())) {
             failWithMessage("\nExpecting TypeLiteral of type '%s' but was '%s'", key.typeLiteral(), typeLiteral);
+        }
+        Class<?> rawType = actual.rawType();
+        if (!rawType.equals(key.typeLiteral().getRawType())) {
+            failWithMessage("\nExpecting Raw type of type '%s' but was '%s'", key.typeLiteral(), typeLiteral);
         }
         return this;
     }

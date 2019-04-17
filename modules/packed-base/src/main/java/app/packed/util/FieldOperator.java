@@ -18,6 +18,8 @@ package app.packed.util;
 /**
  * A field operator
  */
+// Smid i aop eller hook???
+// Eller maaske en .skrald til descriptor, operators, ect..
 public interface FieldOperator {
 
     /**

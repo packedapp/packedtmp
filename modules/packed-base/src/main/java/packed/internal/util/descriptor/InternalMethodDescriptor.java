@@ -29,8 +29,8 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invokers.ExecutableInvoker;
-import packed.internal.invokers.InvokableMember;
+import packed.internal.invokable.ExecutableInvoker;
+import packed.internal.invokable.InvokableMember;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.StringFormatter;
 

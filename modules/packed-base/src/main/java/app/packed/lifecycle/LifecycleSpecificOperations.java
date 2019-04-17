@@ -60,6 +60,9 @@ import app.packed.container.Container;
 // have syncpoints... Fordi ellers giver det ikke mening
 // F.eks. er der jo ikke nogen der string baseret syncpoints paa components.
 // Saa vi kan ikke smide den paa lifecycle operations....
+
+// Persistance.install(ComponentServiceInstaller installer();
+// or Persistance.install(AnyBundle bundle);<- and then use with(), so we can install Annotations....
 interface LifecycleSpecificOperations<T> {
 
     /**

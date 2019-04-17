@@ -37,12 +37,12 @@ class InjectionSiteForDependency implements InjectionSite {
     private final Component component;
 
     /** The key of the service that was requested */
-    private final Dependency dependency;
+    private final DependencyDescriptor dependency;
 
     /** The injector from where the service was requested. */
     private final Injector injector;
 
-    InjectionSiteForDependency(Injector injector, Dependency dependency, @Nullable Component component) {
+    InjectionSiteForDependency(Injector injector, DependencyDescriptor dependency, @Nullable Component component) {
         this.injector = requireNonNull(injector, "injector is null");
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
@@ -56,8 +56,8 @@ class InjectionSiteForDependency implements InjectionSite {
 
     /** {@inheritDoc} */
     @Override
-    public OptionalInt index() {
-        return dependency.index();
+    public OptionalInt parameterIndex() {
+        return dependency.parameterIndex();
     }
 
     /** {@inheritDoc} */

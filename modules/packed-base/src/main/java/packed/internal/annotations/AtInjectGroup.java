@@ -29,9 +29,7 @@ import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
-/**
- * A group of injectable fields and methods.
- */
+/** A group of injectable fields and methods. */
 public final class AtInjectGroup {
 
     /** An empty inject group. */

@@ -95,7 +95,9 @@ public interface InjectorConfigurator extends Taggable {
      * @return a service configuration for the service
      * @see Bundle#provide(Class)
      */
-    <T> ServiceConfiguration<T> provide(Class<T> implementation);
+    default <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+        return provide(Factory.findInjectable(implementation));
+    }
 
     /**
      * Binds the specified factory to a new service. When the injector is created the factory will be invoked <b>once</b> to
@@ -126,7 +128,9 @@ public interface InjectorConfigurator extends Taggable {
      */
     <T> ServiceConfiguration<T> provide(T instance);
 
-    <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation);
+    default <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return provide(Factory.findInjectable(implementation));
+    }
 
     /**
      * If useful, for example,

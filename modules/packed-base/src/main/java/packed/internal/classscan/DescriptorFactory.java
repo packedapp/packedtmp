@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import packed.internal.invokers.ExecutableInvoker;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.ExecutableInvoker;
+import packed.internal.invokable.InternalFunction;
 import packed.internal.util.LookupValue;
 
 /** A cache of descriptors. */

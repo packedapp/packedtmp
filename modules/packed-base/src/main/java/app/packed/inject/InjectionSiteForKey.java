@@ -56,7 +56,7 @@ class InjectionSiteForKey implements InjectionSite {
 
     /** {@inheritDoc} */
     @Override
-    public OptionalInt index() {
+    public OptionalInt parameterIndex() {
         return OptionalInt.empty();
     }
 

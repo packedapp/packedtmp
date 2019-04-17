@@ -15,9 +15,21 @@
  */
 package app.packed.component;
 
-/**
- *
- */
+import java.util.Optional;
+
+/** An instance of a component. */
 public interface ComponentInstance<T> {
 
+    /**
+     * Returns any instance id of the path.
+     * 
+     * @return any instance id of the path
+     */
+    // Hmmmmm,
+    // Singleton, Pool (no-id), Map
+    Optional<String> instanceId();
+
+    T instance();
+
+    // Lifecycle
 }

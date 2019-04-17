@@ -40,7 +40,7 @@ public interface ParameterDescriptor extends VariableDescriptor {
      *
      * @return the index of the parameter
      */
-    int getIndex();
+    int index();
 
     /**
      * Returns true if this parameter represents a variable argument list, otherwise returns false.

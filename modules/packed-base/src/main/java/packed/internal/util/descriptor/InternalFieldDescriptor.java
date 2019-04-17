@@ -28,7 +28,7 @@ import java.lang.reflect.Type;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invokers.FieldInvoker;
+import packed.internal.invokable.FieldAccessor;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -75,7 +75,7 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
-    public int getIndex() {
+    public int index() {
         return 0;
     }
 
@@ -118,7 +118,7 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
     /** {@inheritDoc} */
     @Override
     public boolean isNamePresent() {
-        return true;// A field always have a name
+        return true;
     }
 
     /** {@inheritDoc} */
@@ -161,8 +161,8 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
-    public FieldInvoker<?> newInvoker(Lookup lookup) {
-        return new FieldInvoker<>(this).withLookup(lookup);
+    public FieldAccessor<?> newInvoker(Lookup lookup) {
+        return new FieldAccessor<>(this).withLookup(lookup);
     }
 
     /** {@inheritDoc} */

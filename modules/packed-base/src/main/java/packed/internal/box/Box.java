@@ -17,27 +17,57 @@ package packed.internal.box;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
-/**
- *
- */
-public class Box {
+import app.packed.bundle.BundleContract;
+import packed.internal.classscan.DescriptorFactory;
 
-    public BoxedHooks hooks;
+/** Boxes are the internal representation of a Bundle, Configurator or Host of some kind. */
+public final class Box { /* extends Configurable???? */
 
-    private final BoxedServices services;
+    /** The lookup object. We default to public access */
+    public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
 
-    public final BoxSource source;
+    public BoxHooks hooks;
 
+    /** The service part of the box. */
+    private final BoxServices services;
+
+    /** The type of box */
+    public final BoxType type;
+
+    /** All direct wirings to other boxes. */
     public final ArrayList<BoxWiring> wirings = new ArrayList<>();
 
-    public Box(BoxSource source) {
-        this.source = requireNonNull(source);
-        this.services = new BoxedServices(this);
+    /**
+     * Creates a new Box.
+     * 
+     * @param type
+     *            the type of box
+     */
+    public Box(BoxType type) {
+        this.type = requireNonNull(type);
+        this.services = new BoxServices(this);
     }
 
-    public BoxedServices services() {
+    /** {@inheritDoc} */
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
+        // checkConfigurable();
+        this.accessor = DescriptorFactory.get(lookup);
+    }
+
+    public void buildContract(BundleContract.Builder builder) {
+        services().buildContract(builder.services());
+    }
+
+    /**
+     * Returns a service configuration object.
+     * 
+     * @return a service configuration object
+     */
+    public BoxServices services() {
         return services;
     }
 }

@@ -24,8 +24,8 @@ import app.packed.container.Container;
 import app.packed.util.Key;
 
 /**
- * A service requestions has two important parts. What exactly are being requested, is it optional is the service being
- * requested.
+ * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
+ * service being requested.
  * 
  * An injection site extends the dependency interface with runtime information about which injector requested the
  * injection. And if used within a container which component requested the injection.
@@ -49,11 +49,13 @@ import app.packed.util.Key;
  * }
  * </pre>
  */
-// ServiceRequest
+// ServiceRequest...
 // Who
 // What
 
-public interface InjectionSite extends Dependency {
+// InjectionSite.. Is a bit misleasing because of Injector.get();
+// DependencyRequest
+public interface InjectionSite extends DependencyDescriptor {
 
     /**
      * If a component is requesting returns the component, otherwise an empty optional.
@@ -74,11 +76,11 @@ public interface InjectionSite extends Dependency {
      */
     Injector injector();// HMMMMM,
 
-    static InjectionSite of(Injector injector, Dependency dependency) {
+    static InjectionSite of(Injector injector, DependencyDescriptor dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);
     }
 
-    static InjectionSite of(Injector injector, Dependency dependency, Component componenent) {
+    static InjectionSite of(Injector injector, DependencyDescriptor dependency, Component componenent) {
         return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -110,7 +112,7 @@ public interface InjectionSite extends Dependency {
      * @param component
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
-     * @see #of(Injector, Dependency)
+     * @see #of(Injector, DependencyDescriptor)
      */
     static InjectionSite of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));

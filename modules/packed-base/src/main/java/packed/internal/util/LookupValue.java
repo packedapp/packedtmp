@@ -16,9 +16,12 @@
 package packed.internal.util;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Lazily associate a computed value with a lookup object much like {@link ClassValue} but for lookup objects. */
+/**
+ * Lazily associate a computed value with a lookup object much like {@link ClassValue} but for {@link Lookup} objects.
+ */
 public abstract class LookupValue<T> {
 
     /** The cache of values. */
@@ -34,7 +37,7 @@ public abstract class LookupValue<T> {
     /**
      * Computes the given lookup objects's derived value for this {@code LookupValue}.
      * <p>
-     * This method will be invoked within the first thread that accesses the value with the {@link #get get} method.
+     * This method will be invoked within the first thread that accesses the value with the {@link #get(Lookup) get} method.
      * <p>
      * If this method throws an exception, the corresponding call to {@code get} will terminate abnormally with that
      * exception, and no lookup value will be recorded.

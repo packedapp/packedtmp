@@ -63,15 +63,10 @@ import java.lang.annotation.Target;
  *   }
  * </pre>
  * <p>
- * Placing You cannot register a service that have anything but singleton scope
- * 
- * place this annotation on objects that do not have
- * 
+ * If using
  * <p>
- * // Null is only a valid result, if the dependency is optional. Otherwise it is a failure
- * 
- * Or do we????
- * 
+ * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
+ * dependency is optional.
  */
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -79,8 +74,23 @@ import java.lang.annotation.Target;
 public @interface Provides {
 
     /**
+     * Returns a description of the service provided by the providing method or field.
+     * <p>
+     * The default value is the empty string. Indicating that there is no description for the provided service
+     * 
+     * @return a description of the service provided by the providing method or field
+     * @see ServiceDescriptor#description()
+     */
+    String description() default "";
+
+    /**
      * This If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having
-     * to export it from the bundle
+     * to export it from the bundle.
+     * 
+     * <p>
+     * It is not possible to export a provided service as a noth.
+     * <p>
+     * The default value is {@code false}, indicating that a service is not exported.
      * 
      * @return whether or not the provided service should be exported
      */
@@ -92,14 +102,6 @@ public @interface Provides {
      * @return the binding mode
      */
     InstantiationMode instantionMode() default InstantiationMode.SINGLETON;
-
-    /**
-     * Returns a description of the service provided by the annotated method or field.
-     *
-     * @return a description of the service provided by the annotated method or field
-     * @see ServiceDescriptor#description()
-     */
-    String description() default "";
 
     /**
      * Returns the tags of the service.

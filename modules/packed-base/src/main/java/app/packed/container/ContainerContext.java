@@ -24,7 +24,6 @@ package app.packed.container;
 // Løser også voews problem med interne services vs externe services...
 
 // Saa injector/container er altid externe services.....
-
 public interface ContainerContext {
 
     /**

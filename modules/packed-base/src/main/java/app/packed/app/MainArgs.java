@@ -23,8 +23,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
- * A wrapper around an array of strings. Typically provided via a public-static-main method.
+ * A simple wrapper around an array of strings. Is typically used to wrap the string array argument to a
+ * public-static-main method.
  */
+// Rename to StringArgs and put it in utils...
 public final class MainArgs implements Iterable<String> {
 
     private final List<String> args;
@@ -39,6 +41,7 @@ public final class MainArgs implements Iterable<String> {
         return args.iterator();
     }
 
+    // Maybe, have Runnable, String option, String alternatives()
     public void onOption(String option, Runnable r) {
         if (args.contains(option)) {
             r.run();
@@ -46,7 +49,12 @@ public final class MainArgs implements Iterable<String> {
     }
 
     public void onCommand(String option, Consumer<String> r) {
-
+        // Den fungere godt med den nye switch???
+        // Det der er, er at vi gerne vil kunne checke om vi har en valid kommando.
+        //
+        // dvs. ifNoCommandsHaveBeenRunExecute()....
+        // men saa er denne struktur ogsaa mutable...
+        // Lidt det samme som pattern matching
     }
 
     public void onCommandList(String option, Consumer<String> r) {

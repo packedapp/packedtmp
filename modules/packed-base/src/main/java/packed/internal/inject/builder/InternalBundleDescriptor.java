@@ -68,7 +68,7 @@ public class InternalBundleDescriptor {
             }
         }
 
-        conf.box.services().populateBuilder(builder.contract().services());
+        conf.box.buildContract(builder.contract());
         return builder;
     }
 }

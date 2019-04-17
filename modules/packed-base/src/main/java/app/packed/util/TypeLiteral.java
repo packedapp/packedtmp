@@ -28,9 +28,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
+import packed.internal.util.AppPackedUtilSupport;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.UtilSupport;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
@@ -59,7 +59,7 @@ public abstract class TypeLiteral<T> {
     };
 
     static {
-        UtilSupport.Helper.init(new UtilSupport.Helper() {
+        AppPackedUtilSupport.Helper.init(new AppPackedUtilSupport.Helper() {
 
             /** {@inheritDoc} */
             @Override

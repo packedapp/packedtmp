@@ -61,6 +61,12 @@ import packed.internal.inject.builder.InjectorBuilder;
 
 // explicitServiceRequirements(); <- You can put it in an environment to force it
 
+// AnyBundle...
+// Bundle + BaseBundle, or
+// AnyBundle + Bundle <- I think I like this better....
+
+// We never return, for example, Bundle or AnyBundle to allow for method chaining.
+// As this would
 public abstract class Bundle {
 
     ContainerBuildContext context;
@@ -69,46 +75,6 @@ public abstract class Bundle {
     boolean isFrozen;
 
     protected final Restrictions restrictions = null;
-
-    /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
-     * find a valid constructor or method to instantiate the service instance once the injector is created.
-     * <p>
-     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
-     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param implementation
-     *            the implementation to bind
-     * @return a service configuration for the service
-     * @see InjectorConfigurator#provide(Class)
-     */
-    // Rename to Provide@
-    protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return injectorBuilder().provide(implementation);
-    }
-
-    protected final void serviceAutoRequire() {
-        injectorBuilder().serviceAutoRequire();
-    }
-
-    protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return injectorBuilder().provide(factory);
-    }
-
-    protected final <T> ServiceConfiguration<T> provide(T instance) {
-        return injectorBuilder().provide(instance);
-    }
-
-    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injectorBuilder().provide(implementation);
-    }
-    // // /** The internal configuration to delegate to */
-    // // We probably want to null this out...
-    // // If we install the bundle as a component....
-    // // We do not not want any more garbage then needed.
-    // // private InjectorBuilder injectorBuilder;
 
     protected void buildWithBundle() {
         // Insta
@@ -194,49 +160,6 @@ public abstract class Bundle {
     }
 
     /**
-     * Exposes an internal service outside of this bundle.
-     * 
-     * 
-     * <pre> {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class);}
-     * </pre>
-     * 
-     * You can also choose to expose a service under a different key then what it is known as internally in the
-     * <pre> {@code  
-     * bind(ServiceImpl.class);
-     * expose(ServiceImpl.class).as(Service.class);}
-     * </pre>
-     * 
-     * @param <T>
-     *            the type of the exposed service
-     * @param key
-     *            the key of the internal service to expose
-     * @return a service configuration for the exposed service
-     * @see #export(Key)
-     */
-    protected final <T> ServiceConfiguration<T> export(Key<T> key) {
-        return injectorBuilder().expose(key);
-    }
-
-    protected final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        return injectorBuilder().expose(configuration);
-    }
-
-    protected final <T> ServiceConfiguration<T> exportService(Class<T> key) {
-        return injectorBuilder().expose(key);
-    }
-
-    protected final void exportHooks(Contract contract) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected final void exportHooks(Class<?>... hookTypes) {
-        // interface = Instance Of Hooks
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
      * case if having a single
      * 
@@ -266,7 +189,46 @@ public abstract class Bundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Class<T> key) {
-        return injectorBuilder().expose(key);
+        return export(Key.of(requireNonNull(key, "key is null")));
+    }
+
+    /**
+     * Exposes an internal service outside of this bundle.
+     * 
+     * 
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class);}
+     * </pre>
+     * 
+     * You can also choose to expose a service under a different key then what it is known as internally in the
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service.class);}
+     * </pre>
+     * 
+     * @param <T>
+     *            the type of the exposed service
+     * @param key
+     *            the key of the internal service to expose
+     * @return a service configuration for the exposed service
+     * @see #export(Key)
+     */
+    protected final <T> ServiceConfiguration<T> export(Key<T> key) {
+        return injectorBuilder().export(key);
+    }
+
+    protected final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
+        return injectorBuilder().export(configuration);
+    }
+
+    protected final void exportHooks(Class<?>... hookTypes) {
+        // interface = Instance Of Hooks
+        throw new UnsupportedOperationException();
+    }
+
+    protected final void exportHooks(Contract contract) {
+        throw new UnsupportedOperationException();
     }
 
     InjectorBuilder injectorBuilder() {
@@ -276,6 +238,10 @@ public abstract class Bundle {
         // call Bundle.configure directly");
         // }
         // return injectorBuilder;
+    }
+
+    protected ComponentServiceConfiguration<?> installBundle() {
+        return containerBuilderX().installService(this);
     }
 
     protected final ComponentInstaller installer() {
@@ -317,10 +283,6 @@ public abstract class Bundle {
         return containerBuilderX().installService(implementation);
     }
 
-    protected ComponentServiceConfiguration<?> installBundle() {
-        return containerBuilderX().installService(this);
-    }
-
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
@@ -340,6 +302,11 @@ public abstract class Bundle {
         // For module email, if you are paranoid.
         // You can specify a LookupAccessManager where every lookup access.
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
+    }
+
+    protected final Layer mainLayer(Layer... predecessors) {
+        // Can only be called once???
+        throw new UnsupportedOperationException();
     }
 
     protected final Layer newEmptyLayer(String name, Layer... predecessors) {
@@ -370,11 +337,6 @@ public abstract class Bundle {
         throw new UnsupportedOperationException();
     }
 
-    protected final Layer mainLayer(Layer... predecessors) {
-        // Can only be called once???
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Opens the bundle for modification later on
      */
@@ -382,12 +344,52 @@ public abstract class Bundle {
         // Nope....
     }
 
+    /**
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
+     * find a valid constructor or method to instantiate the service instance once the injector is created.
+     * <p>
+     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
+     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param implementation
+     *            the implementation to bind
+     * @return a service configuration for the service
+     * @see InjectorConfigurator#provide(Class)
+     */
+    // Rename to Provide@
+    protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+        return injectorBuilder().provide(implementation);
+    }
+
+    protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+        return injectorBuilder().provide(factory);
+    }
+
+    protected final <T> ServiceConfiguration<T> provide(T instance) {
+        return injectorBuilder().provide(instance);
+    }
+
+    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return injectorBuilder().provide(implementation);
+    }
+    // // /** The internal configuration to delegate to */
+    // // We probably want to null this out...
+    // // If we install the bundle as a component....
+    // // We do not not want any more garbage then needed.
+    // // private InjectorBuilder injectorBuilder;
+
     protected void requireService(Class<?> key) {
         injectorBuilder().serviceRequire(key);
     }
 
     protected void requireService(Key<?> key) {
         injectorBuilder().serviceRequire(key);
+    }
+
+    protected final void serviceAutoRequire() {
+        injectorBuilder().serviceAutoRequire();
     }
 
     /**
@@ -475,15 +477,15 @@ public abstract class Bundle {
         BundleDescriptor.of(bundle).print();
     }
 
+    static protected void run(Bundle b, Consumer<App> consumer, WiringOperation... operations) {
+        AppLaunch.of(b, operations).run();
+    }
+
     static protected void run(Bundle b, String[] args, WiringOperation... operations) {
         AppLaunch.of(b, args, operations).run();
     }
 
     static protected void run(Bundle b, WiringOperation... operations) {
-        AppLaunch.of(b, operations).run();
-    }
-
-    static protected void run(Bundle b, Consumer<App> consumer, WiringOperation... operations) {
         AppLaunch.of(b, operations).run();
     }
 

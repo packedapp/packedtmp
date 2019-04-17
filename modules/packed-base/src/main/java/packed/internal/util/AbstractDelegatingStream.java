@@ -39,6 +39,8 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /** A stream that delegates most methods to another stream. */
+
+// Taenker vi godt kunne smide den i util...
 public abstract class AbstractDelegatingStream<T> implements Stream<T> {
 
     /** The stream we are wrapping. */

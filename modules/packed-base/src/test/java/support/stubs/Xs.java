@@ -18,7 +18,7 @@ package support.stubs;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceWiringOperations;
+import app.packed.inject2.ServiceWiringOperations;
 
 /**
  *

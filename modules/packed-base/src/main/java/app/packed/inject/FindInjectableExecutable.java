@@ -26,7 +26,7 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.InternalDependency;
 import packed.internal.inject.JavaXInjectSupport;
-import packed.internal.invokers.ExecutableInvoker;
+import packed.internal.invokable.ExecutableInvoker;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;

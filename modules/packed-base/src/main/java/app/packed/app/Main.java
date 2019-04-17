@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A application can have a single main entry point which the is first instructions in a program are executed, Must be
- * placed on a non-static method on a bundle. Why not static....??
+ * A application can have a single main entry point which is the first instructions in a program that is executed, Must
+ * be placed on a method on a bundle. Why not individual components??
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

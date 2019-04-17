@@ -24,7 +24,7 @@ import app.packed.app.App;
 /**
  *
  */
-public interface ThrowingRunnable<T> {
+interface ThrowingRunnable<T> {
     void run(T t) throws Throwable;
 }
 

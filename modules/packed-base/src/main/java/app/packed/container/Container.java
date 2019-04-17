@@ -47,6 +47,12 @@ import app.packed.lifecycle.LifecycleState;
  */
 // listeners <- altsaa vil vel vaere maerkelig at automatisk starte den via listeners???
 // ------------ Det er jo fuldt lovligt via containerBuilder.
+
+// Det er altid meningen at containere er indad facing.
+// App+Injector er udad facing,
+// Componenter er som udgangspunkt ogsaa indad facing. Maaske endda paa containere niveau.
+// D.v.s. med mindre man explicit exposer dem til andre containere saa er de private indenfor containere..
+// Containere er ordnet i et tree. Componenter i et multi trae
 public interface Container extends Injector {
 
     /**

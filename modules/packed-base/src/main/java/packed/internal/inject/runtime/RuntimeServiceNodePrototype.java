@@ -22,7 +22,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.Provider;
 import packed.internal.inject.builder.ServiceBuildNode;
-import packed.internal.invokers.InternalFunction;
+import packed.internal.invokable.InternalFunction;
 
 /** A runtime service node for prototypes. */
 // 3 typer?? Saa kan de foerste to implementere Provider

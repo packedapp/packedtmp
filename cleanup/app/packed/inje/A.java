@@ -34,7 +34,7 @@ public class A {
         // System.out.println(i.with(String.class));
 
         App.of(c -> {
-            Host.install(c);
+            Host.install(c).provide("foo");
         });
 
     }
