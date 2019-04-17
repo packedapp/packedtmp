@@ -38,8 +38,7 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
- * An abstract class for the injector bind methods
- * {@link InjectorConfigurator#wireInjector(Class, WiringOperation...)},
+ * An abstract class for the injector bind methods {@link InjectorConfigurator#wireInjector(Class, WiringOperation...)},
  * {@link InjectorConfigurator#wireInjector(Bundle, WiringOperation...)}, and
  * {@link InjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
@@ -94,7 +93,7 @@ abstract class AbstractWiring {
 
         // Add all to the private node map
         for (ServiceBuildNodeImport<?> node : nodes.values()) {
-            if (!injectorConfiguration.privateNodeMap.putIfAbsent(node)) {
+            if (!injectorConfiguration.box.services().nodes.putIfAbsent(node)) {
                 throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }
