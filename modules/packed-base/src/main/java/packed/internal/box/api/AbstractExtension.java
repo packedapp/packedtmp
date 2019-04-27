@@ -13,31 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import java.lang.annotation.Annotation;
-import java.util.Set;
+package packed.internal.box.api;
 
 /**
  *
  */
-public final class HookContract {
+public abstract class AbstractExtension {
 
-    Set<Class<? extends Annotation>> capturingFieldHooks;
+    protected final void newLine() {
+        // checksConfigurable
+        // FreezesAnyNode before
 
-    public Set<Class<? extends Annotation>> exposedFieldHooks() {
-        throw new UnsupportedOperationException();
+        // Checks that the bundle/configurator/... is still active
+        // Freezes any previous node for modifications....
+
+        // Which means that everything is nodes....
+
+        // Because bind(x) followed by install(x) should work identical to
+        // Because install(x) followed by bind(x) should work identical to
+
     }
-
-    public Set<Class<? extends Annotation>> capturingFieldHooks() {
-        return capturingFieldHooks;
-    }
-
-    public final class Builder {}
-    // captures
-    // exposes
-
-    // expose hooks, capture hooks
-
-    // Another key feature is hooks.
 }

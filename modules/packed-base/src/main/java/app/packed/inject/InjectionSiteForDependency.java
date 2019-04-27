@@ -30,7 +30,7 @@ import app.packed.util.VariableDescriptor;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#with(Class)}.
  */
-class InjectionSiteForDependency implements InjectionSite {
+class InjectionSiteForDependency implements ProvisionContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable

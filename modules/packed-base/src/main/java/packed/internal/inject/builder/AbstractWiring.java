@@ -33,7 +33,7 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
 
@@ -105,7 +105,7 @@ abstract class AbstractWiring {
         ImportExportDescriptor ied = ImportExportDescriptor.from(BundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {
-            for (InternalDependency s : m.dependencies) {
+            for (InternalDependencyDescriptor s : m.dependencies) {
                 if (!nodes.containsKey(s.key())) {
                     throw new InjectionException("not good man, " + s.key() + " is not in the set of incoming services");
                 }

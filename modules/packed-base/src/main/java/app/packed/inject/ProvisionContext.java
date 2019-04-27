@@ -33,8 +33,8 @@ import app.packed.util.Key;
  * This class is typically used together with the {@link Provides} annotation to provide custom injection depending on
  * attributes of the requestor. <pre> {@code  @Provides
  *  public static Logger provideLogger(InjectionSite site) {
- *    if (site.getComponent().isPresent()) {
- *      return Logger.getLogger(site.getComponent().get().getPath().toString());
+ *    if (site.component().isPresent()) {
+ *      return Logger.getLogger(site.component().get().getPath().toString());
  *    } else {
  *      return Logger.getAnonymousLogger();
  *    }
@@ -44,8 +44,8 @@ import app.packed.util.Key;
  * An injection site can also be used to create a factory that is functional equivalent:
  * 
  * <pre> {@code
- *  new Factory1<InjectionSite, Logger>(
- *    site -> site.getComponent().isPresent() ? Logger.getLogger(site.getComponent().get().getPath().toString()) : Logger.getAnonymousLogger()) {};
+ *  new Factory1<ProvisionContext, Logger>(
+ *    c -> c.component().isPresent() ? Logger.getLogger(site.component().get().getPath().toString()) : Logger.getAnonymousLogger()) {};
  * }
  * </pre>
  */
@@ -55,10 +55,15 @@ import app.packed.util.Key;
 
 // InjectionSite.. Is a bit misleasing because of Injector.get();
 // DependencyRequest
-public interface InjectionSite extends DependencyDescriptor {
+
+// ProvidesContext, ProvisionContext
+
+// Generic Dependency @SystemProperty
+public interface ProvisionContext extends DependencyDescriptor {
 
     /**
-     * If a component is requesting returns the component, otherwise an empty optional.
+     * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
+     * {@link Injector#with(Class)}.
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
@@ -76,11 +81,11 @@ public interface InjectionSite extends DependencyDescriptor {
      */
     Injector injector();// HMMMMM,
 
-    static InjectionSite of(Injector injector, DependencyDescriptor dependency) {
+    static ProvisionContext of(Injector injector, DependencyDescriptor dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);
     }
 
-    static InjectionSite of(Injector injector, DependencyDescriptor dependency, Component componenent) {
+    static ProvisionContext of(Injector injector, DependencyDescriptor dependency, Component componenent) {
         return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -95,7 +100,7 @@ public interface InjectionSite extends DependencyDescriptor {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static InjectionSite of(Injector injector, Key<?> key) {
+    static ProvisionContext of(Injector injector, Key<?> key) {
         return new InjectionSiteForKey(injector, key, null);
     }
 
@@ -114,7 +119,7 @@ public interface InjectionSite extends DependencyDescriptor {
      * @return an injection site for the specified injector and key and component.
      * @see #of(Injector, DependencyDescriptor)
      */
-    static InjectionSite of(Injector injector, Key<?> key, Component component) {
+    static ProvisionContext of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));
     }
 

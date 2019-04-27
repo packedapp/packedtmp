@@ -17,7 +17,7 @@ package packed.internal.util;
 
 import app.packed.container.Component;
 import app.packed.container.Container;
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 
@@ -30,8 +30,8 @@ public final class KeyBuilder {
     /** The {@link Container} class as a key. */
     public static final Key<?> CONTAINER_KEY = Key.of(Container.class);
 
-    /** The {@link InjectionSite} class as a key. */
-    public static final Key<?> INJECTION_SITE_KEY = Key.of(InjectionSite.class);
+    /** The {@link ProvisionContext} class as a key. */
+    public static final Key<?> INJECTION_SITE_KEY = Key.of(ProvisionContext.class);
 
     /** The {@link Injector} class as a key. */
     public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);

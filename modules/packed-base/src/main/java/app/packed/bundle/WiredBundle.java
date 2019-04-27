@@ -33,6 +33,8 @@ import app.packed.util.Nullable;
 // wb.as(new Key<@Left Injector>(){});
 // Eneste jeg ikke lide er Bundle til sidst. Bundle er jo som regel noget der kan extendes...
 // Maaske bare wired, writedContainer
+
+// Maybe rename to Wiring.... If we use it for non-bundles
 public final class WiredBundle {
 
     WiredBundle(Bundle parent, Bundle child) {

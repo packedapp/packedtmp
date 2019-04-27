@@ -26,17 +26,21 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 
 /**
- * A dependency object. This is typically created from a parameter on a constructor or method. In which case the
- * parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling {@link #variable()}. It can also
- * be a field, in which case {@link #variable()} returns an instance of {@link ParameterDescriptor}. Dependencies can be
- * optional in which case {@link #isOptional()} returns true.
+ * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
+ * method. In which case the parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling
+ * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
+ * instance of {@link FieldDescriptor}. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
 // Flyt member, parameterIndex og Variable???? til ServiceRequest..
 // Vi goer det kun for at faa en paenere arkitk
 public interface DependencyDescriptor {
+
+    // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
+    // Includes any qualifier...
+    // AnnotatedElement annotations();
 
     /**
      * Returns whether or not this dependency is optional.
@@ -87,12 +91,18 @@ public interface DependencyDescriptor {
      */
     Optional<VariableDescriptor> variable();
 
+    /**
+     * @param actualClass
+     * @param baseClass
+     * @param baseClassTypeVariableIndex
+     * @return
+     */
     public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
-        return InternalDependency.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
+        return InternalDependencyDescriptor.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<DependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        return (List) InternalDependency.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
+        return (List) InternalDependencyDescriptor.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
     }
 }

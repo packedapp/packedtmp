@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 /**
  * Qualifiers are used to distinguish different objects of the same type.
  * <p>
- * This semantics of this annotation is identical to that of javax.inject.Qualifier. And both of them can be used
- * interchangeable.
+ * In regards to injection, the semantics of this annotation is identical to that of javax.inject.Qualifier. And both of
+ * them can be used interchangeable.
  */
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)

@@ -39,7 +39,6 @@ import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.runtime.ImageBuilder;
@@ -61,9 +60,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     /** All nodes that have been added to this builder, even those that are not exposed. */
     ServiceBuildNode<?> privateLatestNode;
 
-    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    final ServiceNodeMap privateNodeMap;
-
     InternalInjector publicInjector;
 
     @Nullable
@@ -80,16 +76,12 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         publicNodeList = null;
 
         box = new Box(BoxType.INJECTOR_VIA_CONFIGURATOR);
-
-        privateNodeMap = box.services().nodes;
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite, bundle);
         publicNodeList = new ArrayList<>();
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
-
-        privateNodeMap = box.services().nodes;
     }
 
     protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
@@ -117,7 +109,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
-        ServiceNode<T> node = privateNodeMap.getRecursive(key);
+        ServiceNode<T> node = box.services().nodes.getRecursive(key);
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }
@@ -139,7 +131,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         if (privateLatestNode != null) {
             Key<?> key = privateLatestNode.key();
             if (key != null) {
-                if (!privateNodeMap.putIfAbsent(privateLatestNode)) {
+                if (!box.services().nodes.putIfAbsent(privateLatestNode)) {
                     System.err.println("OOPS");
                 }
             }
@@ -197,7 +189,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
 
             // First check that we do not have existing services with any of the provided keys
             for (Key<?> k : provides.members.keySet()) {
-                if (privateNodeMap.containsKey(k)) {
+                if (box.services().nodes.containsKey(k)) {
                     throw new IllegalArgumentException("At service with key " + k + " has already been registered");
                 }
             }
@@ -205,7 +197,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
             // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
             // the same key, so we can just add them now without any verification
             for (AtProvides member : provides.members.values()) {
-                privateNodeMap.put(owner.provide(member));// put them directly
+                box.services().nodes.put(owner.provide(member));// put them directly
             }
         }
     }

@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-
-import packed.internal.invokable.InvokableMember;
+package packed.internal.inject.runtime;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
+// Ideen er egentlig at instancen er fra en component....
+public class RuntimeServiceNodeComponent {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
 }

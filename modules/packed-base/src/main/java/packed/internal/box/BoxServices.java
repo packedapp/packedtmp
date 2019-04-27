@@ -27,11 +27,11 @@ import java.util.StringJoiner;
 
 import app.packed.inject.DependencyDescriptor;
 import app.packed.inject.InjectionException;
-import app.packed.inject.ServiceContract;
+import app.packed.inject.ServicesContract;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.builder.ServiceBuildNode;
@@ -98,7 +98,7 @@ public final class BoxServices {
         required.add(key);
     }
 
-    void buildContract(ServiceContract.Builder builder) {
+    void buildContract(ServicesContract.Builder builder) {
         // Why do we need that list
         // for (ServiceBuildNode<?> n : exportedNodes) {
         // if (n instanceof ServiceBuildNodeExposed) {
@@ -126,7 +126,7 @@ public final class BoxServices {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
-                    List<InternalDependency> dependencies = e.getKey().dependencies;
+                    List<InternalDependencyDescriptor> dependencies = e.getKey().dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");

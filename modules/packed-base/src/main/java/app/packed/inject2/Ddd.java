@@ -15,24 +15,32 @@
  */
 package app.packed.inject2;
 
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceContract.Builder;
+import app.packed.inject.ServicesContract;
+import app.packed.inject.ServicesContract.Builder;
 
 /**
  *
  */
 public class Ddd {
 
-    public static void main(String[] args) {
-        Builder b = new ServiceContract.Builder();
+    public static void mainx(String[] args) {
+        Builder b = ServicesContract.builder();
         b.addOptional(String.class);
         b.addRequires(String.class);
         b.build();
     }
 
+    public static void main(String[] args) {
+        ServicesContract.Builder b = ServicesContract.builder();
+        b.addOptional(String.class);
+        b.addRequires(String.class);
+        b.build();
+        // ServicesContract.Builder b = ServicesContract.Builder;
+    }
+
     // HelpInjection
     // Rebinding of services.
-    // I think service interception across bundles...
+    // I think service interception across containers...
 
     // For example, let us introduce a delay...... Lets try and serialize all arguments and return types...
 

@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-
-import packed.internal.invokable.InvokableMember;
+package app.packed.inject;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
-
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+interface ServiceManager {
+    // like injector except, inject + new instance???
+    // Vi vil gode have at App kan noget med nogle services....
 }

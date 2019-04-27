@@ -18,15 +18,16 @@ package packed.internal.inject.builder;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Optional;
 
-import app.packed.inject.InjectionSite;
 import app.packed.inject.Provides;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.util.AbstractConfiguration;
@@ -42,12 +43,12 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
 
     /** The dependencies of this node. */
-    public final List<InternalDependency> dependencies;
+    public final List<InternalDependencyDescriptor> dependencies;
 
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link InjectionSite}. */
+    /** Whether or this node contains a dependency on {@link ProvisionContext}. */
     final boolean hasDependencyOnInjectionSite;
 
     /** The injector configuration this node is registered with. */
@@ -71,7 +72,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    ServiceBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependency> dependencies) {
+    ServiceBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
         super(configurationSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
@@ -79,7 +80,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
         this.autoRequires = injectorBuilder.autoRequires;
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
-            for (InternalDependency e : dependencies) {
+            for (InternalDependencyDescriptor e : dependencies) {
                 if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;
@@ -169,6 +170,11 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
      * @return the new runtime node
      */
     abstract RuntimeServiceNode<T> newRuntimeNode();
+
+    @Override
+    public final Optional<String> description() {
+        return Optional.ofNullable(getDescription());
+    }
 
     /** {@inheritDoc} */
     @Override

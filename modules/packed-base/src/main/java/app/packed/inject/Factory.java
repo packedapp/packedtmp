@@ -16,27 +16,38 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import app.packed.lifecycle.OnStart;
 import app.packed.util.BaseSupport;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.InjectSupport;
+import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.invokable.ExecutableInvoker;
 import packed.internal.invokable.InstanceInvoker;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.invokable.InternalMapperFunction;
 import packed.internal.util.AppPackedUtilSupport;
+import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.descriptor.InternalConstructorDescriptor;
+import packed.internal.util.descriptor.InternalExecutableDescriptor;
+import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * Factories are used for creating new instances of a particular type.
@@ -59,7 +70,7 @@ public class Factory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
-            return new Factory(FindInjectableExecutable.find(implementation));
+            return new Factory(FactoryFindInjectableExecutable.find(implementation));
         }
     };
 
@@ -74,7 +85,7 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FindInjectableExecutable.find(AppPackedUtilSupport.invoke().toTypeLiteral(t)));
+            return new Factory(FactoryFindInjectableExecutable.find(AppPackedUtilSupport.invoke().toTypeLiteral(t)));
         }
     };
 
@@ -89,7 +100,7 @@ public class Factory<T> {
     }
 
     /** The internal factory that all calls delegate to. */
-    final InternalFactory<T> factory;
+    final FactorySupport<T> factory;
 
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot call {@link Object#getClass()} before calling a
@@ -100,7 +111,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) Factory2.create(getClass(), function);
+        this.factory = (FactorySupport<T>) Factory2.create(getClass(), function);
     }
 
     /**
@@ -112,7 +123,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
-        this.factory = (InternalFactory<T>) Factory1.create(getClass(), function);
+        this.factory = (FactorySupport<T>) Factory1.create(getClass(), function);
     }
 
     /**
@@ -121,7 +132,7 @@ public class Factory<T> {
      * @param factory
      *            the internal factory to wrap.
      */
-    Factory(InternalFactory<T> factory) {
+    Factory(FactorySupport<T> factory) {
         this.factory = requireNonNull(factory, "factory is null");
     }
 
@@ -134,7 +145,7 @@ public class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     Factory(Supplier<? extends T> supplier) {
-        this.factory = (InternalFactory<T>) Factory0.create(getClass(), supplier);
+        this.factory = (FactorySupport<T>) Factory0.create(getClass(), supplier);
     }
 
     /**
@@ -186,7 +197,7 @@ public class Factory<T> {
      */
     public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, TypeLiteral<R> type) {
         InternalMapperFunction<T, R> f = new InternalMapperFunction<>(type, factory.function, mapper);
-        return new Factory<>(new InternalFactory<>(f, factory.dependencies));
+        return new Factory<>(new FactorySupport<>(f, factory.dependencies));
     }
 
     /**
@@ -265,7 +276,7 @@ public class Factory<T> {
     // Vi skal have en hel section omkring method handlers.
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new Factory<>(new InternalFactory<T>(factory.function.withLookup(lookup), factory.dependencies));
+        return new Factory<>(new FactorySupport<T>(factory.function.withLookup(lookup), factory.dependencies));
     }
 
     public Factory<T> withType(Class<? extends T> type) {
@@ -323,7 +334,7 @@ public class Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) FIND_INJECTABLE_CACHE.get((Class<?>) t);
         } else {
-            return new Factory<>(FindInjectableExecutable.find(implementation));
+            return new Factory<>(FactoryFindInjectableExecutable.find(implementation));
         }
     }
 
@@ -337,9 +348,123 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(new InternalFactory<>(InstanceInvoker.of(instance), List.of()));
+        return new Factory<>(new FactorySupport<>(InstanceInvoker.of(instance), List.of()));
     }
 }
+
+/** An factory support class. */
+final class FactorySupport<T> {
+
+    /** A list of all of this factory's dependencies. */
+    final List<InternalDependencyDescriptor> dependencies;
+
+    /** The function used to create a new instance. */
+    final InternalFunction<T> function;
+
+    /** The key that this factory will be registered under by default with an injector. */
+    final Key<T> defaultKey;
+
+    FactorySupport(InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
+        this.dependencies = requireNonNull(dependencies, "dependencies is null");
+        this.function = requireNonNull(function);
+        this.defaultKey = function.typeLiteral.toKey();
+    }
+
+    /**
+     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
+     * {@link OnStart} and {@link Provides}.
+     *
+     * @return the scannable type of this factory
+     */
+    Class<? super T> getScannableType() {
+        return function.getReturnTypeRaw();
+    }
+}
+
+/** This class is responsible for finding an injectable executable. */
+final class FactoryFindInjectableExecutable {
+
+    static <T> FactorySupport<T> find(Class<T> implementation) {
+        InternalExecutableDescriptor executable = findExecutable(implementation);
+        return new FactorySupport<>(new ExecutableInvoker<>(TypeLiteral.of(implementation), executable, null, null),
+                InternalDependencyDescriptor.fromExecutable(executable));
+    }
+
+    static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        InternalExecutableDescriptor executable = findExecutable(implementation.getRawType());
+        return new FactorySupport<>(new ExecutableInvoker<>(implementation, executable, null, null), InternalDependencyDescriptor.fromExecutable(executable));
+    }
+
+    private static InternalExecutableDescriptor findExecutable(Class<?> type) {
+        if (type.isArray()) {
+            throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
+        } else if (type.isAnnotation()) {
+            throw new IllegalArgumentException("The specified type (" + format(type) + ") is an annotation");
+        }
+
+        // Try to find a single static method annotated with @Inject
+        Method method = null;
+        for (Method m : type.getDeclaredMethods()) {
+            if (Modifier.isStatic(m.getModifiers()) && JavaXInjectSupport.isInjectAnnotationPresent(m)) {
+                if (method != null) {
+                    throw new IllegalArgumentException("There are multiple static methods annotated with @Inject on " + format(type));
+                }
+                method = m;
+            }
+        }
+
+        // If a single method has been found, use it
+        if (method != null) {
+            // Det er jo i virkeligheden en Key vi laver her, burde havde det samme checkout..
+            if (method.getReturnType() == void.class /* || returnType == Void.class */) {
+                throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have a void return type."
+                        + " (@Inject on static methods are used to indicate that the method is a factory for a specific type, not for injecting values");
+            } else if (TypeUtil.isOptionalType(method.getReturnType())) {
+                throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
+                        + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
+            }
+            return InternalMethodDescriptor.of(method);
+        }
+
+        Constructor<?>[] constructors = type.getDeclaredConstructors();
+
+        // If we only have 1 constructor, return it.
+        if (constructors.length == 1) {
+            return InternalConstructorDescriptor.of(constructors[0]);
+        }
+
+        // See if we have a single constructor annotated with @Inject
+        Constructor<?> constructor = null;
+        int maxParameters = 0;
+        for (Constructor<?> c : constructors) {
+            maxParameters = Math.max(maxParameters, c.getParameterCount());
+            if (JavaXInjectSupport.isInjectAnnotationPresent(c)) {
+                if (constructor != null) {
+                    throw new InvalidDeclarationException(
+                            "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + format(type));
+                }
+                constructor = c;
+            }
+        }
+        if (constructor != null) {
+            return InternalConstructorDescriptor.of(constructor);
+        }
+
+        // Try and find one constructor with maximum number of parameters.
+        for (Constructor<?> c : constructors) {
+            if (c.getParameterCount() == maxParameters) {
+                if (constructor != null) {
+                    throw new IllegalArgumentException("No constructor annotated with @" + Inject.class.getSimpleName()
+                            + ". And multiple constructors having the maximum number of parameters (" + maxParameters + ") on class " + format(type));
+                }
+                constructor = c;
+            }
+        }
+        return InternalConstructorDescriptor.of(constructor);
+    }
+}
+
 //
 // /**
 // * Returns a new bindable factory.

@@ -29,7 +29,6 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** The backing class of {@link Factory}. */
 public class ExecutableInvoker<T> extends InvokableMember<T> {
@@ -48,7 +47,7 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
     final MethodHandle methodHandle;
 
     @SuppressWarnings("unchecked")
-    public ExecutableInvoker(InternalMethodDescriptor methodDescriptor) {
+    public ExecutableInvoker(MethodDescriptor methodDescriptor) {
         super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), null);
         this.executable = methodDescriptor;
         this.methodHandle = null;

@@ -33,6 +33,7 @@ import java.util.OptionalLong;
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
+import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * A key defines a unique identifier with two parts: a mandatory type literal and an optional annotation called a
@@ -304,6 +305,14 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
         Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
+    }
+
+    public static Key<?> fromMethodReturnType(MethodDescriptor method) {
+        requireNonNull(method, "method is null");
+        if (method instanceof InternalMethodDescriptor) {
+            return ((InternalMethodDescriptor) method).fromMethodReturnType();
+        }
+        return fromMethodReturnType(method.newMethod());
     }
 
     static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {

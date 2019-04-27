@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 
 /**
  *
@@ -51,7 +51,7 @@ public class DependencyTest {
         @Test
         @Disabled
         public void fromTypeAttribute() {
-            InternalDependency opString = InternalDependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
+            InternalDependencyDescriptor opString = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -62,12 +62,12 @@ public class DependencyTest {
         @Test
         @Disabled
         public void fromTypeParameter() {
-            assertThat(InternalDependency.of(OptionalInt.class)).isOptionalInt();
+            assertThat(InternalDependencyDescriptor.of(OptionalInt.class)).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            InternalDependency opInt = InternalDependency.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
+            InternalDependencyDescriptor opInt = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated
@@ -77,16 +77,16 @@ public class DependencyTest {
 
     @Test
     public void ofClass() {
-        assertThatNullPointerException().isThrownBy(() -> InternalDependency.of((Class<?>) null));
+        assertThatNullPointerException().isThrownBy(() -> InternalDependencyDescriptor.of((Class<?>) null));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> InternalDependency.of(Optional.class))
+        assertThatIllegalArgumentException().isThrownBy(() -> InternalDependencyDescriptor.of(Optional.class))
                 .withMessage("Cannot determine type variable <T> for type Optional<T>");
 
-        InternalDependency opLong = InternalDependency.of(OptionalLong.class);
+        InternalDependencyDescriptor opLong = InternalDependencyDescriptor.of(OptionalLong.class);
         assertThat(opLong).isOptional(OptionalLong.class);
         assertThat(opLong).keyIs(Long.class);
 
-        InternalDependency opDouble = InternalDependency.of(OptionalDouble.class);
+        InternalDependencyDescriptor opDouble = InternalDependencyDescriptor.of(OptionalDouble.class);
         assertThat(opDouble).isOptional(OptionalDouble.class);
         assertThat(opDouble).keyIs(Double.class);
     }

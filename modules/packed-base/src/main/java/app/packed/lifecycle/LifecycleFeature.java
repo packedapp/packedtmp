@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.lifecycle;
+
+import app.packed.basespi.Feature;
+import app.packed.basespi.FeatureConfigurator;
 
 /**
  *
  */
 
-// Tjah... er vel ikke saa anderledes en Contract.Hooks()...
+public class LifecycleFeature extends Feature<FeatureConfigurator> {
+    public static final LifecycleFeature DEFAULT = new LifecycleFeature();
 
-// Eneste problem.. er man ikke kan styre Lifecycle. Man kan kalde hooks efter f.eks. shutdown....
-// Men det er jo ikke anderledes end at kalde en service efter shutdown...
-// Maaske er det kun noget man skal vaere nervoes for
-interface HookService {
+    // Perhaps adding some custom annotations
 
-    // Streams, vs collections...
-    // vs det vill vaere rart at kunne kalde
-    // vs, man ligesom kan lukke hooks ned. Hvis de altid bliver eksvekveret i en forEach();
+    // ClassValue<Feature> -> IdentityHashMap<Feature, CachedConfiguration>>
 }

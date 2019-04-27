@@ -17,7 +17,7 @@ package packed.internal.inject;
 
 import app.packed.container.Component;
 import app.packed.inject.DependencyDescriptor;
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDescriptor;
@@ -41,21 +41,21 @@ public interface ServiceNode<T> extends ServiceDescriptor {
     // }
 
     default T getInstance(Injector injector, DependencyDescriptor dependency, @Nullable Component component) {
-        return getInstance(InjectionSite.of(injector, dependency));
+        return getInstance(ProvisionContext.of(injector, dependency));
     }
 
     InstantiationMode instantiationMode();
 
     default T getInstance(Injector injector, Key<T> key, @Nullable Component component) {
-        return getInstance(InjectionSite.of(injector, key));
+        return getInstance(ProvisionContext.of(injector, key));
     }
 
-    T getInstance(InjectionSite site);
+    T getInstance(ProvisionContext site);
 
     /**
-     * Returns whether or not this node needs a {@link InjectionSite} instance to be able to deliver a service.
+     * Returns whether or not this node needs a {@link ProvisionContext} instance to be able to deliver a service.
      *
-     * @return whether or not this node needs a {@link InjectionSite} instance to be able to deliver a service
+     * @return whether or not this node needs a {@link ProvisionContext} instance to be able to deliver a service
      */
     boolean needsInjectionSite();
 

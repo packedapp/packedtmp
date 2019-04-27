@@ -13,18 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.hook;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-
-import packed.internal.invokable.InvokableMember;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
+public final class HooksContract {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+    Set<Class<? extends Annotation>> capturingFieldHooks;
+
+    /**
+     * Returns an immutable set of all annotated field hooks.
+     * 
+     * @return an immutable set of all annotated field hooks
+     */
+    public Set<Class<? extends Annotation>> annotatedFieldHooks() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Set<Class<? extends Annotation>> capturingFieldHooks() {
+        return capturingFieldHooks;
+    }
+
+    public final class Builder {}
 }

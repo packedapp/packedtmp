@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package packed.internal.container;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-
-import packed.internal.invokable.InvokableMember;
+import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.util.AbstractConfiguration;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
+public class ComponentNode extends AbstractConfiguration {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+    /**
+     * @param configurationSite
+     */
+    protected ComponentNode(InternalConfigurationSite configurationSite) {
+        super(configurationSite);
+    }
+
 }

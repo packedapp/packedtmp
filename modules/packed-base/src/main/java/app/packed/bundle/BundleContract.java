@@ -19,25 +19,30 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.inject.ServiceContract;
+import app.packed.inject.ServicesContract;
 
 /**
  * The contract of a bundle.
  * <p>
- * The main difference to {@link BundleDescriptor} is that class does not include any implementation details.
+ * The main difference to {@link BundleDescriptor} is that class does not include any implementation details. For
+ * example, BundleDescriptor lists all annotated methods.
+ * 
+ * 
+ * Lists all Components also?????
  */
+
 public class BundleContract {
 
     /** A service contract object. */
-    private final ServiceContract services;
+    private final ServicesContract services;
 
     private final LifecyclePoints startingPoints = null;
 
     private final LifecyclePoints stoppingPoints = null;
 
     private BundleContract(BundleContract.Builder builder) {
-        ServiceContract.Builder s = builder.services;
-        this.services = s == null ? ServiceContract.EMPTY : s.build();
+        ServicesContract.Builder s = builder.services;
+        this.services = s == null ? ServicesContract.EMPTY : s.build();
     }
 
     /**
@@ -46,7 +51,7 @@ public class BundleContract {
      * 
      * @return the service contract for the bundle
      */
-    public final ServiceContract services() {
+    public final ServicesContract services() {
         return services;
     }
 
@@ -75,7 +80,7 @@ public class BundleContract {
     public static class Builder {
 
         /** A service contract builder object. */
-        private ServiceContract.Builder services;
+        private ServicesContract.Builder services;
 
         /**
          * Builds and returns a new contract
@@ -86,9 +91,9 @@ public class BundleContract {
             return new BundleContract(this);
         }
 
-        public ServiceContract.Builder services() {
-            ServiceContract.Builder s = services;
-            return s == null ? services = new ServiceContract.Builder() : s;
+        public ServicesContract.Builder services() {
+            ServicesContract.Builder s = services;
+            return s == null ? services = ServicesContract.builder() : s;
         }
     }
 

@@ -91,18 +91,6 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> returnType() {
-        return method.getReturnType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TypeLiteral<?> returnTypeLiteral() {
-        return TypeLiteral.fromMethodReturnType(method);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         return method.hashCode();
     }
@@ -141,6 +129,18 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
+    public Class<?> returnType() {
+        return method.getReturnType();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TypeLiteral<?> returnTypeLiteral() {
+        return TypeLiteral.fromMethodReturnType(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString() {
         return StringFormatter.format(method);
     }
@@ -150,6 +150,12 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
     public MethodHandle unreflect(Lookup lookup) throws IllegalAccessException {
         requireNonNull(lookup, "lookup is null");
         return lookup.unreflect(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException {
+        return lookup.unreflectSpecial(method, specialCaller);
     }
 
     /**
@@ -178,7 +184,7 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException {
-        return lookup.unreflectSpecial(method, specialCaller);
+    public boolean isStatic() {
+        return Modifier.isStatic(getModifiers());
     }
 }

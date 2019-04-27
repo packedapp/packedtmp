@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.ComponentServiceConfiguration;
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
@@ -31,14 +31,13 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.invokable.InvokableMember;
-import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
@@ -70,7 +69,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     }
 
     public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
-            InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependency> dependencies) {
+            InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
@@ -161,7 +160,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final T getInstance(InjectionSite ignore) {
+    public final T getInstance(ProvisionContext ignore) {
         if (instantionMode == InstantiationMode.PROTOTYPE) {
             return newInstance();
         }
@@ -231,9 +230,8 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ServiceBuildNode<?> provide(AtProvides atProvides) {
-        InternalMemberDescriptor descriptor = atProvides.member;
-        InternalConfigurationSite icss = configurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE,
-                atProvides.member.getAnnotation(Provides.class), descriptor);
+        InternalConfigurationSite icss = configurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE, atProvides.provides,
+                atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {

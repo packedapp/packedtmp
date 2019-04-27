@@ -19,14 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.invokable.InvokableMember;
 
 /** A descriptor of an annotated member that has 0 or more service dependencies. */
 public class AtDependable {
 
     /** The dependencies (parameters) of the member. */
-    public final List<InternalDependency> dependencies;
+    public final List<InternalDependencyDescriptor> dependencies;
 
     /** The invokable member. */
     public final InvokableMember<?> invokable;
@@ -39,7 +39,7 @@ public class AtDependable {
      * @param dependencies
      *            a list of dependencies
      */
-    AtDependable(InvokableMember<?> invokable, List<InternalDependency> dependencies) {
+    AtDependable(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);
     }

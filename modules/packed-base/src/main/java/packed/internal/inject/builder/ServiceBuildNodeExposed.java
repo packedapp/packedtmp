@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
@@ -62,7 +62,7 @@ public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(InjectionSite site) {
+    public T getInstance(ProvisionContext site) {
         return null;
     }
 

@@ -39,11 +39,11 @@ import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.TypeLiteral;
 import app.packed.util.VariableDescriptor;
+import packed.internal.util.AppPackedUtilSupport;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.AppPackedUtilSupport;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
@@ -52,7 +52,7 @@ import packed.internal.util.descriptor.InternalVariableDescriptor;
 /**
  * The default implementation of {@link DependencyDescriptor}.
  */
-public final class InternalDependency implements DependencyDescriptor {
+public final class InternalDependencyDescriptor implements DependencyDescriptor {
 
     /** The key of this dependency. */
     private final Key<?> key;
@@ -68,7 +68,7 @@ public final class InternalDependency implements DependencyDescriptor {
     @Nullable
     private final InternalVariableDescriptor variable;
 
-    private InternalDependency(Key<?> key, Class<?> optionalType, InternalVariableDescriptor variable) {
+    private InternalDependencyDescriptor(Key<?> key, Class<?> optionalType, InternalVariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionalType = optionalType;
         this.variable = variable;
@@ -208,12 +208,12 @@ public final class InternalDependency implements DependencyDescriptor {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
-    public static List<InternalDependency> fromExecutable(Executable executable) {
+    public static List<InternalDependencyDescriptor> fromExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
         throw new UnsupportedOperationException();
     }
 
-    public static List<InternalDependency> fromExecutable(InternalExecutableDescriptor executable) {
+    public static List<InternalDependencyDescriptor> fromExecutable(InternalExecutableDescriptor executable) {
         InternalParameterDescriptor[] parameters = executable.getParametersUnsafe();
         switch (parameters.length) {
         case 0:
@@ -223,7 +223,7 @@ public final class InternalDependency implements DependencyDescriptor {
         case 2:
             return List.of(of(parameters[0]), of(parameters[1]));
         default:
-            ArrayList<InternalDependency> list = new ArrayList<>(parameters.length);
+            ArrayList<InternalDependencyDescriptor> list = new ArrayList<>(parameters.length);
             for (int i = 0; i < parameters.length; i++) {
                 list.add(of(parameters[i]));
             }
@@ -239,12 +239,12 @@ public final class InternalDependency implements DependencyDescriptor {
      * @return the type literal for the field
      * @see Field#getGenericType()
      */
-    public static InternalDependency fromField(Field field) {
+    public static InternalDependencyDescriptor fromField(Field field) {
         requireNonNull(field, "field is null");
         return ofVariable(InternalFieldDescriptor.of(field));
     }
 
-    public static <T> InternalDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+    public static <T> InternalDependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(actualClass, baseClass, baseClassTypeVariableIndex);
 
         // Find any qualifier annotation that might be present
@@ -270,11 +270,12 @@ public final class InternalDependency implements DependencyDescriptor {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependency(AppPackedUtilSupport.invoke().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new InternalDependencyDescriptor(AppPackedUtilSupport.invoke().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
-    public static <T> List<InternalDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        ArrayList<InternalDependency> result = new ArrayList<>();
+    public static <T> List<InternalDependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass,
+            int... baseClassTypeVariableIndexes) {
+        ArrayList<InternalDependencyDescriptor> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
             result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
         }
@@ -288,30 +289,30 @@ public final class InternalDependency implements DependencyDescriptor {
      *            the class to return a dependency for
      * @return a dependency for the specified class
      */
-    public static InternalDependency of(Class<?> type) {
+    public static InternalDependencyDescriptor of(Class<?> type) {
         requireNonNull(type, "type is null");
         if (type == Optional.class) {
             throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
         } else if (type == OptionalInt.class) {
-            return new InternalDependency(Key.of(Integer.class), OptionalInt.class, null);
+            return new InternalDependencyDescriptor(Key.of(Integer.class), OptionalInt.class, null);
         } else if (type == OptionalLong.class) {
-            return new InternalDependency(Key.of(Long.class), OptionalLong.class, null);
+            return new InternalDependencyDescriptor(Key.of(Long.class), OptionalLong.class, null);
         } else if (type == OptionalDouble.class) {
-            return new InternalDependency(Key.of(Double.class), OptionalDouble.class, null);
+            return new InternalDependencyDescriptor(Key.of(Double.class), OptionalDouble.class, null);
         }
         return of(Key.of(type));
     }
 
-    public static <T> InternalDependency of(Key<?> key) {
-        return new InternalDependency(key, null, null);
+    public static <T> InternalDependencyDescriptor of(Key<?> key) {
+        return new InternalDependencyDescriptor(key, null, null);
     }
 
-    public static <T> InternalDependency of(VariableDescriptor variable) {
+    public static <T> InternalDependencyDescriptor of(VariableDescriptor variable) {
         requireNonNull(variable, "variable is null");
         return ofVariable(InternalVariableDescriptor.unwrap(variable));
     }
 
-    private static InternalDependency ofVariable(InternalVariableDescriptor variable) {
+    private static InternalDependencyDescriptor ofVariable(InternalVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
         Annotation a = variable.findQualifiedAnnotation();
 
@@ -353,6 +354,6 @@ public final class InternalDependency implements DependencyDescriptor {
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(variable, tl, a);
         System.out.println(key);
 
-        return new InternalDependency(key, optionalType, variable);
+        return new InternalDependencyDescriptor(key, optionalType, variable);
     }
 }

@@ -17,14 +17,14 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.ServiceBuildNode;
 
 /**
  * The runtime representation of an aliased service which delegates the getInstance() to the aliased node. This type is
- * used for exposed nodes as well as nodes that are imported from other injectors.
+ * used for exported nodes as well as nodes that are imported from other containers.
  */
 public final class RuntimeServiceNodeAlias<T> extends RuntimeServiceNode<T> {
 
@@ -50,7 +50,7 @@ public final class RuntimeServiceNodeAlias<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(InjectionSite site) {
+    public T getInstance(ProvisionContext site) {
         return aliasOf.getInstance(site);
     }
 

@@ -86,8 +86,8 @@ public interface Component extends Taggable {
     /**
      * Returns the name of this component.
      * <p>
-     * If no name was explicitly set using {@link ComponentServiceConfiguration#setName(String)}. A unique name (among other
-     * components with the same parent) has been automatically generated.
+     * If no name was explicitly set when configuring the component. A unique name (among other components with the same
+     * parent) was automatically generated.
      *
      * @return the name of this component
      *

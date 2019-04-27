@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.hook;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-
-import packed.internal.invokable.InvokableMember;
+import app.packed.basespi.Feature;
+import app.packed.basespi.FeatureConfigurator;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
+public class HooksFeature extends Feature<HookFeatureConfigurator> {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+}
+
+class HookFeatureConfigurator extends FeatureConfigurator {
+
 }

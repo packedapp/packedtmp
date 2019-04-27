@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.invokable.Function1Invokeable;
 
 /**
@@ -78,14 +78,14 @@ import packed.internal.invokable.Function1Invokeable;
 public abstract class Factory1<T, R> extends Factory<R> {
 
     /** A cache of extracted type variables and dependencies from implementations of this class. */
-    private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependency>>> CACHE = new ClassValue<>() {
+    private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected Entry<TypeLiteral<?>, List<InternalDependency>> computeValue(Class<?> type) {
+        protected Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>> computeValue(Class<?> type) {
             return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    InternalDependency.fromTypeVariables((Class) type, Factory1.class, 0));
+                    InternalDependencyDescriptor.fromTypeVariables((Class) type, Factory1.class, 0));
         }
     };
 
@@ -103,17 +103,17 @@ public abstract class Factory1<T, R> extends Factory<R> {
     }
 
     /**
-     * Creates a new internal factory from an implementation of this class and a function.
+     * Creates a new factory support instance from an implementation of this class and a function.
      * 
      * @param implementation
      *            the class extending this class
      * @param function
      *            the function used for creating new values
-     * @return a new internal factory
+     * @return a new factory support instance
      */
     @SuppressWarnings("unchecked")
-    static <T, R> InternalFactory<R> create(Class<?> implementation, Function<?, ? extends T> function) {
-        Entry<TypeLiteral<?>, List<InternalDependency>> fs = CACHE.get(implementation);
-        return new InternalFactory<>(new Function1Invokeable<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
+    static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
+        Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>> fs = CACHE.get(implementation);
+        return new FactorySupport<>(new Function1Invokeable<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }

@@ -69,17 +69,17 @@ public abstract class Factory0<R> extends Factory<R> {
     }
 
     /**
-     * Creates a new internal factory from an implementation of this class and a supplier.
+     * Creates a new factory support instance from an implementation of this class and a supplier.
      * 
      * @param implementation
      *            the class extending this class
      * @param supplier
      *            the supplier used for creating new values
-     * @return a new internal factory
+     * @return a new factory support instance
      */
     @SuppressWarnings("unchecked")
-    static <T> InternalFactory<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
+    static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
         TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
-        return new InternalFactory<>(new Function0Invokable<>(tt, supplier), List.of());
+        return new FactorySupport<>(new Function0Invokable<>(tt, supplier), List.of());
     }
 }

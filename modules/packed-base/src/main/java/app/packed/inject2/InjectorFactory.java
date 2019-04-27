@@ -57,6 +57,7 @@ class BundleX {
     // the factory is spawned from internal services
     // Problemer er maaske at ikke kan definere endnu et injector factory level uden at angive en bundle....
 
+    // Problemet er vel at vi kun kan klare en extra level
     interface IFactory {
         Injector a(Request request, Response response);
 

@@ -17,7 +17,7 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.Provider;
 import packed.internal.inject.builder.ServiceBuildNode;
@@ -67,7 +67,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(InjectionSite ignore) {
+    public T getInstance(ProvisionContext ignore) {
         return instance;
     }
 

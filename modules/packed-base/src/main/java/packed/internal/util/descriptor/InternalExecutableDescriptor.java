@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
@@ -59,12 +58,6 @@ public abstract class InternalExecutableDescriptor extends InternalAnnotatedElem
     @Override
     public final Class<?> getDeclaringClass() {
         return executable.getDeclaringClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isStatic() {
-        return Modifier.isStatic(getModifiers());
     }
 
     /** {@inheritDoc} */

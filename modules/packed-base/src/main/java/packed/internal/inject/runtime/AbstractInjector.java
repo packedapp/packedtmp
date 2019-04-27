@@ -22,13 +22,13 @@ import java.util.Optional;
 
 import app.packed.container.Component;
 import app.packed.inject.InjectionException;
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
 import packed.internal.classscan.ServiceClassDescriptor;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.invokable.FieldAccessor;
 
@@ -68,7 +68,7 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(InjectionSite.of(this, key));
+        return n.getInstance(ProvisionContext.of(this, key));
     }
 
     /** {@inheritDoc} */
@@ -87,7 +87,7 @@ public abstract class AbstractInjector implements Injector {
         // Inject fields
         if (!descriptor.inject.fields.isEmpty()) {
             for (AtDependable atInject : descriptor.inject.fields) {
-                InternalDependency dependency = atInject.dependencies.get(0);
+                InternalDependencyDescriptor dependency = atInject.dependencies.get(0);
                 FieldAccessor<?> field = (FieldAccessor<?>) atInject.invokable;
                 ServiceNode<?> node = findNode(dependency.key());
                 if (node != null) {
@@ -121,7 +121,7 @@ public abstract class AbstractInjector implements Injector {
             for (AtDependable method : descriptor.inject.methods) {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(arguments);
-                for (InternalDependency dependency : method.dependencies) {
+                for (InternalDependencyDescriptor dependency : method.dependencies) {
                     ServiceNode<?> node = findNode(dependency.key());
                     System.out.println(node);
 

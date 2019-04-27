@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Semaphore;
 
-import app.packed.inject.InjectionSite;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.inject.Provider;
@@ -59,7 +59,7 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(InjectionSite site) {
+    public T getInstance(ProvisionContext site) {
         for (;;) {
             T i = instance;
             if (i != null) {
@@ -67,6 +67,9 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
             }
 
             // Lazy calculate the value
+
+            // Where should we check for null????
+            // Also, should
             Sync l = lazy;
             if (l != null) {
                 i = l.tryCreate();
@@ -117,6 +120,7 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
             acquireUninterruptibly();
             try {
                 if (failure != null) {
+                    // We should not Rethrow it, We need to wrap it in some ProvisionException
                     ThrowableUtil.rethrowErrorOrRuntimeException(failure);
                 }
                 if (factory != null) {

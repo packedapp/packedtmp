@@ -1,0 +1,43 @@
+
+
+A) Class, no instantiation, only static methods...
+
+
+
+
+
+
+provides services = Permanent
+
+@Provide
+FooService {
+  public FooService provide() {
+    return this;
+  }
+}
+
+is Identical to
+@Provide
+public class FooService {}
+
+
+
+
+
+
+
+
+
+
+
+StereoType: Service, Actor, Pool,
+
+
+Plugins vs Hooks
+  Control instantiation
+  Plugin annotations not published...
+  
+  
+Component
+  isPermanent     (avoid removing it by accident)
+  allowChildren   (

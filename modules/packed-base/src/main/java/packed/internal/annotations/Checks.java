@@ -18,9 +18,9 @@ package packed.internal.annotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 
+import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.util.ErrorMessageBuilder;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
  *
@@ -35,7 +35,7 @@ class Checks {
      * @param annotationType
      *            the type of annotation that forced the check
      */
-    static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    static void checkAnnotatedFieldIsNotFinal(FieldDescriptor field, Class<? extends Annotation> annotationType) {
         if ((Modifier.isStatic(field.getModifiers()))) {
             throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field
                     + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
@@ -50,7 +50,7 @@ class Checks {
      * @param annotationType
      *            the type of annotation that forced the check
      */
-    static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    static void checkAnnotatedFieldIsNotStatic(FieldDescriptor field, Class<? extends Annotation> annotationType) {
         if ((Modifier.isStatic(field.getModifiers()))) {
             throw new InvalidDeclarationException(
                     ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
@@ -62,7 +62,7 @@ class Checks {
         }
     }
 
-    static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
+    static String fieldCannotHaveBothAnnotations(FieldDescriptor field, Class<? extends Annotation> annotationType1,
             Class<? extends Annotation> annotationType2) {
         return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
                 + ", to resolve remove one of the annotations.";
@@ -77,7 +77,7 @@ class Checks {
      *            the annotation
      * @return the error message
      */
-    static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+    static String fieldWithAnnotationCannotBeFinal(FieldDescriptor field, Class<? extends Annotation> annotationType) {
         return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
                 + " or make the field non-final";
     }

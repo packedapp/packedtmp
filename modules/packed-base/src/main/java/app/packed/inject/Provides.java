@@ -22,13 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation indicating that the method or field provides a service.
- * <p>
- * The annotation can be used on both static and non-static fields and methods. However, if you use a non-static field
- * or method you implicitly introduces a dependency to the instance of the type on which the field or method is located.
- * This is normally not a problem, however in some situations it can lead to circles in the dependency graph.
- * <p>
- * A field
+ * An annotation indicating that the annotated type, method or field provides a service. A field
  * 
  * 
  * Or a final field.
@@ -53,8 +47,8 @@ import java.lang.annotation.Target;
  * The field will is made available with the key {@code Key<@Left String>} while the method will be made available under
  * the key {@code Key<@Right String>}.
  * <p>
- * The objects provided by fields and methods are <b>never</b> injected. This must be done manually if needed, for
- * example, via <pre> 
+ * Injection is never performed on any objects provided by a annotated field or method is <b>never</b> injected. This
+ * must be done manually if needed, for example, via <pre> 
  *   &#64;Provides
  *   public SomeObject provide(String name, Injector i) {
  *       SomeObject o = new SomeObject(name);
@@ -63,14 +57,21 @@ import java.lang.annotation.Target;
  *   }
  * </pre>
  * <p>
+ * The annotation can be used on both static and non-static fields and methods. However, if you use a non-static field
+ * or method you implicitly introduces a dependency to the instance of the type on which the field or method is located.
+ * This is normally not a problem, however in some situations it can lead to circles in the dependency graph.
+ * <p>
+ * 
  * If using
  * <p>
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// @Component(name, description, children, ....)
+// @Service()
 public @interface Provides {
 
     /**
@@ -81,16 +82,17 @@ public @interface Provides {
      * @return a description of the service provided by the providing method or field
      * @see ServiceDescriptor#description()
      */
-    String description() default "";
+    String description() default ""; // description on component???
 
     /**
      * This If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having
      * to export it from the bundle.
      * 
      * <p>
-     * It is not possible to export a provided service as a noth.
+     * The service is always exported under the same key as it is registered under internally in a container. If you wish to
+     * use another key, the service must be explicitly exported, for example, using Bundle#exportService().
      * <p>
-     * The default value is {@code false}, indicating that a service is not exported.
+     * The default value is {@code false}, indicating that the provided service is not exported.
      * 
      * @return whether or not the provided service should be exported
      */
@@ -109,4 +111,6 @@ public @interface Provides {
      * @return the tags of the service
      */
     String[] tags() default {};
+
+    // exportedKey = Class<? Supplier<Key>>??? ///
 }

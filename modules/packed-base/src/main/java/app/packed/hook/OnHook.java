@@ -22,17 +22,21 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import app.packed.basespi.RequiresFeature;
+
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
  * of either {@link AnnotatedFieldHook}, {@link AnnotatedMethodHook}, {@link AnnotatedTypeHook} or
  * {@link InstanceOfHook}.
  */
 // Should also be able to take a Stream/List/Collection/Iterable
+// Hvad hvis hvis vi bare tager en definition....
 // Should we Allow Hook? matching every hook? or AnnontatedFieldHook<?> matching all field annotations
 
 // Could allow mailbox'es for actors. Where we automatically transforms method invocations into
 // We would need to have some way to indicate that some method invocation can be done without requring the result
 // Maybe return Void to indicate sync and void as async?
+@RequiresFeature(HooksFeature.class)
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
 @Documented
@@ -44,7 +48,8 @@ public @interface OnHook {
      * 
      * @return whether or not the annotated method will capture hooks from outside of the defining bundle
      */
-    boolean exported() default false;
+    // InternalOnly, ExternalOnly, Both
+    boolean exported() default false;// export or exported?? align with @Provides
 }
 
 @interface OHWithMethod {

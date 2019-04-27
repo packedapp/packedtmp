@@ -17,7 +17,7 @@ package packed.internal.annotations;
 
 import java.util.List;
 
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.invokable.InvokableMember;
 
 /**
@@ -29,7 +29,7 @@ public class AtHook extends AtDependable {
      * @param invokable
      * @param dependencies
      */
-    AtHook(InvokableMember<?> invokable, List<InternalDependency> dependencies) {
+    AtHook(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
         super(invokable, dependencies);
     }
 

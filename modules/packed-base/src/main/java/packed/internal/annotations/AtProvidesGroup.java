@@ -27,7 +27,7 @@ import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
@@ -93,13 +93,13 @@ public final class AtProvidesGroup {
             for (Annotation a : annotations) {
                 if (a.annotationType() == Provides.class) {
                     InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-                    return tryAdd0(lookup, descriptor, Key.fromMethodReturnType(method), (Provides) a, InternalDependency.fromExecutable(descriptor));
+                    return tryAdd0(lookup, descriptor, Key.fromMethodReturnType(method), (Provides) a, InternalDependencyDescriptor.fromExecutable(descriptor));
                 }
             }
             return null;
         }
 
-        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependencyDescriptor> dependencies) {
             AtProvides ap = new AtProvides(lookup, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
 

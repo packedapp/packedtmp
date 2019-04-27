@@ -18,16 +18,18 @@ package packed.internal.annotations;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
+import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
+import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependency;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** A descriptor for a member annotated with {@link Provides}. */
 public final class AtProvides extends AtDependable {
@@ -45,15 +47,18 @@ public final class AtProvides extends AtDependable {
     /** The key under which the provided service will be made available. */
     public final Key<?> key;
 
-    /** The annotated member, either an {@link InternalFieldDescriptor} or an {@link InternalMethodDescriptor}. */
-    public final InternalMemberDescriptor member;
+    /** The annotated member, either an {@link FieldDescriptor} or an {@link MethodDescriptor}. */
+    public final Member member;
 
-    AtProvides(Lookup lookup, InternalMemberDescriptor member, Key<?> key, Provides provides, List<InternalDependency> dependencies) {
+    public final Provides provides;
+
+    AtProvides(Lookup lookup, InternalMemberDescriptor member, Key<?> key, Provides provides, List<InternalDependencyDescriptor> dependencies) {
         super(member.newInvoker(lookup), dependencies);
+        this.provides = requireNonNull(provides);
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.member = requireNonNull(member);
         this.instantionMode = provides.instantionMode();
-        this.isStaticMember = member.isStatic();
+        this.isStaticMember = Modifier.isStatic(member.getModifiers());
         this.key = requireNonNull(key);
     }
 }

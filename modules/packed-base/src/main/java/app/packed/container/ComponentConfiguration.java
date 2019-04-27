@@ -18,7 +18,6 @@ package app.packed.container;
 import app.packed.app.AppConfigurator;
 import app.packed.bundle.Bundle;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Nullable;
 
 // isConfigurable();
@@ -64,9 +63,8 @@ public interface ComponentConfiguration extends ComponentInstaller {
     ComponentConfiguration addMixin(Factory<?> factory);
 
     /**
-     * Adds the specified mixin instance to this component. The mixin can either be a class in which case it will be
-     * instantiated and injected according to same rules as the component instance. Or an instance in which case it will
-     * only be injected.
+     * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
+     * injected according to same rules as the component instance. Or an instance in which case it will only be injected.
      *
      * @param instance
      *            the mixin instance to add
@@ -99,26 +97,14 @@ public interface ComponentConfiguration extends ComponentInstaller {
     @Nullable
     String getName();
 
-    /**
-     * Returns an injector configurator for this component. This configurator can be used to provide service specifically to
-     * the underlying component instance or any of its mixins.
-     * 
-     * injector is responsible for any dependency injection needed for this component. For example, for instantiating the
-     * component instance or any of its mixins. The injector can accessed via {@link Component#injector()} at runtime.
-     * 
-     * @return a the component's injector
-     * @see Component#injector()
-     */
-    // Or privateInjector
-    // Do example, with listener, on instance annotation
-    // injectorInheritable()... an injector that is inherited by all
-    InjectorConfigurator injector();
+    // Ville vaere rigtig rart at vi havde noget support for at fryse navnet, isaer mht til actors...
+    // ComponentPath path() <- once invoked, the name cannot be changed....
 
     /**
      * Sets the description of this component.
      *
      * @param description
-     *            the description of the component
+     *            the description to set
      * @return this configuration
      * @see #getDescription()
      * @see Component#description()
@@ -143,3 +129,20 @@ public interface ComponentConfiguration extends ComponentInstaller {
      */
     ComponentConfiguration setName(@Nullable String name);
 }
+
+/**
+ * Returns an injector configurator for this component. This configurator can be used to provide service specifically to
+ * the underlying component instance or any of its mixins.
+ * 
+ * injector is responsible for any dependency injection needed for this component. For example, for instantiating the
+ * component instance or any of its mixins. The injector can accessed via {@link Component#injector()} at runtime.
+ * 
+ * @return a the component's injector
+ * @see Component#injector()
+ */
+// Or privateInjector
+// Do example, with listener, on instance annotation
+// injectorInheritable()... an injector that is inherited by all
+// Nu er vi taet knyttet til services....
+// Maasske Hellere end Service.private(ComponentConfiguration cc).bind(dddd);
+// InjectorConfigurator injector();

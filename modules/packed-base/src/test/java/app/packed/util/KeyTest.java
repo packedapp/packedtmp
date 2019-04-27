@@ -190,7 +190,8 @@ public class KeyTest {
             }
         }
 
-        npe(() -> Key.fromMethodReturnType(null), "method");
+        npe(() -> Key.fromMethodReturnType((Method) null), "method");
+        npe(() -> Key.fromMethodReturnType((MethodDescriptor) null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
         assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);

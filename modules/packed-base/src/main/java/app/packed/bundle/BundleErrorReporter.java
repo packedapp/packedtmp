@@ -13,18 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.bundle;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
 
-import packed.internal.invokable.InvokableMember;
+import app.packed.inject.Factory;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
+public class BundleErrorReporter {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+    public static final Factory<BundleErrorReporter> FACTORY = Factory.findInjectable(BundleErrorReporter.class).withLookup(MethodHandles.lookup());
+
+    // BundleErrorReporter(InjectorBundle ib) {
+    //
+    // }
+
+    public void reportErrror(String error) {
+
+    }
 }

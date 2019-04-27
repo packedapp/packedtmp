@@ -20,11 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.List;
 
+import app.packed.inject.DependencyDescriptor;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
+import packed.internal.box.BoxServices;
 import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.InternalInjector;
@@ -53,8 +57,8 @@ final class DependencyGraph {
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(InjectorBuilder builder) {
-        builder.privateInjector = new InternalInjector(builder, builder.privateNodeMap);
-        builder.privateNodeMap
+        builder.privateInjector = new InternalInjector(builder, builder.box.services().nodes);
+        builder.box.services().nodes
                 .put(new ServiceBuildNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
@@ -76,7 +80,7 @@ final class DependencyGraph {
         }
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
-        DependencyGraphResolver.resolveAllDependencies(this);
+        resolveAllDependencies(this);
         dependencyCyclesDetect();
     }
 
@@ -114,7 +118,8 @@ final class DependencyGraph {
         analyze(root);
 
         // Instantiate all singletons
-        for (ServiceNode<?> node : root.privateNodeMap) {
+
+        for (ServiceNode<?> node : root.box.services().nodes) {
             if (node instanceof ServiceBuildNodeDefault) {
                 ServiceBuildNodeDefault<?> s = (ServiceBuildNodeDefault<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
@@ -124,12 +129,37 @@ final class DependencyGraph {
         }
 
         // Okay we are finished, convert all nodes to runtime nodes.
-        root.privateNodeMap.toRuntimeNodes();
-        if (root.privateNodeMap != root.box.services().exports) {
+        root.box.services().nodes.toRuntimeNodes();
+        if (root.box.services().nodes != root.box.services().exports) {
             root.box.services().exports.toRuntimeNodes();
         }
     }
 
+    // Requirements -> cannot require any exposed services, or internally registered services...
+
+    static void resolveAllDependencies(DependencyGraph graph) {
+        graph.detectCyclesFor = new ArrayList<>();
+
+        BoxServices services = graph.root.box.services();
+
+        for (ServiceNode<?> nn : services.nodes) {
+            ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
+            node.freeze();// Should be frozen, maybe change to an assert
+
+            if (node.needsResolving()) {
+                graph.detectCyclesFor.add(node);
+                List<InternalDependencyDescriptor> dependencies = node.dependencies;
+                for (int i = 0; i < dependencies.size(); i++) {
+                    DependencyDescriptor dependency = dependencies.get(i);
+                    ServiceNode<?> resolveTo = services.nodes.getNode(dependency);
+                    services.recordResolvedDependency(node, dependency, resolveTo, false);
+                    node.resolvedDependencies[i] = resolveTo;
+                }
+            }
+        }
+        services.checkForMissingDependencies();
+        // b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
+    }
 }
 
 // All exposures

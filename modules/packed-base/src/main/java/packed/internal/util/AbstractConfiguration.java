@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.AbstractSet;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.Set;
 
 import app.packed.util.Nullable;
@@ -40,12 +39,18 @@ public abstract class AbstractConfiguration {
     private String description;
 
     /** Whether or not the configuration has been frozen. */
-    boolean isFrozen;
+    private boolean isFrozen;
 
     /** A tag set (lazy initialized) */
     @Nullable
     private AbstractConfigurableTagSet<String> tags;
 
+    /**
+     * Creates a new abstract configuration
+     * 
+     * @param configurationSite
+     *            the configuration site of the configuration
+     */
     protected AbstractConfiguration(InternalConfigurationSite configurationSite) {
         this.configurationSite = requireNonNull(configurationSite);
     }
@@ -54,10 +59,6 @@ public abstract class AbstractConfiguration {
         if (isFrozen) {
             throw new IllegalStateException("This configuration has been frozen and can no longer be modified");
         }
-    }
-
-    protected void freeze() {
-        isFrozen = true;
     }
 
     /**
@@ -69,6 +70,10 @@ public abstract class AbstractConfiguration {
         return configurationSite;
     }
 
+    public void freeze() {
+        isFrozen = true;
+    }
+
     /**
      * Returns the description.
      *
@@ -76,10 +81,6 @@ public abstract class AbstractConfiguration {
      */
     public final String getDescription() {
         return description;
-    }
-
-    public final Optional<String> description() {
-        return Optional.ofNullable(description);
     }
 
     /**

@@ -26,7 +26,7 @@ import java.lang.reflect.Type;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 
 /** The default abstract implementation of {@link VariableDescriptor}. */
 public abstract class InternalVariableDescriptor extends InternalAnnotatedElement implements VariableDescriptor {
@@ -42,7 +42,7 @@ public abstract class InternalVariableDescriptor extends InternalAnnotatedElemen
     }
 
     /**
-     * The index of the variable, used when creating {@link InternalDependency} instances.
+     * The index of the variable, used when creating {@link InternalDependencyDescriptor} instances.
      * <p>
      * If this variable is a field, this method returns {@code 0}.
      *

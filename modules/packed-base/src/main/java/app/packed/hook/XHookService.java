@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-
-import packed.internal.invokable.InvokableMember;
+package app.packed.hook;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
 
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
+// Tjah... er vel ikke saa anderledes en Contract.Hooks()...
+
+// Eneste problem.. er man ikke kan styre Lifecycle. Man kan kalde hooks efter f.eks. shutdown....
+// Men det er jo ikke anderledes end at kalde en service efter shutdown...
+// Maaske er det kun noget man skal vaere nervoes for
+interface XHookService {
+
+    // Streams, vs collections...
+    // vs det vill vaere rart at kunne kalde
+    // vs, man ligesom kan lukke hooks ned. Hvis de altid bliver eksvekveret i en forEach();
 }

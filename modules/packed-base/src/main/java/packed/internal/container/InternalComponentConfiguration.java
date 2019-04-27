@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -31,7 +30,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.classscan.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InjectSupport;
-import packed.internal.inject.InternalDependency;
+import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.builder.InjectorBuilder;
 import packed.internal.inject.builder.ServiceBuildNodeDefault;
 import packed.internal.invokable.InternalFunction;
@@ -62,7 +61,8 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     String name;
 
     /** The parent of this configuration, or null for the root component. */
-    final @Nullable InternalComponentConfiguration<?> parent;
+    @Nullable
+    final InternalComponentConfiguration<?> parent;
 
     /** The object instances of the component, the array will be passed along to InternalComponent. */
     Object[] instances;
@@ -74,7 +74,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
      * @param bindingMode
      */
     public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
-            @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependency> dependencies) {
+            @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
@@ -191,12 +191,6 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     @Override
     public <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation) {
         return installService(Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InjectorConfigurator injector() {
-        return null;
     }
 
     /** {@inheritDoc} */
