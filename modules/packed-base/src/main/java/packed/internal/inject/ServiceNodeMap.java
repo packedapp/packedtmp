@@ -98,6 +98,11 @@ public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
     public void toRuntimeNodes() {
         nodes.replaceAll((k, v) -> v.toRuntimeNode());
     }
+
+    @Override
+    public String toString() {
+        return nodes.toString();
+    }
 }
 
 // Couple of ideas.

@@ -27,7 +27,7 @@ import java.util.StringJoiner;
 
 import app.packed.inject.DependencyDescriptor;
 import app.packed.inject.InjectionException;
-import app.packed.inject.ServicesContract;
+import app.packed.inject.InjectorContract;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
@@ -98,7 +98,7 @@ public final class BoxServices {
         required.add(key);
     }
 
-    void buildContract(ServicesContract.Builder builder) {
+    void buildContract(InjectorContract.Builder builder) {
         // Why do we need that list
         // for (ServiceBuildNode<?> n : exportedNodes) {
         // if (n instanceof ServiceBuildNodeExposed) {

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.inject.ServicesContract;
+import app.packed.inject.InjectorContract;
 
 /**
  * The contract of a bundle.
@@ -34,15 +34,15 @@ import app.packed.inject.ServicesContract;
 public class BundleContract {
 
     /** A service contract object. */
-    private final ServicesContract services;
+    private final InjectorContract services;
 
     private final LifecyclePoints startingPoints = null;
 
     private final LifecyclePoints stoppingPoints = null;
 
     private BundleContract(BundleContract.Builder builder) {
-        ServicesContract.Builder s = builder.services;
-        this.services = s == null ? ServicesContract.EMPTY : s.build();
+        InjectorContract.Builder s = builder.services;
+        this.services = s == null ? InjectorContract.EMPTY : s.build();
     }
 
     /**
@@ -51,7 +51,7 @@ public class BundleContract {
      * 
      * @return the service contract for the bundle
      */
-    public final ServicesContract services() {
+    public final InjectorContract services() {
         return services;
     }
 
@@ -80,7 +80,7 @@ public class BundleContract {
     public static class Builder {
 
         /** A service contract builder object. */
-        private ServicesContract.Builder services;
+        private InjectorContract.Builder services;
 
         /**
          * Builds and returns a new contract
@@ -91,9 +91,9 @@ public class BundleContract {
             return new BundleContract(this);
         }
 
-        public ServicesContract.Builder services() {
-            ServicesContract.Builder s = services;
-            return s == null ? services = ServicesContract.builder() : s;
+        public InjectorContract.Builder services() {
+            InjectorContract.Builder s = services;
+            return s == null ? services = InjectorContract.builder() : s;
         }
     }
 

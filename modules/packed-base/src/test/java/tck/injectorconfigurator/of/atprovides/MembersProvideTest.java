@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.inject.Provides;
 import app.packed.util.Key;
 import support.stubs.annotation.StringQualifier;
@@ -41,7 +41,7 @@ public class MembersProvideTest {
         validate(of(c -> c.provide(VisibilityStatic.class).prototype()));
     }
 
-    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector of(Consumer<? super SimpleInjectorConfigurator> consumer) {
         return Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

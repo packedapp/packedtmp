@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import app.packed.extension.Extension;
+package app.packed.extension;
 
 /**
  *
  */
-public class HooksFeature extends Extension<HooksFeature> {
+// Navngivning noget med model....
+public class BootstrapFactory {
 
+    public ContainerConfiguration create() {
+        throw new UnsupportedOperationException();
+    }
 }

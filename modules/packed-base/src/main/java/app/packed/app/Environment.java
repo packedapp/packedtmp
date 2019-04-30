@@ -15,7 +15,7 @@
  */
 package app.packed.app;
 
-import app.packed.inject.ProvisionContext;
+import app.packed.inject.ProvidesHelper;
 
 /**
  * Exactly one environment exist in a single ClassLoader. Normally this is also one per JVM. But you can easily load
@@ -74,7 +74,7 @@ public final class Environment {
         // Er ikke overskrevet af graal. Men bliver gemt....
     }
 
-    System.Logger defaultLogger(ProvisionContext site) {
+    System.Logger defaultLogger(ProvidesHelper site) {
         throw new UnsupportedOperationException();
     }
 

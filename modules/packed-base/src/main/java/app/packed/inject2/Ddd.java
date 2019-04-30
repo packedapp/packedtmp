@@ -15,8 +15,8 @@
  */
 package app.packed.inject2;
 
-import app.packed.inject.ServicesContract;
-import app.packed.inject.ServicesContract.Builder;
+import app.packed.inject.InjectorContract;
+import app.packed.inject.InjectorContract.Builder;
 
 /**
  *
@@ -24,14 +24,14 @@ import app.packed.inject.ServicesContract.Builder;
 public class Ddd {
 
     public static void mainx(String[] args) {
-        Builder b = ServicesContract.builder();
+        Builder b = InjectorContract.builder();
         b.addOptional(String.class);
         b.addRequires(String.class);
         b.build();
     }
 
     public static void main(String[] args) {
-        ServicesContract.Builder b = ServicesContract.builder();
+        InjectorContract.Builder b = InjectorContract.builder();
         b.addOptional(String.class);
         b.addRequires(String.class);
         b.build();

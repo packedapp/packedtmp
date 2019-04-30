@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package packed.internal.inject.builder;
+
+import app.packed.bundle.Bundle;
+import app.packed.inject.Injector;
 
 /**
  *
  */
+public class Ffff extends Bundle {
 
-// Ideen var egentlig at vi gerne ville beholder alle metoder.
-// Men f.eks. tilfoeje en ThreadSafe/ThreadUnsafe contract marker
+    public static void main(String[] args) {
+        Injector i = Injector.of(new Ffff());
 
-// Bundle skulle meget gerne bare extende denne, med en specification..
-// F.eks. saadan noget som kontrakt kan du faa med via en specification..
-// Men er det kun fordi vi ikke gider have 2 constructorer i Bundle???
-/// Saa syntes jeg maaske ikke den er det vaerd
-public abstract class AbstractBundle extends AnyBundle {
+        System.out.println(i.services().count() + "");
+        System.out.println(i.with(String.class));
+    }
 
-    /**
-     * @param specification
-     */
-    public AbstractBundle(ContainerConfiguration specification) {
-        super(specification);
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        provide("asdsad");
+        export(String.class);
     }
 }

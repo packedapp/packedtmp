@@ -15,28 +15,10 @@
  */
 package app.packed.hook;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
-
 /**
  *
  */
-public final class HooksContract {
+// Like
+public class AllHooksDescriptor {
 
-    Set<Class<? extends Annotation>> capturingFieldHooks;
-
-    /**
-     * Returns an immutable set of all annotated field hooks.
-     * 
-     * @return an immutable set of all annotated field hooks
-     */
-    public Set<Class<? extends Annotation>> annotatedFieldHooks() {
-        throw new UnsupportedOperationException();
-    }
-
-    public Set<Class<? extends Annotation>> capturingFieldHooks() {
-        return capturingFieldHooks;
-    }
-
-    public final class Builder {}
 }

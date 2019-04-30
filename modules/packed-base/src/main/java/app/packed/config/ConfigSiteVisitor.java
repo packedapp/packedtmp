@@ -64,7 +64,7 @@ public interface ConfigSiteVisitor {
 
     //// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere
     // default void visitConfiguration(ConfigurationNode....)visitConfiguration
-
+    //
     /**
      * Visits a unknown configuration site, for example, if the capturing of configuration sites has been disabled.
      * 

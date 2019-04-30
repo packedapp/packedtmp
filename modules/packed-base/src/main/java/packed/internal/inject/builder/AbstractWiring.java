@@ -23,10 +23,10 @@ import java.util.List;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
@@ -38,9 +38,9 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
- * An abstract class for the injector bind methods {@link InjectorConfigurator#wireInjector(Class, WiringOperation...)},
- * {@link InjectorConfigurator#wireInjector(Bundle, WiringOperation...)}, and
- * {@link InjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
+ * An abstract class for the injector bind methods {@link SimpleInjectorConfigurator#wireInjector(Class, OldWiringOperation...)},
+ * {@link SimpleInjectorConfigurator#wireInjector(Bundle, OldWiringOperation...)}, and
+ * {@link SimpleInjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
 abstract class AbstractWiring {
 
@@ -54,16 +54,16 @@ abstract class AbstractWiring {
     final InjectorBuilder injectorConfiguration;
 
     /** The wiring operations. */
-    final List<WiringOperation> operations;
+    final List<OldWiringOperation> operations;
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<OldWiringOperation> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
         this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<OldWiringOperation> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
@@ -83,7 +83,7 @@ abstract class AbstractWiring {
             }
         }
         // Process each stage
-        for (WiringOperation operation : operations) {
+        for (OldWiringOperation operation : operations) {
             if (operation instanceof UpstreamWiringOperation) {
                 BundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage((UpstreamWiringOperation) operation, nodes);

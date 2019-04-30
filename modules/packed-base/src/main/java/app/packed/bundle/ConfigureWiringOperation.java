@@ -40,7 +40,7 @@ import app.packed.inject.Provides;
 // Two types of operations
 // Operations that requires that a bundle is patchable
 // Operations that does not require it
-public class ConfigureWiringOperation extends WiringOperation {
+public class ConfigureWiringOperation extends OldWiringOperation {
 
     /** Creates a new operation. */
     protected ConfigureWiringOperation() {}

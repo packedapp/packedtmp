@@ -46,6 +46,8 @@ public abstract class ServiceWiringImportOperation extends UpstreamWiringOperati
     public void onEachService(ServiceConfiguration<?> sc) {}
 }
 
+class WiringOption {}
+
 class XImportVer2 {
 
     protected final ServiceConfiguration<?> clone(ServiceConfiguration<?> sc) {

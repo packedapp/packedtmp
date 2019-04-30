@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ProvisionContext;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Nullable;
@@ -31,7 +31,7 @@ import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 /**
  * A build node that is created when a service is exposed.
  */
-public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
+public final class ServiceBuildNodeExported<T> extends ServiceBuildNode<T> {
 
     /** The node that is exposed. */
     final ServiceNode<T> exposureOf;
@@ -42,7 +42,7 @@ public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public ServiceBuildNodeExposed(InjectorBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
+    public ServiceBuildNodeExported(InjectorBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
         super(configuration, configurationSite, List.of());
         this.exposureOf = requireNonNull(exposureOf);
     }
@@ -62,7 +62,7 @@ public final class ServiceBuildNodeExposed<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvisionContext site) {
+    public T getInstance(ProvidesHelper site) {
         return null;
     }
 

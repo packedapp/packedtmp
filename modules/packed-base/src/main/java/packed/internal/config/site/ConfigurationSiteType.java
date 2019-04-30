@@ -33,6 +33,8 @@ public enum ConfigurationSiteType {
     /** */
     INJECTOR_CONFIGURATION_BIND("Injector.bind"),
 
+    INJECTOR_CONFIGURATION_ADD_DEPENDENCY("Injector.addDependency"),
+
     /** */
     INJECTOR_CONFIGURATION_INJECTOR_BIND("Injector.injectorBind"),
 

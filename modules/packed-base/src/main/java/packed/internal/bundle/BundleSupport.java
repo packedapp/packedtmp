@@ -22,7 +22,7 @@ import java.util.List;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.inject.Injector;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
@@ -38,11 +38,11 @@ public final class BundleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        public abstract void finishWireOperation(WiringOperation operation);
+        public abstract void finishWireOperation(OldWiringOperation operation);
 
-        public abstract void startWireOperation(WiringOperation operation);
+        public abstract void startWireOperation(OldWiringOperation operation);
 
-        public abstract MethodHandles.Lookup lookupFromWireOperation(WiringOperation operation);
+        public abstract MethodHandles.Lookup lookupFromWireOperation(OldWiringOperation operation);
 
         /**
          * @param stages
@@ -50,7 +50,7 @@ public final class BundleSupport {
          *            either {@link Injector}, {@link Bundle} or {@link Bundle}
          * @return
          */
-        public abstract List<WiringOperation> extractWiringOperations(WiringOperation[] stages, Class<?> type);
+        public abstract List<OldWiringOperation> extractWiringOperations(OldWiringOperation[] stages, Class<?> type);
 
         /**
          * Initializes this class.

@@ -21,7 +21,7 @@ import java.util.List;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ContainerBuildContext;
 import app.packed.bundle.DownstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.util.Key;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -33,7 +33,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
 
     final InjectorBuilder newConfiguration;
 
-    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOperation> stages) {
+    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<OldWiringOperation> stages) {
         super(injectorConfiguration, configurationSite, bundle, stages);
         this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }
@@ -58,12 +58,12 @@ final class BindInjectorFromBundle extends AbstractWiring {
     }
 
     void processExport() {
-        for (WiringOperation s : operations) {
+        for (OldWiringOperation s : operations) {
             if (s instanceof DownstreamWiringOperation) {
                 throw new UnsupportedOperationException();
             }
         }
-        List<ServiceBuildNodeExport<?>> exports = new ArrayList<>();
+        List<ServiceBuildNodeImport2<?>> exports = new ArrayList<>();
         if (newConfiguration.box.services().required != null) {
             for (Key<?> k : newConfiguration.box.services().required) {
                 if (newConfiguration.box.services().nodes.containsKey(k)) {
@@ -73,7 +73,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }
-                ServiceBuildNodeExport<?> e = new ServiceBuildNodeExport<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()), this,
+                ServiceBuildNodeImport2<?> e = new ServiceBuildNodeImport2<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()), this,
                         node);
                 exports.add(e);
                 newConfiguration.box.services().nodes.put(e);

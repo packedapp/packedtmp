@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.bundle;
 
 /**
  *
  */
-public class FeatureConfigurator {
+// As an alternativ use attachments....
+// Yes this is exactly what they are made for....
+public interface BundleLink {
 
-    // createContract(); or
-    // addToContract(ContractBuilder b)
-    // Failure to have two features creating the same contract type...
+    <T> T use(Class<T> clazz);
 
+    // AnyBundleDescriptor from();
+    // AnyBundleDescriptor to();
+
+    // onParent, onChild, maa have mulighed for installere en service af en eller anden form
+    // Som vi saa kan hive ud her
+
+    // use(InjectorConfiguration).
+
+    // WiringOperations, could be an abstract class taking Requirements in the constructor...
+    // Or the object we use could have an requiresExtension
 }

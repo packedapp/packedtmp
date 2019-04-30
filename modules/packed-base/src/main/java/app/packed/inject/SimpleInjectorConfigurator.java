@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.UpstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
@@ -33,7 +33,8 @@ import app.packed.util.TypeLiteral;
  * is thought of a alternative to using a {@link Bundle}. Unlike bundles all services are automatically exported once
  * defined.
  */
-public interface InjectorConfigurator extends Taggable {
+// Taenker vi kan lave den som klasse....
+public interface SimpleInjectorConfigurator extends Taggable {
 
     /**
      * Returns the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
@@ -164,7 +165,7 @@ public interface InjectorConfigurator extends Taggable {
      * @see #getDescription()
      * @see Injector#description()
      */
-    InjectorConfigurator setDescription(@Nullable String description);
+    SimpleInjectorConfigurator setDescription(@Nullable String description);
 
     /**
      * @param bundle
@@ -172,7 +173,7 @@ public interface InjectorConfigurator extends Taggable {
      * @param stages
      *            optional import/export stages
      */
-    void wireInjector(Bundle bundle, WiringOperation... stages);
+    void wireInjector(Bundle bundle, OldWiringOperation... stages);
 
     /**
      * Binds all services from the specified injector.
@@ -211,9 +212,9 @@ public interface InjectorConfigurator extends Taggable {
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
      *             if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
-     *             (via {@link WiringOperation#andThen(WiringOperation)} thereof
+     *             (via {@link OldWiringOperation#andThen(OldWiringOperation)} thereof
      */
-    void wireInjector(Injector injector, WiringOperation... stages);
+    void wireInjector(Injector injector, OldWiringOperation... stages);
 }
 // addStatics(); useStatics()
 // @OnHook

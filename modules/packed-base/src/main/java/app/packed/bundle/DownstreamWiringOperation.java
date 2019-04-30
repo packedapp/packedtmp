@@ -43,7 +43,7 @@ import app.packed.inject.Provides;
 // IncomingWiringOperation
 
 // into, outform
-public abstract class DownstreamWiringOperation extends WiringOperation {
+public abstract class DownstreamWiringOperation extends OldWiringOperation {
 
     /** Creates a new operation. */
     protected DownstreamWiringOperation() {}

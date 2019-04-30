@@ -34,7 +34,7 @@ import support.stubs.Letters.NeedsB;
 /**
  * Test {@link BundleContract#services()}.
  */
-public class ServicesTest {
+public class ProvisionContractTest {
 
     @Test
     public void empty() {

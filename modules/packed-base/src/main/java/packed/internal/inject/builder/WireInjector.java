@@ -20,15 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.bundle.UpstreamWiringOperation;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 
 /**
- * Represents an imported injector via {@link InjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
+ * Represents an imported injector via {@link SimpleInjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
  */
 final class WireInjector extends AbstractWiring {
 
@@ -43,7 +43,7 @@ final class WireInjector extends AbstractWiring {
      * @param injector
      * @param stages
      */
-    WireInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<WiringOperation> stages) {
+    WireInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<OldWiringOperation> stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
     }

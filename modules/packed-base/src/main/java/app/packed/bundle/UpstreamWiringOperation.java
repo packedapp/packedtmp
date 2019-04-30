@@ -22,7 +22,7 @@ import app.packed.inject.Provides;
 /**
  *
  */
-public abstract class UpstreamWiringOperation extends WiringOperation {
+public abstract class UpstreamWiringOperation extends OldWiringOperation {
 
     /** Creates a new stage */
     protected UpstreamWiringOperation() {}

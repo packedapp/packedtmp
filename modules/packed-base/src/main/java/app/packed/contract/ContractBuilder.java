@@ -18,7 +18,7 @@ package app.packed.contract;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.contract.Contract.ContractFragment;
-import app.packed.inject.ServicesContract;
+import app.packed.inject.InjectorContract;
 
 /**
  *
@@ -32,7 +32,7 @@ import app.packed.inject.ServicesContract;
 // See AbstractInternalBuilder
 public final class ContractBuilder {
 
-    ServicesContract services;
+    InjectorContract services;
 
     /**
      * Creates a new contract from this builder.s
@@ -49,15 +49,15 @@ public final class ContractBuilder {
      * 
      * @return a service contract
      */
-    public ServicesContract services() {
-        ServicesContract s = services;
-        return s == null ? services = ServicesContract.EMPTY : s;
+    public InjectorContract services() {
+        InjectorContract s = services;
+        return s == null ? services = InjectorContract.EMPTY : s;
     }
 
     @SuppressWarnings("unchecked")
     <T> T with(Class<T> type) {
         requireNonNull(type, "type is null");
-        if (type == ServicesContract.class) {
+        if (type == InjectorContract.class) {
             return (T) services();
         }
         throw new UnsupportedOperationException();

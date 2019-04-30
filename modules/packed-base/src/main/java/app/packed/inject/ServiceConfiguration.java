@@ -23,7 +23,7 @@ import app.packed.util.Taggable;
 
 /**
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various
- * provide methods located on {@link InjectorConfigurator} or {@link Bundle}.
+ * provide methods located on {@link SimpleInjectorConfigurator} or {@link Bundle}.
  */
 public interface ServiceConfiguration<T> extends Taggable {
 
@@ -33,6 +33,7 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @param key
      *            the key for which to register the service under
      * @return this configuration
+     * @see #getKey()
      */
     default ServiceConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
@@ -44,6 +45,7 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @param key
      *            the key for which to register the service under
      * @return this configuration
+     * @see #getKey()
      */
     ServiceConfiguration<T> as(Key<? super T> key);
 
@@ -63,18 +65,8 @@ public interface ServiceConfiguration<T> extends Taggable {
     // (exportService(provide().asNone).as(Foo.class)
     ServiceConfiguration<?> asNone();
 
-    /**
-     * 
-     * 
-     * .provide(instance) cannot be lazy
-     * 
-     * @return this configuration
-     * @throws UnsupportedOperationException
-     *             if the service cannot be lazy
-     */
-    ServiceConfiguration<T> lazy();
-
-    ServiceConfiguration<T> prototype();
+    // Should include dependencies via @Inject
+    // List<DependencyDescriptor> dependencies();
 
     /**
      * Returns the configuration site where this configuration was created.
@@ -97,6 +89,8 @@ public interface ServiceConfiguration<T> extends Taggable {
      *
      * @return the key that the service is registered under
      * @see #as(Key)
+     * @see #as(Class)
+     * @see #asNone()
      */
     @Nullable
     Key<?> getKey();
@@ -107,6 +101,19 @@ public interface ServiceConfiguration<T> extends Taggable {
      * @return the instantiation mode of the service
      */
     InstantiationMode instantiationMode();
+
+    /**
+     * 
+     * 
+     * .provide(instance) cannot be lazy
+     * 
+     * @return this configuration
+     * @throws UnsupportedOperationException
+     *             if the service cannot be lazy
+     */
+    ServiceConfiguration<T> lazy();
+
+    ServiceConfiguration<T> prototype();
 
     /**
      * Sets the description of this service.

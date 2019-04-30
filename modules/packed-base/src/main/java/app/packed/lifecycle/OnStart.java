@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.basespi.RequiresFeature;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 
@@ -87,7 +86,7 @@ import app.packed.inject.Injector;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@RequiresFeature(LifecycleFeature.class)
+// @RequiresFeature(LifecycleFeature.class)
 public @interface OnStart {
     String[] after() default {};
 }

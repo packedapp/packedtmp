@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 
 /**
  *
@@ -45,7 +45,7 @@ public class AppLaunch implements Runnable {
      *
      * @throws UnsupportedOperationException
      *             if the bundle is not runnable (has at least one component). Maybe throw this from
-     *             {@link #of(Bundle, WiringOperation...)}
+     *             {@link #of(Bundle, OldWiringOperation...)}
      */
     @Override
     public void run() {
@@ -76,7 +76,7 @@ public class AppLaunch implements Runnable {
     }
     // setTimeToLive(
 
-    public static AppLaunch of(Bundle bundle, String[] args, WiringOperation... operations) {
+    public static AppLaunch of(Bundle bundle, String[] args, OldWiringOperation... operations) {
         return null;
     }
 
@@ -89,7 +89,7 @@ public class AppLaunch implements Runnable {
      *            an optional array of wiring operation
      * @return the new application
      */
-    public static AppLaunch of(Bundle bundle, WiringOperation... operations) {
+    public static AppLaunch of(Bundle bundle, OldWiringOperation... operations) {
         return null;
     }
 }

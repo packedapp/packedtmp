@@ -107,7 +107,7 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
     /** {@inheritDoc} */
     @Override
     public void wireContainer(Bundle bundle, WiringOperation... stages) {
-
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

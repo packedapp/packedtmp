@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.extension;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,9 +24,10 @@ import java.lang.annotation.Target;
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RequiresFeature {
-    Class<? extends Feature<?>> value();
+// RequiresExtension
+public @interface RequiresExtension {
+    Class<? extends Extension<?>> value();
 }

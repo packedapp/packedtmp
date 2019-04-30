@@ -36,7 +36,7 @@ public final class Image {
     final ServiceNodeMap privateNodeMap;
 
     @Nullable
-    final ArrayList<ServiceBuildNodeExposed<?>> publicNodeList;
+    final ArrayList<ServiceBuildNodeExported<?>> publicNodeList;
 
     /** The runtime nodes that will be available in the injector. */
     final ServiceNodeMap publicNodeMap;

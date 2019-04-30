@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ProvisionContext;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
@@ -30,7 +30,7 @@ import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 
 /** A build node that imports a service from another injector. */
-public class ServiceBuildNodeExport<T> extends ServiceBuildNode<T> {
+public class ServiceBuildNodeImport2<T> extends ServiceBuildNode<T> {
 
     /** The node to import. */
     final ServiceNode<T> other;
@@ -39,7 +39,7 @@ public class ServiceBuildNodeExport<T> extends ServiceBuildNode<T> {
     final AbstractWiring source;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ServiceBuildNodeExport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring source, ServiceNode<T> node) {
+    ServiceBuildNodeImport2(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring source, ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.source = requireNonNull(source);
@@ -62,7 +62,7 @@ public class ServiceBuildNodeExport<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvisionContext site) {
+    public T getInstance(ProvidesHelper site) {
         return other.getInstance(site);
     }
 

@@ -22,6 +22,8 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import app.packed.inject.Injector;
+
 /**
  * Qualifiers are used to distinguish different objects of the same type.
  * <p>
@@ -31,6 +33,15 @@ import java.lang.annotation.Target;
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
-public @interface Qualifier {}
+public @interface Qualifier {
+
+    // dependency resolver, qualifier resolver,
+    // Default is Qualifier which indicates that no special resolver is resolver is used
+    // Only support static @Provides methods.... Then we avoid needing to think about how many instances we create...
+    Class<?> resolver() default Injector.class;
+
+    // or provider
+    // QualifiedProvider
+}
 // Allow multiple Qualifiers?
-// Allow ignoring attributes? String[] ignoreAttributesForComparison() default {};
+// Allow ignoring attributes? String[] ignoreAttributes() default {};

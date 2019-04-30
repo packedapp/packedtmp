@@ -22,7 +22,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import app.packed.basespi.RequiresFeature;
+import app.packed.extension.RequiresExtension;
 
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
@@ -36,7 +36,7 @@ import app.packed.basespi.RequiresFeature;
 // Could allow mailbox'es for actors. Where we automatically transforms method invocations into
 // We would need to have some way to indicate that some method invocation can be done without requring the result
 // Maybe return Void to indicate sync and void as async?
-@RequiresFeature(HooksFeature.class)
+@RequiresExtension(HooksFeature.class)
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
 @Documented

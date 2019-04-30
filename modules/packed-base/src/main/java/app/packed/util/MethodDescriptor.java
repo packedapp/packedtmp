@@ -24,9 +24,8 @@ import java.lang.reflect.Modifier;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
- * A method descriptor.
- * <p>
- * Unlike the {@link Method} class, this interface contains no mutable operations, so it can be freely shared.
+ * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is
+ * immutable, and can be be freely shared.
  */
 public interface MethodDescriptor extends ExecutableDescriptor {
 
@@ -62,6 +61,8 @@ public interface MethodDescriptor extends ExecutableDescriptor {
     TypeLiteral<?> returnTypeLiteral();
 
     /**
+     * Produces a method handle for the underlying method.
+     * 
      * @param lookup
      *            the lookup object
      * @param specialCaller
@@ -72,7 +73,6 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      *             bit is set and {@code asVarargsCollector} fails
      * @see Lookup#unreflectSpecial(Method, Class)
      */
-    // Drop checked exception... Har svaert ved at se at den skulle vaere recovable
     MethodHandle unreflectSpecial(MethodHandles.Lookup lookup, Class<?> specialCaller) throws IllegalAccessException;
 
     public static MethodDescriptor of(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
@@ -80,7 +80,7 @@ public interface MethodDescriptor extends ExecutableDescriptor {
     }
 
     /**
-     * Returns a new method descriptor for the specified method.
+     * Returns a new method descriptor from the specified method.
      *
      * @param method
      *            the method to return a descriptor from

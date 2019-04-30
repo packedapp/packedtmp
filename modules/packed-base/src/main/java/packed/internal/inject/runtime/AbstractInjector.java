@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import app.packed.container.Component;
 import app.packed.inject.InjectionException;
-import app.packed.inject.ProvisionContext;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -68,7 +68,7 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ProvisionContext.of(this, key));
+        return n.getInstance(ProvidesHelper.of(this, key));
     }
 
     /** {@inheritDoc} */

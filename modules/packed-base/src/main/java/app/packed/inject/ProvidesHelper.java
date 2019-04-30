@@ -17,13 +17,18 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 import app.packed.container.Component;
 import app.packed.container.Container;
 import app.packed.util.Key;
+import packed.internal.inject.InjectionSiteForDependency;
+import packed.internal.inject.InjectionSiteForKey;
 
 /**
+ * An instance of this class is available for any component method annotated with {@link Provides}.
+ * 
  * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
  * service being requested.
  * 
@@ -49,17 +54,27 @@ import app.packed.util.Key;
  * }
  * </pre>
  */
-// ServiceRequest...
-// Who
-// What
+
+// Rename to ProvidesHelper, then we can save Context for other stuff. And say helper is always used for
 
 // InjectionSite.. Is a bit misleasing because of Injector.get();
 // DependencyRequest
 
 // ProvidesContext, ProvisionContext
 
-// Generic Dependency @SystemProperty
-public interface ProvisionContext extends DependencyDescriptor {
+// Generic Dependency @SystemProperty, ServiceRequest
+
+// qualifier
+
+// What need injection (Dependency)
+// who needs the injection (Which service)
+
+// Should use composition
+public interface ProvidesHelper extends DependencyDescriptor {
+
+    default <T extends Annotation> T qualifier(Class<T> qualifierType) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
@@ -81,11 +96,11 @@ public interface ProvisionContext extends DependencyDescriptor {
      */
     Injector injector();// HMMMMM,
 
-    static ProvisionContext of(Injector injector, DependencyDescriptor dependency) {
+    static ProvidesHelper of(Injector injector, DependencyDescriptor dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);
     }
 
-    static ProvisionContext of(Injector injector, DependencyDescriptor dependency, Component componenent) {
+    static ProvidesHelper of(Injector injector, DependencyDescriptor dependency, Component componenent) {
         return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -100,7 +115,7 @@ public interface ProvisionContext extends DependencyDescriptor {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static ProvisionContext of(Injector injector, Key<?> key) {
+    static ProvidesHelper of(Injector injector, Key<?> key) {
         return new InjectionSiteForKey(injector, key, null);
     }
 
@@ -119,7 +134,7 @@ public interface ProvisionContext extends DependencyDescriptor {
      * @return an injection site for the specified injector and key and component.
      * @see #of(Injector, DependencyDescriptor)
      */
-    static ProvisionContext of(Injector injector, Key<?> key, Component component) {
+    static ProvidesHelper of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));
     }
 

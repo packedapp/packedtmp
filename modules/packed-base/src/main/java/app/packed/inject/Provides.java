@@ -72,6 +72,8 @@ import java.lang.annotation.Target;
 @Documented
 // @Component(name, description, children, ....)
 // @Service()
+// Taenker @Provides @Install(asChild=true)
+// Taenker vi maaske venter med at implementere paa Type
 public @interface Provides {
 
     /**
@@ -82,7 +84,7 @@ public @interface Provides {
      * @return a description of the service provided by the providing method or field
      * @see ServiceDescriptor#description()
      */
-    String description() default ""; // description on component???
+    String description() default ""; // how does this relate to description on component??? description on component???
 
     /**
      * This If this annotation is used on a component registered in a bundle. This method can be used to.... to avoid having
@@ -97,6 +99,9 @@ public @interface Provides {
      * @return whether or not the provided service should be exported
      */
     boolean export() default false;
+
+    // Maybe we do not want this...
+    // Class<?> exportAs(); Only way to specify generic type or Qualifier is manually... Do we remove any qualifier?????
 
     /**
      * The instantiation mode of the providing method or field, the default is {@link InstantiationMode#SINGLETON}.

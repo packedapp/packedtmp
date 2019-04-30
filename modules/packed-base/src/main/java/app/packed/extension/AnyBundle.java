@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.extension;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 
 /**
  *
@@ -42,7 +42,7 @@ public abstract class AnyBundle {
      * 
      * @param lookup
      *            the lookup object
-     * @see InjectorConfigurator#lookup(Lookup)
+     * @see SimpleInjectorConfigurator#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -67,7 +67,7 @@ public abstract class AnyBundle {
      *             if no features of the specified type is supported
      */
     // Skal alle virkelig have adgang....
-    protected final <T> T with(Class<T> featureType) {
+    protected final <T extends Extension<T>> T extendWith(Class<T> featureType) {
         throw new UnsupportedOperationException();
     }
 

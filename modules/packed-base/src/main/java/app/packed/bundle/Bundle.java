@@ -29,9 +29,10 @@ import app.packed.container.Container;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -74,7 +75,7 @@ public abstract class Bundle {
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
 
-    protected final Restrictions restrictions = null;
+    // protected final Restrictions restrictions = null;
 
     protected void buildWithBundle() {
         // Insta
@@ -289,7 +290,7 @@ public abstract class Bundle {
      * 
      * @param lookup
      *            the lookup object
-     * @see InjectorConfigurator#lookup(Lookup)
+     * @see SimpleInjectorConfigurator#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -344,6 +345,10 @@ public abstract class Bundle {
         // Nope....
     }
 
+    protected final InjectorExtension injector() {
+        return injectorBuilder().use(InjectorExtension.class);
+    }
+
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
      * find a valid constructor or method to instantiate the service instance once the injector is created.
@@ -356,11 +361,11 @@ public abstract class Bundle {
      * @param implementation
      *            the implementation to bind
      * @return a service configuration for the service
-     * @see InjectorConfigurator#provide(Class)
+     * @see SimpleInjectorConfigurator#provide(Class)
      */
     // Rename to Provide@
     protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return injectorBuilder().provide(implementation);
+        return injectorBuilder().provide(Factory.findInjectable(implementation));
     }
 
     protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
@@ -368,12 +373,13 @@ public abstract class Bundle {
     }
 
     protected final <T> ServiceConfiguration<T> provide(T instance) {
-        return injectorBuilder().provide(instance);
+        return injector().provide(instance);
     }
 
     protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injectorBuilder().provide(implementation);
+        return injectorBuilder().provide(Factory.findInjectable(implementation));
     }
+
     // // /** The internal configuration to delegate to */
     // // We probably want to null this out...
     // // If we install the bundle as a component....
@@ -397,7 +403,7 @@ public abstract class Bundle {
      * 
      * @param description
      *            the description of the injector or container
-     * @see InjectorConfigurator#setDescription(String)
+     * @see SimpleInjectorConfigurator#setDescription(String)
      * @see Injector#description()
      */
     protected final void setDescription(@Nullable String description) {
@@ -430,12 +436,8 @@ public abstract class Bundle {
         return new WiredBundle(this, requireNonNull(child, "child is null"));
     }
 
-    // protected final void wire(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-    // containerBuilderX().wireContainer(bundleType, stages);
-    // }
-
-    protected final void wire(Bundle bundle, WiringOperation... stages) {
-        containerBuilderX().wireContainer(bundle, stages);
+    protected final void wire(Bundle child, WiringOperation... operations) {
+        containerBuilderX().wireContainer(child, operations);
     }
 
     // or have mainLayer() and then
@@ -477,21 +479,21 @@ public abstract class Bundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    static protected void run(Bundle b, Consumer<App> consumer, WiringOperation... operations) {
+    static protected void run(Bundle b, Consumer<App> consumer, OldWiringOperation... operations) {
         AppLaunch.of(b, operations).run();
     }
 
-    static protected void run(Bundle b, String[] args, WiringOperation... operations) {
+    static protected void run(Bundle b, String[] args, OldWiringOperation... operations) {
         AppLaunch.of(b, args, operations).run();
     }
 
-    static protected void run(Bundle b, WiringOperation... operations) {
+    static protected void run(Bundle b, OldWiringOperation... operations) {
         AppLaunch.of(b, operations).run();
     }
 
-    public interface Restrictions {
-        void service(Class<?> clazz);
-    }
+    // public interface Restrictions {
+    // void service(Class<?> clazz);
+    // }
 }
 /**
  * A injector bundle provides a simple way to package services into a resuable container nice little thingy.

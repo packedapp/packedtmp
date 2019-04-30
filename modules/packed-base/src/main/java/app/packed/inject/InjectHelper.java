@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.inject;
 
 /**
  *
  */
-// Navngivning noget med model....
-public class BootstrapFactory {
+// We should not use injector..
+public interface InjectHelper {
+    // Context, Helpers and other stuff
 
-    public ContainerConfiguration create() {
-        throw new UnsupportedOperationException();
-    }
+    // A descriptors of all dependencies that are available for injection...
 }

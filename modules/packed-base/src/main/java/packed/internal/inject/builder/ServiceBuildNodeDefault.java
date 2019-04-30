@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.ComponentServiceConfiguration;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -160,7 +160,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final T getInstance(ProvisionContext ignore) {
+    public final T getInstance(ProvidesHelper ignore) {
         if (instantionMode == InstantiationMode.PROTOTYPE) {
             return newInstance();
         }

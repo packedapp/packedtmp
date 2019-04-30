@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.extension;
 
 /**
  *
  */
-interface ServiceManager {
-    // like injector except, inject + new instance???
-    // Vi vil gode have at App kan noget med nogle services....
+public abstract class DddBundle extends AnyBundle {
+
+    private static final BootstrapFactory F = new BootStrapFactoryBuilder().build();
+
+    final ContainerConfiguration spec;
+
+    protected DddBundle() {
+        this(F.create());
+    }
+
+    private DddBundle(ContainerConfiguration specification) {
+        super(specification);
+        this.spec = specification;
+    }
 }

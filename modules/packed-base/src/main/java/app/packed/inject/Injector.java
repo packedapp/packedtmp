@@ -24,12 +24,13 @@ import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.ContainerBuildContext;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 import app.packed.util.Taggable;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.SimpleInjectorConfiguratorImpl;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**
@@ -110,7 +111,7 @@ public interface Injector extends Taggable {
      * Returns an optional description of this injector.
      *
      * @return an optional description of this injector
-     * @see InjectorConfigurator#setDescription(String)
+     * @see SimpleInjectorConfigurator#setDescription(String)
      * @see Bundle#setDescription(String)
      */
     Optional<String> description();
@@ -277,7 +278,7 @@ public interface Injector extends Taggable {
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
-    static Injector of(Bundle bundle, WiringOperation... operations) {
+    static Injector of(Bundle bundle, OldWiringOperation... operations) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
 
@@ -304,10 +305,10 @@ public interface Injector extends Taggable {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<InjectorConfigurator> configurator) {
+    static Injector of(Consumer<SimpleInjectorConfigurator> configurator) {
         requireNonNull(configurator, "configurator is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
-        configurator.accept(builder);
+        configurator.accept(new SimpleInjectorConfiguratorImpl(builder));
         return builder.build();
     }
 }

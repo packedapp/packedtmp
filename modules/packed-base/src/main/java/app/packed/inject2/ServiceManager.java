@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.lifecycle;
-
-import app.packed.basespi.Feature;
-import app.packed.basespi.FeatureConfigurator;
+package app.packed.inject2;
 
 /**
  *
  */
-
-public class LifecycleFeature extends Feature<FeatureConfigurator> {
-    public static final LifecycleFeature DEFAULT = new LifecycleFeature();
-
-    // Perhaps adding some custom annotations
-
-    // ClassValue<Feature> -> IdentityHashMap<Feature, CachedConfiguration>>
+interface ServiceManager {
+    // like injector except, inject + new instance???
+    // Vi vil gode have at App kan noget med nogle services....
 }

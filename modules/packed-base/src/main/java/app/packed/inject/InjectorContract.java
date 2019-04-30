@@ -38,10 +38,10 @@ import app.packed.util.Key;
  * 
  * provides Service that the entity makes available to users of the entity.
  */
-public final class ServicesContract {
+public final class InjectorContract {
 
     /** A service contract that has no requirements and provides no services. */
-    public static final ServicesContract EMPTY = new Builder().build();
+    public static final InjectorContract EMPTY = new Builder().build();
 
     /** An immutable set of optional service keys. */
     private final Set<Key<?>> optional;
@@ -58,7 +58,7 @@ public final class ServicesContract {
      * @param builder
      *            the builder to create a service contract from
      */
-    private ServicesContract(ServicesContract.Builder builder) {
+    private InjectorContract(InjectorContract.Builder builder) {
         HashSet<Key<?>> s = builder.requires;
         requires = s == null ? Set.of() : Set.copyOf(s);
 
@@ -72,10 +72,10 @@ public final class ServicesContract {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof ServicesContract)) {
+        if (!(obj instanceof InjectorContract)) {
             return false;
         }
-        ServicesContract sc = (ServicesContract) obj;
+        InjectorContract sc = (InjectorContract) obj;
         return optional.equals(sc.optional) && provides.equals(sc.provides) && requires.equals(sc.requires);
     }
 
@@ -98,7 +98,7 @@ public final class ServicesContract {
      *            the older contract
      * @return whether or not this contract is fully backwards compatible with the other contract
      */
-    boolean isBackwardsCompatibleWith(ServicesContract other) {
+    boolean isBackwardsCompatibleWith(InjectorContract other) {
         requireNonNull(other, "other is null");
         if (!other.requires.containsAll(requires)) {
             return false;
@@ -123,7 +123,7 @@ public final class ServicesContract {
      * 
      * @return an immutable set of keys of all of the services the owning entity provides
      */
-    public Set<Key<?>> provides() {
+    public Set<Key<?>> services() {
         return provides;
     }
 
@@ -141,15 +141,15 @@ public final class ServicesContract {
      * 
      * @return a new service contract builder
      */
-    public static ServicesContract.Builder builder() {
-        return new ServicesContract.Builder();
+    public static InjectorContract.Builder builder() {
+        return new InjectorContract.Builder();
     }
 
     /**
-     * A builder object used to create instances of {@link ServicesContract}.
+     * A builder object used to create instances of {@link InjectorContract}.
      * <p>
      * In addition to creating new contracts, this class also supports creating new contracts by transforming an existing
-     * contracts using the {@link #ServiceContract(ServicesContract)} constructor.
+     * contracts using the {@link #ServiceContract(InjectorContract)} constructor.
      * <p>
      * <strong>Note that this builder is not synchronized.</strong> If multiple threads access a builder concurrently, and
      * at least one of the threads modifies the builder structurally, it <i>must</i> be synchronized externally.
@@ -174,7 +174,7 @@ public final class ServicesContract {
          * @param contract
          *            the contract to create a contract builder builder from
          */
-        public Builder(ServicesContract contract) {
+        public Builder(InjectorContract contract) {
             requireNonNull(contract, "contract is null");
             requires = new HashSet<>(contract.requires);
         }
@@ -185,7 +185,7 @@ public final class ServicesContract {
          *            the contract to remove
          * @return this builder
          */
-        public ServicesContract.Builder add(ServicesContract contract) {
+        public InjectorContract.Builder add(InjectorContract contract) {
             requireNonNull(contract, "contract is null");
             contract.optional.forEach(k -> addOptional(k));
             contract.provides.forEach(k -> addProvides(k));
@@ -193,7 +193,7 @@ public final class ServicesContract {
             return this;
         }
 
-        public ServicesContract.Builder addOptional(Class<?> key) {
+        public InjectorContract.Builder addOptional(Class<?> key) {
             return addOptional(Key.of(key));
         }
 
@@ -204,7 +204,7 @@ public final class ServicesContract {
          *            the key to add
          * @return this builder
          */
-        public ServicesContract.Builder addOptional(Key<?> key) {
+        public InjectorContract.Builder addOptional(Key<?> key) {
             requireNonNull(key, "key is null");
             HashSet<Key<?>> r = optional;
             if (r == null) {
@@ -214,11 +214,11 @@ public final class ServicesContract {
             return this;
         }
 
-        public ServicesContract.Builder addProvides(Class<?> key) {
+        public InjectorContract.Builder addProvides(Class<?> key) {
             return addProvides(Key.of(key));
         }
 
-        public ServicesContract.Builder addProvides(Key<?> key) {
+        public InjectorContract.Builder addProvides(Key<?> key) {
             requireNonNull(key, "key is null");
             HashSet<Key<?>> r = provides;
             if (r == null) {
@@ -235,7 +235,7 @@ public final class ServicesContract {
          *            the key to add
          * @return this builder
          */
-        public ServicesContract.Builder addRequires(Class<?> key) {
+        public InjectorContract.Builder addRequires(Class<?> key) {
             return addRequires(Key.of(key));
         }
 
@@ -246,7 +246,7 @@ public final class ServicesContract {
          *            the key to add
          * @return this builder
          */
-        public ServicesContract.Builder addRequires(Key<?> key) {
+        public InjectorContract.Builder addRequires(Key<?> key) {
             requireNonNull(key, "key is null");
             HashSet<Key<?>> r = requires;
             if (r == null) {
@@ -263,13 +263,13 @@ public final class ServicesContract {
          * @throws IllegalStateException
          *             if any keys have been registered both as optional and required
          */
-        public ServicesContract build() {
+        public InjectorContract build() {
             if (optional != null && requires != null && !Collections.disjoint(optional, requires)) {
                 requires.retainAll(optional);
                 // TODO I think just automatically remove it...
                 throw new IllegalStateException("One or more keys have been registered as both optional and required: " + requires);
             }
-            return new ServicesContract(this);
+            return new InjectorContract(this);
         }
 
         /**
@@ -277,7 +277,7 @@ public final class ServicesContract {
          *            the contract to remove
          * @return this builder
          */
-        public ServicesContract.Builder remove(ServicesContract contract) {
+        public InjectorContract.Builder remove(InjectorContract contract) {
             requireNonNull(contract, "contract is null");
             contract.optional.forEach(k -> removeOptional(k));
             contract.provides.forEach(k -> removeProvides(k));
@@ -285,7 +285,7 @@ public final class ServicesContract {
             return this;
         }
 
-        public ServicesContract.Builder removeOptional(Class<?> key) {
+        public InjectorContract.Builder removeOptional(Class<?> key) {
             return removeOptional(Key.of(key));
         }
 
@@ -294,7 +294,7 @@ public final class ServicesContract {
          *            the key to remove
          * @return this builder
          */
-        public ServicesContract.Builder removeOptional(Key<?> key) {
+        public InjectorContract.Builder removeOptional(Key<?> key) {
             requireNonNull(key, "key is null");
             if (optional != null) {
                 optional.remove(key);
@@ -302,7 +302,7 @@ public final class ServicesContract {
             return this;
         }
 
-        public ServicesContract.Builder removeProvides(Class<?> key) {
+        public InjectorContract.Builder removeProvides(Class<?> key) {
             return removeProvides(Key.of(key));
         }
 
@@ -311,7 +311,7 @@ public final class ServicesContract {
          *            the key to remove
          * @return this builder
          */
-        public ServicesContract.Builder removeProvides(Key<?> key) {
+        public InjectorContract.Builder removeProvides(Key<?> key) {
             requireNonNull(key, "key is null");
             if (provides != null) {
                 provides.remove(key);
@@ -319,7 +319,7 @@ public final class ServicesContract {
             return this;
         }
 
-        public ServicesContract.Builder removeRequires(Class<?> key) {
+        public InjectorContract.Builder removeRequires(Class<?> key) {
             return removeRequires(Key.of(key));
         }
 
@@ -328,7 +328,7 @@ public final class ServicesContract {
          *            the key to remove
          * @return this builder
          */
-        public ServicesContract.Builder removeRequires(Key<?> key) {
+        public InjectorContract.Builder removeRequires(Key<?> key) {
             requireNonNull(key, "key is null");
             if (requires != null) {
                 requires.remove(key);

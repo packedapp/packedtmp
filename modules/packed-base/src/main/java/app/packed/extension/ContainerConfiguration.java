@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.extension;
 
 import java.lang.invoke.MethodHandles;
+import java.util.IdentityHashMap;
 
 /**
  *
  */
 // ContainerMaker to distinguish it from ComponentConfiguration, ServiceConfiguration, ...
+
+// implements Attachable
 public final class ContainerConfiguration {
 
+    final IdentityHashMap<Class<?>, Extension<?>> extensions = new IdentityHashMap<>();
+
+    // register, use
     // set/get name
     // set/get description
 

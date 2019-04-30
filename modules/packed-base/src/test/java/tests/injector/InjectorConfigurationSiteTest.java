@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.TypeLiteral;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -103,7 +103,7 @@ public class InjectorConfigurationSiteTest {
 
     /**
      * Tests that imported service retain configuration sites when using
-     * {@link InjectorConfigurator#importServicesFrom(Injector)}.
+     * {@link SimpleInjectorConfigurator#importServicesFrom(Injector)}.
      */
     @Test
     public void importServiceFrom() {

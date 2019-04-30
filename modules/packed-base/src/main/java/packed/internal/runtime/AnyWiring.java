@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
 import app.packed.inject.Injector;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -36,9 +36,9 @@ public class AnyWiring {
     /** The configuration site of this object. */
     public final InternalConfigurationSite configurationSite;
 
-    final List<WiringOperation> operations;
+    final List<OldWiringOperation> operations;
 
-    protected AnyWiring(InternalConfigurationSite configurationSite, Object child, WiringOperation[] operations) {
+    protected AnyWiring(InternalConfigurationSite configurationSite, Object child, OldWiringOperation[] operations) {
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = BundleSupport.invoke().extractWiringOperations(operations, null);
         this.child = requireNonNull(child);

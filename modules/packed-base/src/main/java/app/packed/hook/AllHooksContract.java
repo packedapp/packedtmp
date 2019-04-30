@@ -13,23 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.hook;
+
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 /**
  *
  */
-public abstract class DddBundle extends AnyBundle {
+public final class AllHooksContract {
 
-    private static final BootstrapFactory F = new BootStrapFactoryBuilder().build();
+    Set<Class<? extends Annotation>> capturingFieldHooks;
 
-    final ContainerConfiguration spec;
-
-    protected DddBundle() {
-        this(F.create());
+    /**
+     * Returns an immutable set of all annotated field hooks.
+     * 
+     * @return an immutable set of all annotated field hooks
+     */
+    public Set<Class<? extends Annotation>> annotatedFieldHooks() {
+        throw new UnsupportedOperationException();
     }
 
-    private DddBundle(ContainerConfiguration specification) {
-        super(specification);
-        this.spec = specification;
+    public Set<Class<? extends Annotation>> capturingFieldHooks() {
+        return capturingFieldHooks;
     }
+
+    public final class Builder {}
 }

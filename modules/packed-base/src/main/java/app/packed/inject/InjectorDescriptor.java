@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import app.packed.extension.Extension;
+package app.packed.inject;
 
 /**
  *
  */
-public class HooksFeature extends Extension<HooksFeature> {
+// Det er ikke meningen folk selv skal lave descriptor imodsaetning til contracts.
+// De skal heller ikke extendes....
+
+// injector.descriptor();
+public interface InjectorDescriptor {
+
+    // configSite
+
+    // Collection<ServiceDescriptor>
+
+    // Map<Key, ServiceDescriptor>
+
+    // InjectorContract contract();
 
 }

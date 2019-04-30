@@ -63,7 +63,7 @@ public class InternalBundleDescriptor {
         }
 
         for (ServiceBuildNode<?> n : conf.publicNodeList) {
-            if (n instanceof ServiceBuildNodeExposed) {
+            if (n instanceof ServiceBuildNodeExported) {
                 builder.contract().services().addProvides(n.getKey());
             }
         }

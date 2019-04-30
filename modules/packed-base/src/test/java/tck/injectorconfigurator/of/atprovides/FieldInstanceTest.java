@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
@@ -124,7 +124,7 @@ public class FieldInstanceTest {
         // TODO check message
     }
 
-    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
+    private static Injector of(Consumer<? super SimpleInjectorConfigurator> consumer) {
         return Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
@@ -152,7 +152,7 @@ public class FieldInstanceTest {
         @Provides(instantionMode = InstantiationMode.SINGLETON)
         Short s = 1;
 
-        static void test(Consumer<? super InjectorConfigurator> configurator) {
+        static void test(Consumer<? super SimpleInjectorConfigurator> configurator) {
             Injector i = of(c -> configurator.accept(c));
             MixedFields f = i.with(MixedFields.class);
             f.l = 2L;

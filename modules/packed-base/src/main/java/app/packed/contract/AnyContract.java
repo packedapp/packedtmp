@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.contract;
 
 /**
  *
  */
-// Like
-public class HooksDescriptor {
+public abstract class AnyContract {
 
 }

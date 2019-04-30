@@ -18,15 +18,18 @@ package packed.internal.inject.builder;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.OldWiringOperation;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.InjectorExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
@@ -44,13 +47,16 @@ import packed.internal.invokable.InternalFunction;
 import packed.internal.runtime.ImageBuilder;
 
 /**
- * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and {@link InjectorConfigurator}.
+ * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and
+ * {@link SimpleInjectorConfigurator}.
  */
-public class InjectorBuilder extends ImageBuilder implements InjectorConfigurator {
+public class InjectorBuilder extends ImageBuilder {
 
     boolean autoRequires;
 
     final Box box;
+
+    final IdentityHashMap<Class<?>, Extension<?>> extensions = new IdentityHashMap<>();
 
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
@@ -63,7 +69,7 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     InternalInjector publicInjector;
 
     @Nullable
-    final ArrayList<ServiceBuildNodeExposed<?>> publicNodeList;
+    final ArrayList<ServiceBuildNodeExported<?>> publicNodeList;
 
     /**
      * Creates a new builder.
@@ -76,12 +82,16 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         publicNodeList = null;
 
         box = new Box(BoxType.INJECTOR_VIA_CONFIGURATOR);
+
+        extensions.put(InjectorExtension.class, new InjectorExtension(this));
     }
 
     public InjectorBuilder(InternalConfigurationSite configurationSite, Bundle bundle) {
         super(configurationSite, bundle);
         publicNodeList = new ArrayList<>();
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
+
+        extensions.put(InjectorExtension.class, new InjectorExtension(this));
     }
 
     protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
@@ -105,23 +115,26 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
      * @return a configuration for the exposed service
      */
     public final <T> ServiceConfiguration<T> export(Key<T> key) {
+        requireNonNull(key, "key is null");
         checkConfigurable();
         freezeLatest();
+
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
         ServiceNode<T> node = box.services().nodes.getRecursive(key);
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }
-        ServiceBuildNodeExposed<T> bn = new ServiceBuildNodeExposed<>(this, cs, node);
+        ServiceBuildNodeExported<T> bn = new ServiceBuildNodeExported<>(this, cs, node);
         bn.as(key);
         publicNodeList.add(bn);
+        bindNode(bn);
         return bn;
     }
 
     @SuppressWarnings("unchecked")
     public final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        // Skal skrives lidt om, det her virker, f.eks. som export(provide(ddd).asNone).as(String.class)
+        // Skal skrives lidt om, det her burde virke, f.eks. som export(provide(ddd).asNone).as(String.class)
 
         return (ServiceConfiguration<T>) export(configuration.getKey());
     }
@@ -131,22 +144,27 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         if (privateLatestNode != null) {
             Key<?> key = privateLatestNode.key();
             if (key != null) {
-                if (!box.services().nodes.putIfAbsent(privateLatestNode)) {
-                    System.err.println("OOPS");
+                if (privateLatestNode instanceof ServiceBuildNodeExported) {
+                    box.services().exports.put(privateLatestNode);
+                } else {
+                    if (!box.services().nodes.putIfAbsent(privateLatestNode)) {
+                        System.err.println("OOPS");
+                    }
                 }
             }
+
             privateLatestNode.freeze();
             privateLatestNode = null;
         }
     }
 
-    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        InstantiationMode mode = InstantiationMode.SINGLETON;
         checkConfigurable();
         freezeLatest();
+
+        InstantiationMode mode = InstantiationMode.SINGLETON;
         InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFunction<T> func = InjectSupport.toInternalFunction(factory);
 
@@ -158,11 +176,8 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         return bindNode(node).as(factory.defaultKey());
     }
 
-    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> provide(T instance) {
-        // TODO lav den om til et factory....
-        requireNonNull(instance, "instance is null");
         checkConfigurable();
         freezeLatest();
         ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
@@ -173,7 +188,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     }
 
     /** {@inheritDoc} */
-    @Override
     public void registerStatics(Class<?> staticsHolder) {
         throw new UnsupportedOperationException();
     }
@@ -206,6 +220,14 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         autoRequires = true;
     }
 
+    public final void serviceOptional(Class<?> key) {
+        serviceOptional(Key.of(key));
+    }
+
+    public final void serviceOptional(Key<?> key) {
+        box.services().addOptional(key);
+    }
+
     public final void serviceRequire(Class<?> key) {
         // kunne strengt taget ogsaa vaere en contract...
         serviceRequire(Key.of(key));
@@ -215,14 +237,6 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         box.services().addRequired(key);
     }
 
-    public final void serviceOptional(Class<?> key) {
-        serviceOptional(Key.of(key));
-    }
-
-    public final void serviceOptional(Key<?> key) {
-        box.services().addOptional(key);
-    }
-
     /** {@inheritDoc} */
     @Override
     public InjectorBuilder setDescription(String description) {
@@ -230,11 +244,18 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
         return this;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Extension<T>> T use(Class<T> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        Extension<?> e = extensions.get(extensionType);
+        requireNonNull(e, extensionType + "");
+        return (T) e;
+    }
+
     /** {@inheritDoc} */
-    @Override
-    public void wireInjector(Bundle bundle, WiringOperation... stages) {
+    public void wireInjector(Bundle bundle, OldWiringOperation... stages) {
         requireNonNull(bundle, "bundle is null");
-        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
+        List<OldWiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
@@ -247,10 +268,9 @@ public class InjectorBuilder extends ImageBuilder implements InjectorConfigurato
     }
 
     /** {@inheritDoc} */
-    @Override
-    public final void wireInjector(Injector injector, WiringOperation... operations) {
+    public final void wireInjector(Injector injector, OldWiringOperation... operations) {
         requireNonNull(injector, "injector is null");
-        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
+        List<OldWiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);

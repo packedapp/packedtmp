@@ -149,23 +149,34 @@ public class Factory<T> {
     }
 
     /**
-     * Returns the default key under which this factory will be registered, this can be overridden, for example, by calling
+     * If this factory is registered as a service with an {@link Injector}. This method returns the (default) key that will
+     * be used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
+     * factory is used to register a service, for example, via {@link SimpleInjectorConfigurator#provide(Factory)}. This
+     * method returns the key for which the factory
+     * 
+     * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
      * {@link ServiceConfiguration#as(Key)}.
      *
-     * @return the default key under which this factory will be registered
+     * @return the key under which this factory will be registered
+     * @see #withDefaultKey(Key)
      */
     public final Key<T> defaultKey() {
         return factory.defaultKey;
     }
 
     /**
-     * Returns a list of all of the dependencies of this factory. Returns an empty list if this factory does not have any
-     * dependencies.
-     *
+     * Returns a list of all of the dependencies that needs to be fulfilled in order for a factory to provide an instance.
+     * Returns an empty list if this factory does not have any dependencies.
+     * <p>
+     * 
+     * @apiNote The list returned does not include dependencies arising from fields or methods that needs injection. As
+     *          these are the responsibility of the injector in which they are registered.
+     * 
      * @return a list of all of the dependencies of this factory
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public final List<DependencyDescriptor> dependencies() {
+
         return (List) factory.dependencies;
     }
 
@@ -180,7 +191,7 @@ public class Factory<T> {
      *            the type of the mapped value
      * @return a new mapped factory
      */
-    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, Class<R> type) {
+    public final <R> Factory<R> mapTo(Function<? super T, R> mapper, Class<R> type) {
         return mapTo(mapper, TypeLiteral.of(type));
     }
 
@@ -195,7 +206,7 @@ public class Factory<T> {
      *            the type of the mapped value
      * @return a new mapped factory
      */
-    public final <R> Factory<R> mapTo(Function<? super T, ? extends R> mapper, TypeLiteral<R> type) {
+    public final <R> Factory<R> mapTo(Function<? super T, R> mapper, TypeLiteral<R> type) {
         InternalMapperFunction<T, R> f = new InternalMapperFunction<>(type, factory.function, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));
     }
@@ -210,12 +221,13 @@ public class Factory<T> {
     }
 
     /**
-     * Returns the scannable type of this factory. This is the type that will be used for scanning for scanning for
-     * annotations. This might differ from the
+     * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
+     * annotations. This might differ from the.
      *
      * @return
      */
     // We should make this public...
+    // InjectableType
     Class<? super T> scannableType() {
         return rawType();
     }
@@ -230,17 +242,17 @@ public class Factory<T> {
     }
 
     /**
-     * Returns a new factory retaining all the properties of this factory. Except that the default key this factory will be
-     * bound to will be the specified key.
+     * Returns a new factory retaining all of the existing properties of this factory. Except that the key returned by
+     * {@link #defaultKey()} will be changed to the specified key.
      * 
      * @param key
-     *            the default key under which to bind the factory
+     *            the key under which to bind the factory
      * @return the new factory
      * @throws ClassCastException
-     *             if the type of the key does not match this factory
+     *             if the type of the key does not match the type of instances this factory provides
      * @see #defaultKey()
      */
-    public final Factory<T> withDefaultKey(Key<? super T> key) {
+    public final Factory<T> withKey(Key<? super T> key) {
         throw new UnsupportedOperationException();
     }
 
@@ -340,7 +352,11 @@ public class Factory<T> {
 
     /**
      * Returns a factory that returns the specified instance every time a new instance is requested.
-     *
+     * <p>
+     * Instances passed to this method should not use field or method injection if the factory needs to be used multiple
+     * times. As these fields and members will be injected every time, possible concurrently, an instance is requested from
+     * the factory.
+     * 
      * @param <T>
      *            the type of instances created by the factory
      * @param instance

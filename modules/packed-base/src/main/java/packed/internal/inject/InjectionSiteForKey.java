@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import app.packed.container.Component;
+import app.packed.inject.Injector;
+import app.packed.inject.ProvidesHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.VariableDescriptor;
@@ -30,7 +32,7 @@ import app.packed.util.VariableDescriptor;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#with(Class)}.
  */
-class InjectionSiteForKey implements ProvisionContext {
+public class InjectionSiteForKey implements ProvidesHelper {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -42,7 +44,7 @@ class InjectionSiteForKey implements ProvisionContext {
     /** The key of the service that was requested */
     private final Key<?> key;
 
-    InjectionSiteForKey(Injector injector, Key<?> key, @Nullable Component component) {
+    public InjectionSiteForKey(Injector injector, Key<?> key, @Nullable Component component) {
         this.injector = requireNonNull(injector, "injector is null");
         this.key = requireNonNull(key, "key is null");
         this.component = component;

@@ -22,14 +22,14 @@ import static support.assertj.Assertions.npe;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.inject2.ServiceWiringOperations;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceWiringImportOperation;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfigurator#wireInjector(Injector, ServiceWiringImportOperation...)} method. */
+/** Tests the {@link SimpleInjectorConfigurator#wireInjector(Injector, ServiceWiringImportOperation...)} method. */
 public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */

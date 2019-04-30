@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.inject.Provides;
-import app.packed.inject.ProvisionContext;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -48,7 +48,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link ProvisionContext}. */
+    /** Whether or this node contains a dependency on {@link ProvidesHelper}. */
     final boolean hasDependencyOnInjectionSite;
 
     /** The injector configuration this node is registered with. */

@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.basespi;
+package app.packed.inject2;
 
 /**
  *
  */
-// InjectorConfigurator... Should this be a proper class...
-// Too avoid people implementing the interface...
-// And stealing the lookup object
-public abstract class Configurator {
+public class InjectorDescriptor {
 
 }
