@@ -17,18 +17,25 @@ package app.packed.app;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
+import app.packed.bundle.WiringOperation;
 import app.packed.container.ComponentInstaller;
 import app.packed.contract.Contract;
 
-// En Session App, kan f.eks. have en request Component... Som loebende har reqeuests som boern....
-// Men som ikke injecter nye ting som ikke er i sessionen...
+// Add/Remove/Execute apps   (run(new XBundle(), runInHost(someHost))
+// HostContract
+// HostDescriptor
+// Stream<App>
 
 /**
  *
  */
+// En Session App, kan f.eks. have en request Component... Som loebende har reqeuests som boern....
+// Men som ikke injecter nye ting som ikke er i sessionen...
+
 // Must be able to close/shutdown a host...
 ///// Rejects new apps, but do we shutdown existing?
 ///// And do we remove
@@ -57,18 +64,20 @@ import app.packed.contract.Contract;
 //// Man burde kunne styre nogle ting ihvertfald
 // Altsaa det ville jo vaere super fedt at kunne teste ting...
 /// Ved at starte forskellige hosts op...
+
+// AnyHost???
 public interface Host {
 
     /**
-     * Returns a stream of all applications currently registered with this host.
+     * Returns a stream of all applications that are currently registered with this host.
      * 
-     * @return a stream of all applications currently registered with this host
+     * @return a stream of all applications that are currently registered with this host
      */
     Stream<App> apps();
 
     /**
-     * Closes the host for further deployments. Attempting to deploy applications after this method has been invoked will
-     * result in {@link IllegalStateException} being thrown.
+     * Closes the host for further deployments. Attempting to deploy applications to this host, after this method has been
+     * invoked will result in {@link IllegalStateException} being thrown.
      * <p>
      * This method can be used together with {@link #undeployAll()}
      * <p>
@@ -76,6 +85,7 @@ public interface Host {
      * 
      * @return this host
      */
+    // Alternativ har den en lifecycle fra componenten, containeren....
     Host close();
 
     /**
@@ -97,7 +107,7 @@ public interface Host {
      */
 
     // Den skal hedde noejagtig det samme som de statiske metoder paa App.
-    AppRunner with(Bundle bundle);
+    App deploy(Bundle bundle, WiringOperation... options);
 
     /**
      * Deploys the specified bundle as a application using the specified options.
@@ -110,6 +120,8 @@ public interface Host {
      *             if this host has been closed, for example, if {@link #close()} has been invoked
      */
     void run(Bundle bundle, String... args);
+
+    void run(Bundle bundle, WiringOperation... options);
 
     /**
      * Undeploys the specified application. If the application has not already been shutdown. Invoking this method will
@@ -130,11 +142,14 @@ public interface Host {
      */
     Host undeployAll();
 
+    Host undeployAll(Predicate<? super App> predicate);
+
     // More a configuration then a builder...
     // Configurator -> via consumer -> When you have many lines, and is not standalone
     // Configuration -> When you have more than 1 expected line
     // Builder -> Standalone, no lifecycle,
 
+    // Vi skal vel supportere en slags wiring operations????
     static HostBuilder install(ComponentInstaller installer) {
         // We don't know exactly what service we can use yet...
         // Her kommer

@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.bundle.x;
 
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.OldWiringOperation;
@@ -65,21 +62,6 @@ public class AppLaunch implements Runnable {
         return CompletableFuture.runAsync(this, executor);
     }
 
-    public AppLaunch setTimeToLive(long timeout, TimeUnit unit) {
-        // Container will be shutdown normally after the specified timeout
-        return this;
-    }
-
-    public AppLaunch setTimeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
-        setTimeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
-        return this; // Will be shutdown using this
-    }
-    // setTimeToLive(
-
-    public static AppLaunch of(Bundle bundle, String[] args, OldWiringOperation... operations) {
-        return null;
-    }
-
     /**
      * Creates new application from the specified bundle and an optional array of wiring operations.
      * 
@@ -90,6 +72,10 @@ public class AppLaunch implements Runnable {
      * @return the new application
      */
     public static AppLaunch of(Bundle bundle, OldWiringOperation... operations) {
+        return null;
+    }
+
+    public static AppLaunch of(Bundle bundle, String[] args, OldWiringOperation... operations) {
         return null;
     }
 }

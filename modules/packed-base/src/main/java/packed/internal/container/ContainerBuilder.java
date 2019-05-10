@@ -42,7 +42,7 @@ import packed.internal.invokable.InternalFunction;
 /**
  * A builder of {@link Container containers}. Is both used via {@link Bundle} and {@link AppConfigurator}.
  */
-public final class ContainerBuilder extends InjectorBuilder implements AppConfigurator {
+public final class ContainerBuilder extends InjectorBuilder {
 
     // Maybe should be able to define a namig strategy, to avoid reuse? Mostly for distributed
     // Lazy initialized... Maybe this is part of the Specification/ContainerConfigurationProvider
@@ -105,26 +105,22 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
     }
 
     /** {@inheritDoc} */
-    @Override
     public void wireContainer(Bundle bundle, WiringOperation... stages) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getName() {
         return name;
     }
 
     /** {@inheritDoc} */
-    @Override
     public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
         return installService(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
     public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         checkConfigurable();
@@ -142,7 +138,6 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
     public <T> ComponentServiceConfiguration<T> installService(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
@@ -157,7 +152,6 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
     }
 
     /** {@inheritDoc} */
-    @Override
     public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
         return installService(Factory.findInjectable(implementation));
     }
@@ -190,7 +184,6 @@ public final class ContainerBuilder extends InjectorBuilder implements AppConfig
     }
 
     /** {@inheritDoc} */
-    @Override
     public void setName(@Nullable String name) {
         this.name = name;
     }

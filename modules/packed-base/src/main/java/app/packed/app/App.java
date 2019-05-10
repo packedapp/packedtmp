@@ -20,17 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.OldWiringOperation;
-import app.packed.container.Container;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.ContainerBuilder;
 
 /**
  * A application is a program.
@@ -44,7 +39,15 @@ import packed.internal.container.ContainerBuilder;
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  * 
  */
-public interface App extends Injector {
+public interface App extends Injector, AutoCloseable {
+
+    /**
+     * Will shutdown
+     **/
+    @Override
+    default void close() {
+        shutdown(); // AppWiringOption.AsynchronouslyClose()... can be used to control this
+    }
 
     /**
      * Returns the name of this application.
@@ -56,16 +59,7 @@ public interface App extends Injector {
      */
     String name();
 
-    /**
-     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
-     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
-     * <p>
-     * There are (currently) no method similar to {@link ExecutorService#shutdownNow()}.
-     *
-     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
-     *         in the process of being shut down
-     */
-    CompletableFuture<App> shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
+    App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 
     /**
      * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
@@ -76,7 +70,31 @@ public interface App extends Injector {
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
      */
-    CompletableFuture<App> shutdown(Throwable cause);
+    App shutdown(Throwable cause);
+
+    /**
+     * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
+     * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
+     * <p>
+     * There are (currently) no method similar to {@link ExecutorService#shutdownNow()}.
+     *
+     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+     *         in the process of being shut down
+     */
+    CompletableFuture<App> shutdownAsync();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
+
+    /**
+     * Initiates an orderly asynchronously shutdown of the application because of an exceptional condition. Invocation has
+     * no additional effect if the application has already been shut down.
+     *
+     * @param cause
+     *            the cause of the shutdown
+     * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
+     *         in the process of being shut down
+     */
+    CompletableFuture<App> shutdownAsync(Throwable cause);
+
+    App start();
 
     /**
      * Initiates an asynchronously startup of the container. Normally, there is no need to call this methods since most
@@ -93,7 +111,7 @@ public interface App extends Injector {
      *         starting up. Can also be used to retrieve any exception that might have prevented the container in starting
      *         properly
      */
-    CompletableFuture<Container> start();
+    CompletableFuture<App> startAsync();
 
     /**
      * Returns the state of application.
@@ -102,25 +120,9 @@ public interface App extends Injector {
      */
     LifecycleOperations<? extends App> state();
 
-    static <T> T invoke(Bundle b, Function<App, T> function, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    // /**
-    // * Creates a new container from a bundle of the specified type.
-    // *
-    // * @param bundleType
-    // * the type of bundle to create the container from
-    // * @return a new container
-    // * @throws RuntimeException
-    // * if the container could not be created
-    // */
-    // static Container of(Class<? extends Bundle> bundleType) {
-    // return of(Bundles.instantiate(bundleType));
-    // }
-
     /**
-     * Creates a new container from the specified bundle.
+     * Creates a new container from the specified bundle. The state of the container when returned from this method is
+     * initialized.
      *
      * @param bundle
      *            the bundle to create the container from
@@ -128,64 +130,18 @@ public interface App extends Injector {
      * @throws RuntimeException
      *             if the container could not be created
      */
-    static App of(Bundle bundle) {
+    static App of(Bundle bundle, WiringOperation... operations) {
         throw new UnsupportedOperationException();
     }
 
-    static App of(Consumer<? super AppConfigurator> configurator, OldWiringOperation... operations) {
+    static App of(Consumer<? super AppConfigurator> configurator, WiringOperation... operations) {
         requireNonNull(configurator, "configurator is null");
-        ContainerBuilder c = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
-        configurator.accept(c);
-        throw new UnsupportedOperationException();
-        // return c.build();
-    }
-    // Deployment Options (Disable StackCatching)
-    // Consumer<App>
-    // Main string args
-
-    static void run(Bundle b, AppOptions options, String... args) {
         throw new UnsupportedOperationException();
     }
 
-    static void run(Bundle b, Consumer<App> consumer, AppOptions options, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    static void run(Bundle b, Consumer<App> consumer, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    static void run(Bundle b, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    static CompletableFuture<Void> runAsync(Bundle b, AppOptions options, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    static CompletableFuture<Void> runAsync(Bundle b, Consumer<App> consumer, AppOptions options, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    static CompletableFuture<Void> runAsync(Bundle b, Consumer<App> consumer, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    static CompletableFuture<Void> runAsync(Bundle b, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Maybe have a lazy start as an AppOptions
-    static App start(Bundle b, AppOptions options, String... args) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Maybe have a lazy start as an AppOptions
-    static App start(Bundle b, String... args) {
+    static void run(Bundle bundle, WiringOperation... operations) {
+        // Hedder execute, for ikke at navnene minder for meget om hinanden (run + running)
+        // Vi skal ogsaa
         throw new UnsupportedOperationException();
     }
 }
-
-// static <X extends Throwable> void runX(Bundle b, TConsumer<App, X> consumer, String... args) throws X {
-// throw new UnsupportedOperationException();
-// }

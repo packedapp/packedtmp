@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 
 import app.packed.app.App;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
@@ -84,19 +83,37 @@ public final class InternalApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public CompletableFuture<App> shutdown() {
+    public App shutdown() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public CompletableFuture<App> shutdown(Throwable cause) {
+    public App shutdown(Throwable cause) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public CompletableFuture<Container> start() {
+    public CompletableFuture<App> shutdownAsync() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> shutdownAsync(Throwable cause) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public App start() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> startAsync() {
         throw new UnsupportedOperationException();
     }
 

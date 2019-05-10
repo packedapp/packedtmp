@@ -34,8 +34,11 @@ public final class LifecycleExtension extends Extension<LifecycleExtension> {
         if (parent == null) {
             throw new /* WiringException */ RuntimeException("Cannot wiring to a bundle that does not support lifecycle...");
         }
-
     }
+
+    // protected void supporting
+
+    // void addAlias(Class<?>
 
     // Perhaps adding some custom annotations
 

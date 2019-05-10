@@ -19,10 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.app.App;
-import app.packed.app.AppLaunch;
+import app.packed.app.AppWiringOptions;
 import app.packed.container.ComponentInstaller;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
@@ -232,6 +231,13 @@ public abstract class Bundle {
         throw new UnsupportedOperationException();
     }
 
+    protected final InjectorExtension injector() {
+        // Maybe only support installation of components....
+        // export would be nice...
+        // export(Exportable...)
+        return injectorBuilder().use(InjectorExtension.class);
+    }
+
     InjectorBuilder injectorBuilder() {
         return context().with(InjectorBuilder.class);
         // if (injectorBuilder == null) {
@@ -345,10 +351,6 @@ public abstract class Bundle {
         // Nope....
     }
 
-    protected final InjectorExtension injector() {
-        return injectorBuilder().use(InjectorExtension.class);
-    }
-
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
      * find a valid constructor or method to instantiate the service instance once the injector is created.
@@ -387,7 +389,7 @@ public abstract class Bundle {
     // // private InjectorBuilder injectorBuilder;
 
     protected void requireService(Class<?> key) {
-        injectorBuilder().serviceRequire(key);
+        injectorBuilder().serviceRequire(Key.of(key));
     }
 
     protected void requireService(Key<?> key) {
@@ -479,22 +481,19 @@ public abstract class Bundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    static protected void run(Bundle b, Consumer<App> consumer, OldWiringOperation... operations) {
-        AppLaunch.of(b, operations).run();
+    static protected void run(Bundle bundle, WiringOperation... operations) {
+        App.run(bundle, operations);
     }
 
-    static protected void run(Bundle b, String[] args, OldWiringOperation... operations) {
-        AppLaunch.of(b, args, operations).run();
+    static protected void run(Bundle bundle, String[] args, WiringOperation... operations) {
+        run(bundle, AppWiringOptions.main(args).andThen(operations));
     }
-
-    static protected void run(Bundle b, OldWiringOperation... operations) {
-        AppLaunch.of(b, operations).run();
-    }
-
-    // public interface Restrictions {
-    // void service(Class<?> clazz);
-    // }
 }
+
+// public interface Restrictions {
+// void service(Class<?> clazz);
+// }
+
 /**
  * A injector bundle provides a simple way to package services into a resuable container nice little thingy.
  * 

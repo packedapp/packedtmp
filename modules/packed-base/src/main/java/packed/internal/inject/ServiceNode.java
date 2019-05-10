@@ -17,9 +17,9 @@ package packed.internal.inject;
 
 import app.packed.container.Component;
 import app.packed.inject.DependencyDescriptor;
-import app.packed.inject.ProvidesHelper;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

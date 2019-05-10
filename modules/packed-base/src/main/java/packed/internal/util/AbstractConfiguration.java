@@ -45,6 +45,10 @@ public abstract class AbstractConfiguration {
     @Nullable
     private AbstractConfigurableTagSet<String> tags;
 
+    protected AbstractConfiguration() {
+        this.configurationSite = null;
+    }
+
     /**
      * Creates a new abstract configuration
      * 

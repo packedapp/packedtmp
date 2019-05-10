@@ -77,6 +77,9 @@ public interface ComponentConfiguration extends ComponentInstaller {
      */
     ComponentConfiguration addMixin(Object instance);
 
+    // Ville vaere rigtig rart at vi havde noget support for at fryse navnet, isaer mht til actors...
+    // ComponentPath path() <- once invoked, the name cannot be changed....
+
     /**
      * Returns the description of this component. Or null if the description has not been set.
      *
@@ -96,9 +99,6 @@ public interface ComponentConfiguration extends ComponentInstaller {
      */
     @Nullable
     String getName();
-
-    // Ville vaere rigtig rart at vi havde noget support for at fryse navnet, isaer mht til actors...
-    // ComponentPath path() <- once invoked, the name cannot be changed....
 
     /**
      * Sets the description of this component.

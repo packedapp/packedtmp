@@ -220,17 +220,8 @@ public class InjectorBuilder extends ImageBuilder {
         autoRequires = true;
     }
 
-    public final void serviceOptional(Class<?> key) {
-        serviceOptional(Key.of(key));
-    }
-
     public final void serviceOptional(Key<?> key) {
         box.services().addOptional(key);
-    }
-
-    public final void serviceRequire(Class<?> key) {
-        // kunne strengt taget ogsaa vaere en contract...
-        serviceRequire(Key.of(key));
     }
 
     public final void serviceRequire(Key<?> key) {

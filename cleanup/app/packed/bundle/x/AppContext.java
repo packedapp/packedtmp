@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.bundle.x;
+
+import app.packed.app.App;
 
 /**
  * A context object that is shared all containers in an application. Is typically dependency injected into a service or
  * a component.
  */
+
+///// Nej jeg syntes ikke vi skal have denne....
+///// Hvis vi nu laver en Injector.... Giver den jo ikke mening.
+//// App er en facade som kun brugeren kender til
+
+@Deprecated
 public interface AppContext {
 
     // SharedContext

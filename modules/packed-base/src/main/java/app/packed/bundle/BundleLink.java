@@ -20,6 +20,10 @@ package app.packed.bundle;
  */
 // As an alternativ use attachments....
 // Yes this is exactly what they are made for....
+
+// Deploy
+// Execute
+// Link (link = container, wire = any)
 public interface BundleLink {
 
     <T> T use(Class<T> clazz);
@@ -34,4 +38,22 @@ public interface BundleLink {
 
     // WiringOperations, could be an abstract class taking Requirements in the constructor...
     // Or the object we use could have an requiresExtension
+
+    Mode mode();
+
+    enum Mode {
+
+        /** Used when deploying */
+        DEPLOY,
+
+        EXECUTE,
+
+        LINK;
+
+        public void checkDeploy() {}
+
+        public void checkExecute() {}
+
+        public void checkLink() {}
+    }
 }

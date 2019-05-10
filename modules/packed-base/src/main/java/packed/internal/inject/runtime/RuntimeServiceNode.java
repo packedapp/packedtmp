@@ -24,7 +24,6 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.builder.ServiceBuildNode;
 
@@ -32,7 +31,7 @@ import packed.internal.inject.builder.ServiceBuildNode;
 public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
 
     /** The point where this node was registered. */
-    private final InternalConfigurationSite configurationSite;
+    private final ConfigSite configurationSite;
 
     /** An (optionally) description of the service. */
     @Nullable

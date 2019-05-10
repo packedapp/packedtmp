@@ -98,6 +98,7 @@ import packed.internal.inject.builder.InjectorBuilder;
 // get(InjectionSite)
 // getService(Class|Key) .get(InjectionSite)<---Nah
 // hasService -> contains
+// Description... hmm its just super helpful...
 public interface Injector extends Taggable {
 
     /**
@@ -225,6 +226,10 @@ public interface Injector extends Taggable {
             throw new UnsupportedOperationException("A service with the specified key could not be found, key = " + key);
         }
         return t.get();
+    }
+
+    default <T> T use(Class<T> key) {
+        return with(key);
     }
 
     /**

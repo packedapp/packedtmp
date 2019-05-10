@@ -23,10 +23,6 @@ import java.io.PrintStream;
 // Hvorfor en specific printer???
 class BundleDescriptorPrinter {
 
-    static BundleDescriptorPrinter copyOf(BundleDescriptorPrinter printer) {
-        return printer;
-    }
-
     BundleDescriptorPrinter freeze() {
         return this;
     }
@@ -37,5 +33,9 @@ class BundleDescriptorPrinter {
 
     public void print(PrintStream ps) {
 
+    }
+
+    static BundleDescriptorPrinter copyOf(BundleDescriptorPrinter printer) {
+        return printer;
     }
 }

@@ -27,7 +27,8 @@ import java.util.stream.Stream;
  * public-static-main method.
  */
 // Rename to StringArgs and put it in utils...
-public final class MainArgs implements Iterable<String> {
+// AppWiringOptions.main(String... args)
+public final class MainArgs implements Iterable<String> /* WiringOperation */ {
 
     private final List<String> args;
 

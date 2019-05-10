@@ -27,7 +27,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// RequiresExtension
+// OnBundle .....
+// OnComponent
+// OnMixin
+
 public @interface RequiresExtension {
     Class<? extends Extension<?>> value();
 }
