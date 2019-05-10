@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.ContainerBuildContext;
 import app.packed.bundle.OldWiringOperation;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
@@ -287,17 +286,18 @@ public interface Injector extends Taggable {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
 
-        ContainerBuildContext bs = new ContainerBuildContext() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> T with(Class<? super T> type) {
-                if (type == InjectorBuilder.class) {
-                    return (T) builder;
-                }
-                return super.with(type);
-            }
-        };
-        bs.configure(bundle);
+        // ContainerBuildContext bs = new ContainerBuildContext() {
+        // @SuppressWarnings("unchecked")
+        // @Override
+        // public <T> T with(Class<? super T> type) {
+        // if (type == InjectorBuilder.class) {
+        // return (T) builder;
+        // }
+        // return super.with(type);
+        // }
+        // };
+        bundle.doConfigure(builder);
+        // bs.configure(bundle);
 
         // BundleSupport.invoke().configureInjectorBundle(bundle, builder, true);
         return builder.build();

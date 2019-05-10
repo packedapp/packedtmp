@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bundle.x;
+
+import app.packed.extension.AnyBundle;
 
 /**
  *
@@ -31,7 +33,4 @@ package app.packed.extension;
 // Maaske bare ikke lave den final..... Hej... den er jo ikke direkte paa bundle
 public abstract class AbstractBundle extends AnyBundle {
 
-    public AbstractBundle(ContainerConfiguration specification) {
-        super(specification);
-    }
 }

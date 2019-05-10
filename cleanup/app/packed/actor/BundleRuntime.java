@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.actor;
 
-import java.lang.invoke.MethodHandles;
-import java.util.IdentityHashMap;
+import app.packed.inject.Injector;
 
 /**
  *
  */
-// ContainerMaker to distinguish it from ComponentConfiguration, ServiceConfiguration, ...
+// Hmm hvad med injector????, kan vi injecte i services?? ja
+// BundleContext
+public interface BundleRuntime extends Injector {
 
-// implements Attachable
-public final class ContainerConfiguration {
-
-    final IdentityHashMap<Class<?>, Extension<?>> extensions = new IdentityHashMap<>();
-
-    // register, use
-    // set/get name
-    // set/get description
-
-    final void lookup(MethodHandles.Lookup lookup) {
-
-    }
-    // Skal vi ogsaa have et factory af dem????
-    // Taenker udelukkende paa performance....
+    // injecting Injector -> is the public exposed injector
 }

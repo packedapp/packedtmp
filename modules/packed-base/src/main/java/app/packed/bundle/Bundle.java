@@ -26,6 +26,7 @@ import app.packed.container.ComponentInstaller;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.contract.Contract;
+import app.packed.extension.AnyBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
@@ -67,9 +68,7 @@ import packed.internal.inject.builder.InjectorBuilder;
 
 // We never return, for example, Bundle or AnyBundle to allow for method chaining.
 // As this would
-public abstract class Bundle {
-
-    ContainerBuildContext context;
+public abstract class Bundle extends AnyBundle {
 
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
@@ -103,6 +102,7 @@ public abstract class Bundle {
     }
 
     /** Configures the bundle using the various methods from the inherited class. */
+    @Override
     protected abstract void configure();
 
     /**
@@ -137,7 +137,7 @@ public abstract class Bundle {
     }
 
     ContainerBuilder containerBuilderX() {
-        return context().with(InjectorBuilder.class);
+        return (ContainerBuilder) configuration();
         // if (injectorBuilder == null) {
         // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
         // call Bundle.configure directly");
@@ -145,19 +145,20 @@ public abstract class Bundle {
         // return injectorBuilder;
     }
 
-    /**
-     * Returns the bundle support object which
-     * 
-     * @return the bundle support object
-     */
-    protected final ContainerBuildContext context() {
-        // Vi laver en bundle nyt per configuration.....
-        ContainerBuildContext s = context;
-        if (s == null) {
-            throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call Bundle.configure directly");
-        }
-        return s;
-    }
+    // /**
+    // * Returns the bundle support object which
+    // *
+    // * @return the bundle support object
+    // */
+    // protected final ContainerBuildContext context() {
+    // // Vi laver en bundle nyt per configuration.....
+    // ContainerBuildContext s = context;
+    // if (s == null) {
+    // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
+    // call Bundle.configure directly");
+    // }
+    // return s;
+    // }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -239,7 +240,8 @@ public abstract class Bundle {
     }
 
     InjectorBuilder injectorBuilder() {
-        return context().with(InjectorBuilder.class);
+        return (InjectorBuilder) configuration();
+        // return context().with(InjectorBuilder.class);
         // if (injectorBuilder == null) {
         // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
         // call Bundle.configure directly");
@@ -290,19 +292,21 @@ public abstract class Bundle {
         return containerBuilderX().installService(implementation);
     }
 
-    /**
-     * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     * Unless your private
-     * 
-     * @param lookup
-     *            the lookup object
-     * @see SimpleInjectorConfigurator#lookup(Lookup)
-     */
-    protected final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        context().lookup(lookup);
-    }
+    // /**
+    // * The lookup object passed to this method is never made available through the public api. It is only used internally.
+    // * Unless your private
+    // *
+    // * @param lookup
+    // * the lookup object
+    // * @see SimpleInjectorConfigurator#lookup(Lookup)
+    // */
+    // @Override
+    // protected final void lookup(Lookup lookup) {
+    // requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+    // context().lookup(lookup);
+    // }
 
+    @Override
     protected final void lookup(Lookup lookup, Object lookupController) {
         // Ideen er at alle lookups skal godkendes at lookup controlleren...
         // Controller/Manager/LookupAccessManager

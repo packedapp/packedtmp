@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.ContainerBuildContext;
 import app.packed.bundle.DownstreamWiringOperation;
 import app.packed.bundle.OldWiringOperation;
 import app.packed.util.Key;
@@ -42,17 +41,17 @@ final class BindInjectorFromBundle extends AbstractWiring {
      * 
      */
     void processImport() {
-        ContainerBuildContext bs = new ContainerBuildContext() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T> T with(Class<? super T> type) {
-                if (type == InjectorBuilder.class) {
-                    return (T) newConfiguration;
-                }
-                return super.with(type);
-            }
-        };
-        bs.configure(bundle);
+        // ContainerBuildContext bs = new ContainerBuildContext() {
+        // @SuppressWarnings("unchecked")
+        // @Override
+        // public <T> T with(Class<? super T> type) {
+        // if (type == InjectorBuilder.class) {
+        // return (T) newConfiguration;
+        // }
+        // return super.with(type);
+        // }
+        // };
+        bundle.doConfigure(newConfiguration);
         // BundleSupport.invoke().configureInjectorBundle(bundle, newConfiguration, true);
         processImport(newConfiguration.publicNodeList);
     }

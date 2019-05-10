@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.bundle.x;
 
 /**
  *
  */
-// Do we need a HostDescriptor as well???
-class HostContract {
+// Navngivning noget med model....
+public class BootstrapFactory {
 
+    public OldContainerConfiguration create() {
+        throw new UnsupportedOperationException();
+    }
 }

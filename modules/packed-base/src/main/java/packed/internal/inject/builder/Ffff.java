@@ -28,7 +28,7 @@ public class Ffff extends Bundle {
         System.out.println(i.services().count() + "");
         System.out.println(i.with(String.class));
 
-        run(new Ffff(), args);
+        // run(new Ffff(), args);
     }
 
     /** {@inheritDoc} */

@@ -18,8 +18,10 @@ package app.packed.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Set;
 
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.container.ContainerConfiguration;
+import app.packed.util.Nullable;
 
 /**
  *
@@ -31,10 +33,78 @@ import app.packed.inject.SimpleInjectorConfigurator;
 
 public abstract class AnyBundle {
 
-    protected AnyBundle(ContainerConfiguration specification) {}
+    /** The configuration */
+    private ContainerConfiguration configuration;
+
+    /**
+     * Returns the container configuration that this bundle wraps.
+     * 
+     * @return the container configuration that this bundle wraps
+     * @throws IllegalStateException
+     *             if called outside {@link #configure()}
+     */
+    protected final ContainerConfiguration configuration() {
+        ContainerConfiguration c = configuration;
+        if (c == null) {
+            throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call #configure() directly");
+        }
+        return c;
+    }
+
+    /** Configures the bundle using the various inherited methods that are available. */
+    protected abstract void configure();
+
+    public final void doConfigure(ContainerConfiguration configuration) {
+        this.configuration = configuration;
+        try {
+            configure();
+        } finally {
+            configuration = null;
+        }
+    }
+
+    protected final Set<Class<? extends Extension<?>>> extensionTypes() {
+        return configuration.extensionTypes();
+    }
+
+    /**
+     * Returns the name of the container or null if the name has not been set.
+     *
+     * @return the name of the container or null if the name has not been set
+     * @see #setName(String)
+     * @see ContainerConfiguration#setName(String)
+     */
+    @Nullable
+    protected final String getName() {
+        return configuration.getName();
+    }
+
+    /**
+     * The lookup object passed to this method is never made available through the public api. It is only used internally.
+     * Unless your private
+     * 
+     * @param lookup
+     *            the lookup object
+     */
+    protected final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        configuration().lookup(lookup);
+    }
+
+    protected final void setName(@Nullable String name) {
+        configuration.setName(name);
+    }
+
+    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
+        return configuration.use(extensionType);
+    }
+
+    // protected final ContainerLink wire(AnyBundle child, WiringOption... operations) {
+    // return configuration().wire(child);
+    // }
 
     /** Configures the bundle using the various methods from the inherited class. */
-    protected abstract void configure();
+    // protected abstract void configure();
 
     /**
      * Returns a feature of the specified type
@@ -52,20 +122,20 @@ public abstract class AnyBundle {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     * Unless your private
-     * 
-     * @param lookup
-     *            the lookup object
-     * @see SimpleInjectorConfigurator#lookup(Lookup)
-     */
-    protected final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        // stuff
-    }
+    // /**
+    // * The lookup object passed to this method is never made available through the public api. It is only used internally.
+    // * Unless your private
+    // *
+    // * @param lookup
+    // * the lookup object
+    // * @see SimpleInjectorConfigurator#lookup(Lookup)
+    // */
+    // protected void lookup(Lookup lookup) {
+    // requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+    // // stuff
+    // }
 
-    protected final void lookup(Lookup lookup, Object lookupController) {
+    protected void lookup(Lookup lookup, Object lookupController) {
         // Ideen er at alle lookups skal godkendes at lookup controlleren...
         // Controller/Manager/LookupAccessManager
         // For module email, if you are paranoid.

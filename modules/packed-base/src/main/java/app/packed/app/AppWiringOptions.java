@@ -64,11 +64,12 @@ public final class AppWiringOptions {
     }
 
     public static WiringOperation main(String... args) {
+        // but why not for Injector also...
         throw new UnsupportedOperationException();
     }
 
     public static WiringOperation config(Configuration c) {
-        // This is for App.
+        // This is for App, but why not for Injector also...
         // we need config(String) for wire()..... configOptional() also maybe...
         // Would be nice.. if config extends WiringOperations
         // alternative c.wire();

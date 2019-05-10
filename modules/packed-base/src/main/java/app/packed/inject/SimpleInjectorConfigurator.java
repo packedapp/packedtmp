@@ -34,6 +34,7 @@ import app.packed.util.TypeLiteral;
  * defined.
  */
 // Taenker vi kan lave den som klasse....
+// Basalt set skal den bare wrappe en ContainerConfiguration.... vel ogsaa implementere den????
 public interface SimpleInjectorConfigurator extends Taggable {
 
     /**

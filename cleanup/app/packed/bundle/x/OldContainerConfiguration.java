@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.bundle.x;
 
-import app.packed.inject.Provides;
+import java.lang.invoke.MethodHandles;
+import java.util.IdentityHashMap;
+
+import app.packed.extension.Extension;
 
 /**
  *
  */
-// Must be registered as a component...
-abstract class AbstractHost {
+// ContainerMaker to distinguish it from ComponentConfiguration, ServiceConfiguration, ...
 
-    protected Host host() {
-        throw new UnsupportedOperationException();
+// implements Attachable
+public final class OldContainerConfiguration {
+
+    final IdentityHashMap<Class<?>, Extension<?>> extensions = new IdentityHashMap<>();
+
+    // register, use
+    // set/get name
+    // set/get description
+
+    final void lookup(MethodHandles.Lookup lookup) {
+
     }
-}
-
-class MyHost extends AbstractHost {
-
-    @Provides
-    public Host providedHost() {
-        return host();
-    }
+    // Skal vi ogsaa have et factory af dem????
+    // Taenker udelukkende paa performance....
 }

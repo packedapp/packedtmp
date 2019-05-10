@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.inject.Provides;
+import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.util.Nullable;
 import packed.internal.bundle.BundleSupport;
 
@@ -201,8 +201,8 @@ public abstract class OldWiringOperation {
     }
 
     // Kunne vaere rart, hvis man f.eks. kunne
-    // bindInjector(SomeBundle.class, JaxRSSpec.2_1.strict());
-    // bindInjector(SomeBundle.class, JettySpec.23_1.strict());
+    // wire(SomeBundle.class, JaxRSSpec.v2_1.wireStrict());
+    // wire(SomeBundle.class, JettySpec.v23_1.wireStrict());
 
     /// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
     // ComponentInstanceHook

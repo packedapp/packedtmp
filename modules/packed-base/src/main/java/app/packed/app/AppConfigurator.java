@@ -40,8 +40,10 @@ import app.packed.util.Nullable;
  * <li>Setting a name for the container.</li>
  * </ul>
  */
-
+/// USEFUL IN TESTS
 // Istedet for et interface kan det jo ligesaa godt bare vaere en klasse der wrapper en ComponentConfiguration...
+// have a App start()????
+
 public interface AppConfigurator extends SimpleInjectorConfigurator, ComponentInstaller {
 
     /**

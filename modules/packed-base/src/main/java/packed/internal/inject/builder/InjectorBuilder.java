@@ -18,12 +18,10 @@ package packed.internal.inject.builder;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.OldWiringOperation;
-import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
@@ -44,19 +42,17 @@ import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokable.InternalFunction;
-import packed.internal.runtime.ImageBuilder;
+import packed.internal.runtime.AbstractContainerConfiguration;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and
  * {@link SimpleInjectorConfigurator}.
  */
-public class InjectorBuilder extends ImageBuilder {
+public class InjectorBuilder extends AbstractContainerConfiguration {
 
     boolean autoRequires;
 
     final Box box;
-
-    final IdentityHashMap<Class<?>, Extension<?>> extensions = new IdentityHashMap<>();
 
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
@@ -226,21 +222,6 @@ public class InjectorBuilder extends ImageBuilder {
 
     public final void serviceRequire(Key<?> key) {
         box.services().addRequired(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InjectorBuilder setDescription(String description) {
-        super.setDescription(description);
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Extension<T>> T use(Class<T> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        Extension<?> e = extensions.get(extensionType);
-        requireNonNull(e, extensionType + "");
-        return (T) e;
     }
 
     /** {@inheritDoc} */

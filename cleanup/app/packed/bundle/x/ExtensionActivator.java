@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bundle.x;
+
+import app.packed.extension.Extension;
 
 /**
  *
@@ -21,6 +23,7 @@ package app.packed.extension;
 // Ideen er egentligt, at man kan installere den via en service provider. Og saa bliver den automatisk instantieret hvis
 // man bruger en annotering.
 
+//// Er en daarlig ide. Fordi, definition af et bundle saa kan aendre sig hvis man smider noget paa classpathehn....
 public abstract class ExtensionActivator<T extends Extension<T>> {
 
     protected void freeze() {

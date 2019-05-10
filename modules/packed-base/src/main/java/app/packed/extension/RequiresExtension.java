@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 // OnBundle .....
 // OnComponent
 // OnMixin
-
+// UsesExtension
 public @interface RequiresExtension {
     Class<? extends Extension<?>> value();
 }

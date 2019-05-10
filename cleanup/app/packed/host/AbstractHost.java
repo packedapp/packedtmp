@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.host;
 
-import app.packed.inject.Injector;
+import app.packed.inject.Provides;
 
 /**
  *
  */
-// Hmm hvad med injector????, kan vi injecte i services?? ja
-// BundleContext
-public interface BundleRuntime extends Injector {
+// Must be registered as a component...
+abstract class AbstractHost {
 
-    // injecting Injector -> is the public exposed injector
+    protected Host host() {
+        throw new UnsupportedOperationException();
+    }
+}
+
+class MyHost extends AbstractHost {
+
+    @Provides
+    public Host providedHost() {
+        return host();
+    }
 }

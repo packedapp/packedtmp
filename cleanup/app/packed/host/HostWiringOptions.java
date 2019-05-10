@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.host;
 
 /**
  *
  */
-public abstract class DddBundle extends AnyBundle {
+// I think
 
-    private static final BootstrapFactory F = new BootStrapFactoryBuilder().build();
+// Maybe extend WiringOption.. so we can restrict which options you can use....
+// But would be nice to be able to specify default options for a host..
+// Maybe even a Function<Secrets, List<HostWiringOption>
+public class HostWiringOptions {
+    // UNDEPLOY_ON_TERMINATION or
+    // KEEP_ON_TERMINATION
 
-    final ContainerConfiguration spec;
+    // TIME_TO_LIVE
 
-    protected DddBundle() {
-        this(F.create());
-    }
+    // AFTER_UNDEPLOY_RETENTION_TIME (LINGER??) basically keep this around for a minute
 
-    private DddBundle(ContainerConfiguration specification) {
-        super(specification);
-        this.spec = specification;
-    }
+    // MHT til naming, kan vi f.eks. bruge et prefix: Session-UUID
 }

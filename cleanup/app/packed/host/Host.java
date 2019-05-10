@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.host;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import app.packed.app.App;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
 import app.packed.container.ComponentInstaller;

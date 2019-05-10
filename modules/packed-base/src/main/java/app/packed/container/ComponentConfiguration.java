@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.app.AppConfigurator;
 import app.packed.bundle.Bundle;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
@@ -29,8 +28,8 @@ import app.packed.util.Nullable;
 
 /**
  * This class represents the configuration of a component. An actual instance is usually obtained by calling one of the
- * install methods on {@link ComponentInstaller}, {@link Bundle}, {@link AppConfigurator} or on another component
- * configuration. It it also possible to install components at runtime via {@link Component}.
+ * install methods on {@link ComponentInstaller}, {@link Bundle} or on another component configuration. It it also
+ * possible to install components at runtime via {@link Component}.
  */
 public interface ComponentConfiguration extends ComponentInstaller {
 
