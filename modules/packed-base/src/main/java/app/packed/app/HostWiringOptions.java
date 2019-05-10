@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject2;
-
-import app.packed.inject.Injector;
+package app.packed.app;
 
 /**
  *
  */
+// I think
 
-// Why we need it...
+// Maybe extend WiringOption.. so we can restrict which options you can use....
+// But would be nice to be able to specify default options for a host..
+// Maybe even a Function<Secrets, List<HostWiringOption>
+public class HostWiringOptions {
+    // UNDEPLOY_ON_TERMINATION or
+    // KEEP_ON_TERMINATION
 
-// To get all services
+    // TIME_TO_LIVE
 
-// We need a clear separation between the outfacing injector and the internal injector...
+    // AFTER_UNDEPLOY_RETENTION_TIME (LINGER??) basically keep this around for a minute
 
-// Replace with ContainerContext....
-interface InjectorContext extends Injector {
-
-    Injector publicInjector();// Hmm bliver svaer at extende mht til App
-
-    // I don't want to call it services.....
+    // MHT til naming, kan vi f.eks. bruge et prefix: Session-UUID
 }

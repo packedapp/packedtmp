@@ -30,7 +30,11 @@ import packed.internal.inject.ServiceNode;
  */
 public abstract class Extension<T extends Extension<T>> {
 
-    /** The configuration site of this object. The api needs to be public... */
+    /**
+     * The configuration site of this object. The api needs to be public...
+     * 
+     * @return this configuration site
+     */
     public final InternalConfigurationSite configurationSite() {
         throw new UnsupportedOperationException();
     }

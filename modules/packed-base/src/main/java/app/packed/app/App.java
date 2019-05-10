@@ -126,6 +126,8 @@ public interface App extends Injector, AutoCloseable {
      *
      * @param bundle
      *            the bundle to create the container from
+     * @param operations
+     *            wiring operations
      * @return a new container
      * @throws RuntimeException
      *             if the container could not be created

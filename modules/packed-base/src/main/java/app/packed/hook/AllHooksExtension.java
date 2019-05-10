@@ -98,10 +98,13 @@ public final class AllHooksExtension extends Extension<AllHooksExtension> {
         }
 
         /**
+         * @param <T>
+         *            the type of hook
          * @param hookType
          *            the type of hooks to filter
          * @param filter
          *            a non-interfering, stateless predicate to apply to each hook to determine if it should be exported
+         * @return this extension
          */
         public <T extends Hook> AllHooksExtension filterOutgoing(Class<T> hookType, Predicate<? super T> filter) {
             // Man kunne vaere fristet til at sige, at man burde kunne lave en der filtrer hooks udfra hvilke consumer af dem der

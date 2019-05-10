@@ -158,7 +158,7 @@ public class Factory<T> {
      * {@link ServiceConfiguration#as(Key)}.
      *
      * @return the key under which this factory will be registered
-     * @see #withDefaultKey(Key)
+     * @see #withKey(Key)
      */
     public final Key<T> defaultKey() {
         return factory.defaultKey;

@@ -37,6 +37,22 @@ public abstract class AnyBundle {
     protected abstract void configure();
 
     /**
+     * Returns a feature of the specified type
+     * 
+     * @param <T>
+     *            the extension type
+     * @param featureType
+     *            the feature type
+     * @return an extension of the specified type
+     * @throws UnsupportedOperationException
+     *             if no features of the specified type is supported
+     */
+    // Skal alle virkelig have adgang....
+    protected final <T extends Extension<T>> T extendWith(Class<T> featureType) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
      * 
@@ -55,20 +71,6 @@ public abstract class AnyBundle {
         // For module email, if you are paranoid.
         // You can specify a LookupAccessManager where every lookup access.
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
-    }
-
-    /**
-     * Returns a feature of the specified type
-     * 
-     * @param featureType
-     *            the feature type
-     * @return
-     * @throws UnsupportedOperationException
-     *             if no features of the specified type is supported
-     */
-    // Skal alle virkelig have adgang....
-    protected final <T extends Extension<T>> T extendWith(Class<T> featureType) {
-        throw new UnsupportedOperationException();
     }
 
     // alternative is some kind of builder....

@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
@@ -139,6 +139,9 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * 
      * 
      * service must either be an instance, or only have static
+     * 
+     * @param staticsHolder
+     *            stuff
      * 
      * @throws InvalidDeclarationException
      *             if, provides members are non-static

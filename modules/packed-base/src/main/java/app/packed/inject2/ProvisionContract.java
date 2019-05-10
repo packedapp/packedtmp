@@ -123,7 +123,8 @@ public final class ProvisionContract {
      * Returns a provision contract from the specified bundle.
      * 
      * @param bundle
-     * @return
+     *            the bundle to create a contract from
+     * @return this contract
      */
     public static ProvisionContract of(AnyBundle bundle) {
         return EMPTY;
@@ -133,7 +134,7 @@ public final class ProvisionContract {
      * A builder object used to create instances of {@link ProvisionContract}.
      * <p>
      * In addition to creating new contracts, this class also supports creating new contracts by transforming an existing
-     * contracts using the {@link #ServiceContract(ProvisionContract)} constructor.
+     * contracts using the constructor.
      * <p>
      * <strong>Note that this builder is not synchronized.</strong> If multiple threads access a builder concurrently, and
      * at least one of the threads modifies the builder structurally, it <i>must</i> be synchronized externally.

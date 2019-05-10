@@ -91,12 +91,6 @@ public interface DependencyDescriptor {
      */
     Optional<VariableDescriptor> variable();
 
-    /**
-     * @param actualClass
-     * @param baseClass
-     * @param baseClassTypeVariableIndex
-     * @return
-     */
     public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         return InternalDependencyDescriptor.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
     }

@@ -53,8 +53,6 @@ public interface ComponentInstaller {
     /**
      * Installs a new child to this configuration, which uses the specified factory to instantiate the component instance.
      *
-     * @param <S>
-     *            the type of child component to install
      * @param factory
      *            the factory used to instantiate the component instance
      * @return the configuration of the child component
@@ -69,8 +67,6 @@ public interface ComponentInstaller {
      * 
      * the specified component instance as a child of this component.
      * 
-     * @param <S>
-     *            the type of child component to install
      * @param instance
      *            the component instance to install
      * @return the configuration of the child component

@@ -76,19 +76,6 @@ public interface Host {
     Stream<App> apps();
 
     /**
-     * Closes the host for further deployments. Attempting to deploy applications to this host, after this method has been
-     * invoked will result in {@link IllegalStateException} being thrown.
-     * <p>
-     * This method can be used together with {@link #undeployAll()}
-     * <p>
-     * Ongoing deployments will not be effected.
-     * 
-     * @return this host
-     */
-    // Alternativ har den en lifecycle fra componenten, containeren....
-    Host close();
-
-    /**
      * Returns the contract that the host commits to.
      * 
      * @return the contract that the host commits to
@@ -103,9 +90,12 @@ public interface Host {
      * 
      * @param bundle
      *            the bundle to deploy
+     * @param options
+     *            optional wiring operations
      * @return the application
+     * @throws IllegalArgumentException
+     *             if the an application with the specified name has already been deployed
      */
-
     // Den skal hedde noejagtig det samme som de statiske metoder paa App.
     App deploy(Bundle bundle, WiringOperation... options);
 
@@ -117,7 +107,7 @@ public interface Host {
      * @param args
      *            the deployment options
      * @throws IllegalStateException
-     *             if this host has been closed, for example, if {@link #close()} has been invoked
+     *             if this host has been shutdown
      */
     void run(Bundle bundle, String... args);
 
@@ -143,6 +133,12 @@ public interface Host {
     Host undeployAll();
 
     Host undeployAll(Predicate<? super App> predicate);
+
+    App use(String name);
+
+    default <T> T use(String name, Class<T> serviceType) {
+        return use(name).use(serviceType);
+    }
 
     // More a configuration then a builder...
     // Configurator -> via consumer -> When you have many lines, and is not standalone
@@ -180,6 +176,19 @@ public interface Host {
 // configuration.asHost()...
 
 // InternalHost can injectes i Componenten....... Og saa kan man udstille de ting man vil...
+
+/**
+ * Closes the host for further deployments. Attempting to deploy applications to this host, after this method has been
+ * invoked will result in {@link IllegalStateException} being thrown.
+ * <p>
+ * This method can be used together with {@link #undeployAll()}
+ * <p>
+ * Ongoing deployments will not be effected.
+ * 
+ * @return this host
+ */
+// Alternativ har den en lifecycle fra componenten, containeren....
+// Host close();
 
 class MyComponent {
     final Host host;
