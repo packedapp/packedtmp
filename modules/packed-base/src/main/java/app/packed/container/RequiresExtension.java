@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.box.api;
+package app.packed.container;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  */
-public abstract class AbstractExtension {
-
-    protected final void newLine() {
-        // checksConfigurable
-        // FreezesAnyNode before
-
-        // Checks that the bundle/configurator/... is still active
-        // Freezes any previous node for modifications....
-
-        // Which means that everything is nodes....
-
-        // Because bind(x) followed by install(x) should work identical to
-        // Because install(x) followed by bind(x) should work identical to
-
-    }
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+// OnBundle .....
+// OnComponent
+// OnMixin
+// UsesExtension
+public @interface RequiresExtension {
+    Class<? extends Extension<?>> value();
 }

@@ -18,10 +18,9 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
-import app.packed.bundle.WiredBundle;
+import app.packed.bundle.AnyBundle;
+import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOperation;
-import app.packed.extension.AnyBundle;
-import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 
 /**
@@ -54,10 +53,20 @@ public interface ContainerConfiguration {
     Set<Class<? extends Extension<?>>> extensionTypes(); // Hmm, kan vi have hidden extensions???
 
     /**
+     * Returns the description of this container. Or null if the description has not been set.
+     *
+     * @return the description of this container. Or null if the description has not been set.
+     * @see #setDescription(String)
+     * @see Container#description()
+     */
+    @Nullable
+    String getDescription();
+
+    /**
      * Returns the name of the container or null if the name has not been set.
      *
      * @return the name of the container or null if the name has not been set
-     * @see #overrideName(String)
+     * @see #setName(String)
      */
     @Nullable
     String getName();
@@ -75,6 +84,17 @@ public interface ContainerConfiguration {
      *            the lookup object
      */
     void lookup(Lookup lookup);
+
+    /**
+     * Sets the description of this container.
+     *
+     * @param description
+     *            the description to set
+     * @return this configuration
+     * @see #getDescription()
+     * @see Container#description()
+     */
+    ContainerConfiguration setDescription(@Nullable String description);
 
     /**
      * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
@@ -113,10 +133,11 @@ public interface ContainerConfiguration {
      *            the child bundle
      * @param options
      *            optional wiring options
-     * @return
+     * @return a bundle link
      */
-    WiredBundle wire(AnyBundle child, WiringOperation... options);
+    BundleLink wire(AnyBundle child, WiringOperation... options);
 
+    Set<String> tags();
     // static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
     // options) {
     // requireNonNull(consumer, "configurator is null");

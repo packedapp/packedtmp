@@ -13,21 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bundle;
+package packed.internal.util;
 
 import java.util.ServiceLoader;
 
+import app.packed.bundle.Bundle;
 import app.packed.util.BaseSupport;
 
 /**
  *
  */
-public class BundleSupportLoader {
+public class BaseSupportLoader {
 
     public static void main(String[] args) {
-        for (BaseSupport bs : ServiceLoader.load(BaseSupport.class, BundleSupportLoader.class.getClassLoader())) {
+        for (BaseSupport bs : ServiceLoader.load(BaseSupport.class, BaseSupportLoader.class.getClassLoader())) {
             System.out.println(bs);
 
         }
     }
+}
+
+class DefaultBS extends BaseSupport {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        this.scanBundle(new Bundle() {
+
+            @Override
+            protected void configure() {}
+        });
+    }
+
 }

@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.bundle;
+package app.packed.bundle.x;
 
-import app.packed.bundle.Bundle;
-import app.packed.util.BaseSupport;
+import app.packed.bundle.ConfigureWiringOperation;
 
 /**
  *
  */
-public class DefaultBS extends BaseSupport {
+// Altsaa det er jo implementation
+public interface ServiceRebinder<T> {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        this.scanBundle(new Bundle() {
-
-            @Override
-            protected void configure() {}
-        });
+    default ConfigureWiringOperation as(T type) {
+        return null;
     }
 
+    static <T> ServiceRebinder<T> rebind(Class<T> type) {
+        return null;
+    }
 }

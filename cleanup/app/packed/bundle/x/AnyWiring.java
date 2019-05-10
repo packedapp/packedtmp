@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.runtime;
+package app.packed.bundle.x;
 
 import static java.util.Objects.requireNonNull;
 

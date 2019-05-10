@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.actor;
+package app.packed.bundle.x;
 
-import app.packed.inject.Injector;
+import java.nio.file.Path;
+
+import app.packed.bundle.Bundle;
+import app.packed.inject.Factory1;
 
 /**
  *
  */
-// Hmm hvad med injector????, kan vi injecte i services?? ja
-// BundleContext
-public interface BundleRuntime extends Injector {
+public class PathBundle extends Bundle {
 
-    // injecting Injector -> is the public exposed injector
+    Path p;
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        // buildWithBundle();
+        provide(new Factory1<PathBundle, Path>(e -> e.p) {});
+    }
 }

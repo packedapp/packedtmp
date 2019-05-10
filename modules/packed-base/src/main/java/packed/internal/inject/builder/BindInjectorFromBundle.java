@@ -41,18 +41,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
      * 
      */
     void processImport() {
-        // ContainerBuildContext bs = new ContainerBuildContext() {
-        // @SuppressWarnings("unchecked")
-        // @Override
-        // public <T> T with(Class<? super T> type) {
-        // if (type == InjectorBuilder.class) {
-        // return (T) newConfiguration;
-        // }
-        // return super.with(type);
-        // }
-        // };
         bundle.doConfigure(newConfiguration);
-        // BundleSupport.invoke().configureInjectorBundle(bundle, newConfiguration, true);
         processImport(newConfiguration.publicNodeList);
     }
 

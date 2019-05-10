@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.container;
 
 import app.packed.bundle.BundleLink;
 import app.packed.util.Nullable;
@@ -28,7 +28,21 @@ import packed.internal.inject.ServiceNode;
  * Subclasses should be final
  *
  */
+// Maybe rename to ContainerExtension
 public abstract class Extension<T extends Extension<T>> {
+
+    protected final void newLine() {
+        // checksConfigurable
+        // FreezesAnyNode before
+
+        // Checks that the bundle/configurator/... is still active
+        // Freezes any previous node for modifications....
+
+        // Which means that everything is nodes....
+
+        // Because bind(x) followed by install(x) should work identical to
+        // Because install(x) followed by bind(x) should work identical to
+    }
 
     /**
      * The configuration site of this object. The api needs to be public...

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,19 +21,15 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
 import app.packed.util.Nullable;
 
 /**
- *
+ * A generic bundle. Normally you would extend {@link Bundle}
  */
-// Bundle vs Configurator
-//// Hmmm, altsaa vi har Bundle, fordi det er den letteste maade at inkapsle ting...
-//// Maaske skal vi slet ikke supportere generiske configuratorer...
-//// Problemet er dog de protectede metoder...
-
 public abstract class AnyBundle {
 
-    /** The configuration */
+    /** The configuration. */
     private ContainerConfiguration configuration;
 
     /**
@@ -46,13 +42,38 @@ public abstract class AnyBundle {
     protected final ContainerConfiguration configuration() {
         ContainerConfiguration c = configuration;
         if (c == null) {
-            throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to call #configure() directly");
+            throw new IllegalStateException(
+                    "This method can only be called from within a bundles #configure() method. Maybe you tried to call #configure() directly");
         }
         return c;
     }
 
     /** Configures the bundle using the various inherited methods that are available. */
     protected abstract void configure();
+
+    /** Whether or not {@link #configure()} has been invoked. */
+    boolean isFrozen;
+
+    /**
+     * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
+     * users of extensions does try to configure the extension after it has been configured.
+     *
+     * <pre>{@code
+     * public ManagementBundle setJMXEnabled(boolean enabled) {
+     *     checkConfigurable(); //will throw IllegalStateException if configure() has already been called
+     *     this.jmxEnabled = enabled;
+     *     return this;
+     * }}
+     * </pre>
+     * 
+     * @throws IllegalStateException
+     *             if the {@link #configure()} method has already been invoked once for this extension instance
+     */
+    protected final void checkConfigurable() {
+        if (isFrozen) {
+            // throw new IllegalStateException("This bundle is no longer configurable");
+        }
+    }
 
     public final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;
@@ -61,6 +82,22 @@ public abstract class AnyBundle {
         } finally {
             configuration = null;
         }
+    }
+
+    /**
+     * Returns a feature of the specified type
+     * 
+     * @param <T>
+     *            the extension type
+     * @param featureType
+     *            the feature type
+     * @return an extension of the specified type
+     * @throws UnsupportedOperationException
+     *             if no features of the specified type is supported
+     */
+    // Skal alle virkelig have adgang....
+    protected final <T extends Extension<T>> T extendWith(Class<T> featureType) {
+        throw new UnsupportedOperationException();
     }
 
     protected final Set<Class<? extends Extension<?>>> extensionTypes() {
@@ -91,56 +128,24 @@ public abstract class AnyBundle {
         configuration().lookup(lookup);
     }
 
-    protected final void setName(@Nullable String name) {
-        configuration.setName(name);
-    }
-
-    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
-        return configuration.use(extensionType);
+    protected final void lookup(Lookup lookup, Object lookupController) {
+        // Ideen er at alle lookups skal godkendes at lookup controlleren...
+        // Controller/Manager/LookupAccessManager
+        // For module email, if you are paranoid.
+        // You can specify a LookupAccessManager where every lookup access.
+        // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
 
     // protected final ContainerLink wire(AnyBundle child, WiringOption... operations) {
     // return configuration().wire(child);
     // }
 
-    /** Configures the bundle using the various methods from the inherited class. */
-    // protected abstract void configure();
-
-    /**
-     * Returns a feature of the specified type
-     * 
-     * @param <T>
-     *            the extension type
-     * @param featureType
-     *            the feature type
-     * @return an extension of the specified type
-     * @throws UnsupportedOperationException
-     *             if no features of the specified type is supported
-     */
-    // Skal alle virkelig have adgang....
-    protected final <T extends Extension<T>> T extendWith(Class<T> featureType) {
-        throw new UnsupportedOperationException();
+    protected final void setName(@Nullable String name) {
+        configuration.setName(name);
     }
 
-    // /**
-    // * The lookup object passed to this method is never made available through the public api. It is only used internally.
-    // * Unless your private
-    // *
-    // * @param lookup
-    // * the lookup object
-    // * @see SimpleInjectorConfigurator#lookup(Lookup)
-    // */
-    // protected void lookup(Lookup lookup) {
-    // requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-    // // stuff
-    // }
-
-    protected void lookup(Lookup lookup, Object lookupController) {
-        // Ideen er at alle lookups skal godkendes at lookup controlleren...
-        // Controller/Manager/LookupAccessManager
-        // For module email, if you are paranoid.
-        // You can specify a LookupAccessManager where every lookup access.
-        // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
+    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
+        return configuration.use(extensionType);
     }
 
     // alternative is some kind of builder....

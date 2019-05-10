@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.bundle;
+package app.packed.bundle.x;
 
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Layer;
+import app.packed.bundle.WiringOperation;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 

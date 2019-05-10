@@ -17,8 +17,13 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.extension.Extension;
+import app.packed.container.ComponentServiceConfiguration;
+import app.packed.container.Extension;
+import app.packed.lifecycle.OnStart;
+import app.packed.util.Key;
 import app.packed.util.Qualifier;
+import app.packed.util.TypeLiteral;
+import packed.internal.container.ContainerBuilder;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**
@@ -31,6 +36,96 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     public InjectorExtension(InjectorBuilder b) {
         this.b = requireNonNull(b);
+    }
+
+    /**
+     * Adds the specified key to the list of optional services.
+     * 
+     * @param key
+     *            the key to add
+     */
+    public void addOptional(Key<?> key) {
+        b.services().addOptional(key);
+    }
+
+    /**
+     * Adds the specified key to the list of required services.
+     * 
+     * @param key
+     *            the key to add
+     */
+    public void addRequired(Key<?> key) {
+        b.services().addRequired(key);
+    }
+
+    public void autoRequire() {
+        b.serviceAutoRequire();
+    }
+
+    public <T> ServiceConfiguration<T> export(Class<T> key) {
+        return export(Key.of(requireNonNull(key, "key is null")));
+    }
+
+    /**
+     * Exposes an internal service outside of this bundle.
+     * 
+     * 
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class);}
+     * </pre>
+     * 
+     * You can also choose to expose a service under a different key then what it is known as internally in the
+     * <pre> {@code  
+     * bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service.class);}
+     * </pre>
+     * 
+     * @param <T>
+     *            the type of the exposed service
+     * @param key
+     *            the key of the internal service to expose
+     * @return a service configuration for the exposed service
+     * @see #export(Key)
+     */
+    public <T> ServiceConfiguration<T> export(Key<T> key) {
+        return b.export(key);
+    }
+
+    public <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
+        return b.export(configuration);
+    }
+
+    public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
+        return ((ContainerBuilder) b).installService(implementation);
+    }
+
+    /**
+     *
+     * <p>
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param factory
+     *            the factory used for creating the component instance
+     * @return the configuration of the component that was installed
+     */
+    public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
+        return ((ContainerBuilder) b).installService(factory);
+    }
+
+    public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
+        return ((ContainerBuilder) b).installService(implementation);
+    }
+    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
+
+    public <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+        return provide(Factory.findInjectable(implementation));
+    }
+
+    public <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+        return b.provide(factory);
     }
 
     /**
@@ -51,7 +146,9 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return b.provide(instance);
     }
 
-    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
+    public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return provide(Factory.findInjectable(implementation));
+    }
 
     // Services are the default implementation of injection....
 

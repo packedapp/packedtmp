@@ -285,21 +285,7 @@ public interface Injector extends Taggable {
     static Injector of(Bundle bundle, OldWiringOperation... operations) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
-
-        // ContainerBuildContext bs = new ContainerBuildContext() {
-        // @SuppressWarnings("unchecked")
-        // @Override
-        // public <T> T with(Class<? super T> type) {
-        // if (type == InjectorBuilder.class) {
-        // return (T) builder;
-        // }
-        // return super.with(type);
-        // }
-        // };
         bundle.doConfigure(builder);
-        // bs.configure(bundle);
-
-        // BundleSupport.invoke().configureInjectorBundle(bundle, builder, true);
         return builder.build();
     }
 

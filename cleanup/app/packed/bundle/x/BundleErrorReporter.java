@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject2;
+package app.packed.bundle.x;
 
-import app.packed.bundle.ConfigureWiringOperation;
+import java.lang.invoke.MethodHandles;
+
+import app.packed.inject.Factory;
 
 /**
  *
  */
-// Altsaa det er jo implementation
-public interface ServiceRebinder<T> {
+public class BundleErrorReporter {
 
-    default ConfigureWiringOperation as(T type) {
-        return null;
-    }
+    public static final Factory<BundleErrorReporter> FACTORY = Factory.findInjectable(BundleErrorReporter.class).withLookup(MethodHandles.lookup());
 
-    static <T> ServiceRebinder<T> rebind(Class<T> type) {
-        return null;
+    // BundleErrorReporter(InjectorBundle ib) {
+    //
+    // }
+
+    public void reportErrror(String error) {
+
     }
 }

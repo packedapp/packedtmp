@@ -19,9 +19,8 @@ import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import app.packed.bundle.WiredBundle;
+import app.packed.container.Extension;
 import app.packed.contract.Contract;
-import app.packed.extension.Extension;
 
 /**
  *
@@ -93,9 +92,10 @@ public final class AllHooksExtension extends Extension<AllHooksExtension> {
         // wireFilterIncoming
         // AllHooksExtension.Wiring wiring(Wiring);
         // withWiring(myNewWiring).filterStuff
-        public <T extends Hook> AllHooksExtension filterIncoming(WiredBundle wiring, Class<T> hookType, Predicate<? super T> filter) {
-            throw new UnsupportedOperationException();
-        }
+        // public <T extends Hook> AllHooksExtension filterIncoming(WiredBundle wiring, Class<T> hookType, Predicate<? super T>
+        // filter) {
+        // throw new UnsupportedOperationException();
+        // }
 
         /**
          * @param <T>

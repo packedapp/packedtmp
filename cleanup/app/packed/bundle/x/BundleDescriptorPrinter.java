@@ -13,24 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.extension;
+package app.packed.bundle.x;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.PrintStream;
 
 /**
  *
  */
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-// OnBundle .....
-// OnComponent
-// OnMixin
-// UsesExtension
-public @interface RequiresExtension {
-    Class<? extends Extension<?>> value();
+// Hvorfor en specific printer???
+class BundleDescriptorPrinter {
+
+    BundleDescriptorPrinter freeze() {
+        return this;
+    }
+
+    public void print() {
+        print(System.out);
+    }
+
+    public void print(PrintStream ps) {
+
+    }
+
+    static BundleDescriptorPrinter copyOf(BundleDescriptorPrinter printer) {
+        return printer;
+    }
 }

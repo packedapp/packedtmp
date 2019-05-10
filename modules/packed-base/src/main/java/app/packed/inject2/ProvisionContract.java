@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.extension.AnyBundle;
+import app.packed.bundle.AnyBundle;
 import app.packed.util.Key;
 
 /**

@@ -33,6 +33,7 @@ import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.box.Box;
+import packed.internal.box.BoxServices;
 import packed.internal.box.BoxType;
 import packed.internal.bundle.BundleSupport;
 import packed.internal.classscan.ServiceClassDescriptor;
@@ -42,7 +43,6 @@ import packed.internal.inject.InjectSupport;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokable.InternalFunction;
-import packed.internal.runtime.AbstractContainerConfiguration;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and
@@ -216,12 +216,8 @@ public class InjectorBuilder extends AbstractContainerConfiguration {
         autoRequires = true;
     }
 
-    public final void serviceOptional(Key<?> key) {
-        box.services().addOptional(key);
-    }
-
-    public final void serviceRequire(Key<?> key) {
-        box.services().addRequired(key);
+    public final BoxServices services() {
+        return box.services();
     }
 
     /** {@inheritDoc} */

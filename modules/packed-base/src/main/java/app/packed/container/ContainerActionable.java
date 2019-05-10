@@ -20,8 +20,9 @@ import java.util.function.Consumer;
 /**
  * Actions that can be performed at particular times in the
  */
-//Det er noget a.la. naar man har naaet et syncpoint....
-public interface ContainerActionable { //extends SyncPoint???????
+// Det er noget a.la. naar man har naaet et syncpoint....
+// Hoere maaske mere til i Lifecycle...
+public interface ContainerActionable { // extends SyncPoint???????
     // Lidt som syncpoint.....MEget som syncpoitn
 
     // execute/run/shit
@@ -33,10 +34,10 @@ public interface ContainerActionable { //extends SyncPoint???????
     // Kan være på baggrund af flere syncpoints. Så vi skal have noget navngivning for det.
     // Og maaden at sige, hvis 3/4 lykkedes saa xyz. ellers P
 
-    default void run(Runnable runnable) {}
-
     // Checks that the service will exist before hand
     default <T> void run(Class<T> serviceType, Consumer<T> consumer) {}
+
+    default void run(Runnable runnable) {}
 
     // Something takes a container...
 }

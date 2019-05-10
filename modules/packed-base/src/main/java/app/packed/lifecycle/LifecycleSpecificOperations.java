@@ -20,14 +20,14 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import app.packed.app.App;
 import app.packed.container.Component;
-import app.packed.container.Container;
 
 /**
  * A lifecycle expansion interface. The main purpose of this interface is to avoid cluttering the interface of entities
- * such as {@link Container} and {@link Component} with a large number of rarely used lifecycle methods. Instead of
- * placing the methods directly on the Container or Component interface. A method can be used to get a hold of an
- * instance of this interface.
+ * such as {@link App} and {@link Component} with a large number of rarely used lifecycle methods. Instead of placing
+ * the methods directly on the Container or Component interface. A method can be used to get a hold of an instance of
+ * this interface.
  *
  * Instead an instance of this inte
  *

@@ -18,7 +18,7 @@ package app.packed.bundle.x;
 import java.lang.invoke.MethodHandles;
 import java.util.IdentityHashMap;
 
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 
 /**
  *

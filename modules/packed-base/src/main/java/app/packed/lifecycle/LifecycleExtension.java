@@ -16,7 +16,7 @@
 package app.packed.lifecycle;
 
 import app.packed.bundle.BundleLink;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.util.Nullable;
 
 /**

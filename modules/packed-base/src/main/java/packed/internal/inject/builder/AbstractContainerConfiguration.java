@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.runtime;
+package packed.internal.inject.builder;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,13 +24,13 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.bundle.AnyBundle;
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiredBundle;
+import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOperation;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
-import app.packed.extension.AnyBundle;
-import app.packed.extension.Extension;
+import app.packed.container.Extension;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -52,7 +52,7 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     public final Bundle bundle;
 
     /** All outgoing links of this container, in order of installation order. */
-    final Map<String, WiredBundle> containers = new HashMap<>();
+    final Map<String, BundleLink> containers = new HashMap<>();
 
     /** All extensions that have been installed for the container. */
     public final IdentityHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new IdentityHashMap<>();
@@ -103,12 +103,9 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends Extension<T>> T use(Class<T> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        Extension<?> e = extensions.get(extensionType);
-        requireNonNull(e, extensionType + "");
-        return (T) e;
+    public AbstractContainerConfiguration setDescription(String description) {
+        super.setDescription(description);
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -119,7 +116,16 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     }
 
     @Override
-    public final WiredBundle wire(AnyBundle child, WiringOperation... options) {
+    @SuppressWarnings("unchecked")
+    public <T extends Extension<T>> T use(Class<T> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        Extension<?> e = extensions.get(extensionType);
+        requireNonNull(e, extensionType + "");
+        return (T) e;
+    }
+
+    @Override
+    public final BundleLink wire(AnyBundle child, WiringOperation... options) {
         throw new UnsupportedOperationException();
     }
 }

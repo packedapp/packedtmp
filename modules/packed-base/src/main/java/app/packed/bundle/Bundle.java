@@ -17,7 +17,6 @@ package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.app.App;
@@ -26,7 +25,6 @@ import app.packed.container.ComponentInstaller;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.contract.Contract;
-import app.packed.extension.AnyBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
@@ -38,8 +36,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.container.ContainerBuilder;
-import packed.internal.inject.builder.InjectorBuilder;
 
 /**
  * Bundles provide a simply way to package components and build modular application. This is useful, for example, for:
@@ -60,7 +56,7 @@ import packed.internal.inject.builder.InjectorBuilder;
 
 // Descriptor does not freeze, Injector+Container freezes
 
-// explicitServiceRequirements(); <- You can put it in an environment to force it
+// explicitServiceRequirements(); <- You can put it in an environment to force it. No it would break encapsulation
 
 // AnyBundle...
 // Bundle + BaseBundle, or
@@ -68,97 +64,15 @@ import packed.internal.inject.builder.InjectorBuilder;
 
 // We never return, for example, Bundle or AnyBundle to allow for method chaining.
 // As this would
+
+// protected final Restrictions restrictions = null;
+
+// protected void buildWithBundle() {
+// // Insta
+// // NativeImageWriter
+// }
+
 public abstract class Bundle extends AnyBundle {
-
-    /** Whether or not {@link #configure()} has been invoked. */
-    boolean isFrozen;
-
-    // protected final Restrictions restrictions = null;
-
-    protected void buildWithBundle() {
-        // Insta
-        // NativeImageWriter
-    }
-
-    /**
-     * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
-     * users of extensions does try to configure the extension after it has been configured.
-     *
-     * <pre>{@code
-     * public ManagementBundle setJMXEnabled(boolean enabled) {
-     *     checkConfigurable(); //will throw IllegalStateException if configure() has already been called
-     *     this.jmxEnabled = enabled;
-     *     return this;
-     * }}
-     * </pre>
-     * 
-     * @throws IllegalStateException
-     *             if the {@link #configure()} method has already been invoked once for this extension instance
-     */
-    protected final void checkConfigurable() {
-        if (isFrozen) {
-            // throw new IllegalStateException("This bundle is no longer configurable");
-        }
-    }
-
-    /** Configures the bundle using the various methods from the inherited class. */
-    @Override
-    protected abstract void configure();
-
-    /**
-     * @param builder
-     *            the injector configuration to delagate to
-     * @param freeze
-     * @apiNote we take an AbstractBundleConfigurator instead of a BundleConfigurator to make sure we never parse an
-     *          external configurator by accident. And we some let the bundle implementation invoke
-     *          {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
-     *          object escape.
-     */
-    final void configure(InjectorBuilder builder, boolean freeze) {
-
-        // Maybe we can do some access checkes on the Configurator. To allow for testing....
-        //
-        // if (this.injectorBuilder != null) {
-        // throw new IllegalStateException();
-        // } else if (isFrozen && freeze) {
-        // // vi skal have love til f.eks. at koere en gang descriptor af, saa det er kun hvis vi skal freeze den ogsaa doer.
-        // throw new IllegalStateException("Cannot configure this bundle, after it has been been frozen");
-        // }
-        // this.injectorBuilder = requireNonNull(builder);
-        // try {
-        // configure();
-        // } finally {
-        // this.injectorBuilder = null;
-        // if (freeze) {
-        // isFrozen = true;
-        // }
-        // }
-        throw new UnsupportedOperationException();
-    }
-
-    ContainerBuilder containerBuilderX() {
-        return (ContainerBuilder) configuration();
-        // if (injectorBuilder == null) {
-        // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
-        // call Bundle.configure directly");
-        // }
-        // return injectorBuilder;
-    }
-
-    // /**
-    // * Returns the bundle support object which
-    // *
-    // * @return the bundle support object
-    // */
-    // protected final ContainerBuildContext context() {
-    // // Vi laver en bundle nyt per configuration.....
-    // ContainerBuildContext s = context;
-    // if (s == null) {
-    // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
-    // call Bundle.configure directly");
-    // }
-    // return s;
-    // }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -190,7 +104,7 @@ public abstract class Bundle extends AnyBundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Class<T> key) {
-        return export(Key.of(requireNonNull(key, "key is null")));
+        return injector().export(key);
     }
 
     /**
@@ -216,11 +130,11 @@ public abstract class Bundle extends AnyBundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Key<T> key) {
-        return injectorBuilder().export(key);
+        return injector().export(key);
     }
 
     protected final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        return injectorBuilder().export(configuration);
+        return injector().export(configuration);
     }
 
     protected final void exportHooks(Class<?>... hookTypes) {
@@ -232,26 +146,18 @@ public abstract class Bundle extends AnyBundle {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns an instance of the injector extension, installing it if it has not already been installed.
+     * 
+     * @return an instance of the injector extension
+     */
     protected final InjectorExtension injector() {
-        // Maybe only support installation of components....
-        // export would be nice...
-        // export(Exportable...)
-        return injectorBuilder().use(InjectorExtension.class);
+        return use(InjectorExtension.class);
     }
 
-    InjectorBuilder injectorBuilder() {
-        return (InjectorBuilder) configuration();
-        // return context().with(InjectorBuilder.class);
-        // if (injectorBuilder == null) {
-        // throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
-        // call Bundle.configure directly");
-        // }
-        // return injectorBuilder;
-    }
-
-    protected ComponentServiceConfiguration<?> installBundle() {
-        return containerBuilderX().installService(this);
-    }
+    // protected ComponentServiceConfiguration<?> installBundle() {
+    // return containerBuilderX().installService(this);
+    // }
 
     protected final ComponentInstaller installer() {
         // Its here because bundle cannot implement ComponentInstaller
@@ -270,7 +176,7 @@ public abstract class Bundle extends AnyBundle {
      * @return a component configuration that can be use to configure the component in greater detail
      */
     protected final <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
-        return containerBuilderX().installService(implementation);
+        return injector().installService(implementation);
     }
 
     /**
@@ -285,34 +191,11 @@ public abstract class Bundle extends AnyBundle {
      * @return the configuration of the component that was installed
      */
     protected final <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
-        return containerBuilderX().installService(factory);
+        return injector().installService(factory);
     }
 
     protected final <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
-        return containerBuilderX().installService(implementation);
-    }
-
-    // /**
-    // * The lookup object passed to this method is never made available through the public api. It is only used internally.
-    // * Unless your private
-    // *
-    // * @param lookup
-    // * the lookup object
-    // * @see SimpleInjectorConfigurator#lookup(Lookup)
-    // */
-    // @Override
-    // protected final void lookup(Lookup lookup) {
-    // requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-    // context().lookup(lookup);
-    // }
-
-    @Override
-    protected final void lookup(Lookup lookup, Object lookupController) {
-        // Ideen er at alle lookups skal godkendes at lookup controlleren...
-        // Controller/Manager/LookupAccessManager
-        // For module email, if you are paranoid.
-        // You can specify a LookupAccessManager where every lookup access.
-        // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
+        return injector().installService(implementation);
     }
 
     protected final Layer mainLayer(Layer... predecessors) {
@@ -349,13 +232,6 @@ public abstract class Bundle extends AnyBundle {
     }
 
     /**
-     * Opens the bundle for modification later on
-     */
-    protected final void open() {
-        // Nope....
-    }
-
-    /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
      * find a valid constructor or method to instantiate the service instance once the injector is created.
      * <p>
@@ -371,11 +247,11 @@ public abstract class Bundle extends AnyBundle {
      */
     // Rename to Provide@
     protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return injectorBuilder().provide(Factory.findInjectable(implementation));
+        return injector().provide(implementation);
     }
 
     protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return injectorBuilder().provide(factory);
+        return injector().provide(factory);
     }
 
     protected final <T> ServiceConfiguration<T> provide(T instance) {
@@ -383,7 +259,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injectorBuilder().provide(Factory.findInjectable(implementation));
+        return injector().provide(Factory.findInjectable(implementation));
     }
 
     // // /** The internal configuration to delegate to */
@@ -393,15 +269,15 @@ public abstract class Bundle extends AnyBundle {
     // // private InjectorBuilder injectorBuilder;
 
     protected void requireService(Class<?> key) {
-        injectorBuilder().serviceRequire(Key.of(key));
+        injector().addRequired(Key.of(key));
     }
 
     protected void requireService(Key<?> key) {
-        injectorBuilder().serviceRequire(key);
+        injector().addRequired(key);
     }
 
     protected final void serviceAutoRequire() {
-        injectorBuilder().serviceAutoRequire();
+        injector().autoRequire();
     }
 
     /**
@@ -413,11 +289,11 @@ public abstract class Bundle extends AnyBundle {
      * @see Injector#description()
      */
     protected final void setDescription(@Nullable String description) {
-        injectorBuilder().setDescription(description);
+        configuration().setDescription(description);
     }
 
     protected final Set<String> tags() {
-        return injectorBuilder().tags();
+        return configuration().tags();
     }
 
     // /**
@@ -438,12 +314,10 @@ public abstract class Bundle extends AnyBundle {
     // return containerBuilderX().install(instance);
     // }
 
-    protected final WiredBundle wire(Bundle child) {
-        return new WiredBundle(this, requireNonNull(child, "child is null"));
-    }
-
-    protected final void wire(Bundle child, WiringOperation... operations) {
-        containerBuilderX().wireContainer(child, operations);
+    protected final BundleLink wire(Bundle child) {
+        requireNonNull(child, "child is null");
+        throw new UnsupportedOperationException();
+        // return new WiredBundle(this, );
     }
 
     // or have mainLayer() and then
@@ -485,12 +359,12 @@ public abstract class Bundle extends AnyBundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    static protected void run(Bundle bundle, WiringOperation... operations) {
-        App.run(bundle, operations);
-    }
-
     static protected void run(Bundle bundle, String[] args, WiringOperation... operations) {
         run(bundle, AppWiringOptions.main(args).andThen(operations));
+    }
+
+    static protected void run(Bundle bundle, WiringOperation... operations) {
+        App.run(bundle, operations);
     }
 }
 
@@ -498,6 +372,50 @@ public abstract class Bundle extends AnyBundle {
 // void service(Class<?> clazz);
 // }
 
+/// **
+// * @param builder
+// * the injector configuration to delagate to
+// * @param freeze
+// * @apiNote we take an AbstractBundleConfigurator instead of a BundleConfigurator to make sure we never parse an
+// * external configurator by accident. And we some let the bundle implementation invoke
+// * {@link #lookup(java.lang.invoke.MethodHandles.Lookup)} on a random interface. Thereby letting the Lookup
+// * object escape.
+// */
+// final void configure(InjectorBuilder builder, boolean freeze) {
+//
+// // Maybe we can do some access checkes on the Configurator. To allow for testing....
+// //
+// // if (this.injectorBuilder != null) {
+// // throw new IllegalStateException();
+// // } else if (isFrozen && freeze) {
+// // // vi skal have love til f.eks. at koere en gang descriptor af, saa det er kun hvis vi skal freeze den ogsaa doer.
+// // throw new IllegalStateException("Cannot configure this bundle, after it has been been frozen");
+// // }
+// // this.injectorBuilder = requireNonNull(builder);
+// // try {
+// // configure();
+// // } finally {
+// // this.injectorBuilder = null;
+// // if (freeze) {
+// // isFrozen = true;
+// // }
+// // }
+// throw new UnsupportedOperationException();
+// }
+//// /**
+//// * Returns the bundle support object which
+//// *
+//// * @return the bundle support object
+//// */
+//// protected final ContainerBuildContext context() {
+//// // Vi laver en bundle nyt per configuration.....
+//// ContainerBuildContext s = context;
+//// if (s == null) {
+//// throw new IllegalStateException("This method can only be called from within Bundle.configure(). Maybe you tried to
+//// call Bundle.configure directly");
+//// }
+//// return s;
+//// }
 /**
  * A injector bundle provides a simple way to package services into a resuable container nice little thingy.
  * 
@@ -537,7 +455,13 @@ public abstract class Bundle extends AnyBundle {
  * <p>
  * Bundles are strictly a configuration and initialization time concept. Bundles are not available
  */
-
+//
+/// **
+// * Opens the bundle for modification later on
+// */
+// protected final void open() {
+// // Nope....
+// }
 // ID256 BundleHash????? API wise. SpecHash..
 
 // protected void lookup(Lookup lookup, LookupAccessController accessController) {}

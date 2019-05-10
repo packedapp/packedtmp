@@ -15,7 +15,7 @@
  */
 package app.packed.bundle.x;
 
-import app.packed.extension.AnyBundle;
+import app.packed.bundle.AnyBundle;
 
 /**
  *
@@ -30,7 +30,7 @@ import app.packed.extension.AnyBundle;
 /// Saa syntes jeg maaske ikke den er det vaerd
 
 // Efter vi har faaet extensions er det jo reelt set kun fordi vi vil returnere noget andet end Bundle...
-// Maaske bare ikke lave den final..... Hej... den er jo ikke direkte paa bundle
+// Maaske bare ikke lave den final..... HejHej... den er jo ikke direkte paa Bundle, men via BundleDescriptor
 public abstract class AbstractBundle extends AnyBundle {
 
 }
