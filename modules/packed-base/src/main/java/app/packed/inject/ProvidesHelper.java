@@ -78,7 +78,7 @@ public interface ProvidesHelper extends DependencyDescriptor {
 
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
-     * {@link Injector#with(Class)}.
+     * {@link Injector#use(Class)}.
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
@@ -107,7 +107,7 @@ public interface ProvidesHelper extends DependencyDescriptor {
     /**
      * Returns a new injection site for the specified injector and key.
      * <p>
-     * This method is used to create injection site for methods such as {@link Injector#with(Key)}.
+     * This method is used to create injection site for methods such as {@link Injector#use(Key)}.
      * 
      * @param injector
      *            the injector from where injection is requested
@@ -122,7 +122,7 @@ public interface ProvidesHelper extends DependencyDescriptor {
     /**
      * Returns a new injection site for the specified injector, key and component.
      * <p>
-     * This method is used to create injection site for methods such as {@link Injector#with(Key)} on
+     * This method is used to create injection site for methods such as {@link Injector#use(Key)} on
      * {@link Component#injector() component injectors}.
      * 
      * @param injector

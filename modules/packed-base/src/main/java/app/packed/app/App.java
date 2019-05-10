@@ -99,7 +99,7 @@ public interface App extends Injector, AutoCloseable {
     /**
      * Initiates an asynchronously startup of the container. Normally, there is no need to call this methods since most
      * methods on the container will lazily start the container whenever it is needed. For example, invoking
-     * {@link #with(Class)} will automatically start the container if it has not already been started by another action.
+     * {@link #use(Class)} will automatically start the container if it has not already been started by another action.
      * <p>
      * If the container is in the process of being initialized when invoking this method, for example, from a method
      * annotated with {@link OnInitialize}. The container will automatically be started immediately after it have been

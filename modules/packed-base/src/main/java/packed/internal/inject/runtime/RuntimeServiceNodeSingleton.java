@@ -17,8 +17,8 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvidesHelper;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidesHelper;
 import packed.internal.inject.Provider;
 import packed.internal.inject.builder.ServiceBuildNode;
 
@@ -44,8 +44,6 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
      *            the node to create this node from
      * @param instance
      *            the singleton instance
-     * @param instantionMode
-     *            the binding mode of this node
      */
     public RuntimeServiceNodeSingleton(ServiceBuildNode<T> buildNode, T instance) {
         super(buildNode);

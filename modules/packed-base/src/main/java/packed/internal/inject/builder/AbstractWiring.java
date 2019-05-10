@@ -22,11 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
@@ -38,9 +36,7 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
 
 /**
- * An abstract class for the injector bind methods {@link SimpleInjectorConfigurator#wireInjector(Class, OldWiringOperation...)},
- * {@link SimpleInjectorConfigurator#wireInjector(Bundle, OldWiringOperation...)}, and
- * {@link SimpleInjectorConfigurator#wireInjector(Injector, UpstreamWiringOperation...)}.
+ * An abstract class for the injector bind methods
  */
 abstract class AbstractWiring {
 

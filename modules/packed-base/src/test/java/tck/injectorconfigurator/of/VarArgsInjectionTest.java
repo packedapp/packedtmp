@@ -50,7 +50,7 @@ public class VarArgsInjectionTest {
             c.provide(VarArgsConstructor.class);
             c.provide(array);
         });
-        assertThat(i.with(String[].class)).isSameAs(array);
+        assertThat(i.use(String[].class)).isSameAs(array);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class VarArgsInjectionTest {
             c.provide(ArrayConstructor.class);
             c.provide(array);
         });
-        assertThat(i.with(String[].class)).isSameAs(array);
+        assertThat(i.use(String[].class)).isSameAs(array);
     }
 
     public static class ArrayConstructor {

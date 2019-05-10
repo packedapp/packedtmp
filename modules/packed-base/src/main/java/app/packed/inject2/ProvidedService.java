@@ -35,7 +35,8 @@ import app.packed.config.ConfigSite;
 
 final class ProvidedService<T> {
 
-    ProvidedService() {}
+    ProvidedService() {
+    }
     // Ideen er vi kan trace hvor en service kommer fra....
     // Den er final, package protected, så man ikke kan fake det....
 
@@ -57,7 +58,7 @@ final class ProvidedService<T> {
     /**
      * Returns the module that provides the service.
      * 
-     * @return
+     * @return stuff
      */
     public Module sourceModule() {
         // Hmm, vi kan jo ikke f.eks. give Source app'en med.

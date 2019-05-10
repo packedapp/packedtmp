@@ -66,22 +66,22 @@ public class FieldInstanceTest {
             c.provide(new AtomicBoolean(false));
             c.provide(SingletonField.class).lazy();
         });
-        assertThat(i.with(AtomicBoolean.class)).isTrue();
-        SingletonField f = i.with(SingletonField.class);
-        assertThat(i.with(Short.class)).isEqualTo((short) 1);
+        assertThat(i.use(AtomicBoolean.class)).isTrue();
+        SingletonField f = i.use(SingletonField.class);
+        assertThat(i.use(Short.class)).isEqualTo((short) 1);
         f.s = 2;
-        assertThat(i.with(Short.class)).isEqualTo((short) 1);
+        assertThat(i.use(Short.class)).isEqualTo((short) 1);
 
         // Lazy
         i = of(c -> {
             c.provide(new AtomicBoolean(false));
             c.provide(LazyField.class).lazy();
         });
-        assertThat(i.with(AtomicBoolean.class)).isFalse();
-        assertThat(i.with(Short.class)).isEqualTo((short) 1);
-        assertThat(i.with(AtomicBoolean.class)).isTrue();
-        i.with(LazyField.class).s = 2;
-        assertThat(i.with(Short.class)).isEqualTo((short) 1);
+        assertThat(i.use(AtomicBoolean.class)).isFalse();
+        assertThat(i.use(Short.class)).isEqualTo((short) 1);
+        assertThat(i.use(AtomicBoolean.class)).isTrue();
+        i.use(LazyField.class).s = 2;
+        assertThat(i.use(Short.class)).isEqualTo((short) 1);
         // InstanceFieldsLazy.test(c -> c.bindLazy(Factory.findInjectable(InstanceFieldsLazy.class)));
         // InstanceFieldsLazy.test(c -> c.bindLazy(new TypeLiteral<InstanceFieldsLazy>() {}));
 
@@ -154,20 +154,20 @@ public class FieldInstanceTest {
 
         static void test(Consumer<? super SimpleInjectorConfigurator> configurator) {
             Injector i = of(c -> configurator.accept(c));
-            MixedFields f = i.with(MixedFields.class);
+            MixedFields f = i.use(MixedFields.class);
             f.l = 2L;
             f.s = 2;
             f.p = 2;
 
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(2);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(2);
             f.l = 3L;
             f.s = 3;
             f.p = 3;
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(3);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }
 

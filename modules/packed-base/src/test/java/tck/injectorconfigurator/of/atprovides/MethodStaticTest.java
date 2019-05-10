@@ -95,20 +95,20 @@ public class MethodStaticTest {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
-            assertThat(i.with(MixedMethodsInstantiable.class)).isNotNull();
+            assertThat(i.use(MixedMethodsInstantiable.class)).isNotNull();
             L = 2L;
             S = 2;
             P = 2;
 
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(2);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(2);
             L = 3L;
             S = 3;
             P = 3;
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(3);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }
 
@@ -156,15 +156,15 @@ public class MethodStaticTest {
             S = 2;
             P = 2;
 
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(2);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(2);
             L = 3L;
             S = 3;
             P = 3;
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(3);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }
 }

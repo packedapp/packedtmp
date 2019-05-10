@@ -45,8 +45,7 @@ import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokable.InternalFunction;
 
 /**
- * A builder of {@link Injector injectors}. Is both used via {@link InjectorBundle} and
- * {@link SimpleInjectorConfigurator}.
+ * A builder of {@link Injector injectors}. Is both used via {@link SimpleInjectorConfigurator}.
  */
 public class InjectorBuilder extends AbstractContainerConfiguration {
 
@@ -183,7 +182,6 @@ public class InjectorBuilder extends AbstractContainerConfiguration {
         return bindNode(node).as((Class) instance.getClass());
     }
 
-    /** {@inheritDoc} */
     public void registerStatics(Class<?> staticsHolder) {
         throw new UnsupportedOperationException();
     }
@@ -216,11 +214,10 @@ public class InjectorBuilder extends AbstractContainerConfiguration {
         autoRequires = true;
     }
 
-    public final BoxServices services() {
+    public BoxServices services() {
         return box.services();
     }
 
-    /** {@inheritDoc} */
     public void wireInjector(Bundle bundle, OldWiringOperation... stages) {
         requireNonNull(bundle, "bundle is null");
         List<OldWiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
@@ -235,7 +232,6 @@ public class InjectorBuilder extends AbstractContainerConfiguration {
         injectorBundleBindings.add(is);
     }
 
-    /** {@inheritDoc} */
     public final void wireInjector(Injector injector, OldWiringOperation... operations) {
         requireNonNull(injector, "injector is null");
         List<OldWiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);

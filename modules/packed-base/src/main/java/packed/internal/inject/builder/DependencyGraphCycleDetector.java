@@ -35,7 +35,7 @@ final class DependencyGraphCycleDetector {
      *            the stack of locally visited dependencies so far
      * @param node
      *            the node to visit
-     * @return
+     * @return stuff
      * @throws InjectionException
      *             if there is a cycle in the graph
      */

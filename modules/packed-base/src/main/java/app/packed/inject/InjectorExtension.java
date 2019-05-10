@@ -29,7 +29,6 @@ import packed.internal.inject.builder.InjectorBuilder;
 /**
  *
  */
-
 public final class InjectorExtension extends Extension<InjectorExtension> {
 
     final InjectorBuilder b;
@@ -45,6 +44,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            the key to add
      */
     public void addOptional(Key<?> key) {
+        requireNonNull(key, "key is null");
+        checkConfigurable();
         b.services().addOptional(key);
     }
 
@@ -55,6 +56,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            the key to add
      */
     public void addRequired(Key<?> key) {
+        requireNonNull(key, "key is null");
+        checkConfigurable();
         b.services().addRequired(key);
     }
 
@@ -63,20 +66,24 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
-        return export(Key.of(requireNonNull(key, "key is null")));
+        requireNonNull(key, "key is null");
+        return export(Key.of(key));
     }
 
     /**
      * Exposes an internal service outside of this bundle.
      * 
      * 
-     * <pre> {@code  
+     * <pre>
+     *  {@code  
      * bind(ServiceImpl.class);
      * expose(ServiceImpl.class);}
      * </pre>
      * 
      * You can also choose to expose a service under a different key then what it is known as internally in the
-     * <pre> {@code  
+     * 
+     * <pre>
+     *  {@code  
      * bind(ServiceImpl.class);
      * expose(ServiceImpl.class).as(Service.class);}
      * </pre>

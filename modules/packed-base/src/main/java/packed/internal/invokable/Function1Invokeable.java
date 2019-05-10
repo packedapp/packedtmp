@@ -31,10 +31,6 @@ public class Function1Invokeable<T, R> extends InternalFunction<R> {
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    /**
-     * @param supplier
-     * @param functionalSignature
-     */
     public Function1Invokeable(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
         super(type);
         this.function = requireNonNull(function, "function is null");

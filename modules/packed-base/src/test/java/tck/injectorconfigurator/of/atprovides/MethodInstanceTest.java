@@ -126,20 +126,20 @@ public class MethodInstanceTest {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
-            MixedMethods f = i.with(MixedMethods.class);
+            MixedMethods f = i.use(MixedMethods.class);
             f.l = 2L;
             f.s = 2;
             f.p = 2;
 
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(2);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(2);
             f.l = 3L;
             f.s = 3;
             f.p = 3;
-            assertThat(i.with(Short.class)).isEqualTo((short) 1);
-            assertThat(i.with(Long.class)).isEqualTo(2L);
-            assertThat(i.with(Integer.class)).isEqualTo(3);
+            assertThat(i.use(Short.class)).isEqualTo((short) 1);
+            assertThat(i.use(Long.class)).isEqualTo(2L);
+            assertThat(i.use(Integer.class)).isEqualTo(3);
         }
     }
 

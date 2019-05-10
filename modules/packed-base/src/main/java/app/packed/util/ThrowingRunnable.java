@@ -42,9 +42,9 @@ class D {
 class E {
 
     public static void main(String[] args) {
-        D.main(a -> a.with(List.class).clear());
+        D.main(a -> a.use(List.class).clear());
 
-        int size = D.mainTask(a -> a.with(List.class).size());
+        int size = D.mainTask(a -> a.use(List.class).size());
 
         System.out.println(size);
     }

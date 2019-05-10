@@ -36,8 +36,8 @@ public class Example {
             e.wireInjector(x1);
         });
 
-        System.out.println(i.with(String.class));
-        System.out.println(i.with(Example.class));
-        System.out.println(i.with(Integer.class));
+        System.out.println(i.use(String.class));
+        System.out.println(i.use(Example.class));
+        System.out.println(i.use(Integer.class));
     }
 }

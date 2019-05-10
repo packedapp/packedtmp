@@ -4,7 +4,6 @@ module app.packed.base {
     exports app.packed.config;
     exports app.packed.container;
     exports app.packed.contract;
-    exports app.packed.extension;
     exports app.packed.hook;
     exports app.packed.inject;
     exports app.packed.lifecycle;
@@ -14,6 +13,7 @@ module app.packed.base {
     exports packed.internal.inject to app.packed.base.devtools;
     exports packed.internal.inject.builder to app.packed.base.devtools;
     // exports packed.internal.invokers to app.packed.base.devtools;
+    exports packed.internal.box to app.packed.base.devtools;
     exports packed.internal.inject.runtime to app.packed.base.devtools;
     exports packed.internal.annotations to app.packed.base.devtools;
     exports packed.internal.classscan to app.packed.base.devtools;

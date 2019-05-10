@@ -41,21 +41,21 @@ public class InjectorWithTest {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        assertThat(i.with(A.class)).isInstanceOf(A.class);
-        assertThat(i.with(new Key<A>() {})).isInstanceOf(A.class);
-        assertThat(i.with(new Key<A>() {})).isSameAs(i.get(A.class).get());
+        assertThat(i.use(A.class)).isInstanceOf(A.class);
+        assertThat(i.use(new Key<A>() {})).isInstanceOf(A.class);
+        assertThat(i.use(new Key<A>() {})).isSameAs(i.get(A.class).get());
 
-        assertThat(i.with(new Key<@Left A>() {})).isInstanceOf(A.class);
+        assertThat(i.use(new Key<@Left A>() {})).isInstanceOf(A.class);
 
-        assertThat(i.with(new Key<A>() {})).isNotSameAs(i.with(new Key<@Left A>() {}));
+        assertThat(i.use(new Key<A>() {})).isNotSameAs(i.use(new Key<@Left A>() {}));
 
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> i.with(B.class));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> i.use(B.class));
         a.isExactlyInstanceOf(UnsupportedOperationException.class).hasNoCause();
 
-        a = assertThatThrownBy(() -> i.with(new Key<@Left B>() {}));
+        a = assertThatThrownBy(() -> i.use(new Key<@Left B>() {}));
         a.isExactlyInstanceOf(UnsupportedOperationException.class).hasNoCause();
 
-        a = assertThatThrownBy(() -> i.with(new Key<@Right A>() {}));
+        a = assertThatThrownBy(() -> i.use(new Key<@Right A>() {}));
         a.isExactlyInstanceOf(UnsupportedOperationException.class).hasNoCause();
     }
 }

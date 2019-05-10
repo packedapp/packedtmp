@@ -49,15 +49,15 @@ public class MembersProvideTest {
     }
 
     private static void validate(Injector i) {
-        assertThat(i.with(new Key<@StringQualifier("f_package") String>() {})).isEqualTo("package_f");
-        assertThat(i.with(new Key<@StringQualifier("f_private") String>() {})).isEqualTo("private_f");
-        assertThat(i.with(new Key<@StringQualifier("f_protected") String>() {})).isEqualTo("protected_f");
-        assertThat(i.with(new Key<@StringQualifier("f_public") String>() {})).isEqualTo("public_f");
+        assertThat(i.use(new Key<@StringQualifier("f_package") String>() {})).isEqualTo("package_f");
+        assertThat(i.use(new Key<@StringQualifier("f_private") String>() {})).isEqualTo("private_f");
+        assertThat(i.use(new Key<@StringQualifier("f_protected") String>() {})).isEqualTo("protected_f");
+        assertThat(i.use(new Key<@StringQualifier("f_public") String>() {})).isEqualTo("public_f");
 
-        assertThat(i.with(new Key<@StringQualifier("m_package") String>() {})).isEqualTo("package_m");
-        assertThat(i.with(new Key<@StringQualifier("m_public") String>() {})).isEqualTo("public_m");
-        assertThat(i.with(new Key<@StringQualifier("m_protected") String>() {})).isEqualTo("protected_m");
-        assertThat(i.with(new Key<@StringQualifier("m_private") String>() {})).isEqualTo("private_m");
+        assertThat(i.use(new Key<@StringQualifier("m_package") String>() {})).isEqualTo("package_m");
+        assertThat(i.use(new Key<@StringQualifier("m_public") String>() {})).isEqualTo("public_m");
+        assertThat(i.use(new Key<@StringQualifier("m_protected") String>() {})).isEqualTo("protected_m");
+        assertThat(i.use(new Key<@StringQualifier("m_private") String>() {})).isEqualTo("private_m");
     }
 
     static class VisibilityNonStatic {

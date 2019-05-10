@@ -74,7 +74,7 @@ public class InjectorBindBundleTest {
         Injector i = Injector.of(c -> {
             c.wireInjector(b);
         });
-        assertThat(i.with(String.class)).isEqualTo("X");
+        assertThat(i.use(String.class)).isEqualTo("X");
     }
 
     /** Tests that we can import no services. */
@@ -92,8 +92,8 @@ public class InjectorBindBundleTest {
         Injector i = Injector.of(c -> {
             c.wireInjector(b);
         });
-        assertThat(i.with(Long.class)).isEqualTo(1L);
-        assertThat(i.with(Long.class)).isEqualTo(2L);
-        assertThat(i.with(Long.class)).isEqualTo(3L);
+        assertThat(i.use(Long.class)).isEqualTo(1L);
+        assertThat(i.use(Long.class)).isEqualTo(2L);
+        assertThat(i.use(Long.class)).isEqualTo(3L);
     }
 }

@@ -33,7 +33,8 @@ import java.util.StringJoiner;
 public final class StringFormatter {
 
     /** Cannot instantiate. */
-    private StringFormatter() {}
+    private StringFormatter() {
+    }
 
     /**
      * Creates a short string representation of the specified type. Basically this method uses {@link Class#getSimpleName()}
@@ -105,8 +106,8 @@ public final class StringFormatter {
     /**
      * Formats the specified class.
      *
-     * @param clazz
-     *            the class to to format
+     * @param type
+     *            the type to format
      * @return the string representation of the specified class
      */
     public static String format(Type type) {

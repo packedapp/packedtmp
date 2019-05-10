@@ -26,10 +26,6 @@ import app.packed.util.TypeLiteral;
  */
 public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T>> {
 
-    /**
-     * @param actual
-     * @param selfType
-     */
     public FactoryAssert(Factory<T> actual) {
         super(actual, FactoryAssert.class);
     }

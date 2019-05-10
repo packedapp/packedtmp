@@ -114,8 +114,6 @@ public final class DescriptorFactory {
     /**
      * Returns a service descriptor for the specified implementation type.
      * 
-     * @param <T>
-     *            the type of the descriptor
      * @param implementation
      *            the implementation type to return a descriptor for
      * @return a service descriptor for the specified implementation type

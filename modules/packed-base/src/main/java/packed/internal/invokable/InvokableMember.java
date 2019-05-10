@@ -26,10 +26,6 @@ public abstract class InvokableMember<T> extends InternalFunction<T> {
     @Nullable
     final Object instance;
 
-    /**
-     * @param typeLiteralOrKey
-     * @param dependencies
-     */
     public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
         super(typeLiteralOrKey);
         this.instance = instance;

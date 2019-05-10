@@ -36,7 +36,7 @@ public class TetIt {
                 c.provide(Factory.ofInstance("foo"));
                 c.provide(NeedsString.class);
             });
-            requireNonNull(inj.with(NeedsString.class));
+            requireNonNull(inj.use(NeedsString.class));
         }
         System.out.println("Total time: " + (System.currentTimeMillis() - start) + " milliseconds");
     }

@@ -17,8 +17,6 @@ package app.packed.app;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Consumer;
-
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOperation;
 import app.packed.container.ComponentInstaller;
@@ -31,7 +29,7 @@ import app.packed.util.Nullable;
 
 /**
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
- * {@link Container#of(Consumer)}.
+ * 
  * <p>
  * This interface extends {@link SimpleInjectorConfigurator} with functionality for:
  * <ul>

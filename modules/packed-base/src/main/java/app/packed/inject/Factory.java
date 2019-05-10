@@ -224,7 +224,7 @@ public class Factory<T> {
      * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
      * annotations. This might differ from the.
      *
-     * @return
+     * @return stuff
      */
     // We should make this public...
     // InjectableType
@@ -508,7 +508,8 @@ class XFac2 {
      * This method will attempt to find exactly one static method annotated with inject. Either because there is only one
      * method that returns returnType or because there is one annotated with {@link Inject}
      *
-     * @param classContainingMethods
+     * @param implementation
+     *            the implementation
      * @param returnType
      *            the
      * @return a factory wrapping the st
@@ -549,7 +550,8 @@ class XFac2 {
      * a generic signature:
      *
      * <pre>
-     * Factory<List<String>> f = Factory.fromConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {});
+     * Factory<List<String>> f = Factory.fromConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+     * });
      * </pre>
      *
      * @param constructor

@@ -45,7 +45,8 @@ public class StringFormatterTest {
         formatClass0(InnerClass.class, BASE + "$" + InnerClass.class.getSimpleName());
 
         // Local Class
-        class LocalClass {}
+        class LocalClass {
+        }
         String localClassName = LocalClass.class.getName();
         formatClass0(LocalClass.class, localClassName);
 
@@ -62,7 +63,7 @@ public class StringFormatterTest {
         assertThat(format(b)).isEqualTo(expectedName + "[][]");
     }
 
-    /** Tests {@link TypeUtil#formatSimple(java.lang.reflect.Type)}. */
+    /** Tests {@link StringFormatter#formatSimple(java.lang.reflect.Type)}. */
     @Test
     public void toShortString() {
         npe(() -> StringFormatter.formatSimple((Type) null), "type");
@@ -72,15 +73,19 @@ public class StringFormatterTest {
         assertThat(StringFormatter.formatSimple(LIST_STRING_ARRAY_ARRAY)).isEqualTo("List<String>[][]");
         assertThat(StringFormatter.formatSimple(MAP_STRING_INTEGER)).isEqualTo("Map<String, Integer>");
 
-        class Y<T> {}
+        class Y<T> {
+        }
         assertThat(StringFormatter.formatSimple(Y.class.getTypeParameters()[0])).isEqualTo("T");
         assertThat(StringFormatter.formatSimple(LIST_WILDCARD)).isEqualTo("List<?>");
         assertThat(StringFormatter.formatSimple(MAP_EXTENDSSTRING_SUPERINTEGER)).isEqualTo("Map<? extends String, ? super Integer>");
 
-        assertThatThrownBy(() -> StringFormatter.formatSimple(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> StringFormatter.formatSimple(new Type() {
+        })).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
-    public static class StaticInnerClass {}
+    public static class StaticInnerClass {
+    }
 
-    public static class InnerClass {}
+    public static class InnerClass {
+    }
 }

@@ -56,8 +56,6 @@ public class ImportExportDescriptor {
     /**
      * Returns a service class descriptor for the specified lookup and type
      * 
-     * @param <T>
-     *            the type of element the service class descriptor holds
      * @param lookup
      *            the lookup
      * @param type

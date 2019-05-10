@@ -36,7 +36,7 @@ import app.packed.container.RequiresExtension;
 // Could allow mailbox'es for actors. Where we automatically transforms method invocations into
 // We would need to have some way to indicate that some method invocation can be done without requring the result
 // Maybe return Void to indicate sync and void as async?
-@RequiresExtension(HooksFeature.class)
+@RequiresExtension(HooksExtension.class)
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
 @Documented
@@ -66,7 +66,7 @@ public @interface OnHook {
     String pathMatcher() default "";// "Doo.*/*"
 
     /**
-     * @return
+     * @return stuff
      */
     boolean ignoreOwnContainer() default false;
 
@@ -80,7 +80,7 @@ public @interface OnHook {
     /**
      * Will attempt to compile the resulting very aggressively. For example, via lambda factory.
      * 
-     * @return
+     * @return stuff
      */
     // Or Class<? extends SomeOptimizer>
     boolean attemptCompilation() default false;

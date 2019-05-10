@@ -26,7 +26,7 @@ public class Ffff extends Bundle {
     public static void main(String[] args) {
         Injector i = Injector.of(new Ffff());
         System.out.println(i.services().count() + "");
-        System.out.println(i.with(String.class));
+        System.out.println(i.use(String.class));
 
         // run(new Ffff(), args);
     }

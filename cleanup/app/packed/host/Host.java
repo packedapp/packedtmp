@@ -84,7 +84,8 @@ public interface Host {
     Contract contract();
 
     // deploy and do not start
-    // deploy start asynchronously (when do you not want to start, I think this is default
+    // deploy start asynchronously (when do you not want to start, I think this is
+    // default
     // deploy start synchronously
     /**
      * Deploys the specified bundle as a application and starts it asynchronously.
@@ -142,7 +143,8 @@ public interface Host {
     }
 
     // More a configuration then a builder...
-    // Configurator -> via consumer -> When you have many lines, and is not standalone
+    // Configurator -> via consumer -> When you have many lines, and is not
+    // standalone
     // Configuration -> When you have more than 1 expected line
     // Builder -> Standalone, no lifecycle,
 
@@ -182,11 +184,10 @@ public interface Host {
  * Closes the host for further deployments. Attempting to deploy applications to this host, after this method has been
  * invoked will result in {@link IllegalStateException} being thrown.
  * <p>
- * This method can be used together with {@link #undeployAll()}
+ * This method can be used together with
  * <p>
  * Ongoing deployments will not be effected.
  * 
- * @return this host
  */
 // Alternativ har den en lifecycle fra componenten, containeren....
 // Host close();

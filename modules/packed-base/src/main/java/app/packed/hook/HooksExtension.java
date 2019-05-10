@@ -20,6 +20,6 @@ import app.packed.container.Extension;
 /**
  *
  */
-public class HooksFeature extends Extension<HooksFeature> {
+public class HooksExtension extends Extension<HooksExtension> {
 
 }

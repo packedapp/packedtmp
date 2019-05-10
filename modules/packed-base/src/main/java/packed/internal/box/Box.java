@@ -51,7 +51,6 @@ public final class Box { /* extends Configurable???? */
         this.services = new BoxServices(this);
     }
 
-    /** {@inheritDoc} */
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
         // checkConfigurable();

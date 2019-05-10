@@ -175,7 +175,6 @@ public class InternalComponent implements Component {
         return tags;
     }
 
-    /** {@inheritDoc} */
     public LifecycleState getState() {
         return LifecycleState.INITIALIZING;
     }

@@ -132,7 +132,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
      * If this node is located on another build node return the node, otherwise null. For example a method annotated with
      * {@link Provides} on a class that is itself registered as a component.
      * 
-     * @return
+     * @return stuff
      */
     @Nullable
     ServiceBuildNode<?> declaringNode() {

@@ -30,7 +30,7 @@ import app.packed.util.VariableDescriptor;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
- * {@link Injector#with(Class)}.
+ * {@link Injector#use(Class)}.
  */
 public class InjectionSiteForKey implements ProvidesHelper {
 

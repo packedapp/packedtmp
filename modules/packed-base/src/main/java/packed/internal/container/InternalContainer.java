@@ -111,13 +111,13 @@ public class InternalContainer implements Container {
     }
 
     @Override
-    public <T> T with(Class<T> key) {
-        return injector.with(key);
+    public <T> T use(Class<T> key) {
+        return injector.use(key);
     }
 
     @Override
-    public <T> T with(Key<T> key) {
-        return injector.with(key);
+    public <T> T use(Key<T> key) {
+        return injector.use(key);
     }
 
     /** {@inheritDoc} */
@@ -136,7 +136,6 @@ public class InternalContainer implements Container {
         return "Unknown";// name of root component????, no name //JettyWebserver.
     }
 
-    /** {@inheritDoc} */
     public Component root() {
         return root;
     }

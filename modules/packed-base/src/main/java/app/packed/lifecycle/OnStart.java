@@ -38,7 +38,7 @@ import app.packed.inject.Injector;
  * }
  * </pre>
  *
- * Methods annotated with OnStart can have any service that is also available from {@link Container#with(Class)}
+ * Methods annotated with OnStart can have any service that is also available from {@link Container#use(Class)}
  * injected. For example, the following method will print out the name and the state of the container when it starts.
  *
  * <pre>
@@ -76,7 +76,7 @@ import app.packed.inject.Injector;
  * failing to start and moving to the shutdown phase.
  * <p>
  *
- * Normally services are not available from {@link Container#with(Class)} until all services have been successfully
+ * Normally services are not available from {@link Container#use(Class)} until all services have been successfully
  * started. However, by using this annotation. Services that not yet completed startup can be injected. It is up to the
  * user to make sure that invoking method on instances that injected this does not cause any problems. For example,
  * calling a method on another service that only works when the container is in the running phase.

@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.UpstreamWiringOperation;
 import app.packed.inject.Injector;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
@@ -48,7 +48,7 @@ public final class BundleSupport {
          * @param stages
          * @param type
          *            either {@link Injector}, {@link Bundle} or {@link Bundle}
-         * @return
+         * @return java.util.Objects.*
          */
         public abstract List<OldWiringOperation> extractWiringOperations(OldWiringOperation[] stages, Class<?> type);
 
@@ -73,7 +73,8 @@ public final class BundleSupport {
         static final Helper SINGLETON;
 
         static {
-            new UpstreamWiringOperation() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
+            new UpstreamWiringOperation() {
+            }; // Initializes TypeLiteral, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }

@@ -24,7 +24,7 @@ import app.packed.inject.Injector;
 public class TestBundle extends Bundle {
 
     public static void main(String[] args) {
-        System.out.println(Injector.of(new TestBundle()).with(String.class));
+        System.out.println(Injector.of(new TestBundle()).use(String.class));
     }
 
     /** {@inheritDoc} */

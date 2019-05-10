@@ -52,6 +52,8 @@ public abstract class WiringOperation {
         return compose(l.toArray(i -> new WiringOperation[i]));
     }
 
+    // protected void validate(); Validates that the operation can be used
+
     protected abstract void process(BundleLink link);
 
     static WiringOperation compose(WiringOperation... operations) {

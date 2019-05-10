@@ -66,20 +66,20 @@ public class QualifierTest {
         Stub.C = 2L;
         Stub.L = 2L;
 
-        assertThat(i.with(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
-        assertThat(i.with(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
-        assertThat(i.with(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
-        assertThat(i.with(new Key<Long>() {})).isEqualTo(1L);
+        assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
+        assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(2L);
+        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
+        assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
 
         Stub.A = 3L;
         Stub.B = 3L;
         Stub.C = 3L;
         Stub.L = 3L;
 
-        assertThat(i.with(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
-        assertThat(i.with(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
-        assertThat(i.with(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
-        assertThat(i.with(new Key<Long>() {})).isEqualTo(1L);
+        assertThat(i.use(new Key<@StringQualifier("A") Long>() {})).isEqualTo(2L);
+        assertThat(i.use(new Key<@StringQualifier("B") Long>() {})).isEqualTo(3L);
+        assertThat(i.use(new Key<@StringQualifier("C") Long>() {})).isEqualTo(1L);
+        assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
     }
 
     private static Injector of(Consumer<? super SimpleInjectorConfigurator> consumer) {

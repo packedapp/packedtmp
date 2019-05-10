@@ -37,7 +37,7 @@ public class ExportTest2 {
 
         i.services().forEach(e -> System.out.println(e.key().toStringSimple()));
 
-        System.out.println(i.with(ZonedDateTime.class));
+        System.out.println(i.use(ZonedDateTime.class));
     }
 
     public static final class I extends Bundle {

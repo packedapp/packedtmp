@@ -63,7 +63,7 @@ public class SimpleInjectorImportsTest {
         Injector i1 = Injector.of(c -> c.provide("X"));
 
         Injector i = Injector.of(c -> c.wireInjector(i1));
-        assertThat(i.with(String.class)).isEqualTo("X");
+        assertThat(i.use(String.class)).isEqualTo("X");
 
     }
 
@@ -78,7 +78,7 @@ public class SimpleInjectorImportsTest {
         });
         assertThat(i.hasService(String.class)).isFalse();
         assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
-        assertThat(i.with(new Key<@Right String>() {})).isEqualTo("X");
+        assertThat(i.use(new Key<@Right String>() {})).isEqualTo("X");
     }
 
     /** Tests that we can rebind imported services. */
@@ -92,8 +92,8 @@ public class SimpleInjectorImportsTest {
             c.wireInjector(i2, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
         });
 
-        assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
-        assertThat(i.with(new Key<@Right String>() {})).isEqualTo("Y");
+        assertThat(i.use(new Key<@Left String>() {})).isEqualTo("X");
+        assertThat(i.use(new Key<@Right String>() {})).isEqualTo("Y");
     }
 
     /** Tests that we can switch keys of two imported services. */
@@ -106,8 +106,8 @@ public class SimpleInjectorImportsTest {
             c.wireInjector(i1);
             c.wireInjector(i2);
         });
-        assertThat(i.with(new Key<@Left String>() {})).isEqualTo("X");
-        assertThat(i.with(new Key<@Right String>() {})).isEqualTo("Y");
+        assertThat(i.use(new Key<@Left String>() {})).isEqualTo("X");
+        assertThat(i.use(new Key<@Right String>() {})).isEqualTo("Y");
 
         // Now let us switch them around
         i = Injector.of(c -> {
@@ -115,7 +115,7 @@ public class SimpleInjectorImportsTest {
             c.wireInjector(i2, ServiceWiringOperations.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });
 
-        assertThat(i.with(new Key<@Left String>() {})).isEqualTo("Y");
-        assertThat(i.with(new Key<@Right String>() {})).isEqualTo("X");
+        assertThat(i.use(new Key<@Left String>() {})).isEqualTo("Y");
+        assertThat(i.use(new Key<@Right String>() {})).isEqualTo("X");
     }
 }

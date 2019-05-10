@@ -73,12 +73,9 @@ interface LifecycleSpecificOperations<T> {
      * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
-     * @param state
-     *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(LifecycleState, long, TimeUnit)
-     * @see #getState()
+     * @see #await( long, TimeUnit)
      * @see #whenAt(LifecycleState)
      */
     // on(LifecycleState.INITIALIZED).await();
@@ -92,8 +89,6 @@ interface LifecycleSpecificOperations<T> {
      * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
-     * @param state
-     *            the state to wait on
      * @param timeout
      *            the maximum time to wait
      * @param unit
@@ -102,8 +97,6 @@ interface LifecycleSpecificOperations<T> {
      *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(LifecycleState)
-     * @see #getState()
      * @see #whenAt(LifecycleState)
      */
     boolean await(long timeout, TimeUnit unit) throws InterruptedException;
@@ -138,8 +131,6 @@ interface LifecycleSpecificOperations<T> {
      * <p>
      * This method can be invoked concurrently by multiple threads.
      *
-     * @param state
-     *            the state
      * @param action
      *            the action to execute
      * @return true if the action was executed, otherwise false
@@ -160,7 +151,8 @@ interface LifecycleSpecificOperations<T> {
      * <p>
      * For example, the following example will print a simple string if the component starts successfully:
      *
-     * <pre> {@code
+     * <pre>
+     *  {@code
      * Component component = ...;
      * component.whenAtState(State.RUNNING).thenRunAsync(() -> System.out.println("Component started successfully"));}
      * </pre>
@@ -171,8 +163,6 @@ interface LifecycleSpecificOperations<T> {
      * @param state
      *            the state for which to return a completion stage
      * @return a completion stage for the specified state
-     * @see #await(LifecycleState, long, TimeUnit)
-     * @see #getState()
      */
     // Do we want to add this to configuration? ContainerConfiguration.whenAtState(Running.class, print "Yeah");
     // We want a CompletionFuture instead. We want something like join() to be available.

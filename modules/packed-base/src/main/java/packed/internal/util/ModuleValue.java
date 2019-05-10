@@ -31,9 +31,9 @@ public abstract class ModuleValue<T> {
      * If this method throws an exception, the corresponding call to {@code get} will terminate abnormally with that
      * exception, and no lookup value will be recorded.
      *
-     * @param lookup
-     *            the lookup object for which a value must be computed
-     * @return the newly computed value associated with this {@code LookupValue}, for the given lookup object
+     * @param module
+     *            the module for which a value must be computed
+     * @return the newly computed value associated with this {@code ModuleValue}, for the given module object
      */
     protected abstract T computeValue(Module module);
 
@@ -41,9 +41,9 @@ public abstract class ModuleValue<T> {
      * Returns the value for the given lookup object. If no value has yet been computed, it is obtained by an invocation of
      * the {@link #computeValue computeValue} method.
      * 
-     * @param lookup
-     *            the lookup object
-     * @return the value for the given lookup object
+     * @param module
+     *            the module object
+     * @return the value for the given moduleobject
      */
     public final T get(Module module) {
         throw new UnsupportedOperationException();

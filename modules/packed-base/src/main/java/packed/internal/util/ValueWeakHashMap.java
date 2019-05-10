@@ -180,13 +180,6 @@ class ValueWeakHashMap<K, V> {
         return segmentFor(hash).put(key, hash, value, false);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return the previous value associated with the specified key, or <tt>null</tt> if there was no mapping for the key
-     * @throws NullPointerException
-     *             if the specified key or value is null
-     */
     V putIfAbsent(K key, V value) {
         if (value == null)
             throw new NullPointerException();
@@ -208,12 +201,6 @@ class ValueWeakHashMap<K, V> {
         return segmentFor(hash).remove(key, hash, null, false);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws NullPointerException
-     *             if the specified key is null
-     */
     boolean remove(Object key, Object value) {
         int hash = hash(key.hashCode());
         if (value == null)
@@ -221,13 +208,6 @@ class ValueWeakHashMap<K, V> {
         return segmentFor(hash).remove(key, hash, value, false) != null;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return the previous value associated with the specified key, or <tt>null</tt> if there was no mapping for the key
-     * @throws NullPointerException
-     *             if the specified key or value is null
-     */
     V replace(K key, V value) {
         if (value == null)
             throw new NullPointerException();
@@ -235,12 +215,6 @@ class ValueWeakHashMap<K, V> {
         return segmentFor(hash).replace(key, hash, value);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws NullPointerException
-     *             if any of the arguments are null
-     */
     boolean replace(K key, V oldValue, V newValue) {
         if (oldValue == null || newValue == null)
             throw new NullPointerException();

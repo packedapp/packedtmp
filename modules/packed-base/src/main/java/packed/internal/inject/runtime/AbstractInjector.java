@@ -143,7 +143,7 @@ public abstract class AbstractInjector implements Injector {
 
     /** {@inheritDoc} */
     @Override
-    public final <T> T with(Class<T> key) {
+    public final <T> T use(Class<T> key) {
         T t = getInstanceOrNull(key);
         if (t != null) {
             return t;
@@ -162,7 +162,7 @@ public abstract class AbstractInjector implements Injector {
 
     /** {@inheritDoc} */
     @Override
-    public final <T> T with(Key<T> key) {
+    public final <T> T use(Key<T> key) {
         T t = getInstanceOrNull(key);
         if (t == null) {
             throw new UnsupportedOperationException("No service with the specified key could  be found, key = " + key);

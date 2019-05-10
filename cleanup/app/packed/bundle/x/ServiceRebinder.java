@@ -15,17 +15,15 @@
  */
 package app.packed.bundle.x;
 
-import app.packed.bundle.ConfigureWiringOperation;
-
 /**
  *
  */
 // Altsaa det er jo implementation
 public interface ServiceRebinder<T> {
 
-    default ConfigureWiringOperation as(T type) {
-        return null;
-    }
+    // default ConfigureWiringOperation as(T type) {
+    // return null;
+    // }
 
     static <T> ServiceRebinder<T> rebind(Class<T> type) {
         return null;

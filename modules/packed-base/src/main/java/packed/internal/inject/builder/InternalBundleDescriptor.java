@@ -28,7 +28,7 @@ public class InternalBundleDescriptor {
 
     /**
      * @param bundle
-     * @return
+     * @return stuff
      */
     public static BundleDescriptor.Builder of(Bundle bundle) {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);

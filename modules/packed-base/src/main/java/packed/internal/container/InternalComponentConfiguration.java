@@ -67,12 +67,6 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     /** The object instances of the component, the array will be passed along to InternalComponent. */
     Object[] instances;
 
-    /**
-     * @param containerBuilder
-     * @param configurationSite
-     * @param factory
-     * @param bindingMode
-     */
     public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
@@ -254,10 +248,6 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
         }
     }
 
-    /**
-     * @param internalContainer
-     * @return
-     */
     void init(InternalContainer container) {
         if (parent == null) {
             component = new InternalComponent(container, this, null, false, getName());

@@ -26,6 +26,7 @@ package app.packed.bundle;
 // Link (link = container, wire = any)
 public interface BundleLink {
 
+    // Use what??? Only think we have secrets....
     <T> T use(Class<T> clazz);
 
     // AnyBundleDescriptor from();

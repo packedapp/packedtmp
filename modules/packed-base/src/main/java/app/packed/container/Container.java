@@ -29,7 +29,7 @@ import app.packed.lifecycle.LifecycleState;
  * created by calling which returns a new container in the {@link LifecycleState#INITIALIZED} state.
  * <p>
  * The container can now be started either by calling a method that requires a running container, for example,
- * {@link #with(Class)}. Or by calling start which will <b>asynchronously</b> start the container. Calling either of
+ * {@link #use(Class)}. Or by calling start which will <b>asynchronously</b> start the container. Calling either of
  * these methods will move the container into the {@link LifecycleState#STARTING} state. When the container and all of
  * its components have been properly started the container will move to the {@link LifecycleState#RUNNING} state. Which
  * indicates that the container is ready for use. Calls by other threads to the container before it is fully started

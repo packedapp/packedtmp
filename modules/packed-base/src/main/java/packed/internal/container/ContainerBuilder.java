@@ -98,17 +98,14 @@ public final class ContainerBuilder extends InjectorBuilder {
         return container;
     }
 
-    /** {@inheritDoc} */
     public void wireContainer(Bundle bundle, WiringOperation... stages) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
     public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
         return installService(Factory.findInjectable(implementation));
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
@@ -125,7 +122,6 @@ public final class ContainerBuilder extends InjectorBuilder {
         return cc;
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> installService(T instance) {
         requireNonNull(instance, "instance is null");
@@ -140,7 +136,6 @@ public final class ContainerBuilder extends InjectorBuilder {
         return cc;
     }
 
-    /** {@inheritDoc} */
     public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
         return installService(Factory.findInjectable(implementation));
     }

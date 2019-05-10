@@ -40,14 +40,19 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
  * <p>
  * Sample usage:
  *
- * <pre> {@code
- * TypeLiteral<List<String>> list = new TypeLiteral<List<String>>() {};
- * TypeLiteral<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {};}
+ * <pre>
+ * {
+ *     &#64;code
+ *     TypeLiteral<List<String>> list = new TypeLiteral<List<String>>() {
+ *     };
+ *     TypeLiteral<Map<Integer, List<Integer>>> list = new TypeLiteral<>() {
+ *     };
+ * }
  * </pre>
  */
 public abstract class TypeLiteral<T> {
 
-    /** A cache of factories used by {@link #findInjectable(Class)}. */
+    /** A cache of factories used by find injectable. */
     private static final ClassValue<TypeLiteral<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -266,13 +271,15 @@ public abstract class TypeLiteral<T> {
      * <p>
      * Given a class:
      * 
-     * <pre> {@code
-     * public abstract class MyConsumer extends HashMap<String, List<String>>} 
+     * <pre>
+     *  {@code
+     * public abstract class MyConsumer extends HashMap<String, List<String>>}
      * </pre>
      * <p>
      * The hash maps value type parameter can be extracted as a type literal by calling:
      * 
-     * <pre> {@code
+     * <pre>
+     *  {@code
      * TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(MyConsumer.class, HashMap.class, 1);
      * System.out.println(tl); //prints List<String>}
      * </pre>
@@ -326,10 +333,6 @@ public abstract class TypeLiteral<T> {
      * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
      * work, and has some overhead.
      * 
-     * @param implementation
-     *            the type to return a type literal for
-     * @return a type literal from the specified type
-     * @see #of(Class)
      */
     static final class CanonicalizedTypeLiteral<T> extends TypeLiteral<T> {
 

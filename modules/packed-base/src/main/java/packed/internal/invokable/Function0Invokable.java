@@ -39,11 +39,10 @@ public final class Function0Invokable<T> extends InternalFunction<T> {
     /**
      * Creates a factory0 instance.
      * 
+     * @param type
+     *            the class to extract type info from.
      * @param supplier
      *            the supplier that creates the actual values
-     * @param typeInfo
-     *            the class to extract type info from.
-     * @return the new factory
      */
     public Function0Invokable(TypeLiteral<T> type, Supplier<? extends T> supplier) {
         super(type);

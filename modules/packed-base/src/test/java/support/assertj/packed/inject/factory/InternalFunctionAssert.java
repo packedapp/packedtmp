@@ -26,10 +26,6 @@ import packed.internal.invokable.InternalFunction;
  */
 public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAssert<T>, InternalFunction<T>> {
 
-    /**
-     * @param actual
-     * @param selfType
-     */
     public InternalFunctionAssert(InternalFunction<T> actual) {
         super(actual, InternalFunctionAssert.class);
     }
