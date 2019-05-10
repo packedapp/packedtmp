@@ -58,7 +58,8 @@ public abstract class AnyBundle {
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
      * users of extensions does try to configure the extension after it has been configured.
      *
-     * <pre>{@code
+     * <pre>
+     * {@code
      * public ManagementBundle setJMXEnabled(boolean enabled) {
      *     checkConfigurable(); //will throw IllegalStateException if configure() has already been called
      *     this.jmxEnabled = enabled;
@@ -82,22 +83,6 @@ public abstract class AnyBundle {
         } finally {
             configuration = null;
         }
-    }
-
-    /**
-     * Returns a feature of the specified type
-     * 
-     * @param <T>
-     *            the extension type
-     * @param featureType
-     *            the feature type
-     * @return an extension of the specified type
-     * @throws UnsupportedOperationException
-     *             if no features of the specified type is supported
-     */
-    // Skal alle virkelig have adgang....
-    protected final <T extends Extension<T>> T extendWith(Class<T> featureType) {
-        throw new UnsupportedOperationException();
     }
 
     protected final Set<Class<? extends Extension<?>>> extensionTypes() {
@@ -128,17 +113,13 @@ public abstract class AnyBundle {
         configuration().lookup(lookup);
     }
 
-    protected final void lookup(Lookup lookup, Object lookupController) {
+    final void lookup(Lookup lookup, Object lookupController) {
         // Ideen er at alle lookups skal godkendes at lookup controlleren...
         // Controller/Manager/LookupAccessManager
         // For module email, if you are paranoid.
         // You can specify a LookupAccessManager where every lookup access.
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
-
-    // protected final ContainerLink wire(AnyBundle child, WiringOption... operations) {
-    // return configuration().wire(child);
-    // }
 
     protected final void setName(@Nullable String name) {
         configuration.setName(name);
@@ -148,6 +129,9 @@ public abstract class AnyBundle {
         return configuration.use(extensionType);
     }
 
+    // protected final ContainerLink wire(AnyBundle child, WiringOption... operations) {
+    // return configuration().wire(child);
+    // }
     // alternative is some kind of builder....
 
     // installXX

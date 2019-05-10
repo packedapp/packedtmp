@@ -56,7 +56,16 @@ public abstract class WiringOperation {
 
     protected abstract void process(BundleLink link);
 
-    static WiringOperation compose(WiringOperation... operations) {
+    /**
+     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
+     * 
+     * @param operations
+     *            the operations to combine
+     * @return a new combined operation
+     * @see #andThen(WiringOperation)
+     * @see #andThen(WiringOperation...)
+     */
+    public static WiringOperation compose(WiringOperation... operations) {
         throw new UnsupportedOperationException();
     }
 

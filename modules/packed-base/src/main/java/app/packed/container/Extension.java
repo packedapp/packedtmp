@@ -37,7 +37,6 @@ public abstract class Extension<T extends Extension<T>> {
 
         // Checks that the bundle/configurator/... is still active
         // Freezes any previous node for modifications....
-
         // Which means that everything is nodes....
 
         // Because bind(x) followed by install(x) should work identical to

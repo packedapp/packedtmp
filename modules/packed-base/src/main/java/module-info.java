@@ -12,7 +12,6 @@ module app.packed.base {
     exports packed.internal.bundle to app.packed.base.devtools;
     exports packed.internal.inject to app.packed.base.devtools;
     exports packed.internal.inject.builder to app.packed.base.devtools;
-    // exports packed.internal.invokers to app.packed.base.devtools;
     exports packed.internal.box to app.packed.base.devtools;
     exports packed.internal.inject.runtime to app.packed.base.devtools;
     exports packed.internal.annotations to app.packed.base.devtools;
@@ -21,6 +20,5 @@ module app.packed.base {
     exports packed.internal.config.site to app.packed.base.devtools;
 
     // uses app.packed.util.ModuleEnv;
-
     // provides app.packed.util.ModuleEnv with packed.internal.bundle.DefaultBS;
 }

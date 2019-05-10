@@ -26,6 +26,7 @@ import app.packed.util.Nullable;
 /**
  * The configuration of a container.
  */
+// checkConfigurable??? Or only via extensions?
 // Basic functionality
 /// Name
 /// Extensions
@@ -138,17 +139,17 @@ public interface ContainerConfiguration {
     BundleLink wire(AnyBundle child, WiringOperation... options);
 
     Set<String> tags();
-    // static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
-    // options) {
-    // requireNonNull(consumer, "configurator is null");
-    // requireNonNull(consumer, "consumer is null");
-    // DefaultAppConfiguration dac = new DefaultAppConfiguration();
-    // configurator.accept(dac.root());
-    // consumer.accept(dac.build());
-    // }
-    // ContainerConfiguration immutable().. can read name, installed extensions, and use extensions have already been
-    // installed??
 }
+// static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
+// options) {
+// requireNonNull(consumer, "configurator is null");
+// requireNonNull(consumer, "consumer is null");
+// DefaultAppConfiguration dac = new DefaultAppConfiguration();
+// configurator.accept(dac.root());
+// consumer.accept(dac.build());
+// }
+// ContainerConfiguration immutable().. can read name, installed extensions, and use extensions have already been
+// installed??
 /// **
 // * @param <T>
 // * @param extension

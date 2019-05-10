@@ -27,14 +27,14 @@ import packed.internal.container.ContainerBuilder;
 import packed.internal.inject.builder.InjectorBuilder;
 
 /**
- *
+ * An extension used with injection.
  */
 public final class InjectorExtension extends Extension<InjectorExtension> {
 
-    final InjectorBuilder b;
+    private final InjectorBuilder builder;
 
     public InjectorExtension(InjectorBuilder b) {
-        this.b = requireNonNull(b);
+        this.builder = requireNonNull(b);
     }
 
     /**
@@ -46,7 +46,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        b.services().addOptional(key);
+        builder.services().addOptional(key);
     }
 
     /**
@@ -58,11 +58,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addRequired(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        b.services().addRequired(key);
+        builder.services().addRequired(key);
     }
 
     public void autoRequire() {
-        b.serviceAutoRequire();
+        builder.serviceAutoRequire();
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
@@ -96,15 +96,15 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @see #export(Key)
      */
     public <T> ServiceConfiguration<T> export(Key<T> key) {
-        return b.export(key);
+        return builder.export(key);
     }
 
     public <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        return b.export(configuration);
+        return builder.export(configuration);
     }
 
     public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
-        return ((ContainerBuilder) b).installService(implementation);
+        return ((ContainerBuilder) builder).installService(implementation);
     }
 
     /**
@@ -119,11 +119,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @return the configuration of the component that was installed
      */
     public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
-        return ((ContainerBuilder) b).installService(factory);
+        return ((ContainerBuilder) builder).installService(factory);
     }
 
     public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
-        return ((ContainerBuilder) b).installService(implementation);
+        return ((ContainerBuilder) builder).installService(implementation);
     }
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
@@ -132,7 +132,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     public <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return b.provide(factory);
+        return builder.provide(factory);
     }
 
     /**
@@ -150,7 +150,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      */
     public <T> ServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance");
-        return b.provide(instance);
+        return builder.provide(instance);
     }
 
     public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {

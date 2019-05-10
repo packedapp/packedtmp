@@ -41,12 +41,10 @@ import app.packed.lifecycle.OnInitialize;
  */
 public interface App extends Injector, AutoCloseable {
 
-    /**
-     * Will shutdown
-     **/
+    /** An alias for calling {@link #shutdown()} to support the {@link AutoCloseable} interface. **/
     @Override
     default void close() {
-        shutdown(); // AppWiringOption.AsynchronouslyClose()... can be used to control this
+        shutdown();
     }
 
     /**
