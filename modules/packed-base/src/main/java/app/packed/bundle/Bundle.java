@@ -83,21 +83,13 @@ public abstract class Bundle extends AnyBundle {
      * 
      * <p>
      * Once an internal service has been exposed, the internal service is made immutable. For example,
-     * {@code setDescription()} will fail in the following example with a runtime exception:
-     * 
-     * <pre>
-     * {
-     *     &#64;code
-     *     ServiceConfiguration<?> sc = bind(ServiceImpl.class);
-     *     expose(ServiceImpl.class).as(Service.class);
-     *     sc.setDescription("foo");
-     * }
+     * {@code setDescription()} will fail in the following example with a runtime exception: <pre>{@code 
+     * ServiceConfiguration<?> sc = bind(ServiceImpl.class);
+     * expose(ServiceImpl.class).as(Service.class);
+     * sc.setDescription("foo");}
      * </pre>
      * <p>
-     * A single internal service can be exposed under multiple keys:
-     * 
-     * <pre>
-     * {@code 
+     * A single internal service can be exposed under multiple keys: <pre>{@code 
      * bind(ServiceImpl.class);
      * expose(ServiceImpl.class).as(Service1.class).setDescription("Service 1");
      * expose(ServiceImpl.class).as(Service2.class).setDescription("Service 2");}
@@ -119,16 +111,13 @@ public abstract class Bundle extends AnyBundle {
      * Exposes an internal service outside of this bundle.
      * 
      * 
-     * <pre>
-     *  {@code  
+     * <pre> {@code  
      * bind(ServiceImpl.class);
      * expose(ServiceImpl.class);}
      * </pre>
      * 
      * You can also choose to expose a service under a different key then what it is known as internally in the
-     * 
-     * <pre>
-     *  {@code  
+     * <pre> {@code  
      * bind(ServiceImpl.class);
      * expose(ServiceImpl.class).as(Service.class);}
      * </pre>
