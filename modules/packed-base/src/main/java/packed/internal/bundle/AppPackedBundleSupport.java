@@ -26,7 +26,7 @@ import app.packed.bundle.WiringOption;
 import app.packed.inject.Injector;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
-public final class BundleSupport {
+public final class AppPackedBundleSupport {
 
     public static Helper invoke() {
         return SingletonHolder.SINGLETON;

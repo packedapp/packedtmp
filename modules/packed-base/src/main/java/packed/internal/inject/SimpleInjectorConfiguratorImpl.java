@@ -27,16 +27,16 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.SimpleInjectorConfigurator;
 import app.packed.util.Nullable;
-import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.builder.ContainerBuilder;
 
 /**
  *
  */
 public class SimpleInjectorConfiguratorImpl implements SimpleInjectorConfigurator {
 
-    InjectorBuilder builder;
+    ContainerBuilder builder;
 
-    public SimpleInjectorConfiguratorImpl(InjectorBuilder ib) {
+    public SimpleInjectorConfiguratorImpl(ContainerBuilder ib) {
         this.builder = requireNonNull(ib);
     }
 

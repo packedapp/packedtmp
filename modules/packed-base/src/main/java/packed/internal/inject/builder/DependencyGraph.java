@@ -42,7 +42,7 @@ final class DependencyGraph {
     ArrayList<ServiceBuildNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
-    final InjectorBuilder root;
+    final ContainerBuilder root;
 
     /**
      * Creates a new dependency graph.
@@ -50,13 +50,13 @@ final class DependencyGraph {
      * @param root
      *            the root injector builder
      */
-    DependencyGraph(InjectorBuilder root) {
+    DependencyGraph(ContainerBuilder root) {
         this.root = requireNonNull(root);
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void analyze(InjectorBuilder builder) {
+    void analyze(ContainerBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.box.services().nodes);
         builder.box.services().nodes
                 .put(new ServiceBuildNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));

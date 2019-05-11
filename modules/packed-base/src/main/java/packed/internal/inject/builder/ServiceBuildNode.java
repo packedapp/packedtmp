@@ -53,7 +53,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
 
     /** The injector configuration this node is registered with. */
     @Nullable // Is nullable for stages for now
-    protected final InjectorBuilder injectorBuilder;
+    protected final ContainerBuilder injectorBuilder;
 
     public boolean autoRequires;
 
@@ -72,7 +72,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    ServiceBuildNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
+    ServiceBuildNode(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
         super(configurationSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);

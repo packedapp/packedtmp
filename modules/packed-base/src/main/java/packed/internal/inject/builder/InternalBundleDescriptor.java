@@ -32,7 +32,7 @@ public class InternalBundleDescriptor {
      */
     public static BundleDescriptor.Builder of(Bundle bundle) {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
-        InjectorBuilder conf = new InjectorBuilder(ics, bundle);
+        ContainerBuilder conf = new ContainerBuilder(ics, bundle);
 
         // ContainerBuildContext bs = new ContainerBuildContext() {
         // @SuppressWarnings("unchecked")

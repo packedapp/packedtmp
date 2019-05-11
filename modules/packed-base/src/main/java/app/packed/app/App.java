@@ -29,7 +29,7 @@ import app.packed.lifecycle.OnInitialize;
 import packed.internal.app.InternalApp;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.ContainerBuilder;
+import packed.internal.inject.builder.ContainerBuilder;
 
 /**
  * A application is a program.

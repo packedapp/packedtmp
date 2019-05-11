@@ -35,37 +35,34 @@ import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.ContainerBuilder;
+import packed.internal.container.AppPackedContainerSupport;
+import packed.internal.container.ExtensionInfo;
 import packed.internal.util.AbstractConfiguration;
 
-/**
- *
- */
-public abstract class AbstractContainerConfiguration extends AbstractConfiguration implements ContainerConfiguration {
+/** The default implementation of {@link ContainerConfiguration}. */
+public class DefaultContainerConfiguration extends AbstractConfiguration implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
     public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
 
-    /**
-     * The (optional) bundle we are creating a runtime instance for, if null then we using a {@code XConfiguration} to
-     * create the runtime.
-     */
+    /** The bundle we created this configuration from. Or null if we are using a configurator of some kind. */
     @Nullable
     public final Bundle bundle;
 
-    /** All outgoing links of this container, in order of installation order. */
-    final LinkedHashMap<String, BundleLink> containers = new LinkedHashMap<>();
-
     /** All extensions that have been installed for the container. */
-    public final IdentityHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new IdentityHashMap<>();
+    final IdentityHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new IdentityHashMap<>();
 
     /** The name of the container, or null if no name has been set. */
     @Nullable
     private String name;
 
+    /** The wiring options used when creating this configuration. */
     public final List<WiringOption> options;
 
-    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
+    /** All outgoing links of this container, in order of installation order. */
+    final LinkedHashMap<String, DefaultContainerConfiguration> wirings = new LinkedHashMap<>();
+
+    protected DefaultContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
         super(configurationSite);
         this.bundle = bundle;
         this.options = List.of(options);
@@ -97,7 +94,8 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     }
 
     @Override
-    public AbstractContainerConfiguration setDescription(String description) {
+    public DefaultContainerConfiguration setDescription(String description) {
+        checkConfigurable();
         super.setDescription(description);
         return this;
     }
@@ -113,9 +111,12 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     @SuppressWarnings("unchecked")
     public <T extends Extension<T>> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        Extension<?> e = extensions.get(extensionType);
-        requireNonNull(e, extensionType + "");
-        return (T) e;
+        return (T) extensions.computeIfAbsent(extensionType, k -> {
+            checkConfigurable(); // we can use extension that have already been installed, but not add new
+            Extension<?> e = ExtensionInfo.newInstance(extensionType);
+            AppPackedContainerSupport.invoke().setExtensionConfiguration(e, this);
+            return e;
+        });
     }
 
     @Override
@@ -123,6 +124,7 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
         ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, options);
         child.doConfigure(builder);
         builder.build();
+        wirings.put(builder.getName(), builder);
         return null;
     }
 
@@ -149,7 +151,7 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
         /** {@inheritDoc} */
         @Override
         protected void process(BundleLink link) {
-            ((AbstractContainerConfiguration) link.cc()).name = name;
+            ((DefaultContainerConfiguration) link.cc()).name = name;
         }
     }
 }

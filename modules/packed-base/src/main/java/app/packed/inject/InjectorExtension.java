@@ -23,18 +23,15 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.container.ContainerBuilder;
-import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.builder.ContainerBuilder;
 
 /**
  * An extension used with injection.
  */
 public final class InjectorExtension extends Extension<InjectorExtension> {
 
-    private final InjectorBuilder builder;
-
-    public InjectorExtension(InjectorBuilder b) {
-        this.builder = requireNonNull(b);
+    ContainerBuilder builder() {
+        return (ContainerBuilder) super.configuration;
     }
 
     /**
@@ -46,7 +43,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        builder.services().addOptional(key);
+        builder().services().addOptional(key);
     }
 
     /**
@@ -58,11 +55,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addRequired(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        builder.services().addRequired(key);
+        builder().services().addRequired(key);
     }
 
     public void autoRequire() {
-        builder.serviceAutoRequire();
+        builder().serviceAutoRequire();
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
@@ -96,15 +93,15 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @see #export(Key)
      */
     public <T> ServiceConfiguration<T> export(Key<T> key) {
-        return builder.export(key);
+        return builder().export(key);
     }
 
     public <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        return builder.export(configuration);
+        return builder().export(configuration);
     }
 
     public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
-        return ((ContainerBuilder) builder).installService(Factory.findInjectable(implementation));
+        return builder().installService(Factory.findInjectable(implementation));
     }
 
     /**
@@ -119,11 +116,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @return the configuration of the component that was installed
      */
     public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
-        return ((ContainerBuilder) builder).installService(factory);
+        return builder().installService(factory);
     }
 
     public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
-        return ((ContainerBuilder) builder).installService(Factory.findInjectable(implementation));
+        return builder().installService(Factory.findInjectable(implementation));
     }
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
@@ -132,7 +129,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     public <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return builder.provide(factory);
+        return builder().provide(factory);
     }
 
     /**
@@ -150,7 +147,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      */
     public <T> ServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance");
-        return builder.provide(instance);
+        return builder().provide(instance);
     }
 
     public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {

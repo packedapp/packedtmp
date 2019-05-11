@@ -68,7 +68,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         return descriptor;
     }
 
-    public ServiceBuildNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public ServiceBuildNodeDefault(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
@@ -121,7 +121,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
      * @param instance
      *            the instance
      */
-    public ServiceBuildNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public ServiceBuildNodeDefault(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");

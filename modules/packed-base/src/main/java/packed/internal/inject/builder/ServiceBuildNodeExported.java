@@ -42,7 +42,7 @@ public final class ServiceBuildNodeExported<T> extends ServiceBuildNode<T> {
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public ServiceBuildNodeExported(InjectorBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
+    public ServiceBuildNodeExported(ContainerBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
         super(configuration, configurationSite, List.of());
         this.exposureOf = requireNonNull(exposureOf);
     }

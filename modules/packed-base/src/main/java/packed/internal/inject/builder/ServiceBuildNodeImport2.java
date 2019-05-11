@@ -39,7 +39,7 @@ public class ServiceBuildNodeImport2<T> extends ServiceBuildNode<T> {
     final AbstractWiring source;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ServiceBuildNodeImport2(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring source, ServiceNode<T> node) {
+    ServiceBuildNodeImport2(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring source, ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.source = requireNonNull(source);

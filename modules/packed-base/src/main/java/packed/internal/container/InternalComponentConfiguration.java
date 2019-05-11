@@ -29,9 +29,9 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.classscan.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.InjectSupport;
+import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.builder.ContainerBuilder;
 import packed.internal.inject.builder.ServiceBuildNodeDefault;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
@@ -67,7 +67,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     /** The object instances of the component, the array will be passed along to InternalComponent. */
     public Object[] instances;
 
-    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
         this.parent = parent;
@@ -79,7 +79,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, T instance) {
         super(containerBuilder, configurationSite, descriptor, instance);
         this.parent = parent;
@@ -116,7 +116,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     @Override
     public ComponentServiceConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
-        InternalFunction<?> f = InjectSupport.toInternalFunction(factory);
+        InternalFunction<?> f = AppPackedInjectSupport.toInternalFunction(factory);
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
 
@@ -242,7 +242,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
          * @param configurationSite
          * @param instance
          */
-        public MixinNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
+        public MixinNode(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
             // Null should probably be service class descriptor... or its own...
             super(injectorConfiguration, configurationSite, null, instance);
         }

@@ -29,11 +29,11 @@ import packed.internal.inject.ServiceNode;
  */
 final class BindInjectorFromBundle extends AbstractWiring {
 
-    final InjectorBuilder newConfiguration;
+    final ContainerBuilder newConfiguration;
 
-    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
+    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
         super(injectorConfiguration, configurationSite, bundle, stages);
-        this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
+        this.newConfiguration = new ContainerBuilder(configurationSite, bundle);
     }
 
     /**

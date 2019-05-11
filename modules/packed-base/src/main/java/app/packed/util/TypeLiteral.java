@@ -61,6 +61,11 @@ public abstract class TypeLiteral<T> {
     static {
         AppPackedUtilSupport.Helper.init(new AppPackedUtilSupport.Helper() {
 
+            @Override
+            public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {
+                return typeLiteral.getClass() == CanonicalizedTypeLiteral.class;
+            }
+
             /** {@inheritDoc} */
             @Override
             public Key<?> toKeyNullableQualifier(Type type, Annotation qualifier) {
@@ -72,11 +77,6 @@ public abstract class TypeLiteral<T> {
             @Override
             public TypeLiteral<?> toTypeLiteral(Type type) {
                 return new CanonicalizedTypeLiteral<>(type);
-            }
-
-            @Override
-            public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {
-                return typeLiteral.getClass() == CanonicalizedTypeLiteral.class;
             }
         });
     }

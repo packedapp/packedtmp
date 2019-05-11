@@ -15,10 +15,14 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.bundle.BundleLink;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.inject.ServiceNode;
+import packed.internal.inject.builder.DefaultContainerConfiguration;
 
 /**
  *
@@ -31,6 +35,41 @@ import packed.internal.inject.ServiceNode;
 // Maybe rename to ContainerExtension
 public abstract class Extension<T extends Extension<T>> {
 
+    static {
+        AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
+
+            @Override
+            public void setExtensionConfiguration(Extension<?> e, DefaultContainerConfiguration configuration) {
+                e.configuration = requireNonNull(configuration);
+            }
+        });
+    }
+
+    protected DefaultContainerConfiguration configuration;
+
+    // Supports Freezable and ConfigurationSite
+    protected final <S extends ServiceNode<S>> S addNode(S node) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final void checkConfigurable() {
+
+    }
+
+    /**
+     * The configuration site of this object. The api needs to be public...
+     * 
+     * @return this configuration site
+     */
+    // Det er hvor extensionen er blevet installeret...Tror vi skal vaere lidt mere complex foerend det giver mening
+    public final InternalConfigurationSite configurationSite() {
+        throw new UnsupportedOperationException();
+    }
+
+    // createContract(); or
+    // addToContract(ContractBuilder b)
+    // Failure to have two features creating the same contract type...
+
     protected final void newLine() {
         // checksConfigurable
         // FreezesAnyNode before
@@ -41,28 +80,6 @@ public abstract class Extension<T extends Extension<T>> {
 
         // Because bind(x) followed by install(x) should work identical to
         // Because install(x) followed by bind(x) should work identical to
-    }
-
-    /**
-     * The configuration site of this object. The api needs to be public...
-     * 
-     * @return this configuration site
-     */
-    public final InternalConfigurationSite configurationSite() {
-        throw new UnsupportedOperationException();
-    }
-
-    // createContract(); or
-    // addToContract(ContractBuilder b)
-    // Failure to have two features creating the same contract type...
-
-    // Supports Freezable and ConfigurationSite
-    protected final <S extends ServiceNode<S>> S addNode(S node) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected final void checkConfigurable() {
-
     }
 
     // Skal have en eller anden form for link med...

@@ -31,7 +31,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
-import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.builder.ContainerBuilder;
 
 /**
  *
@@ -45,7 +45,7 @@ public class InternalContainer implements Container {
 
     private final String name;
 
-    public InternalContainer(InjectorBuilder builder, Injector injector) {
+    public InternalContainer(ContainerBuilder builder, Injector injector) {
         this.injector = requireNonNull(injector);
         if (builder.root != null) {
             builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));

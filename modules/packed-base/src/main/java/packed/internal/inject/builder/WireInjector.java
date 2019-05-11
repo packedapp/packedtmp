@@ -41,7 +41,7 @@ final class WireInjector extends AbstractWiring {
      * @param injector
      * @param stages
      */
-    WireInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<WiringOption> stages) {
+    WireInjector(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<WiringOption> stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
     }

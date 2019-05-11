@@ -35,7 +35,7 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.InjectSupport;
+import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.invokable.ExecutableInvoker;
@@ -90,7 +90,7 @@ public class Factory<T> {
     };
 
     static {
-        InjectSupport.Helper.init(new InjectSupport.Helper() {
+        AppPackedInjectSupport.Helper.init(new AppPackedInjectSupport.Helper() {
 
             @Override
             protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {

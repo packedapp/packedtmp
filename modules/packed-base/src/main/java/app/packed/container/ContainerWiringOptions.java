@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOption;
-import packed.internal.inject.builder.AbstractContainerConfiguration;
+import packed.internal.inject.builder.DefaultContainerConfiguration;
 
 /** Various container wiring options. */
 public final class ContainerWiringOptions {
@@ -58,7 +58,7 @@ public final class ContainerWiringOptions {
     }
 
     public static WiringOption overrideName(String name) {
-        return new AbstractContainerConfiguration.OverrideNameWiringOption(name);
+        return new DefaultContainerConfiguration.OverrideNameWiringOption(name);
     }
 
     public static WiringOption main(String... args) {

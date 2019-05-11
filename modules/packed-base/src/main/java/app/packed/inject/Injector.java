@@ -30,7 +30,7 @@ import app.packed.util.Taggable;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.SimpleInjectorConfiguratorImpl;
-import packed.internal.inject.builder.InjectorBuilder;
+import packed.internal.inject.builder.ContainerBuilder;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -280,7 +280,7 @@ public interface Injector extends Taggable {
      */
     static Injector of(Bundle bundle, WiringOption... operations) {
         requireNonNull(bundle, "bundle is null");
-        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
         bundle.doConfigure(builder);
         return builder.buildInjector();
     }
@@ -294,7 +294,7 @@ public interface Injector extends Taggable {
      */
     static Injector of(Consumer<SimpleInjectorConfigurator> configurator, WiringOption... operations) {
         requireNonNull(configurator, "configurator is null");
-        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, operations);
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, operations);
         configurator.accept(new SimpleInjectorConfiguratorImpl(builder));
         return builder.buildInjector();
     }

@@ -21,7 +21,7 @@ import app.packed.inject.Factory;
 import packed.internal.invokable.InternalFunction;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
-public final class InjectSupport {
+public final class AppPackedInjectSupport {
 
     /**
      * Extracts the internal factory from the specified factory

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 
 import app.packed.inject.Injector;
 import app.packed.inject.SimpleInjectorConfigurator;
-import packed.internal.bundle.BundleSupport;
+import packed.internal.bundle.AppPackedBundleSupport;
 
 // Wire vs link....
 
@@ -61,7 +61,7 @@ import packed.internal.bundle.BundleSupport;
 public abstract class WiringOption {
 
     static {
-        BundleSupport.Helper.init(new BundleSupport.Helper() {
+        AppPackedBundleSupport.Helper.init(new AppPackedBundleSupport.Helper() {
 
             @Override
             public List<WiringOption> extractWiringOperations(WiringOption[] operations, Class<?> type) {

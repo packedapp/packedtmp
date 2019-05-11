@@ -27,7 +27,7 @@ import app.packed.inject.InjectionException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
-import packed.internal.bundle.BundleSupport;
+import packed.internal.bundle.AppPackedBundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependencyDescriptor;
@@ -46,19 +46,19 @@ abstract class AbstractWiring {
     final InternalConfigurationSite configurationSite;
 
     /** The configuration of the injector that binding another bundle or injector. */
-    final InjectorBuilder injectorConfiguration;
+    final ContainerBuilder injectorConfiguration;
 
     /** The wiring operations. */
     final List<WiringOption> operations;
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
+    AbstractWiring(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
         this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOption> stages) {
+    AbstractWiring(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOption> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
@@ -80,9 +80,9 @@ abstract class AbstractWiring {
         // Process each stage
         for (WiringOption operation : operations) {
             if (operation instanceof WiringOption) {
-                BundleSupport.invoke().startWireOperation(operation);
+                AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
-                BundleSupport.invoke().finishWireOperation(operation);
+                AppPackedBundleSupport.invoke().finishWireOperation(operation);
             }
         }
 
@@ -97,7 +97,7 @@ abstract class AbstractWiring {
     private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(WiringOption stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
         // Find @Provides, lookup class
 
-        ImportExportDescriptor ied = ImportExportDescriptor.from(BundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
+        ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {
             for (InternalDependencyDescriptor s : m.dependencies) {
