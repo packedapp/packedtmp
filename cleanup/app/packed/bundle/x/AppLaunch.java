@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.WiringOperation;
 
 /**
  *
@@ -42,7 +42,7 @@ public class AppLaunch implements Runnable {
      *
      * @throws UnsupportedOperationException
      *             if the bundle is not runnable (has at least one component). Maybe throw this from
-     *             {@link #of(Bundle, OldWiringOperation...)}
+     * 
      */
     @Override
     public void run() {
@@ -71,11 +71,11 @@ public class AppLaunch implements Runnable {
      *            an optional array of wiring operation
      * @return the new application
      */
-    public static AppLaunch of(Bundle bundle, OldWiringOperation... operations) {
+    public static AppLaunch of(Bundle bundle, WiringOperation... operations) {
         return null;
     }
 
-    public static AppLaunch of(Bundle bundle, String[] args, OldWiringOperation... operations) {
+    public static AppLaunch of(Bundle bundle, String[] args, WiringOperation... operations) {
         return null;
     }
 }

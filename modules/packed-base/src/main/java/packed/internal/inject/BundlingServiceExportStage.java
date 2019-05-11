@@ -15,7 +15,7 @@
  */
 package packed.internal.inject;
 
-import app.packed.bundle.DownstreamWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 
@@ -48,12 +48,12 @@ import app.packed.util.Key;
 // Ellers k
 public class BundlingServiceExportStage {
 
-    public static final DownstreamWiringOperation ACCEPT_REQUIRED = null;
+    public static final WiringOperation ACCEPT_REQUIRED = null;
 
-    public static final DownstreamWiringOperation ACCEPT_REQUIRED_MANDATORYs = null;
+    public static final WiringOperation ACCEPT_REQUIRED_MANDATORYs = null;
 
     /** An export stage, that ignores all optional dependencies */
-    public static final DownstreamWiringOperation IGNORE_OPTIONAL = null;
+    public static final WiringOperation IGNORE_OPTIONAL = null;
 
     protected void filter(ServiceConfiguration<?> configuration) {
         // if (configuration.getKey() isN)

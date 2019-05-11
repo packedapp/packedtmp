@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
@@ -218,9 +218,9 @@ public class InjectorBuilder extends AbstractContainerConfiguration {
         return box.services();
     }
 
-    public void wireInjector(Bundle bundle, OldWiringOperation... stages) {
+    public void wireInjector(Bundle bundle, WiringOperation... stages) {
         requireNonNull(bundle, "bundle is null");
-        List<OldWiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
+        List<WiringOperation> listOfStages = BundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
@@ -232,9 +232,9 @@ public class InjectorBuilder extends AbstractContainerConfiguration {
         injectorBundleBindings.add(is);
     }
 
-    public final void wireInjector(Injector injector, OldWiringOperation... operations) {
+    public final void wireInjector(Injector injector, WiringOperation... operations) {
         requireNonNull(injector, "injector is null");
-        List<OldWiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
+        List<WiringOperation> wiringOperations = BundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);

@@ -18,7 +18,6 @@ package app.packed.bundle.x;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.OldWiringOperation;
 import app.packed.inject.Provides;
 
 /**
@@ -42,7 +41,7 @@ import app.packed.inject.Provides;
 // Two types of operations
 // Operations that requires that a bundle is patchable
 // Operations that does not require it
-public class ConfigureWiringOperation extends OldWiringOperation {
+public class ConfigureWiringOperation {
 
     /** Creates a new operation. */
     protected ConfigureWiringOperation() {}
@@ -55,9 +54,7 @@ public class ConfigureWiringOperation extends OldWiringOperation {
      *            a lookup object that can be used for accessing member on subclasses, such as methods annotated with
      *            {@link Provides}.
      */
-    protected ConfigureWiringOperation(MethodHandles.Lookup lookup) {
-        super(lookup);
-    }
+    protected ConfigureWiringOperation(MethodHandles.Lookup lookup) {}
 
     /**
      * Returns a wiring operation that opens a bundle.

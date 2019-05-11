@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 import app.packed.util.Taggable;
@@ -278,7 +278,7 @@ public interface Injector extends Taggable {
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
-    static Injector of(Bundle bundle, OldWiringOperation... operations) {
+    static Injector of(Bundle bundle, WiringOperation... operations) {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
         bundle.doConfigure(builder);

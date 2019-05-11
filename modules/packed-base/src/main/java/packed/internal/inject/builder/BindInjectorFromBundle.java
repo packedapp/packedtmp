@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.DownstreamWiringOperation;
-import app.packed.bundle.OldWiringOperation;
+import app.packed.bundle.WiringOperation;
 import app.packed.util.Key;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -32,7 +31,7 @@ final class BindInjectorFromBundle extends AbstractWiring {
 
     final InjectorBuilder newConfiguration;
 
-    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<OldWiringOperation> stages) {
+    BindInjectorFromBundle(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOperation> stages) {
         super(injectorConfiguration, configurationSite, bundle, stages);
         this.newConfiguration = new InjectorBuilder(configurationSite, bundle);
     }
@@ -46,8 +45,8 @@ final class BindInjectorFromBundle extends AbstractWiring {
     }
 
     void processExport() {
-        for (OldWiringOperation s : operations) {
-            if (s instanceof DownstreamWiringOperation) {
+        for (WiringOperation s : operations) {
+            if (s instanceof WiringOperation) {
                 throw new UnsupportedOperationException();
             }
         }
