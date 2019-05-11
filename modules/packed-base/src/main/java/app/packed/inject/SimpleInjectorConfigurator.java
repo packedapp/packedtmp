@@ -28,9 +28,9 @@ import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
 
 /**
- * A lightweight configuration object used to create a simple {@link Injector} via {@link Injector#of(Consumer)}. This
- * is thought of a alternative to using a {@link Bundle}. Unlike bundles all services are automatically exported once
- * defined.
+ * A lightweight configuration object used to create a simple {@link Injector} via
+ * {@link Injector#of(Consumer, WiringOption...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
+ * bundles all services are automatically exported once defined.
  */
 // Taenker vi kan lave den som klasse....
 // Basalt set skal den bare wrappe en ContainerConfiguration.... vel ogsaa implementere den????
