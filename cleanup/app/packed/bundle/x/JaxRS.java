@@ -1,4 +1,4 @@
-package packed.internal.container;
+package app.packed.bundle.x;
 
 import app.packed.contract.Contract;
 
