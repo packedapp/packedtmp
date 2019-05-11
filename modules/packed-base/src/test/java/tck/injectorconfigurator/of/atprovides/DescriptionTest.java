@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provides;
 
 /** Tests {@link Provides#description()}. */
@@ -45,7 +45,7 @@ public class DescriptionTest {
         assertThat(i.getDescriptor(Integer.class).get().description()).isEmpty();
     }
 
-    private static Injector of(Consumer<? super SimpleInjectorConfigurator> consumer) {
+    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
         return Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

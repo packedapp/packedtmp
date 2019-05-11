@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Extension;
 import app.packed.lifecycle.OnStart;
@@ -28,11 +29,9 @@ import packed.internal.inject.builder.ContainerBuilder;
 /**
  * An extension used with injection.
  */
-public final class InjectorExtension extends Extension<InjectorExtension> {
 
-    ContainerBuilder builder() {
-        return (ContainerBuilder) super.configuration;
-    }
+// manualRequirementManagement(); Do we need or can we just say that we should extend this contract?
+public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /**
      * Adds the specified key to the list of optional services.
@@ -60,6 +59,10 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     public void autoRequire() {
         builder().serviceAutoRequire();
+    }
+
+    private ContainerBuilder builder() {
+        return (ContainerBuilder) super.configuration;
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
@@ -165,4 +168,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     // And then wrap it in ComponentServiceConfiguration....
     // void ServiceConfiguration<?> provide(ComponentConfiguration configuration);
+
+    public void provideAll(Injector injector, WiringOption... operations) {
+        builder().provideAll(injector, operations);
+    }
 }

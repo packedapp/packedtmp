@@ -151,7 +151,7 @@ public class Factory<T> {
     /**
      * If this factory is registered as a service with an {@link Injector}. This method returns the (default) key that will
      * be used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
-     * factory is used to register a service, for example, via {@link SimpleInjectorConfigurator#provide(Factory)}. This
+     * factory is used to register a service, for example, via {@link InjectorConfigurator#provide(Factory)}. This
      * method returns the key for which the factory
      * 
      * Returns the key for which this factory will be registered, this can be overridden, for example, by calling

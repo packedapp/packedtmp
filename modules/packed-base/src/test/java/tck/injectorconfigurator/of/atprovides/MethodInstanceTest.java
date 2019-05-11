@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
@@ -121,7 +121,7 @@ public class MethodInstanceTest {
             return s;
         }
 
-        static void test(Consumer<? super SimpleInjectorConfigurator> configurator) {
+        static void test(Consumer<? super InjectorConfigurator> configurator) {
             Injector i = Injector.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);

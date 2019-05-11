@@ -36,7 +36,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
@@ -57,7 +57,7 @@ import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.invokable.InternalFunction;
 
 /**
- * A builder of {@link Injector injectors}. Is both used via {@link SimpleInjectorConfigurator}.
+ * A builder of {@link Injector injectors}. Is both used via {@link InjectorConfigurator}.
  */
 public class ContainerBuilder extends DefaultContainerConfiguration {
 
@@ -344,7 +344,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         injectorBundleBindings.add(is);
     }
 
-    public final void wireInjector(Injector injector, WiringOption... operations) {
+    public final void provideAll(Injector injector, WiringOption... operations) {
         requireNonNull(injector, "injector is null");
         List<WiringOption> wiringOperations = AppPackedBundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
         checkConfigurable();

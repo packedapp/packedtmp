@@ -112,7 +112,7 @@ public class InjectorConfigurationSiteTest {
 
         Injector i2 = Injector.of(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
-            c.wireInjector(i);
+            c.provideAll(i);
         });
 
         ConfigSite cs = i2.getDescriptor(Integer.class).get().configurationSite();
@@ -125,7 +125,7 @@ public class InjectorConfigurationSiteTest {
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.of(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
-            c.wireInjector(i2);
+            c.provideAll(i2);
         });
 
         cs = i3.getDescriptor(Integer.class).get().configurationSite();

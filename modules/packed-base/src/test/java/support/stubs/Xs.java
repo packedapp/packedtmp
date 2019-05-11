@@ -33,7 +33,7 @@ public class Xs {
         });
 
         Injector i2 = Injector.of(c -> {
-            c.wireInjector(i, ServiceWiringOperations.peekImports(e -> {
+            c.provideAll(i, ServiceWiringOperations.peekImports(e -> {
                 new Exception().printStackTrace();
                 // System.out.println("Available " + e.getKey() + new Exception().printStackTrace());
             }), ServiceWiringOperations.retainImports(String.class));

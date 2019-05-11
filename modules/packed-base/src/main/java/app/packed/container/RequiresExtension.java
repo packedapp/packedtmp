@@ -21,6 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.inject.InjectorExtension;
+import app.packed.inject.ProvidesHelper;
+
 /**
  *
  */
@@ -31,6 +34,38 @@ import java.lang.annotation.Target;
 // OnComponent
 // OnMixin
 // UsesExtension
+
+// Vi har en @RequiresInjection annotation....
+// Den er taenkt til at indikere at man kan injecte parameterene i @OnStart metoder...
+// Saa dependencies fra dem kan blive taget med i BundleContracten....
+
 public @interface RequiresExtension {
     Class<? extends Extension<?>> value();
 }
+
+@interface InjectableTarget {
+    Class<?>[] helperClasses();
+}
+
+@InjectableTarget(helperClasses = ProvidesHelper.class)
+@RequiresExtension(InjectorExtension.class)
+@interface NewProvides {}
+// In one @XMethod(extensions = InjectorExtension.class, injectSupported = true, injectHelperClasses =
+// ProvidesHelper.class)
+//// Alternativt skal
+
+// Alternativ kan annotere helper classes???
+// @AvailableFor(Provides.class)
+// public ProvidesHelper
+// Downside, any one can annotere deres klasses....
+// Upside, ProvidesHelper can only be injected into methods annotated with @Provides
+
+/// Aabner ogsaa op for at man Annotere tilfaeldig objecter med en annoterering.
+///// Hvor man har en raekke dependencies, for at lave et nyt pbject.
+///// En metoder faar saa automatisk dependencies, til at de dependencies der skal bruges til at lave objectet...
+///// fe.sk
+
+// @Special Class
+// class Calculater(Math m, Stuff s)
+// hvis man refererer til Calcul
+/// Det bliver noedt til at vaere en fejl hvis man direkte proever at registrere den

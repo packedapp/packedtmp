@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
+import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
@@ -54,10 +55,14 @@ public interface App extends Injector, AutoCloseable {
     /**
      * Returns the name of this application.
      * <p>
+     * The name is always identical to the name of the top level container in the application.
+     * <p>
      * If no name is explicitly set when configuring the application, the runtime will generate a (on a best-effort basis)
      * unique name.
      *
      * @return the name of this application
+     * @see ContainerConfiguration#setName(String)
+     * @see Bundle#setName(String)
      */
     String name();
 

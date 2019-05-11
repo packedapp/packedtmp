@@ -25,7 +25,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.util.InvalidDeclarationException;
@@ -82,7 +82,7 @@ public class QualifierTest {
         assertThat(i.use(new Key<Long>() {})).isEqualTo(1L);
     }
 
-    private static Injector of(Consumer<? super SimpleInjectorConfigurator> consumer) {
+    private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
         return Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);

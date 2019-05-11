@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
+import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.util.Nullable;
@@ -96,6 +97,11 @@ public abstract class AnyBundle {
         return configuration.extensionTypes();
     }
 
+    @Nullable
+    protected final String getDescription() {
+        return configuration().getDescription();
+    }
+
     /**
      * Returns the name of the container or null if the name has not been set.
      *
@@ -128,6 +134,25 @@ public abstract class AnyBundle {
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
 
+    protected final ContainerConfiguration setDescription(@Nullable String description) {
+        return configuration().setDescription(description);
+    }
+
+    /**
+     * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
+     * '_', '-' or '.'. The name is case sensitive.
+     * <p>
+     * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
+     * such a way that it will have a unique name among other sibling container.
+     *
+     * @param name
+     *            the name of the container
+     * @see #getName()
+     * @see ContainerConfiguration#setName(String)
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     */
     protected final void setName(@Nullable String name) {
         configuration.setName(name);
     }
@@ -139,17 +164,17 @@ public abstract class AnyBundle {
     protected final BundleLink wire(AnyBundle child, WiringOption... operations) {
         return configuration().wire(child, operations);
     }
-
-    // alternative is some kind of builder....
-
-    // installXX
-    // Der er lidt bootstrap metoder...for staaet paa den maade, at man kan saette lidt ting op.
-    // som bliver koert inde configure(), og nogle ting der bliver koert efter....
-    // Also, som finishItem configuration
-
-    // Ville vaere saa sindsygt, hvis vi kunne definere Bundle (BaseBundle) paa den her maade
-    // Og med en api, der kan bruges af andre ogsaa...
-    // skal vi have en spi pakke??? nahhhhh
-
-    // Layer!...! Aahhh shit det bliver noget meta hullumhej...
 }
+
+// alternative is some kind of builder....
+
+// installXX
+// Der er lidt bootstrap metoder...for staaet paa den maade, at man kan saette lidt ting op.
+// som bliver koert inde configure(), og nogle ting der bliver koert efter....
+// Also, som finishItem configuration
+
+// Ville vaere saa sindsygt, hvis vi kunne definere Bundle (BaseBundle) paa den her maade
+// Og med en api, der kan bruges af andre ogsaa...
+// skal vi have en spi pakke??? nahhhhh
+
+// Layer!...! Aahhh shit det bliver noget meta hullumhej...

@@ -23,7 +23,7 @@ import app.packed.util.Taggable;
 
 /**
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various
- * provide methods located on {@link SimpleInjectorConfigurator} or {@link Bundle}.
+ * provide methods located on {@link InjectorConfigurator} or {@link Bundle}.
  */
 public interface ServiceConfiguration<T> extends Taggable {
 

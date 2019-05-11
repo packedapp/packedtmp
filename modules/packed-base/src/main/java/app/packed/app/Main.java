@@ -40,3 +40,6 @@ public @interface Main {
     boolean overridable() default true;
 }
 // https://en.wikipedia.org/wiki/Entry_point
+
+// Cli kan vel ogsaa bruges paa en injector????
+// Nahhh

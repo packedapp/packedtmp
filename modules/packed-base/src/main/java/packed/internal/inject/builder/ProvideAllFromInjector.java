@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.internal.inject.builder;
+
+import static java.util.Objects.requireNonNull;
+
+import app.packed.inject.Injector;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  *
  */
-// We should not use injector..
+public class ProvideAllFromInjector extends ProvideAll {
 
-public interface InjectHelper {
-    // Context, Helpers and other stuff
+    final Injector injector;
 
-    // A descriptors of all dependencies that are available for injection...
+    public ProvideAllFromInjector(InternalConfigurationSite configurationSite, Injector injector) {
+        super(configurationSite);
+        this.injector = requireNonNull(injector, "injector is null");
+    }
 }

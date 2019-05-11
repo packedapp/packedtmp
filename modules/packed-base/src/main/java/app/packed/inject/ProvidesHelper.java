@@ -55,7 +55,7 @@ import packed.internal.inject.InjectionSiteForKey;
  * </pre>
  */
 
-// Rename to ProvidesHelper, then we can save Context for other stuff. And say helper is always used for
+// Rename to ProvidesHelper, then we can save Context for other stuff. And say helper is always used for additional
 
 // InjectionSite.. Is a bit misleasing because of Injector.get();
 // DependencyRequest

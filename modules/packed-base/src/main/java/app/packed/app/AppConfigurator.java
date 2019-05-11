@@ -23,7 +23,7 @@ import app.packed.container.ComponentInstaller;
 import app.packed.container.Container;
 import app.packed.container.ContainerActionable;
 import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.Nullable;
 
@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
  * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
  * 
  * <p>
- * This interface extends {@link SimpleInjectorConfigurator} with functionality for:
+ * This interface extends {@link InjectorConfigurator} with functionality for:
  * <ul>
  * <li>Installing components that should be available from the container, at least one component must be installed</li>
  * <li>Registering callbacks that will be executed on certain syncpoints</li>
@@ -44,8 +44,11 @@ import app.packed.util.Nullable;
 // Bundle vs Configurator
 //// Hmmm, altsaa vi har Bundle, fordi det er den letteste maade at inkapsle ting...
 //// Maaske skal vi slet ikke supportere generiske configuratorer...
-//// Problemet er dog de protectede metoder...
-public interface AppConfigurator extends SimpleInjectorConfigurator, ComponentInstaller {
+//// Men det jo super meget lettere....
+
+//// Den basale ide er at ingen ting er encapsulated...
+// Alt bliver auto exporteret...
+public interface AppConfigurator extends ComponentInstaller {
 
     /**
      * Returns the name of the container or null if the name has not been set.
@@ -114,10 +117,8 @@ public interface AppConfigurator extends SimpleInjectorConfigurator, ComponentIn
      * @param description
      *            a (nullable) description of this injector
      * @return this configuration
-     * @see #getDescription()
      * @see Injector#description()
      */
-    @Override
     AppConfigurator setDescription(@Nullable String description);
 
     /**
@@ -146,8 +147,7 @@ public interface AppConfigurator extends SimpleInjectorConfigurator, ComponentIn
      * @param stages
      *            import export stages
      */
-    void wireContainer(Bundle bundle, WiringOption... stages);
-
+    void wire(Bundle bundle, WiringOption... stages);
     // change of() <- to async start (this includes bundles then, but then we cannot create a bundled container, without
     // starting it)
     // IDeen er at have

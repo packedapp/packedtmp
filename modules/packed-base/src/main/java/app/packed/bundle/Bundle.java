@@ -28,10 +28,9 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
 
@@ -197,6 +196,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     protected final Layer mainLayer(Layer... predecessors) {
+        // Layers are an AnyBundle thingy...
         // Can only be called once???
         throw new UnsupportedOperationException();
     }
@@ -241,7 +241,7 @@ public abstract class Bundle extends AnyBundle {
      * @param implementation
      *            the implementation to bind
      * @return a service configuration for the service
-     * @see SimpleInjectorConfigurator#provide(Class)
+     * @see InjectorConfigurator#provide(Class)
      */
     // Rename to Provide@
     protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
@@ -276,18 +276,6 @@ public abstract class Bundle extends AnyBundle {
 
     protected final void serviceAutoRequire() {
         injector().autoRequire();
-    }
-
-    /**
-     * Sets the description of the injector or container.
-     * 
-     * @param description
-     *            the description of the injector or container
-     * @see SimpleInjectorConfigurator#setDescription(String)
-     * @see Injector#description()
-     */
-    protected final void setDescription(@Nullable String description) {
-        configuration().setDescription(description);
     }
 
     protected final Set<String> tags() {

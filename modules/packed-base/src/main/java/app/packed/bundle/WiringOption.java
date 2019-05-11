@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.inject.Injector;
-import app.packed.inject.SimpleInjectorConfigurator;
+import app.packed.inject.InjectorConfigurator;
 import packed.internal.bundle.AppPackedBundleSupport;
 
 // Wire vs link....
@@ -33,7 +33,7 @@ import packed.internal.bundle.AppPackedBundleSupport;
 // Klasse -> Vi kan have protected metoder
 /**
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
- * {@link SimpleInjectorConfigurator#wireInjector(Injector, WiringOption...)} or
+ * {@link InjectorConfigurator#provideAll(Injector, WiringOption...)} or
  * 
  * <p>
  * A typical usage for wiring operations is for rebinding services under another key when wiring an injector into
@@ -58,6 +58,8 @@ import packed.internal.bundle.AppPackedBundleSupport;
 
 //// ExportTransient -> Meaning everything is exported out again from the bundle
 //// exportTransient(Filter) <-Kunne ogsaa vaere paa WiredBundle
+
+// operation vs option...
 public abstract class WiringOption {
 
     static {

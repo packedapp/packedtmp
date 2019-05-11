@@ -15,26 +15,55 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
+import app.packed.container.ContainerConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
+import packed.internal.inject.builder.ContainerBuilder;
 
 /**
- * A lightweight configuration object used to create a simple {@link Injector} via
+ * A lightweight configuration object that can be used to create {@link Injector injectors} via
  * {@link Injector#of(Consumer, WiringOption...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
- * bundles all services are automatically exported once defined.
+ * bundles all services are automatically exported once defined. For example useful in tests.
+ * 
+ * <p>
+ * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
+ * default.
  */
-// Taenker vi kan lave den som klasse....
-// Basalt set skal den bare wrappe en ContainerConfiguration.... vel ogsaa implementere den????
-public interface SimpleInjectorConfigurator extends Taggable {
+public class InjectorConfigurator implements Taggable {
+
+    /** The configuration we delegate all calls to. */
+    private final ContainerConfiguration configuration;
+
+    /**
+     * Creates a new configurator
+     * 
+     * @param configuration
+     *            the configuration to wrap
+     */
+    public InjectorConfigurator(ContainerConfiguration configuration) {
+        this.configuration = requireNonNull(configuration, "configuration is null");
+    }
+
+    /**
+     * Returns the container configuration that was used to create this configurator.
+     * 
+     * @return the container configuration that was used to create this configurator
+     */
+    protected final ContainerConfiguration configuration() {
+        return configuration;
+    }
 
     /**
      * Returns the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
@@ -44,7 +73,18 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * @see #setDescription(String)
      */
     @Nullable
-    String getDescription();
+    public final String getDescription() {
+        return configuration.getDescription();
+    }
+
+    /**
+     * Returns an instance of the injector extension.
+     * 
+     * @return an instance of the injector extension
+     */
+    private InjectorExtension injector() {
+        return configuration.use(InjectorExtension.class);
+    }
 
     /**
      * Sets a {@link Lookup lookup object} that will be used to access members (fields, constructors and methods) on
@@ -63,7 +103,9 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * @param lookup
      *            the lookup object
      */
-    void lookup(MethodHandles.Lookup lookup);
+    public final void lookup(Lookup lookup) {
+        configuration.lookup(lookup);
+    }
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
@@ -96,7 +138,7 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * @return a service configuration for the service
      * @see Bundle#provide(Class)
      */
-    default <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+    public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
         return provide(Factory.findInjectable(implementation));
     }
 
@@ -112,7 +154,9 @@ public interface SimpleInjectorConfigurator extends Taggable {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    <T> ServiceConfiguration<T> provide(Factory<T> factory);
+    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+        return injector().provide(factory);
+    }
 
     /**
      * Binds the specified instance as a new service.
@@ -127,56 +171,13 @@ public interface SimpleInjectorConfigurator extends Taggable {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    <T> ServiceConfiguration<T> provide(T instance);
-
-    default <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
+    public final <T> ServiceConfiguration<T> provide(T instance) {
+        return injector().provide(instance);
     }
 
-    /**
-     * If useful, for example,
-     * 
-     * 
-     * 
-     * service must either be an instance, or only have static
-     * 
-     * @param staticsHolder
-     *            stuff
-     * 
-     * @throws InvalidDeclarationException
-     *             if, provides members are non-static
-     */
-    void registerStatics(Class<?> staticsHolder); // use statics
-
-    // /**
-    // * @param bundleType
-    // * the type of bundle to instantiate
-    // * @param stages
-    // * optional stages
-    // */
-    // default void wireInjector(Class<? extends Bundle> bundleType, WiringOperation... stages) {
-    // wireInjector(Bundles.instantiate(bundleType), stages);
-    // }
-
-    /**
-     * Sets the (nullable) description of the injector, the description can later be obtained via
-     * {@link Injector#description()}.
-     *
-     * @param description
-     *            a (nullable) description of this injector
-     * @return this configuration
-     * @see #getDescription()
-     * @see Injector#description()
-     */
-    SimpleInjectorConfigurator setDescription(@Nullable String description);
-
-    /**
-     * @param bundle
-     *            the bundle to bind
-     * @param stages
-     *            optional import/export stages
-     */
-    void wireInjector(Bundle bundle, WiringOption... stages);
+    public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return provide(Factory.findInjectable(implementation));
+    }
 
     /**
      * Binds all services from the specified injector.
@@ -188,7 +189,7 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * 
      * Injector importTo = Injector.of(c -&gt; {
      *   c.bind(12345); 
-     *   c.injectorBind(importFrom);
+     *   c.provideAll(importFrom);
      * });
      * 
      * System.out.println(importTo.with(String.class));// prints "foostring"}}
@@ -205,19 +206,69 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * });
      * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
      * Injector i = Injector.of(c -&gt; {
-     *   c.injectorBind(importTo, InjectorImportStage.reject(Integer.class));
+     *   c.provideAll(importTo, InjectorImportStage.reject(Integer.class));
      * });
      * </pre> @param injector the injector to bind services from
      * 
      * @param injector
      *            the injector to import services from
-     * @param stages
+     * @param options
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
      *             if the specified stages are not instance all instance of {@link WiringOption} or combinations (via
      *             {@link WiringOption#andThen(WiringOption)} thereof
      */
-    void wireInjector(Injector injector, WiringOption... stages);
+    public final void provideAll(Injector injector, WiringOption... options) {
+        injector().provideAll(injector, options);
+    }
+
+    /**
+     * If useful, for example,
+     * 
+     * 
+     * 
+     * service must either be an instance, or only have static
+     * 
+     * @param staticsHolder
+     *            stuff
+     * 
+     * @throws InvalidDeclarationException
+     *             if, provides members are non-static
+     */
+    public final void registerStatics(Class<?> staticsHolder) {
+        ((ContainerBuilder) configuration).registerStatics(staticsHolder);
+    }
+
+    /**
+     * Sets the (nullable) description of the injector, the description can later be obtained via
+     * {@link Injector#description()}.
+     *
+     * @param description
+     *            a (nullable) description of this injector
+     * @return this configuration
+     * @see #getDescription()
+     * @see Injector#description()
+     */
+    public final InjectorConfigurator setDescription(@Nullable String description) {
+        configuration.setDescription(description);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Set<String> tags() {
+        return configuration.tags();
+    }
+
+    /**
+     * @param bundle
+     *            the bundle to bind
+     * @param stages
+     *            optional import/export stages
+     */
+    public final void wireInjector(Bundle bundle, WiringOption... stages) {
+        ((ContainerBuilder) configuration).wireInjector(bundle, stages);
+    }
 }
 // addStatics(); useStatics()
 // @OnHook

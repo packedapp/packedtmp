@@ -29,7 +29,6 @@ import app.packed.util.Key;
 import app.packed.util.Taggable;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.SimpleInjectorConfiguratorImpl;
 import packed.internal.inject.builder.ContainerBuilder;
 
 /**
@@ -111,7 +110,7 @@ public interface Injector extends Taggable {
      * Returns an optional description of this injector.
      *
      * @return an optional description of this injector
-     * @see SimpleInjectorConfigurator#setDescription(String)
+     * @see InjectorConfigurator#setDescription(String)
      * @see Bundle#setDescription(String)
      */
     Optional<String> description();
@@ -292,10 +291,12 @@ public interface Injector extends Taggable {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<SimpleInjectorConfigurator> configurator, WiringOption... operations) {
+    static Injector of(Consumer<InjectorConfigurator> configurator, WiringOption... operations) {
         requireNonNull(configurator, "configurator is null");
+        // Hmm vi burde have en public version af ContainerBuilder
+        // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
         ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, operations);
-        configurator.accept(new SimpleInjectorConfiguratorImpl(builder));
+        configurator.accept(new InjectorConfigurator(builder));
         return builder.buildInjector();
     }
 }
