@@ -27,6 +27,13 @@ import app.packed.util.Nullable;
 /**
  * A generic bundle. Normally you would extend {@link Bundle}
  */
+
+// A bundle can be used by one thread at a time...
+// However, once configured once. It cannot be changed...
+// Saa dette burde virke
+// Bundle b = new SomeBundle();
+// wire(b, setName("f1"));
+// wire(b, setName("f2"));
 public abstract class AnyBundle {
 
     /** The configuration. */

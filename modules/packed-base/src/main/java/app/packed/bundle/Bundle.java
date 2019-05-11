@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 
 import app.packed.app.App;
-import app.packed.app.AppWiringOptions;
 import app.packed.container.ComponentInstaller;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
+import app.packed.container.ContainerWiringOptions;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -359,11 +359,11 @@ public abstract class Bundle extends AnyBundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    static protected void run(Bundle bundle, String[] args, WiringOperation... operations) {
-        run(bundle, AppWiringOptions.main(args).andThen(operations));
+    static protected void run(Bundle bundle, String[] args, WiringOption... operations) {
+        run(bundle, ContainerWiringOptions.main(args).andThen(operations));
     }
 
-    static protected void run(Bundle bundle, WiringOperation... operations) {
+    static protected void run(Bundle bundle, WiringOption... operations) {
         App.run(bundle, operations);
     }
 }

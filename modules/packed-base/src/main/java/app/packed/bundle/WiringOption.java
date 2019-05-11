@@ -32,7 +32,7 @@ import packed.internal.bundle.BundleSupport;
 // Klasse -> Vi kan have protected metoder
 /**
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
- * {@link SimpleInjectorConfigurator#wireInjector(Injector, WiringOperation...)} or
+ * {@link SimpleInjectorConfigurator#wireInjector(Injector, WiringOption...)} or
  * 
  * <p>
  * A typical usage for wiring operations is for rebinding services under another key when wiring an injector into
@@ -57,30 +57,36 @@ import packed.internal.bundle.BundleSupport;
 
 //// ExportTransient -> Meaning everything is exported out again from the bundle
 //// exportTransient(Filter) <-Kunne ogsaa vaere paa WiredBundle
-public abstract class WiringOperation {
+public abstract class WiringOption {
 
     static {
         BundleSupport.Helper.init(new BundleSupport.Helper() {
 
             @Override
-            public List<WiringOperation> extractWiringOperations(WiringOperation[] operations, Class<?> type) {
+            public List<WiringOption> extractWiringOperations(WiringOption[] operations, Class<?> type) {
                 return ComposedWiringOperation.operationsExtract(operations, type);
             }
 
             /** {@inheritDoc} */
             @Override
-            public void finishWireOperation(WiringOperation operation) {
+            public void finishWireOperation(WiringOption operation) {
                 // operation.onFinish();
             }
 
             @Override
-            public Lookup lookupFromWireOperation(WiringOperation operation) {
+            public Lookup lookupFromWireOperation(WiringOption operation) {
                 throw new UnsupportedOperationException();
             }
 
             /** {@inheritDoc} */
             @Override
-            public void startWireOperation(WiringOperation operation) {
+            public void process(WiringOption operation, BundleLink link) {
+                operation.process(link);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public void startWireOperation(WiringOption operation) {
                 operation.process(null);
             }
         });
@@ -106,31 +112,31 @@ public abstract class WiringOperation {
      * @return a composed {@code WiringOperation} that performs in sequence this operation followed by the {@code after}
      *         operation
      */
-    public final WiringOperation andThen(WiringOperation after) {
+    public final WiringOption andThen(WiringOption after) {
         return compose(this, requireNonNull(after, "after is null"));
     }
 
-    public final WiringOperation andThen(WiringOperation... nextOperations) {
-        ArrayList<WiringOperation> l = new ArrayList<>();
+    public final WiringOption andThen(WiringOption... nextOperations) {
+        ArrayList<WiringOption> l = new ArrayList<>();
         l.add(this);
         l.addAll(List.of(nextOperations));
-        return compose(l.toArray(i -> new WiringOperation[i]));
+        return compose(l.toArray(i -> new WiringOption[i]));
     }
 
     // protected void validate(); Validates that the operation can be used
 
     protected abstract void process(BundleLink link);
 
-    static WiringOperation disableConfigSet() {
+    static WiringOption disableConfigSet() {
         // Man skal vel ogsaa kunne enable den igen....
         throw new UnsupportedOperationException();
     }
 
-    static WiringOperation lookup(MethodHandles.Lookup lookup) {
+    static WiringOption lookup(MethodHandles.Lookup lookup) {
         throw new UnsupportedOperationException();
     }
 
-    static WiringOperation provide(Object o) {
+    static WiringOption provide(Object o) {
         // Is this service instead???
         // Bootstrap
 
@@ -145,20 +151,20 @@ public abstract class WiringOperation {
      * @param operations
      *            the operations to combine
      * @return a new combined operation
-     * @see #andThen(WiringOperation)
-     * @see #andThen(WiringOperation...)
+     * @see #andThen(WiringOption)
+     * @see #andThen(WiringOption...)
      */
-    public static WiringOperation compose(WiringOperation... operations) {
+    public static WiringOption compose(WiringOption... operations) {
         return new ComposedWiringOperation(operations);
     }
 
     /** An operation that combines multiple operations. */
-    static final class ComposedWiringOperation extends WiringOperation {
+    static final class ComposedWiringOperation extends WiringOption {
 
         /** The stages that have been combined */
-        private final List<WiringOperation> operations;
+        private final List<WiringOption> operations;
 
-        ComposedWiringOperation(WiringOperation... operations) {
+        ComposedWiringOperation(WiringOption... operations) {
             this.operations = List.of(requireNonNull(operations, "operations is null"));
         }
 
@@ -175,22 +181,22 @@ public abstract class WiringOperation {
             return sb.toString();
         }
 
-        static List<WiringOperation> operationsExtract(WiringOperation[] operations, Class<?> type) {
+        static List<WiringOption> operationsExtract(WiringOption[] operations, Class<?> type) {
             requireNonNull(operations, "operations is null");
             if (operations.length == 0) {
                 return List.of();
             }
-            ArrayList<WiringOperation> result = new ArrayList<>(operations.length);
-            for (WiringOperation s : operations) {
+            ArrayList<WiringOption> result = new ArrayList<>(operations.length);
+            for (WiringOption s : operations) {
                 requireNonNull(s, "The specified array of operations contained a null");
                 operationsExtract0(s, type, result);
             }
             return List.copyOf(result);
         }
 
-        private static void operationsExtract0(WiringOperation o, Class<?> type, ArrayList<WiringOperation> result) {
+        private static void operationsExtract0(WiringOption o, Class<?> type, ArrayList<WiringOption> result) {
             if (o instanceof ComposedWiringOperation) {
-                for (WiringOperation ies : ((ComposedWiringOperation) o).operations) {
+                for (WiringOption ies : ((ComposedWiringOperation) o).operations) {
                     operationsExtract0(ies, type, result);
                 }
             } else {
@@ -200,7 +206,7 @@ public abstract class WiringOperation {
 
         @Override
         protected void process(BundleLink link) {
-            for (WiringOperation wo : operations) {
+            for (WiringOption wo : operations) {
                 wo.process(link);
             }
         }

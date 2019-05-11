@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
@@ -176,7 +176,7 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * @param stages
      *            optional import/export stages
      */
-    void wireInjector(Bundle bundle, WiringOperation... stages);
+    void wireInjector(Bundle bundle, WiringOption... stages);
 
     /**
      * Binds all services from the specified injector.
@@ -214,10 +214,10 @@ public interface SimpleInjectorConfigurator extends Taggable {
      * @param stages
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link WiringOperation} or combinations (via
-     *             {@link WiringOperation#andThen(WiringOperation)} thereof
+     *             if the specified stages are not instance all instance of {@link WiringOption} or combinations (via
+     *             {@link WiringOption#andThen(WiringOption)} thereof
      */
-    void wireInjector(Injector injector, WiringOperation... stages);
+    void wireInjector(Injector injector, WiringOption... stages);
 }
 // addStatics(); useStatics()
 // @OnHook

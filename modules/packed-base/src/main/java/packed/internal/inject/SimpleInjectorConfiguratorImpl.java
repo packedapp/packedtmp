@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceConfiguration;
@@ -77,12 +77,12 @@ public class SimpleInjectorConfiguratorImpl implements SimpleInjectorConfigurato
     }
 
     @Override
-    public void wireInjector(Bundle bundle, WiringOperation... stages) {
+    public void wireInjector(Bundle bundle, WiringOption... stages) {
         builder.wireInjector(bundle, stages);
     }
 
     @Override
-    public void wireInjector(Injector injector, WiringOperation... stages) {
+    public void wireInjector(Injector injector, WiringOption... stages) {
         builder.wireInjector(injector, stages);
     }
 }

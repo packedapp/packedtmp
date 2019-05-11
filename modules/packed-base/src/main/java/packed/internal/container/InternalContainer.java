@@ -42,12 +42,18 @@ public class InternalContainer implements Container {
     /** The root component of the container. */
     private final InternalComponent root;
 
+    private final String name;
+
     InternalContainer(ContainerBuilder builder, Injector injector) {
         this.injector = requireNonNull(injector);
+        if (builder.root != null) {
+            builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
+            this.root = requireNonNull(builder.root.component);
+        } else {
+            this.root = null;
+        }
 
-        builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
-
-        this.root = requireNonNull(builder.root.component);
+        this.name = builder.getName() == null ? "App" : builder.getName();
     }
 
     @Override
@@ -129,11 +135,10 @@ public class InternalContainer implements Container {
     /** {@inheritDoc} */
     @Override
     public String name() {
+        return name;
         // Det eneste jeg ved er at man godt kan have 2 containere med det samme navn som sieblings.
         // installContainer(Jetty.class); //Maaske man kan bestemme root component navnet???
         // installContainer(Jetty.class);//Maaske man kan bestemme root component navnet???
-        // Hmmmmmmmmmmm
-        return "Unknown";// name of root component????, no name //JettyWebserver.
     }
 
     public Component root() {

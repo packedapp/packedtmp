@@ -21,7 +21,7 @@ import java.util.TimeZone;
 import java.util.function.Function;
 
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -35,7 +35,7 @@ import app.packed.util.Nullable;
  * 
  * 
  */
-public abstract class ServiceWiringImportOperation extends WiringOperation {
+public abstract class ServiceWiringImportOperation extends WiringOption {
 
     /**
      * Processes each service.
@@ -51,8 +51,6 @@ public abstract class ServiceWiringImportOperation extends WiringOperation {
         throw new UnsupportedOperationException();
     }
 }
-
-class WiringOption {}
 
 class XImportVer2 {
 
@@ -79,7 +77,7 @@ class XImportVer2 {
         throw new UnsupportedOperationException();
     }
 
-    public static <T, S> WiringOperation adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
+    public static <T, S> WiringOption adapt(Key<T> key1, Key<T> newKey1, Function<S, T> f) {
         // Nahhh kun supporte provides her.. Evt. Factory...
         throw new UnsupportedOperationException();
 

@@ -13,15 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package packed.internal.inject.builder;
+
+import app.packed.app.App;
+import app.packed.bundle.Bundle;
 
 /**
  *
  */
-// Or Secrets... I think it conveys it better... But what is a good name for Attachable
-public interface Attachable {
+public class Ggg2 extends Bundle {
 
-    default AttachmentMap attachments() {
-        throw new UnsupportedOperationException();
+    public static void main(String[] args) {
+        App app = App.of(new Ggg2());
+
+        System.out.println(app.services().count() + "");
+        System.out.println(app.use(String.class));
+
+        System.out.println(app.name());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        setName("MyApppp");
+        provide("asdsad");
+        export(String.class);
     }
 }

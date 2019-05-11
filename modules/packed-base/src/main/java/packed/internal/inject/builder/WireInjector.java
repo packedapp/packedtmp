@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.inject.Injector;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -41,7 +41,7 @@ final class WireInjector extends AbstractWiring {
      * @param injector
      * @param stages
      */
-    WireInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<WiringOperation> stages) {
+    WireInjector(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Injector injector, List<WiringOption> stages) {
         super(injectorConfiguration, configurationSite, stages);
         this.injector = requireNonNull(injector, "injector is null");
     }

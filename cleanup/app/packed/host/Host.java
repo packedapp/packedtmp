@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import app.packed.app.App;
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentInstaller;
 import app.packed.contract.Contract;
 
@@ -99,7 +99,7 @@ public interface Host {
      *             if the an application with the specified name has already been deployed
      */
     // Den skal hedde noejagtig det samme som de statiske metoder paa App.
-    App deploy(Bundle bundle, WiringOperation... options);
+    App deploy(Bundle bundle, WiringOption... options);
 
     /**
      * Deploys the specified bundle as a application using the specified options.
@@ -113,7 +113,7 @@ public interface Host {
      */
     void run(Bundle bundle, String... args);
 
-    void run(Bundle bundle, WiringOperation... options);
+    void run(Bundle bundle, WiringOption... options);
 
     /**
      * Undeploys the specified application. If the application has not already been shutdown. Invoking this method will

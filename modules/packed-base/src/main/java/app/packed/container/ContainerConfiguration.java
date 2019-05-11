@@ -20,7 +20,7 @@ import java.util.Set;
 
 import app.packed.bundle.AnyBundle;
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.util.Nullable;
 
 /**
@@ -136,7 +136,7 @@ public interface ContainerConfiguration {
      *            optional wiring options
      * @return a bundle link
      */
-    BundleLink wire(AnyBundle child, WiringOperation... options);
+    BundleLink wire(AnyBundle child, WiringOption... options);
 
     Set<String> tags();
 }

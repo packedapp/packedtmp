@@ -15,6 +15,8 @@
  */
 package packed.internal.app;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.Set;
@@ -23,20 +25,20 @@ import java.util.stream.Stream;
 
 import app.packed.app.App;
 import app.packed.config.ConfigSite;
+import app.packed.container.Container;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
-import packed.internal.container.InternalContainer;
 
 /**
  *
  */
 public final class InternalApp implements App {
 
-    final InternalContainer container;
+    final Container container;
 
-    public InternalApp() {
-        this.container = null;
+    public InternalApp(Container container) {
+        this.container = requireNonNull(container);
     }
 
     /** {@inheritDoc} */

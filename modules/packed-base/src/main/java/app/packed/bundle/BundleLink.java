@@ -16,6 +16,7 @@
 package app.packed.bundle;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerConfiguration;
 import app.packed.util.Attachable;
 
 /**
@@ -48,6 +49,8 @@ public interface BundleLink extends Attachable {
 
     // Vi kan ikke returnere Bundle. Saa vil vi finde en der finder paa at kalde BundleDescriptor.of()....
     Class<? extends AnyBundle> childType();
+
+    ContainerConfiguration cc();
 
     // Use what??? Only think we have secrets... Vi kan jo ikke bare hive en extension ud, og begynde at modificere den...
     // Eller d.v.s. de skulle gerne vaere Unconfigurable....Men alligevel saa er der vel noget information vi ikke vil have

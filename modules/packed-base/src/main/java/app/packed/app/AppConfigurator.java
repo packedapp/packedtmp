@@ -18,7 +18,7 @@ package app.packed.app;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentInstaller;
 import app.packed.container.Container;
 import app.packed.container.ContainerActionable;
@@ -146,7 +146,7 @@ public interface AppConfigurator extends SimpleInjectorConfigurator, ComponentIn
      * @param stages
      *            import export stages
      */
-    void wireContainer(Bundle bundle, WiringOperation... stages);
+    void wireContainer(Bundle bundle, WiringOption... stages);
 
     // change of() <- to async start (this includes bundles then, but then we cannot create a bundled container, without
     // starting it)

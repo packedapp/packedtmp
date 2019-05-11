@@ -21,13 +21,14 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import app.packed.bundle.AnyBundle;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
@@ -61,20 +62,24 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     @Nullable
     private String name;
 
+    public final List<WiringOption> options;
+
     /**
      * @param configurationSite
      */
-    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite) {
+    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, WiringOption... options) {
         super(configurationSite);
         this.bundle = null;
+        this.options = List.of(options);
     }
 
     /**
      * @param configurationSite
      */
-    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, Bundle bundle) {
+    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, Bundle bundle, WiringOption... options) {
         super(configurationSite);
         this.bundle = requireNonNull(bundle);
+        this.options = List.of(options);
     }
 
     /** {@inheritDoc} */
@@ -112,7 +117,7 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     @Override
     public final void setName(@Nullable String name) {
         checkConfigurable();
-        this.name = name;
+        this.name = checkName(name);
     }
 
     @Override
@@ -125,7 +130,34 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     }
 
     @Override
-    public final BundleLink wire(AnyBundle child, WiringOperation... options) {
+    public final BundleLink wire(AnyBundle child, WiringOption... options) {
         throw new UnsupportedOperationException();
+    }
+
+    private static String checkName(String name) {
+        return name;
+    }
+
+    /** A wiring option that overrides any existing container name. */
+    public static class OverrideNameWiringOption extends WiringOption {
+
+        /** The (checked) name to override with. */
+        private final String name;
+
+        /**
+         * Creates a new option
+         * 
+         * @param name
+         *            the name to override any existing container name with
+         */
+        public OverrideNameWiringOption(String name) {
+            this.name = checkName(name);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected void process(BundleLink link) {
+            ((AbstractContainerConfiguration) link.cc()).name = name;
+        }
     }
 }

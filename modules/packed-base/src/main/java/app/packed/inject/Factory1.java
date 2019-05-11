@@ -34,7 +34,7 @@ import packed.internal.invokable.Function1Invokeable;
  *
  * <pre>{@code
  *   InjectorBuilder builder = new InjectorBuilder();
- *   builder.bind(new FunctionFactory<>(System::currentTimeMillis)).setDescription("Startup Time");}
+ *   builder.bind(new Factory1<>(System::currentTimeMillis).setDescription("Startup Time"){};}
  * </pre>
  * <p>
  * You can also use annotations on the dependency's type parameter. For example, say you have a {@link Qualifier} that

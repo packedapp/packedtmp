@@ -22,10 +22,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
+import packed.internal.app.InternalApp;
+import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.ContainerBuilder;
 
 /**
  * A application is a program.
@@ -130,16 +134,19 @@ public interface App extends Injector, AutoCloseable {
      * @throws RuntimeException
      *             if the container could not be created
      */
-    static App of(Bundle bundle, WiringOperation... operations) {
-        throw new UnsupportedOperationException();
+    static App of(Bundle bundle, WiringOption... operations) {
+        requireNonNull(bundle, "bundle is null");
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, operations);
+        bundle.doConfigure(builder);
+        return new InternalApp(builder.build());
     }
 
-    static App of(Consumer<? super AppConfigurator> configurator, WiringOperation... operations) {
+    static App of(Consumer<? super AppConfigurator> configurator, WiringOption... operations) {
         requireNonNull(configurator, "configurator is null");
         throw new UnsupportedOperationException();
     }
 
-    static void run(Bundle bundle, WiringOperation... operations) {
+    static void run(Bundle bundle, WiringOption... operations) {
         // Hedder execute, for ikke at navnene minder for meget om hinanden (run + running)
         // Vi skal ogsaa
         throw new UnsupportedOperationException();

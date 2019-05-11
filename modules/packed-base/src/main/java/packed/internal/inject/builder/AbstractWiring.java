@@ -22,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
 import app.packed.inject.InjectionException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -49,16 +49,16 @@ abstract class AbstractWiring {
     final InjectorBuilder injectorConfiguration;
 
     /** The wiring operations. */
-    final List<WiringOperation> operations;
+    final List<WiringOption> operations;
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
         this.bundle = requireNonNull(bundle, "bundle is null");
     }
 
-    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOperation> stages) {
+    AbstractWiring(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOption> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
@@ -78,8 +78,8 @@ abstract class AbstractWiring {
             }
         }
         // Process each stage
-        for (WiringOperation operation : operations) {
-            if (operation instanceof WiringOperation) {
+        for (WiringOption operation : operations) {
+            if (operation instanceof WiringOption) {
                 BundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
                 BundleSupport.invoke().finishWireOperation(operation);
@@ -94,7 +94,7 @@ abstract class AbstractWiring {
         }
     }
 
-    private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(WiringOperation stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
+    private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(WiringOption stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
         // Find @Provides, lookup class
 
         ImportExportDescriptor ied = ImportExportDescriptor.from(BundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());

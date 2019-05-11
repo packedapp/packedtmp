@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.container;
 
 import java.lang.module.Configuration;
 import java.util.concurrent.CancellationException;
@@ -21,23 +21,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOperation;
+import app.packed.bundle.WiringOption;
+import packed.internal.inject.builder.AbstractContainerConfiguration;
 
-/**
- * These wiring options can only be used on top level containers... // Hvorfor????
- */
-// DisableAutomaticStart, for example from use(DDD.class)
-// banner() <- onInitialize, onStartup()... Action on a particlar lifecycle????
-// installShutdownHook() <- Maybe, share one, and then add to list
+/** Various container wiring options. */
+public final class ContainerWiringOptions {
 
-// disableConfigSite <- IsHierachical...
-// App Options is maybe better...
-public final class AppWiringOptions {
-
-    private AppWiringOptions() {}
+    private ContainerWiringOptions() {}
 
     /**
-     * Sets a maximum time for the application to run. When the deadline podpodf the app is shutdown.
+     * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.
      * 
      * @param timeout
      *            the timeout
@@ -47,15 +40,15 @@ public final class AppWiringOptions {
      */
     // These can only be used with a TopContainer with lifecycle...
     // Container will be shutdown normally after the specified timeout
-    public static WiringOperation timeToLive(long timeout, TimeUnit unit) {
+    public static WiringOption timeToLive(long timeout, TimeUnit unit) {
         // Shuts down container normally
         throw new UnsupportedOperationException();
     }
 
-    public static WiringOperation timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
+    public static WiringOption timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
         timeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
         // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
-        return new WiringOperation() {
+        return new WiringOption() {
 
             @Override
             protected void process(BundleLink link) {
@@ -64,12 +57,16 @@ public final class AppWiringOptions {
         };
     }
 
-    public static WiringOperation main(String... args) {
+    public static WiringOption overrideName(String name) {
+        return new AbstractContainerConfiguration.OverrideNameWiringOption(name);
+    }
+
+    public static WiringOption main(String... args) {
         // but why not for Injector also...
         throw new UnsupportedOperationException();
     }
 
-    public static WiringOperation config(Configuration c) {
+    public static WiringOption config(Configuration c) {
         // This is for App, but why not for Injector also...
         // we need config(String) for wire()..... configOptional() also maybe...
         // Would be nice.. if config extends WiringOperations
@@ -82,18 +79,3 @@ public final class AppWiringOptions {
 
     // force start, initialize, await start...
 }
-// AppManifest
-// AppSettings
-// Could also be Consumer<? super AppOptions>
-
-//// Time to live is from when the container has moved to running...
-// public AppLaunch setTimeToLive(long timeout, TimeUnit unit) {
-// // Container will be shutdown normally after the specified timeout
-// return this;
-// }
-//
-// public AppLaunch setTimeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
-// setTimeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
-// return this; // Will be shutdown using this
-// }
-//// setTimeToLive(
