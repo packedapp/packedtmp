@@ -27,9 +27,10 @@ import app.packed.bundle.WiringOperation;
  * These wiring options can only be used on top level containers... // Hvorfor????
  */
 // DisableAutomaticStart, for example from use(DDD.class)
-// banner() <- onInitialize, onStartup()
+// banner() <- onInitialize, onStartup()... Action on a particlar lifecycle????
 // installShutdownHook() <- Maybe, share one, and then add to list
 
+// disableConfigSite <- IsHierachical...
 // App Options is maybe better...
 public final class AppWiringOptions {
 

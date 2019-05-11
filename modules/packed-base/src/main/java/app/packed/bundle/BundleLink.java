@@ -15,6 +15,9 @@
  */
 package app.packed.bundle;
 
+import app.packed.config.ConfigSite;
+import app.packed.util.Attachable;
+
 /**
  *
  */
@@ -24,10 +27,32 @@ package app.packed.bundle;
 // Deploy
 // Execute
 // Link (link = container, wire = any)
-public interface BundleLink {
 
-    // Use what??? Only think we have secrets....
-    <T> T use(Class<T> clazz);
+// The first operation we do in a Container could link().. So we know nothing about the parent.
+// Other than it is either a host or a Bundle...
+public interface BundleLink extends Attachable {
+
+    /**
+     * Returns the place where the bundle was linked.
+     * 
+     * @return the place where the bundle was linked
+     */
+    ConfigSite configSite();
+
+    // parent (permanent) secrets
+    // child (permanent) secrets
+
+    // Link secrets (temporary) (Link secrets have there own tmp hierachi I think)
+    // D.v.s. top level containeren. Hvis de ikke har en faelles top level extension...
+    // Saa kan de ikke kommunikere....
+
+    // Vi kan ikke returnere Bundle. Saa vil vi finde en der finder paa at kalde BundleDescriptor.of()....
+    Class<? extends AnyBundle> childType();
+
+    // Use what??? Only think we have secrets... Vi kan jo ikke bare hive en extension ud, og begynde at modificere den...
+    // Eller d.v.s. de skulle gerne vaere Unconfigurable....Men alligevel saa er der vel noget information vi ikke vil have
+    // ud... F.eks. alle interne services...
+    // <T> T use(Class<T> clazz);
 
     // AnyBundleDescriptor from();
     // AnyBundleDescriptor to();
@@ -35,10 +60,9 @@ public interface BundleLink {
     // onParent, onChild, maa have mulighed for installere en service af en eller anden form
     // Som vi saa kan hive ud her
 
-    // use(InjectorConfiguration).
-
     // WiringOperations, could be an abstract class taking Requirements in the constructor...
     // Or the object we use could have an requiresExtension
+    // Hvilket foerst kan checkes i postProcess() fordi vi bliver noedt til at configurere bundlen foerst...
 
     Mode mode();
 
@@ -51,7 +75,9 @@ public interface BundleLink {
 
         LINK;
 
-        public void checkDeploy() {}
+        public void checkDeploy() {
+            // List belastende vi ikke kan skrive f.eks. FFF Wiring operations requires DeployMode
+        }
 
         public void checkExecute() {}
 

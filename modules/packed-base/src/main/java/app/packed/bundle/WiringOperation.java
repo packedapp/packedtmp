@@ -69,6 +69,11 @@ public abstract class WiringOperation {
         throw new UnsupportedOperationException();
     }
 
+    static WiringOperation disableConfigSet() {
+        // Man skal vel ogsaa kunne enable den igen....
+        throw new UnsupportedOperationException();
+    }
+
     static WiringOperation lookup(MethodHandles.Lookup lookup) {
         throw new UnsupportedOperationException();
     }
