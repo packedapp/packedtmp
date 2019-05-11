@@ -66,8 +66,6 @@ public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
 
     @SuppressWarnings("unchecked")
     public <T> ServiceNode<T> getRecursive(Key<T> type) {
-        // System.out.println("Looking for " + type);
-        // System.out.println("Contents " + map.keySet());
         ServiceNode<T> node = (ServiceNode<T>) nodes.get(type);
         if (node == null && parent != null) {
             return parent.getRecursive(type);

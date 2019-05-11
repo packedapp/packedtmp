@@ -352,7 +352,6 @@ public final class InternalDependencyDescriptor implements DependencyDescriptor 
 
         // TL is free from Optional
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(variable, tl, a);
-        System.out.println(key);
 
         return new InternalDependencyDescriptor(key, optionalType, variable);
     }

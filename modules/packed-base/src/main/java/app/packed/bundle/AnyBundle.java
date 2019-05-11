@@ -39,25 +39,6 @@ public abstract class AnyBundle {
     /** The configuration. */
     private ContainerConfiguration configuration;
 
-    /**
-     * Returns the container configuration that this bundle wraps.
-     * 
-     * @return the container configuration that this bundle wraps
-     * @throws IllegalStateException
-     *             if called outside {@link #configure()}
-     */
-    protected final ContainerConfiguration configuration() {
-        ContainerConfiguration c = configuration;
-        if (c == null) {
-            throw new IllegalStateException(
-                    "This method can only be called from within a bundles #configure() method. Maybe you tried to call #configure() directly");
-        }
-        return c;
-    }
-
-    /** Configures the bundle using the various inherited methods that are available. */
-    protected abstract void configure();
-
     /** Whether or not {@link #configure()} has been invoked. */
     boolean isFrozen;
 
@@ -83,6 +64,25 @@ public abstract class AnyBundle {
         }
     }
 
+    /**
+     * Returns the container configuration that this bundle wraps.
+     * 
+     * @return the container configuration that this bundle wraps
+     * @throws IllegalStateException
+     *             if called outside {@link #configure()}
+     */
+    protected final ContainerConfiguration configuration() {
+        ContainerConfiguration c = configuration;
+        if (c == null) {
+            throw new IllegalStateException(
+                    "This method can only be called from within a bundles #configure() method. Maybe you tried to call #configure() directly");
+        }
+        return c;
+    }
+
+    /** Configures the bundle using the various inherited methods that are available. */
+    protected abstract void configure();
+
     public final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;
         try {
@@ -101,7 +101,7 @@ public abstract class AnyBundle {
      *
      * @return the name of the container or null if the name has not been set
      * @see #setName(String)
-     * @see ContainerConfiguration#setName(String)
+     * @see ContainerConfiguration#getName()
      */
     @Nullable
     protected final String getName() {
@@ -136,9 +136,10 @@ public abstract class AnyBundle {
         return configuration.use(extensionType);
     }
 
-    // protected final ContainerLink wire(AnyBundle child, WiringOption... operations) {
-    // return configuration().wire(child);
-    // }
+    protected final BundleLink wire(AnyBundle child, WiringOption... operations) {
+        return configuration().wire(child, operations);
+    }
+
     // alternative is some kind of builder....
 
     // installXX

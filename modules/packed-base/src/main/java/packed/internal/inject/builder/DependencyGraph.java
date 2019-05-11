@@ -118,7 +118,7 @@ final class DependencyGraph {
         analyze(root);
 
         // Instantiate all singletons
-        System.out.println(root.box.services().exports);
+        // System.out.println(root.box.services().exports);
 
         for (ServiceNode<?> node : root.box.services().nodes) {
             if (node instanceof ServiceBuildNodeDefault) {

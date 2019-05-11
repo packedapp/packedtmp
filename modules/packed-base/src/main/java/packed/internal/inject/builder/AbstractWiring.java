@@ -109,8 +109,6 @@ abstract class AbstractWiring {
 
         // Make runtime nodes....
 
-        // System.out.println("Any provides " + !ied.provides.isEmpty());
-
         HashMap<Key<?>, ServiceBuildNodeImport<?>> newNodes = new HashMap<>();
 
         for (Iterator<ServiceBuildNodeImport<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {

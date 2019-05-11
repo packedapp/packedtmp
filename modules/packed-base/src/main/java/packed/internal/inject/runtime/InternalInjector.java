@@ -65,7 +65,7 @@ public final class InternalInjector extends AbstractInjector {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
         for (ServiceNode<?> n : nodes) {
-            System.out.println(n);
+            System.out.println("Failed Get " + n);
             // if (n instanceof RuntimeNode<T>)
         }
         super.failedGet(key);

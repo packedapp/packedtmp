@@ -15,8 +15,6 @@
  */
 package app.packed.bundle;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Set;
 
 import app.packed.app.App;
@@ -313,12 +311,6 @@ public abstract class Bundle extends AnyBundle {
     // protected final <T> ComponentConfiguration<T> install(T instance) {
     // return containerBuilderX().install(instance);
     // }
-
-    protected final BundleLink wire(Bundle child) {
-        requireNonNull(child, "child is null");
-        throw new UnsupportedOperationException();
-        // return new WiredBundle(this, );
-    }
 
     // or have mainLayer() and then
     // newEmptyLayer(String name, includeMainAsSuccessor, BundleLayer... )

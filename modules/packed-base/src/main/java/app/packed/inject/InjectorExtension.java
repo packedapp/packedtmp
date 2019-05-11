@@ -104,7 +104,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
-        return ((ContainerBuilder) builder).installService(implementation);
+        return ((ContainerBuilder) builder).installService(Factory.findInjectable(implementation));
     }
 
     /**
@@ -123,7 +123,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
-        return ((ContainerBuilder) builder).installService(implementation);
+        return ((ContainerBuilder) builder).installService(Factory.findInjectable(implementation));
     }
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 

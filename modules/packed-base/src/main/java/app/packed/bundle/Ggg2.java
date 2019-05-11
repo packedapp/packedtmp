@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package app.packed.bundle;
 
 import app.packed.app.App;
-import app.packed.bundle.Bundle;
 
 /**
  *
@@ -24,10 +23,19 @@ import app.packed.bundle.Bundle;
 public class Ggg2 extends Bundle {
 
     public static void main(String[] args) {
-        App app = App.of(new Ggg2());
+        App app = App.of(new Ggg2(), new WiringOption() {
 
-        System.out.println(app.services().count() + "");
-        System.out.println(app.use(String.class));
+            @Override
+            protected void process(BundleLink link) {
+                System.out.println("Du er sgu ret sej Kasper");
+                // System.out.println(link.configSite());
+            }
+        });
+
+        // app = App.of(new Ggg2(), WiringOption.of(l -> System.out.println("cool")));
+
+        // System.out.println(app.services().count() + "");
+        // System.out.println(app.use(String.class));
 
         System.out.println(app.name());
     }
@@ -38,5 +46,16 @@ public class Ggg2 extends Bundle {
         setName("MyApppp");
         provide("asdsad");
         export(String.class);
+
+        wire(new CBundle(), WiringOption.of(l -> System.out.println("cool baby-----")));
+    }
+
+    static class CBundle extends Bundle {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            setName("SomeChild");
+        }
     }
 }

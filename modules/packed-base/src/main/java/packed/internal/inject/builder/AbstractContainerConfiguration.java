@@ -19,10 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import app.packed.bundle.AnyBundle;
@@ -34,7 +33,9 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
+import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.ContainerBuilder;
 import packed.internal.util.AbstractConfiguration;
 
 /**
@@ -53,7 +54,7 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
     public final Bundle bundle;
 
     /** All outgoing links of this container, in order of installation order. */
-    final Map<String, BundleLink> containers = new HashMap<>();
+    final LinkedHashMap<String, BundleLink> containers = new LinkedHashMap<>();
 
     /** All extensions that have been installed for the container. */
     public final IdentityHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new IdentityHashMap<>();
@@ -64,21 +65,9 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
 
     public final List<WiringOption> options;
 
-    /**
-     * @param configurationSite
-     */
-    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, WiringOption... options) {
+    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
         super(configurationSite);
-        this.bundle = null;
-        this.options = List.of(options);
-    }
-
-    /**
-     * @param configurationSite
-     */
-    protected AbstractContainerConfiguration(InternalConfigurationSite configurationSite, Bundle bundle, WiringOption... options) {
-        super(configurationSite);
-        this.bundle = requireNonNull(bundle);
+        this.bundle = bundle;
         this.options = List.of(options);
     }
 
@@ -131,7 +120,10 @@ public abstract class AbstractContainerConfiguration extends AbstractConfigurati
 
     @Override
     public final BundleLink wire(AnyBundle child, WiringOption... options) {
-        throw new UnsupportedOperationException();
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, options);
+        child.doConfigure(builder);
+        builder.build();
+        return null;
     }
 
     private static String checkName(String name) {

@@ -282,7 +282,7 @@ public interface Injector extends Taggable {
         requireNonNull(bundle, "bundle is null");
         InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
         bundle.doConfigure(builder);
-        return builder.build();
+        return builder.buildInjector();
     }
 
     /**
@@ -292,11 +292,11 @@ public interface Injector extends Taggable {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<SimpleInjectorConfigurator> configurator) {
+    static Injector of(Consumer<SimpleInjectorConfigurator> configurator, WiringOption... operations) {
         requireNonNull(configurator, "configurator is null");
-        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF));
+        InjectorBuilder builder = new InjectorBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, operations);
         configurator.accept(new SimpleInjectorConfiguratorImpl(builder));
-        return builder.build();
+        return builder.buildInjector();
     }
 }
 

@@ -40,10 +40,10 @@ import packed.internal.util.Checks;
 public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T> implements ComponentServiceConfiguration<T> {
 
     /** A list of all children that have been added (lazily initialized). */
-    ArrayList<InternalComponentConfiguration<?>> children;
+    public ArrayList<InternalComponentConfiguration<?>> children;
 
     /** A map of all children that have been added whose name has been explicitly set (lazily initialized). */
-    HashMap<String, InternalComponentConfiguration<?>> childrenExplicitNamed;
+    public HashMap<String, InternalComponentConfiguration<?>> childrenExplicitNamed;
 
     /** The internal component, after it has been initialized. */
     InternalComponent component;
@@ -55,19 +55,19 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     final Thread initializationThread;
 
     /** A list of all mixins that have been added (lazily initialized). */
-    ArrayList<MixinNode> mixins;
+    public ArrayList<MixinNode> mixins;
 
     @Nullable
-    String name;
+    public String name;
 
     /** The parent of this configuration, or null for the root component. */
     @Nullable
     final InternalComponentConfiguration<?> parent;
 
     /** The object instances of the component, the array will be passed along to InternalComponent. */
-    Object[] instances;
+    public Object[] instances;
 
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
         this.parent = parent;
@@ -79,7 +79,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, T instance) {
         super(containerBuilder, configurationSite, descriptor, instance);
         this.parent = parent;
@@ -102,7 +102,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     }
 
     @Override
-    protected ComponentClassDescriptor descriptor() {
+    public ComponentClassDescriptor descriptor() {
         return (ComponentClassDescriptor) super.descriptor();
     }
 

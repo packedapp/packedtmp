@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import app.packed.inject.Injector;
 import app.packed.inject.SimpleInjectorConfigurator;
@@ -212,6 +213,17 @@ public abstract class WiringOption {
         }
     }
 
+    // Ved ikke om det er noget vi kommer til at bruge...
+    public static WiringOption of(Consumer<BundleLink> consumer) {
+        requireNonNull(consumer, "consumer is null");
+        return new WiringOption() {
+
+            @Override
+            protected void process(BundleLink link) {
+                consumer.accept(link);
+            }
+        };
+    }
     // Kunne vaere rart, hvis man f.eks. kunne
     // wire(SomeBundle.class, JaxRSSpec.v2_1.wireStrict());
     // wire(SomeBundle.class, JettySpec.v23_1.wireStrict());
