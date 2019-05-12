@@ -16,7 +16,6 @@
 package app.packed.container;
 
 import app.packed.inject.Factory;
-import app.packed.util.TypeLiteral;
 
 /**
  * A component installer that can install children
@@ -57,9 +56,7 @@ public interface ComponentInstaller {
      *            the factory used to instantiate the component instance
      * @return the configuration of the child component
      */
-    default ComponentConfiguration install(Factory<?> factory) {
-        return installService(factory);
-    }
+    ComponentConfiguration install(Factory<?> factory);
 
     /**
      * Installs a component a singleton component. lazy, prototype und so weiter will throw an
@@ -71,39 +68,38 @@ public interface ComponentInstaller {
      *            the component instance to install
      * @return the configuration of the child component
      */
-    default ComponentConfiguration install(Object instance) {
-        return installService(instance);
-    }
+    ComponentConfiguration install(Object instance);
 
-    /**
-     * Install the specified component implementation as a child of this component.
-     *
-     * @param <S>
-     *            the type of child component to install
-     * @param implementation
-     *            the component implementation to install
-     * @return the configuration of the child component
-     * @throws UnsupportedOperationException
-     *             if the installer does not support installing component services. For example, this is not allowed at
-     *             runtime.
-     */
-    default <S> ComponentServiceConfiguration<S> installService(Class<S> implementation) {
-        return installService(Factory.findInjectable(implementation));
-    }
-
-    /**
-     * Installs a new child to this configuration, which uses the specified factory to instantiate the component instance.
-     *
-     * @param <S>
-     *            the type of child component to install
-     * @param factory
-     *            the factory used to instantiate the component instance
-     * @return the configuration of the child component
-     * @throws UnsupportedOperationException
-     *             if the installer does not support installing component services. For example, this is not allowed at
-     *             runtime.
-     */
-    <S> ComponentServiceConfiguration<S> installService(Factory<S> factory);
+    //
+    // /**
+    // * Install the specified component implementation as a child of this component.
+    // *
+    // * @param <S>
+    // * the type of child component to install
+    // * @param implementation
+    // * the component implementation to install
+    // * @return the configuration of the child component
+    // * @throws UnsupportedOperationException
+    // * if the installer does not support installing component services. For example, this is not allowed at
+    // * runtime.
+    // */
+    // default <S> ComponentServiceConfiguration<S> installService(Class<S> implementation) {
+    // return installService(Factory.findInjectable(implementation));
+    // }
+    //
+    // /**
+    // * Installs a new child to this configuration, which uses the specified factory to instantiate the component instance.
+    // *
+    // * @param <S>
+    // * the type of child component to install
+    // * @param factory
+    // * the factory used to instantiate the component instance
+    // * @return the configuration of the child component
+    // * @throws UnsupportedOperationException
+    // * if the installer does not support installing component services. For example, this is not allowed at
+    // * runtime.
+    // */
+    // <S> ComponentServiceConfiguration<S> installService(Factory<S> factory);
 
     /**
      * Install the specified component instance as a child of this component.
@@ -117,9 +113,9 @@ public interface ComponentInstaller {
      *             if the installer does not support installing component services. For example, this is not allowed at
      *             runtime.
      */
-    <S> ComponentServiceConfiguration<S> installService(S instance);
-
-    default <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation) {
-        return installService(Factory.findInjectable(implementation));
-    }
+    // <S> ComponentServiceConfiguration<S> installService(S instance);
+    //
+    // default <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation) {
+    // return installService(Factory.findInjectable(implementation));
+    // }
 }

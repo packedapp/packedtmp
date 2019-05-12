@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentInstaller;
+import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.container.ContainerActionable;
 import app.packed.inject.Injector;
@@ -49,6 +50,8 @@ import app.packed.util.Nullable;
 //// Den basale ide er at ingen ting er encapsulated...
 // Alt bliver auto exporteret...
 public interface AppConfigurator extends ComponentInstaller {
+
+    <T> ComponentServiceConfiguration<T> provide(Class<T> implementation);
 
     /**
      * Returns the name of the container or null if the name has not been set.

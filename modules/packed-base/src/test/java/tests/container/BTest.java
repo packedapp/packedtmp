@@ -53,7 +53,8 @@ public class BTest {
         @Override
         protected void configure() {
             lookup(MethodHandles.lookup());
-            installService(Private.class).installService(PrivateImplementation.class);
+            provide(Private.class);
+            provide(PrivateImplementation.class);
 
         }
     }

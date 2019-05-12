@@ -21,18 +21,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import app.packed.container.ComponentConfiguration;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
 import packed.internal.classscan.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.buildtime.ContainerBuilder;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
+import packed.internal.inject.buildtime.ContainerBuilder;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
@@ -164,31 +164,6 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** {@inheritDoc} */
     @Override
-    public <S> ComponentServiceConfiguration<S> installService(Class<S> implementation) {
-        return installService(Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <S> ComponentServiceConfiguration<S> installService(Factory<S> factory) {
-        // Man kan installere child components indtil bundlen er faerdig...
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <S> ComponentServiceConfiguration<S> installService(S instance) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <S> ComponentServiceConfiguration<S> installService(TypeLiteral<S> implementation) {
-        return installService(Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public InternalComponentConfiguration<T> setDescription(String description) {
         super.setDescription(description);
         return this;
@@ -255,5 +230,17 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
             component = new InternalComponent(container, this, parent.component, false, getName());
             parent.component.children.put(component.name(), component);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration install(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration install(Object instance) {
+        throw new UnsupportedOperationException();
     }
 }

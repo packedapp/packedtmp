@@ -69,13 +69,13 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     final Box box;
 
+    /** All nodes that have been added to this builder, even those that are not exposed. */
+    AbstractConfigurableNode currentNode;
+
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
 
     InternalInjector privateInjector;
-
-    /** All nodes that have been added to this builder, even those that are not exposed. */
-    AbstractConfigurableNode currentNode;
 
     InternalInjector publicInjector;
 
