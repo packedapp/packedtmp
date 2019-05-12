@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -75,12 +75,12 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     InternalInjector privateInjector;
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
-    ServiceBuildNode<?> privateLatestNode;
+    AbstractConfigurableNode currentNode;
 
     InternalInjector publicInjector;
 
     @Nullable
-    final ArrayList<ServiceBuildNodeExported<?>> publicNodeList;
+    final ArrayList<BuildtimeServiceNodeExported<?>> publicNodeList;
 
     /** The root component, or null if no root component has been set yet. */
     @Nullable
@@ -92,9 +92,9 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
 
-    protected final <T> ServiceBuildNode<T> bindNode(ServiceBuildNode<T> node) {
-        assert privateLatestNode == null;
-        privateLatestNode = node;
+    protected final <T extends AbstractConfigurableNode> T bindNode(T node) {
+        assert currentNode == null;
+        currentNode = node;
         return node;
     }
 
@@ -182,7 +182,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         if (node == null) {
             throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         }
-        ServiceBuildNodeExported<T> bn = new ServiceBuildNodeExported<>(this, cs, node);
+        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(this, cs, node);
         bn.as(key);
         publicNodeList.add(bn);
         bindNode(bn);
@@ -197,21 +197,22 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     }
 
     public void freezeLatest() {
-        // Skal vi egentlig ikke ogsaa frysse noden????
-        if (privateLatestNode != null) {
-            Key<?> key = privateLatestNode.key();
-            if (key != null) {
-                if (privateLatestNode instanceof ServiceBuildNodeExported) {
-                    box.services().exports.put(privateLatestNode);
-                } else {
-                    if (!box.services().nodes.putIfAbsent(privateLatestNode)) {
-                        System.err.println("OOPS");
+        if (currentNode != null) {
+            if (currentNode instanceof BuildtimeServiceNode) {
+                BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) currentNode;
+                Key<?> key = node.key();
+                if (key != null) {
+                    if (node instanceof BuildtimeServiceNodeExported) {
+                        box.services().exports.put(node);
+                    } else {
+                        if (!box.services().nodes.putIfAbsent(node)) {
+                            System.err.println("OOPS");
+                        }
                     }
                 }
             }
-
-            privateLatestNode.freeze();
-            privateLatestNode = null;
+            currentNode.freeze();
+            currentNode = null;
         }
     }
 
@@ -276,7 +277,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
 
         ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(func.getReturnTypeRaw());
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func), (List) factory.dependencies());
+        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func),
+                (List) factory.dependencies());
 
         scanForProvides(func.getReturnTypeRaw(), node);
 
@@ -288,8 +290,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         checkConfigurable();
         freezeLatest();
         ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
-        ServiceBuildNodeDefault<T> node = new ServiceBuildNodeDefault<>(this, configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND),
-                serviceDesc, instance);
+        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(this,
+                configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
         scanForProvides(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
     }
@@ -298,7 +300,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    protected void scanForProvides(Class<?> type, ServiceBuildNodeDefault<?> owner) {
+    protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
         AtProvidesGroup provides = accessor.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
             owner.hasInstanceMembers = provides.hasInstanceMembers;

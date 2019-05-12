@@ -13,75 +13,76 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ProvidesHelper;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
+import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
 
-/**
- * A build node that is created when a service is exposed.
- */
-public final class ServiceBuildNodeExported<T> extends ServiceBuildNode<T> {
+/** A build node that imports a service from another injector. */
+public class BuildtimeServiceNodeProvideAll<T> extends BuildtimeServiceNode<T> {
 
-    /** The node that is exposed. */
-    final ServiceNode<T> exposureOf;
+    /** The node to import. */
+    final ServiceNode<T> other;
 
-    /**
-     * @param configuration
-     *            the injector configuration this node is being added to
-     * @param configurationSite
-     *            the configuration site of the exposure
-     */
-    public ServiceBuildNodeExported(ContainerBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
-        super(configuration, configurationSite, List.of());
-        this.exposureOf = requireNonNull(exposureOf);
-    }
+    /** The bind injector source. */
+    final ProvideAll binding;
 
-    @Override
-    @Nullable
-    ServiceBuildNode<?> declaringNode() {
-        // Skal vi ikke returnere exposureOf?? istedet for .declaringNode
-        return (exposureOf instanceof ServiceBuildNode) ? ((ServiceBuildNode<?>) exposureOf).declaringNode() : null;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    BuildtimeServiceNodeProvideAll(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideAll binding,
+            ServiceNode<T> node) {
+        super(injectorConfiguration, configurationSite, List.of());
+        this.other = requireNonNull(node);
+        this.binding = requireNonNull(binding);
+        this.as((Key) node.key());
+        this.setDescription(node.description().orElse(null));
+        this.tags().addAll(node.tags());
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return exposureOf.instantiationMode();
+        return other.instantiationMode();
+    }
+
+    @Override
+    @Nullable
+    BuildtimeServiceNode<?> declaringNode() {
+        return (other instanceof BuildtimeServiceNode) ? ((BuildtimeServiceNode<?>) other).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvidesHelper site) {
-        return null;
+        return other.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return false;
+        return other.needsInjectionSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return false;
+        return other.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
     RuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeServiceNodeAlias<>(this, exposureOf);
+        return new RuntimeServiceNodeDelegate<T>(this, other);
     }
 
     /** {@inheritDoc} */

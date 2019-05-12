@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,7 @@ import packed.internal.box.BoxServices;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.builder.DependencyGraphCycleDetector.DependencyCycle;
+import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.KeyBuilder;
 
@@ -39,7 +39,7 @@ final class DependencyGraph {
     static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), InternalInjector.class);
 
     /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<ServiceBuildNode<?>> detectCyclesFor;
+    ArrayList<BuildtimeServiceNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
     final ContainerBuilder root;
@@ -59,7 +59,7 @@ final class DependencyGraph {
     void analyze(ContainerBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.box.services().nodes);
         builder.box.services().nodes
-                .put(new ServiceBuildNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
+                .put(new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {
@@ -101,9 +101,9 @@ final class DependencyGraph {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<ServiceBuildNode<?>> stack = new ArrayDeque<>();
-        ArrayDeque<ServiceBuildNode<?>> dependencies = new ArrayDeque<>();
-        for (ServiceBuildNode<?> node : detectCyclesFor) {
+        ArrayDeque<BuildtimeServiceNode<?>> stack = new ArrayDeque<>();
+        ArrayDeque<BuildtimeServiceNode<?>> dependencies = new ArrayDeque<>();
+        for (BuildtimeServiceNode<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
@@ -121,8 +121,8 @@ final class DependencyGraph {
         // System.out.println(root.box.services().exports);
 
         for (ServiceNode<?> node : root.box.services().nodes) {
-            if (node instanceof ServiceBuildNodeDefault) {
-                ServiceBuildNodeDefault<?> s = (ServiceBuildNodeDefault<?>) node;
+            if (node instanceof BuildtimeServiceNodeDefault) {
+                BuildtimeServiceNodeDefault<?> s = (BuildtimeServiceNodeDefault<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
@@ -144,7 +144,7 @@ final class DependencyGraph {
         BoxServices services = graph.root.box.services();
 
         for (ServiceNode<?> nn : services.nodes) {
-            ServiceBuildNode<?> node = (ServiceBuildNode<?>) nn;
+            BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) nn;
             node.freeze();// Should be frozen, maybe change to an assert
 
             if (node.needsResolving()) {

@@ -29,7 +29,7 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.builder.ContainerBuilder;
+import packed.internal.inject.buildtime.ContainerBuilder;
 import packed.internal.util.KeyBuilder;
 
 /** The default implementation of {@link Injector}. */

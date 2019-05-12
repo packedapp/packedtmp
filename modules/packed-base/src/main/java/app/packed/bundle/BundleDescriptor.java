@@ -36,7 +36,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.builder.InternalBundleDescriptor;
+import packed.internal.inject.buildtime.InternalBundleDescriptor;
 
 /**
  * An immutable bundle descriptor.

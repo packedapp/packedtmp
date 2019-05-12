@@ -18,7 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
-import packed.internal.inject.builder.DefaultContainerConfiguration;
+import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public final class AppPackedContainerSupport {

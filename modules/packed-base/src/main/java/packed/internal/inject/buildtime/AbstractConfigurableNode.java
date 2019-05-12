@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,7 +29,7 @@ import packed.internal.config.site.InternalConfigurationSite;
  * An abstract configuration object. That provides basic support for strings tags, setting a description, and freezing a
  * configuration.
  */
-public abstract class AbstractConfiguration {
+public abstract class AbstractConfigurableNode {
 
     /** The configuration site of this object. */
     protected final InternalConfigurationSite configurationSite;
@@ -45,7 +45,7 @@ public abstract class AbstractConfiguration {
     @Nullable
     private AbstractConfigurableTagSet<String> tags;
 
-    protected AbstractConfiguration() {
+    protected AbstractConfigurableNode() {
         this.configurationSite = null;
     }
 
@@ -55,11 +55,11 @@ public abstract class AbstractConfiguration {
      * @param configurationSite
      *            the configuration site of the configuration
      */
-    protected AbstractConfiguration(InternalConfigurationSite configurationSite) {
+    protected AbstractConfigurableNode(InternalConfigurationSite configurationSite) {
         this.configurationSite = requireNonNull(configurationSite);
     }
 
-    protected void checkConfigurable() {
+    protected final void checkConfigurable() {
         if (isFrozen) {
             throw new IllegalStateException("This configuration has been frozen and can no longer be modified");
         }
@@ -97,6 +97,10 @@ public abstract class AbstractConfiguration {
         return tags == null ? Set.of() : tags.toImmutableSet();
     }
 
+    protected void onFreeze() {
+
+    }
+
     /**
      * Sets the description of this configuration.
      *
@@ -106,7 +110,7 @@ public abstract class AbstractConfiguration {
      * @throws IllegalStateException
      *             if this configuration can no longer be configured
      */
-    public AbstractConfiguration setDescription(String description) {
+    public AbstractConfigurableNode setDescription(String description) {
         checkConfigurable();
         this.description = description;
         return this;
@@ -122,7 +126,7 @@ public abstract class AbstractConfiguration {
         return tags == null ? this.tags = new AbstractConfigurableTagSet<>() {
             @Override
             protected void checkMutable() {
-                AbstractConfiguration.this.checkConfigurable();
+                AbstractConfigurableNode.this.checkConfigurable();
             }
         } : tags;
     }

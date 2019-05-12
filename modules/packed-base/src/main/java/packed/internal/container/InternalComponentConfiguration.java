@@ -31,13 +31,13 @@ import packed.internal.classscan.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.builder.ContainerBuilder;
-import packed.internal.inject.builder.ServiceBuildNodeDefault;
+import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
 /** The default implementation of {@link ComponentServiceConfiguration}. */
-public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T> implements ComponentServiceConfiguration<T> {
+public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentServiceConfiguration<T> {
 
     /** A list of all children that have been added (lazily initialized). */
     public ArrayList<InternalComponentConfiguration<?>> children;
@@ -225,7 +225,7 @@ public class InternalComponentConfiguration<T> extends ServiceBuildNodeDefault<T
     }
 
     /** A special build node that is used for mixins. */
-    static class MixinNode extends ServiceBuildNodeDefault<Object> {
+    static class MixinNode extends BuildtimeServiceNodeDefault<Object> {
 
         // /**
         // * @param injectorBuilder

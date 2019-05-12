@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,7 @@ import app.packed.util.Nullable;
 /** The default implementation of {@link ServiceDescriptor}. */
 public class InternalServiceDescriptor implements ServiceDescriptor {
 
-    /** The config site of the service. */
+    /** The configuration site of the service. */
     private final ConfigSite configurationSite;
 
     /** An optional description of the service. */

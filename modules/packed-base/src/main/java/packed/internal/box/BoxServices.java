@@ -34,7 +34,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.builder.ServiceBuildNode;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
@@ -48,10 +48,10 @@ public final class BoxServices {
     public final ServiceNodeMap exports;
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<Entry<ServiceBuildNode<?>, DependencyDescriptor>> missingDependencies;
+    private ArrayList<Entry<BuildtimeServiceNode<?>, DependencyDescriptor>> missingDependencies;
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<ServiceBuildNode<?>, List<DependencyDescriptor>> unresolvedDependencies;
+    IdentityHashMap<BuildtimeServiceNode<?>, List<DependencyDescriptor>> unresolvedDependencies;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     // SKAL VI lave en cache af noder der er slaaet op i andre boxe???
@@ -121,7 +121,7 @@ public final class BoxServices {
     public void checkForMissingDependencies() {
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (Entry<ServiceBuildNode<?>, DependencyDescriptor> e : missingDependencies) {
+            for (Entry<BuildtimeServiceNode<?>, DependencyDescriptor> e : missingDependencies) {
                 if (!e.getValue().isOptional() && !e.getKey().autoRequires) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
@@ -168,7 +168,7 @@ public final class BoxServices {
         }
     }
 
-    public void recordMissingDependency(ServiceBuildNode<?> node, DependencyDescriptor dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildtimeServiceNode<?> node, DependencyDescriptor dependency, boolean fromParent) {
 
     }
 
@@ -178,13 +178,13 @@ public final class BoxServices {
      * @param node
      * @param dependency
      */
-    public void recordResolvedDependency(ServiceBuildNode<?> node, DependencyDescriptor dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(BuildtimeServiceNode<?> node, DependencyDescriptor dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
         requireNonNull(node);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<Entry<ServiceBuildNode<?>, DependencyDescriptor>> m = missingDependencies;
+        ArrayList<Entry<BuildtimeServiceNode<?>, DependencyDescriptor>> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }

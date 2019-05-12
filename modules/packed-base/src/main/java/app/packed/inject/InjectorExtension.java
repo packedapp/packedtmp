@@ -24,8 +24,8 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.builder.ContainerBuilder;
-import packed.internal.inject.builder.ProvideAll;
+import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.inject.buildtime.ProvideAll;
 
 /**
  * An extension used with injection.

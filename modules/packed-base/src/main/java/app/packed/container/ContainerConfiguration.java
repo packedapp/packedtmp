@@ -21,6 +21,7 @@ import java.util.Set;
 import app.packed.bundle.AnyBundle;
 import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOption;
+import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
 /**
@@ -72,7 +73,13 @@ public interface ContainerConfiguration {
     @Nullable
     String getName();
 
+    ComponentConfiguration installNone(Class<?> implementation);
+
     ComponentConfiguration install(Object instance);
+
+    ComponentConfiguration install(Factory<?> factory);
+
+    ComponentConfiguration install(Class<?> implementation);
 
     /**
      * Registers a {@link Lookup} object that can is primarily used for accessing fields and methods on registered

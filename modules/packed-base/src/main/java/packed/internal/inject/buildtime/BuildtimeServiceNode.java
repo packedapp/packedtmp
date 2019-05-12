@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,16 +28,16 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.InternalServiceDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
-import packed.internal.util.AbstractConfiguration;
 import packed.internal.util.KeyBuilder;
 
 /**
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class ServiceBuildNode<T> extends AbstractConfiguration implements ServiceNode<T>, ServiceConfiguration<T> {
+public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode implements ServiceNode<T>, ServiceConfiguration<T> {
 
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
@@ -72,7 +72,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    ServiceBuildNode(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
+    BuildtimeServiceNode(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
         super(configurationSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
@@ -91,7 +91,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     }
 
     @Override
-    public ServiceBuildNode<T> as(Class<? super T> key) {
+    public BuildtimeServiceNode<T> as(Class<? super T> key) {
         requireNonNull(key, "key is null");
         return as(Key.of(key));
     }
@@ -103,7 +103,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public ServiceBuildNode<T> as(Key<? super T> key) {
+    public BuildtimeServiceNode<T> as(Key<? super T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         // validateKey(key);
@@ -135,7 +135,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
      * @return stuff
      */
     @Nullable
-    ServiceBuildNode<?> declaringNode() {
+    BuildtimeServiceNode<?> declaringNode() {
         return null;
     }
 
@@ -178,7 +178,7 @@ public abstract class ServiceBuildNode<T> extends AbstractConfiguration implemen
 
     /** {@inheritDoc} */
     @Override
-    public ServiceBuildNode<T> setDescription(String description) {
+    public BuildtimeServiceNode<T> setDescription(String description) {
         checkConfigurable();
         super.setDescription(description);
         return this;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,20 +39,20 @@ final class DependencyGraphCycleDetector {
      * @throws InjectionException
      *             if there is a cycle in the graph
      */
-    static DependencyCycle detectCycle(ServiceBuildNode<?> node, ArrayDeque<ServiceBuildNode<?>> stack, ArrayDeque<ServiceBuildNode<?>> dependencies) {
+    static DependencyCycle detectCycle(BuildtimeServiceNode<?> node, ArrayDeque<BuildtimeServiceNode<?>> stack, ArrayDeque<BuildtimeServiceNode<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             ServiceNode<?> dependency = node.resolvedDependencies[i];
-            if (dependency instanceof ServiceBuildNode) {
-                ServiceBuildNode<?> to = (ServiceBuildNode<?>) dependency;
+            if (dependency instanceof BuildtimeServiceNode) {
+                BuildtimeServiceNode<?> to = (BuildtimeServiceNode<?>) dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
-                ServiceBuildNode<?> owner = to.declaringNode();
+                BuildtimeServiceNode<?> owner = to.declaringNode();
                 if (owner != null) {
                     to = owner;
                 }
 
-                if (to.needsResolving() && to instanceof ServiceBuildNodeDefault) {
-                    ServiceBuildNodeDefault<?> ic = (ServiceBuildNodeDefault<?>) to;
+                if (to.needsResolving() && to instanceof BuildtimeServiceNodeDefault) {
+                    BuildtimeServiceNodeDefault<?> ic = (BuildtimeServiceNodeDefault<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);
                         // See if the component is already on the stack -> A cycle has been detected
@@ -81,15 +81,15 @@ final class DependencyGraphCycleDetector {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<ServiceBuildNode<?>> dependencies;
+        final ArrayDeque<BuildtimeServiceNode<?>> dependencies;
 
-        DependencyCycle(ArrayDeque<ServiceBuildNode<?>> dependencies) {
+        DependencyCycle(ArrayDeque<BuildtimeServiceNode<?>> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 
         @Override
         public String toString() {
-            ArrayList<ServiceBuildNode<?>> list = new ArrayList<>(dependencies);
+            ArrayList<BuildtimeServiceNode<?>> list = new ArrayList<>(dependencies);
             // This method does not yet support Provides methods
 
             // Try checking this out and running some examples, it should have better error messages.
@@ -103,7 +103,7 @@ final class DependencyGraphCycleDetector {
 
             // Uncomments the 3
             // sb.append(format(s.factory.mirror.getType()));
-            for (ServiceBuildNode<?> n : list) {
+            for (BuildtimeServiceNode<?> n : list) {
                 System.out.println(n);
                 sb.append(" -");
                 // s = (BuildNodeOldFactory<?>) n;

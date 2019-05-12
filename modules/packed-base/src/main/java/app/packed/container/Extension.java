@@ -22,7 +22,7 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.builder.DefaultContainerConfiguration;
+import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /**
  *

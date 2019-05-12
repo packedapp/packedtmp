@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,13 +30,13 @@ import packed.internal.inject.ServiceNodeMap;
 public final class Image {
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
-    ServiceBuildNode<?> privateLatestNode;
+    BuildtimeServiceNode<?> privateLatestNode;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     final ServiceNodeMap privateNodeMap;
 
     @Nullable
-    final ArrayList<ServiceBuildNodeExported<?>> publicNodeList;
+    final ArrayList<BuildtimeServiceNodeExported<?>> publicNodeList;
 
     /** The runtime nodes that will be available in the injector. */
     final ServiceNodeMap publicNodeMap;

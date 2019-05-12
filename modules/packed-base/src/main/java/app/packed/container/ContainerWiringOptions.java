@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOption;
-import packed.internal.inject.builder.DefaultContainerConfiguration;
+import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /** Various container wiring options. */
 public final class ContainerWiringOptions {
@@ -40,6 +40,9 @@ public final class ContainerWiringOptions {
      */
     // These can only be used with a TopContainer with lifecycle...
     // Container will be shutdown normally after the specified timeout
+
+    // Vi vil gerne have en version, vi kan refreshe ogsaa???
+    // Maaske vi bare ikke skal supportered det direkte.
     public static WiringOption timeToLive(long timeout, TimeUnit unit) {
         // Shuts down container normally
         throw new UnsupportedOperationException();

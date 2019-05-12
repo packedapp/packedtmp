@@ -30,7 +30,7 @@ import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.builder.ContainerBuilder;
+import packed.internal.inject.buildtime.ContainerBuilder;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via

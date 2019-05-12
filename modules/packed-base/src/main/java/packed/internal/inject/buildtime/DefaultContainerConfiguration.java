@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,16 +31,16 @@ import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
+import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.container.ExtensionInfo;
-import packed.internal.util.AbstractConfiguration;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public class DefaultContainerConfiguration extends AbstractConfiguration implements ContainerConfiguration {
+public class DefaultContainerConfiguration extends AbstractConfigurableNode implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
     public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
@@ -80,8 +80,26 @@ public class DefaultContainerConfiguration extends AbstractConfiguration impleme
         return name;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration install(Class<?> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration install(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public final ComponentConfiguration install(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration installNone(Class<?> implementation) {
         throw new UnsupportedOperationException();
     }
 

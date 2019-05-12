@@ -13,34 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidesHelper;
+import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
+import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
 
 /** A build node that imports a service from another injector. */
-public class ServiceBuildNodeProvideAll<T> extends ServiceBuildNode<T> {
+public class BuildtimeServiceNodeImport<T> extends BuildtimeServiceNode<T> {
 
     /** The node to import. */
     final ServiceNode<T> other;
 
     /** The bind injector source. */
-    final ProvideAll binding;
+    final BindInjectorFromBundle binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ServiceBuildNodeProvideAll(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideAll binding,
-            ServiceNode<T> node) {
+    BuildtimeServiceNodeImport(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjectorFromBundle binding, ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.binding = requireNonNull(binding);
@@ -57,8 +56,8 @@ public class ServiceBuildNodeProvideAll<T> extends ServiceBuildNode<T> {
 
     @Override
     @Nullable
-    ServiceBuildNode<?> declaringNode() {
-        return (other instanceof ServiceBuildNode) ? ((ServiceBuildNode<?>) other).declaringNode() : null;
+    BuildtimeServiceNode<?> declaringNode() {
+        return (other instanceof BuildtimeServiceNode) ? ((BuildtimeServiceNode<?>) other).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
@@ -82,7 +81,7 @@ public class ServiceBuildNodeProvideAll<T> extends ServiceBuildNode<T> {
     /** {@inheritDoc} */
     @Override
     RuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeServiceNodeAlias<T>(this, other);
+        return new RuntimeServiceNodeDelegate<T>(this, other);
     }
 
     /** {@inheritDoc} */

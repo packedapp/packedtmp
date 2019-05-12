@@ -25,7 +25,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.builder.ServiceBuildNode;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
 /** A node that represents a service at runtime. */
 public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
@@ -49,7 +49,7 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
      * @param node
      *            the build node to create the runtime node from
      */
-    RuntimeServiceNode(ServiceBuildNode<T> node) {
+    RuntimeServiceNode(BuildtimeServiceNode<T> node) {
         this.configurationSite = requireNonNull(node.configurationSite());
         this.description = node.getDescription();
         this.key = requireNonNull(node.key());

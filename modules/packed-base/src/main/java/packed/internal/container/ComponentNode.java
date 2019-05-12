@@ -16,12 +16,12 @@
 package packed.internal.container;
 
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.util.AbstractConfiguration;
+import packed.internal.inject.buildtime.AbstractConfigurableNode;
 
 /**
  *
  */
-public class ComponentNode extends AbstractConfiguration {
+public class ComponentNode extends AbstractConfigurableNode {
 
     /**
      * @param configurationSite

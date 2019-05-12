@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleDescriptor;
@@ -26,24 +26,10 @@ import packed.internal.inject.ServiceNode;
  */
 public class InternalBundleDescriptor {
 
-    /**
-     * @param bundle
-     * @return stuff
-     */
     public static BundleDescriptor.Builder of(Bundle bundle) {
         InternalConfigurationSite ics = InternalConfigurationSite.ofStack(ConfigurationSiteType.BUNDLE_DESCRIPTOR_OF);
         ContainerBuilder conf = new ContainerBuilder(ics, bundle);
 
-        // ContainerBuildContext bs = new ContainerBuildContext() {
-        // @SuppressWarnings("unchecked")
-        // @Override
-        // public <T> T with(Class<? super T> type) {
-        // if (type == InjectorBuilder.class) {
-        // return (T) conf;
-        // }
-        // return super.with(type);
-        // }
-        // };
         bundle.doConfigure(conf);
 
         // BundleSupport.invoke().configureInjectorBundle((InjectorBundle) bundle, conf, false);
@@ -56,13 +42,13 @@ public class InternalBundleDescriptor {
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
 
         for (ServiceNode<?> n : conf.box.services().nodes) {
-            if (n instanceof ServiceBuildNode) {
-                builder.addServiceDescriptor(((ServiceBuildNode<?>) n).toDescriptor());
+            if (n instanceof BuildtimeServiceNode) {
+                builder.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
             }
         }
 
-        for (ServiceBuildNode<?> n : conf.publicNodeList) {
-            if (n instanceof ServiceBuildNodeExported) {
+        for (BuildtimeServiceNode<?> n : conf.publicNodeList) {
+            if (n instanceof BuildtimeServiceNodeExported) {
                 builder.contract().services().addProvides(n.getKey());
             }
         }

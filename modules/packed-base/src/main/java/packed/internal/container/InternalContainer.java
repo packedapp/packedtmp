@@ -31,7 +31,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
-import packed.internal.inject.builder.ContainerBuilder;
+import packed.internal.inject.buildtime.ContainerBuilder;
 
 /**
  *

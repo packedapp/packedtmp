@@ -13,97 +13,117 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
 import app.packed.inject.InjectionException;
-import app.packed.inject.Injector;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.AppPackedBundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
-import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
-import packed.internal.inject.runtime.InternalInjector;
 
-/** Provides services from an existing Injector. */
-public final class ProvideAll {
+/**
+ * An abstract class for the injector bind methods
+ */
+class BindInjectorFromBundle {
 
-    /** The injector we are providing services from. */
-    private final Injector injector;
+    @Nullable
+    final Bundle bundle;
+
+    /** The configuration site of binding. */
+    final InternalConfigurationSite configurationSite;
 
     /** The configuration of the injector that binding another bundle or injector. */
     final ContainerBuilder injectorConfiguration;
 
-    /** The wiring options used when creating this configuration. */
-    final List<WiringOption> options;
+    /** The wiring operations. */
+    final List<WiringOption> operations;
 
-    /** The configuration site of this object. */
-    final InternalConfigurationSite configurationSite;
+    final ContainerBuilder newConfiguration;
 
-    public ProvideAll(ContainerBuilder configuration, Injector injector, WiringOption... operations) {
-        this.injectorConfiguration = requireNonNull(configuration);
-        this.injector = requireNonNull(injector, "injector is null");
-        this.options = List.of(requireNonNull(operations, "operations is null"));
-        this.configurationSite = configuration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-    }
-
-    public void process() {
-        List<ServiceNode<?>> nodes;
-
-        if (injector instanceof InternalInjector) {
-            nodes = ((InternalInjector) injector).copyNodes();
-        } else {
-            throw new IllegalArgumentException("Currently only Injectors created by Packed are supported");
-        }
-
-        processImport(nodes);
+    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
+        this.injectorConfiguration = requireNonNull(injectorConfiguration);
+        this.configurationSite = requireNonNull(configurationSite);
+        this.operations = requireNonNull(stages);
+        this.bundle = bundle;
+        this.newConfiguration = new ContainerBuilder(configurationSite, bundle);
     }
 
     /**
-     * @param externalNodes
-     *            all nodes that are available for import from bound injector or bundle
+     * 
      */
-    private void processImport(List<? extends ServiceNode<?>> externalNodes) {
+    void processImport() {
+        bundle.doConfigure(newConfiguration);
+        processImport(newConfiguration.publicNodeList);
+    }
 
-        // First create service build nodes for every existing node
-        HashMap<Key<?>, ServiceBuildNode<?>> nodes = new HashMap<>();
-        for (ServiceNode<?> node : externalNodes) {
-            if (!node.isPrivate()) {
-                ServiceBuildNodeProvideAll<?> n = new ServiceBuildNodeProvideAll<>(injectorConfiguration,
-                        configurationSite.replaceParent(node.configurationSite()), this, node);
-                nodes.put(node.key(), n);
+    void processExport() {
+        for (WiringOption s : operations) {
+            if (s instanceof WiringOption) {
+                throw new UnsupportedOperationException();
             }
         }
+        List<BuildtimeServiceNodeImport<?>> exports = new ArrayList<>();
+        if (newConfiguration.box.services().required != null) {
+            for (Key<?> k : newConfiguration.box.services().required) {
+                if (newConfiguration.box.services().nodes.containsKey(k)) {
+                    throw new RuntimeException("OOPS already there " + k);
+                }
+                ServiceNode<?> node = injectorConfiguration.box.services().nodes.getRecursive(k);
+                if (node == null) {
+                    throw new RuntimeException("OOPS " + k);
+                }
+                BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()), this,
+                        node);
+                exports.add(e);
+                newConfiguration.box.services().nodes.put(e);
+            }
+        }
+    }
 
-        // Process each wiring operation
-        for (WiringOption operation : options) {
+    /**
+     * @param importableNodes
+     *            all nodes that are available for import from bound injector or bundle
+     */
+    void processImport(List<? extends ServiceNode<?>> importableNodes) {
+        HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes = new HashMap<>();
+        for (ServiceNode<?> node : importableNodes) {
+            if (!node.isPrivate()) {
+                nodes.put(node.key(),
+                        new BuildtimeServiceNodeImport<>(injectorConfiguration, configurationSite.replaceParent(node.configurationSite()), this, node));
+            }
+        }
+        // Process each stage
+        for (WiringOption operation : operations) {
             if (operation instanceof WiringOption) {
                 AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
                 AppPackedBundleSupport.invoke().finishWireOperation(operation);
-                throw new Error();
             }
         }
 
         // Add all to the private node map
-        for (ServiceBuildNode<?> node : nodes.values()) {
+        for (BuildtimeServiceNodeImport<?> node : nodes.values()) {
             if (!injectorConfiguration.box.services().nodes.putIfAbsent(node)) {
                 throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }
     }
 
-    private HashMap<Key<?>, ServiceBuildNode<?>> processImportStage(WiringOption stage, HashMap<Key<?>, ServiceBuildNode<?>> nodes) {
+    private HashMap<Key<?>, BuildtimeServiceNodeImport<?>> processImportStage(WiringOption stage, HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes) {
         ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {
@@ -116,10 +136,10 @@ public final class ProvideAll {
 
         // Make runtime nodes....
 
-        HashMap<Key<?>, ServiceBuildNode<?>> newNodes = new HashMap<>();
+        HashMap<Key<?>, BuildtimeServiceNodeImport<?>> newNodes = new HashMap<>();
 
-        for (Iterator<ServiceBuildNode<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
-            ServiceBuildNode<?> node = iterator.next();
+        for (Iterator<BuildtimeServiceNodeImport<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
+            BuildtimeServiceNodeImport<?> node = iterator.next();
             Key<?> existing = node.key();
 
             // invoke the import function on the stage
@@ -139,4 +159,5 @@ public final class ProvideAll {
         newNodes.putAll(nodes);
         return newNodes;
     }
+
 }

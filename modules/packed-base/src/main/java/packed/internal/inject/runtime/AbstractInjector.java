@@ -18,12 +18,13 @@ package packed.internal.inject.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 import app.packed.container.Component;
 import app.packed.inject.InjectionException;
-import app.packed.inject.ProvidesHelper;
 import app.packed.inject.Injector;
+import app.packed.inject.ProvidesHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
@@ -34,6 +35,8 @@ import packed.internal.invokable.FieldAccessor;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
+
+    public abstract List<ServiceNode<?>> copyNodes();
 
     /**
      * Ideen er egentlig at vi kan lave en detaljeret fejlbesked, f.eks, vi har en X type, men den har en qualifier. Eller

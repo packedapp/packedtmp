@@ -21,7 +21,7 @@ import app.packed.inject.ProvidesHelper;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.Provider;
-import packed.internal.inject.builder.ServiceBuildNode;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.invokable.InternalFunction;
 
 /** A runtime service node for prototypes. */
@@ -42,7 +42,7 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
     /**
      * @param node
      */
-    public RuntimeServiceNodePrototype(ServiceBuildNode<T> node, InternalFunction<T> function) {
+    public RuntimeServiceNodePrototype(BuildtimeServiceNode<T> node, InternalFunction<T> function) {
         super(node);
         this.invoker = requireNonNull(function);
         this.providers = new Provider[node.dependencies.size()];

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.builder;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -43,7 +43,7 @@ import packed.internal.invokable.InvokableMember;
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
  * makes extending it with {@link ComponentServiceConfiguration} much easier.
  */
-public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
+public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -62,13 +62,13 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     private InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provides}. */
-    private final ServiceBuildNodeDefault<?> parent;
+    private final BuildtimeServiceNodeDefault<?> parent;
 
     protected ServiceClassDescriptor descriptor() {
         return descriptor;
     }
 
-    public ServiceBuildNodeDefault(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public BuildtimeServiceNodeDefault(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
@@ -105,7 +105,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
         return this;
     }
 
-    public ServiceBuildNodeDefault<T> instantiateAs(InstantiationMode mode) {
+    public BuildtimeServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -121,7 +121,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
      * @param instance
      *            the instance
      */
-    public ServiceBuildNodeDefault(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public BuildtimeServiceNodeDefault(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
@@ -133,8 +133,8 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
 
     boolean hasInstanceMembers;
 
-    ServiceBuildNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory,
-            ServiceBuildNodeDefault<?> parent) {
+    BuildtimeServiceNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory,
+            BuildtimeServiceNodeDefault<?> parent) {
         super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -144,7 +144,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     }
 
     @Override
-    ServiceBuildNode<?> declaringNode() {
+    BuildtimeServiceNode<?> declaringNode() {
         return parent;
     }
 
@@ -229,7 +229,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ServiceBuildNode<?> provide(AtProvides atProvides) {
+    public BuildtimeServiceNode<?> provide(AtProvides atProvides) {
         InternalConfigurationSite icss = configurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE, atProvides.provides,
                 atProvides.member);
 
@@ -238,7 +238,7 @@ public class ServiceBuildNodeDefault<T> extends ServiceBuildNode<T> {
             // getInstance(null);
             // fi = fi.withInstance(this.instance);
         }
-        ServiceBuildNodeDefault<?> node = new ServiceBuildNodeDefault<>(icss, atProvides, fi, this);
+        BuildtimeServiceNodeDefault<?> node = new BuildtimeServiceNodeDefault<>(icss, atProvides, fi, this);
         node.as((Key) atProvides.key);
         return node;
     }
