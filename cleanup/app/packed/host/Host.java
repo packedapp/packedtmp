@@ -66,7 +66,8 @@ import app.packed.contract.Contract;
 // Altsaa det ville jo vaere super fedt at kunne teste ting...
 /// Ved at starte forskellige hosts op...
 
-// AnyHost???
+// Specify a PrototypeBundle.. saa use("sdsdsd") automatisk laver og instantiere en bundle
+
 public interface Host {
 
     /**

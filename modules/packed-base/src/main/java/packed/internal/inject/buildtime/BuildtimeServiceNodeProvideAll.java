@@ -46,7 +46,7 @@ public class BuildtimeServiceNodeProvideAll<T> extends BuildtimeServiceNode<T> {
         this.binding = requireNonNull(binding);
         this.as((Key) node.key());
         this.setDescription(node.description().orElse(null));
-        this.tags().addAll(node.tags());
+        // this.tags().addAll(node.tags());
     }
 
     /** {@inheritDoc} */

@@ -21,12 +21,11 @@ import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
-import app.packed.util.Taggable;
 
 /**
  *
  */
-public interface Component extends Taggable {
+public interface Component /* extends Taggable */ {
 
     /**
      * Returns an immutable view of this component's children. To remove or add children at runtime, use this component's

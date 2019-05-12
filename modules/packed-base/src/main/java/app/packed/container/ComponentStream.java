@@ -108,26 +108,26 @@ public interface ComponentStream extends Stream<Component> {
         return collect(Collectors.toList());
     }
 
-    /**
-     * Returns a component stream consisting of all components in this stream where the specified tag is present.
-     * <p>
-     * Usage:
-     *
-     * <pre>
-     * Container c;
-     * System.out.println("Number of important components : " + c.stream().withTag("IMPORTANT").count());
-     * </pre>
-     * <p>
-     * This is an <em>intermediate operation</em>.
-     *
-     * @param tag
-     *            the tag that must be present
-     * @return the new stream
-     */
-    default ComponentStream withTag(String tag) {
-        requireNonNull(tag, "tag is null");
-        return filter(e -> e.tags().contains(tag));
-    }
+    // /**
+    // * Returns a component stream consisting of all components in this stream where the specified tag is present.
+    // * <p>
+    // * Usage:
+    // *
+    // * <pre>
+    // * Container c;
+    // * System.out.println("Number of important components : " + c.stream().withTag("IMPORTANT").count());
+    // * </pre>
+    // * <p>
+    // * This is an <em>intermediate operation</em>.
+    // *
+    // * @param tag
+    // * the tag that must be present
+    // * @return the new stream
+    // */
+    // default ComponentStream withTag(String tag) {
+    // requireNonNull(tag, "tag is null");
+    // return filter(e -> e.tags().contains(tag));
+    // }
 
     default <T> ComponentStream filterOnType(Class<T> type) {
         return filter(c -> {

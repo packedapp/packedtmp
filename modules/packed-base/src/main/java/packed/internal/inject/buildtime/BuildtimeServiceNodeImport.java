@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ProvidesHelper;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -39,13 +39,14 @@ public class BuildtimeServiceNodeImport<T> extends BuildtimeServiceNode<T> {
     final BindInjectorFromBundle binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildtimeServiceNodeImport(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjectorFromBundle binding, ServiceNode<T> node) {
+    BuildtimeServiceNodeImport(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjectorFromBundle binding,
+            ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.binding = requireNonNull(binding);
         this.as((Key) node.key());
         this.setDescription(node.description().orElse(null));
-        this.tags().addAll(node.tags());
+        // this.tags().addAll(node.tags());
     }
 
     /** {@inheritDoc} */

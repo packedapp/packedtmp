@@ -25,10 +25,10 @@ import app.packed.container.ContainerWiringOptions;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provides;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.InjectorConfigurator;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -70,6 +70,10 @@ import app.packed.util.TypeLiteral;
 // }
 
 public abstract class Bundle extends AnyBundle {
+
+    protected final void install(Object instance) {
+        configuration().install(instance);
+    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use

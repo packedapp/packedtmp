@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.container.ComponentConfiguration;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
@@ -232,15 +231,4 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentConfiguration install(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentConfiguration install(Object instance) {
-        throw new UnsupportedOperationException();
-    }
 }

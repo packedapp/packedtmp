@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,6 +63,11 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
     /** All outgoing links of this container, in order of installation order. */
     final LinkedHashMap<String, DefaultContainerConfiguration> wirings = new LinkedHashMap<>();
 
+    final HashMap<String, ComponentBuildNode> components = new HashMap<>();
+
+    /** All nodes that have been added to this builder, even those that are not exposed. */
+    AbstractFreezableNode currentNode;
+
     protected DefaultContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
         super(configurationSite);
         this.bundle = bundle;
@@ -92,9 +98,26 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
         throw new UnsupportedOperationException();
     }
 
+    public void newOperation() {
+        AbstractFreezableNode c = currentNode;
+        if (c != null) {
+            c.freeze();
+        }
+        currentNode = null;
+    }
+
+    public <T extends AbstractFreezableNode> T newOperation(T node) {
+        AbstractFreezableNode c = currentNode;
+        if (c != null) {
+            c.freeze();
+        }
+        currentNode = node;
+        return node;
+    }
+
     @Override
     public final ComponentConfiguration install(Object instance) {
-        throw new UnsupportedOperationException();
+        return newOperation(new DefaultComponentConfiguration(this, instance));
     }
 
     /** {@inheritDoc} */
@@ -107,13 +130,13 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
     @Override
     public final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
-        checkConfigurable();
+        newOperation();
         this.accessor = DescriptorFactory.get(lookup);
     }
 
     @Override
     public DefaultContainerConfiguration setDescription(String description) {
-        checkConfigurable();
+        newOperation();
         super.setDescription(description);
         return this;
     }

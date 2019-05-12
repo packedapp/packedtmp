@@ -90,6 +90,6 @@ public class ProvideTest {
         // ConfigurationSite;
         assertThat(sc.getDescription()).isNull();
         assertThat(sc.getKey()).isEqualTo(Key.of(A.class));
-        assertThat(sc.tags().isEmpty());
+        // assertThat(sc.tags().isEmpty());
     }
 }

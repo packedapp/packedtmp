@@ -145,7 +145,6 @@ final class DependencyGraph {
 
         for (ServiceNode<?> nn : services.nodes) {
             BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) nn;
-            node.freeze();// Should be frozen, maybe change to an assert
 
             if (node.needsResolving()) {
                 graph.detectCyclesFor.add(node);

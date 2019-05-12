@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -60,8 +59,8 @@ public class InternalComponent implements Component {
     @Nullable
     final InternalComponent parent;
 
-    /** An immutable set of tags for this component. */
-    private final Set<String> tags;
+    // /** An immutable set of tags for this component. */
+    // private final Set<String> tags;
     volatile Object[] instances;
 
     InternalComponent(InternalContainer container, InternalComponentConfiguration<?> configuration, InternalComponent parent, boolean isRuntime, String name) {
@@ -71,7 +70,7 @@ public class InternalComponent implements Component {
         this.parent = parent;
         this.description = configuration.getDescription();
         this.name = requireNonNull(name);
-        this.tags = configuration.immutableCopyOfTags();
+        // this.tags = configuration.immutableCopyOfTags();
     }
 
     /** {@inheritDoc} */
@@ -168,12 +167,12 @@ public class InternalComponent implements Component {
     public ComponentStream stream() {
         return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(InternalComponent::stream)));
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<String> tags() {
-        return tags;
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public Set<String> tags() {
+    // return tags;
+    // }
 
     public LifecycleState getState() {
         return LifecycleState.INITIALIZING;

@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -124,10 +123,10 @@ public final class InternalApp implements App {
     public LifecycleOperations<? extends App> state() {
         throw new UnsupportedOperationException();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<String> tags() {
-        return container.tags();
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public Set<String> tags() {
+    // return container.tags();
+    // }
 }

@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.injectorconfigurator.of;
+package packed.internal.inject.buildtime;
 
-import org.junit.jupiter.api.Test;
+import app.packed.app.App;
+import app.packed.bundle.Bundle;
 
 /**
  *
  */
-public class InjectorTagsTest {
+public class TestIt extends Bundle {
 
-    @Test
-    public void tags() {
-        // assertThat(Injector.of(c -> {}).tags()).isEmpty();
-        //
-        // Injector i = Injector.of(c -> {
-        // assertThat(c.tags()).isEmpty();
-        //
-        // assertThat(c.tags().add("foo")).isTrue();
-        // assertThat(c.tags()).contains("foo");
-        // assertThat(c.tags().add("foo")).isFalse();
-        // assertThatNullPointerException().isThrownBy(() -> c.tags().add(null));
-        // });
-        // assertThat(i.tags()).containsExactly("foo");
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        install("foo");
+        install("fooddd");
+        install("fooddd");
+    }
+
+    public static void main(String[] args) {
+        App.of(new TestIt());
     }
 }

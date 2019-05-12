@@ -173,8 +173,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     public void provideAll(Injector injector, WiringOption... operations) {
         ProvideAll pa = new ProvideAll(builder(), injector, operations);// Validates arguments
-        checkConfigurable();
-        builder().freezeLatest();
+        builder().newOperation();
         pa.process();
     }
 }

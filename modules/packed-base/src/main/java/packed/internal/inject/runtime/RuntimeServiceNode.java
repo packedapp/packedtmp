@@ -18,7 +18,6 @@ package packed.internal.inject.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
@@ -40,8 +39,8 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
     /** The key under which the service is available. */
     private final Key<T> key;
 
-    /** Any tags that might be present on the service. */
-    private final Set<String> tags;
+    // /** Any tags that might be present on the service. */
+    // private final Set<String> tags;
 
     /**
      * Creates a new runtime node from a build node.
@@ -53,7 +52,7 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
         this.configurationSite = requireNonNull(node.configurationSite());
         this.description = node.getDescription();
         this.key = requireNonNull(node.key());
-        this.tags = node.immutableCopyOfTags();
+        // this.tags = node.immutableCopyOfTags();
     }
 
     @Override
@@ -92,12 +91,12 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
     public final boolean needsResolving() {
         return false;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Set<String> tags() {
-        return tags;
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public final Set<String> tags() {
+    // return tags;
+    // }
 
     /** {@inheritDoc} */
     @Override

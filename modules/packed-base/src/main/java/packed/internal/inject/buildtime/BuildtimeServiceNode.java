@@ -97,7 +97,7 @@ public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode i
                 injectorBuilder.box.services().exports.put(this);
             } else {
                 if (!injectorBuilder.box.services().nodes.putIfAbsent(this)) {
-                    System.err.println("OOPS");
+                    System.err.println("OOPS " + key);
                 }
             }
         }
@@ -150,11 +150,6 @@ public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode i
     @Nullable
     BuildtimeServiceNode<?> declaringNode() {
         return null;
-    }
-
-    @Override
-    public final void freeze() {
-        super.freeze();
     }
 
     /** {@inheritDoc} */

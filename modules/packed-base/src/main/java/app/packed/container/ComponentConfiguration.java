@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
  * install methods on {@link ComponentInstaller}, {@link Bundle} or on another component configuration. It it also
  * possible to install components at runtime via {@link Component}.
  */
-public interface ComponentConfiguration extends ComponentInstaller {
+public interface ComponentConfiguration /* extends ComponentInstaller */ {
 
     // TypeAnnotations are ignored for now...
     /**
@@ -45,7 +45,9 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #addMixin(Factory)
      * @see #addMixin(Object)
      */
-    ComponentConfiguration addMixin(Class<?> implementation);
+    default ComponentConfiguration addMixin(Class<?> implementation) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Adds the specified mixin to the list of mixins for the component.
@@ -59,7 +61,9 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #addMixin(Class)
      * @see #addMixin(Object)
      */
-    ComponentConfiguration addMixin(Factory<?> factory);
+    default ComponentConfiguration addMixin(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
@@ -74,7 +78,9 @@ public interface ComponentConfiguration extends ComponentInstaller {
      * @see #addMixin(Class)
      * @see #addMixin(Factory)
      */
-    ComponentConfiguration addMixin(Object instance);
+    default ComponentConfiguration addMixin(Object instance) {
+        throw new UnsupportedOperationException();
+    }
 
     // Ville vaere rigtig rart at vi havde noget support for at fryse navnet, isaer mht til actors...
     // ComponentPath path() <- once invoked, the name cannot be changed....

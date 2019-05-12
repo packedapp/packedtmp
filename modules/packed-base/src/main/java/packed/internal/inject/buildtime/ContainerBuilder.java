@@ -69,9 +69,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     final Box box;
 
-    /** All nodes that have been added to this builder, even those that are not exposed. */
-    AbstractConfigurableNode currentNode;
-
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings;
 
@@ -92,7 +89,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
 
-    protected final <T extends AbstractConfigurableNode> T bindNode(T node) {
+    protected final <T extends AbstractFreezableNode> T bindNode(T node) {
         // Bliver en protected method paa en extension...
         assert currentNode == null;
         currentNode = node;
@@ -154,13 +151,13 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
             });
         }
         InternalContainer container = new InternalContainer(this, buildInjector());
+        System.out.println("Components " + components.keySet());
 
         return container;
     }
 
     public Injector buildInjector() {
-        freezeLatest();
-        freeze();
+        newOperation();
         new DependencyGraph(this).instantiate();
         return publicInjector;
     }
@@ -174,8 +171,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
      */
     public final <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
-        checkConfigurable();
-        freezeLatest();
+        newOperation();
 
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
@@ -188,14 +184,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         publicNodeList.add(bn);
         bindNode(bn);
         return bn;
-    }
-
-    public void freezeLatest() {
-        if (currentNode != null) {
-            currentNode.freeze();
-            currentNode.onFreeze();
-            currentNode = null;
-        }
     }
 
     /**
@@ -221,8 +209,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        freezeLatest();
+        newOperation();
+
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
 
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
@@ -237,8 +225,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> installService(T instance) {
         requireNonNull(instance, "instance is null");
-        checkConfigurable();
-        freezeLatest();
+        newOperation();
+
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
@@ -251,8 +239,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        freezeLatest();
+        newOperation();
 
         InstantiationMode mode = InstantiationMode.SINGLETON;
         InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
@@ -269,8 +256,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public final <T> ServiceConfiguration<T> provide(T instance) {
-        checkConfigurable();
-        freezeLatest();
+        newOperation();
+
         ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
         BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
@@ -313,8 +300,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     public void wireInjector(Bundle bundle, WiringOption... stages) {
         requireNonNull(bundle, "bundle is null");
         List<WiringOption> listOfStages = AppPackedBundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
-        checkConfigurable();
-        freezeLatest();
+        newOperation();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);
         is.processImport();

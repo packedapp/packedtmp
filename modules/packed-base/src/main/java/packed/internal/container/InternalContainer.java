@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.app.App;
@@ -111,11 +110,11 @@ public class InternalContainer implements Container {
     public Stream<ServiceDescriptor> services() {
         return injector.services();
     }
-
-    @Override
-    public Set<String> tags() {
-        return injector.tags();
-    }
+    //
+    // @Override
+    // public Set<String> tags() {
+    // return injector.tags();
+    // }
 
     @Override
     public <T> T use(Class<T> key) {

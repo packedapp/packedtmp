@@ -17,9 +17,7 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceConfiguration;
@@ -58,11 +56,11 @@ public class ServiceUtils {
 
         private final Key<?> key;
 
-        private final Set<String> tags;
+        // private final Set<String> tags;
 
         CopyOfConfiguration(ServiceConfiguration<?> bne) {
             this.key = bne.getKey();
-            this.tags = Set.copyOf(bne.tags());
+            // this.tags = Set.copyOf(bne.tags());
             this.configurationSite = bne.configurationSite();
             this.description = bne.getDescription();
         }
@@ -84,20 +82,20 @@ public class ServiceUtils {
         public Key<?> key() {
             return key;
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<String> tags() {
-            return tags;
-        }
+        //
+        // /** {@inheritDoc} */
+        // @Override
+        // public Set<String> tags() {
+        // return tags;
+        // }
 
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("[Key = " + key().toStringSimple());
-            if (!tags.isEmpty()) {
-                sb.append(", tags = " + tags);
-            }
+            // if (!tags.isEmpty()) {
+            // sb.append(", tags = " + tags);
+            // }
             sb.append("]");
             return sb.toString();
         }
@@ -136,11 +134,11 @@ public class ServiceUtils {
         public Key<?> key() {
             return configuration.getKey();
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public Set<String> tags() {
-            return Collections.unmodifiableSet(configuration.tags());
-        }
+        //
+        // /** {@inheritDoc} */
+        // @Override
+        // public Set<String> tags() {
+        // return Collections.unmodifiableSet(configuration.tags());
+        // }
     }
 }

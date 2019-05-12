@@ -70,12 +70,12 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
     public Key<?> key() {
         return key;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<String> tags() {
-        return tags;
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public Set<String> tags() {
+    // return tags;
+    // }
 
     @Override
     public String toString() {

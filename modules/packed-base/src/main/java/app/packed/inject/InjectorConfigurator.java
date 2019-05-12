@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
@@ -27,7 +26,6 @@ import app.packed.bundle.WiringOption;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
-import app.packed.util.Taggable;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.buildtime.ContainerBuilder;
 
@@ -40,7 +38,7 @@ import packed.internal.inject.buildtime.ContainerBuilder;
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public class InjectorConfigurator implements Taggable {
+public class InjectorConfigurator /* implements Taggable */ {
 
     /** The configuration we delegate all calls to. */
     private final ContainerConfiguration configuration;
@@ -235,12 +233,12 @@ public class InjectorConfigurator implements Taggable {
         configuration.setDescription(description);
         return this;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Set<String> tags() {
-        return configuration.tags();
-    }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public final Set<String> tags() {
+    // return configuration.tags();
+    // }
 
     /**
      * @param bundle

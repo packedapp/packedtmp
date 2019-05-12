@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import app.packed.inject.Injector;
@@ -49,13 +48,13 @@ public final class InternalInjector extends AbstractInjector {
     @Nullable
     final AbstractInjector parent;
 
-    /** This injector's tags. */
-    private final Set<String> tags;
+    // /** This injector's tags. */
+    // private final Set<String> tags;
 
     public InternalInjector(ContainerBuilder injectorConfiguration, ServiceNodeMap nodes) {
         this.parent = null;
         this.nodes = requireNonNull(nodes);
-        this.tags = injectorConfiguration.immutableCopyOfTags();
+        // this.tags = injectorConfiguration.immutableCopyOfTags();
         this.description = injectorConfiguration.getDescription();
         this.configurationSite = injectorConfiguration.configurationSite();
     }
@@ -96,13 +95,14 @@ public final class InternalInjector extends AbstractInjector {
     public Stream<ServiceDescriptor> services() {
         return (Stream) nodes.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
     }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public Set<String> tags() {
+    // return tags;
+    // }
 
-    /** {@inheritDoc} */
     @Override
-    public Set<String> tags() {
-        return tags;
-    }
-
     public List<ServiceNode<?>> copyNodes() {
         return nodes.copyNodes();
     }

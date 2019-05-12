@@ -26,7 +26,6 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
-import app.packed.util.Taggable;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.buildtime.ContainerBuilder;
@@ -97,7 +96,7 @@ import packed.internal.inject.buildtime.ContainerBuilder;
 // getService(Class|Key) .get(InjectionSite)<---Nah
 // hasService -> contains
 // Description... hmm its just super helpful...
-public interface Injector extends Taggable {
+public interface Injector /* extends Taggable */ {
 
     /**
      * Returns the configuration site of this injector.

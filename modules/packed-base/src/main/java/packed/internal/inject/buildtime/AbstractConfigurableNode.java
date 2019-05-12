@@ -29,25 +29,17 @@ import packed.internal.config.site.InternalConfigurationSite;
  * An abstract configuration object. That provides basic support for strings tags, setting a description, and freezing a
  * configuration.
  */
-public abstract class AbstractConfigurableNode {
-
-    /** The configuration site of this object. */
-    protected final InternalConfigurationSite configurationSite;
+public abstract class AbstractConfigurableNode extends AbstractFreezableNode {
 
     /** The description. */
     @Nullable
     private String description;
 
-    /** Whether or not the configuration has been frozen. */
-    private boolean isFrozen;
-
     /** A tag set (lazy initialized) */
     @Nullable
     private AbstractConfigurableTagSet<String> tags;
 
-    protected AbstractConfigurableNode() {
-        this.configurationSite = null;
-    }
+    protected AbstractConfigurableNode() {}
 
     /**
      * Creates a new abstract configuration
@@ -56,26 +48,7 @@ public abstract class AbstractConfigurableNode {
      *            the configuration site of the configuration
      */
     protected AbstractConfigurableNode(InternalConfigurationSite configurationSite) {
-        this.configurationSite = requireNonNull(configurationSite);
-    }
-
-    protected final void checkConfigurable() {
-        if (isFrozen) {
-            throw new IllegalStateException("This configuration has been frozen and can no longer be modified");
-        }
-    }
-
-    /**
-     * Returns the configuration site of this configuration.
-     * 
-     * @return the configuration site of this configuration
-     */
-    public final InternalConfigurationSite configurationSite() {
-        return configurationSite;
-    }
-
-    public void freeze() {
-        isFrozen = true;
+        super(configurationSite);
     }
 
     /**
@@ -95,10 +68,6 @@ public abstract class AbstractConfigurableNode {
     public final Set<String> immutableCopyOfTags() {
         AbstractConfigurableTagSet<String> tags = this.tags;
         return tags == null ? Set.of() : tags.toImmutableSet();
-    }
-
-    protected void onFreeze() {
-
     }
 
     /**
