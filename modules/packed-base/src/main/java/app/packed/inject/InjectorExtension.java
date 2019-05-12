@@ -25,6 +25,7 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.builder.ContainerBuilder;
+import packed.internal.inject.builder.ProvideAll;
 
 /**
  * An extension used with injection.
@@ -169,6 +170,9 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     // void ServiceConfiguration<?> provide(ComponentConfiguration configuration);
 
     public void provideAll(Injector injector, WiringOption... operations) {
-        builder().provideAll(injector, operations);
+        ProvideAll pa = new ProvideAll(builder(), injector, operations);// Validates arguments
+        checkConfigurable();
+        builder().freezeLatest();
+        pa.process();
     }
 }

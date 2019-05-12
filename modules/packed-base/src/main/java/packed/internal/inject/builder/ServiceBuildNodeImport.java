@@ -36,10 +36,10 @@ public class ServiceBuildNodeImport<T> extends ServiceBuildNode<T> {
     final ServiceNode<T> other;
 
     /** The bind injector source. */
-    final AbstractWiring binding;
+    final BindInjectorFromBundle binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ServiceBuildNodeImport(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring binding, ServiceNode<T> node) {
+    ServiceBuildNodeImport(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjectorFromBundle binding, ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
         this.binding = requireNonNull(binding);

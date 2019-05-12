@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ProvidesHelper;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -30,19 +30,20 @@ import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeAlias;
 
 /** A build node that imports a service from another injector. */
-public class ServiceBuildNodeImport2<T> extends ServiceBuildNode<T> {
+public class ServiceBuildNodeProvideAll<T> extends ServiceBuildNode<T> {
 
     /** The node to import. */
     final ServiceNode<T> other;
 
     /** The bind injector source. */
-    final AbstractWiring source;
+    final ProvideAll binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    ServiceBuildNodeImport2(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, AbstractWiring source, ServiceNode<T> node) {
+    ServiceBuildNodeProvideAll(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideAll binding,
+            ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);
-        this.source = requireNonNull(source);
+        this.binding = requireNonNull(binding);
         this.as((Key) node.key());
         this.setDescription(node.description().orElse(null));
         this.tags().addAll(node.tags());

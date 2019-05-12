@@ -196,7 +196,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return (ServiceConfiguration<T>) export(configuration.getKey());
     }
 
-    protected void freezeLatest() {
+    public void freezeLatest() {
         // Skal vi egentlig ikke ogsaa frysse noden????
         if (privateLatestNode != null) {
             Key<?> key = privateLatestNode.key();
@@ -342,15 +342,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
             injectorBundleBindings = new ArrayList<>(1);
         }
         injectorBundleBindings.add(is);
-    }
-
-    public final void provideAll(Injector injector, WiringOption... operations) {
-        requireNonNull(injector, "injector is null");
-        checkConfigurable();
-        freezeLatest();
-        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        ProvideAllFromInjector pa = new ProvideAllFromInjector(cs, injector, this, operations);
-        pa.importServices();
     }
 
     /** Small for utility class for generate a best effort unique name for containers. */
