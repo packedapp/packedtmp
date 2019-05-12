@@ -91,6 +91,19 @@ public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode i
     }
 
     @Override
+    protected void onFreeze() {
+        if (key != null) {
+            if (this instanceof BuildtimeServiceNodeExported) {
+                injectorBuilder.box.services().exports.put(this);
+            } else {
+                if (!injectorBuilder.box.services().nodes.putIfAbsent(this)) {
+                    System.err.println("OOPS");
+                }
+            }
+        }
+    }
+
+    @Override
     public BuildtimeServiceNode<T> as(Class<? super T> key) {
         requireNonNull(key, "key is null");
         return as(Key.of(key));

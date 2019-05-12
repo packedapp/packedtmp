@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
 import app.packed.container.ContainerConfiguration;
-import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.Taggable;
@@ -220,23 +219,6 @@ public class InjectorConfigurator implements Taggable {
      */
     public final void provideAll(Injector injector, WiringOption... options) {
         injector().provideAll(injector, options);
-    }
-
-    /**
-     * If useful, for example,
-     * 
-     * 
-     * 
-     * service must either be an instance, or only have static
-     * 
-     * @param staticsHolder
-     *            stuff
-     * 
-     * @throws InvalidDeclarationException
-     *             if, provides members are non-static
-     */
-    public final void registerStatics(Class<?> staticsHolder) {
-        ((ContainerBuilder) configuration).registerStatics(staticsHolder);
     }
 
     /**

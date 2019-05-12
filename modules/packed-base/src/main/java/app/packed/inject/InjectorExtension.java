@@ -99,8 +99,10 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return builder().export(key);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        return builder().export(configuration);
+        // Skal skrives lidt om, det her burde virke, f.eks. som export(provide(ddd).asNone).as(String.class)
+        return (ServiceConfiguration<T>) export(configuration.getKey());
     }
 
     public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {

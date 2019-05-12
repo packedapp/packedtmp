@@ -93,6 +93,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     }
 
     protected final <T extends AbstractConfigurableNode> T bindNode(T node) {
+        // Bliver en protected method paa en extension...
         assert currentNode == null;
         currentNode = node;
         return node;
@@ -189,29 +190,10 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return bn;
     }
 
-    @SuppressWarnings("unchecked")
-    public final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
-        // Skal skrives lidt om, det her burde virke, f.eks. som export(provide(ddd).asNone).as(String.class)
-
-        return (ServiceConfiguration<T>) export(configuration.getKey());
-    }
-
     public void freezeLatest() {
         if (currentNode != null) {
-            if (currentNode instanceof BuildtimeServiceNode) {
-                BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) currentNode;
-                Key<?> key = node.key();
-                if (key != null) {
-                    if (node instanceof BuildtimeServiceNodeExported) {
-                        box.services().exports.put(node);
-                    } else {
-                        if (!box.services().nodes.putIfAbsent(node)) {
-                            System.err.println("OOPS");
-                        }
-                    }
-                }
-            }
             currentNode.freeze();
+            currentNode.onFreeze();
             currentNode = null;
         }
     }
@@ -294,10 +276,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
                 configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
         scanForProvides(instance.getClass(), node);
         return bindNode(node).as((Class) instance.getClass());
-    }
-
-    public void registerStatics(Class<?> staticsHolder) {
-        throw new UnsupportedOperationException();
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
