@@ -37,6 +37,7 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
 
     /** The key of the service. */
     private final Key<?> key;
+
     private final Set<String> tags;
 
     /**

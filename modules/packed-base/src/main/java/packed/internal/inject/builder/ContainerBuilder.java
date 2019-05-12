@@ -34,9 +34,9 @@ import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
@@ -346,12 +346,11 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     public final void provideAll(Injector injector, WiringOption... operations) {
         requireNonNull(injector, "injector is null");
-        List<WiringOption> wiringOperations = AppPackedBundleSupport.invoke().extractWiringOperations(operations, Bundle.class);
         checkConfigurable();
         freezeLatest();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        WireInjector is = new WireInjector(this, cs, injector, wiringOperations);
-        is.importServices();
+        ProvideAllFromInjector pa = new ProvideAllFromInjector(cs, injector, this, operations);
+        pa.importServices();
     }
 
     /** Small for utility class for generate a best effort unique name for containers. */

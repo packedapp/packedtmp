@@ -17,7 +17,7 @@ public abstract class ProvideAll {
 
     protected ProvideAll(InternalConfigurationSite configurationSite, WiringOption... options) {
         this.configurationSite = requireNonNull(configurationSite);
-        this.options = List.of(options);
+        this.options = List.of(requireNonNull(options, "operations is null"));
     }
 
 }

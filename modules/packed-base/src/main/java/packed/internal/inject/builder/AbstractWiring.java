@@ -51,18 +51,11 @@ abstract class AbstractWiring {
     /** The wiring operations. */
     final List<WiringOption> operations;
 
-    AbstractWiring(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
+    AbstractWiring(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, @Nullable Bundle bundle, List<WiringOption> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
-        this.bundle = requireNonNull(bundle, "bundle is null");
-    }
-
-    AbstractWiring(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, List<WiringOption> stages) {
-        this.injectorConfiguration = requireNonNull(injectorConfiguration);
-        this.configurationSite = requireNonNull(configurationSite);
-        this.operations = requireNonNull(stages);
-        this.bundle = null;
+        this.bundle = bundle;
     }
 
     /**
@@ -95,8 +88,6 @@ abstract class AbstractWiring {
     }
 
     private HashMap<Key<?>, ServiceBuildNodeImport<?>> processImportStage(WiringOption stage, HashMap<Key<?>, ServiceBuildNodeImport<?>> nodes) {
-        // Find @Provides, lookup class
-
         ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {

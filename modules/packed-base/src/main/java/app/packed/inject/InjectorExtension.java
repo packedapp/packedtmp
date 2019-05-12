@@ -29,8 +29,7 @@ import packed.internal.inject.builder.ContainerBuilder;
 /**
  * An extension used with injection.
  */
-
-// manualRequirementManagement(); Do we need or can we just say that we should extend this contract?
+// manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?
 public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /**
