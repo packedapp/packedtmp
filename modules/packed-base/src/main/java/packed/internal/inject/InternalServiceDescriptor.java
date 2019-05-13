@@ -18,7 +18,6 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceDescriptor;
@@ -38,19 +37,18 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
     /** The key of the service. */
     private final Key<?> key;
 
-    private final Set<String> tags;
+    // private final Set<String> tags;
 
     /**
      * @param configurationSite
      * @param description
      * @param key
-     * @param tags
      */
-    public InternalServiceDescriptor(Key<?> key, ConfigSite configurationSite, String description, Set<String> tags) {
+    public InternalServiceDescriptor(Key<?> key, ConfigSite configurationSite, String description /* Set<String> tags */) {
         this.configurationSite = requireNonNull(configurationSite);
         this.description = description;
         this.key = requireNonNull(key);
-        this.tags = requireNonNull(tags);
+        // this.tags = requireNonNull(tags);
     }
 
     /** {@inheritDoc} */
@@ -79,6 +77,7 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
 
     @Override
     public String toString() {
-        return "InternalServiceDescriptor [configurationSite=" + configurationSite + ", description=" + description + ", key=" + key + ", tags=" + tags + "]";
+        return "InternalServiceDescriptor [configurationSite=" + configurationSite + ", description=" + description + ", key=" + key /* + ", tags=" + tags */
+                + "]";
     }
 }

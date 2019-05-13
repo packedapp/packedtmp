@@ -37,7 +37,15 @@ import packed.internal.util.KeyBuilder;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode implements ServiceNode<T>, ServiceConfiguration<T> {
+public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode implements ServiceNode<T>, ServiceConfiguration<T> {
+
+    private String description;
+
+    /** {@inheritDoc} */
+    @Override
+    public @Nullable String getDescription() {
+        return description;
+    }
 
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
@@ -110,7 +118,7 @@ public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode i
     }
 
     public final ServiceDescriptor toDescriptor() {
-        return new InternalServiceDescriptor(key, configurationSite, getDescription(), immutableCopyOfTags());
+        return new InternalServiceDescriptor(key, configurationSite, getDescription() /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */
@@ -188,7 +196,7 @@ public abstract class BuildtimeServiceNode<T> extends AbstractConfigurableNode i
     @Override
     public BuildtimeServiceNode<T> setDescription(String description) {
         checkConfigurable();
-        super.setDescription(description);
+        this.description = description;
         return this;
     }
 
