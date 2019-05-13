@@ -247,22 +247,11 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
+                configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), cdesc, root, instance);
         ComponentServiceConfiguration<T> cc = install0(icc);
         scanForProvides(instance.getClass(), icc);
         bindNode(icc).as((Class) instance.getClass());
         return cc;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T> ServiceConfiguration<T> provide(T instance) {
-        newOperation();
-
-        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(instance.getClass());
-        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(this,
-                configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), serviceDesc, instance);
-        scanForProvides(instance.getClass(), node);
-        return bindNode(node).as((Class) instance.getClass());
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {

@@ -152,7 +152,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      */
     public <T> ServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance");
-        return builder().provide(instance);
+        return builder().installService(instance);
     }
 
     public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
