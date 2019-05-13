@@ -49,25 +49,6 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
     ServiceConfiguration<T> as(Key<? super T> key);
 
     /**
-     * Indicates that the service will not be registered under any key. There are a number of use cases for this method:
-     * <p>
-     * The primary use for this method is to register object with has fields and/or methods annotated with {@link Provides}.
-     * But where we do not want to expose the declaring class as a service.
-     * <p>
-     * Install component with a serv
-     * <p>
-     * For import and export stages, to indicate that a service should not be send further in the pipeline.
-     * 
-     * @return this configuration
-     */
-    // another usecase is for registering a service that should only be available outward facing
-    // (exportService(provide().asNone).as(Foo.class)
-    ServiceConfiguration<?> asNone();
-
-    // Should include dependencies via @Inject
-    // List<DependencyDescriptor> dependencies();
-
-    /**
      * Returns the configuration site where this configuration was created.
      * 
      * @return the configuration site where this configuration was created
@@ -84,14 +65,12 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
     String getDescription();
 
     /**
-     * Returns the key that the service is registered under. Returns null if {@link #asNone()} has been invoked.
+     * Returns the key that the service is registered under.
      *
      * @return the key that the service is registered under
      * @see #as(Key)
      * @see #as(Class)
-     * @see #asNone()
      */
-    @Nullable
     Key<?> getKey();
 
     /**
@@ -124,3 +103,23 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      */
     ServiceConfiguration<T> setDescription(@Nullable String description);
 }
+
+/// **
+// * Indicates that the service will not be registered under any key. There are a number of use cases for this method:
+// * <p>
+// * The primary use for this method is to register object with has fields and/or methods annotated with {@link
+/// Provides}.
+// * But where we do not want to expose the declaring class as a service.
+// * <p>
+// * Install component with a serv
+// * <p>
+// * For import and export stages, to indicate that a service should not be send further in the pipeline.
+// *
+// * @return this configuration
+// */
+//// another usecase is for registering a service that should only be available outward facing
+//// (exportService(provide().asNone).as(Foo.class)
+// ServiceConfiguration<?> asNone();
+//
+//// Should include dependencies via @Inject
+//// List<DependencyDescriptor> dependencies();

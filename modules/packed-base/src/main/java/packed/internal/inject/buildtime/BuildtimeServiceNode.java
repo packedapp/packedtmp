@@ -39,19 +39,15 @@ import packed.internal.util.KeyBuilder;
  */
 public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode implements ServiceNode<T>, ServiceConfiguration<T> {
 
-    private String description;
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable String getDescription() {
-        return description;
-    }
-
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
 
+    public boolean autoRequires;
+
     /** The dependencies of this node. */
     public final List<InternalDependencyDescriptor> dependencies;
+
+    String description;
 
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
@@ -63,14 +59,11 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     @Nullable // Is nullable for stages for now
     protected final ContainerBuilder injectorBuilder;
 
-    public boolean autoRequires;
-
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
      * methods annotated with {@link Provides}. In which the case the declaring class might need to be constructor injected
      * before the method can be executed.
      */
-    @Nullable
     private Key<T> key;
 
     /** The resolved dependencies of this node. */
@@ -99,26 +92,9 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     }
 
     @Override
-    protected void onFreeze() {
-        if (key != null) {
-            if (this instanceof BuildtimeServiceNodeExported) {
-                injectorBuilder.box.services().exports.put(this);
-            } else {
-                if (!injectorBuilder.box.services().nodes.putIfAbsent(this)) {
-                    System.err.println("OOPS " + key);
-                }
-            }
-        }
-    }
-
-    @Override
     public BuildtimeServiceNode<T> as(Class<? super T> key) {
         requireNonNull(key, "key is null");
         return as(Key.of(key));
-    }
-
-    public final ServiceDescriptor toDescriptor() {
-        return new InternalServiceDescriptor(key, configurationSite, getDescription() /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */
@@ -132,13 +108,13 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         this.key = (Key<T>) key;
         return this;
     }
-
-    @Override
-    public ServiceConfiguration<?> asNone() {
-        checkConfigurable();
-        key = null;
-        return this;
-    }
+    //
+    // @Override
+    // public ServiceConfiguration<?> asNone() {
+    // checkConfigurable();
+    // key = null;
+    // return this;
+    // }
 
     public final void checkResolved() {
         for (int i = 0; i < resolvedDependencies.length; i++) {
@@ -160,15 +136,26 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         return null;
     }
 
+    @Override
+    public final Optional<String> description() {
+        return Optional.ofNullable(getDescription());
+    }
+
     /** {@inheritDoc} */
     @Override
-    public final Key<T> key() {
-        return key;
+    public @Nullable String getDescription() {
+        return description;
     }
 
     /** {@inheritDoc} */
     @Override
     public final Key<T> getKey() {
+        return key;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Key<T> key() {
         return key;
     }
 
@@ -188,8 +175,16 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     abstract RuntimeServiceNode<T> newRuntimeNode();
 
     @Override
-    public final Optional<String> description() {
-        return Optional.ofNullable(getDescription());
+    protected void onFreeze() {
+        if (key != null) {
+            if (this instanceof BuildtimeServiceNodeExported) {
+                injectorBuilder.box.services().exports.put(this);
+            } else {
+                if (!injectorBuilder.box.services().nodes.putIfAbsent(this)) {
+                    System.err.println("OOPS " + key);
+                }
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -198,6 +193,10 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         checkConfigurable();
         this.description = description;
         return this;
+    }
+
+    public final ServiceDescriptor toDescriptor() {
+        return new InternalServiceDescriptor(key, configurationSite, getDescription() /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */

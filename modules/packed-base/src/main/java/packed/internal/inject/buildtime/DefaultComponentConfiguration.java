@@ -37,12 +37,12 @@ public class DefaultComponentConfiguration extends AbstractFreezableNode impleme
     public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Object instance) {
         super(dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL));
         requireNonNull(instance, "instance is null");
-        this.node = new ComponentBuildNode(dcc);
+        this.node = new ComponentBuildNode(configurationSite, dcc);
     }
 
     public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Factory<?> factory, InstantiationMode instantiationMode) {
         super(dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL));
-        this.node = new ComponentBuildNode(dcc);
+        this.node = new ComponentBuildNode(configurationSite, dcc);
     }
 
     /** {@inheritDoc} */

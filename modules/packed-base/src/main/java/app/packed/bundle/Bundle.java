@@ -196,7 +196,7 @@ public abstract class Bundle extends AnyBundle {
         return injector().installService(factory);
     }
 
-    protected final <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
+    protected final <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
         return injector().installService(implementation);
     }
 
@@ -253,17 +253,13 @@ public abstract class Bundle extends AnyBundle {
         return injector().provide(implementation);
     }
 
-    protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
-        return injector().provide(factory);
-    }
-
     protected final <T> ServiceConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
-
-    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injector().provide(Factory.findInjectable(implementation));
-    }
+    //
+    // protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+    // return injector().provide(Factory.findInjectable(implementation));
+    // }
 
     // // /** The internal configuration to delegate to */
     // // We probably want to null this out...

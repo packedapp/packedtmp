@@ -19,10 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.UUID;
 
+import packed.internal.config.site.InternalConfigurationSite;
+
 /**
  *
  */
-public class ComponentBuildNode {
+// What used to be InternalComponentConfiguration
+public final class ComponentBuildNode {
 
     public String description;
 
@@ -34,7 +37,10 @@ public class ComponentBuildNode {
 
     public final DefaultContainerConfiguration dcc;
 
-    ComponentBuildNode(DefaultContainerConfiguration dcc) {
+    final InternalConfigurationSite cs;
+
+    ComponentBuildNode(InternalConfigurationSite cs, DefaultContainerConfiguration dcc) {
+        this.cs = requireNonNull(cs);
         this.dcc = requireNonNull(dcc);
     }
 

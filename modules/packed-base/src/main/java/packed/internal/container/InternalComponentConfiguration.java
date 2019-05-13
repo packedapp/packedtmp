@@ -150,13 +150,6 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** {@inheritDoc} */
     @Override
-    public InternalComponentConfiguration<?> asNone() {
-        super.asNone();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public @Nullable String getName() {
         return name;
     }

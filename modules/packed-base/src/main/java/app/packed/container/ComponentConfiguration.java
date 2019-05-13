@@ -16,6 +16,7 @@
 package app.packed.container;
 
 import app.packed.bundle.Bundle;
+import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
@@ -32,6 +33,13 @@ import app.packed.util.Nullable;
  * possible to install components at runtime via {@link Component}.
  */
 public interface ComponentConfiguration /* extends ComponentInstaller */ {
+
+    /**
+     * Returns the configuration site where this configuration was created.
+     * 
+     * @return the configuration site where this configuration was created
+     */
+    ConfigSite configurationSite();
 
     // TypeAnnotations are ignored for now...
     /**

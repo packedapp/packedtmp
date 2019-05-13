@@ -51,7 +51,7 @@ public final class ServiceWiringOperations {
         /** {@inheritDoc} */
         @Override
         public void onEachService(ServiceConfiguration<?> sc) {
-            sc.asNone();
+            // sc.asNone();
         }
     };
 
@@ -192,7 +192,7 @@ public final class ServiceWiringOperations {
             @Override
             public void onEachService(ServiceConfiguration<?> sc) {
                 if (!predicate.test(ServiceUtils.wrapperOf(sc))) {
-                    sc.asNone();
+                    // sc.asNone();
                 }
             }
         };

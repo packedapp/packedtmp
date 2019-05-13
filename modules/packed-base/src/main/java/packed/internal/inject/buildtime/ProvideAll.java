@@ -35,7 +35,7 @@ import packed.internal.inject.ServiceWiringImportOperation;
 import packed.internal.inject.runtime.AbstractInjector;
 
 /** Provides services from an existing Injector. */
-public final class ProvideAll extends AbstractConfigurableNode {
+public final class ProvideAll extends AbstractFreezableNode {
 
     /** The injector we are providing services from. */
     private final Injector injector;

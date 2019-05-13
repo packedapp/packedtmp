@@ -22,7 +22,7 @@ import packed.internal.config.site.InternalConfigurationSite;
 /**
  *
  */
-public class AbstractFreezableNode {
+public abstract class AbstractFreezableNode {
 
     /** The configuration site of this object. */
     protected final InternalConfigurationSite configurationSite;

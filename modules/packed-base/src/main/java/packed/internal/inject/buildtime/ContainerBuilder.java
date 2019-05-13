@@ -182,8 +182,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(this, cs, node);
         bn.as(key);
         publicNodeList.add(bn);
-        bindNode(bn);
-        return bn;
+        return bindNode(new DefaultServiceConfiguration<>(bn));
     }
 
     /**
@@ -217,21 +216,9 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.dependencies());
         ComponentServiceConfiguration<T> cc = install0(icc);
         scanForProvides(func.getReturnTypeRaw(), icc);
-        bindNode(icc).as(factory.defaultKey());
-        return cc;
-    }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ComponentServiceConfiguration<T> installService(T instance) {
-        requireNonNull(instance, "instance is null");
-        newOperation();
-
-        ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
-        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
-        ComponentServiceConfiguration<T> cc = install0(icc);
-        scanForProvides(instance.getClass(), icc);
-        bindNode(icc).as((Class) instance.getClass());
+        icc.as(factory.defaultKey());
+        bindNode(icc);
         return cc;
     }
 
@@ -251,6 +238,20 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         scanForProvides(func.getReturnTypeRaw(), node);
 
         return bindNode(node).as(factory.defaultKey());
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> ComponentServiceConfiguration<T> installService(T instance) {
+        requireNonNull(instance, "instance is null");
+        newOperation();
+
+        ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
+        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
+                configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, instance);
+        ComponentServiceConfiguration<T> cc = install0(icc);
+        scanForProvides(instance.getClass(), icc);
+        bindNode(icc).as((Class) instance.getClass());
+        return cc;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

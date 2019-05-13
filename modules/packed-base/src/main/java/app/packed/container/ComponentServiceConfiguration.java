@@ -32,14 +32,14 @@ import app.packed.util.Key;
  * {@link Component} at runtime.
  */
 public interface ComponentServiceConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration {
-
-    /**
-     * Prohibits the component for being available as a dependency to other services/components.
-     * 
-     * @return this component configuration
-     */
-    @Override
-    ComponentServiceConfiguration<?> asNone();
+    //
+    // /**
+    // * Prohibits the component for being available as a dependency to other services/components.
+    // *
+    // * @return this component configuration
+    // */
+    // @Override
+    // ComponentServiceConfiguration<?> asNone();
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
@@ -76,7 +76,9 @@ public interface ComponentServiceConfiguration<T> extends ServiceConfiguration<T
      * @see #addMixin(Object)
      */
     @Override
-    ComponentServiceConfiguration<T> addMixin(Class<?> implementation);
+    default ComponentServiceConfiguration<T> addMixin(Class<?> implementation) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Adds the specified mixin to the list of mixins for the component.
@@ -91,7 +93,9 @@ public interface ComponentServiceConfiguration<T> extends ServiceConfiguration<T
      * @see #addMixin(Object)
      */
     @Override
-    ComponentServiceConfiguration<T> addMixin(Factory<?> factory);
+    default ComponentServiceConfiguration<T> addMixin(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Adds the specified mixin instance to this component. The mixin can either be a class in which case it will be
@@ -108,7 +112,9 @@ public interface ComponentServiceConfiguration<T> extends ServiceConfiguration<T
      * @see #addMixin(Factory)
      */
     @Override
-    ComponentServiceConfiguration<T> addMixin(Object instance);
+    default ComponentServiceConfiguration<T> addMixin(Object instance) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Sets the description of this component.
