@@ -67,7 +67,7 @@ class BindInjectorFromBundle {
      */
     void processImport() {
         bundle.doConfigure(newConfiguration);
-        processImport(newConfiguration.publicNodeList);
+        processImport(newConfiguration.exportedNodes);
     }
 
     void processExport() {

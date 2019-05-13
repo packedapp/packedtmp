@@ -231,6 +231,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
             // getInstance(null);
             // fi = fi.withInstance(this.instance);
         }
+
         BuildtimeServiceNodeDefault<?> node = new BuildtimeServiceNodeDefault<>(icss, atProvides, fi, this);
         node.as((Key) atProvides.key);
         return node;

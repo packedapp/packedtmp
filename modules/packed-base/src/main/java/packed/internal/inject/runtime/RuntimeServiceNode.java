@@ -70,10 +70,6 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
         return Optional.ofNullable(description);
     }
 
-    public final String getDescription() {
-        return description;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final Key<T> key() {
