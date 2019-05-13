@@ -51,7 +51,7 @@ public class ImportTest {
         @Override
         protected void configure() {
             export(provide(ZoneId.systemDefault()).as(ZoneId.class));
-            export(installService(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
+            export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
         }
     }
 
@@ -61,7 +61,7 @@ public class ImportTest {
         @Override
         protected void configure() {
             provide(ZoneId.of("Europe/London")).as(ZoneId.class);
-            export(installService(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
+            export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
         }
     }
 
@@ -71,7 +71,7 @@ public class ImportTest {
         @Override
         protected void configure() {
             provide(ZoneId.of("Europe/Berlin")).as(ZoneId.class);
-            export(installService(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
+            export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
 
         }
     }

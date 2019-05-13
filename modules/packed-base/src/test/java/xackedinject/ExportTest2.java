@@ -47,7 +47,7 @@ public class ExportTest2 {
         protected void configure() {
             // Requirements
             requireService(ZoneId.class);
-            export(installService(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
+            export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
         }
     }
 

@@ -192,13 +192,12 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
         InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL);
+        ComponentClassDescriptor desc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
 
-        ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
-        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this, frame, cdesc, root, func, (List) factory.dependencies());
-        scanForProvides(func.getReturnTypeRaw(), icc);
+        InternalComponentConfiguration<T> node = new InternalComponentConfiguration<T>(this, frame, desc, root, func, (List) factory.dependencies());
 
-        bindNode(icc).as(factory.defaultKey());
-        return icc;
+        scanForProvides(func.getReturnTypeRaw(), node);
+        return bindNode(node).as(factory.defaultKey());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -210,13 +209,12 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
+        ServiceClassDescriptor desc = accessor.serviceDescriptorFor(func.getReturnTypeRaw());
 
-        ServiceClassDescriptor serviceDesc = accessor.serviceDescriptorFor(func.getReturnTypeRaw());
-        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(this, frame, serviceDesc, mode, accessor.readable(func),
+        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(this, frame, desc, mode, accessor.readable(func),
                 (List) factory.dependencies());
 
         scanForProvides(func.getReturnTypeRaw(), node);
-
         return bindNode(node).as(factory.defaultKey());
     }
 

@@ -19,7 +19,6 @@ import java.util.Set;
 
 import app.packed.app.App;
 import app.packed.container.ComponentConfiguration;
-import app.packed.container.ComponentInstaller;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.container.ContainerWiringOptions;
@@ -71,10 +70,6 @@ import app.packed.util.TypeLiteral;
 // }
 
 public abstract class Bundle extends AnyBundle {
-
-    protected final ComponentConfiguration install(Object instance) {
-        return configuration().install(instance);
-    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -157,29 +152,13 @@ public abstract class Bundle extends AnyBundle {
         return use(InjectorExtension.class);
     }
 
+    protected final ComponentConfiguration install(Object instance) {
+        return configuration().install(instance);
+    }
+
     // protected ComponentServiceConfiguration<?> installBundle() {
     // return containerBuilderX().installService(this);
     // }
-
-    protected final ComponentInstaller installer() {
-        // Its here because bundle cannot implement ComponentInstaller
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Installs the specified component implementation. This method is short for
-     * {@code install(Factory.findInjectable(implementation))} which basically finds a valid constructor/static method (as
-     * outlined in {@link Factory#findInjectable(Class)}) to instantiate the specified component implementation.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param implementation
-     *            the component implementation to install
-     * @return a component configuration that can be use to configure the component in greater detail
-     */
-    protected final <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
-        return injector().installService(implementation);
-    }
 
     /**
      *
@@ -194,10 +173,6 @@ public abstract class Bundle extends AnyBundle {
      */
     protected final <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
         return injector().installService(factory);
-    }
-
-    protected final <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injector().provide(implementation);
     }
 
     protected final Layer mainLayer(Layer... predecessors) {
@@ -256,10 +231,10 @@ public abstract class Bundle extends AnyBundle {
     protected final <T> ServiceConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
-    //
-    // protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-    // return injector().provide(Factory.findInjectable(implementation));
-    // }
+
+    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return injector().provide(implementation);
+    }
 
     // // /** The internal configuration to delegate to */
     // // We probably want to null this out...

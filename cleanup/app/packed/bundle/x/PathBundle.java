@@ -31,6 +31,6 @@ public class PathBundle extends Bundle {
     @Override
     protected void configure() {
         // buildWithBundle();
-        installService(new Factory1<PathBundle, Path>(e -> e.p) {});
+        provide(new Factory1<PathBundle, Path>(e -> e.p) {});
     }
 }

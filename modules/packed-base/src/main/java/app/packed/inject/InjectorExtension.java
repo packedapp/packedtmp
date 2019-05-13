@@ -105,10 +105,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return (ServiceConfiguration<T>) export(configuration.getKey());
     }
 
-    public <T> ComponentServiceConfiguration<T> installService(Class<T> implementation) {
-        return builder().installService(Factory.findInjectable(implementation));
-    }
-
     /**
      *
      * <p>
@@ -146,12 +142,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @return a service configuration for the service
      */
     public <T> ServiceConfiguration<T> provide(T instance) {
-        requireNonNull(instance, "instance");
         return builder().provide(instance);
     }
 
-    public <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return builder().installService(Factory.findInjectable(implementation));
+    public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return provide(Factory.findInjectable(implementation));
     }
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
