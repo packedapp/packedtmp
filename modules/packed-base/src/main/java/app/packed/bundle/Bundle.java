@@ -18,6 +18,7 @@ package app.packed.bundle;
 import java.util.Set;
 
 import app.packed.app.App;
+import app.packed.container.ComponentConfiguration;
 import app.packed.container.ComponentInstaller;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
@@ -71,8 +72,8 @@ import app.packed.util.TypeLiteral;
 
 public abstract class Bundle extends AnyBundle {
 
-    protected final void install(Object instance) {
-        configuration().install(instance);
+    protected final ComponentConfiguration install(Object instance) {
+        return configuration().install(instance);
     }
 
     /**

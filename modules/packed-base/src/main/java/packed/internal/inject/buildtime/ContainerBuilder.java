@@ -202,7 +202,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
             }
             root.children.add(configuration);
         }
-
         return configuration;
     }
 

@@ -27,7 +27,7 @@ public class TestIt extends Bundle {
     @Override
     protected void configure() {
         install("foo");
-        install("fooddd");
+        install("fooddd").setName("fff");
         install("fooddd");
     }
 

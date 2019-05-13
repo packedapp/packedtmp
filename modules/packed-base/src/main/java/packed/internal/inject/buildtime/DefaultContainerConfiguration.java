@@ -33,6 +33,7 @@ import app.packed.container.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -50,6 +51,11 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
     @Nullable
     public final Bundle bundle;
 
+    public final HashMap<String, ComponentBuildNode> components = new HashMap<>();
+
+    /** All nodes that have been added to this builder, even those that are not exposed. */
+    AbstractFreezableNode currentNode;
+
     /** All extensions that have been installed for the container. */
     final IdentityHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new IdentityHashMap<>();
 
@@ -62,11 +68,6 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
 
     /** All outgoing links of this container, in order of installation order. */
     final LinkedHashMap<String, DefaultContainerConfiguration> wirings = new LinkedHashMap<>();
-
-    final HashMap<String, ComponentBuildNode> components = new HashMap<>();
-
-    /** All nodes that have been added to this builder, even those that are not exposed. */
-    AbstractFreezableNode currentNode;
 
     protected DefaultContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
         super(configurationSite);
@@ -89,13 +90,32 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration install(Class<?> implementation) {
-        throw new UnsupportedOperationException();
+        return install(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration install(Factory<?> factory) {
-        throw new UnsupportedOperationException();
+        return newOperation(new DefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON));
+    }
+
+    @Override
+    public final ComponentConfiguration install(Object instance) {
+        return newOperation(new DefaultComponentConfiguration(this, instance));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentConfiguration installStatics(Class<?> implementation) {
+        return newOperation(new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
+        newOperation();
+        this.accessor = DescriptorFactory.get(lookup);
     }
 
     public void newOperation() {
@@ -113,25 +133,6 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
         }
         currentNode = node;
         return node;
-    }
-
-    @Override
-    public final ComponentConfiguration install(Object instance) {
-        return newOperation(new DefaultComponentConfiguration(this, instance));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentConfiguration installNone(Class<?> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
-        newOperation();
-        this.accessor = DescriptorFactory.get(lookup);
     }
 
     @Override

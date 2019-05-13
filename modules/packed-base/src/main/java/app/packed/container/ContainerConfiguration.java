@@ -73,13 +73,13 @@ public interface ContainerConfiguration {
     @Nullable
     String getName();
 
-    ComponentConfiguration installNone(Class<?> implementation);
-
-    ComponentConfiguration install(Object instance);
+    ComponentConfiguration install(Class<?> implementation);
 
     ComponentConfiguration install(Factory<?> factory);
 
-    ComponentConfiguration install(Class<?> implementation);
+    ComponentConfiguration install(Object instance);
+
+    ComponentConfiguration installStatics(Class<?> implementation);
 
     /**
      * Registers a {@link Lookup} object that can is primarily used for accessing fields and methods on registered
@@ -121,6 +121,8 @@ public interface ContainerConfiguration {
      */
     void setName(@Nullable String name);
 
+    Set<String> tags();
+
     /**
      * Returns an extension of the specified type. If an extension of the specified type has not already been installed this
      * method will automatically instantiate an extension of the specified type and install it. Returning the instantiated
@@ -144,8 +146,6 @@ public interface ContainerConfiguration {
      * @return a bundle link
      */
     BundleLink wire(AnyBundle child, WiringOption... options);
-
-    Set<String> tags();
 }
 // static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
 // options) {

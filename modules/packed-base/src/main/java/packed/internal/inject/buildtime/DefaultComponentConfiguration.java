@@ -18,6 +18,8 @@ package packed.internal.inject.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.ComponentConfiguration;
+import app.packed.inject.Factory;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigurationSiteType;
 
@@ -35,6 +37,11 @@ public class DefaultComponentConfiguration extends AbstractFreezableNode impleme
     public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Object instance) {
         super(dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL));
         requireNonNull(instance, "instance is null");
+        this.node = new ComponentBuildNode(dcc);
+    }
+
+    public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Factory<?> factory, InstantiationMode instantiationMode) {
+        super(dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL));
         this.node = new ComponentBuildNode(dcc);
     }
 

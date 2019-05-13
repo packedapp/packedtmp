@@ -18,13 +18,13 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.app.App;
 import app.packed.config.ConfigSite;
 import app.packed.container.Component;
-import app.packed.container.ComponentPath;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
@@ -39,20 +39,32 @@ public class InternalContainer implements Container {
 
     private final Injector injector;
 
-    /** The root component of the container. */
-    private final InternalComponent root;
-
+    /** The name of the container. */
     private final String name;
+
+    final Map<String, InternalComponent> components;
+
+    /** All child containers of this container. */
+    // Kan vi have en child container og en component med samme navn???
+    // Det var ikke muligt foer fordi vi havde en root component
+
+    // Hmmmmmmmmm. Et problem, er at man
+
+    final Map<String, InternalComponent> containers = Map.of();
 
     public InternalContainer(ContainerBuilder builder, Injector injector) {
         this.injector = requireNonNull(injector);
-        if (builder.root != null) {
-            builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
-            this.root = requireNonNull(builder.root.component);
+        // if (builder.root != null) {
+        // builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
+        // this.root = requireNonNull(builder.root.component);
+        // } else {
+        // this.root = null;
+        // }
+        if (builder.components.isEmpty()) {
+            components = Map.of();
         } else {
-            this.root = null;
+            components = Map.of();
         }
-
         this.name = builder.getName() == null ? "App" : builder.getName();
     }
 
@@ -129,7 +141,8 @@ public class InternalContainer implements Container {
     /** {@inheritDoc} */
     @Override
     public Optional<Component> getComponent(CharSequence path) {
-        return path == ComponentPath.ROOT || path.toString().equals("/") ? Optional.of(root) : Optional.empty();
+        throw new UnsupportedOperationException();
+        // return path == ComponentPath.ROOT || path.toString().equals("/") ? Optional.of(root) : Optional.empty();
     }
 
     /** {@inheritDoc} */
@@ -139,10 +152,6 @@ public class InternalContainer implements Container {
         // Det eneste jeg ved er at man godt kan have 2 containere med det samme navn som sieblings.
         // installContainer(Jetty.class); //Maaske man kan bestemme root component navnet???
         // installContainer(Jetty.class);//Maaske man kan bestemme root component navnet???
-    }
-
-    public Component root() {
-        return root;
     }
 
     /** {@inheritDoc} */
