@@ -182,26 +182,12 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(this, cs, node);
         bn.as(key);
         publicNodeList.add(bn);
+
         return bindNode(new DefaultServiceConfiguration<>(bn));
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        newOperation();
-
-        InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
-        InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL);
-        ComponentClassDescriptor desc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
-
-        InternalComponentConfiguration<T> node = new InternalComponentConfiguration<T>(this, frame, desc, root, func, (List) factory.dependencies());
-
-        scanForProvides(func.getReturnTypeRaw(), node);
-        return bindNode(node).as(factory.defaultKey());
-    }
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+    public final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         newOperation();
 
@@ -215,7 +201,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
                 (List) factory.dependencies());
 
         scanForProvides(func.getReturnTypeRaw(), node);
-        return bindNode(node).as(factory.defaultKey());
+        bindNode(node).as(factory.defaultKey());
+        return new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), node);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

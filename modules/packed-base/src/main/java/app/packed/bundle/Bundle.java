@@ -160,21 +160,6 @@ public abstract class Bundle extends AnyBundle {
     // return containerBuilderX().installService(this);
     // }
 
-    /**
-     *
-     * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param factory
-     *            the factory used for creating the component instance
-     * @return the configuration of the component that was installed
-     */
-    protected final <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
-        return injector().installService(factory);
-    }
-
     protected final Layer mainLayer(Layer... predecessors) {
         // Layers are an AnyBundle thingy...
         // Can only be called once???
@@ -224,15 +209,30 @@ public abstract class Bundle extends AnyBundle {
      * @see InjectorConfigurator#provide(Class)
      */
     // Rename to Provide@
-    protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
         return injector().provide(implementation);
     }
 
-    protected final <T> ServiceConfiguration<T> provide(T instance) {
+    /**
+     *
+     * <p>
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param factory
+     *            the factory used for creating the component instance
+     * @return the configuration of the component that was installed
+     */
+    protected final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+        return injector().provide(factory);
+    }
+
+    protected final <T> ComponentServiceConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
 
-    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+    protected final <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
         return injector().provide(implementation);
     }
 

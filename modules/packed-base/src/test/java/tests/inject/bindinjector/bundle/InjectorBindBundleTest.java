@@ -84,7 +84,7 @@ public class InjectorBindBundleTest {
         Bundle b = new Bundle() {
             @Override
             protected void configure() {
-                installService(new Factory0<>(al::incrementAndGet) {}).prototype();
+                provide(new Factory0<>(al::incrementAndGet) {}).prototype();
                 export(Long.class);
             }
         };

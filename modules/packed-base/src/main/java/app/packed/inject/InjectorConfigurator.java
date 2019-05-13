@@ -136,7 +136,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @see Bundle#provide(Class)
      */
     public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
+        return injector().provide(implementation);
     }
 
     /**
@@ -173,7 +173,7 @@ public class InjectorConfigurator /* implements Taggable */ {
     }
 
     public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
+        return injector().provide(implementation);
     }
 
     /**

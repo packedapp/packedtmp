@@ -105,6 +105,10 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return (ServiceConfiguration<T>) export(configuration.getKey());
     }
 
+    public <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
+        return builder().provide(Factory.findInjectable(implementation));
+    }
+
     /**
      *
      * <p>
@@ -116,15 +120,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
-        return builder().installService(factory);
-    }
-
-    public <T> ServiceConfiguration<T> provide(Class<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
-    }
-
-    public <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+    public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
         return builder().provide(factory);
     }
 
@@ -141,12 +137,12 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceConfiguration<T> provide(T instance) {
+    public <T> ComponentServiceConfiguration<T> provide(T instance) {
         return builder().provide(instance);
     }
 
-    public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
+    public <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return builder().provide(Factory.findInjectable(implementation));
     }
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
