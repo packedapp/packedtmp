@@ -45,7 +45,6 @@ public final class ComponentBuildNode {
     }
 
     public void onFreeze() {
-        System.out.println("FFF");
         if (name == null) {
             name = UUID.randomUUID().toString();
         }

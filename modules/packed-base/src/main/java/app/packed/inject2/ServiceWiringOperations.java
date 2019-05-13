@@ -27,11 +27,11 @@ import java.util.stream.Collectors;
 
 import app.packed.bundle.WiringOption;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceUtils;
 import packed.internal.inject.ServiceWiringImportOperation;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
 /**
  * A number of wiring operations for services.
@@ -50,7 +50,7 @@ public final class ServiceWiringOperations {
 
         /** {@inheritDoc} */
         @Override
-        public void onEachService(ServiceConfiguration<?> sc) {
+        public void onEachService(BuildtimeServiceNode<?> sc) {
             // sc.asNone();
         }
     };
@@ -79,7 +79,7 @@ public final class ServiceWiringOperations {
         requireNonNull(action, "action is null");
         return new ServiceWiringImportOperation() {
             @Override
-            public void onEachService(ServiceConfiguration<?> sc) {
+            public void onEachService(BuildtimeServiceNode<?> sc) {
                 action.accept(ServiceUtils.wrapperOf(sc));
             }
         };
@@ -103,7 +103,7 @@ public final class ServiceWiringOperations {
         return new ServiceWiringImportOperation() {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
-            public void onEachService(ServiceConfiguration<?> sc) {
+            public void onEachService(BuildtimeServiceNode<?> sc) {
                 if (sc.getKey().equals(from)) {
                     sc.as((Key) to);
                 }
@@ -190,7 +190,7 @@ public final class ServiceWiringOperations {
         requireNonNull(predicate, "predicate is null");
         return new ServiceWiringImportOperation() {
             @Override
-            public void onEachService(ServiceConfiguration<?> sc) {
+            public void onEachService(BuildtimeServiceNode<?> sc) {
                 if (!predicate.test(ServiceUtils.wrapperOf(sc))) {
                     // sc.asNone();
                 }

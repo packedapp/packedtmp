@@ -89,7 +89,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
 
-    @Deprecated
     protected final <T extends AbstractFreezableNode> T bindNode(T node) {
         // Bliver en protected method paa en extension...
         assert currentNode == null;
@@ -203,8 +202,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
-        bindNode(node);
-        return new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), node);
+        return bindNode(new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), node));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -218,9 +216,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         scanForProvides(instance.getClass(), icc);
         icc.as((Class) instance.getClass());
-        bindNode(icc);
 
-        return new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), icc);
+        return bindNode(new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), icc));
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {

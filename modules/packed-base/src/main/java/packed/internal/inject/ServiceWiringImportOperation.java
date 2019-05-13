@@ -26,6 +26,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
 /**
  * A stage that is executed during the import phase of an injector or module. A typically usage is to restrict what
@@ -44,7 +45,7 @@ public abstract class ServiceWiringImportOperation extends WiringOption {
      *            the service configuration
      */
     // IDeen er lidt at kalde alle der procerere mere end en entity onEachX, og resten onX
-    public void onEachService(ServiceConfiguration<?> sc) {}
+    public void onEachService(BuildtimeServiceNode<?> sc) {}
 
     @Override
     protected void process(BundleLink link) {

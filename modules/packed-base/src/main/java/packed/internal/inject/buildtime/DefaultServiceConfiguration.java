@@ -47,7 +47,8 @@ public class DefaultServiceConfiguration<T> extends AbstractFreezableNode implem
     @Override
     public ServiceConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
-        return node.as(key);
+        node.as(key);
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -74,14 +75,16 @@ public class DefaultServiceConfiguration<T> extends AbstractFreezableNode implem
     @Override
     public ServiceConfiguration<T> lazy() {
         checkConfigurable();
-        return node.lazy();
+        ((BuildtimeServiceNodeDefault<T>) node).lazy();
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> prototype() {
         checkConfigurable();
-        return node.prototype();
+        ((BuildtimeServiceNodeDefault<T>) node).prototype();
+        return this;
     }
 
     /** {@inheritDoc} */

@@ -24,6 +24,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
 /**
  *
@@ -43,7 +44,7 @@ public class ServiceUtils {
      *            the service configuration to create an adaptor for
      * @return the read through descriptor
      */
-    public static ServiceDescriptor wrapperOf(ServiceConfiguration<?> configuration) {
+    public static ServiceDescriptor wrapperOf(BuildtimeServiceNode<?> configuration) {
         // Move to internal
         return new ServiceConfigurationWrapper(configuration);
     }
@@ -105,7 +106,7 @@ public class ServiceUtils {
     static class ServiceConfigurationWrapper implements ServiceDescriptor {
 
         /** The configuration we read through to. */
-        private final ServiceConfiguration<?> configuration;
+        private final BuildtimeServiceNode<?> configuration;
 
         /**
          * Creates a new wrapper
@@ -113,7 +114,7 @@ public class ServiceUtils {
          * @param configuration
          *            the configuration to wrap
          */
-        ServiceConfigurationWrapper(ServiceConfiguration<?> configuration) {
+        ServiceConfigurationWrapper(BuildtimeServiceNode<?> configuration) {
             this.configuration = requireNonNull(configuration, "configuration is null");
         }
 

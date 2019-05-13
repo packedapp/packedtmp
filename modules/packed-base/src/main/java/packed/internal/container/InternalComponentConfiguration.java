@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import app.packed.container.ComponentConfiguration;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.classscan.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -36,7 +36,7 @@ import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
 /** The default implementation of {@link ComponentServiceConfiguration}. */
-public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentServiceConfiguration<T> {
+public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentConfiguration {
 
     /** A list of all children that have been added (lazily initialized). */
     public ArrayList<InternalComponentConfiguration<?>> children;
@@ -107,13 +107,13 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** {@inheritDoc} */
     @Override
-    public ComponentServiceConfiguration<T> addMixin(Class<?> implementation) {
+    public InternalComponentConfiguration<T> addMixin(Class<?> implementation) {
         return addMixin(Factory.findInjectable(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentServiceConfiguration<T> addMixin(Factory<?> factory) {
+    public InternalComponentConfiguration<T> addMixin(Factory<?> factory) {
         checkConfigurable();
         InternalFunction<?> f = AppPackedInjectSupport.toInternalFunction(factory);
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
@@ -121,12 +121,12 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** {@inheritDoc} */
     @Override
-    public ComponentServiceConfiguration<T> addMixin(Object instance) {
+    public InternalComponentConfiguration<T> addMixin(Object instance) {
         checkConfigurable();
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, instance));
     }
 
-    private ComponentServiceConfiguration<T> addMixin0(MixinNode node) {
+    private InternalComponentConfiguration<T> addMixin0(MixinNode node) {
         if (mixins == null) {
             mixins = new ArrayList<>(1);
         }
@@ -134,19 +134,19 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public InternalComponentConfiguration<T> as(Class<? super T> key) {
-        super.as(key);
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InternalComponentConfiguration<T> as(Key<? super T> key) {
-        super.as(key);
-        return this;
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public ServiceConfiguration<T> as(Class<? super T> key) {
+    // super.as(key);
+    // return this;
+    // }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public InternalComponentConfiguration<T> as(Key<? super T> key) {
+    // super.as(key);
+    // return this;
+    // }
 
     /** {@inheritDoc} */
     @Override
@@ -167,7 +167,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** {@inheritDoc} */
     @Override
-    public ComponentServiceConfiguration<T> setName(String name) {
+    public ComponentConfiguration setName(String name) {
         checkConfigurable();
         if (!Objects.equals(name, this.name)) {
             if (parent != null) {

@@ -25,7 +25,6 @@ import java.util.List;
 import app.packed.inject.DependencyDescriptor;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
-import app.packed.util.Key;
 import packed.internal.box.BoxServices;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InternalDependencyDescriptor;
@@ -58,8 +57,9 @@ final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(ContainerBuilder builder) {
         builder.privateInjector = new InternalInjector(builder, builder.box.services().nodes);
-        builder.box.services().nodes
-                .put(new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector).as((Key) KeyBuilder.INJECTOR_KEY));
+        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector);
+        d.as(KeyBuilder.INJECTOR_KEY);
+        builder.box.services().nodes.put(d);
         if (builder.bundle == null) {
             builder.publicInjector = builder.privateInjector;
         } else {

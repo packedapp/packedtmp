@@ -23,7 +23,6 @@ import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provides;
 import app.packed.inject.ProvidesHelper;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -85,16 +84,11 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         // }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ServiceConfiguration<T> lazy() {
+    public void lazy() {
         instantiateAs(InstantiationMode.LAZY);
-        return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ServiceConfiguration<T> prototype() {
+    public void prototype() {
         if (hasDependencyOnInjectionSite) {
             throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         }
@@ -102,7 +96,6 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
             throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
         }
         instantiateAs(InstantiationMode.PROTOTYPE);
-        return this;
     }
 
     public BuildtimeServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {

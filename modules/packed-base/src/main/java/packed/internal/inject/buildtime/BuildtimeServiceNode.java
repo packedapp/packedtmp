@@ -22,7 +22,6 @@ import java.util.Optional;
 
 import app.packed.inject.Provides;
 import app.packed.inject.ProvidesHelper;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -37,7 +36,7 @@ import packed.internal.util.KeyBuilder;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode implements ServiceNode<T>, ServiceConfiguration<T> {
+public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode implements ServiceNode<T> /* , ServiceConfiguration<T> */ {
 
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
@@ -73,6 +72,10 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
+    public String getDescription() {
+        return description;
+    }
+
     BuildtimeServiceNode(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
         super(configurationSite);
         this.injectorBuilder = injectorBuilder;
@@ -91,22 +94,18 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         this.hasDependencyOnInjectionSite = hasDependencyOnInjectionSite;
     }
 
-    @Override
-    public BuildtimeServiceNode<T> as(Class<? super T> key) {
+    public void as(Class<? super T> key) {
         requireNonNull(key, "key is null");
-        return as(Key.of(key));
+        as(Key.of(key));
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
-    public BuildtimeServiceNode<T> as(Key<? super T> key) {
+    public void as(Key<? super T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
         this.key = (Key<T>) key;
-        return this;
     }
     //
     // @Override
@@ -138,17 +137,9 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
 
     @Override
     public final Optional<String> description() {
-        return Optional.ofNullable(getDescription());
+        return Optional.ofNullable(description);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable String getDescription() {
-        return description;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public final Key<T> getKey() {
         return key;
     }
@@ -187,8 +178,6 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
     public BuildtimeServiceNode<T> setDescription(String description) {
         checkConfigurable();
         this.description = description;
@@ -196,7 +185,7 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     }
 
     public final ServiceDescriptor toDescriptor() {
-        return new InternalServiceDescriptor(key, configurationSite, getDescription() /* immutableCopyOfTags() */);
+        return new InternalServiceDescriptor(key, configurationSite, description /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */
