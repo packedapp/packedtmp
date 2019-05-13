@@ -133,7 +133,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         this.function = requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
         this.descriptor = null;
-        setDescription(atProvides.description);
+        description = atProvides.description;
     }
 
     @Override

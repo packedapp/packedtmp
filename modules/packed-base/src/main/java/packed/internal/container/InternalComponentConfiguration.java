@@ -114,7 +114,6 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     /** {@inheritDoc} */
     @Override
     public InternalComponentConfiguration<T> addMixin(Factory<?> factory) {
-        checkConfigurable();
         InternalFunction<?> f = AppPackedInjectSupport.toInternalFunction(factory);
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
     }
@@ -122,7 +121,6 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     /** {@inheritDoc} */
     @Override
     public InternalComponentConfiguration<T> addMixin(Object instance) {
-        checkConfigurable();
         return addMixin0(new MixinNode(injectorBuilder, configurationSite, instance));
     }
 
@@ -157,7 +155,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     /** {@inheritDoc} */
     @Override
     public InternalComponentConfiguration<T> setDescription(String description) {
-        super.setDescription(description);
+        super.description = description;
         return this;
     }
 
@@ -168,7 +166,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setName(String name) {
-        checkConfigurable();
+        // checkConfigurable();
         if (!Objects.equals(name, this.name)) {
             if (parent != null) {
                 if (name == null) { // we allow clearing of the name if automatically set, for example, by an annotation

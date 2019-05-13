@@ -36,7 +36,7 @@ import packed.internal.util.KeyBuilder;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode implements ServiceNode<T> /* , ServiceConfiguration<T> */ {
+public abstract class BuildtimeServiceNode<T> /* extends AbstractFreezableNode */ implements ServiceNode<T> {
 
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
@@ -46,7 +46,7 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     /** The dependencies of this node. */
     public final List<InternalDependencyDescriptor> dependencies;
 
-    String description;
+    public String description;
 
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
@@ -76,8 +76,12 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         return description;
     }
 
+    /** The configuration site of this object. */
+    protected final InternalConfigurationSite configurationSite;
+
     BuildtimeServiceNode(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
-        super(configurationSite);
+        this.configurationSite = requireNonNull(configurationSite);
+        // super(configurationSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceNode<?>[dependencies.size()];
@@ -94,6 +98,16 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
         this.hasDependencyOnInjectionSite = hasDependencyOnInjectionSite;
     }
 
+    /**
+     * Returns the configuration site of this configuration.
+     * 
+     * @return the configuration site of this configuration
+     */
+    @Override
+    public final InternalConfigurationSite configurationSite() {
+        return configurationSite;
+    }
+
     public void as(Class<? super T> key) {
         requireNonNull(key, "key is null");
         as(Key.of(key));
@@ -102,7 +116,7 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
     @SuppressWarnings("unchecked")
     public void as(Key<? super T> key) {
         requireNonNull(key, "key is null");
-        checkConfigurable();
+        // checkConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
         this.key = (Key<T>) key;
@@ -165,7 +179,6 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
      */
     abstract RuntimeServiceNode<T> newRuntimeNode();
 
-    @Override
     protected void onFreeze() {
         if (key != null) {
             if (this instanceof BuildtimeServiceNodeExported) {
@@ -176,12 +189,6 @@ public abstract class BuildtimeServiceNode<T> extends AbstractFreezableNode impl
                 }
             }
         }
-    }
-
-    public BuildtimeServiceNode<T> setDescription(String description) {
-        checkConfigurable();
-        this.description = description;
-        return this;
     }
 
     public final ServiceDescriptor toDescriptor() {
