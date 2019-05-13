@@ -89,6 +89,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
 
+    @Deprecated
     protected final <T extends AbstractFreezableNode> T bindNode(T node) {
         // Bliver en protected method paa en extension...
         assert currentNode == null;
@@ -201,7 +202,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
                 (List) factory.dependencies());
 
         scanForProvides(func.getReturnTypeRaw(), node);
-        bindNode(node).as(factory.defaultKey());
+        node.as(factory.defaultKey());
+        bindNode(node);
         return new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), node);
     }
 
@@ -210,12 +212,15 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         requireNonNull(instance, "instance is null");
         newOperation();
 
+        InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
-        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), cdesc, root, instance);
+        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this, frame, cdesc, root, instance);
+
         scanForProvides(instance.getClass(), icc);
-        bindNode(icc).as((Class) instance.getClass());
-        return icc;
+        icc.as((Class) instance.getClass());
+        bindNode(icc);
+
+        return new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), icc);
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {

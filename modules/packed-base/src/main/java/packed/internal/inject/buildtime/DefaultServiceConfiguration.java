@@ -27,6 +27,12 @@ import app.packed.util.Nullable;
  */
 public class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements ServiceConfiguration<T> {
 
+    /** {@inheritDoc} */
+    @Override
+    protected void onFreeze() {
+        node.onFreeze();
+    }
+
     final BuildtimeServiceNode<T> node;
 
     /**

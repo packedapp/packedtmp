@@ -37,6 +37,13 @@ public class DefaultComponentServiceConfiguration<T> extends DefaultServiceConfi
 
     /** {@inheritDoc} */
     @Override
+    protected void onFreeze() {
+        component.onFreeze();
+        super.onFreeze();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     @Nullable
     public String getName() {
         return component.name;
