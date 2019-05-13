@@ -215,7 +215,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this, frame, cdesc, root, instance);
 
         scanForProvides(instance.getClass(), icc);
-        icc.as((Class) instance.getClass());
+        icc.as((Key) Key.of(instance.getClass()));
 
         return bindNode(new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), icc));
     }

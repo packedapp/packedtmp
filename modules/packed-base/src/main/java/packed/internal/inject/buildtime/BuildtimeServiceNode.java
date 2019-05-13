@@ -108,11 +108,6 @@ public abstract class BuildtimeServiceNode<T> /* extends AbstractFreezableNode *
         return configurationSite;
     }
 
-    public void as(Class<? super T> key) {
-        requireNonNull(key, "key is null");
-        as(Key.of(key));
-    }
-
     @SuppressWarnings("unchecked")
     public void as(Key<? super T> key) {
         requireNonNull(key, "key is null");
