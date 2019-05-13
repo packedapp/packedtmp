@@ -191,14 +191,13 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         newOperation();
 
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
+        InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL);
 
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
-        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
-                configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.dependencies());
+        InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this, frame, cdesc, root, func, (List) factory.dependencies());
         scanForProvides(func.getReturnTypeRaw(), icc);
 
-        icc.as(factory.defaultKey());
-        bindNode(icc);
+        bindNode(icc).as(factory.defaultKey());
         return icc;
     }
 
@@ -208,6 +207,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         newOperation();
 
         InstantiationMode mode = InstantiationMode.SINGLETON;
+
         InternalConfigurationSite frame = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
 
