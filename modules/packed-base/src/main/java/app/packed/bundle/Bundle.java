@@ -197,7 +197,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     protected final <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injector().installService(implementation);
+        return injector().provide(implementation);
     }
 
     protected final Layer mainLayer(Layer... predecessors) {

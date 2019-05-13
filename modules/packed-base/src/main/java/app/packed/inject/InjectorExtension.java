@@ -124,11 +124,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return builder().installService(factory);
     }
 
-    public <T> ComponentServiceConfiguration<T> installService(TypeLiteral<T> implementation) {
-        return builder().installService(Factory.findInjectable(implementation));
-    }
-    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
-
     public <T> ServiceConfiguration<T> provide(Class<T> implementation) {
         return provide(Factory.findInjectable(implementation));
     }
@@ -152,12 +147,13 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      */
     public <T> ServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance");
-        return builder().installService(instance);
+        return builder().provide(instance);
     }
 
-    public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
+    public <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+        return builder().installService(Factory.findInjectable(implementation));
     }
+    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
     // Services are the default implementation of injection....
 

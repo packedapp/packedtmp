@@ -185,25 +185,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return bindNode(new DefaultServiceConfiguration<>(bn));
     }
 
-    /**
-     * Sets the component root iff a root has not already been set.
-     *
-     * @param configuration
-     *            the component configuration
-     * @return the specified component configuration
-     */
-    private <T> InternalComponentConfiguration<T> install0(InternalComponentConfiguration<T> configuration) {
-        if (root == null) {
-            root = configuration;
-        } else {
-            if (root.children == null) {
-                root.children = new ArrayList<>();
-            }
-            root.children.add(configuration);
-        }
-        return configuration;
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> installService(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
@@ -214,12 +195,11 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(func.getReturnTypeRaw());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL), cdesc, root, func, (List) factory.dependencies());
-        ComponentServiceConfiguration<T> cc = install0(icc);
         scanForProvides(func.getReturnTypeRaw(), icc);
 
         icc.as(factory.defaultKey());
         bindNode(icc);
-        return cc;
+        return icc;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -241,17 +221,16 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ComponentServiceConfiguration<T> installService(T instance) {
+    public <T> ComponentServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
         newOperation();
 
         ComponentClassDescriptor cdesc = accessor.componentDescriptorFor(instance.getClass());
         InternalComponentConfiguration<T> icc = new InternalComponentConfiguration<T>(this,
                 configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND), cdesc, root, instance);
-        ComponentServiceConfiguration<T> cc = install0(icc);
         scanForProvides(instance.getClass(), icc);
         bindNode(icc).as((Class) instance.getClass());
-        return cc;
+        return icc;
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
@@ -278,7 +257,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         }
     }
 
-    public final void serviceAutoRequire() {
+    public void serviceAutoRequire() {
         autoRequires = true;
     }
 
