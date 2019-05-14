@@ -46,7 +46,7 @@ public class ExportTest2 {
         @Override
         protected void configure() {
             // Requirements
-            requireService(ZoneId.class);
+            // requireService(ZoneId.class);
             export(provide(new Factory1<ZoneId, ZonedDateTime>(ZonedDateTime::now) {}).prototype());
         }
     }

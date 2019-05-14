@@ -57,7 +57,7 @@ import packed.internal.invokable.InternalFunction;
  */
 public class ContainerBuilder extends DefaultContainerConfiguration {
 
-    boolean autoRequires;
+    boolean autoRequires = true;
 
     final Box box;
 
@@ -207,8 +207,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         }
     }
 
-    public void serviceAutoRequire() {
-        autoRequires = true;
+    public void serviceManualRequirements() {
+        autoRequires = false;
     }
 
     public BoxServices services() {
@@ -216,6 +216,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     }
 
     public void wireInjector(Bundle bundle, WiringOption... stages) {
+
         requireNonNull(bundle, "bundle is null");
         List<WiringOption> listOfStages = AppPackedBundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
         newOperation();

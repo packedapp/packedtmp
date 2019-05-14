@@ -39,6 +39,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @param key
      *            the key to add
      */
+    // Contracts as well??? Would be nice to get out of the way..
     public void addOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
@@ -46,19 +47,23 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     /**
+     * This method adds the specified key to the list of required services.
+     * 
      * Adds the specified key to the list of required services.
      * 
      * @param key
      *            the key to add
      */
+    // Contracts as well??? Would be nice to get out of the way..On the other hand its two methods...
+    // And I don't know if you publically want to display the contracts you implement????
     public void addRequired(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
         builder().services().addRequired(key);
     }
 
-    public void autoRequire() {
-        builder().serviceAutoRequire();
+    public void serviceManualRequirements() {
+        builder().serviceManualRequirements();
     }
 
     private ContainerBuilder builder() {

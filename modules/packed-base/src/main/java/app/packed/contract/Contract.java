@@ -18,6 +18,7 @@ package app.packed.contract;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 
 /**
@@ -33,7 +34,12 @@ import app.packed.util.Key;
 
 // Merge to contracts.... All fragments, needs a merge method
 
+// Contracts are all about the API.
+// Descriptors are all about the implementation details
 public final class Contract {
+
+    // Of cource, descriptor should have one as well...
+    ConfigSite configSite; // How did we create this contract....
 
     // String Description.. But it is neither bundle or container. It is the description of the contract...
 
@@ -48,6 +54,8 @@ public final class Contract {
         // Altsaa F.eks. J2EE = JaxRS + JPA
         throw new UnsupportedOperationException();
     }
+
+    // extensionOf --- find et bedre navn --- men ihvertfald 3.2 er en videreudvikling af 3.1
 
     /**
      * 

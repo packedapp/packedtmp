@@ -250,8 +250,8 @@ public abstract class Bundle extends AnyBundle {
         injector().addRequired(key);
     }
 
-    protected final void serviceAutoRequire() {
-        injector().autoRequire();
+    protected final void serviceManualRequirements() {
+        injector().serviceManualRequirements();
     }
 
     protected final Set<String> tags() {

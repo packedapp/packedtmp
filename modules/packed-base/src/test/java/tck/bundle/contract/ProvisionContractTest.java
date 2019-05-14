@@ -74,7 +74,6 @@ public class ProvisionContractTest {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
-                serviceAutoRequire();
                 provide(NeedsA.class);
                 provide(B.class);
             }
@@ -91,7 +90,6 @@ public class ProvisionContractTest {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
-                serviceAutoRequire();
                 provide(NeedsAOptional.class);
                 provide(B.class);
             }
@@ -109,7 +107,6 @@ public class ProvisionContractTest {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
-                serviceAutoRequire();
                 provide(NeedsA.class);
                 provide(NeedsAOptional.class);
                 provide(B.class);
@@ -127,7 +124,6 @@ public class ProvisionContractTest {
             @Override
             protected void configure() {
                 lookup(MethodHandles.lookup());
-                serviceAutoRequire();
                 provide(NeedsAOptional.class);
                 provide(NeedsB.class);
                 export(provide(C.class));
