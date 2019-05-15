@@ -151,8 +151,8 @@ public class Factory<T> {
     /**
      * If this factory is registered as a service with an {@link Injector}. This method returns the (default) key that will
      * be used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
-     * factory is used to register a service, for example, via {@link InjectorConfigurator#provide(Factory)}. This
-     * method returns the key for which the factory
+     * factory is used to register a service, for example, via {@link InjectorConfigurator#provide(Factory)}. This method
+     * returns the key for which the factory
      * 
      * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
      * {@link ServiceConfiguration#as(Key)}.
@@ -165,18 +165,17 @@ public class Factory<T> {
     }
 
     /**
-     * Returns a list of all of the dependencies that needs to be fulfilled in order for a factory to provide an instance.
-     * Returns an empty list if this factory does not have any dependencies.
+     * Returns a list of all of the dependencies that needs to be fulfilled in order for this factory to successfully create
+     * an instance. Returns an empty list if this factory does not have any dependencies.
      * <p>
      * 
-     * @apiNote The list returned does not include dependencies arising from fields or methods that needs injection. As
-     *          these are the responsibility of the injector in which they are registered.
+     * @apiNote The list does not include dependencies that may be needed to do field or instance method injection. As these
+     *          are the responsibility of the injector in which they are registered.
      * 
      * @return a list of all of the dependencies of this factory
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final List<DependencyDescriptor> dependencies() {
-
+    public final List<Dependency> dependencies() {
         return (List) factory.dependencies;
     }
 
@@ -388,7 +387,7 @@ final class FactorySupport<T> {
 
     /**
      * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
-     * {@link OnStart} and {@link Provides}.
+     * {@link OnStart} and {@link Provide}.
      *
      * @return the scannable type of this factory
      */

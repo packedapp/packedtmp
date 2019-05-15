@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import app.packed.inject.Injector;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 
@@ -69,7 +69,7 @@ class BundleX {
         Somebody c(Request request, Response response);
 
         // Fails if Request is not available for each method
-        @Provides
+        @Provide
         default LocalDate now(Request request) {
             throw new UnsupportedOperationException();
         }

@@ -30,14 +30,14 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link Provides#instantionMode()} on fields. */
+/** Tests {@link Provide#instantionMode()} on fields. */
 public class FieldInstanceTest {
 
-    /** Tests default {@link Provides#instantionMode()} on instance fields. */
+    /** Tests default {@link Provide#instantionMode()} on instance fields. */
     @Test
     public void provide() {
         MixedFields.test(c -> c.provide(new MixedFields()));
@@ -46,7 +46,7 @@ public class FieldInstanceTest {
         MixedFields.test(c -> c.provide(new TypeLiteral<MixedFields>() {}));
     }
 
-    /** Tests lazy {@link Provides#instantionMode()} on instance fields. */
+    /** Tests lazy {@link Provide#instantionMode()} on instance fields. */
     @Test
     public void provideLazy() {
         MixedFields.test(c -> c.provide(MixedFields.class).lazy());
@@ -55,7 +55,7 @@ public class FieldInstanceTest {
     }
 
     /**
-     * An extra test for lazy {@link Provides#instantionMode()} on instance fields. Which makes sure that the lazy parent is
+     * An extra test for lazy {@link Provide#instantionMode()} on instance fields. Which makes sure that the lazy parent is
      * not created before it is needed by the provided fields.
      */
     @Test
@@ -133,7 +133,7 @@ public class FieldInstanceTest {
 
     static class LazyField {
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         Short s = 1;
 
         LazyField(AtomicBoolean b) {
@@ -143,13 +143,13 @@ public class FieldInstanceTest {
 
     static class MixedFields {
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         Long l = 1L;
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         Integer p = 1;
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         Short s = 1;
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
@@ -173,7 +173,7 @@ public class FieldInstanceTest {
 
     static class PrototypeField {
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         Short s = 1;
 
         PrototypeField(AtomicBoolean b) {
@@ -183,7 +183,7 @@ public class FieldInstanceTest {
 
     static class SingletonField {
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         Short s = 1;
 
         SingletonField(AtomicBoolean b) {

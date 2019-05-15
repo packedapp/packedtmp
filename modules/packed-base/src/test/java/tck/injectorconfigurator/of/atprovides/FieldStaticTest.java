@@ -26,16 +26,16 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.TypeLiteral;
 
 /**
- * Tests {@link Provides#instantionMode()} on static fields. In general we do not need to create an instance of the
- * parent if we have static {@link Provides} fields. Unlike for instance fields.
+ * Tests {@link Provide#instantionMode()} on static fields. In general we do not need to create an instance of the
+ * parent if we have static {@link Provide} fields. Unlike for instance fields.
  */
 public class FieldStaticTest {
 
-    /** Tests default {@link Provides#instantionMode()} on static fields. */
+    /** Tests default {@link Provide#instantionMode()} on static fields. */
     @Test
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provide(new MixedFieldsInstantiable()));
@@ -44,7 +44,7 @@ public class FieldStaticTest {
         MixedFieldsInstantiable.test(c -> c.provide(new TypeLiteral<MixedFieldsInstantiable>() {}));
     }
 
-    /** Tests lazy {@link Provides#instantionMode()} on static fields. */
+    /** Tests lazy {@link Provide#instantionMode()} on static fields. */
     @Test
     public void provideLazy() {
         MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).lazy());
@@ -52,7 +52,7 @@ public class FieldStaticTest {
         MixedFieldsNoInstantiation.test(c -> c.provide(new TypeLiteral<MixedFieldsNoInstantiation>() {}).lazy());
     }
 
-    /** Tests prototype {@link Provides#instantionMode()} on static fields. */
+    /** Tests prototype {@link Provide#instantionMode()} on static fields. */
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.provide(MixedFieldsNoInstantiation.class).prototype());
@@ -63,13 +63,13 @@ public class FieldStaticTest {
     /** A helper class that can be instantiated. */
     static class MixedFieldsInstantiable {
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         private static Long L;
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         private static Integer P;
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         private static Short S;
 
         MixedFieldsInstantiable() {
@@ -109,13 +109,13 @@ public class FieldStaticTest {
      */
     static class MixedFieldsNoInstantiation {
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         private static Long L;
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         private static Integer P;
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         private static Short S;
 
         public MixedFieldsNoInstantiation() {

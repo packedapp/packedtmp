@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -34,7 +34,7 @@ import packed.internal.util.descriptor.InternalMemberDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
- * Information about fields and methods annotated with {@link Provides}, typically on a single class. Used for both
+ * Information about fields and methods annotated with {@link Provide}, typically on a single class. Used for both
  * services, components, import and export stages.
  */
 public final class AtProvidesGroup {
@@ -81,8 +81,8 @@ public final class AtProvidesGroup {
         @Nullable
         public AtProvides tryAdd(Lookup lookup, Field field, Annotation[] annotations) {
             for (Annotation a : annotations) {
-                if (a.annotationType() == Provides.class) {
-                    return tryAdd0(lookup, InternalFieldDescriptor.of(field), Key.fromField(field), (Provides) a, List.of());
+                if (a.annotationType() == Provide.class) {
+                    return tryAdd0(lookup, InternalFieldDescriptor.of(field), Key.fromField(field), (Provide) a, List.of());
                 }
             }
             return null;
@@ -91,15 +91,15 @@ public final class AtProvidesGroup {
         @Nullable
         public AtProvides tryAdd(Lookup lookup, Method method, Annotation[] annotations) {
             for (Annotation a : annotations) {
-                if (a.annotationType() == Provides.class) {
+                if (a.annotationType() == Provide.class) {
                     InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-                    return tryAdd0(lookup, descriptor, Key.fromMethodReturnType(method), (Provides) a, InternalDependencyDescriptor.fromExecutable(descriptor));
+                    return tryAdd0(lookup, descriptor, Key.fromMethodReturnType(method), (Provide) a, InternalDependencyDescriptor.fromExecutable(descriptor));
                 }
             }
             return null;
         }
 
-        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provides provides, List<InternalDependencyDescriptor> dependencies) {
+        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
             AtProvides ap = new AtProvides(lookup, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
 

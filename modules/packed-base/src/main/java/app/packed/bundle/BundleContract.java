@@ -75,6 +75,10 @@ public class BundleContract {
         return BundleDescriptor.of(bundle).contract();
     }
 
+    public void print() {
+
+    }
+
     // Needed if we want to allow extensions..
     // Which I think we want after AnyBundle
     public static class Builder {

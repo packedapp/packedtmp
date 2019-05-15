@@ -22,7 +22,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.inject.DependencyDescriptor;
+import app.packed.inject.Dependency;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import packed.internal.box.BoxServices;
@@ -150,7 +150,7 @@ final class DependencyGraph {
                 graph.detectCyclesFor.add(node);
                 List<InternalDependencyDescriptor> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
-                    DependencyDescriptor dependency = dependencies.get(i);
+                    Dependency dependency = dependencies.get(i);
                     ServiceNode<?> resolveTo = services.nodes.getNode(dependency);
                     services.recordResolvedDependency(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;

@@ -32,7 +32,7 @@ import app.packed.util.Key;
  * {@link Component} at runtime.
  */
 public interface ComponentServiceConfiguration<T> extends ServiceConfiguration<T>, ComponentConfiguration {
-    //
+
     // /**
     // * Prohibits the component for being available as a dependency to other services/components.
     // *

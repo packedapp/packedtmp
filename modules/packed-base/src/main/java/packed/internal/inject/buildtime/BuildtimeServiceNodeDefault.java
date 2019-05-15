@@ -21,7 +21,7 @@ import java.util.List;
 
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.inject.ProvidesHelper;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -60,7 +60,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     /** The instantiation mode of this node. */
     private InstantiationMode instantionMode;
 
-    /** The parent, if this node is the result of a member annotated with {@link Provides}. */
+    /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BuildtimeServiceNodeDefault<?> parent;
 
     protected ServiceClassDescriptor descriptor() {

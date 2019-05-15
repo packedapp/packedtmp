@@ -17,7 +17,7 @@ package packed.internal.classscan;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import packed.internal.annotations.AtProvidesGroup;
 
 /**
@@ -25,7 +25,7 @@ import packed.internal.annotations.AtProvidesGroup;
  */
 public class ImportExportDescriptor {
 
-    /** A group of all members annotated with {@link Provides}. */
+    /** A group of all members annotated with {@link Provide}. */
     public final AtProvidesGroup provides;
 
     /** The class this descriptor is created from. */

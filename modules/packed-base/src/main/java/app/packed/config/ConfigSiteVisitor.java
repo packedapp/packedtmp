@@ -17,7 +17,7 @@ package app.packed.config;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 
@@ -30,7 +30,7 @@ public interface ConfigSiteVisitor {
 
     /**
      * Visits an annotated field that was the origin of a configuration action. For example, a service provided via a field
-     * annotated with {@link Provides}.
+     * annotated with {@link Provide}.
      * 
      * @param configSite
      *            the configuration site
@@ -43,7 +43,7 @@ public interface ConfigSiteVisitor {
 
     /**
      * Visits an annotated method that was the origin of a configuration action. For example, a service provided via a
-     * method annotated with {@link Provides}.
+     * method annotated with {@link Provide}.
      * 
      * @param configSite
      *            the configuration site

@@ -18,16 +18,24 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.util.Optional;
+import java.util.OptionalInt;
 
+import app.packed.app.App;
 import app.packed.container.Component;
 import app.packed.container.Container;
+import app.packed.util.ConstructorDescriptor;
+import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
+import app.packed.util.MethodDescriptor;
+import app.packed.util.ParameterDescriptor;
+import app.packed.util.VariableDescriptor;
 import packed.internal.inject.InjectionSiteForDependency;
 import packed.internal.inject.InjectionSiteForKey;
 
 /**
- * An instance of this class is available for any component method annotated with {@link Provides}.
+ * An instance of this class is available for any component method annotated with {@link Provide}.
  * 
  * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
  * service being requested.
@@ -35,7 +43,7 @@ import packed.internal.inject.InjectionSiteForKey;
  * An injection site extends the dependency interface with runtime information about which injector requested the
  * injection. And if used within a container which component requested the injection.
  * <p>
- * This class is typically used together with the {@link Provides} annotation to provide custom injection depending on
+ * This class is typically used together with the {@link Provide} annotation to provide custom injection depending on
  * attributes of the requestor. <pre> {@code  @Provides
  *  public static Logger provideLogger(InjectionSite site) {
  *    if (site.component().isPresent()) {
@@ -70,7 +78,108 @@ import packed.internal.inject.InjectionSiteForKey;
 // who needs the injection (Which service)
 
 // Should use composition
-public interface ProvidesHelper extends DependencyDescriptor {
+
+// Jeg syntes ikke ProvidesHelper
+
+// Jeg er tilboejetil til at lave dependency til en final klasse...
+// Og saa lave den optional paa Provides
+// Dependency -> Only for Injection. use() <- er ikke en dependency men du kan bruge ProvidesHelper
+// Hvad med Factory<@Cool String, Foo> Det ville jeg sige var en dependency.
+// Saa Dependency har en ElementType of
+// ElementType[] types = new ElementType[] { ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD,
+// ElementType.PARAMETER };
+// Type
+// Hahaha, what about @RequiredService.. har maaske ikke noget med dependencies at goere...
+
+// --------------------------------------------------------------------------------------
+// Altsaa vi skal supporte Dependency paa alt hvad vi kan laver til et factory udfra...
+// ---
+// Hmmmmmm det aendrer tingene lidt, eller maaske....
+
+// DependencyDescriptor -> klasse
+// ProvidesHelper Interface. maaske de samme metoder som dependency...
+
+// Primaere grund er at vi kan bruge Optional<Dependency>
+// Som bedre angiver brug af use()
+
+// Hvordan virker InjectorTransformer, eller hvad den nu hedder... Den er ikke en service, men en slags transformer.
+// Ville ikke give mening at have den som en dependency... Vi processere altid en ting af gangen....
+// Provides, for singleton service burde smide Unsupported operation for dependency. Det her object giver faktisk ikke
+// mening
+// for singleton services. Alle metoder burde smide UnsupportedOperationException...
+// Du burde kunne faa ProvidesHelper injected i din klasse ogsaa....
+// @Provides(many = true, as = Logger.class) ... ahh does qualifiers...not so pretty
+// public class MyLogger {
+/// MyLogger(ProvidesHelper p)
+// } Saa kan vi klare AOP ogsaa. Hvilket er rigtig svaert
+
+// ProvidesManyContext... A object that helps
+// Does not make sense for singletons... med mindre vi har saaden noget som exportAs()
+// ServiceContext <- Permanent [exported(), Set<Key<?>> exportedAs(), String[] usesByChildContainers
+// ProvisionContext <- One time
+public interface ProvidesHelper {
+    // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
+    // Includes any qualifier...
+    // AnnotatedElement annotations();
+
+    /**
+     * Returns whether or not this dependency is optional.
+     *
+     * @return whether or not this dependency is optional
+     */
+    boolean isOptional();
+
+    /**
+     * Returns the key of this dependency.
+     *
+     * @return the key of this dependency
+     */
+    Key<?> key();
+
+    /**
+     * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
+     * dependency was not created from a member.
+     * <p>
+     * If this dependency was created from a member this method will an optional containing either a {@link FieldDescriptor}
+     * in case of field injection, A {@link MethodDescriptor} in case of method injection or a {@link ConstructorDescriptor}
+     * in case of constructor injection.
+     * 
+     * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
+     *         member.
+     * @see #variable()
+     */
+    Optional<Member> member();
+
+    /**
+     * If this dependency represents a parameter to a constructor or method. This method will return an optional holding the
+     * index of the parameter. Otherwise, this method returns an empty optional.
+     * 
+     * @return the optional parameter index of the dependency
+     */
+    OptionalInt parameterIndex();
+
+    /**
+     * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
+     * dependency was not created from a variable.
+     * <p>
+     * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
+     * created from a parameter this method will return a {@link ParameterDescriptor}.
+     * 
+     * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
+     *         variable.
+     * @see #member()
+     */
+    Optional<VariableDescriptor> variable();
+
+    /**
+     * If this helper class is created as the result of needing dependency injection. This method returns an empty optional
+     * if used from methods such as {@link App#use(Key)}.
+     * 
+     * @return any dependency this class might have
+     */
+    default Optional<Dependency> dependency() {
+        throw new UnsupportedOperationException();
+    }
 
     default <T extends Annotation> T qualifier(Class<T> qualifierType) {
         throw new UnsupportedOperationException();
@@ -96,11 +205,11 @@ public interface ProvidesHelper extends DependencyDescriptor {
      */
     Injector injector();// HMMMMM,
 
-    static ProvidesHelper of(Injector injector, DependencyDescriptor dependency) {
+    static ProvidesHelper of(Injector injector, Dependency dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);
     }
 
-    static ProvidesHelper of(Injector injector, DependencyDescriptor dependency, Component componenent) {
+    static ProvidesHelper of(Injector injector, Dependency dependency, Component componenent) {
         return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -132,11 +241,12 @@ public interface ProvidesHelper extends DependencyDescriptor {
      * @param component
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
-     * @see #of(Injector, DependencyDescriptor)
+     * @see #of(Injector, Dependency)
      */
     static ProvidesHelper of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));
     }
 
     // withTags();// A way to provide info to @Provides....ahh bare mere boebl
+    // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt
 }

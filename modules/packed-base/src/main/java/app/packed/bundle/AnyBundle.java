@@ -82,7 +82,7 @@ public abstract class AnyBundle {
     }
 
     /** Configures the bundle using the various inherited methods that are available. */
-    protected abstract void configure();
+    protected void configure() {}
 
     public final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;

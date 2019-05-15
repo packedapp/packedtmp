@@ -29,14 +29,14 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link Provides#instantionMode()}. */
+/** Tests {@link Provide#instantionMode()}. */
 public class MethodInstanceTest {
 
-    /** Tests default {@link Provides#instantionMode()} on instance methods. */
+    /** Tests default {@link Provide#instantionMode()} on instance methods. */
     @Test
     public void provide() {
         MixedMethods.test(c -> c.provide(new MixedMethods()));
@@ -45,7 +45,7 @@ public class MethodInstanceTest {
         MixedMethods.test(c -> c.provide(new TypeLiteral<MixedMethods>() {}));
     }
 
-    /** Tests lazy {@link Provides#instantionMode()} on instance methods. */
+    /** Tests lazy {@link Provide#instantionMode()} on instance methods. */
     @Test
     public void provideLazy() {
         MixedMethods.test(c -> c.provide(MixedMethods.class).lazy());
@@ -92,7 +92,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         public Short s() {
             return s;
         }
@@ -106,17 +106,17 @@ public class MethodInstanceTest {
 
         Short s = 1;
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         Long l() {
             return l;
         }
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         Integer p() {
             return p;
         }
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         Short s() {
             return s;
         }
@@ -151,7 +151,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         public Short s() {
             return s;
         }
@@ -165,7 +165,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         public Short s() {
             return s;
         }

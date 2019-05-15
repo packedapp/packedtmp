@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.inject.ProvidesHelper;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -63,7 +63,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
-     * methods annotated with {@link Provides}. In which the case the declaring class might need to be constructor injected
+     * methods annotated with {@link Provide}. In which the case the declaring class might need to be constructor injected
      * before the method can be executed.
      */
     Key<T> key;
@@ -124,7 +124,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
 
     /**
      * If this node is located on another build node return the node, otherwise null. For example a method annotated with
-     * {@link Provides} on a class that is itself registered as a component.
+     * {@link Provide} on a class that is itself registered as a component.
      * 
      * @return stuff
      */

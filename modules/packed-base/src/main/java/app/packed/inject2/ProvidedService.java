@@ -32,11 +32,14 @@ import app.packed.config.ConfigSite;
 //
 // Provideren får at hvad der _kan_ intercepte.
 // ProvidedService får at vide, hvem der interceptet....
+// Ideen er her at du kan faa detaljer om hvordan du har faaet services...
 
+// Debug info
+
+// Maaske kan man faa hele path'en. Med mindre hosten er konfigureret som strict
 final class ProvidedService<T> {
 
-    ProvidedService() {
-    }
+    ProvidedService() {}
     // Ideen er vi kan trace hvor en service kommer fra....
     // Den er final, package protected, så man ikke kan fake det....
 

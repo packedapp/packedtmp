@@ -31,7 +31,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.inject.DependencyDescriptor;
+import app.packed.inject.Dependency;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -50,9 +50,9 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /**
- * The default implementation of {@link DependencyDescriptor}.
+ * The default implementation of {@link Dependency}.
  */
-public final class InternalDependencyDescriptor implements DependencyDescriptor {
+public final class InternalDependencyDescriptor implements Dependency {
 
     /** The key of this dependency. */
     private final Key<?> key;
@@ -109,7 +109,7 @@ public final class InternalDependencyDescriptor implements DependencyDescriptor 
     /** {@inheritDoc} */
     @Override
     public OptionalInt parameterIndex() {
-        // TODO cache
+        // TODO cache?
         return variable == null ? OptionalInt.empty() : OptionalInt.of(variable.index());
     }
 

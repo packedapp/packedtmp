@@ -18,7 +18,7 @@ package app.packed.bundle.x;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.bundle.Bundle;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 
 /**
  * Configure wiring operations are invoked immediately after a bundle has been {@link Bundle#configure() configured}.
@@ -48,11 +48,11 @@ public class ConfigureWiringOperation {
 
     /**
      * Creates a new operation with a lookup object. This constructor is only needed if the extending class makes use of the
-     * {@link Provides} annotation.
+     * {@link Provide} annotation.
      * 
      * @param lookup
      *            a lookup object that can be used for accessing member on subclasses, such as methods annotated with
-     *            {@link Provides}.
+     *            {@link Provide}.
      */
     protected ConfigureWiringOperation(MethodHandles.Lookup lookup) {}
 

@@ -81,6 +81,11 @@ import packed.internal.inject.buildtime.InternalBundleDescriptor;
 // Could be made into a Visitor instead..... Or in addition to...
 public class BundleDescriptor {
 
+    // Skal igen bare vaere en wrapper oven paa AnyBundle. Okay her bliver det lidt problematisk med at man kan definere sin
+    // egen.
+
+    // Maaske ender man ikke med at kunne det. Men det er en god ovelse for at separare ting.
+
     // I think add @Description as annotation??? IDK
 
     /** The (optional) description of the bundle. */
@@ -174,6 +179,7 @@ public class BundleDescriptor {
         return bundleModule().getDescriptor().version();
     }
 
+    // Det maa da vaere descriptors
     public List<BundleContract> children() {
         throw new UnsupportedOperationException();
     }

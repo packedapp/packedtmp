@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import support.stubs.annotation.StringQualifier;
@@ -91,22 +91,22 @@ public class QualifierTest {
 
     static class MultipleIdenticalQualifiedFieldKeys {
 
-        @Provides
+        @Provide
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provides
+        @Provide
         @StringQualifier("A")
         private Long B = 0L;
     }
 
     static class MultipleIdenticalQualifiedMemberKeys {
 
-        @Provides
+        @Provide
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provides
+        @Provide
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -115,13 +115,13 @@ public class QualifierTest {
 
     static class MultipleIdenticalQualifiedMethodKeys {
 
-        @Provides
+        @Provide
         @StringQualifier("A")
         static Long a() {
             return 0L;
         }
 
-        @Provides
+        @Provide
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -130,19 +130,19 @@ public class QualifierTest {
 
     static class Stub {
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         @StringQualifier("A")
         private static Long A;
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         @StringQualifier("B")
         private static Long B;
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         @StringQualifier("C")
         private static Long C;
 
-        @Provides
+        @Provide
         private static Long L;
     }
 }

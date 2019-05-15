@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Extension;
+import app.packed.contract.Contract;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -35,11 +36,15 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /**
      * Adds the specified key to the list of optional services.
+     * <p>
+     * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
+     * via # {@link #addRequired(Key)} or implicitly via, for example, a constructor dependency. The key will be removed
+     * from the list of optional services and only be listed as a required key.
      * 
      * @param key
      *            the key to add
      */
-    // Contracts as well??? Would be nice to get out of the way..
+    // Should be have varargs???, or as a minimum support method chaining
     public void addOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
@@ -62,12 +67,32 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         builder().services().addRequired(key);
     }
 
-    public void serviceManualRequirements() {
+    /**
+     * Requires that all requirements are explicitly added via either {@link #addOptional(Key)}, {@link #addRequired(Key)}
+     * or via implement a {@link Contract}.
+     */
+    // Kan vi lave denne generisk paa tvaers af extensions...
+    public void manualRequirementManagement() {
         builder().serviceManualRequirements();
     }
 
     private ContainerBuilder builder() {
         return (ContainerBuilder) super.configuration;
+    }
+
+    // Why export
+    // Need to export
+
+    <T> ServiceConfiguration<T> alias(Class<T> key) {
+        // Hvorfor har vi brug for alias????
+        // provide(BigFatClass.class);
+        // provide(BigFatClass.class).as(X.class);
+        // provide(BigFatClass.class).as(Y.class);
+
+        // Den er ikke super brugbar..
+        // Smid en static provides paa bundlen...
+        // Og saa provide
+        throw new UnsupportedOperationException();
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
@@ -117,7 +142,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     /**
      *
      * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
      *
      * @param <T>
      *            the type of component to install

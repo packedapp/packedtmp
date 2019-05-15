@@ -15,12 +15,20 @@
  */
 package app.packed.bundle;
 
+import java.time.LocalDate;
+
 import app.packed.app.App;
+import app.packed.inject.Factory;
+import app.packed.inject.Factory0;
+import app.packed.inject.Provide;
 
 /**
  *
  */
 public class Ggg2 extends Bundle {
+
+    @Provide(prototype = true)
+    static final Factory<LocalDate> TODAY = new Factory0<>(() -> LocalDate.now()) {};
 
     public static void main(String[] args) {
         App app = App.of(new Ggg2(), new WiringOption() {

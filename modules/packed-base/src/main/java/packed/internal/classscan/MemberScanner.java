@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import packed.internal.annotations.AtDependable;
 import packed.internal.annotations.AtInjectGroup;
 import packed.internal.annotations.AtProvidesGroup;
@@ -37,7 +37,7 @@ class MemberScanner {
 
     final Class<?> clazz;
 
-    /** A builder for members annotated with {@link Provides}. */
+    /** A builder for members annotated with {@link Provide}. */
     AtProvidesGroup.Builder provides = new AtProvidesGroup.Builder();
 
     /** A builder for members annotated with {@link Inject}. */

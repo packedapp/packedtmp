@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.host;
+package app.packed.inject2;
 
-import app.packed.inject.Provide;
+import java.util.Set;
+
+import app.packed.util.Key;
 
 /**
  *
  */
-// Must be registered as a component...
-abstract class AbstractHost {
+// Oehhh er det egentlig service descriptoren??
+// Nej, service descriptor er extern vil jeg sige
+// ServiceContext er internt, kan kun injectes ind i selve servicen.
+// Eller i den metoder der provider services...
+// Maaske slaa den sammen med ProvisionContext <- Saa er det ogsaa vi ligesom kan sige
+// Er noget man kun bruge i forbindelse med at lave en service.
+// ServiceContext
+public interface ServiceContext {
 
-    protected Host host() {
-        throw new UnsupportedOperationException();
-    }
-}
+    boolean exported();
 
-class MyHost extends AbstractHost {
+    Set<Key<?>> exportedAs();
 
-    @Provide
-    public Host providedHost() {
-        return host();
-    }
+    Key<?> key();
 }

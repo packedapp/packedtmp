@@ -27,7 +27,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InjectorExtension;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
@@ -166,6 +166,10 @@ public abstract class Bundle extends AnyBundle {
         throw new UnsupportedOperationException();
     }
 
+    protected final void main(String methodName, Class<?>... arguments) {
+        throw new UnsupportedOperationException();
+    }
+
     protected final Layer newEmptyLayer(String name, Layer... predecessors) {
         throw new UnsupportedOperationException();
     }
@@ -216,7 +220,7 @@ public abstract class Bundle extends AnyBundle {
     /**
      *
      * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provides}.
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
      *
      * @param <T>
      *            the type of component to install
@@ -242,16 +246,16 @@ public abstract class Bundle extends AnyBundle {
     // // We do not not want any more garbage then needed.
     // // private InjectorBuilder injectorBuilder;
 
-    protected void requireService(Class<?> key) {
+    protected final void requireService(Class<?> key) {
         injector().addRequired(Key.of(key));
     }
 
-    protected void requireService(Key<?> key) {
+    protected final void requireService(Key<?> key) {
         injector().addRequired(key);
     }
 
     protected final void serviceManualRequirements() {
-        injector().serviceManualRequirements();
+        injector().manualRequirementManagement();
     }
 
     protected final Set<String> tags() {

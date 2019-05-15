@@ -16,7 +16,7 @@
 package packed.internal.inject;
 
 import app.packed.container.Component;
-import app.packed.inject.DependencyDescriptor;
+import app.packed.inject.Dependency;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidesHelper;
@@ -40,7 +40,7 @@ public interface ServiceNode<T> extends ServiceDescriptor {
     // return () -> getInstance(site);
     // }
 
-    default T getInstance(Injector injector, DependencyDescriptor dependency, @Nullable Component component) {
+    default T getInstance(Injector injector, Dependency dependency, @Nullable Component component) {
         return getInstance(ProvidesHelper.of(injector, dependency));
     }
 

@@ -18,7 +18,7 @@ package packed.internal.classscan;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import packed.internal.annotations.AtInjectGroup;
 import packed.internal.annotations.AtProvidesGroup;
 
@@ -31,7 +31,7 @@ public class ServiceClassDescriptor {
     /** A group of all members annotated with {@link Inject}. */
     public final AtInjectGroup inject;
 
-    /** A group of all members annotated with {@link Provides}. */
+    /** A group of all members annotated with {@link Provide}. */
     public final AtProvidesGroup provides;
 
     /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */

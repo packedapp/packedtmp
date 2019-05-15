@@ -137,7 +137,10 @@ public interface ContainerConfiguration {
     <T extends Extension<T>> T use(Class<T> extensionType);
 
     /**
-     * Creates a link to another container.
+     * Creates a link to another bundle.
+     * <p>
+     * All links made using this method between two bundles are permanent. If you need dynamic stuff you can use hosts and
+     * applications.
      * 
      * @param child
      *            the child bundle

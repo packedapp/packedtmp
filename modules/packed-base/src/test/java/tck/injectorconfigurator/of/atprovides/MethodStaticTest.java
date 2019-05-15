@@ -26,13 +26,13 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link Provides#instantionMode()} on static methods. */
+/** Tests {@link Provide#instantionMode()} on static methods. */
 public class MethodStaticTest {
 
-    /** Tests default {@link Provides#instantionMode()} on static methods. */
+    /** Tests default {@link Provide#instantionMode()} on static methods. */
     @Test
     public void provide() {
         MixedMethodsInstantiable.test(c -> c.provide(new MixedMethodsInstantiable()));
@@ -41,7 +41,7 @@ public class MethodStaticTest {
         MixedMethodsInstantiable.test(c -> c.provide(new TypeLiteral<MixedMethodsInstantiable>() {}));
     }
 
-    /** Tests lazy {@link Provides#instantionMode()} on static methods. */
+    /** Tests lazy {@link Provide#instantionMode()} on static methods. */
     @Test
     public void provideLazy() {
         MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).lazy());
@@ -49,7 +49,7 @@ public class MethodStaticTest {
         MixedMethodsNoInstantiation.test(c -> c.provide(new TypeLiteral<MixedMethodsNoInstantiation>() {}).lazy());
     }
 
-    /** Tests prototype {@link Provides#instantionMode()} on static methods. */
+    /** Tests prototype {@link Provide#instantionMode()} on static methods. */
     @Test
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).prototype());
@@ -72,17 +72,17 @@ public class MethodStaticTest {
             assertThat(S).isEqualByComparingTo((short) 1);
         }
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         static Long l() {
             return L;
         }
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         static Integer p() {
             return P;
         }
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         static Short s() {
             return S;
         }
@@ -128,17 +128,17 @@ public class MethodStaticTest {
             throw new AssertionError("Cannot instantiate");
         }
 
-        @Provides(instantionMode = InstantiationMode.LAZY)
+        @Provide(instantionMode = InstantiationMode.LAZY)
         static Long l() {
             return L;
         }
 
-        @Provides(instantionMode = InstantiationMode.PROTOTYPE)
+        @Provide(instantionMode = InstantiationMode.PROTOTYPE)
         static Integer p() {
             return P;
         }
 
-        @Provides(instantionMode = InstantiationMode.SINGLETON)
+        @Provide(instantionMode = InstantiationMode.SINGLETON)
         static Short s() {
             return S;
         }

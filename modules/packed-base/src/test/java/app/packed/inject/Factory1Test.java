@@ -31,7 +31,7 @@ public class Factory1Test {
         Factory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
         assertThat(f.dependencies()).hasSize(1);
-        DependencyDescriptor d = f.dependencies().get(0);
+        Dependency d = f.dependencies().get(0);
 
         assertThat(d.isOptional()).isFalse();
         assertThat(d.key()).isEqualTo(Key.of(String.class));

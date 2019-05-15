@@ -36,7 +36,9 @@ import packed.internal.inject.InternalDependencyDescriptor;
  */
 // Flyt member, parameterIndex og Variable???? til ServiceRequest..
 // Vi goer det kun for at faa en paenere arkitk
-public interface DependencyDescriptor {
+// Bliver brugt med factory, for at kunne se dens dependencies.....
+// Bliver brugt med Factory + BindableFactory
+public interface Dependency {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
@@ -71,9 +73,9 @@ public interface DependencyDescriptor {
     Optional<Member> member();
 
     /**
-     * If this dependency represents a parameter in a constructor or method. This method will return an optional holding the
-     * parameter index. Otherwise this method returns an empty optional.
-     *
+     * If this dependency represents a parameter to a constructor or method. This method will return an optional holding the
+     * index of the parameter. Otherwise, this method returns an empty optional.
+     * 
      * @return the optional parameter index of the dependency
      */
     OptionalInt parameterIndex();
@@ -91,12 +93,12 @@ public interface DependencyDescriptor {
      */
     Optional<VariableDescriptor> variable();
 
-    public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+    public static <T> Dependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         return InternalDependencyDescriptor.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> List<DependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
+    public static <T> List<Dependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
         return (List) InternalDependencyDescriptor.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
     }
 }

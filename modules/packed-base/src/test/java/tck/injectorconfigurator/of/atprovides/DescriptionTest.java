@@ -24,12 +24,12 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.Provides;
+import app.packed.inject.Provide;
 
-/** Tests {@link Provides#description()}. */
+/** Tests {@link Provide#description()}. */
 public class DescriptionTest {
 
-    /** Tests service with description on {@link Provides}. */
+    /** Tests service with description on {@link Provide}. */
     @Test
     public void injectorWithDescription() {
         Injector i = of(c -> c.provide(new WithDescription()));
@@ -37,7 +37,7 @@ public class DescriptionTest {
         assertThat(i.getDescriptor(Integer.class).get().description()).hasValue("niceMethod");
     }
 
-    /** Tests service without description on {@link Provides}. */
+    /** Tests service without description on {@link Provide}. */
     @Test
     public void injectorWithoutDescription() {
         Injector i = of(c -> c.provide(new WithoutDescription()));
@@ -54,10 +54,10 @@ public class DescriptionTest {
 
     static class WithDescription {
 
-        @Provides(description = "niceField")
+        @Provide(description = "niceField")
         public static final Long F = 0L;
 
-        @Provides(description = "niceMethod")
+        @Provide(description = "niceMethod")
         public static int m() {
             return 0;
         }
@@ -65,10 +65,10 @@ public class DescriptionTest {
 
     static class WithoutDescription {
 
-        @Provides
+        @Provide
         public static final Long F = 0L;
 
-        @Provides
+        @Provide
         public static int m() {
             return 0;
         }
