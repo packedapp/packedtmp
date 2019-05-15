@@ -23,7 +23,7 @@ import java.util.OptionalInt;
 
 import app.packed.container.Component;
 import app.packed.inject.Injector;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.VariableDescriptor;
@@ -32,7 +32,7 @@ import app.packed.util.VariableDescriptor;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-public class InjectionSiteForKey implements ProvidesHelper {
+public class InjectionSiteForKey implements ProvideHelper {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable

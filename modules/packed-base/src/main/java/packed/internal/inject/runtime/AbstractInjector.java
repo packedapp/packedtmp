@@ -24,7 +24,7 @@ import java.util.Optional;
 import app.packed.container.Component;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
@@ -79,7 +79,7 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ProvidesHelper.of(this, key));
+        return n.getInstance(ProvideHelper.of(this, key));
     }
 
     /** {@inheritDoc} */

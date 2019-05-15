@@ -27,9 +27,9 @@ import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOption;
 import app.packed.config.ConfigSite;
-import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
+import app.packed.inject.ExportedServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
@@ -71,7 +71,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     @Nullable
     final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
 
-    public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
+    public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, WiringOption... options) {
         super(configurationSite, bundle, options);
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
@@ -84,6 +84,9 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     }
 
     public Container build() {
+        if (bundle != null) {
+            bundle.doConfigure(this);
+        }
         // if (root == null) {
         // throw new IllegalStateException("Must install at least one component");
         // }
@@ -131,7 +134,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
      *            the key of the service that should be exposed
      * @return a configuration for the exposed service
      */
-    public final <T> ServiceConfiguration<T> export(Key<T> key) {
+    public final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         newOperation();
 
@@ -145,11 +148,11 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         bn.as(key);
         exportedNodes.add(bn);
 
-        return bindNode(new DefaultServiceConfiguration<>(bn));
+        return bindNode(new DefaultExportedServiceConfiguration<>(bn));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         newOperation();
 
@@ -164,11 +167,11 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
-        return bindNode(new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), node));
+        return bindNode(new DefaultServiceConfiguration<>(new ComponentBuildNode(frame, this), node));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ComponentServiceConfiguration<T> provide(T instance) {
+    public <T> ServiceConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
         newOperation();
 
@@ -180,7 +183,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         scanForProvides(instance.getClass(), sc);
         sc.as((Key) Key.of(instance.getClass()));
 
-        return bindNode(new DefaultComponentServiceConfiguration<>(new ComponentBuildNode(frame, this), sc));
+        return bindNode(new DefaultServiceConfiguration<>(new ComponentBuildNode(frame, this), sc));
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {

@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.inject.InjectorExtension;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 
 /**
  *
@@ -47,7 +47,7 @@ public @interface RequiresExtension {
     Class<?>[] helperClasses();
 }
 
-@InjectableTarget(helperClasses = ProvidesHelper.class)
+@InjectableTarget(helperClasses = ProvideHelper.class)
 @RequiresExtension(InjectorExtension.class)
 @interface NewProvides {}
 // In one @XMethod(extensions = InjectorExtension.class, injectSupported = true, injectHelperClasses =

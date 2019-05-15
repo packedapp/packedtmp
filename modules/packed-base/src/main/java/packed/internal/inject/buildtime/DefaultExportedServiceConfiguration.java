@@ -27,12 +27,6 @@ import app.packed.util.Nullable;
  */
 public class DefaultExportedServiceConfiguration<T> extends AbstractFreezableNode implements ExportedServiceConfiguration<T> {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onFreeze() {
-        node.onFreeze();
-    }
-
     final BuildtimeServiceNode<T> node;
 
     /**
@@ -69,6 +63,12 @@ public class DefaultExportedServiceConfiguration<T> extends AbstractFreezableNod
     @Override
     public InstantiationMode instantiationMode() {
         return node.instantiationMode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onFreeze() {
+        node.onFreeze();
     }
 
     /** {@inheritDoc} */

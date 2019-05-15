@@ -142,7 +142,6 @@ public interface App extends Injector, AutoCloseable {
     static App of(Bundle bundle, WiringOption... operations) {
         requireNonNull(bundle, "bundle is null");
         ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, operations);
-        bundle.doConfigure(builder);
         return new InternalApp(builder.build());
     }
 

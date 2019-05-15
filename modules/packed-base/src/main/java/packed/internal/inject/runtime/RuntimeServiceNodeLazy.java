@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Semaphore;
 
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.inject.Provider;
@@ -59,7 +59,7 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidesHelper site) {
+    public T getInstance(ProvideHelper site) {
         for (;;) {
             T i = instance;
             if (i != null) {

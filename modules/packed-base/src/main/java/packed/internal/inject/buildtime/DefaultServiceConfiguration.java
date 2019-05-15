@@ -25,29 +25,28 @@ import app.packed.util.Nullable;
 /**
  *
  */
-public class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements ServiceConfiguration<T> {
+class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements ServiceConfiguration<T> {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onFreeze() {
-        node.onFreeze();
-    }
+    /** The component we are exposing. */
+    private final ComponentBuildNode component;
 
-    final BuildtimeServiceNode<T> node;
+    /** The service we are exposing. */
+    private final BuildtimeServiceNode<T> service;
 
     /**
-     * @param node
+     * @param service
      */
-    public DefaultServiceConfiguration(BuildtimeServiceNode<T> node) {
-        super(node.configurationSite);
-        this.node = requireNonNull(node);
+    DefaultServiceConfiguration(ComponentBuildNode component, BuildtimeServiceNode<T> service) {
+        this.service = requireNonNull(service);
+        this.component = component;
+        component.serviceNode = service;
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> as(Key<? super T> key) {
         checkConfigurable();
-        node.as(key);
+        service.as(key);
         return this;
     }
 
@@ -56,34 +55,48 @@ public class DefaultServiceConfiguration<T> extends AbstractFreezableNode implem
     @Nullable
     public String getDescription() {
         checkConfigurable();
-        return node.description;
+        return service.description;
     }
 
     /** {@inheritDoc} */
     @Override
     public @Nullable Key<?> getKey() {
-        return node.getKey();
+        return service.getKey();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public String getName() {
+        return component.name;
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return node.instantiationMode();
+        return service.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> lazy() {
         checkConfigurable();
-        ((BuildtimeServiceNodeDefault<T>) node).lazy();
+        ((BuildtimeServiceNodeDefault<T>) service).lazy();
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onFreeze() {
+        component.onFreeze();
+        service.onFreeze();
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> prototype() {
         checkConfigurable();
-        ((BuildtimeServiceNodeDefault<T>) node).prototype();
+        ((BuildtimeServiceNodeDefault<T>) service).prototype();
         return this;
     }
 
@@ -91,8 +104,16 @@ public class DefaultServiceConfiguration<T> extends AbstractFreezableNode implem
     @Override
     public ServiceConfiguration<T> setDescription(@Nullable String description) {
         checkConfigurable();
-        node.description = description;
+        service.description = description;
+        component.description = description;
         return this;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ServiceConfiguration<T> setName(String name) {
+        checkConfigurable();
+        component.name = name;
+        return this;
+    }
 }

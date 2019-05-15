@@ -19,10 +19,10 @@ import java.util.Set;
 
 import app.packed.app.App;
 import app.packed.container.ComponentConfiguration;
-import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Container;
 import app.packed.container.ContainerWiringOptions;
 import app.packed.contract.Contract;
+import app.packed.inject.ExportedServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
@@ -100,7 +100,7 @@ public abstract class Bundle extends AnyBundle {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
-    protected final <T> ServiceConfiguration<T> export(Class<T> key) {
+    protected final <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         return injector().export(key);
     }
 
@@ -126,11 +126,11 @@ public abstract class Bundle extends AnyBundle {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
-    protected final <T> ServiceConfiguration<T> export(Key<T> key) {
+    protected final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         return injector().export(key);
     }
 
-    protected final <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
+    protected final <T> ExportedServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
         return injector().export(configuration);
     }
 
@@ -213,7 +213,7 @@ public abstract class Bundle extends AnyBundle {
      * @see InjectorConfigurator#provide(Class)
      */
     // Rename to Provide@
-    protected final <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
         return injector().provide(implementation);
     }
 
@@ -228,15 +228,15 @@ public abstract class Bundle extends AnyBundle {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
         return injector().provide(factory);
     }
 
-    protected final <T> ComponentServiceConfiguration<T> provide(T instance) {
+    protected final <T> ServiceConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
 
-    protected final <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+    protected final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
         return injector().provide(implementation);
     }
 
@@ -255,7 +255,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     protected final void serviceManualRequirements() {
-        injector().manualRequirementManagement();
+        injector().manualRequirementsManagement();
     }
 
     protected final Set<String> tags() {

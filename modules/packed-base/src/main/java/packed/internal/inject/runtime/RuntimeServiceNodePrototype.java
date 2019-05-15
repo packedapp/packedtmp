@@ -17,7 +17,7 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.Provider;
@@ -48,8 +48,8 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
-            ProvidesHelper is = null;
-            ProvidesHelper.of(Injector.of(c -> {}), node.dependencies.get(i));
+            ProvideHelper is = null;
+            ProvideHelper.of(Injector.of(c -> {}), node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);
         }
         // Create local injection site for each parameter.
@@ -70,7 +70,7 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidesHelper site) {
+    public T getInstance(ProvideHelper site) {
         return newInstance();
     }
 

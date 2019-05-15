@@ -28,9 +28,9 @@ import packed.internal.config.site.ConfigurationSiteType;
  */
 public class DefaultComponentConfiguration extends AbstractFreezableNode implements ComponentConfiguration {
 
-    public final ComponentBuildNode node;
+    final ComponentBuildNode node;
 
-    public DefaultComponentConfiguration(ComponentBuildNode node) {
+    DefaultComponentConfiguration(ComponentBuildNode node) {
         this.node = requireNonNull(node);
     }
 

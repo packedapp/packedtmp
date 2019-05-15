@@ -18,7 +18,7 @@ package packed.internal.inject.runtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
@@ -65,7 +65,7 @@ public final class RuntimeServiceNodeSingleton<T> extends RuntimeServiceNode<T> 
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidesHelper ignore) {
+    public T getInstance(ProvideHelper ignore) {
         return instance;
     }
 

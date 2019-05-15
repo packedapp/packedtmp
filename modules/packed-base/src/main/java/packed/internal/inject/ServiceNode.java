@@ -19,7 +19,7 @@ import app.packed.container.Component;
 import app.packed.inject.Dependency;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -41,21 +41,21 @@ public interface ServiceNode<T> extends ServiceDescriptor {
     // }
 
     default T getInstance(Injector injector, Dependency dependency, @Nullable Component component) {
-        return getInstance(ProvidesHelper.of(injector, dependency));
+        return getInstance(ProvideHelper.of(injector, dependency));
     }
 
     InstantiationMode instantiationMode();
 
     default T getInstance(Injector injector, Key<T> key, @Nullable Component component) {
-        return getInstance(ProvidesHelper.of(injector, key));
+        return getInstance(ProvideHelper.of(injector, key));
     }
 
-    T getInstance(ProvidesHelper site);
+    T getInstance(ProvideHelper site);
 
     /**
-     * Returns whether or not this node needs a {@link ProvidesHelper} instance to be able to deliver a service.
+     * Returns whether or not this node needs a {@link ProvideHelper} instance to be able to deliver a service.
      *
-     * @return whether or not this node needs a {@link ProvidesHelper} instance to be able to deliver a service
+     * @return whether or not this node needs a {@link ProvideHelper} instance to be able to deliver a service
      */
     boolean needsInjectionSite();
 

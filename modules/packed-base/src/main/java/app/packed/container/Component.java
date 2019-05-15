@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.Injector;
 
 /**
@@ -59,7 +60,7 @@ public interface Component /* extends Taggable */ {
      *
      * @return the description of this component. Or null if no description has been set
      *
-     * @see ComponentServiceConfiguration#setDescription(String)
+     * @see ServiceConfiguration#setDescription(String)
      */
     Optional<String> description();
 
@@ -90,7 +91,7 @@ public interface Component /* extends Taggable */ {
      *
      * @return the name of this component
      *
-     * @see ComponentServiceConfiguration#setName(String)
+     * @see ServiceConfiguration#setName(String)
      */
     String name();
 

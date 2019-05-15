@@ -17,8 +17,8 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.bundle.Bundle;
 import app.packed.bundle.WiringOption;
-import app.packed.container.ComponentServiceConfiguration;
 import app.packed.container.Extension;
 import app.packed.contract.Contract;
 import app.packed.lifecycle.OnStart;
@@ -69,10 +69,10 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /**
      * Requires that all requirements are explicitly added via either {@link #addOptional(Key)}, {@link #addRequired(Key)}
-     * or via implement a {@link Contract}.
+     * or via implementing a {@link Contract}.
      */
     // Kan vi lave denne generisk paa tvaers af extensions...
-    public void manualRequirementManagement() {
+    public void manualRequirementsManagement() {
         builder().serviceManualRequirements();
     }
 
@@ -92,10 +92,19 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         // Den er ikke super brugbar..
         // Smid en static provides paa bundlen...
         // Og saa provide
+
+        class Doo extends Bundle {
+
+            @Provide
+            CharSequence alias(String str) {
+                return str;
+            }
+        }
+        System.out.println(new Doo());
         throw new UnsupportedOperationException();
     }
 
-    public <T> ServiceConfiguration<T> export(Class<T> key) {
+    public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         requireNonNull(key, "key is null");
         return export(Key.of(key));
     }
@@ -125,17 +134,17 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      * @return a service configuration for the exposed service
      * @see #export(Key)
      */
-    public <T> ServiceConfiguration<T> export(Key<T> key) {
+    public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         return builder().export(key);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> ServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
+    public <T> ExportedServiceConfiguration<T> export(ServiceConfiguration<T> configuration) {
         // Skal skrives lidt om, det her burde virke, f.eks. som export(provide(ddd).asNone).as(String.class)
-        return (ServiceConfiguration<T>) export(configuration.getKey());
+        return (ExportedServiceConfiguration<T>) export(configuration.getKey());
     }
 
-    public <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
+    public <T> ServiceConfiguration<T> provide(Class<T> implementation) {
         return builder().provide(Factory.findInjectable(implementation));
     }
 
@@ -150,7 +159,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+    public <T> ServiceConfiguration<T> provide(Factory<T> factory) {
         return builder().provide(factory);
     }
 
@@ -167,11 +176,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provide(T instance) {
+    public <T> ServiceConfiguration<T> provide(T instance) {
         return builder().provide(instance);
     }
 
-    public <T> ComponentServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+    public <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
         return builder().provide(Factory.findInjectable(implementation));
     }
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
@@ -184,10 +193,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     // Saa kalder vi addNode(inner.foo);
 
     // export
-
-    // And then wrap it in ComponentServiceConfiguration....
-    // void ServiceConfiguration<?> provide(ComponentConfiguration configuration);
-
     public void provideAll(Injector injector, WiringOption... operations) {
         ProvideAll pa = new ProvideAll(builder(), injector, operations);// Validates arguments
         builder().newOperation();

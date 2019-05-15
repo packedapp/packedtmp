@@ -17,7 +17,7 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
@@ -50,7 +50,7 @@ public final class RuntimeServiceNodeDelegate<T> extends RuntimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidesHelper site) {
+    public T getInstance(ProvideHelper site) {
         return aliasOf.getInstance(site);
     }
 

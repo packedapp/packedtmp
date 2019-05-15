@@ -19,14 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
 import app.packed.bundle.AnyBundle;
-import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleLink;
 import app.packed.bundle.WiringOption;
 import app.packed.container.ComponentConfiguration;
@@ -53,15 +50,16 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
 
     /** The bundle we created this configuration from. Or null if we are using a configurator of some kind. */
     @Nullable
-    public final Bundle bundle;
+    public final AnyBundle bundle;
 
-    public final HashMap<String, ComponentBuildNode> components = new HashMap<>();
+    /** All registered components. */
+    public final LinkedHashMap<String, ComponentBuildNode> components = new LinkedHashMap<>();
 
     /** All nodes that have been added to this builder, even those that are not exposed. */
     AbstractFreezableNode currentNode;
 
-    /** All extensions that have been installed for the container. */
-    final IdentityHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new IdentityHashMap<>();
+    /** All extensions that are used. */
+    final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
     /** The name of the container, or null if no name has been set. */
     @Nullable
@@ -70,10 +68,10 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
     /** The wiring options used when creating this configuration. */
     public final List<WiringOption> options;
 
-    /** All outgoing links of this container, in order of installation order. */
+    /** All child containers, in order of wiring order. */
     final LinkedHashMap<String, DefaultContainerConfiguration> wirings = new LinkedHashMap<>();
 
-    protected DefaultContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable Bundle bundle, WiringOption... options) {
+    protected DefaultContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, WiringOption... options) {
         super(configurationSite);
         this.bundle = bundle;
         this.options = List.of(options);
@@ -167,8 +165,7 @@ public class DefaultContainerConfiguration extends AbstractConfigurableNode impl
 
     @Override
     public final BundleLink wire(AnyBundle child, WiringOption... options) {
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, options);
-        child.doConfigure(builder);
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), child, options);
         builder.build();
         wirings.put(builder.getName(), builder);
         return null;

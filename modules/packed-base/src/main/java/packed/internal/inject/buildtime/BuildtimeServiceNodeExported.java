@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -61,7 +61,7 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvidesHelper site) {
+    public T getInstance(ProvideHelper site) {
         return null;
     }
 

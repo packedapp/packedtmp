@@ -19,35 +19,41 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.UUID;
 
+import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  *
  */
-// What used to be InternalComponentConfiguration
 public final class ComponentBuildNode {
 
-    public String description;
+    /** The configuration of the container that this component has been installed into. */
+    final DefaultContainerConfiguration containerConfiguration;
 
-    public Object instance;
+    /** The description of the component */
+    @Nullable
+    String description;
 
-    public String name;
+    Object instance;
 
-    public BuildtimeServiceNode<?> serviceNode;
+    /** The name of the component */
+    @Nullable
+    String name;
 
-    public final DefaultContainerConfiguration dcc;
+    BuildtimeServiceNode<?> serviceNode;
 
-    final InternalConfigurationSite cs;
+    /** The configuration site of the component. */
+    final InternalConfigurationSite site;
 
-    ComponentBuildNode(InternalConfigurationSite cs, DefaultContainerConfiguration dcc) {
-        this.cs = requireNonNull(cs);
-        this.dcc = requireNonNull(dcc);
+    ComponentBuildNode(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
+        this.site = requireNonNull(site);
+        this.containerConfiguration = requireNonNull(containerConfiguration);
     }
 
     public void onFreeze() {
         if (name == null) {
             name = UUID.randomUUID().toString();
         }
-        dcc.components.put(name, this);
+        containerConfiguration.components.put(name, this);
     }
 }

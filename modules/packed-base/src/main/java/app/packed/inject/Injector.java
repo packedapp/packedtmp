@@ -192,9 +192,9 @@ public interface Injector /* extends Taggable */ {
     <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
     /**
-     * Returns a unordered {@code Stream} of all the services that this injector provides.
+     * Returns a unordered {@code Stream} of all services that this injector provides.
      *
-     * @return a unordered {@code Stream} of all the services that this injector provides
+     * @return a unordered {@code Stream} of all services that this injector provides
      */
     Stream<ServiceDescriptor> services();
 

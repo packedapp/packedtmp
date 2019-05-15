@@ -117,7 +117,16 @@ import packed.internal.inject.InjectionSiteForKey;
 // Does not make sense for singletons... med mindre vi har saaden noget som exportAs()
 // ServiceContext <- Permanent [exported(), Set<Key<?>> exportedAs(), String[] usesByChildContainers
 // ProvisionContext <- One time
-public interface ProvidesHelper {
+
+// ProvisionContext (used with Provide), InjectionContext (used with Inject)
+
+// provide(String.class).via(h->"fooo");
+// Hmm provide("Goo").via() giver ingen mening..
+
+// provide(MyService).from(MyServiceImpl.class)
+// provide(MyServiceImpl).as(MyService.class)
+
+public interface ProvideHelper {
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
     // AnnotatedElement annotations();
@@ -205,11 +214,11 @@ public interface ProvidesHelper {
      */
     Injector injector();// HMMMMM,
 
-    static ProvidesHelper of(Injector injector, Dependency dependency) {
+    static ProvideHelper of(Injector injector, Dependency dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);
     }
 
-    static ProvidesHelper of(Injector injector, Dependency dependency, Component componenent) {
+    static ProvideHelper of(Injector injector, Dependency dependency, Component componenent) {
         return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -224,7 +233,7 @@ public interface ProvidesHelper {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static ProvidesHelper of(Injector injector, Key<?> key) {
+    static ProvideHelper of(Injector injector, Key<?> key) {
         return new InjectionSiteForKey(injector, key, null);
     }
 
@@ -243,7 +252,7 @@ public interface ProvidesHelper {
      * @return an injection site for the specified injector and key and component.
      * @see #of(Injector, Dependency)
      */
-    static ProvidesHelper of(Injector injector, Key<?> key, Component component) {
+    static ProvideHelper of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));
     }
 

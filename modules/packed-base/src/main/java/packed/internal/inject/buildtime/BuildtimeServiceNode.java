@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.inject.Provide;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -54,7 +54,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
     /** A flag used to detect cycles in the dependency graph. */
     boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link ProvidesHelper}. */
+    /** Whether or this node contains a dependency on {@link ProvideHelper}. */
     final boolean hasDependencyOnInjectionSite;
 
     /** The injector configuration this node is registered with. */

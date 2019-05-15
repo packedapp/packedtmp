@@ -17,7 +17,7 @@ package app.packed.bundle;
 
 import app.packed.container.Extension;
 import app.packed.inject.InjectorExtension;
-import app.packed.inject.ProvidesHelper;
+import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 
 /**
@@ -45,6 +45,6 @@ class ProvidesConfiguator extends FrameworkMethodConfigurator {
     protected void configure() {
         requireExtension(InjectorExtension.class);
         enabledInjection();
-        addInjectable(ProvidesHelper.class, "A helper object for @Provides");
+        addInjectable(ProvideHelper.class, "A helper object for @Provides");
     }
 }
