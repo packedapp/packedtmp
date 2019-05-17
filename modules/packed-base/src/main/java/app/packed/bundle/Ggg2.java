@@ -31,7 +31,7 @@ public class Ggg2 extends Bundle {
     static final Factory<LocalDate> TODAY = new Factory0<>(() -> LocalDate.now()) {};
 
     public static void main(String[] args) {
-        App app = App.of(new Ggg2(), new WiringOption() {
+        App app = App.of(new Ggg2(), new Wirelet() {
 
             @Override
             protected void process(BundleLink link) {
@@ -55,7 +55,7 @@ public class Ggg2 extends Bundle {
         provide("asdsad");
         export(String.class);
 
-        wire(new CBundle(), WiringOption.of(l -> System.out.println("cool baby-----")));
+        wire(new CBundle(), Wirelet.of(l -> System.out.println("cool baby-----")));
     }
 
     static class CBundle extends Bundle {

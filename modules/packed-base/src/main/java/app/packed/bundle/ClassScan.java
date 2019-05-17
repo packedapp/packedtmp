@@ -36,8 +36,20 @@ import java.lang.annotation.Target;
 // @ClassScan < (
 
 // Think we do a ModuleClassScan +
+
+// 3 defaults
+// ScanAll, ScanAllSameModule, ScanAllSamePackage
+// ModulepathScan + ClasspathScan
+/// Grunden til vi ikke kalder dem f.eks. ComponentScan er vi gerne ville kunne bruge dem til f.eks. jpa.Entitities...
+// Eller andet, men hvor der er en context
+
+// Skal vi smide nogle exceptions, hvis den ikke er paa en bundle????
+
+// ScanModulePath
+// @ScanModulepath(packages = "*") vs @ScanModulepath(packages = ".")
 public @interface ClassScan {
 
+    // Vil maaske gerne ogsaa have @ListenTo paa et tidspunkt...
     Class<?>[] annotations() default {}; // Kan man vaelge???? annotations= {Entity.class} <- we should have some kind of repositor
 
     /**
@@ -68,6 +80,7 @@ public @interface ClassScan {
      * 
      * @return a list of package names that will be included in the scanning
      */
+    // Special "*" <- All packages, "." <- current package only
     String[] packages() default {};
 
     // Severity[FAIL, WARN, INFO?, IGNORE] onIn

@@ -114,6 +114,10 @@ public abstract class AnyBundle {
         return configuration.getName();
     }
 
+    protected final <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
@@ -161,8 +165,8 @@ public abstract class AnyBundle {
         return configuration.use(extensionType);
     }
 
-    protected final BundleLink wire(AnyBundle child, WiringOption... operations) {
-        return configuration().wire(child, operations);
+    protected final BundleLink wire(AnyBundle child, Wirelet... wirelets) {
+        return configuration().wire(child, wirelets);
     }
 }
 

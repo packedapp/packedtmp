@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
@@ -31,7 +31,7 @@ import packed.internal.inject.buildtime.ContainerBuilder;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#of(Consumer, WiringOption...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
+ * {@link Injector#of(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
  * bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
@@ -212,10 +212,10 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param options
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link WiringOption} or combinations (via
-     *             {@link WiringOption#andThen(WiringOption)} thereof
+     *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
+     *             {@link Wirelet#andThen(Wirelet)} thereof
      */
-    public final void provideAll(Injector injector, WiringOption... options) {
+    public final void provideAll(Injector injector, Wirelet... options) {
         injector().provideAll(injector, options);
     }
 
@@ -246,7 +246,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void wireInjector(Bundle bundle, WiringOption... stages) {
+    public final void wireInjector(Bundle bundle, Wirelet... stages) {
         ((ContainerBuilder) configuration).wireInjector(bundle, stages);
     }
 }

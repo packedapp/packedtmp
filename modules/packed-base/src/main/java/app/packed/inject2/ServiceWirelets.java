@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -43,10 +43,10 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
 // Alias()->creates an alias of a service, Rebind() changes the key, and transform() takes a function
 
 // Tro maaske vi skal to klasser, incoming, outgoing
-public final class ServiceWiringOperations {
+public final class ServiceWirelets {
 
     /** An wiring operation that removes every service in the import pipeline. */
-    public static final WiringOption NO_IMPORTS = new ServiceWiringImportOperation() {
+    public static final Wirelet NO_IMPORTS = new ServiceWiringImportOperation() {
 
         /** {@inheritDoc} */
         @Override
@@ -56,7 +56,7 @@ public final class ServiceWiringOperations {
     };
 
     // public static IIS PRINT_KEY = peek(
-    private ServiceWiringOperations() {}
+    private ServiceWirelets() {}
 
     /**
      * This method exists mainly to support debugging, where you want to see which services are available at a particular
@@ -75,7 +75,7 @@ public final class ServiceWiringOperations {
      *            the action to perform for each service descriptor
      * @return a peeking stage
      */
-    public static WiringOption peekImports(Consumer<? super ServiceDescriptor> action) {
+    public static Wirelet peekImports(Consumer<? super ServiceDescriptor> action) {
         requireNonNull(action, "action is null");
         return new ServiceWiringImportOperation() {
             @Override
@@ -97,7 +97,7 @@ public final class ServiceWiringOperations {
      */
     // rebindToParent
     // rebindToChild
-    public static WiringOption rebindImport(Key<?> from, Key<?> to) {
+    public static Wirelet rebindImport(Key<?> from, Key<?> to) {
         requireNonNull(from, "from is null");
         requireNonNull(to, "to is null");
         return new ServiceWiringImportOperation() {
@@ -118,7 +118,7 @@ public final class ServiceWiringOperations {
      *            the keys that should be rejected
      * @return the new import stage
      */
-    public static WiringOption removeImports(Class<?>... keys) {
+    public static Wirelet removeImports(Class<?>... keys) {
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return removeImports(d -> set.contains(d.key()));
     }
@@ -130,7 +130,7 @@ public final class ServiceWiringOperations {
      *            the keys that should be rejected
      * @return the new import stage
      */
-    public static WiringOption removeImports(Key<?>... keys) {
+    public static Wirelet removeImports(Key<?>... keys) {
         Set<Key<?>> set = Set.of(keys);
         return removeImports(d -> set.contains(d.key()));
     }
@@ -145,7 +145,7 @@ public final class ServiceWiringOperations {
      *            the predicate to test against
      * @return the new import stage
      */
-    public static WiringOption removeImports(Predicate<? super ServiceDescriptor> predicate) {
+    public static Wirelet removeImports(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
         return retainImports(e -> !predicate.test(e));
     }
@@ -157,7 +157,7 @@ public final class ServiceWiringOperations {
      *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static WiringOption retainImports(Class<?>... keys) {
+    public static Wirelet retainImports(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Arrays.stream(keys).map(k -> Key.of(k)).collect(Collectors.toSet());
         return retainImports(d -> set.contains(d.key()));
@@ -170,7 +170,7 @@ public final class ServiceWiringOperations {
      *            the keys for which services will be accepted
      * @return the new import stage
      */
-    public static WiringOption retainImports(Key<?>... keys) {
+    public static Wirelet retainImports(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         Set<Key<?>> set = Set.of(keys);
         return retainImports(d -> set.contains(d.key()));
@@ -186,7 +186,7 @@ public final class ServiceWiringOperations {
      *            the predicate that selects which services are accepted by this stage
      * @return the new import stage
      */
-    public static WiringOption retainImports(Predicate<? super ServiceDescriptor> predicate) {
+    public static Wirelet retainImports(Predicate<? super ServiceDescriptor> predicate) {
         requireNonNull(predicate, "predicate is null");
         return new ServiceWiringImportOperation() {
             @Override
@@ -210,16 +210,16 @@ public final class ServiceWiringOperations {
      *            the instance to bind
      * @return the wiring operation
      */
-    public static <T, R> WiringOption bindDownstream(Object instance) {
+    public static <T, R> Wirelet bindDownstream(Object instance) {
         MethodHandles.lookup();
         throw new UnsupportedOperationException();
     }
 
-    public static <T, R> WiringOption bindDownstream(Factory<?> factory) {
+    public static <T, R> Wirelet bindDownstream(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T, R> WiringOption mapOutgoing(Key<T> from, Key<R> to, Function<? super T, ? extends R> mapper) {
+    public static <T, R> Wirelet mapOutgoing(Key<T> from, Key<R> to, Function<? super T, ? extends R> mapper) {
         throw new UnsupportedOperationException();
     }
 

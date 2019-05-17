@@ -18,7 +18,7 @@ package app.packed.host;
 import java.util.function.Function;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.contract.Contract;
 import app.packed.inject.ServiceConfiguration;
 
@@ -35,12 +35,12 @@ public interface HostBuilder {
     // or BiConsumer(String, Host);
 
     // Lazyly deploy apps....
-    public void supplyBy(Function<String, Bundle> function, WiringOption... operations);
+    public void supplyBy(Function<String, Bundle> function, Wirelet... operations);
     // Maybe have operations seperate
 
-    public void addOptionsFirst(WiringOption... operations);
+    public void addOptionsFirst(Wirelet... operations);
 
-    public void addOptionsLast(WiringOption... operations);
+    public void addOptionsLast(Wirelet... operations);
 
     // Vi skal havde fundet ud af hvordan vi kan smide et object med...
     // Objekter er vel mandatory???

@@ -25,10 +25,11 @@ import java.util.function.Supplier;
 import app.packed.bundle.AnyBundle;
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Install;
 import app.packed.inject.ExportedServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -71,7 +72,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     @Nullable
     final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
 
-    public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, WiringOption... options) {
+    public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... options) {
         super(configurationSite, bundle, options);
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
@@ -85,12 +86,13 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     public Container build() {
         if (bundle != null) {
+            if (bundle.getClass().isAnnotationPresent(Install.class)) {
+                install(bundle);
+            }
             bundle.doConfigure(this);
         }
-        // if (root == null) {
-        // throw new IllegalStateException("Must install at least one component");
-        // }
-        for (WiringOption wo : options) {
+
+        for (Wirelet wo : options) {
             AppPackedBundleSupport.invoke().process(wo, new BundleLink() {
 
                 @Override
@@ -218,10 +220,10 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return box.services();
     }
 
-    public void wireInjector(Bundle bundle, WiringOption... stages) {
+    public void wireInjector(Bundle bundle, Wirelet... stages) {
 
         requireNonNull(bundle, "bundle is null");
-        List<WiringOption> listOfStages = AppPackedBundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
+        List<Wirelet> listOfStages = AppPackedBundleSupport.invoke().extractWiringOperations(stages, Bundle.class);
         newOperation();
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, listOfStages);

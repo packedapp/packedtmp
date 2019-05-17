@@ -38,6 +38,8 @@ import packed.internal.config.site.InternalConfigurationSite;
 // 99% of the time they will probably have the same parents...
 // Maybe store a hash... for the total configuration site.
 // No matter what, we should never new ConfigSite*** in any way
+
+// Can lazily generate line numbers from AnnotatedMethods+fields via reading of classinfo
 public interface ConfigSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
@@ -81,6 +83,7 @@ public interface ConfigSite {
      * 
      * @return any parent this site may have, or an empty {@link Optional} if this site has no parent
      */
+    // Rename to cause????
     Optional<ConfigSite> parent();
 
     default void print() {

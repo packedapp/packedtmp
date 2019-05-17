@@ -69,6 +69,7 @@ public interface BundleLink extends Attachable {
 
     Mode mode();
 
+    // wire(new WebserverBundle()).port(8080);
     enum Mode {
 
         /** Used when deploying */

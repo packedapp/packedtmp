@@ -18,7 +18,7 @@ package support.stubs;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.inject2.ServiceWiringOperations;
+import app.packed.inject2.ServiceWirelets;
 
 /**
  *
@@ -33,10 +33,10 @@ public class Xs {
         });
 
         Injector i2 = Injector.of(c -> {
-            c.provideAll(i, ServiceWiringOperations.peekImports(e -> {
+            c.provideAll(i, ServiceWirelets.peekImports(e -> {
                 new Exception().printStackTrace();
                 // System.out.println("Available " + e.getKey() + new Exception().printStackTrace());
-            }), ServiceWiringOperations.retainImports(String.class));
+            }), ServiceWirelets.retainImports(String.class));
         });
 
         System.out.println();

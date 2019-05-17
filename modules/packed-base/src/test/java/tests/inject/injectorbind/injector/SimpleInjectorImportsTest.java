@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import app.packed.inject2.ServiceWiringOperations;
+import app.packed.inject2.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceWiringImportOperation;
 import support.stubs.annotation.Left;
@@ -41,7 +41,7 @@ public class SimpleInjectorImportsTest {
         npe(() -> Injector.of(c -> c.provideAll(i, (ServiceWiringImportOperation[]) null)), "operations");
 
         // TODO test error message
-        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.provideAll(i, ServiceWiringOperations.NO_IMPORTS, null)));
+        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.provideAll(i, ServiceWirelets.NO_IMPORTS, null)));
     }
 
     /** Tests that we can import no services. */
@@ -54,7 +54,7 @@ public class SimpleInjectorImportsTest {
         });
 
         Injector i = Injector.of(c -> {
-            c.provideAll(i1, ServiceWiringOperations.NO_IMPORTS);
+            c.provideAll(i1, ServiceWirelets.NO_IMPORTS);
         });
         assertThat(i.services().count()).isEqualTo(0L);
     }
@@ -76,8 +76,8 @@ public class SimpleInjectorImportsTest {
         Injector i1 = Injector.of(c -> c.provide("X"));
 
         Injector i = Injector.of(c -> {
-            c.provideAll(i1, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
-                    ServiceWiringOperations.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.provideAll(i1, ServiceWirelets.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
+                    ServiceWirelets.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
         });
         assertThat(i.hasService(String.class)).isFalse();
         assertThat(i.hasService(new Key<@Left String>() {})).isFalse();
@@ -92,8 +92,8 @@ public class SimpleInjectorImportsTest {
         Injector i2 = Injector.of(c -> c.provide("Y"));
 
         Injector i = Injector.of(c -> {
-            c.provideAll(i1, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
-            c.provideAll(i2, ServiceWiringOperations.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
+            c.provideAll(i1, ServiceWirelets.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
+            c.provideAll(i2, ServiceWirelets.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
         });
 
         assertThat(i.use(new Key<@Left String>() {})).isEqualTo("X");
@@ -116,8 +116,8 @@ public class SimpleInjectorImportsTest {
 
         // Now let us switch them around
         i = Injector.of(c -> {
-            c.provideAll(i1, ServiceWiringOperations.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
-            c.provideAll(i2, ServiceWiringOperations.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
+            c.provideAll(i1, ServiceWirelets.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
+            c.provideAll(i2, ServiceWirelets.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });
 
         assertThat(i.use(new Key<@Left String>() {})).isEqualTo("Y");

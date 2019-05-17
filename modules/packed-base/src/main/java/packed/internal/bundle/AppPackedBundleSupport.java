@@ -22,7 +22,7 @@ import java.util.List;
 
 import app.packed.bundle.Bundle;
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.inject.Injector;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
@@ -38,13 +38,13 @@ public final class AppPackedBundleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        public abstract void finishWireOperation(WiringOption operation);
+        public abstract void finishWireOperation(Wirelet operation);
 
-        public abstract void startWireOperation(WiringOption operation);
+        public abstract void startWireOperation(Wirelet operation);
 
-        public abstract void process(WiringOption operation, BundleLink link);
+        public abstract void process(Wirelet operation, BundleLink link);
 
-        public abstract MethodHandles.Lookup lookupFromWireOperation(WiringOption operation);
+        public abstract MethodHandles.Lookup lookupFromWireOperation(Wirelet operation);
 
         /**
          * @param stages
@@ -52,7 +52,7 @@ public final class AppPackedBundleSupport {
          *            either {@link Injector}, {@link Bundle} or {@link Bundle}
          * @return java.util.Objects.*
          */
-        public abstract List<WiringOption> extractWiringOperations(WiringOption[] stages, Class<?> type);
+        public abstract List<Wirelet> extractWiringOperations(Wirelet[] stages, Class<?> type);
 
         /**
          * Initializes this class.
@@ -75,7 +75,7 @@ public final class AppPackedBundleSupport {
         static final Helper SINGLETON;
 
         static {
-            new WiringOption() {
+            new Wirelet() {
                 @Override
                 protected void process(BundleLink link) {}
             }; // Initializes TypeLiteral, which in turn will call SupportInject#init

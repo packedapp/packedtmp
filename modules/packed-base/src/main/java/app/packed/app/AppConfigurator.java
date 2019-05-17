@@ -18,13 +18,13 @@ package app.packed.app;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.container.ComponentInstaller;
 import app.packed.container.Container;
 import app.packed.container.ContainerActionable;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.Nullable;
 
@@ -150,7 +150,7 @@ public interface AppConfigurator extends ComponentInstaller {
      * @param stages
      *            import export stages
      */
-    void wire(Bundle bundle, WiringOption... stages);
+    <T extends Bundle> T wire(T bundle, Wirelet... stages);
     // change of() <- to async start (this includes bundles then, but then we cannot create a bundled container, without
     // starting it)
     // IDeen er at have

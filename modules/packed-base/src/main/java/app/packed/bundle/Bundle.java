@@ -15,12 +15,10 @@
  */
 package app.packed.bundle;
 
-import java.util.Set;
-
 import app.packed.app.App;
 import app.packed.container.ComponentConfiguration;
 import app.packed.container.Container;
-import app.packed.container.ContainerWiringOptions;
+import app.packed.container.ContainerWirelets;
 import app.packed.contract.Contract;
 import app.packed.inject.ExportedServiceConfiguration;
 import app.packed.inject.Factory;
@@ -258,10 +256,6 @@ public abstract class Bundle extends AnyBundle {
         injector().manualRequirementsManagement();
     }
 
-    protected final Set<String> tags() {
-        return configuration().tags();
-    }
-
     // /**
     // * Install the specified component instance.
     // * <p>
@@ -319,12 +313,12 @@ public abstract class Bundle extends AnyBundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    static protected void run(Bundle bundle, String[] args, WiringOption... operations) {
-        run(bundle, ContainerWiringOptions.main(args).andThen(operations));
+    static protected void run(Bundle bundle, String[] args, Wirelet... wirelets) {
+        run(bundle, ContainerWirelets.main(args).andThen(wirelets));
     }
 
-    static protected void run(Bundle bundle, WiringOption... operations) {
-        App.run(bundle, operations);
+    static protected void run(Bundle bundle, Wirelet... wirelets) {
+        App.run(bundle, wirelets);
     }
 }
 

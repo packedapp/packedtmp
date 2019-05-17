@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
 import app.packed.bundle.Bundle;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
-import app.packed.inject2.ServiceWiringOperations;
+import app.packed.inject2.ServiceWirelets;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 
@@ -38,8 +38,8 @@ public class ImportTest {
     public static void main(String[] args) {
 
         Injector i = Injector.of(c -> {
-            c.wireInjector(new London(), ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
-            c.wireInjector(new London(), ServiceWiringOperations.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
+            c.wireInjector(new London(), ServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
+            c.wireInjector(new London(), ServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
         });
 
         i.services().forEach(e -> System.out.println(e.key().toStringSimple()));

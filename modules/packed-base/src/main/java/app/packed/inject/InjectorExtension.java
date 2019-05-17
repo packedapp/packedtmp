@@ -18,7 +18,7 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.container.Extension;
 import app.packed.contract.Contract;
 import app.packed.lifecycle.OnStart;
@@ -193,7 +193,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     // Saa kalder vi addNode(inner.foo);
 
     // export
-    public void provideAll(Injector injector, WiringOption... operations) {
+    public void provideAll(Injector injector, Wirelet... operations) {
         ProvideAll pa = new ProvideAll(builder(), injector, operations);// Validates arguments
         builder().newOperation();
         pa.process();

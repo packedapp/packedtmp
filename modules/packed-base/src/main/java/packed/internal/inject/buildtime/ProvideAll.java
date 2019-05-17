@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
@@ -44,9 +44,9 @@ public final class ProvideAll extends AbstractFreezableNode {
     final ContainerBuilder injectorConfiguration;
 
     /** The wiring options used when creating this configuration. */
-    final List<WiringOption> options;
+    final List<Wirelet> options;
 
-    public ProvideAll(ContainerBuilder configuration, Injector injector, WiringOption... operations) {
+    public ProvideAll(ContainerBuilder configuration, Injector injector, Wirelet... operations) {
         super(configuration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND));
         this.injectorConfiguration = requireNonNull(configuration);
         this.injector = requireNonNull(injector, "injector is null");
@@ -82,8 +82,8 @@ public final class ProvideAll extends AbstractFreezableNode {
         }
 
         // Process each wiring operation
-        for (WiringOption operation : options) {
-            if (operation instanceof WiringOption) {
+        for (Wirelet operation : options) {
+            if (operation instanceof Wirelet) {
                 AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
                 AppPackedBundleSupport.invoke().finishWireOperation(operation);
@@ -99,7 +99,7 @@ public final class ProvideAll extends AbstractFreezableNode {
         }
     }
 
-    private HashMap<Key<?>, BuildtimeServiceNode<?>> processImportStage(WiringOption stage, HashMap<Key<?>, BuildtimeServiceNode<?>> nodes) {
+    private HashMap<Key<?>, BuildtimeServiceNode<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNode<?>> nodes) {
         ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {

@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.util.Key;
 import packed.internal.config.site.ConfigurationSiteType;
@@ -276,7 +276,7 @@ public interface Injector /* extends Taggable */ {
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
-    static Injector of(Bundle bundle, WiringOption... operations) {
+    static Injector of(Bundle bundle, Wirelet... operations) {
         requireNonNull(bundle, "bundle is null");
         ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
         bundle.doConfigure(builder);
@@ -290,7 +290,7 @@ public interface Injector /* extends Taggable */ {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<InjectorConfigurator> configurator, WiringOption... operations) {
+    static Injector of(Consumer<InjectorConfigurator> configurator, Wirelet... operations) {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...

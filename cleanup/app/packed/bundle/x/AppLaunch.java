@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 
 /**
  *
@@ -71,11 +71,11 @@ public class AppLaunch implements Runnable {
      *            an optional array of wiring operation
      * @return the new application
      */
-    public static AppLaunch of(Bundle bundle, WiringOption... operations) {
+    public static AppLaunch of(Bundle bundle, Wirelet... operations) {
         return null;
     }
 
-    public static AppLaunch of(Bundle bundle, String[] args, WiringOption... operations) {
+    public static AppLaunch of(Bundle bundle, String[] args, Wirelet... operations) {
         return null;
     }
 }

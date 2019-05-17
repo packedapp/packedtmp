@@ -17,10 +17,12 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.bundle.BundleLink;
 import app.packed.config.ConfigSite;
+import app.packed.util.AttachmentMap;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedContainerSupport;
@@ -51,11 +53,6 @@ public abstract class Extension<T extends Extension<T>> {
 
     protected DefaultContainerConfiguration configuration;
 
-    protected ConfigSite spawnSite(String name) {
-        // Den ved alt om config sites er disablet paa containeren
-        throw new UnsupportedOperationException();
-    }
-
     // Supports Freezable and ConfigurationSite
     protected final <S extends ServiceNode<S>> S addNode(S node) {
         throw new UnsupportedOperationException();
@@ -75,9 +72,14 @@ public abstract class Extension<T extends Extension<T>> {
         throw new UnsupportedOperationException();
     }
 
-    // createContract(); or
-    // addToContract(ContractBuilder b)
-    // Failure to have two features creating the same contract type...
+    protected final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> consumer) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final AttachmentMap hostAttachments() {
+        // immutable version
+        throw new UnsupportedOperationException();
+    }
 
     protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
         // Ideen er at man kalde
@@ -114,6 +116,12 @@ public abstract class Extension<T extends Extension<T>> {
         // Because install(x) followed by bind(x) should work identical to
     }
 
+    // createContract(); or
+    // addToContract(ContractBuilder b)
+    // Failure to have two features creating the same contract type...
+
+    protected void onFirstUse() {}
+
     // Skal have en eller anden form for link med...
     // Hvor man kan gemme ting. f.eks. en Foo.class
     // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
@@ -121,6 +129,11 @@ public abstract class Extension<T extends Extension<T>> {
 
     // onWireChikd
     protected void onWireParent(@Nullable T parent, BundleLink link) {}
+
+    protected ConfigSite spawnSite(String name) {
+        // Den ved alt om config sites er disablet paa containeren
+        throw new UnsupportedOperationException();
+    }
 }
 // If it uses other extensions... Either get them by constructor, or via use(xxx)
 /// F.eks. LifecycleExtension

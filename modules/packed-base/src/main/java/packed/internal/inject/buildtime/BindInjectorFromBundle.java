@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.bundle.Bundle;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.inject.InjectionException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -50,11 +50,11 @@ class BindInjectorFromBundle {
     final ContainerBuilder injectorConfiguration;
 
     /** The wiring operations. */
-    final List<WiringOption> operations;
+    final List<Wirelet> operations;
 
     final ContainerBuilder newConfiguration;
 
-    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<WiringOption> stages) {
+    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<Wirelet> stages) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.operations = requireNonNull(stages);
@@ -71,8 +71,8 @@ class BindInjectorFromBundle {
     }
 
     void processExport() {
-        for (WiringOption s : operations) {
-            if (s instanceof WiringOption) {
+        for (Wirelet s : operations) {
+            if (s instanceof Wirelet) {
                 throw new UnsupportedOperationException();
             }
         }
@@ -107,8 +107,8 @@ class BindInjectorFromBundle {
             }
         }
         // Process each stage
-        for (WiringOption operation : operations) {
-            if (operation instanceof WiringOption) {
+        for (Wirelet operation : operations) {
+            if (operation instanceof Wirelet) {
                 AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
                 AppPackedBundleSupport.invoke().finishWireOperation(operation);
@@ -123,7 +123,7 @@ class BindInjectorFromBundle {
         }
     }
 
-    private HashMap<Key<?>, BuildtimeServiceNodeImport<?>> processImportStage(WiringOption stage, HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes) {
+    private HashMap<Key<?>, BuildtimeServiceNodeImport<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes) {
         ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {

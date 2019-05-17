@@ -20,7 +20,7 @@ import java.util.Set;
 
 import app.packed.bundle.AnyBundle;
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
@@ -121,7 +121,7 @@ public interface ContainerConfiguration {
      */
     void setName(@Nullable String name);
 
-    Set<String> tags();
+    // Set<String> tags();
 
     /**
      * Returns an extension of the specified type. If an extension of the specified type has not already been installed this
@@ -148,7 +148,7 @@ public interface ContainerConfiguration {
      *            optional wiring options
      * @return a bundle link
      */
-    BundleLink wire(AnyBundle child, WiringOption... options);
+    BundleLink wire(AnyBundle child, Wirelet... options);
 }
 // static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
 // options) {

@@ -53,6 +53,8 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     @Nullable
     private InternalFunction<T> function;
 
+    boolean hasInstanceMembers;
+
     /** The singleton instance, not used for prototypes. */
     @Nullable
     private T instance;
@@ -62,10 +64,6 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BuildtimeServiceNodeDefault<?> parent;
-
-    protected ServiceClassDescriptor descriptor() {
-        return descriptor;
-    }
 
     public BuildtimeServiceNodeDefault(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
@@ -82,26 +80,6 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
         // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         // }
-    }
-
-    public void lazy() {
-        instantiateAs(InstantiationMode.LAZY);
-    }
-
-    public void prototype() {
-        if (hasDependencyOnInjectionSite) {
-            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
-        }
-        if (hasInstanceMembers) {
-            throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
-        }
-        instantiateAs(InstantiationMode.PROTOTYPE);
-    }
-
-    public BuildtimeServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {
-        requireNonNull(mode, "mode is null");
-        this.instantionMode = mode;
-        return this;
     }
 
     /**
@@ -124,8 +102,6 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         this.function = null;
     }
 
-    boolean hasInstanceMembers;
-
     BuildtimeServiceNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory,
             BuildtimeServiceNodeDefault<?> parent) {
         super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
@@ -139,6 +115,10 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     @Override
     BuildtimeServiceNode<?> declaringNode() {
         return parent;
+    }
+
+    protected ServiceClassDescriptor descriptor() {
+        return descriptor;
     }
 
     private InternalFunction<T> fac() {
@@ -165,10 +145,20 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         return i;
     }
 
+    public BuildtimeServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {
+        requireNonNull(mode, "mode is null");
+        this.instantionMode = mode;
+        return this;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final InstantiationMode instantiationMode() {
         return instantionMode;
+    }
+
+    public void lazy() {
+        instantiateAs(InstantiationMode.LAZY);
     }
 
     /** {@inheritDoc} */
@@ -219,6 +209,16 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
         return new RuntimeServiceNodeLazy<>(this, fac(), null);
 
+    }
+
+    public void prototype() {
+        if (hasDependencyOnInjectionSite) {
+            throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
+        }
+        if (hasInstanceMembers) {
+            throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as prototypes");
+        }
+        instantiateAs(InstantiationMode.PROTOTYPE);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

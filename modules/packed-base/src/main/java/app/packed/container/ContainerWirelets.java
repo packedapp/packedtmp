@@ -21,13 +21,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.bundle.BundleLink;
-import app.packed.bundle.WiringOption;
+import app.packed.bundle.Wirelet;
 import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /** Various container wiring options. */
-public final class ContainerWiringOptions {
+public final class ContainerWirelets {
 
-    private ContainerWiringOptions() {}
+    private ContainerWirelets() {}
 
     /**
      * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.
@@ -43,15 +43,15 @@ public final class ContainerWiringOptions {
 
     // Vi vil gerne have en version, vi kan refreshe ogsaa???
     // Maaske vi bare ikke skal supportered det direkte.
-    public static WiringOption timeToLive(long timeout, TimeUnit unit) {
+    public static Wirelet timeToLive(long timeout, TimeUnit unit) {
         // Shuts down container normally
         throw new UnsupportedOperationException();
     }
 
-    public static WiringOption timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
+    public static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
         timeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
         // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
-        return new WiringOption() {
+        return new Wirelet() {
 
             @Override
             protected void process(BundleLink link) {
@@ -60,16 +60,16 @@ public final class ContainerWiringOptions {
         };
     }
 
-    public static WiringOption overrideName(String name) {
+    public static Wirelet overrideName(String name) {
         return new DefaultContainerConfiguration.OverrideNameWiringOption(name);
     }
 
-    public static WiringOption main(String... args) {
+    public static Wirelet main(String... args) {
         // but why not for Injector also...
         throw new UnsupportedOperationException();
     }
 
-    public static WiringOption config(Configuration c) {
+    public static Wirelet config(Configuration c) {
         // This is for App, but why not for Injector also...
         // we need config(String) for wire()..... configOptional() also maybe...
         // Would be nice.. if config extends WiringOperations
