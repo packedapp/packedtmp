@@ -22,6 +22,11 @@ import packed.internal.config.site.InternalConfigurationSite;
 /**
  *
  */
+
+// Den bliver droppet fordi den er super kompleks.
+// Og fordele omvejede ikke bagdelene.
+// For example, naar man skulle kombinere operationer...
+
 public abstract class AbstractFreezableNode {
 
     /** The configuration site of this object. */

@@ -32,6 +32,7 @@ public class InternalBundleDescriptor {
 
         bundle.doConfigure(conf);
 
+        conf.finish();
         // BundleSupport.invoke().configureInjectorBundle((InjectorBundle) bundle, conf, false);
 
         DependencyGraph injectorBuilder = new DependencyGraph(conf);

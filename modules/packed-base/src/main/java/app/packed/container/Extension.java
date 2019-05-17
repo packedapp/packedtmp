@@ -18,7 +18,6 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import app.packed.bundle.BundleLink;
 import app.packed.config.ConfigSite;
@@ -27,7 +26,6 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.buildtime.AbstractFreezableNode;
 import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /**
@@ -80,29 +78,29 @@ public abstract class Extension<T extends Extension<T>> {
         // immutable version
         throw new UnsupportedOperationException();
     }
-
-    protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
-        // Ideen er at man kalde
-        // bundleWith
-        // configuration.
-
-        // Vi ved vi er single traadet. Saa det er vel noget med at have en counter... der tikker en op hver gang vi kalder
-        // mergeOperation
-        return mergeOperations(() -> {
-            configuration.install("foo");
-            configuration.install("foo");
-            return null;
-        });
-
-        // Don't think we need to have a separate verify step
-        //
-        // configuration.install("foo").setName("foo)";
-        // configuration.install("foo").setName("foo)";
-        // Would both be verified ok, because we do not make structural changes in the first step when verifying
-
-        // What we would need was a command like functionality. Where to much trouble
-
-    }
+    //
+    // protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
+    // // Ideen er at man kalde
+    // // bundleWith
+    // // configuration.
+    //
+    // // Vi ved vi er single traadet. Saa det er vel noget med at have en counter... der tikker en op hver gang vi kalder
+    // // mergeOperation
+    // return mergeOperations(() -> {
+    // configuration.install("foo");
+    // configuration.install("foo");
+    // return null;
+    // });
+    //
+    // // Don't think we need to have a separate verify step
+    // //
+    // // configuration.install("foo").setName("foo)";
+    // // configuration.install("foo").setName("foo)";
+    // // Would both be verified ok, because we do not make structural changes in the first step when verifying
+    //
+    // // What we would need was a command like functionality. Where to much trouble
+    //
+    // }
 
     protected final void newLine() {
         // checksConfigurable

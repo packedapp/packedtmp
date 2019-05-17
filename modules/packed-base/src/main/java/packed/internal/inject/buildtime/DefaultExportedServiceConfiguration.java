@@ -17,30 +17,37 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.ExportedServiceConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  *
  */
-public class DefaultExportedServiceConfiguration<T> extends AbstractFreezableNode implements ExportedServiceConfiguration<T> {
+public class DefaultExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
 
     final BuildtimeServiceNode<T> node;
+
+    private final DefaultContainerConfiguration dcc;
+    /** The configuration site of this object. */
+    private final InternalConfigurationSite configurationSite;
 
     /**
      * @param node
      */
-    public DefaultExportedServiceConfiguration(BuildtimeServiceNode<T> node) {
-        super(node.configurationSite);
+    public DefaultExportedServiceConfiguration(DefaultContainerConfiguration dcc, BuildtimeServiceNode<T> node) {
+        this.configurationSite = node.configurationSite;
+        this.dcc = requireNonNull(dcc);
         this.node = requireNonNull(node);
     }
 
     /** {@inheritDoc} */
     @Override
     public ExportedServiceConfiguration<T> as(Key<? super T> key) {
-        checkConfigurable();
+        dcc.checkConfigurable();
         node.as(key);
         return this;
     }
@@ -49,7 +56,7 @@ public class DefaultExportedServiceConfiguration<T> extends AbstractFreezableNod
     @Override
     @Nullable
     public String getDescription() {
-        checkConfigurable();
+        dcc.checkConfigurable();
         return node.description;
     }
 
@@ -67,16 +74,16 @@ public class DefaultExportedServiceConfiguration<T> extends AbstractFreezableNod
 
     /** {@inheritDoc} */
     @Override
-    protected void onFreeze() {
-        node.onFreeze();
+    public ExportedServiceConfiguration<T> setDescription(@Nullable String description) {
+        dcc.checkConfigurable();
+        node.description = description;
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExportedServiceConfiguration<T> setDescription(@Nullable String description) {
-        checkConfigurable();
-        node.description = description;
-        return this;
+    public ConfigSite configurationSite() {
+        return configurationSite;
     }
 
 }

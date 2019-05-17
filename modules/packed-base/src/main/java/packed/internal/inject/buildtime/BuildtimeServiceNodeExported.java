@@ -15,8 +15,6 @@
  */
 package packed.internal.inject.buildtime;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.List;
 
 import app.packed.inject.InstantiationMode;
@@ -33,7 +31,7 @@ import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
 public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<T> {
 
     /** The node that is exposed. */
-    final ServiceNode<T> exposureOf;
+    public ServiceNode<T> exposureOf;
 
     /**
      * @param configuration
@@ -41,9 +39,8 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public BuildtimeServiceNodeExported(ContainerBuilder configuration, InternalConfigurationSite configurationSite, ServiceNode<T> exposureOf) {
+    public BuildtimeServiceNodeExported(ContainerBuilder configuration, InternalConfigurationSite configurationSite) {
         super(configuration, configurationSite, List.of());
-        this.exposureOf = requireNonNull(exposureOf);
     }
 
     @Override
@@ -82,5 +79,4 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
     RuntimeServiceNode<T> newRuntimeNode() {
         return new RuntimeServiceNodeDelegate<>(this, exposureOf);
     }
-
 }

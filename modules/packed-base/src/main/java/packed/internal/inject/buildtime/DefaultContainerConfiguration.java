@@ -39,7 +39,7 @@ import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.container.ExtensionInfo;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public class DefaultContainerConfiguration extends AbstractFreezableNode implements ContainerConfiguration {
+public class DefaultContainerConfiguration implements ContainerConfiguration {
     /** The lookup object. We default to public access */
     public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
 
@@ -74,8 +74,11 @@ public class DefaultContainerConfiguration extends AbstractFreezableNode impleme
     /** All child containers, in order of wiring order. */
     final LinkedHashMap<String, DefaultContainerConfiguration> wirings = new LinkedHashMap<>();
 
+    /** The configuration site of this object. */
+    private final InternalConfigurationSite configurationSite;
+
     protected DefaultContainerConfiguration(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... options) {
-        super(configurationSite);
+        this.configurationSite = requireNonNull(configurationSite);
         this.bundle = bundle;
         this.options = List.of(options);
     }
@@ -111,18 +114,18 @@ public class DefaultContainerConfiguration extends AbstractFreezableNode impleme
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration install(Factory<?> factory) {
-        return newOperation(new DefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON));
+        return new DefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON);
     }
 
     @Override
     public final ComponentConfiguration install(Object instance) {
-        return newOperation(new DefaultComponentConfiguration(this, instance));
+        return new DefaultComponentConfiguration(this, instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration installStatics(Class<?> implementation) {
-        return newOperation(new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE));
+        return new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
     }
 
     /** {@inheritDoc} */
@@ -139,6 +142,10 @@ public class DefaultContainerConfiguration extends AbstractFreezableNode impleme
             c.freeze();
         }
         currentNode = null;
+    }
+
+    final void checkConfigurable() {
+
     }
 
     public <T extends AbstractFreezableNode> T newOperation(T node) {
@@ -218,5 +225,11 @@ public class DefaultContainerConfiguration extends AbstractFreezableNode impleme
         protected void process(BundleLink link) {
             ((DefaultContainerConfiguration) link.cc()).name = name;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InternalConfigurationSite configurationSite() {
+        return configurationSite;
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildtime;
+package app.packed.host;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,6 +24,7 @@ import java.util.Set;
 
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.buildtime.AbstractFreezableNode;
 
 /**
  * An abstract configuration object. That provides basic support for strings tags, setting a description, and freezing a

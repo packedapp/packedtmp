@@ -123,8 +123,29 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return container;
     }
 
+    ArrayList<BuildtimeServiceNode<?>> nodes = new ArrayList<>();
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void finish() {
+        for (BuildtimeServiceNode<?> e : nodes) {
+            if (!box.services().nodes.putIfAbsent(e)) {
+                System.err.println("OOPS " + e.key);
+            }
+        }
+        for (BuildtimeServiceNodeExported<?> e : exportedNodes) {
+            ServiceNode<?> sn = box.services().nodes.getRecursive(e.getKey());
+            if (sn == null) {
+                throw new IllegalStateException("Could not find node to export " + e.getKey());
+            }
+            e.exposureOf = (ServiceNode) sn;
+            box.services().exports.put(e);
+        }
+    }
+
     public Injector buildInjector() {
         newOperation();
+        finish();
+
         new DependencyGraph(this).instantiate();
         return publicInjector;
     }
@@ -142,15 +163,15 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
-        ServiceNode<T> node = box.services().nodes.getRecursive(key);
-        if (node == null) {
-            throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
-        }
-        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(this, cs, node);
+        // ServiceNode<T> node = box.services().nodes.getRecursive(key);
+        // if (node == null) {
+        // throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
+        // }
+        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(this, cs);
         bn.as(key);
         exportedNodes.add(bn);
 
-        return bindNode(new DefaultExportedServiceConfiguration<>(bn));
+        return new DefaultExportedServiceConfiguration<>(this, bn);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -169,7 +190,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
-        return bindNode(new DefaultServiceConfiguration<>(new ComponentBuildNode(frame, this), node));
+        nodes.add(node);
+        return new DefaultServiceConfiguration<>(this, new ComponentBuildNode(frame, this), node);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -184,8 +206,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
         scanForProvides(instance.getClass(), sc);
         sc.as((Key) Key.of(instance.getClass()));
-
-        return bindNode(new DefaultServiceConfiguration<>(new ComponentBuildNode(frame, this), sc));
+        nodes.add(sc);
+        return new DefaultServiceConfiguration<>(this, new ComponentBuildNode(frame, this), sc);
     }
 
     protected void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
@@ -220,7 +242,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return box.services();
     }
 
-    public void wireInjector(Bundle bundle, Wirelet... stages) {
+    public void link(Bundle bundle, Wirelet... stages) {
 
         requireNonNull(bundle, "bundle is null");
         List<Wirelet> listOfStages = AppPackedBundleSupport.invoke().extractWiringOperations(stages, Bundle.class);

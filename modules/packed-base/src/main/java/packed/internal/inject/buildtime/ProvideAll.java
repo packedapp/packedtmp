@@ -29,13 +29,14 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.AppPackedBundleSupport;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
 import packed.internal.inject.runtime.AbstractInjector;
 
 /** Provides services from an existing Injector. */
-public final class ProvideAll extends AbstractFreezableNode {
+public final class ProvideAll {
 
     /** The injector we are providing services from. */
     private final Injector injector;
@@ -46,11 +47,23 @@ public final class ProvideAll extends AbstractFreezableNode {
     /** The wiring options used when creating this configuration. */
     final List<Wirelet> options;
 
+    /** The configuration site of this object. */
+    private final InternalConfigurationSite configurationSite;
+
     public ProvideAll(ContainerBuilder configuration, Injector injector, Wirelet... operations) {
-        super(configuration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND));
+        this.configurationSite = configuration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
         this.injectorConfiguration = requireNonNull(configuration);
         this.injector = requireNonNull(injector, "injector is null");
         this.options = List.of(requireNonNull(operations, "operations is null"));
+    }
+
+    /**
+     * Returns the configuration site of this configuration.
+     * 
+     * @return the configuration site of this configuration
+     */
+    public final InternalConfigurationSite configurationSite() {
+        return configurationSite;
     }
 
     public void process() {

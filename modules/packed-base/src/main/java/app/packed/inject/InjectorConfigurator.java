@@ -31,8 +31,8 @@ import packed.internal.inject.buildtime.ContainerBuilder;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#of(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
- * bundles all services are automatically exported once defined. For example useful in tests.
+ * {@link Injector#of(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike bundles
+ * all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
@@ -246,9 +246,10 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void wireInjector(Bundle bundle, Wirelet... stages) {
-        ((ContainerBuilder) configuration).wireInjector(bundle, stages);
+    public final void link(Bundle bundle, Wirelet... stages) {
+        ((ContainerBuilder) configuration).link(bundle, stages);
     }
+
 }
 // addStatics(); useStatics()
 // @OnHook

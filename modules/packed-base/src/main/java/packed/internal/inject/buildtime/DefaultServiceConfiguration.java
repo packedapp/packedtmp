@@ -17,6 +17,7 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
@@ -25,10 +26,12 @@ import app.packed.util.Nullable;
 /**
  *
  */
-class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements ServiceConfiguration<T> {
+class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** The component we are exposing. */
     private final ComponentBuildNode component;
+
+    private final DefaultContainerConfiguration dcc;
 
     /** The service we are exposing. */
     private final BuildtimeServiceNode<T> service;
@@ -36,7 +39,8 @@ class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements Se
     /**
      * @param service
      */
-    DefaultServiceConfiguration(ComponentBuildNode component, BuildtimeServiceNode<T> service) {
+    DefaultServiceConfiguration(DefaultContainerConfiguration dcc, ComponentBuildNode component, BuildtimeServiceNode<T> service) {
+        this.dcc = requireNonNull(dcc);
         this.service = requireNonNull(service);
         this.component = component;
         component.serviceNode = service;
@@ -45,16 +49,22 @@ class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements Se
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> as(Key<? super T> key) {
-        checkConfigurable();
+        dcc.checkConfigurable();
         service.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
+    public ConfigSite configurationSite() {
+        return service.configurationSite();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     @Nullable
     public String getDescription() {
-        checkConfigurable();
+        dcc.checkConfigurable();
         return service.description;
     }
 
@@ -80,22 +90,15 @@ class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements Se
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> lazy() {
-        checkConfigurable();
+        dcc.checkConfigurable();
         ((BuildtimeServiceNodeDefault<T>) service).lazy();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void onFreeze() {
-        component.onFreeze();
-        service.onFreeze();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ServiceConfiguration<T> prototype() {
-        checkConfigurable();
+        dcc.checkConfigurable();
         ((BuildtimeServiceNodeDefault<T>) service).prototype();
         return this;
     }
@@ -103,7 +106,7 @@ class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements Se
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> setDescription(@Nullable String description) {
-        checkConfigurable();
+        dcc.checkConfigurable();
         service.description = description;
         component.description = description;
         return this;
@@ -112,7 +115,7 @@ class DefaultServiceConfiguration<T> extends AbstractFreezableNode implements Se
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> setName(String name) {
-        checkConfigurable();
+        dcc.checkConfigurable();
         component.name = name;
         return this;
     }

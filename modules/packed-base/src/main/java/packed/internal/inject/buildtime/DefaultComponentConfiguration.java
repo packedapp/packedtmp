@@ -17,31 +17,42 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.config.ConfigSite;
 import app.packed.container.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.InternalConfigurationSite;
 
 /**
  *
  */
-public class DefaultComponentConfiguration extends AbstractFreezableNode implements ComponentConfiguration {
+public class DefaultComponentConfiguration implements ComponentConfiguration {
 
     final ComponentBuildNode node;
 
-    DefaultComponentConfiguration(ComponentBuildNode node) {
+    private final DefaultContainerConfiguration dcc;
+
+    /** The configuration site of this object. */
+    private final InternalConfigurationSite configurationSite;
+
+    DefaultComponentConfiguration(DefaultContainerConfiguration dcc, ComponentBuildNode node) {
         this.node = requireNonNull(node);
+        this.dcc = requireNonNull(dcc);
+        this.configurationSite = (InternalConfigurationSite) node.containerConfiguration;
     }
 
     public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Object instance) {
-        super(dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL));
+        this.configurationSite = dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL);
+        this.dcc = requireNonNull(dcc);
         requireNonNull(instance, "instance is null");
         this.node = new ComponentBuildNode(configurationSite, dcc);
     }
 
     public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Factory<?> factory, InstantiationMode instantiationMode) {
-        super(dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL));
+        this.configurationSite = dcc.configurationSite().spawnStack(ConfigurationSiteType.COMPONENT_INSTALL);
+        this.dcc = requireNonNull(dcc);
         this.node = new ComponentBuildNode(configurationSite, dcc);
     }
 
@@ -57,15 +68,10 @@ public class DefaultComponentConfiguration extends AbstractFreezableNode impleme
         return node.name;
     }
 
-    @Override
-    protected void onFreeze() {
-        node.onFreeze();
-    }
-
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setDescription(@Nullable String description) {
-        checkConfigurable();
+        dcc.checkConfigurable();
         node.description = description;
         return this;
     }
@@ -73,8 +79,14 @@ public class DefaultComponentConfiguration extends AbstractFreezableNode impleme
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setName(@Nullable String name) {
-        checkConfigurable();
+        dcc.checkConfigurable();
         node.name = name;
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configurationSite() {
+        return configurationSite();
     }
 }

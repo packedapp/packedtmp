@@ -32,7 +32,7 @@ public class ExportTest2 {
 
         Injector i = Injector.of(c -> {
             c.provide(ZoneId.systemDefault()).as(ZoneId.class);
-            c.wireInjector(new I());
+            c.link(new I());
         });
 
         i.services().forEach(e -> System.out.println(e.key().toStringSimple()));

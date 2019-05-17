@@ -21,6 +21,7 @@ import java.util.Set;
 import app.packed.bundle.AnyBundle;
 import app.packed.bundle.BundleLink;
 import app.packed.bundle.Wirelet;
+import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
@@ -45,6 +46,8 @@ import app.packed.util.Nullable;
 // Environment <- Immutable??, Attachable??
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
 public interface ContainerConfiguration {
+
+    ConfigSite configurationSite();
 
     /**
      * Returns an immutable view of all of the extension types that are used by this container.
