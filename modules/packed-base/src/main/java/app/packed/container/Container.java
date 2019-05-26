@@ -17,7 +17,8 @@ package app.packed.container;
 
 import java.util.Optional;
 
-import app.packed.app.App;
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
@@ -48,11 +49,17 @@ import app.packed.lifecycle.LifecycleState;
 // listeners <- altsaa vil vel vaere maerkelig at automatisk starte den via listeners???
 // ------------ Det er jo fuldt lovligt via containerBuilder.
 
-// Det er altid meningen at containere er indad facing.
+// Det er altid meningen at containere er indad facing.... Ligesom Componenten....
+
 // App+Injector er udad facing,
 // Componenter er som udgangspunkt ogsaa indad facing. Maaske endda paa containere niveau.
 // D.v.s. med mindre man explicit exposer dem til andre containere saa er de private indenfor containere..
 // Containere er ordnet i et tree. Componenter i et multi trae
+
+// Syntes maaske ikke den skal extende Injector...
+
+// Services can have injector injected??? Only Components can have a Container???
+
 public interface Container extends Injector {
 
     /**

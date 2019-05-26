@@ -15,8 +15,8 @@
  */
 package packed.internal.inject.buildtime;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleDescriptor;
+import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
@@ -54,7 +54,7 @@ public class InternalBundleDescriptor {
             }
         }
 
-        conf.box.buildContract(builder.contract());
+        conf.box.services().buildContract(builder.contract().services());
         return builder;
     }
 }

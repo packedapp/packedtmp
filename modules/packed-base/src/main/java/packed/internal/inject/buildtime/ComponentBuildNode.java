@@ -45,7 +45,7 @@ public final class ComponentBuildNode {
     /** The configuration site of the component. */
     final InternalConfigurationSite site;
 
-    ComponentBuildNode(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
+    public ComponentBuildNode(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
         this.site = requireNonNull(site);
         this.containerConfiguration = requireNonNull(containerConfiguration);
     }

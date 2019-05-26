@@ -18,15 +18,15 @@ package app.packed.bundle.x;
 import java.util.Set;
 import java.util.function.Function;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.Layer;
+import app.packed.container.Bundle;
+import app.packed.container.Layer;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 
 /**
  * A bundle that has been wired using wire or a similar method.
  * <p>
- * Operations on this object must be performed immediately after {@link Bundle#wire(Bundle)} has been invoked. And
+ * Operations on this object must be performed immediately after {@link Bundle#link(Bundle)} has been invoked. And
  * before any other operations on the bundle are performed. Failure to do so will result in an
  * {@link IllegalStateException} being thrown from all mutable operations on this object.
  */

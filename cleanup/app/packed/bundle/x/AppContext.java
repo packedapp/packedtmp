@@ -15,7 +15,7 @@
  */
 package app.packed.bundle.x;
 
-import app.packed.app.App;
+import app.packed.container.App;
 
 /**
  * A context object that is shared all containers in an application. Is typically dependency injected into a service or

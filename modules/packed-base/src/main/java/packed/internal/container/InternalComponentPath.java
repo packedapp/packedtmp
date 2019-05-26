@@ -17,7 +17,10 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.ComponentPath;
+import java.nio.file.Path;
+import java.util.Iterator;
+
+import app.packed.component.ComponentPath;
 
 /** The default implementation of {@link ComponentPath}. */
 final class InternalComponentPath implements ComponentPath {
@@ -67,13 +70,6 @@ final class InternalComponentPath implements ComponentPath {
         return depth;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath parent() {
-        InternalComponent parent = component.parent;
-        return parent == null ? null : parent.path();
-    }
-
     @Override
     public int hashCode() {
         return toString().hashCode();
@@ -86,8 +82,21 @@ final class InternalComponentPath implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
+    public Iterator<Path> iterator() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public int length() {
         return toString().length();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath parent() {
+        InternalComponent parent = component.parent;
+        return parent == null ? null : parent.path();
     }
 
     /** {@inheritDoc} */

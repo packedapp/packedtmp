@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 

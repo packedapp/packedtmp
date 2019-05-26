@@ -21,7 +21,7 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import app.packed.container.Component;
+import app.packed.component.Component;
 import app.packed.inject.Injector;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;

@@ -15,8 +15,8 @@
  */
 package packed.internal.inject.buildtime;
 
-import app.packed.app.App;
-import app.packed.bundle.Bundle;
+import app.packed.container.App;
+import app.packed.container.Bundle;
 
 /**
  *

@@ -22,13 +22,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.inject.InjectionException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.AppPackedBundleSupport;
+import packed.internal.bundle.WireletList;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.InternalDependencyDescriptor;
@@ -50,14 +51,14 @@ class BindInjectorFromBundle {
     final ContainerBuilder injectorConfiguration;
 
     /** The wiring operations. */
-    final List<Wirelet> operations;
+    final WireletList wirelets;
 
     final ContainerBuilder newConfiguration;
 
-    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, List<Wirelet> stages) {
+    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, WireletList wirelets) {
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
-        this.operations = requireNonNull(stages);
+        this.wirelets = requireNonNull(wirelets);
         this.bundle = bundle;
         this.newConfiguration = new ContainerBuilder(configurationSite, bundle);
     }
@@ -71,7 +72,7 @@ class BindInjectorFromBundle {
     }
 
     void processExport() {
-        for (Wirelet s : operations) {
+        for (Wirelet s : wirelets.list()) {
             if (s instanceof Wirelet) {
                 throw new UnsupportedOperationException();
             }
@@ -86,8 +87,8 @@ class BindInjectorFromBundle {
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }
-                BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()), this,
-                        node);
+                BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()),
+                        this, node);
                 exports.add(e);
                 newConfiguration.box.services().nodes.put(e);
             }
@@ -107,7 +108,7 @@ class BindInjectorFromBundle {
             }
         }
         // Process each stage
-        for (Wirelet operation : operations) {
+        for (Wirelet operation : wirelets.list()) {
             if (operation instanceof Wirelet) {
                 AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);

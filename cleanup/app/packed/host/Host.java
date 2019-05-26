@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.app.App;
-import app.packed.bundle.Bundle;
-import app.packed.bundle.Wirelet;
-import app.packed.container.ComponentInstaller;
+import app.packed.component.ComponentInstaller;
+import app.packed.container.App;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.contract.Contract;
 
 // Add/Remove/Execute apps   (run(new XBundle(), runInHost(someHost))
@@ -68,6 +68,8 @@ import app.packed.contract.Contract;
 
 // Specify a PrototypeBundle.. saa use("sdsdsd") automatisk laver og instantiere en bundle
 
+// Dataplane
+
 public interface Host {
 
     /**
@@ -88,33 +90,35 @@ public interface Host {
     // deploy start asynchronously (when do you not want to start, I think this is
     // default
     // deploy start synchronously
+    // Den skal hedde noejagtig det samme som de statiske metoder paa App.
+    // deploy(bundle, AppWirelets.dontStart());
+    // deploy(bundle, AppWirelets.awaitStart()); synchronous await full start
     /**
      * Deploys the specified bundle as a application and starts it asynchronously.
      * 
      * @param bundle
      *            the bundle to deploy
-     * @param options
+     * @param wirelets
      *            optional wiring operations
      * @return the application
      * @throws IllegalArgumentException
      *             if the an application with the specified name has already been deployed
      */
-    // Den skal hedde noejagtig det samme som de statiske metoder paa App.
-    App deploy(Bundle bundle, Wirelet... options);
+    App deploy(Bundle bundle, Wirelet... wirelets);
 
     /**
      * Deploys the specified bundle as a application using the specified options.
      * 
      * @param bundle
      *            the bundle to deploy
-     * @param args
+     * @param wirelets
      *            the deployment options
      * @throws IllegalStateException
-     *             if this host has been shutdown
+     *             if this host is no longer active
+     * @throws IllegalArgumentException
+     *             if the specified bundle explicitly defines a name for which an application already exists in this host
      */
-    void run(Bundle bundle, String... args);
-
-    void run(Bundle bundle, Wirelet... options);
+    void run(Bundle bundle, Wirelet... wirelets);
 
     /**
      * Undeploys the specified application. If the application has not already been shutdown. Invoking this method will
@@ -137,6 +141,13 @@ public interface Host {
 
     Host undeployAll(Predicate<? super App> predicate);
 
+    /**
+     * @param name
+     * @return an application with the specified
+     * 
+     * @throws IllegalArgumentException
+     *             if an application with the specified name does not exist.
+     */
     App use(String name);
 
     default <T> T use(String name, Class<T> serviceType) {

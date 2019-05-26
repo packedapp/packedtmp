@@ -17,7 +17,7 @@ package xackedinject;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 import xackedinject.DifferentEnvironments.BaseEnvironment;
 import xackedinject.DifferentEnvironments.ProdEnvironment;
 import xackedinject.DifferentEnvironments.TestEnvironment;

@@ -17,10 +17,10 @@ package app.packed.host;
 
 import java.util.function.Function;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.contract.Contract;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ProvidedComponentConfiguration;
 
 /**
  *
@@ -45,7 +45,7 @@ public interface HostBuilder {
     // Vi skal havde fundet ud af hvordan vi kan smide et object med...
     // Objekter er vel mandatory???
 
-    default <T> ServiceConfiguration<T> provide(T instance) {
+    default <T> ProvidedComponentConfiguration<T> provide(T instance) {
         throw new UnsupportedOperationException();
     }
 

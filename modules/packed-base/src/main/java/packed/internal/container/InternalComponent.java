@@ -23,10 +23,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
+import app.packed.component.Component;
+import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Component;
-import app.packed.container.ComponentPath;
-import app.packed.container.ComponentStream;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleState;

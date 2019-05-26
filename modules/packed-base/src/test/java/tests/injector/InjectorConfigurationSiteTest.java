@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.TypeLiteral;
 import packed.internal.config.site.ConfigurationSiteType;
 import support.stubs.Letters.A;
@@ -43,7 +43,7 @@ import support.stubs.Letters.I;
 import support.stubs.Letters.J;
 
 /**
- * Tests {@link ServiceConfiguration#configurationSite()} and {@link Injector#configurationSite()}.
+ * Tests {@link ProvidedComponentConfiguration#configurationSite()} and {@link Injector#configurationSite()}.
  * <p>
  * Most of the test are pretty hackish.
  */
@@ -88,7 +88,7 @@ public class InjectorConfigurationSiteTest {
     }
 
     /** A helper method for {@link #binding()}. */
-    private void binding0(ServiceConfiguration<?> sc) {
+    private void binding0(ProvidedComponentConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
         int index = sc.getKey().typeLiteral().getRawType().getSimpleName().toString().charAt(0) - 'A';
         ConfigSite cs = sc.configurationSite();

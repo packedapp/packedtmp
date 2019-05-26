@@ -21,12 +21,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import app.packed.bundle.Wirelet;
+import app.packed.container.Wirelet;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import packed.internal.annotations.AtProvides;
 import packed.internal.bundle.AppPackedBundleSupport;
+import packed.internal.bundle.WireletList;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -41,20 +42,20 @@ public final class ProvideAll {
     /** The injector we are providing services from. */
     private final Injector injector;
 
-    /** The configuration of the injector that binding another bundle or injector. */
-    final ContainerBuilder injectorConfiguration;
+    /** The configuration of the container we are providing services into. */
+    final ContainerBuilder containerConfiguration;
 
     /** The wiring options used when creating this configuration. */
-    final List<Wirelet> options;
+    final WireletList wirelets;
 
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
 
-    public ProvideAll(ContainerBuilder configuration, Injector injector, Wirelet... operations) {
-        this.configurationSite = configuration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        this.injectorConfiguration = requireNonNull(configuration);
+    public ProvideAll(ContainerBuilder containerConfiguration, Injector injector, Wirelet... wirelets) {
+        this.containerConfiguration = requireNonNull(containerConfiguration);
         this.injector = requireNonNull(injector, "injector is null");
-        this.options = List.of(requireNonNull(operations, "operations is null"));
+        this.wirelets = WireletList.of(wirelets);
+        this.configurationSite = containerConfiguration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
     /**
@@ -88,14 +89,14 @@ public final class ProvideAll {
         HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(injectorConfiguration,
+                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(containerConfiguration,
                         configurationSite.replaceParent(node.configurationSite()), this, node);
                 nodes.put(node.key(), n);
             }
         }
 
         // Process each wiring operation
-        for (Wirelet operation : options) {
+        for (Wirelet operation : wirelets.list()) {
             if (operation instanceof Wirelet) {
                 AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
@@ -106,7 +107,7 @@ public final class ProvideAll {
 
         // Add all to the private node map
         for (BuildtimeServiceNode<?> node : nodes.values()) {
-            if (!injectorConfiguration.box.services().nodes.putIfAbsent(node)) {
+            if (!containerConfiguration.box.services().nodes.putIfAbsent(node)) {
                 throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }

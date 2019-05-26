@@ -20,8 +20,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.app.App;
-import app.packed.container.Component;
+import app.packed.component.Component;
+import app.packed.container.App;
 
 /**
  * A lifecycle expansion interface. The main purpose of this interface is to avoid cluttering the interface of entities

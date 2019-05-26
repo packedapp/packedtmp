@@ -15,7 +15,7 @@
  */
 package app.packed.hook;
 
-import app.packed.container.Component;
+import app.packed.component.Component;
 
 /** The base interface for all hooks. */
 // Strictly we should have descriptors for non-mutable stuff..

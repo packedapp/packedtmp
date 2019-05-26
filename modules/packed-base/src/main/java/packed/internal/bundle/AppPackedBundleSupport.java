@@ -20,9 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleLink;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
@@ -42,7 +41,7 @@ public final class AppPackedBundleSupport {
 
         public abstract void startWireOperation(Wirelet operation);
 
-        public abstract void process(Wirelet operation, BundleLink link);
+        // public abstract void process(Wirelet operation, BundleLink link);
 
         public abstract MethodHandles.Lookup lookupFromWireOperation(Wirelet operation);
 
@@ -75,10 +74,7 @@ public final class AppPackedBundleSupport {
         static final Helper SINGLETON;
 
         static {
-            new Wirelet() {
-                @Override
-                protected void process(BundleLink link) {}
-            }; // Initializes TypeLiteral, which in turn will call SupportInject#init
+            new Wirelet() {}; // Initializes TypeLiteral, which in turn will call SupportInject#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }

@@ -17,8 +17,8 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;

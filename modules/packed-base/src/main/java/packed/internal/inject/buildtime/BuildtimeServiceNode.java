@@ -166,18 +166,18 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
      * @return the new runtime node
      */
     abstract RuntimeServiceNode<T> newRuntimeNode();
-
-    protected void onFreeze() {
-        if (key != null) {
-            if (this instanceof BuildtimeServiceNodeExported) {
-                injectorBuilder.box.services().exports.put(this);
-            } else {
-                if (!injectorBuilder.box.services().nodes.putIfAbsent(this)) {
-                    System.err.println("OOPS " + key);
-                }
-            }
-        }
-    }
+    //
+    // protected void onFreeze() {
+    // if (key != null) {
+    // if (this instanceof BuildtimeServiceNodeExported) {
+    // injectorBuilder.box.services().exports.put(this);
+    // } else {
+    // if (!injectorBuilder.box.services().nodes.putIfAbsent(this)) {
+    // System.err.println("OOPS " + key);
+    // }
+    // }
+    // }
+    // }
 
     public final ServiceDescriptor toDescriptor() {
         return new InternalServiceDescriptor(key, configurationSite, description /* immutableCopyOfTags() */);

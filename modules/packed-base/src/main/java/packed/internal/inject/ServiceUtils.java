@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -31,7 +31,7 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
  */
 public class ServiceUtils {
 
-    public static ServiceDescriptor copyOf(ServiceConfiguration<?> configuration) {
+    public static ServiceDescriptor copyOf(ProvidedComponentConfiguration<?> configuration) {
         // Move to internal
         return new CopyOfConfiguration(configuration);
     }
@@ -59,7 +59,7 @@ public class ServiceUtils {
 
         // private final Set<String> tags;
 
-        CopyOfConfiguration(ServiceConfiguration<?> bne) {
+        CopyOfConfiguration(ProvidedComponentConfiguration<?> bne) {
             this.key = bne.getKey();
             // this.tags = Set.copyOf(bne.tags());
             this.configurationSite = bne.configurationSite();

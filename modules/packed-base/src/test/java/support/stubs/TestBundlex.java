@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleDescriptor;
+import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.inject.Injector;
 
 /**

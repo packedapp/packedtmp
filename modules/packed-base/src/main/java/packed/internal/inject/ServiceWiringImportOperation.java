@@ -20,9 +20,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import app.packed.bundle.BundleLink;
-import app.packed.bundle.Wirelet;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.container.Wirelet;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -46,16 +45,11 @@ public abstract class ServiceWiringImportOperation extends Wirelet {
      */
     // IDeen er lidt at kalde alle der procerere mere end en entity onEachX, og resten onX
     public void onEachService(BuildtimeServiceNode<?> sc) {}
-
-    @Override
-    protected void process(BundleLink link) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 class XImportVer2 {
 
-    protected final ServiceConfiguration<?> clone(ServiceConfiguration<?> sc) {
+    protected final ProvidedComponentConfiguration<?> clone(ProvidedComponentConfiguration<?> sc) {
         return sc;// Do we ever need to make a service available under two different keys
     }
 
@@ -74,7 +68,7 @@ class XImportVer2 {
         throw new UnsupportedOperationException();
     }
 
-    protected final Map<Key<?>, ServiceConfiguration<?>> imoortedServices() {
+    protected final Map<Key<?>, ProvidedComponentConfiguration<?>> imoortedServices() {
         throw new UnsupportedOperationException();
     }
 

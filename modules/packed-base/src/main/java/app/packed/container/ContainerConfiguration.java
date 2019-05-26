@@ -16,11 +16,10 @@
 package app.packed.container;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.List;
 import java.util.Set;
 
-import app.packed.bundle.AnyBundle;
-import app.packed.bundle.BundleLink;
-import app.packed.bundle.Wirelet;
+import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
@@ -85,6 +84,20 @@ public interface ContainerConfiguration {
     ComponentConfiguration installStatics(Class<?> implementation);
 
     /**
+     * Creates a link to another bundle.
+     * <p>
+     * All links made using this method between two bundles are permanent. If you need dynamic stuff you can use hosts and
+     * applications.
+     * 
+     * @param child
+     *            the child bundle
+     * @param wirelets
+     *            optional wiring options
+     * @return a bundle link
+     */
+    <T extends AnyBundle> T link(T child, Wirelet... wirelets);
+
+    /**
      * Registers a {@link Lookup} object that can is primarily used for accessing fields and methods on registered
      * components.
      * <p>
@@ -107,6 +120,8 @@ public interface ContainerConfiguration {
      */
     ContainerConfiguration setDescription(@Nullable String description);
 
+    // Set<String> tags();
+
     /**
      * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
      * '_', '-' or '.'. The name is case sensitive.
@@ -124,12 +139,16 @@ public interface ContainerConfiguration {
      */
     void setName(@Nullable String name);
 
-    // Set<String> tags();
-
     /**
-     * Returns an extension of the specified type. If an extension of the specified type has not already been installed this
-     * method will automatically instantiate an extension of the specified type and install it. Returning the instantiated
-     * extension for all subsequent calls to this method with the specified type.
+     * Returns an extension of the specified type. If this is the first time the extension is requested this method will
+     * automatically instantiate an extension of the specified type and install it. Returning the instantiated extension for
+     * all subsequent calls to this method with the specified type.
+     * <p>
+     * Ways for extensions to be installed
+     * 
+     * Extensions might use other extensions in which
+     * 
+     * Extension Method....
      * 
      * @param <T>
      *            the type of extension to return
@@ -140,18 +159,11 @@ public interface ContainerConfiguration {
     <T extends Extension<T>> T use(Class<T> extensionType);
 
     /**
-     * Creates a link to another bundle.
-     * <p>
-     * All links made using this method between two bundles are permanent. If you need dynamic stuff you can use hosts and
-     * applications.
+     * Returns a list of the wirelets that was used when creating this configuration.
      * 
-     * @param child
-     *            the child bundle
-     * @param options
-     *            optional wiring options
-     * @return a bundle link
+     * @return a list of the wirelets that was used when creating this configuration
      */
-    BundleLink wire(AnyBundle child, Wirelet... options);
+    List<Wirelet> wirelets();
 }
 // static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
 // options) {

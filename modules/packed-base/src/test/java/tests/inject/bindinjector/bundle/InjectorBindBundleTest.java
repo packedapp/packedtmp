@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 import app.packed.inject.Factory0;
 import app.packed.inject.Injector;
 import packed.internal.inject.ServiceWiringImportOperation;
@@ -42,7 +42,7 @@ public class InjectorBindBundleTest {
         };
 
         npe(() -> Injector.of(c -> c.link((Bundle) null)), "bundle");
-        npe(() -> Injector.of(c -> c.link(b, (ServiceWiringImportOperation[]) null)), "operations");
+        npe(() -> Injector.of(c -> c.link(b, (ServiceWiringImportOperation[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */

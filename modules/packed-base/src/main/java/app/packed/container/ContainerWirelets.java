@@ -20,13 +20,13 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.bundle.BundleLink;
-import app.packed.bundle.Wirelet;
+import app.packed.inject.ServiceWirelets;
 import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /** Various container wiring options. */
 public final class ContainerWirelets {
 
+    /** No instantiation. */
     private ContainerWirelets() {}
 
     /**
@@ -43,6 +43,8 @@ public final class ContainerWirelets {
 
     // Vi vil gerne have en version, vi kan refreshe ogsaa???
     // Maaske vi bare ikke skal supportered det direkte.
+
+    // Teknisk set er det vel en app wirelet
     public static Wirelet timeToLive(long timeout, TimeUnit unit) {
         // Shuts down container normally
         throw new UnsupportedOperationException();
@@ -53,20 +55,28 @@ public final class ContainerWirelets {
         // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
         return new Wirelet() {
 
-            @Override
-            protected void process(BundleLink link) {
-                link.mode().checkExecute();
-            }
+            // @Override
+            // protected void process(BundleLink link) {
+            // link.mode().checkExecute();
+            // }
         };
     }
 
-    public static Wirelet overrideName(String name) {
+    /**
+     * Returns a wirelet that will set name of a container once wired, overriding any existing name it may have.
+     * 
+     * @param name
+     *            the name of the container
+     * @return a wirelet that will set name of a container once wired
+     */
+    // Move to Wirelet???
+    public static Wirelet name(String name) {
         return new DefaultContainerConfiguration.OverrideNameWiringOption(name);
     }
 
     public static Wirelet main(String... args) {
-        // but why not for Injector also...
-        throw new UnsupportedOperationException();
+        // MainArgs.wirelet(String... args)
+        return ServiceWirelets.provide(MainArgs.of(args));
     }
 
     public static Wirelet config(Configuration c) {

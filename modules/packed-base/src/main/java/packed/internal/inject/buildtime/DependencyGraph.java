@@ -25,8 +25,8 @@ import java.util.List;
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
-import packed.internal.box.BoxServices;
 import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
@@ -141,7 +141,7 @@ final class DependencyGraph {
     static void resolveAllDependencies(DependencyGraph graph) {
         graph.detectCyclesFor = new ArrayList<>();
 
-        BoxServices services = graph.root.box.services();
+        InjectorBuilder services = graph.root.box.services();
 
         for (ServiceNode<?> nn : services.nodes) {
             BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) nn;

@@ -17,67 +17,100 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.bundle.BundleLink;
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
-import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedContainerSupport;
-import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /**
- *
+ * Container extensions are used to extend containers with functionality.
  *
  *
  * <p>
- * Subclasses should be final
- *
+ * Subclasses of this class that are actively used should be final.
  */
-// Maybe rename to ContainerExtension
+// Maybe rename to ContainerExtension because we rarely need to spell it out
+// Disallow registering extensions as a service???
 public abstract class Extension<T extends Extension<T>> {
 
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
+            /** {@inheritDoc} */
             @Override
-            public void setExtensionConfiguration(Extension<?> e, DefaultContainerConfiguration configuration) {
-                e.configuration = requireNonNull(configuration);
+            public void setExtensionConfiguration(Extension<?> extension, DefaultContainerConfiguration configuration) {
+                extension.configuration = requireNonNull(configuration);
             }
         });
     }
 
-    protected DefaultContainerConfiguration configuration;
+    /** The configuration of the container in which the extension is registered. */
+    public DefaultContainerConfiguration configuration;
 
-    // Supports Freezable and ConfigurationSite
-    protected final <S extends ServiceNode<S>> S addNode(S node) {
-        throw new UnsupportedOperationException();
-    }
-
+    /**
+     * Checks that the container that this extension belongs to is still configurable. Throwing an
+     * {@link IllegalStateException} if it is not.
+     * 
+     * @throws IllegalStateException
+     *             if the container this extension is no longer configurable.
+     */
     protected final void checkConfigurable() {
-
+        configuration().checkConfigurable();
     }
 
     /**
-     * The configuration site of this object. The api needs to be public...
+     * Returns the configuration of the container or fails with an {@link IllegalStateException}.
      * 
-     * @return this configuration site
+     * @return the configuration of the container
      */
-    // Det er hvor extensionen er blevet installeret...Tror vi skal vaere lidt mere complex foerend det giver mening
-    public final InternalConfigurationSite configurationSite() {
-        throw new UnsupportedOperationException();
+    private DefaultContainerConfiguration configuration() {
+        DefaultContainerConfiguration c = configuration;
+        if (c == null) {
+            throw new IllegalStateException("This operation cannot be called from the contructor of the extension");
+        }
+        return c;
     }
 
-    protected final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> consumer) {
-        throw new UnsupportedOperationException();
+    /**
+     * Performs the given action for each of the wirelets of the specified type. Actions are performed in the registration
+     * order of the wirelets. Exceptions thrown by the action are relayed to the caller.
+     *
+     * @param <W>
+     *            the type of wirelets to process
+     * @param wireletType
+     *            the type of wirelets to process
+     * @param action
+     *            The action to be performed for each wirelet
+     */
+    protected final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
+        configuration().forEachWirelet(wireletType, action);
     }
 
-    protected final AttachmentMap hostAttachments() {
-        // immutable version
+    /**
+     * If this extensions container is deployed into a host, returns the host.
+     * 
+     * @return attachments
+     */
+    protected final Optional<AttachmentMap> host() {
+        // Ideen er at hvis man har en host som foraeldre saa....
+        // Skal den vaere tilgaengelig fra ContainerConfiguration??
+        // Skal vi have et egentligt interface??? Kunne jo ogsaa vaere rart med en path??
+        // Maaske at kunne se kontrakterne... o.s.v.
         throw new UnsupportedOperationException();
+        // host().
     }
+
+    /**
+     * 
+     */
+    public void onFinish() {}
+
+    protected void onFirstUse() {}
+
     //
     // protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
     // // Ideen er at man kalde
@@ -102,34 +135,74 @@ public abstract class Extension<T extends Extension<T>> {
     //
     // }
 
-    protected final void newLine() {
-        // checksConfigurable
-        // FreezesAnyNode before
+    // protected final void newLine() {
+    // checksConfigurable
+    // FreezesAnyNode before
 
-        // Checks that the bundle/configurator/... is still active
-        // Freezes any previous node for modifications....
-        // Which means that everything is nodes....
+    // Checks that the bundle/configurator/... is still active
+    // Freezes any previous node for modifications....
+    // Which means that everything is nodes....
 
-        // Because bind(x) followed by install(x) should work identical to
-        // Because install(x) followed by bind(x) should work identical to
-    }
+    // Because bind(x) followed by install(x) should work identical to
+    // Because install(x) followed by bind(x) should work identical to
+    // }
 
     // createContract(); or
     // addToContract(ContractBuilder b)
     // Failure to have two features creating the same contract type...
 
-    protected void onFirstUse() {}
+    /**
+     * If the underlying container has parent which uses this container, returns the parents
+     * 
+     * @return if the underlying any parent of this container
+     * @throws IllegalStateException
+     *             if called from outside of {@link #onFinish()}.
+     */
+    protected final Optional<T> parent() {
+        throw new UnsupportedOperationException();
+    }
 
     // Skal have en eller anden form for link med...
     // Hvor man kan gemme ting. f.eks. en Foo.class
     // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
-    protected void onWireChild(@Nullable T child, BundleLink link) {}
+    // protected void onWireChild(@Nullable T child, BundleLink link) {}
+    //
+    // // onWireChikd
+    // protected void onWireParent(@Nullable T parent, BundleLink link) {}
 
-    // onWireChikd
-    protected void onWireParent(@Nullable T parent, BundleLink link) {}
+    /**
+     * Returns the path of the underlying container.
+     * 
+     * @return the path of the underlying container
+     */
+    protected final ComponentPath path() {
+        throw new UnsupportedOperationException();
+    }
 
-    protected ConfigSite spawnSite(String name) {
-        // Den ved alt om config sites er disablet paa containeren
+    protected void build() {
+        // Maybe take an attributemap that is shared between all invocations
+        // default implementation processes children..
+        // So we should always call super.build();
+        // sadsad()
+        // super.build();
+        // weweew
+    }
+
+    /**
+     * Creates a new configuration site
+     * 
+     * <p>
+     * If the gathering of a stack-based configuration is disabled. This method return {@link ConfigSite#UNKNOWN}.
+     * 
+     * @param name
+     *            the name of the operation
+     * @return the new configuration site
+     */
+    protected final ConfigSite spawnConfigSite(String name) {
+        // Have a depth indicator.....
+        // + ConfigSiteStackFilter.create("com.acme")
+        // ConfigSite spawnConfigSite(ConfigSiteStackFilter f, String name) {} Den ved alt om config sites er disablet paa
+        // containeren
         throw new UnsupportedOperationException();
     }
 }
@@ -176,3 +249,18 @@ public abstract class Extension<T extends Extension<T>> {
 // Eller hvis aaben paa noget andet..
 // Cache<ProvidesGroup>
 // cache.get(FooComponent.class);
+
+//// Supports Freezable and ConfigurationSite
+// protected final <S extends ServiceNode<S>> S addNode(S node) {
+// throw new UnsupportedOperationException();
+// }
+
+/// **
+// * The configuration site of this object. The api needs to be public...
+// *
+// * @return this configuration site
+// */
+//// Det er hvor extensionen er blevet installeret...Tror vi skal vaere lidt mere complex foerend det giver mening
+// public final InternalConfigurationSite configurationSite() {
+// throw new UnsupportedOperationException();
+// }

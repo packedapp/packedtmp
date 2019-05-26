@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
 import support.stubs.Letters.A;
@@ -50,23 +50,23 @@ public class ProvideTest {
     public void configurationSite() throws Throwable {
         Injector inj = Injector.of(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            ServiceConfiguration<A> a = conf.provide(A.class);
-            ServiceConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
-            ServiceConfiguration<C> c = conf.provide(C0);
-            ServiceConfiguration<D> d = conf.provide(TypeLiteral.of(D.class));
-            ServiceConfiguration<E> e = conf.provide(E.class).lazy();
-            ServiceConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            ServiceConfiguration<G> g = conf.provide(TypeLiteral.of(G.class)).lazy();
-            ServiceConfiguration<H> h = conf.provide(H.class).prototype();
-            ServiceConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
-            ServiceConfiguration<J> j = conf.provide(TypeLiteral.of(J.class)).prototype();
+            ProvidedComponentConfiguration<A> a = conf.provide(A.class);
+            ProvidedComponentConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
+            ProvidedComponentConfiguration<C> c = conf.provide(C0);
+            ProvidedComponentConfiguration<D> d = conf.provide(TypeLiteral.of(D.class));
+            ProvidedComponentConfiguration<E> e = conf.provide(E.class).lazy();
+            ProvidedComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
+            ProvidedComponentConfiguration<G> g = conf.provide(TypeLiteral.of(G.class)).lazy();
+            ProvidedComponentConfiguration<H> h = conf.provide(H.class).prototype();
+            ProvidedComponentConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
+            ProvidedComponentConfiguration<J> j = conf.provide(TypeLiteral.of(J.class)).prototype();
         });
     }
 
     @Test
     public void bindInstance() {
         Injector i = Injector.of(e -> {
-            ServiceConfiguration<A> sc = e.provide(A0);
+            ProvidedComponentConfiguration<A> sc = e.provide(A0);
             testConfiguration(sc, InstantiationMode.SINGLETON, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -84,7 +84,7 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(ServiceConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
+    static void testConfiguration(ProvidedComponentConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
 
         assertThat(sc.instantiationMode()).isSameAs(InstantiationMode.SINGLETON);
         // ConfigurationSite;

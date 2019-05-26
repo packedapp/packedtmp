@@ -15,7 +15,7 @@
  */
 package packed.internal.util;
 
-import app.packed.container.Component;
+import app.packed.component.Component;
 import app.packed.container.Container;
 import app.packed.inject.ProvideHelper;
 import app.packed.inject.Injector;

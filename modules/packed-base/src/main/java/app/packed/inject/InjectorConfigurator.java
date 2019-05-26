@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.Wirelet;
+import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
@@ -135,7 +135,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @return a service configuration for the service
      * @see Bundle#provide(Class)
      */
-    public final <T> ServiceConfiguration<T> provide(Class<T> implementation) {
+    public final <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
         return injector().provide(implementation);
     }
 
@@ -151,7 +151,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public final <T> ServiceConfiguration<T> provide(Factory<T> factory) {
+    public final <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
         return injector().provide(factory);
     }
 
@@ -168,11 +168,11 @@ public class InjectorConfigurator /* implements Taggable */ {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public final <T> ServiceConfiguration<T> provide(T instance) {
+    public final <T> ProvidedComponentConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
 
-    public final <T> ServiceConfiguration<T> provide(TypeLiteral<T> implementation) {
+    public final <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {
         return injector().provide(implementation);
     }
 

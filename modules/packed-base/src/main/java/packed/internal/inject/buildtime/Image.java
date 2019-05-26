@@ -18,7 +18,7 @@ package packed.internal.inject.buildtime;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;

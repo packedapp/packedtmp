@@ -19,14 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /**
  *
  */
-class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
+public class DefaultServiceConfiguration<T> implements ProvidedComponentConfiguration<T> {
 
     /** The component we are exposing. */
     private final ComponentBuildNode component;
@@ -39,7 +39,7 @@ class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
     /**
      * @param service
      */
-    DefaultServiceConfiguration(DefaultContainerConfiguration dcc, ComponentBuildNode component, BuildtimeServiceNode<T> service) {
+    public DefaultServiceConfiguration(DefaultContainerConfiguration dcc, ComponentBuildNode component, BuildtimeServiceNode<T> service) {
         this.dcc = requireNonNull(dcc);
         this.service = requireNonNull(service);
         this.component = component;
@@ -48,7 +48,7 @@ class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> as(Key<? super T> key) {
+    public ProvidedComponentConfiguration<T> as(Key<? super T> key) {
         dcc.checkConfigurable();
         service.as(key);
         return this;
@@ -89,7 +89,7 @@ class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> lazy() {
+    public ProvidedComponentConfiguration<T> lazy() {
         dcc.checkConfigurable();
         ((BuildtimeServiceNodeDefault<T>) service).lazy();
         return this;
@@ -97,7 +97,7 @@ class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> prototype() {
+    public ProvidedComponentConfiguration<T> prototype() {
         dcc.checkConfigurable();
         ((BuildtimeServiceNodeDefault<T>) service).prototype();
         return this;
@@ -105,7 +105,7 @@ class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> setDescription(@Nullable String description) {
+    public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
         dcc.checkConfigurable();
         service.description = description;
         component.description = description;
@@ -114,7 +114,7 @@ class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> setName(String name) {
+    public ProvidedComponentConfiguration<T> setName(String name) {
         dcc.checkConfigurable();
         component.name = name;
         return this;

@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.container.Component;
-import app.packed.container.ComponentStream;
+import app.packed.component.Component;
+import app.packed.component.ComponentStream;
 import packed.internal.util.AbstractDelegatingStream;
 
 /** The default implementation of {@link ComponentStream}. */

@@ -15,7 +15,7 @@
  */
 package stubs.bundles;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 
 /**
  *

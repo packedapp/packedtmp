@@ -17,7 +17,7 @@ package app.packed.bundle.x;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 
 /**
  *

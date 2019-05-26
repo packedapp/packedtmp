@@ -15,8 +15,10 @@
  */
 package app.packed.component;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * A component path points to a component in a container expressed in a string of characters in which path components,
@@ -30,17 +32,71 @@ import java.util.Optional;
  * <p>
  * This interface will be extended in the future with additional methods.
  */
-public interface ComponentPath extends Comparable<ComponentPath>, CharSequence {
+public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>, CharSequence {
 
-    // App... er vel ikke skide noedvendigt eftersom componenter ikke er generalt tilgaengelig
+    /** A component path representing the root of a hierarchy. */
+    static final ComponentPath ROOT = new ComponentPath() {
 
-    /**
-     * Returns any instance id of the path.
-     * 
-     * @return any instance id of the path
-     */
-    /// Taenker det er lidt meget... at krave at man altid skal have en unique streng???
-    Optional<String> instanceId();
+        /** {@inheritDoc} */
+        @Override
+        public char charAt(int index) {
+            return toString().charAt(index);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int compareTo(ComponentPath other) {
+            return other.isRoot() ? 0 : 1;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof ComponentPath && ((ComponentPath) other).isRoot();
+        }
+
+        @Override
+        public int findDepth() {
+            return 0;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath parent() {
+            return null;
+        }
+
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        @Override
+        public boolean isRoot() {
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int length() {
+            return 1;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            return toString().subSequence(start, end);
+        }
+
+        @Override
+        public String toString() {
+            return "/";
+        }
+
+        @Override
+        public Iterator<Path> iterator() {
+            return Collections.emptyIterator();
+        }
+    };
 
     /**
      * Returns the number of elements in this path. This is not a constant time operation as we might need to traverse

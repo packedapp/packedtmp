@@ -155,7 +155,7 @@ public class Factory<T> {
      * returns the key for which the factory
      * 
      * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
-     * {@link ServiceConfiguration#as(Key)}.
+     * {@link ProvidedComponentConfiguration#as(Key)}.
      *
      * @return the key under which this factory will be registered
      * @see #withKey(Key)

@@ -17,7 +17,7 @@ package app.packed.bundle.x;
 
 import java.nio.file.Path;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 import app.packed.inject.Factory1;
 
 /**

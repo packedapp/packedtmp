@@ -15,7 +15,7 @@
  */
 package app.packed.bundle.x;
 
-import app.packed.bundle.AnyBundle;
+import app.packed.container.AnyBundle;
 
 /**
  *

@@ -22,9 +22,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -290,7 +290,7 @@ public interface Injector /* extends Taggable */ {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<InjectorConfigurator> configurator, Wirelet... operations) {
+    static Injector of(Consumer<? super InjectorConfigurator> configurator, Wirelet... operations) {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...

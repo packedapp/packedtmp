@@ -22,8 +22,8 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.OptionalInt;
 
-import app.packed.app.App;
-import app.packed.container.Component;
+import app.packed.component.Component;
+import app.packed.container.App;
 import app.packed.container.Container;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.FieldDescriptor;

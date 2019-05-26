@@ -78,6 +78,8 @@ public final class Environment {
         throw new UnsupportedOperationException();
     }
 
+    /// USE_ROOT_HOST<- all apps, are weak referenced...
+
 }
 // reboot (will reinitialize everything) read System properties again.
 /// The initalization list will be cleared every time we create an environment.

@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.app.App;
+import app.packed.component.Component;
 import app.packed.config.ConfigSite;
-import app.packed.container.Component;
+import app.packed.container.App;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;

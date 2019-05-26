@@ -15,8 +15,8 @@
  */
 package packed.internal.inject;
 
-import app.packed.bundle.Wirelet;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.container.Wirelet;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 
 /**
@@ -55,15 +55,15 @@ public class BundlingServiceExportStage {
     /** An export stage, that ignores all optional dependencies */
     public static final Wirelet IGNORE_OPTIONAL = null;
 
-    protected void filter(ServiceConfiguration<?> configuration) {
+    protected void filter(ProvidedComponentConfiguration<?> configuration) {
         // if (configuration.getKey() isN)
     }
 
-    protected void filterMandatory(ServiceConfiguration<?> configuration) {
+    protected void filterMandatory(ProvidedComponentConfiguration<?> configuration) {
         filter(configuration);
     }
 
-    protected void filterOptional(ServiceConfiguration<?> configuration) {
+    protected void filterOptional(ProvidedComponentConfiguration<?> configuration) {
         filter(configuration);
     }
 

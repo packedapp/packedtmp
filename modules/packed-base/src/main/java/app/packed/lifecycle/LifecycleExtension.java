@@ -15,26 +15,24 @@
  */
 package app.packed.lifecycle;
 
-import app.packed.bundle.BundleLink;
 import app.packed.container.Extension;
-import app.packed.util.Nullable;
 
 /**
  * An extension
  */
 public final class LifecycleExtension extends Extension<LifecycleExtension> {
 
-    @Override
-    protected void onWireChild(@Nullable LifecycleExtension child, BundleLink link) {
-
-    }
-
-    @Override
-    protected void onWireParent(@Nullable LifecycleExtension parent, BundleLink link) {
-        if (parent == null) {
-            throw new /* WiringException */ RuntimeException("Cannot wiring to a bundle that does not support lifecycle...");
-        }
-    }
+    // @Override
+    // protected void onWireChild(@Nullable LifecycleExtension child, O link) {
+    //
+    // }
+    //
+    // @Override
+    // protected void onWireParent(@Nullable LifecycleExtension parent, BundleLink link) {
+    // if (parent == null) {
+    // throw new /* WiringException */ RuntimeException("Cannot wiring to a bundle that does not support lifecycle...");
+    // }
+    // }
 
     // protected void supporting
 

@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.container.Component;
+import app.packed.component.Component;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.ProvideHelper;

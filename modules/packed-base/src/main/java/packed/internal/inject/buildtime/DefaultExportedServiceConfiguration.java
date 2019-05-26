@@ -18,7 +18,7 @@ package packed.internal.inject.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ExportedServiceConfiguration;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -27,7 +27,7 @@ import packed.internal.config.site.InternalConfigurationSite;
 /**
  *
  */
-public class DefaultExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
+public class DefaultExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     final BuildtimeServiceNode<T> node;
 
@@ -46,7 +46,7 @@ public class DefaultExportedServiceConfiguration<T> implements ExportedServiceCo
 
     /** {@inheritDoc} */
     @Override
-    public ExportedServiceConfiguration<T> as(Key<? super T> key) {
+    public ServiceConfiguration<T> as(Key<? super T> key) {
         dcc.checkConfigurable();
         node.as(key);
         return this;
@@ -74,7 +74,7 @@ public class DefaultExportedServiceConfiguration<T> implements ExportedServiceCo
 
     /** {@inheritDoc} */
     @Override
-    public ExportedServiceConfiguration<T> setDescription(@Nullable String description) {
+    public ServiceConfiguration<T> setDescription(@Nullable String description) {
         dcc.checkConfigurable();
         node.description = description;
         return this;

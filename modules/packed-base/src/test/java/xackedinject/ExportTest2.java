@@ -18,7 +18,7 @@ package xackedinject;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
 

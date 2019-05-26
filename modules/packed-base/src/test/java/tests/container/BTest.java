@@ -18,8 +18,8 @@ package tests.container;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
-import app.packed.bundle.Bundle;
-import app.packed.bundle.BundleDescriptor;
+import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 

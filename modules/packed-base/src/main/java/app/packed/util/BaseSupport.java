@@ -18,7 +18,7 @@ package app.packed.util;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.Bundle;
+import app.packed.container.Bundle;
 
 /**
  * Provides an environment per module

@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 
+import app.packed.container.ExtensionAnnotation;
 import app.packed.util.Key;
 
 /**
@@ -83,6 +84,7 @@ import app.packed.util.Key;
 
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
+@ExtensionAnnotation(InjectorExtension.class)
 public @interface Provide {
 
     boolean prototype() default false;
@@ -111,7 +113,7 @@ public @interface Provide {
      * The default value is the empty string, indicating that there is no description for the provided service
      * 
      * @return a description of the service provided by the providing method, field or type
-     * @see ServiceConfiguration#setDescription(String)
+     * @see ProvidedComponentConfiguration#setDescription(String)
      * @see ServiceDescriptor#description()
      */
     // how does this relate to description on component??? description on component???

@@ -38,6 +38,15 @@ import packed.internal.inject.InternalDependencyDescriptor;
 // Vi goer det kun for at faa en paenere arkitk
 // Bliver brugt med factory, for at kunne se dens dependencies.....
 // Bliver brugt med Factory + BindableFactory
+
+// From Field
+// From Parameter
+// From Type variable
+// From InjectorExtension.require
+// From InjectorExtension.optional
+// Via Wildcard Qualifier methods (static? Dependency Chain). Jeg har en @Foo int fff
+// -- Som goer at jeg dependenr paa Configuration + XConverter.. Heh saa giver parameter index.. vel ikke mening
+// -- Kunne lave en limitation der siger at man kun maa transformere med 1 parameter...
 public interface Dependency {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx

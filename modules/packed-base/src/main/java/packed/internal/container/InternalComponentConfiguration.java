@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.container.ComponentConfiguration;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
@@ -35,7 +35,7 @@ import packed.internal.inject.buildtime.ContainerBuilder;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
-/** The default implementation of {@link ServiceConfiguration}. */
+/** The default implementation of {@link ProvidedComponentConfiguration}. */
 public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentConfiguration {
 
     /** A list of all children that have been added (lazily initialized). */

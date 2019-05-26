@@ -15,7 +15,7 @@
  */
 package packed.internal.inject;
 
-import app.packed.container.Component;
+import app.packed.component.Component;
 import app.packed.inject.Dependency;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;

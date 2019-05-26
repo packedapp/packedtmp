@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvideHelper;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -40,7 +40,7 @@ import packed.internal.invokable.InvokableMember;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
- * makes extending it with {@link ServiceConfiguration} much easier.
+ * makes extending it with {@link ProvidedComponentConfiguration} much easier.
  */
 public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
@@ -53,7 +53,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     @Nullable
     private InternalFunction<T> function;
 
-    boolean hasInstanceMembers;
+    public boolean hasInstanceMembers;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable

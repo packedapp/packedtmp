@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import app.packed.util.Key;
@@ -38,6 +39,18 @@ import app.packed.util.Key;
  * 
  * provides Service that the entity makes available to users of the entity.
  */
+
+// ------------ Injector Contract ---------------
+// Contract (Contractee)
+// Required Services [Services that the contractee requires that the other part provides]
+// Optional Required Services [Services that the other part can optionally provide to the contractee]
+// Provided Services [Services that the contractee provides to the other part]
+// Rules
+// * A service contract cannot have same dependency both as a required service and a optional service.
+// Instead required should trump optional
+// * A service contract cannot both have the same service as a requirement and provide it.
+// * A key can only in one catagory at a time! Builder validates this....
+// InjectorContract.of(new Bundle());
 public final class InjectorContract {
 
     /** A service contract that has no requirements and provides no services. */
@@ -143,6 +156,21 @@ public final class InjectorContract {
      */
     public static InjectorContract.Builder builder() {
         return new InjectorContract.Builder();
+    }
+
+    static InjectorContract ofInjector(Injector injector) {
+        throw new UnsupportedOperationException();
+    }
+
+    static InjectorContract ofServices(InjectorContract contract) {
+        // En contract, der kun inkludere provides services, men ikke requirements
+        return contract;
+    }
+
+    public static InjectorContract ofServices(Class<?>... keys) {
+        Builder b = builder();
+        List.of(keys).forEach(k -> b.addProvides(k));
+        return b.build();
     }
 
     /**
@@ -264,6 +292,8 @@ public final class InjectorContract {
          *             if any keys have been registered both as optional and required
          */
         public InjectorContract build() {
+            // TODO keys that have both been added as optional and required???.
+            // Should we
             if (optional != null && requires != null && !Collections.disjoint(optional, requires)) {
                 requires.retainAll(optional);
                 // TODO I think just automatically remove it...
