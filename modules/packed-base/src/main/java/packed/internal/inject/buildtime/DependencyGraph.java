@@ -43,6 +43,8 @@ final class DependencyGraph {
     /** The root injector builder. */
     final ContainerBuilder root;
 
+    final InjectorBuilder ib;
+
     /**
      * Creates a new dependency graph.
      * 
@@ -51,19 +53,20 @@ final class DependencyGraph {
      */
     DependencyGraph(ContainerBuilder root) {
         this.root = requireNonNull(root);
+        this.ib = requireNonNull(root.box.services());
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(ContainerBuilder builder) {
-        builder.box.services().privateInjector = new InternalInjector(builder, builder.box.services().nodes);
-        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, builder.box.services().privateInjector);
+        ib.privateInjector = new InternalInjector(builder, ib.nodes);
+        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
-        builder.box.services().nodes.put(d);
+        ib.nodes.put(d);
         if (builder.bundle == null) {
-            builder.box.services().publicInjector = builder.box.services().privateInjector;
+            ib.publicInjector = ib.privateInjector;
         } else {
-            builder.box.services().publicInjector = new InternalInjector(builder, builder.box.services().exports);
+            ib.publicInjector = new InternalInjector(builder, ib.exports);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
@@ -72,8 +75,8 @@ final class DependencyGraph {
 
         }
 
-        if (builder.box.services().injectorBundleBindings != null) {
-            for (BindInjectorFromBundle bi : builder.box.services().injectorBundleBindings) {
+        if (ib.injectorBundleBindings != null) {
+            for (BindInjectorFromBundle bi : ib.injectorBundleBindings) {
                 bi.processExport();
                 new DependencyGraph(bi.newConfiguration).instantiate();
             }
@@ -120,7 +123,7 @@ final class DependencyGraph {
         // Instantiate all singletons
         // System.out.println(root.box.services().exports);
 
-        for (ServiceNode<?> node : root.box.services().nodes) {
+        for (ServiceNode<?> node : ib.nodes) {
             if (node instanceof BuildtimeServiceNodeDefault) {
                 BuildtimeServiceNodeDefault<?> s = (BuildtimeServiceNodeDefault<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
@@ -130,9 +133,9 @@ final class DependencyGraph {
         }
 
         // Okay we are finished, convert all nodes to runtime nodes.
-        root.box.services().nodes.toRuntimeNodes();
-        if (root.box.services().nodes != root.box.services().exports) {
-            root.box.services().exports.toRuntimeNodes();
+        ib.nodes.toRuntimeNodes();
+        if (ib.nodes != ib.exports) {
+            ib.exports.toRuntimeNodes();
         }
     }
 
@@ -141,7 +144,7 @@ final class DependencyGraph {
     static void resolveAllDependencies(DependencyGraph graph) {
         graph.detectCyclesFor = new ArrayList<>();
 
-        InjectorBuilder services = graph.root.box.services();
+        InjectorBuilder services = graph.ib;
 
         for (ServiceNode<?> nn : services.nodes) {
             BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) nn;

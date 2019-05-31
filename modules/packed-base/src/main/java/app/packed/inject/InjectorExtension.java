@@ -36,6 +36,7 @@ import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.WireletList;
 import packed.internal.inject.AppPackedInjectSupport;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
@@ -57,6 +58,10 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     public ArrayList<BuildtimeServiceNode<?>> nodes = new ArrayList<>();
 
+    private InjectorBuilder ib() {
+        return builder().box.services();
+    }
+
     /**
      * Adds the specified key to the list of optional services.
      * <p>
@@ -71,7 +76,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        builder().box.services().addOptional(key);
+        ib().addOptional(key);
         // return this;
     }
 
@@ -86,7 +91,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addRequired(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        builder().box.services().addRequired(key);
+        ib().addRequired(key);
     }
 
     <T> ProvidedComponentConfiguration<T> alias(Class<T> key) {
@@ -159,7 +164,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         // }
         BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder(), cs);
         bn.as(key);
-        builder().box.services().exportedNodes.add(bn);
+        ib().exportedNodes.add(bn);
         return new DefaultExportedServiceConfiguration<>(builder(), bn);
     }
 
@@ -187,17 +192,17 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     @Override
     public void onFinish() {
         for (BuildtimeServiceNode<?> e : nodes) {
-            if (!builder().box.services().nodes.putIfAbsent(e)) {
+            if (!ib().nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());
             }
         }
-        for (BuildtimeServiceNodeExported<?> e : builder().box.services().exportedNodes) {
-            ServiceNode<?> sn = builder().box.services().nodes.getRecursive(e.getKey());
+        for (BuildtimeServiceNodeExported<?> e : ib().exportedNodes) {
+            ServiceNode<?> sn = ib().nodes.getRecursive(e.getKey());
             if (sn == null) {
                 throw new IllegalStateException("Could not find node to export " + e.getKey());
             }
             e.exposureOf = (ServiceNode) sn;
-            builder().box.services().exports.put(e);
+            ib().exports.put(e);
         }
     }
 
@@ -283,7 +288,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            any wirelets used to filter and transform the provided services
      */
     public void provideFrom(Injector injector, Wirelet... wirelets) {
-        ProvideFromInjector pa = new ProvideFromInjector(builder(), builder().box.services(), injector, WireletList.of(wirelets)); // Validates arguments
+        ProvideFromInjector pa = new ProvideFromInjector(builder(), ib(), injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
         pa.process();
     }
@@ -307,19 +312,19 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     /** {@inheritDoc} */
     @Override
     public void buildBundle(Builder builder) {
-        for (ServiceNode<?> n : builder().box.services().nodes) {
+        for (ServiceNode<?> n : ib().nodes) {
             if (n instanceof BuildtimeServiceNode) {
                 builder.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
             }
         }
 
-        for (BuildtimeServiceNode<?> n : builder().box.services().exportedNodes) {
+        for (BuildtimeServiceNode<?> n : ib().exportedNodes) {
             if (n instanceof BuildtimeServiceNodeExported) {
                 builder.contract().services().addProvides(n.getKey());
             }
         }
 
-        builder().box.services().buildContract(builder.contract().services());
+        ib().buildContract(builder.contract().services());
     }
 
     public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
