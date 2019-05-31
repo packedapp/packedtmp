@@ -32,6 +32,7 @@ import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.WireletList;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
@@ -39,7 +40,7 @@ import packed.internal.inject.ServiceWiringImportOperation;
 /**
  * An abstract class for the injector bind methods
  */
-class BindInjectorFromBundle {
+public class BindInjectorFromBundle {
 
     @Nullable
     final Bundle bundle;
@@ -55,7 +56,11 @@ class BindInjectorFromBundle {
 
     final ContainerBuilder newConfiguration;
 
-    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Bundle bundle, WireletList wirelets) {
+    final InjectorBuilder ib;
+
+    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InjectorBuilder ib, InternalConfigurationSite configurationSite, Bundle bundle,
+            WireletList wirelets) {
+        this.ib = requireNonNull(ib);
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.wirelets = requireNonNull(wirelets);

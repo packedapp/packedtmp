@@ -56,14 +56,14 @@ final class DependencyGraph {
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(ContainerBuilder builder) {
-        builder.privateInjector = new InternalInjector(builder, builder.box.services().nodes);
-        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, builder.privateInjector);
+        builder.box.services().privateInjector = new InternalInjector(builder, builder.box.services().nodes);
+        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, builder.box.services().privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         builder.box.services().nodes.put(d);
         if (builder.bundle == null) {
-            builder.publicInjector = builder.privateInjector;
+            builder.box.services().publicInjector = builder.box.services().privateInjector;
         } else {
-            builder.publicInjector = new InternalInjector(builder, builder.box.services().exports);
+            builder.box.services().publicInjector = new InternalInjector(builder, builder.box.services().exports);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
@@ -72,8 +72,8 @@ final class DependencyGraph {
 
         }
 
-        if (builder.injectorBundleBindings != null) {
-            for (BindInjectorFromBundle bi : builder.injectorBundleBindings) {
+        if (builder.box.services().injectorBundleBindings != null) {
+            for (BindInjectorFromBundle bi : builder.box.services().injectorBundleBindings) {
                 bi.processExport();
                 new DependencyGraph(bi.newConfiguration).instantiate();
             }

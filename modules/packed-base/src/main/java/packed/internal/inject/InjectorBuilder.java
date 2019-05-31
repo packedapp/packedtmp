@@ -31,8 +31,10 @@ import app.packed.inject.InjectorContract;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.inject.buildtime.BindInjectorFromBundle;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
+import packed.internal.inject.runtime.InternalInjector;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
@@ -58,6 +60,13 @@ public final class InjectorBuilder {
     public final HashSet<Key<?>> required = new HashSet<>();
 
     public final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
+
+    /** A list of bundle bindings, as we need to post process the exports. */
+    public ArrayList<BindInjectorFromBundle> injectorBundleBindings = new ArrayList<>();
+
+    public InternalInjector privateInjector;
+
+    public InternalInjector publicInjector;
 
     InjectorBuilder(boolean exportNodes) {
         if (exportNodes) {

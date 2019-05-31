@@ -180,7 +180,8 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.box.services().publicInjector,
+                        dependencies.get(i), null);
             }
         }
 

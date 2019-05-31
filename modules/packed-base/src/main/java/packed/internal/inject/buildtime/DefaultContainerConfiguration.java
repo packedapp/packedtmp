@@ -152,11 +152,12 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
     }
 
     @Override
-    public final <T extends AnyBundle> T link(T child, Wirelet... options) {
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), child, options);
+    public final <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "bundle is null");
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, wirelets);
         builder.build();
         wirings.put(builder.getName(), builder);
-        return child;
+        return bundle;
     }
 
     /** {@inheritDoc} */

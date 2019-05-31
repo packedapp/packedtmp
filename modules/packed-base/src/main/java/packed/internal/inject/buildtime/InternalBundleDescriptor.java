@@ -40,9 +40,7 @@ public class InternalBundleDescriptor {
         //////////////// Create the builder
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
-
         conf.buildBundle(builder);
-
         return builder;
     }
 }

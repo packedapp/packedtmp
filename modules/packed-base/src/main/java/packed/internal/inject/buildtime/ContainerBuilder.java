@@ -15,25 +15,17 @@
  */
 package packed.internal.inject.buildtime;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
-import app.packed.container.Bundle;
 import app.packed.container.Container;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Nullable;
-import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.InternalContainer;
-import packed.internal.container.WireletList;
 import packed.internal.inject.Box;
 import packed.internal.inject.BoxType;
-import packed.internal.inject.runtime.InternalInjector;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorConfigurator}.
@@ -43,13 +35,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     boolean autoRequires = true;
 
     public final Box box;
-
-    /** A list of bundle bindings, as we need to post process the exports. */
-    ArrayList<BindInjectorFromBundle> injectorBundleBindings = new ArrayList<>();
-
-    InternalInjector privateInjector;
-
-    InternalInjector publicInjector;
 
     public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... wirelets) {
         super(configurationSite, bundle, wirelets);
@@ -71,18 +56,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     public Injector buildInjector() {
         finish();
         new DependencyGraph(this).instantiate();
-        return publicInjector;
-    }
-
-    public void link(Bundle bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-        WireletList wl = WireletList.of(wirelets);
-        checkConfigurable();
-        // Look in wirelets for explicit disabled/enabled stack spawn, otherwise ask parent
-        InternalConfigurationSite cs = configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-        BindInjectorFromBundle is = new BindInjectorFromBundle(this, cs, bundle, wl);
-        is.processImport();
-        injectorBundleBindings.add(is);
+        return box.services().publicInjector;
     }
 
     public void disableAutomaticRequirements() {

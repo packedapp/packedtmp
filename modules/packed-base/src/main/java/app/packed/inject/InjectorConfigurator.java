@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
+import app.packed.container.AnyBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -246,10 +247,9 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void link(Bundle bundle, Wirelet... stages) {
+    public final void link(AnyBundle bundle, Wirelet... stages) {
         ((ContainerBuilder) configuration).link(bundle, stages);
     }
-
 }
 // addStatics(); useStatics()
 // @OnHook
