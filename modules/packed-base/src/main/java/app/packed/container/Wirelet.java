@@ -267,7 +267,7 @@ public abstract class Wirelet {
      * @return a wirelet that will set name of a container once wired
      */
     public static Wirelet name(String name) {
-        return new DefaultContainerConfiguration.OverrideNameWiringOption(name);
+        return new DefaultContainerConfiguration.OverrideNameWirelet(name);
     }
 }
 

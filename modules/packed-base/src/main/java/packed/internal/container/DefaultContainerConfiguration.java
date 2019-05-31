@@ -149,7 +149,7 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension<?>>> extensionTypes() {
+    public Set<Class<? extends Extension<?>>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
@@ -157,6 +157,7 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
+        wirelets.consumeLast(OverrideNameWirelet.class, w -> name = w.name);
         if (name != null) {
             String n = name;
             if (n.endsWith("?")) {
@@ -200,26 +201,18 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         return name;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentConfiguration install(Class<?> implementation) {
         return install(Factory.findInjectable(implementation));
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentConfiguration install(Factory<?> factory) {
         return new DefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentConfiguration install(Object instance) {
         return new DefaultComponentConfiguration(this, instance);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentConfiguration installStatic(Class<?> implementation) {
         return new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
     }
@@ -297,10 +290,10 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
     }
 
     /** A wiring option that overrides any existing container name. */
-    public static class OverrideNameWiringOption extends Wirelet {
+    public static class OverrideNameWirelet extends Wirelet {
 
         /** The (checked) name to override with. */
-        final String name;
+        private final String name;
 
         /**
          * Creates a new option
@@ -308,7 +301,7 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
          * @param name
          *            the name to override any existing container name with
          */
-        public OverrideNameWiringOption(String name) {
+        public OverrideNameWirelet(String name) {
             this.name = checkName(name);
         }
     }

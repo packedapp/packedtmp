@@ -19,23 +19,24 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
 /**
- * The configuration of a container.
+ * The configuration of a container. This class is rarely used directly. Instead containers are typically configured via
+ * a bundle.
  */
-// checkConfigurable??? Or only via extensions?
 // Basic functionality
 /// Name
+// Check Configurable
 /// Extensions
 /// Wiring to other containers
-/// Attachments
 /// Lookup
 
-/// Layers
+// Missing
+/// Attachments!!
+/// Layers!!!
+
 /// Components?? Or is this an extension.... It would be nice if you could install components from other extensions....
 /// Which you cannot currently, as you cannot inject ContainerConfiguration... And what about attachments????
 /// Maybe directly on the extension.. containerAttachements().. maybe also use?? Then we can always lazy initialize....
@@ -46,6 +47,13 @@ import app.packed.util.Nullable;
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
 public interface ContainerConfiguration {
 
+    void checkConfigurable();
+
+    /**
+     * Returns the configuration site of the container.
+     * 
+     * @return the configuration site of the container
+     */
     ConfigSite configurationSite();
 
     /**
@@ -53,8 +61,7 @@ public interface ContainerConfiguration {
      * 
      * @return an immutable view of all of the extension types that are used by this container
      */
-    // Map<Class, Extension>?????
-    Set<Class<? extends Extension<?>>> extensionTypes(); // Hmm, kan vi have hidden extensions???
+    Set<Class<? extends Extension<?>>> extensions();
 
     /**
      * Returns the description of this container. Or null if the description has not been set.
@@ -74,14 +81,6 @@ public interface ContainerConfiguration {
      */
     @Nullable
     String getName();
-
-    ComponentConfiguration install(Class<?> implementation);
-
-    ComponentConfiguration install(Factory<?> factory);
-
-    ComponentConfiguration install(Object instance);
-
-    ComponentConfiguration installStatic(Class<?> implementation);
 
     /**
      * Creates a link to another bundle.
@@ -124,7 +123,8 @@ public interface ContainerConfiguration {
 
     /**
      * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
-     * '_', '-' or '.'. The name is case sensitive.
+     * '_', '-' or '.'. The string may end with a '?' indicating that the runtime might place the '?' with a runtime chosen
+     * post-fix string in case other components or containers have the same name. The name is case sensitive.
      * <p>
      * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
      * such a way that it will have a unique name among other sibling container.
@@ -133,9 +133,8 @@ public interface ContainerConfiguration {
      *            the name of the container
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-     *             characters and '_', '-' or '.'
+     *             characters and '_', '-' or '.', or contains a '?' at any position then the last position of the string.
      * @see #getName()
-     * @see Container#name()
      */
     void setName(@Nullable String name);
 
@@ -159,28 +158,10 @@ public interface ContainerConfiguration {
     <T extends Extension<T>> T use(Class<T> extensionType);
 
     /**
-     * Returns a list of the wirelets that was used when creating this configuration.
+     * Returns a list of any wirelets that was used to create this configuration. For example, via
+     * {@link App#of(AnyBundle, Wirelet...)}.
      * 
-     * @return a list of the wirelets that was used when creating this configuration
+     * @return a list of any wirelets that was used to create this configuration
      */
     List<Wirelet> wirelets();
 }
-// static void ruddn(Consumer<? super ContainerConfiguration> configurator, Consumer<App> consumer, WiringOption...
-// options) {
-// requireNonNull(consumer, "configurator is null");
-// requireNonNull(consumer, "consumer is null");
-// DefaultAppConfiguration dac = new DefaultAppConfiguration();
-// configurator.accept(dac.root());
-// consumer.accept(dac.build());
-// }
-// ContainerConfiguration immutable().. can read name, installed extensions, and use extensions have already been
-// installed??
-/// **
-// * @param <T>
-// * @param extension
-// * @return
-// * @throws IllegalStateException
-// * if the specified extension is already used by another container configuration
-// */
-/// Tror grunden til jeg fjernede den, er at vi altid laegger op til at
-// <T extends Extension> T use(T extension);

@@ -147,8 +147,12 @@ public abstract class Bundle extends AnyBundle {
         return use(InjectorExtension.class);
     }
 
+    protected final ComponentExtension component() {
+        return use(ComponentExtension.class);
+    }
+
     protected final ComponentConfiguration install(Object instance) {
-        return configuration().install(instance);
+        return component().install(instance);
     }
 
     // protected ComponentServiceConfiguration<?> installBundle() {

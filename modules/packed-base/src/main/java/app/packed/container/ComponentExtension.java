@@ -15,10 +15,14 @@
  */
 package app.packed.container;
 
+import app.packed.component.ComponentConfiguration;
+import app.packed.inject.Factory;
+import packed.internal.container.DefaultContainerConfiguration;
+
 /**
- *
+ * An extension that provides basic functionality for installing components.
  */
-final class ComponentExtension extends Extension<ComponentExtension> {
+public final class ComponentExtension extends Extension<ComponentExtension> {
 
     // install
     // noget med Main, Entry points....
@@ -26,14 +30,37 @@ final class ComponentExtension extends Extension<ComponentExtension> {
 
     // @Main skal jo pege et paa en eller anden extension...
 
-    // Alternative to ComponentScan
-    void scanThisModule(Class<?>... classesInPackages) {}
+    private DefaultContainerConfiguration configuration() {
+        return super.configuration;
+    }
 
     // Selvfoelelig er det hele komponenter... Ogsaa scoped
     // Vi skal ikke til at have flere scans...
 
-    void scanThisModule(String... packages) {}
+    public ComponentConfiguration install(Class<?> implementation) {
+        return configuration().install(implementation);
+    }
 
     // @Scoped
     // @Install()
+
+    // Why export
+    // Need to export
+
+    public ComponentConfiguration install(Factory<?> factory) {
+        return configuration().install(factory);
+    }
+
+    public ComponentConfiguration install(Object instance) {
+        return configuration().install(instance);
+    }
+
+    public ComponentConfiguration installStatic(Class<?> implementation) {
+        return configuration().installStatic(implementation);
+    }
+
+    // Alternative to ComponentScan
+    void scanThisModule(Class<?>... classesInPackages) {}
+
+    void scanThisModule(String... packages) {}
 }

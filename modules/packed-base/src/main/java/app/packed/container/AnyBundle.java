@@ -26,7 +26,6 @@ import app.packed.util.Nullable;
 /**
  * A generic bundle. Normally you would extend {@link Bundle}
  */
-
 // A bundle can be used by one thread at a time...
 // However, once configured once. It cannot be changed...
 // Saa dette burde virke
@@ -91,8 +90,8 @@ public abstract class AnyBundle {
         }
     }
 
-    protected final Set<Class<? extends Extension<?>>> extensionTypes() {
-        return configuration().extensionTypes();
+    protected final Set<Class<? extends Extension<?>>> extensions() {
+        return configuration().extensions();
     }
 
     @Nullable
@@ -122,6 +121,7 @@ public abstract class AnyBundle {
      * @param wirelets
      *            an optional array of wirelets
      * @return the specified bundle
+     * @see ContainerConfiguration#link(AnyBundle, Wirelet...)
      */
     protected final <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
         return configuration().link(bundle, wirelets);
@@ -133,6 +133,7 @@ public abstract class AnyBundle {
      * 
      * @param lookup
      *            the lookup object
+     * @see ContainerConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -147,6 +148,11 @@ public abstract class AnyBundle {
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
 
+    /**
+     * @param description
+     *            the description to set
+     * @see ContainerConfiguration#setDescription(String)
+     */
     protected final void setDescription(@Nullable String description) {
         configuration().setDescription(description);
     }
@@ -176,21 +182,9 @@ public abstract class AnyBundle {
      * @param <T>
      * @param extensionType
      * @return an extension of the specified type
+     * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
 }
-
-// alternative is some kind of builder....
-
-// installXX
-// Der er lidt bootstrap metoder...for staaet paa den maade, at man kan saette lidt ting op.
-// som bliver koert inde configure(), og nogle ting der bliver koert efter....
-// Also, som finishItem configuration
-
-// Ville vaere saa sindsygt, hvis vi kunne definere Bundle (BaseBundle) paa den her maade
-// Og med en api, der kan bruges af andre ogsaa...
-// skal vi have en spi pakke??? nahhhhh
-
-// Layer!...! Aahhh shit det bliver noget meta hullumhej...

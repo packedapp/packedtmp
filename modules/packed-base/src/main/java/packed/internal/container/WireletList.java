@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import app.packed.container.Wirelet;
 
@@ -76,4 +77,13 @@ public final class WireletList extends Wirelet {
         return new WireletList(wirelets);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Wirelet> void consumeLast(Class<T> wireletType, Consumer<T> consumer) {
+        for (int i = wirelets.size() - 1; i >= 0; i--) {
+            if (wireletType.isAssignableFrom(wirelets.get(i).getClass())) {
+                consumer.accept((T) wirelets.get(i));
+                return;
+            }
+        }
+    }
 }

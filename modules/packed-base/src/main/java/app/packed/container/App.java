@@ -58,8 +58,7 @@ public interface App extends Injector, AutoCloseable {
      * unique name.
      *
      * @return the name of this application
-     * @see ContainerConfiguration#setName(String)
-     * @see Bundle#setName(String)
+     * @see AnyBundle#setName(String)
      */
     String name();
 
