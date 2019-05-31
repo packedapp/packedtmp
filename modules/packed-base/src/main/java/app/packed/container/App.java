@@ -22,11 +22,11 @@ import java.util.concurrent.ExecutorService;
 
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
+import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.InternalApp;
-import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.container.ContainerType;
+import packed.internal.container.DefaultApp;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * A application is a program.
@@ -134,39 +134,44 @@ public interface App extends Injector, AutoCloseable {
      * Creates a new application from the specified bundle. The state of the returned application will be initialized.
      *
      * @param bundle
-     *            the bundle to create an application from
+     *            the bundle that the application should be created from
      * @param wirelets
      *            wiring operations
      * @return a new application
      * @throws RuntimeException
-     *             if the application could not be created for some reason
+     *             if the application could not be properly created
      */
     static App of(AnyBundle bundle, Wirelet... wirelets) {
-        // Would like a new name to of... So we can have a of(Bundle b, String[] args, Wirelet... wirelets) in AnyBundle
         requireNonNull(bundle, "bundle is null");
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, wirelets);
-        return new InternalApp(builder.build());
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(ContainerType.APP_OF, bundle, wirelets);
+        return new DefaultApp(configuration.build());
     }
 
     /**
      * This method will create and start an {@link App application} from the specified bundle. Blocking until the
-     * application is terminated.
+     * application has terminated.
      * 
      * @param bundle
-     *            the bundle to create an application from
+     *            the bundle that the application should be created from
      * @param wirelets
-     *            wirelet operations
+     *            wirelets
      * @throws RuntimeException
-     *             if the application did not run properly
+     *             if the application did not execute properly
      */
     static void run(AnyBundle bundle, Wirelet... wirelets) {
         // CTRL-C ?? Obvious a wirelet, but default on or default off.
+        // Paa Bundle syntes jeg den er paa, men ikke her...
 
         // If has @Main will run Main and then exit
         // Otherwise will run until application is shutdown
 
-        // Hedder execute, for ikke at navnene minder for meget om hinanden (run + running)
-        throw new UnsupportedOperationException();
+        try (App app = of(bundle, wirelets)) {
+            app.start();
+            try {
+                app.state().await(LifecycleState.TERMINATED);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
-
 }

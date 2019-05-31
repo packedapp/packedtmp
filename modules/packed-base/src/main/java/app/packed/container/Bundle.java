@@ -155,13 +155,13 @@ public abstract class Bundle extends AnyBundle {
     // return containerBuilderX().installService(this);
     // }
 
-    protected final Layer mainLayer(Layer... predecessors) {
-        // Layers are an AnyBundle thingy...
-        // Can only be called once???
+    protected final void main(String methodName, Class<?>... arguments) {
         throw new UnsupportedOperationException();
     }
 
-    protected final void main(String methodName, Class<?>... arguments) {
+    protected final Layer mainLayer(Layer... predecessors) {
+        // Layers are an AnyBundle thingy...
+        // Can only be called once???
         throw new UnsupportedOperationException();
     }
 
@@ -321,7 +321,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     static protected void run(Bundle bundle, String[] args, Wirelet... wirelets) {
-        run(bundle, Wirelet.appMain(args).andThen(wirelets));
+        run(bundle, Wirelet.appMain(args).andThen(wirelets)); // + CTRL-C
     }
 
     static protected void run(Bundle bundle, Wirelet... wirelets) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.container;
 
 /** The type of box. */
 
@@ -24,8 +24,18 @@ package packed.internal.inject;
 // Vi maa have en AppContext.... og en AppType....
 public enum ContainerType {
 
+    /** */
+    APP_OF,
+
+    /** */
+    APP_RUN,
+
     /** A box targeting a Injector created from a bundle. */
-    INJECTOR_VIA_BUNDLE,
+    INJECTOR_OF,
+
+    DESCRIPTOR,
+
+    LINK,
 
     /** A box targeting a Injector created using a configurator. */
     INJECTOR_VIA_CONFIGURATOR;
@@ -35,7 +45,8 @@ public enum ContainerType {
     }
 
     public boolean unresolvedServicesAllowed() {
-        return this == INJECTOR_VIA_BUNDLE;
+        return false;
+        // return this == INJECTOR_VIA_BUNDLE;
     }
 
     // HOST

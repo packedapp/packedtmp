@@ -34,11 +34,14 @@ import app.packed.util.Nullable;
 import packed.internal.inject.buildtime.BindInjectorFromBundle;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
-import packed.internal.inject.runtime.InternalInjector;
+import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /** This class records all service related information for a single box. */
+
+// Kan vi have en InjectorBuilder uden en InjectorExtension???
+// Giver ikke saa meget mening....Configurationen skal jo ske gennem InjectorExtension
 public final class InjectorBuilder {
 
     public boolean autoRequires = true;
@@ -66,9 +69,11 @@ public final class InjectorBuilder {
     /** A list of bundle bindings, as we need to post process the exports. */
     public ArrayList<BindInjectorFromBundle> injectorBundleBindings = new ArrayList<>();
 
-    public InternalInjector privateInjector;
+    public DefaultInjector privateInjector;
 
-    public InternalInjector publicInjector;
+    public DefaultInjector publicInjector;
+
+    public ArrayList<BuildtimeServiceNode<?>> nodes2 = new ArrayList<>();
 
     public InjectorBuilder() {
         boolean exportNodes = true;

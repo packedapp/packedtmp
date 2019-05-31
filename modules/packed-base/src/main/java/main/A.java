@@ -138,8 +138,8 @@ class ProvidePro extends ExtensionProcessor<InjectorExtension, Provide> {
     /** {@inheritDoc} */
     @Override
     protected void visitEnd(Class<?> type) {
-        AtProvidesGroup g = b.build();
-        registerCallback(e -> e.installGroup(g));
+        // AtProvidesGroup g = b.build();
+        // registerCallback(e -> e.installGroup(g));
     }
 
 }

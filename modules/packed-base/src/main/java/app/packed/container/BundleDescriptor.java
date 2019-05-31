@@ -27,11 +27,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.hook.BundleDescriptorHooks;
-import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildtime.InternalBundleDescriptor;
+import packed.internal.container.ContainerType;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * An immutable bundle descriptor.
@@ -74,23 +74,24 @@ import packed.internal.inject.buildtime.InternalBundleDescriptor;
 // BundleDescriptor.graph() throws UOE if Options.IncludeDependencyGraph has not been set.
 
 // Could be made into a Visitor instead..... Or in addition to...
+// Skal igen bare vaere en wrapper oven paa AnyBundle. Okay her bliver det lidt problematisk med at man kan definere sin
+// egen. Boern... altid en hovedpine
+
+// Maaske ender man ikke med at kunne det. Men det er en god ovelse for at separare ting.
+
+// I think add @Description as annotation??? IDK
+
 public class BundleDescriptor {
-
-    // Skal igen bare vaere en wrapper oven paa AnyBundle. Okay her bliver det lidt problematisk med at man kan definere sin
-    // egen.
-
-    // Maaske ender man ikke med at kunne det. Men det er en god ovelse for at separare ting.
-
-    // I think add @Description as annotation??? IDK
-
-    /** The (optional) description of the bundle. */
-    private final @Nullable String bundleDescription;
 
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
     /** A Services object. */
     private final BundleContract contract;
+
+    /** The (optional) description of the bundle. */
+    @Nullable
+    private final String description;
 
     @Nullable
     private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
@@ -109,34 +110,8 @@ public class BundleDescriptor {
         requireNonNull(builder, "builder is null");
         this.contract = builder.contract().build();
         this.bundleType = builder.bundleType();
-        this.bundleDescription = builder.getBundleDescription();
+        this.description = builder.getBundleDescription();
         this.services = builder.services == null ? List.of() : List.copyOf(builder.services.values());
-    }
-
-    /**
-     * Returns an optional description of the bundle as set by {@link Bundle#setDescription(String)}.
-     * 
-     * @return a optional description of the bundle
-     * 
-     * @see Bundle#setDescription(String)
-     */
-    public final Optional<String> bundleDescription() {
-        return Optional.ofNullable(bundleDescription);
-    }
-
-    /**
-     * Returns the id of the bundle. If the bundle is in a named module it the name of the module concatenated with
-     * {@code "." + bundleType.getSimpleName()}. If this bundle is not in a named module it is just
-     * {bundleType.getSimpleName()}
-     * 
-     * @return the id of the bundle
-     */
-    public final String bundleId() {
-        // Think we are going to drop this....
-        if (bundleModule().isNamed()) {
-            return bundleModule().getName() + "." + bundleType.getSimpleName();
-        }
-        return bundleType.getSimpleName();
     }
 
     /**
@@ -161,27 +136,30 @@ public class BundleDescriptor {
         return bundleType;
     }
 
-    /**
-     * Returns the version of this bundle. The version of a bundle is always identical to the version of the module to which
-     * the bundle belongs. If the bundle is in the unnamed module or on the class path this method returns
-     * {@link Optional#empty()}.
-     * 
-     * @return the version of the bundle
-     * @see ModuleDescriptor#version()
-     */
-    public final Optional<Version> bundleVersion() {
-        // Do we want to allow, people to set their own version in the builder???? I mean it won't have any effect... maybe let
-        // people override it
-        return bundleModule().getDescriptor().version();
-    }
-
-    // Det maa da vaere descriptors
-    public List<BundleContract> children() {
+    public List<BundleDescriptor> children() {
+        // Saa skal vi vel ogsaa have navne...
+        // Maaske kan vi have Container? <- Indicating that it will be created with Container and then some postfix
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns the bundle contract.
+     * 
+     * @return the bundle contract
+     */
     public BundleContract contract() {
         return contract;
+    }
+
+    /**
+     * Returns any description that has been set for the bundle via {@link Bundle#setDescription(String)}.
+     * 
+     * @return a optional description of the bundle
+     * 
+     * @see Bundle#setDescription(String)
+     */
+    public final Optional<String> description() {
+        return Optional.ofNullable(description);
     }
 
     public final BundleDescriptorHooks hooks() {
@@ -204,15 +182,6 @@ public class BundleDescriptor {
         System.out.println(toString());
     }
 
-    /**
-     * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.
-     * 
-     * @return the runtime type of the bundle
-     */
-    public final Class<?> runtimeType() {
-        return Bundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
-    }
-
     public Collection<ServiceDescriptor> services() {
         return services;
     }
@@ -232,7 +201,21 @@ public class BundleDescriptor {
     }
 
     /**
-     * Returns a descriptor for the specified bundle.
+     * Returns the version of this bundle. The version of a bundle is always identical to the version of the module to which
+     * the bundle belongs. If the bundle is in the unnamed module or on the class path this method returns
+     * {@link Optional#empty()}.
+     * 
+     * @return the version of the bundle
+     * @see ModuleDescriptor#version()
+     */
+    public final Optional<Version> version() {
+        // To keep things simple we do not currently allow people override the version.
+        ModuleDescriptor descriptor = bundleModule().getDescriptor();
+        return descriptor == null ? Optional.empty() : descriptor.version();
+    }
+
+    /**
+     * Returns a bundle descriptor for the specified bundle.
      *
      * @param bundle
      *            the bundle to return a descriptor for
@@ -240,20 +223,12 @@ public class BundleDescriptor {
      */
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        return InternalBundleDescriptor.of(bundle).build();
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(ContainerType.DESCRIPTOR, bundle);
+        builder.setBundleDescription(conf.getDescription());
+        conf.createDescriptor(builder);
+        return builder.build();
     }
-
-    // /**
-    // * Returns a descriptor for the specified type of bundle.
-    // *
-    // * @param bundleType
-    // * the type of bundle to return a descriptor from
-    // * @return a descriptor for the specified type of bundle
-    // */
-    // @Deprecated
-    // public static BundleDescriptor of(Class<? extends Bundle> bundleType) {
-    // return of(Bundles.instantiate(bundleType));
-    // }
 
     // /**
     // * <p>A stream builder has a lifecycle, which starts in a building
@@ -335,7 +310,30 @@ public class BundleDescriptor {
         }
     }
 }
-
+//
+/// **
+// * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.
+// *
+// * @return the runtime type of the bundle
+// */
+// public final Class<?> runtimeType() {
+// return Bundle.class.isAssignableFrom(bundleType) ? Container.class : Injector.class;
+// }
+//
+/// **
+// * Returns the id of the bundle. If the bundle is in a named module it the name of the module concatenated with
+// * {@code "." + bundleType.getSimpleName()}. If this bundle is not in a named module it is just
+// * {bundleType.getSimpleName()}
+// *
+// * @return the id of the bundle
+// */
+// public final String bundleId() {
+// // Think we are going to drop this....
+// if (bundleModule().isNamed()) {
+// return bundleModule().getName() + "." + bundleType.getSimpleName();
+// }
+// return bundleType.getSimpleName();
+// }
 // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
 // Og dermed kun importere praecis de interfaces den definere...
 // Deploy(someSpec?) ved ikke lige med API'en /

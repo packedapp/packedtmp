@@ -24,6 +24,8 @@ import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.ComponentBuildNode;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  *
@@ -40,7 +42,7 @@ public class DefaultComponentConfiguration implements ComponentConfiguration {
     DefaultComponentConfiguration(DefaultContainerConfiguration dcc, ComponentBuildNode node) {
         this.node = requireNonNull(node);
         this.dcc = requireNonNull(dcc);
-        this.configurationSite = (InternalConfigurationSite) node.containerConfiguration;
+        this.configurationSite = node.site;
     }
 
     public DefaultComponentConfiguration(DefaultContainerConfiguration dcc, Object instance) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.runtime;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,8 +29,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
 import packed.internal.classscan.ServiceClassDescriptor;
-import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.ServiceNode;
 import packed.internal.invokable.FieldAccessor;
 
 /** An abstract implementation of an injector. */

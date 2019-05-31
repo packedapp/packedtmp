@@ -24,7 +24,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
 import packed.internal.container.AppPackedContainerSupport;
-import packed.internal.inject.buildtime.DefaultContainerConfiguration;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * Container extensions are used to extend containers with functionality.
@@ -49,6 +49,7 @@ public abstract class Extension<T extends Extension<T>> {
     }
 
     /** The configuration of the container in which the extension is registered. */
+    @SuppressWarnings("exports")
     public DefaultContainerConfiguration configuration;
 
     /**
@@ -58,8 +59,10 @@ public abstract class Extension<T extends Extension<T>> {
      * @throws IllegalStateException
      *             if the container this extension is no longer configurable.
      */
-    protected final void checkConfigurable() {
-        configuration().checkConfigurable();
+    protected final ContainerConfiguration checkConfigurable() {
+        DefaultContainerConfiguration c = configuration;
+        c.checkConfigurable();
+        return c;
     }
 
     /**

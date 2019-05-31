@@ -39,9 +39,6 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
     /** The key under which the service is available. */
     private final Key<T> key;
 
-    // /** Any tags that might be present on the service. */
-    // private final Set<String> tags;
-
     /**
      * Creates a new runtime node from a build node.
      *
@@ -52,11 +49,7 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
         this.configurationSite = requireNonNull(node.configurationSite());
         this.description = node.getDescription();
         this.key = requireNonNull(node.key());
-        // this.tags = node.immutableCopyOfTags();
     }
-
-    @Override
-    public abstract InstantiationMode instantiationMode();
 
     /** {@inheritDoc} */
     @Override
@@ -70,11 +63,8 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
         return Optional.ofNullable(description);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public final Key<T> key() {
-        return key;
-    }
+    public abstract InstantiationMode instantiationMode();
 
     // Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
     // F.eks. man eftersporger Foo.class, men maaske er der en FooImpl et sted
@@ -84,15 +74,15 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
+    public final Key<T> key() {
+        return key;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final boolean needsResolving() {
         return false;
     }
-    //
-    // /** {@inheritDoc} */
-    // @Override
-    // public final Set<String> tags() {
-    // return tags;
-    // }
 
     /** {@inheritDoc} */
     @Override

@@ -28,7 +28,7 @@ import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -248,7 +248,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      *            optional import/export stages
      */
     public final void link(AnyBundle bundle, Wirelet... stages) {
-        ((ContainerBuilder) configuration).link(bundle, stages);
+        ((DefaultContainerConfiguration) configuration).link(bundle, stages);
     }
 }
 // addStatics(); useStatics()

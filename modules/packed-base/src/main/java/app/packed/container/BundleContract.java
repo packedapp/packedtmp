@@ -62,7 +62,7 @@ public class BundleContract {
     }
 
     /**
-     * Returns a descriptor for the specified bundle.
+     * Returns a contract for the specified bundle.
      *
      * @param bundle
      *            the bundle to return a descriptor for

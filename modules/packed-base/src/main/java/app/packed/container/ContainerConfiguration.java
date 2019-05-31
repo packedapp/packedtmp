@@ -117,10 +117,10 @@ public interface ContainerConfiguration {
      * @return this configuration
      * @see #getDescription()
      * @see Container#description()
+     * @throws IllegalStateException
+     *             if this configuration can no longer be configured
      */
     ContainerConfiguration setDescription(@Nullable String description);
-
-    // Set<String> tags();
 
     /**
      * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and

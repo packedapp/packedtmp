@@ -30,12 +30,13 @@ import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedBundleSupport;
+import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.container.WireletList;
+import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
-import packed.internal.inject.runtime.AbstractInjector;
 
 /** Provides services from an existing Injector. */
 public final class ProvideFromInjector {

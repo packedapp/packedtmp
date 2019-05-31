@@ -18,45 +18,52 @@ package packed.internal.inject.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  *
  */
 public class DefaultExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
-    final BuildtimeServiceNode<T> node;
-
-    private final DefaultContainerConfiguration dcc;
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
+
+    private final DefaultContainerConfiguration containerConfiguration;
+
+    final BuildtimeServiceNode<T> node;
 
     /**
      * @param node
      */
-    public DefaultExportedServiceConfiguration(DefaultContainerConfiguration dcc, BuildtimeServiceNode<T> node) {
+    public DefaultExportedServiceConfiguration(DefaultContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
+        this.containerConfiguration = requireNonNull(containerConfiguration);
         this.configurationSite = node.configurationSite;
-        this.dcc = requireNonNull(dcc);
         this.node = requireNonNull(node);
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> as(Key<? super T> key) {
-        dcc.checkConfigurable();
+        containerConfiguration.checkConfigurable();
         node.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
+    public ConfigSite configurationSite() {
+        return configurationSite;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     @Nullable
     public String getDescription() {
-        dcc.checkConfigurable();
         return node.description;
     }
 
@@ -75,15 +82,8 @@ public class DefaultExportedServiceConfiguration<T> implements ServiceConfigurat
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> setDescription(@Nullable String description) {
-        dcc.checkConfigurable();
+        containerConfiguration.checkConfigurable();
         node.description = description;
         return this;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configurationSite() {
-        return configurationSite;
-    }
-
 }

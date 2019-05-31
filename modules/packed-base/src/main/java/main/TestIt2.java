@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildtime;
+package main;
 
 import app.packed.container.App;
 import app.packed.container.Bundle;
@@ -21,7 +21,7 @@ import app.packed.container.Bundle;
 /**
  *
  */
-public class TestIt extends Bundle {
+public class TestIt2 extends Bundle {
 
     /** {@inheritDoc} */
     @Override
@@ -32,6 +32,6 @@ public class TestIt extends Bundle {
     }
 
     public static void main(String[] args) {
-        App.of(new TestIt());
+        App.of(new TestIt2());
     }
 }

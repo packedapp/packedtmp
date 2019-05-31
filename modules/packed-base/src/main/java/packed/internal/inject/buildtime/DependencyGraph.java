@@ -27,16 +27,17 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.InstantiationMode;
 import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
-import packed.internal.inject.runtime.InternalInjector;
+import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.util.KeyBuilder;
 
-final class DependencyGraph {
+public final class DependencyGraph {
 
-    static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), InternalInjector.class);
+    static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), DefaultInjector.class);
 
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildtimeServiceNode<?>> detectCyclesFor;
@@ -52,22 +53,22 @@ final class DependencyGraph {
      * @param root
      *            the root injector builder
      */
-    DependencyGraph(ContainerBuilder root) {
+    public DependencyGraph(DefaultContainerConfiguration root) {
         this.root = requireNonNull(root);
         this.ib = requireNonNull(root.use(InjectorExtension.class).ib);
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void analyze() {
-        ib.privateInjector = new InternalInjector(root, ib.nodes);
+    public void analyze() {
+        ib.privateInjector = new DefaultInjector(root, ib.nodes);
         BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(ib, root.configurationSite(), INJ, ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ib.nodes.put(d);
         if (root.bundle == null) {
             ib.publicInjector = ib.privateInjector;
         } else {
-            ib.publicInjector = new InternalInjector(root, ib.exports);
+            ib.publicInjector = new DefaultInjector(root, ib.exports);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
@@ -118,7 +119,7 @@ final class DependencyGraph {
         return null;
     }
 
-    void instantiate() {
+    public void instantiate() {
         analyze();
 
         // Instantiate all singletons

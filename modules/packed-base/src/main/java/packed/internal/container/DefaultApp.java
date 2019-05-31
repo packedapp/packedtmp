@@ -29,13 +29,13 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
 
-/** The default implementation of {@link App}. Basically just wrapping a top level container. */
-public final class InternalApp implements App {
+/** The default implementation of {@link App application}. Basically it is just wrapping a container. */
+public final class DefaultApp implements App {
 
     /** The container we are wrapping. */
     private final Container container;
 
-    public InternalApp(Container container) {
+    public DefaultApp(Container container) {
         this.container = requireNonNull(container, "container is null");
     }
 

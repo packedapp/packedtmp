@@ -21,18 +21,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 import packed.internal.util.KeyBuilder;
 
 /** The default implementation of {@link Injector}. */
-public final class InternalInjector extends AbstractInjector {
+public final class DefaultInjector extends AbstractInjector {
 
     /** The configuration site of this injector. */
     private final InternalConfigurationSite configurationSite;
@@ -41,29 +43,42 @@ public final class InternalInjector extends AbstractInjector {
     @Nullable
     private final String description;
 
-    /** A map of all services. */
-    private final ServiceNodeMap nodes;
-
-    /** This injector's parent, or null if this is a top-level injector. */
+    /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final AbstractInjector parent;
 
-    // /** This injector's tags. */
-    // private final Set<String> tags;
+    /** All services that this injector provides. */
+    private final ServiceNodeMap services;
 
-    public InternalInjector(DefaultContainerConfiguration injectorConfiguration, ServiceNodeMap nodes) {
+    public DefaultInjector(DefaultContainerConfiguration containerConfiguration, ServiceNodeMap services) {
         this.parent = null;
-        this.nodes = requireNonNull(nodes);
-        // this.tags = injectorConfiguration.immutableCopyOfTags();
-        this.description = injectorConfiguration.getDescription();
-        this.configurationSite = injectorConfiguration.configurationSite();
+        this.configurationSite = requireNonNull(containerConfiguration.configurationSite());
+        this.description = containerConfiguration.getDescription();
+        this.services = requireNonNull(services);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configurationSite() {
+        return configurationSite;
+    }
+
+    @Override
+    public List<ServiceNode<?>> copyNodes() {
+        return services.copyNodes();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> description() {
+        return Optional.ofNullable(description);
     }
 
     @Override
     protected void failedGet(Key<?> key) {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
-        for (ServiceNode<?> n : nodes) {
+        for (ServiceNode<?> n : services) {
             System.out.println("Failed Get " + n);
             // if (n instanceof RuntimeNode<T>)
         }
@@ -74,36 +89,13 @@ public final class InternalInjector extends AbstractInjector {
     @Override
     @Nullable
     protected <T> ServiceNode<T> findNode(Key<T> key) {
-        return nodes.getRecursive(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InternalConfigurationSite configurationSite() {
-        return configurationSite;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return Optional.ofNullable(description);
+        return services.getRecursive(key);
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) nodes.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
-    }
-    //
-    // /** {@inheritDoc} */
-    // @Override
-    // public Set<String> tags() {
-    // return tags;
-    // }
-
-    @Override
-    public List<ServiceNode<?>> copyNodes() {
-        return nodes.copyNodes();
+        return (Stream) services.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
     }
 }

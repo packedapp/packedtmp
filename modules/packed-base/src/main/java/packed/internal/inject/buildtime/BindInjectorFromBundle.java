@@ -30,6 +30,7 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedBundleSupport;
+import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.container.WireletList;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildtime;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
 /**
  *
@@ -32,18 +33,18 @@ public final class ComponentBuildNode {
 
     /** The description of the component */
     @Nullable
-    String description;
+    public String description;
 
-    Object instance;
+    public Object instance;
 
     /** The name of the component */
     @Nullable
-    String name;
+    public String name;
 
-    BuildtimeServiceNode<?> serviceNode;
+    public BuildtimeServiceNode<?> serviceNode;
 
     /** The configuration site of the component. */
-    final InternalConfigurationSite site;
+    public final InternalConfigurationSite site;
 
     public ComponentBuildNode(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
         this.site = requireNonNull(site);

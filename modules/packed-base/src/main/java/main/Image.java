@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildtime;
+package main;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,6 +23,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNodeMap;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
+import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
 
 /**
  *

@@ -30,8 +30,8 @@ import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.ServiceWirelets;
 import packed.internal.container.AppPackedBundleSupport;
+import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.container.WireletList;
-import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 // Wire vs link....
 

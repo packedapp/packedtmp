@@ -55,7 +55,10 @@ public final class ExtensionInfo<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Extension<T>> T newInstance(Class<T> extensionType) {
-        return (T) CACHE.get(extensionType).newInstance();
+    public static <T extends Extension<T>> T newInstance(DefaultContainerConfiguration containerConfiguration, Class<T> extensionType) {
+        ExtensionInfo<T> ei = (ExtensionInfo<T>) CACHE.get(extensionType);
+        Extension<T> e = ei.newInstance();
+        AppPackedContainerSupport.invoke().setExtensionConfiguration(e, containerConfiguration);
+        return (T) e;
     }
 }

@@ -26,9 +26,8 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.container.ContainerType;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -278,7 +277,7 @@ public interface Injector /* extends Taggable */ {
      */
     static Injector of(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, wirelets);
+        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(ContainerType.INJECTOR_OF, bundle, wirelets);
         bundle.doConfigure(builder);
         return builder.buildInjector();
     }
@@ -294,7 +293,7 @@ public interface Injector /* extends Taggable */ {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, wirelets);
+        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(ContainerType.INJECTOR_OF, null, wirelets);
         configurator.accept(new InjectorConfigurator(builder));
         return builder.buildInjector();
     }
