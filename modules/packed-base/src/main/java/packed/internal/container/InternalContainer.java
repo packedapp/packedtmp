@@ -29,7 +29,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
-import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 /**
  *
@@ -51,7 +51,7 @@ public class InternalContainer implements Container {
 
     final Map<String, InternalComponent> containers = Map.of();
 
-    public InternalContainer(ContainerBuilder builder, Injector injector) {
+    public InternalContainer(DefaultContainerConfiguration builder, Injector injector) {
         this.injector = requireNonNull(injector);
         // if (builder.root != null) {
         // builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));

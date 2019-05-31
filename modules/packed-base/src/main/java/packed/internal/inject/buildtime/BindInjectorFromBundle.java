@@ -17,7 +17,6 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,23 +48,23 @@ public class BindInjectorFromBundle {
     final InternalConfigurationSite configurationSite;
 
     /** The configuration of the injector that binding another bundle or injector. */
-    final ContainerBuilder injectorConfiguration;
+    final DefaultContainerConfiguration injectorConfiguration;
 
     /** The wiring operations. */
     final WireletList wirelets;
 
-    final ContainerBuilder newConfiguration;
+    final DefaultContainerConfiguration newConfiguration;
 
     final InjectorBuilder ib;
 
-    BindInjectorFromBundle(ContainerBuilder injectorConfiguration, InjectorBuilder ib, InternalConfigurationSite configurationSite, Bundle bundle,
+    BindInjectorFromBundle(DefaultContainerConfiguration injectorConfiguration, InjectorBuilder ib, InternalConfigurationSite configurationSite, Bundle bundle,
             WireletList wirelets) {
         this.ib = requireNonNull(ib);
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
         this.configurationSite = requireNonNull(configurationSite);
         this.wirelets = requireNonNull(wirelets);
         this.bundle = bundle;
-        this.newConfiguration = new ContainerBuilder(configurationSite, bundle);
+        this.newConfiguration = null;// new ContainerBuilder(configurationSite, bundle);
     }
 
     /**
@@ -73,7 +72,7 @@ public class BindInjectorFromBundle {
      */
     void processImport() {
         bundle.doConfigure(newConfiguration);
-        processImport(newConfiguration.box.services().exportedNodes);
+        // processImport(newConfiguration.box.services().exportedNodes);
     }
 
     void processExport() {
@@ -82,22 +81,22 @@ public class BindInjectorFromBundle {
                 throw new UnsupportedOperationException();
             }
         }
-        List<BuildtimeServiceNodeImport<?>> exports = new ArrayList<>();
-        if (newConfiguration.box.services().required != null) {
-            for (Key<?> k : newConfiguration.box.services().required) {
-                if (newConfiguration.box.services().nodes.containsKey(k)) {
-                    throw new RuntimeException("OOPS already there " + k);
-                }
-                ServiceNode<?> node = injectorConfiguration.box.services().nodes.getRecursive(k);
-                if (node == null) {
-                    throw new RuntimeException("OOPS " + k);
-                }
-                BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration.box.services(),
-                        configurationSite.replaceParent(node.configurationSite()), this, node);
-                exports.add(e);
-                newConfiguration.box.services().nodes.put(e);
-            }
-        }
+        // List<BuildtimeServiceNodeImport<?>> exports = new ArrayList<>();
+        // if (newConfiguration.box.services().required != null) {
+        // for (Key<?> k : newConfiguration.box.services().required) {
+        // if (newConfiguration.box.services().nodes.containsKey(k)) {
+        // throw new RuntimeException("OOPS already there " + k);
+        // }
+        // ServiceNode<?> node = injectorConfiguration.box.services().nodes.getRecursive(k);
+        // if (node == null) {
+        // throw new RuntimeException("OOPS " + k);
+        // }
+        // BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration.box.services(),
+        // configurationSite.replaceParent(node.configurationSite()), this, node);
+        // exports.add(e);
+        // newConfiguration.box.services().nodes.put(e);
+        // }
+        // }
     }
 
     /**
@@ -105,31 +104,32 @@ public class BindInjectorFromBundle {
      *            all nodes that are available for import from bound injector or bundle
      */
     void processImport(List<? extends ServiceNode<?>> importableNodes) {
-        HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes = new HashMap<>();
-        for (ServiceNode<?> node : importableNodes) {
-            if (!node.isPrivate()) {
-                nodes.put(node.key(), new BuildtimeServiceNodeImport<>(injectorConfiguration.box.services(),
-                        configurationSite.replaceParent(node.configurationSite()), this, node));
-            }
-        }
-        // Process each stage
-        for (Wirelet operation : wirelets.list()) {
-            if (operation instanceof Wirelet) {
-                AppPackedBundleSupport.invoke().startWireOperation(operation);
-                nodes = processImportStage(operation, nodes);
-                AppPackedBundleSupport.invoke().finishWireOperation(operation);
-            }
-        }
-
-        // Add all to the private node map
-        for (BuildtimeServiceNodeImport<?> node : nodes.values()) {
-            if (!injectorConfiguration.box.services().nodes.putIfAbsent(node)) {
-                throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
-            }
-        }
+        // HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes = new HashMap<>();
+        // for (ServiceNode<?> node : importableNodes) {
+        // if (!node.isPrivate()) {
+        // nodes.put(node.key(), new BuildtimeServiceNodeImport<>(injectorConfiguration.box.services(),
+        // configurationSite.replaceParent(node.configurationSite()), this, node));
+        // }
+        // }
+        // // Process each stage
+        // for (Wirelet operation : wirelets.list()) {
+        // if (operation instanceof Wirelet) {
+        // AppPackedBundleSupport.invoke().startWireOperation(operation);
+        // nodes = processImportStage(operation, nodes);
+        // AppPackedBundleSupport.invoke().finishWireOperation(operation);
+        // }
+        // }
+        //
+        // // Add all to the private node map
+        // for (BuildtimeServiceNodeImport<?> node : nodes.values()) {
+        // if (!injectorConfiguration.box.services().nodes.putIfAbsent(node)) {
+        // throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already
+        // present
+        // }
+        // }
     }
 
-    private HashMap<Key<?>, BuildtimeServiceNodeImport<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes) {
+    HashMap<Key<?>, BuildtimeServiceNodeImport<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes) {
         ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {

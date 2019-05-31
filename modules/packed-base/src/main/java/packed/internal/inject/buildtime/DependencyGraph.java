@@ -41,7 +41,7 @@ final class DependencyGraph {
     ArrayList<BuildtimeServiceNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
-    final ContainerBuilder root;
+    final DefaultContainerConfiguration root;
 
     final InjectorBuilder ib;
 
@@ -78,7 +78,7 @@ final class DependencyGraph {
         if (ib.injectorBundleBindings != null) {
             for (BindInjectorFromBundle bi : ib.injectorBundleBindings) {
                 bi.processExport();
-                new DependencyGraph(bi.newConfiguration).instantiate();
+                // new DependencyGraph(bi.newConfiguration).instantiate();
             }
         }
 

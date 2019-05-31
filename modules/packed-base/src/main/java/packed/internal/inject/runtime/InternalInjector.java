@@ -28,7 +28,7 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.buildtime.ContainerBuilder;
+import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 import packed.internal.util.KeyBuilder;
 
 /** The default implementation of {@link Injector}. */
@@ -51,7 +51,7 @@ public final class InternalInjector extends AbstractInjector {
     // /** This injector's tags. */
     // private final Set<String> tags;
 
-    public InternalInjector(ContainerBuilder injectorConfiguration, ServiceNodeMap nodes) {
+    public InternalInjector(DefaultContainerConfiguration injectorConfiguration, ServiceNodeMap nodes) {
         this.parent = null;
         this.nodes = requireNonNull(nodes);
         // this.tags = injectorConfiguration.immutableCopyOfTags();

@@ -43,9 +43,6 @@ public final class ProvideFromInjector {
     /** The injector we are providing services from. */
     private final Injector injector;
 
-    /** The configuration of the container we are providing services into. */
-    final ContainerBuilder containerConfiguration;
-
     /** The wiring options used when creating this configuration. */
     final WireletList wirelets;
 
@@ -54,8 +51,7 @@ public final class ProvideFromInjector {
 
     private final InjectorBuilder ib;
 
-    public ProvideFromInjector(ContainerBuilder containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
-        this.containerConfiguration = requireNonNull(containerConfiguration);
+    public ProvideFromInjector(DefaultContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
         this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);
@@ -93,8 +89,8 @@ public final class ProvideFromInjector {
         HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(containerConfiguration.box.services(),
-                        configurationSite.replaceParent(node.configurationSite()), this, node);
+                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(ib, configurationSite.replaceParent(node.configurationSite()), this,
+                        node);
                 nodes.put(node.key(), n);
             }
         }

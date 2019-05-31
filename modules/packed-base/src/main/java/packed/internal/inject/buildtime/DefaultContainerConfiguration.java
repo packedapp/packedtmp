@@ -79,6 +79,12 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
         this.wirelets = WireletList.of(wirelets);
     }
 
+    public void buildBundle(BundleDescriptor.Builder builder) {
+        for (Extension<?> e : extensions.values()) {
+            e.buildBundle(builder);
+        }
+    }
+
     public final void checkConfigurable() {
 
     }
@@ -93,12 +99,6 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
     @Override
     public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    public void buildBundle(BundleDescriptor.Builder builder) {
-        for (Extension<?> e : extensions.values()) {
-            e.buildBundle(builder);
-        }
     }
 
     public void finish() {
@@ -120,6 +120,21 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
     @Override
     public final String getDescription() {
         return description;
+    }
+
+    /**
+     * Returns an extension of the specified type if installed, otherwise null.
+     * 
+     * @param <T>
+     *            the type of extension to return
+     * @param extensionType
+     *            the type of extension to return
+     * @return an extension of the specified type if installed, otherwise null
+     */
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T extends Extension<T>> T getExtension(Class<T> extensionType) {
+        return (T) extensions.get(extensionType);
     }
 
     /** {@inheritDoc} */
