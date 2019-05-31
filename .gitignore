@@ -1,5 +1,6 @@
 /bin
-
+/bin-test/
+/.clover/
 documentation
 cleanup
 target
@@ -8,5 +9,3 @@ target
 .project
 .settings
 .DS_Store
-/.clover/
-/bin-test/
