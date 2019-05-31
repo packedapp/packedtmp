@@ -58,6 +58,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     public ArrayList<BuildtimeServiceNode<?>> nodes = new ArrayList<>();
 
+    public final InjectorBuilder ib = new InjectorBuilder();
+
     private InjectorBuilder ib() {
         return builder().box.services();
     }

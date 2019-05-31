@@ -21,6 +21,7 @@ import app.packed.container.Container;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.InjectorExtension;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.InternalContainer;
@@ -36,6 +37,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... wirelets) {
         super(configurationSite, bundle, wirelets);
+        use(InjectorExtension.class);
     }
 
     public Container build() {

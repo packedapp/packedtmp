@@ -70,7 +70,7 @@ public final class InjectorBuilder {
 
     public InternalInjector publicInjector;
 
-    InjectorBuilder() {
+    public InjectorBuilder() {
         boolean exportNodes = true;
         // System.out.println(exportNodes);
         if (exportNodes) {
