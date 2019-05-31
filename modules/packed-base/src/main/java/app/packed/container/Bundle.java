@@ -49,7 +49,6 @@ import app.packed.util.TypeLiteral;
 // Descriptor does not freeze, Injector+Container freezes
 
 // explicitServiceRequirements(); <- You can put it in an environment to force it. No it would break encapsulation
-
 // AnyBundle...
 // Bundle + BaseBundle, or
 // AnyBundle + Bundle <- I think I like this better....
@@ -63,7 +62,6 @@ import app.packed.util.TypeLiteral;
 // // Insta
 // // NativeImageWriter
 // }
-
 public abstract class Bundle extends AnyBundle {
 
     /**
