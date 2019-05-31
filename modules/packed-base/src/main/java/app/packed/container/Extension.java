@@ -28,7 +28,8 @@ import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * Container extensions are used to extend containers with functionality.
- *
+ * <p>
+ * Subclasses of this class must give open rights to app.packed.base
  *
  * <p>
  * Subclasses of this class that are actively used should be final.

@@ -29,5 +29,11 @@ final class ComponentExtension extends Extension<ComponentExtension> {
     // Alternative to ComponentScan
     void scanThisModule(Class<?>... classesInPackages) {}
 
+    // Selvfoelelig er det hele komponenter... Ogsaa scoped
+    // Vi skal ikke til at have flere scans...
+
     void scanThisModule(String... packages) {}
+
+    // @Scoped
+    // @Install()
 }

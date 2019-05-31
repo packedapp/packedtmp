@@ -17,7 +17,6 @@ package packed.app.packed.inject2;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -41,8 +40,6 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
 // Omvendt gider vi jo ikke have en hel klasse til rename af en injector...
 
 // Alias()->creates an alias of a service, Rebind() changes the key, and transform() takes a function
-
-// Tro maaske vi skal to klasser, incoming, outgoing
 public final class OldServiceWirelets {
 
     /** An wiring operation that removes every service in the import pipeline. */
@@ -211,7 +208,6 @@ public final class OldServiceWirelets {
      * @return the wiring operation
      */
     public static <T, R> Wirelet bindDownstream(Object instance) {
-        MethodHandles.lookup();
         throw new UnsupportedOperationException();
     }
 

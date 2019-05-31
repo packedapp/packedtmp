@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
@@ -22,7 +23,9 @@ import java.lang.reflect.Method;
  */
 // Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
 // Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+public class NativeImageSupport {
+
+    public static void registerConstructor(Constructor<?> c) {}
 
     public void saveMethod(Method m) {}
 

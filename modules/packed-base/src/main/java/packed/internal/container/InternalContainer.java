@@ -63,7 +63,8 @@ public class InternalContainer implements Container {
         } else {
             components = Map.of();
         }
-        this.name = builder.getName() == null ? "App" : builder.getName();
+        this.name = builder.getName();
+        // this.name = builder.getName() == null ? "App" : builder.getName();
     }
 
     @Override

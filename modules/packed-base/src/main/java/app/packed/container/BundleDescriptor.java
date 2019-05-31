@@ -96,6 +96,8 @@ public class BundleDescriptor {
     @Nullable
     private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
 
+    private final String name;
+
     /** A descriptor for each registered service in the bundle. */
     // hmm exported vs
     private final Collection<ServiceDescriptor> services;
@@ -112,6 +114,7 @@ public class BundleDescriptor {
         this.bundleType = builder.bundleType();
         this.description = builder.getBundleDescription();
         this.services = builder.services == null ? List.of() : List.copyOf(builder.services.values());
+        this.name = builder.name == null ? "?" : builder.name;
     }
 
     /**
@@ -177,6 +180,15 @@ public class BundleDescriptor {
         return Optional.ofNullable(mainEntryPoint);
     }
 
+    /**
+     * Returns the name of the bundle.
+     * 
+     * @return the name of the bundle
+     */
+    public final String name() {
+        return name;
+    }
+
     /** Prints this descriptor to {@code system.out}. */
     public final void print() {
         System.out.println(toString());
@@ -191,7 +203,8 @@ public class BundleDescriptor {
     public final String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("bundle { type: ").append(format(bundleType));
+        sb.append("bundle { name: ").append(name);
+        sb.append(", type: ").append(format(bundleType));
         if (bundleModule().isNamed()) {
             sb.append(", module: ").append(bundleModule().getName());
         }
@@ -225,7 +238,6 @@ public class BundleDescriptor {
         requireNonNull(bundle, "bundle is null");
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         DefaultContainerConfiguration conf = new DefaultContainerConfiguration(ContainerType.DESCRIPTOR, bundle);
-        builder.setBundleDescription(conf.getDescription());
         conf.createDescriptor(builder);
         return builder.build();
     }
@@ -268,6 +280,8 @@ public class BundleDescriptor {
 
         private BundleContract.Builder contract = new BundleContract.Builder();
 
+        private String name;
+
         private Map<Key<?>, ServiceDescriptor> services;
 
         public Builder(Class<? extends Bundle> bundleType) {
@@ -306,6 +320,11 @@ public class BundleDescriptor {
 
         public Builder setBundleDescription(@Nullable String description) {
             this.bundleDescription = description;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = requireNonNull(name);
             return this;
         }
     }

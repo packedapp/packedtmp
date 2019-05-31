@@ -64,7 +64,7 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
     private String description;
 
     /** All extensions that are currently used. */
-    final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
     private boolean isConfigured;
 
@@ -72,43 +72,33 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
     @Nullable
     private String name;
 
+    @Nullable
     final DefaultContainerConfiguration parent;
 
     /** A list of wirelets used when creating this configuration. */
     private final WireletList wirelets;
 
     /** All child containers, in order of wiring order. */
-    final LinkedHashMap<String, DefaultContainerConfiguration> wirings = new LinkedHashMap<>();
+    final LinkedHashMap<String, DefaultContainerConfiguration> links = new LinkedHashMap<>();
 
     public DefaultContainerConfiguration(ContainerType type, @Nullable AnyBundle bundle, Wirelet... wirelets) {
-        this.configurationSite = InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF);
-        this.bundle = bundle;
-        this.parent = null;
-        this.wirelets = WireletList.of(wirelets);
+        this(type, null, bundle, wirelets);
     }
 
     public DefaultContainerConfiguration(DefaultContainerConfiguration parent, ContainerType type, @Nullable AnyBundle bundle, Wirelet... wirelets) {
+        this(type, requireNonNull(parent), bundle, wirelets);
+    }
+
+    private DefaultContainerConfiguration(ContainerType type, DefaultContainerConfiguration parent, @Nullable AnyBundle bundle, Wirelet... wirelets) {
         this.configurationSite = InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF);
         this.bundle = bundle;
-        this.parent = requireNonNull(parent);
+        this.parent = parent;
         this.wirelets = WireletList.of(wirelets);
     }
 
     public Container build() {
         configure();
         return new InternalContainer(this, buildInjector());
-    }
-
-    public void createDescriptor(BundleDescriptor.Builder builder) {
-        configure();
-        finish();
-
-        DependencyGraph injectorBuilder = new DependencyGraph(this);
-        injectorBuilder.analyze();
-
-        for (Extension<?> e : extensions.values()) {
-            e.buildBundle(builder);
-        }
     }
 
     public Injector buildInjector() {
@@ -130,13 +120,31 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
     public void configure() {
         if (!isConfigured) {
             if (bundle != null) {
+                BundleClassCache bcc = BundleClassCache.of(bundle.getClass());
                 if (bundle.getClass().isAnnotationPresent(Install.class)) {
                     install(bundle);
                 }
                 bundle.doConfigure(this);
+                if (name == null) {
+                    name = bcc.defaultName();
+                }
             }
         }
         isConfigured = true;
+    }
+
+    public void createDescriptor(BundleDescriptor.Builder builder) {
+        configure();
+        // FinishAllChildren
+        finish();
+        builder.setBundleDescription(description);
+        builder.setName(name);
+        DependencyGraph injectorBuilder = new DependencyGraph(this);
+        injectorBuilder.analyze();
+
+        for (Extension<?> e : extensions.values()) {
+            e.buildBundle(builder);
+        }
     }
 
     /** {@inheritDoc} */
@@ -149,6 +157,15 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
+        if (name != null) {
+            String n = name;
+            if (n.endsWith("?")) {
+                n = n.substring(0, n.length() - 1);
+            }
+
+            name = n;
+        }
+
     }
 
     public <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
@@ -156,11 +173,7 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         requireNonNull(action, "action is null");
     }
 
-    /**
-     * Returns the description.
-     *
-     * @return the configuration
-     */
+    /** {@inheritDoc} */
     @Override
     public String getDescription() {
         return description;
@@ -216,12 +229,13 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
     public <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
         DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(this, ContainerType.LINK, bundle, wirelets);
+
         // Implementation node, we can do linking (calling bundle.configure) in two ways. Immediately or later after the parent
         // has been fully configured. We choose immediately because we get nice stack traces.
         configuration.configure();
 
         // TODO what about name
-        wirings.put(configuration.getName(), configuration);
+        links.put(configuration.getName(), configuration);
         return bundle;
     }
 
@@ -258,7 +272,7 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         requireNonNull(extensionType, "extensionType is null");
         return (T) extensions.computeIfAbsent(extensionType, k -> {
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
-            return ExtensionInfo.newInstance(this, extensionType);
+            return ExtensionClassCache.newInstance(this, extensionType);
         });
     }
 
