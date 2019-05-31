@@ -9,7 +9,7 @@ Building Packed
 The source code can be cloned using [git](http://git-scm.com/) from GitHub:
 
 ```
-  git clone https://github.com/packedapp/packed.git
+  git clone https://github.com/packedapp/packedtmp.git
 ```
 
 This project uses [Apache Maven](https://maven.apache.org/) as the build system.
@@ -20,3 +20,6 @@ To install and compile the source code locally, run:
 ```
 
 Note that Packed requires Java 11 to compile and run.
+
+
+Travis CI: https://travis-ci.org/packedapp/packedtmp
