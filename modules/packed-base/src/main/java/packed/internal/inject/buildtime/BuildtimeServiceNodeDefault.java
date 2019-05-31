@@ -30,6 +30,7 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
@@ -65,7 +66,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BuildtimeServiceNodeDefault<?> parent;
 
-    public BuildtimeServiceNodeDefault(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, configurationSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
@@ -92,7 +93,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildtimeServiceNodeDefault(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
             T instance) {
         super(injectorConfiguration, configurationSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
@@ -180,8 +181,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.box.services().publicInjector,
-                        dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
             }
         }
 

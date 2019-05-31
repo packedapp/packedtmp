@@ -162,7 +162,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         // if (node == null) {
         // throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         // }
-        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder(), cs);
+        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(ib(), cs);
         bn.as(key);
         ib().exportedNodes.add(bn);
         return new DefaultExportedServiceConfiguration<>(builder(), bn);
@@ -185,7 +185,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     // Kan vi lave denne generisk paa tvaers af extensions...
     // disableAutomaticRequirements()
     public void manualRequirementsManagement() {
-        builder().disableAutomaticRequirements();
+        ib().autoRequires = false;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -238,7 +238,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
         ServiceClassDescriptor desc = builder().accessor.serviceDescriptorFor(func.getReturnTypeRaw());
 
-        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder(), frame, desc, InstantiationMode.SINGLETON,
+        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(ib(), frame, desc, InstantiationMode.SINGLETON,
                 builder().accessor.readable(func), (List) factory.dependencies());
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
@@ -267,7 +267,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         InternalConfigurationSite frame = builder().configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
         ServiceClassDescriptor sdesc = builder().accessor.serviceDescriptorFor(instance.getClass());
 
-        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder(), frame, sdesc, instance);
+        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(ib(), frame, sdesc, instance);
 
         scanForProvides(instance.getClass(), sc);
         sc.as((Key) Key.of(instance.getClass()));

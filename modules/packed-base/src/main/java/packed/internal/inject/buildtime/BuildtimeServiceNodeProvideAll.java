@@ -24,6 +24,7 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
@@ -38,7 +39,7 @@ public class BuildtimeServiceNodeProvideAll<T> extends BuildtimeServiceNode<T> {
     final ProvideFromInjector binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildtimeServiceNodeProvideAll(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideFromInjector binding,
+    BuildtimeServiceNodeProvideAll(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideFromInjector binding,
             ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);

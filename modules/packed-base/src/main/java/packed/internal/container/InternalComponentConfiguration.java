@@ -21,17 +21,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
-import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.classscan.OldComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.AppPackedInjectSupport;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
-import packed.internal.inject.buildtime.ContainerBuilder;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
@@ -66,7 +64,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     /** The object instances of the component, the array will be passed along to InternalComponent. */
     public Object[] instances;
 
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
         this.parent = parent;
@@ -78,7 +76,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, T instance) {
         super(containerBuilder, configurationSite, descriptor, instance);
         this.parent = parent;
@@ -104,33 +102,14 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     public OldComponentClassDescriptor descriptor() {
         return (OldComponentClassDescriptor) super.descriptor();
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public InternalComponentConfiguration<T> addMixin(Class<?> implementation) {
-        return addMixin(Factory.findInjectable(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InternalComponentConfiguration<T> addMixin(Factory<?> factory) {
-        InternalFunction<?> f = AppPackedInjectSupport.toInternalFunction(factory);
-        return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InternalComponentConfiguration<T> addMixin(Object instance) {
-        return addMixin0(new MixinNode(injectorBuilder, configurationSite, instance));
-    }
-
-    private InternalComponentConfiguration<T> addMixin0(MixinNode node) {
-        if (mixins == null) {
-            mixins = new ArrayList<>(1);
-        }
-        mixins.add(node);
-        return this;
-    }
+    //
+    // private InternalComponentConfiguration<T> addMixin0(MixinNode node) {
+    // if (mixins == null) {
+    // mixins = new ArrayList<>(1);
+    // }
+    // mixins.add(node);
+    // return this;
+    // }
 
     // /** {@inheritDoc} */
     // @Override
@@ -188,6 +167,25 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
         }
         return this;
     }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public InternalComponentConfiguration<T> addMixin(Class<?> implementation) {
+    // return addMixin(Factory.findInjectable(implementation));
+    // }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public InternalComponentConfiguration<T> addMixin(Factory<?> factory) {
+    // InternalFunction<?> f = AppPackedInjectSupport.toInternalFunction(factory);
+    // return addMixin0(new MixinNode(injectorBuilder, configurationSite, injectorBuilder.accessor.readable(f)));
+    // }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public InternalComponentConfiguration<T> addMixin(Object instance) {
+    // return addMixin0(new MixinNode(injectorBuilder, configurationSite, instance));
+    // }
 
     /** A special build node that is used for mixins. */
     static class MixinNode extends BuildtimeServiceNodeDefault<Object> {
@@ -207,7 +205,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
          * @param configurationSite
          * @param instance
          */
-        public MixinNode(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
+        public MixinNode(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, Object instance) {
             // Null should probably be service class descriptor... or its own...
             super(injectorConfiguration, configurationSite, null, instance);
         }

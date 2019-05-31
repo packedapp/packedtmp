@@ -26,6 +26,7 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.InternalServiceDescriptor;
 import packed.internal.inject.ServiceNode;
@@ -59,7 +60,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
 
     /** The injector configuration this node is registered with. */
     @Nullable // Is nullable for stages for now
-    protected final ContainerBuilder injectorBuilder;
+    protected final InjectorBuilder injectorBuilder;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
@@ -75,7 +76,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    BuildtimeServiceNode(ContainerBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
+    BuildtimeServiceNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
         this.configurationSite = requireNonNull(configurationSite);
         // super(configurationSite);
         this.injectorBuilder = injectorBuilder;

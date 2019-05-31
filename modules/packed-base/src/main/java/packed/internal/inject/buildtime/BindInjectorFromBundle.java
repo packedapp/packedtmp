@@ -92,8 +92,8 @@ public class BindInjectorFromBundle {
                 if (node == null) {
                     throw new RuntimeException("OOPS " + k);
                 }
-                BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration, configurationSite.replaceParent(node.configurationSite()),
-                        this, node);
+                BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration.box.services(),
+                        configurationSite.replaceParent(node.configurationSite()), this, node);
                 exports.add(e);
                 newConfiguration.box.services().nodes.put(e);
             }
@@ -108,8 +108,8 @@ public class BindInjectorFromBundle {
         HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : importableNodes) {
             if (!node.isPrivate()) {
-                nodes.put(node.key(),
-                        new BuildtimeServiceNodeImport<>(injectorConfiguration, configurationSite.replaceParent(node.configurationSite()), this, node));
+                nodes.put(node.key(), new BuildtimeServiceNodeImport<>(injectorConfiguration.box.services(),
+                        configurationSite.replaceParent(node.configurationSite()), this, node));
             }
         }
         // Process each stage

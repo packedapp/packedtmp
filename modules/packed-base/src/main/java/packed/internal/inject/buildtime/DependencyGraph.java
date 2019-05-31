@@ -60,7 +60,7 @@ final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(ContainerBuilder builder) {
         ib.privateInjector = new InternalInjector(builder, ib.nodes);
-        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder, builder.configurationSite(), INJ, ib.privateInjector);
+        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder.box.services(), builder.configurationSite(), INJ, ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ib.nodes.put(d);
         if (builder.bundle == null) {

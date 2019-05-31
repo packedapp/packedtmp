@@ -21,6 +21,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
@@ -39,7 +40,7 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
      * @param configurationSite
      *            the configuration site of the exposure
      */
-    public BuildtimeServiceNodeExported(ContainerBuilder configuration, InternalConfigurationSite configurationSite) {
+    public BuildtimeServiceNodeExported(InjectorBuilder configuration, InternalConfigurationSite configurationSite) {
         super(configuration, configurationSite, List.of());
     }
 

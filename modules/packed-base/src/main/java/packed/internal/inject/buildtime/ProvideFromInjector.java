@@ -93,7 +93,7 @@ public final class ProvideFromInjector {
         HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(containerConfiguration,
+                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(containerConfiguration.box.services(),
                         configurationSite.replaceParent(node.configurationSite()), this, node);
                 nodes.put(node.key(), n);
             }

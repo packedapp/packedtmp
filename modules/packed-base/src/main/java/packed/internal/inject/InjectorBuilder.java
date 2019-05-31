@@ -41,6 +41,8 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 /** This class records all service related information for a single box. */
 public final class InjectorBuilder {
 
+    public boolean autoRequires = true;
+
     /** A map of all nodes that are exported out from the box. */
     public final ServiceNodeMap exports;
 

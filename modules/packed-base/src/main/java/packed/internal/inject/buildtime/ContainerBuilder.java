@@ -32,8 +32,6 @@ import packed.internal.inject.BoxType;
  */
 public class ContainerBuilder extends DefaultContainerConfiguration {
 
-    boolean autoRequires = true;
-
     public final Box box;
 
     public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... wirelets) {
@@ -57,10 +55,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         finish();
         new DependencyGraph(this).instantiate();
         return box.services().publicInjector;
-    }
-
-    public void disableAutomaticRequirements() {
-        autoRequires = false;
     }
 }
 
