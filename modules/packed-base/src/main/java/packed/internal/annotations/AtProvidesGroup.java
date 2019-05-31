@@ -22,7 +22,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
+import app.packed.component.ComponentConfiguration;
+import app.packed.container.ExtensionGroupConfigurator;
+import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -37,7 +41,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  * Information about fields and methods annotated with {@link Provide}, typically on a single class. Used for both
  * services, components, import and export stages.
  */
-public final class AtProvidesGroup {
+public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration, InjectorExtension> {
 
     /** An empty provides group. */
     private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
@@ -59,8 +63,14 @@ public final class AtProvidesGroup {
         this.hasInstanceMembers = builder.hasInstanceMembers;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void accept(ComponentConfiguration cc, InjectorExtension e) {
+        // TODO Auto-generated method stub
+    }
+
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class Builder {
+    public final static class Builder implements ExtensionGroupConfigurator.Builder<InjectorExtension> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;
@@ -74,6 +84,7 @@ public final class AtProvidesGroup {
          * 
          * @return the new group
          */
+        @Override
         public AtProvidesGroup build() {
             return members == null ? EMPTY : new AtProvidesGroup(this);
         }
@@ -99,7 +110,8 @@ public final class AtProvidesGroup {
             return null;
         }
 
-        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
+        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,
+                List<InternalDependencyDescriptor> dependencies) {
             AtProvides ap = new AtProvides(lookup, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
 

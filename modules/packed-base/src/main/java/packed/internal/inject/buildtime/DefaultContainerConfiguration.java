@@ -32,12 +32,12 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
-import packed.internal.bundle.WireletList;
 import packed.internal.classscan.DescriptorFactory;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.container.ExtensionInfo;
+import packed.internal.container.WireletList;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public class DefaultContainerConfiguration implements ContainerConfiguration {
@@ -134,7 +134,7 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration installStatics(Class<?> implementation) {
+    public ComponentConfiguration installStatic(Class<?> implementation) {
         return new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
     }
 

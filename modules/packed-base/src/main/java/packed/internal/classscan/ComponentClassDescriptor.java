@@ -16,33 +16,37 @@
 package packed.internal.classscan;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.function.BiConsumer;
 
-import packed.internal.util.descriptor.InternalFieldDescriptor;
+import app.packed.component.ComponentConfiguration;
+import app.packed.container.ContainerConfiguration;
 
 /**
  *
  */
-public class ComponentClassDescriptor extends ServiceClassDescriptor {
+// Includere den lookup??? Ja det taenker jeg
+public class ComponentClassDescriptor {
 
-    // Need the lookup....
-    // Also with regards to ComponentMethod....
-    // Access might fail at runtime.... For example, if we stream all component methods....
-    // And one is private, the lookup didn't not allow it. I think its find just to throw a runtime exception
+    public static void process(ContainerConfiguration container, ComponentConfiguration component) {
 
-    /** A cached map of all fields for a particular annotation. */
-    final ConcurrentHashMap<Class<? extends Annotation>, List<InternalFieldDescriptor>> annotatedFields = new ConcurrentHashMap<>();
+    }
 
-    /** All fields that have at least 1 annotation. */
-    List<InternalFieldDescriptor> fieldsAllAnnotated;
+    public static BiConsumer<ContainerConfiguration, ComponentConfiguration>[] scan(Class<?> clazz) {
+        HashSet<ExtensionGroup> s = new HashSet<>();
+        for (Class<?> c = clazz; c != Object.class; c = c.getSuperclass()) {
+            for (Method method : c.getDeclaredMethods()) {
+                Annotation[] annotations = method.getAnnotations();
+                for (Annotation a : annotations) {
+                    ExtensionGroup ce = ExtensionGroup.FOR_ANNOTATION.get(a.annotationType());
+                    if (ce != ExtensionGroup.EMPTY) {
+                        s.add(ce);
+                    }
+                }
 
-    /**
-     * @param clazz
-     * @param lookup
-     */
-    ComponentClassDescriptor(Class<?> clazz, Lookup lookup, MemberScanner scanner) {
-        super(clazz, lookup, scanner);
+            }
+        }
+        return s.toArray(i -> new ExtensionGroup[i]);
     }
 }

@@ -35,10 +35,10 @@ public class BuildtimeServiceNodeProvideAll<T> extends BuildtimeServiceNode<T> {
     final ServiceNode<T> other;
 
     /** The bind injector source. */
-    final ProvideAll binding;
+    final ProvideFromInjector binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildtimeServiceNodeProvideAll(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideAll binding,
+    BuildtimeServiceNodeProvideAll(ContainerBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ProvideFromInjector binding,
             ServiceNode<T> node) {
         super(injectorConfiguration, configurationSite, List.of());
         this.other = requireNonNull(node);

@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package main;
 
-import java.lang.reflect.Method;
+import app.packed.config.ConfigSite;
+import app.packed.inject.Dependency;
 
 /**
  *
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+public class AAA {
 
-    public void saveMethod(Method m) {}
+    public static class ExplicitDependency {
+        ConfigSite configSite;
+        // Includere key + optional..
+        /// Saa kan Injector descriptor.. includere alle requirements
+        // i En liste, men der vil vi jo gerne have config site, component + dvs andet...
+        Dependency dependency;
 
-    // public static void support(AnyBundle b) {
-    //
-    // }
+    }
 }

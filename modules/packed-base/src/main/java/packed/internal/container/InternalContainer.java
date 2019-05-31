@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 import app.packed.component.Component;
 import app.packed.config.ConfigSite;
-import app.packed.container.App;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
@@ -66,11 +65,6 @@ public class InternalContainer implements Container {
             components = Map.of();
         }
         this.name = builder.getName() == null ? "App" : builder.getName();
-    }
-
-    @Override
-    public App app() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -28,10 +28,10 @@ import app.packed.inject.InjectionException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
-import packed.internal.bundle.AppPackedBundleSupport;
-import packed.internal.bundle.WireletList;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.AppPackedBundleSupport;
+import packed.internal.container.WireletList;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
@@ -68,7 +68,7 @@ class BindInjectorFromBundle {
      */
     void processImport() {
         bundle.doConfigure(newConfiguration);
-        processImport(newConfiguration.exportedNodes);
+        processImport(newConfiguration.box.services().exportedNodes);
     }
 
     void processExport() {

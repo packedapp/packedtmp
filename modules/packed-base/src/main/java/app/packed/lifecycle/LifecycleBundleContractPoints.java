@@ -13,22 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package app.packed.lifecycle;
 
-import app.packed.config.ConfigSite;
-import app.packed.inject.Dependency;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  *
  */
-public class AAA {
+public class LifecycleBundleContractPoints {
+    // Navn + Description, alternative, Map<String, Optional<String>> name+ description
+    public Map<String, Optional<String>> exposed() {
+        return Map.of();
+    }
 
-    public static class ExplicitDependency {
-        ConfigSite configSite;
-        // Includere key + optional..
-        /// Saa kan Injector descriptor.. includere alle requirements
-        // i En liste, men der vil vi jo gerne have config site, component + dvs andet...
-        Dependency dependency;
+    public Set<String> optional() {
+        return Set.of();
+    }
 
+    public Set<String> required() {
+        return Set.of();
     }
 }

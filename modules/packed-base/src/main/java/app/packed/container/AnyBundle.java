@@ -92,7 +92,7 @@ public abstract class AnyBundle {
     }
 
     protected final Set<Class<? extends Extension<?>>> extensionTypes() {
-        return configuration.extensionTypes();
+        return configuration().extensionTypes();
     }
 
     @Nullable
@@ -109,11 +109,22 @@ public abstract class AnyBundle {
      */
     @Nullable
     protected final String getName() {
-        return configuration.getName();
+        return configuration().getName();
     }
 
+    /**
+     * Links the specified bundle to this bundle.
+     * 
+     * @param <T>
+     *            the type of bundle to link
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            an optional array of wirelets
+     * @return the specified bundle
+     */
     protected final <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
-        return configuration.link(bundle, wirelets);
+        return configuration().link(bundle, wirelets);
     }
 
     /**
@@ -136,8 +147,8 @@ public abstract class AnyBundle {
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
 
-    protected final ContainerConfiguration setDescription(@Nullable String description) {
-        return configuration().setDescription(description);
+    protected final void setDescription(@Nullable String description) {
+        configuration().setDescription(description);
     }
 
     /**
@@ -156,11 +167,18 @@ public abstract class AnyBundle {
      *             characters and '_', '-' or '.'
      */
     protected final void setName(@Nullable String name) {
-        configuration.setName(name);
+        configuration().setName(name);
     }
 
+    /**
+     * Returns a container extension of the specified type.
+     * 
+     * @param <T>
+     * @param extensionType
+     * @return an extension of the specified type
+     */
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {
-        return configuration.use(extensionType);
+        return configuration().use(extensionType);
     }
 }
 

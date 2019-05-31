@@ -62,13 +62,6 @@ import app.packed.lifecycle.LifecycleState;
 
 public interface Container extends Injector {
 
-    /**
-     * Returns the application that this container belongs to.
-     * 
-     * @return the application that this container belongs to
-     */
-    App app();
-
     // ListenerManager listenerManager(); // listeners()...???, container.jobs().
 
     /**

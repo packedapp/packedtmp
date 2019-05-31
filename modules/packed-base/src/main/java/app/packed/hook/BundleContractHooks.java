@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import java.lang.reflect.Method;
+package app.packed.hook;
 
 /**
  *
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+public class BundleContractHooks {
 
-    public void saveMethod(Method m) {}
+    /** An object representing the various hooks a bundle exposes. */
+    // This is more implementation details...
+    // For example, the number of methods might change...
+    // Might as well provide
 
-    // public static void support(AnyBundle b) {
-    //
-    // }
 }

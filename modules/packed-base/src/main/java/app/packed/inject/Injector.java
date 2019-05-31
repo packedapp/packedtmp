@@ -270,15 +270,15 @@ public interface Injector /* extends Taggable */ {
      *
      * @param bundle
      *            a bundle to create an injector from
-     * @param operations
+     * @param wirelets
      *            various operations
      * @return the new injector
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
-    static Injector of(Bundle bundle, Wirelet... operations) {
+    static Injector of(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle);
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), bundle, wirelets);
         bundle.doConfigure(builder);
         return builder.buildInjector();
     }
@@ -290,11 +290,11 @@ public interface Injector /* extends Taggable */ {
      *            a consumer used for configuring the injector
      * @return the new injector
      */
-    static Injector of(Consumer<? super InjectorConfigurator> configurator, Wirelet... operations) {
+    static Injector of(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, operations);
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), null, wirelets);
         configurator.accept(new InjectorConfigurator(builder));
         return builder.buildInjector();
     }

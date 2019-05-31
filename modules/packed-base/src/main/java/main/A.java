@@ -13,45 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package main;
 
-import static java.lang.annotation.RetentionPolicy.CLASS;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.Extension;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import packed.internal.annotations.AtProvidesGroup;
 
-@Retention(CLASS)
-@Target(ElementType.ANNOTATION_TYPE)
 /**
  * A meta annotation that can be used on annotations to indicate that a specific should, if not already it, be installed
  * into the configuration of a container.
  */
+
+public class A {
+
+}
 // The extension class must have a matching method for each annotation target
 // @OnHook AnnotatedField<Provides>
 // @OnHook AnnotatedMethod<Provides>
 // I think we should require the methods....
 // Default implementation can just ignore them
-public @interface ExtensionAnnotation {
-
-    /**
-     * Returns the extension that knows how do handle the types, fields or methods that are annotated...
-     * 
-     * @return the extension that knows how do handle
-     */
-    Class<? extends Extension<?>> value();
-}
 // We only support one extension here unlike requiresExtension...
 // Because we need a single place to look for interesting methods....
 /// @OnHookDiscovery er det jo..

@@ -18,7 +18,6 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.lang.annotation.Annotation;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.Collection;
@@ -26,10 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.Hook;
+import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -166,14 +163,15 @@ public class BundleDescriptor {
 
     /**
      * Returns the version of this bundle. The version of a bundle is always identical to the version of the module to which
-     * the bundle belongs. If the bundle is in the unnamed module this method returns {@link Optional#empty()}.
+     * the bundle belongs. If the bundle is in the unnamed module or on the class path this method returns
+     * {@link Optional#empty()}.
      * 
      * @return the version of the bundle
      * @see ModuleDescriptor#version()
      */
     public final Optional<Version> bundleVersion() {
-        // Do we want to allow, people to set their own version in the builder????
-        // I mean it won't have any effect... maybe let people override it
+        // Do we want to allow, people to set their own version in the builder???? I mean it won't have any effect... maybe let
+        // people override it
         return bundleModule().getDescriptor().version();
     }
 
@@ -186,8 +184,8 @@ public class BundleDescriptor {
         return contract;
     }
 
-    public final Hooks hooks() {
-        return new Hooks();
+    public final BundleDescriptorHooks hooks() {
+        return new BundleDescriptorHooks();
     }
 
     /**
@@ -336,61 +334,19 @@ public class BundleDescriptor {
             return this;
         }
     }
-
-    public final class Hooks {
-
-        // Permissions-> For AOP, For Invocation, for da shizzla
-
-        public Map<Class<? extends Class<?>>, Collection<AnnotatedFieldHook<?>>> annotatedFieldExports() {
-            return Map.of();
-        }
-
-        /**
-         * Returns a collection of all exported annotated field hooks of the particular type.
-         * 
-         * @param <T>
-         *            the type of field annotation
-         * @param annotationType
-         *            the type of field hook
-         * @return a collection of all exported annotated field hooks of the particular type
-         */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        public <T extends Annotation> Collection<AnnotatedFieldHook<T>> annotatedFieldExports(Class<T> annotationType) {
-            requireNonNull(annotationType, "annotationType is null");
-            return (Collection) annotatedFieldExports().getOrDefault(annotationType, List.of());
-        }
-
-        /**
-         * Returns a collection of all hooks that the bundle exports in no particular order.
-         * 
-         * @return a collection of all hooks that the bundle exports in no particular order
-         */
-        public Collection<Hook> exports() {
-            return Set.of();
-        }
-
-        public final class Builder {}
-        // captures
-        // exposes
-
-        // expose hooks, capture hooks
-
-        // Another key feature is hooks.
-    }
-    //
-
-    // Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
-    // Og dermed kun importere praecis de interfaces den definere...
-    // Deploy(someSpec?) ved ikke lige med API'en /
-    // FooBarBundle.API$2_2
-    // FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
-    // Maaske hellere have den markeret med @Preview :D
-    /// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
-
-    // The union of exposedServices, optionalService and requiredService must be empty
-    // Hmm, vi gider ikke bygge dobbelt check..., og vi gider ikke lave en descriptor hver gang.
-    // Saa koden skal nok ligge andet steds..
 }
+
+// Det gode ved at have en SPEC_VERSION, er at man kan specificere man vil bruge.
+// Og dermed kun importere praecis de interfaces den definere...
+// Deploy(someSpec?) ved ikke lige med API'en /
+// FooBarBundle.API$2_2
+// FooBarBundle.API$2_3-SNAPSHOT hmmm, saa forsvinder den jo naar man releaser den???
+// Maaske hellere have den markeret med @Preview :D
+/// Bundlen, kan maaske endda supportere flere versioner??Som i flere versioner??
+
+// The union of exposedServices, optionalService and requiredService must be empty
+// Hmm, vi gider ikke bygge dobbelt check..., og vi gider ikke lave en descriptor hver gang.
+// Saa koden skal nok ligge andet steds..
 //
 /// **
 // * Returns any annotations that are present on the bundle. For example, {@link Deprecated}

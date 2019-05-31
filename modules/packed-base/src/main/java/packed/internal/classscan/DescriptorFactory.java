@@ -40,12 +40,12 @@ public final class DescriptorFactory {
     public static final DescriptorFactory PUBLIC = get(MethodHandles.publicLookup());
 
     /** A cache of service class descriptors. */
-    private final ClassValue<ComponentClassDescriptor> componentClassCache = new ClassValue<>() {
+    private final ClassValue<OldComponentClassDescriptor> componentClassCache = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected ComponentClassDescriptor computeValue(Class<?> type) {
-            return new ComponentClassDescriptor(type, lookup, MemberScanner.forComponent(type, lookup));
+        protected OldComponentClassDescriptor computeValue(Class<?> type) {
+            return new OldComponentClassDescriptor(type, lookup, MemberScanner.forComponent(type, lookup));
         }
     };
 
@@ -85,7 +85,7 @@ public final class DescriptorFactory {
      *            the implementation type to return a descriptor for
      * @return a component descriptor for the specified implementation type
      */
-    public <T> ComponentClassDescriptor componentDescriptorFor(Class<T> implementation) {
+    public <T> OldComponentClassDescriptor componentDescriptorFor(Class<T> implementation) {
         return componentClassCache.get(requireNonNull(implementation, "implementation is null"));
     }
 

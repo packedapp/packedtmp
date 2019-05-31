@@ -30,10 +30,10 @@ import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
-import packed.internal.bundle.WireletList;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.WireletList;
 import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
@@ -42,7 +42,7 @@ import packed.internal.inject.buildtime.ComponentBuildNode;
 import packed.internal.inject.buildtime.ContainerBuilder;
 import packed.internal.inject.buildtime.DefaultExportedServiceConfiguration;
 import packed.internal.inject.buildtime.DefaultServiceConfiguration;
-import packed.internal.inject.buildtime.ProvideAll;
+import packed.internal.inject.buildtime.ProvideFromInjector;
 import packed.internal.invokable.InternalFunction;
 
 /**
@@ -157,7 +157,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         // }
         BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder(), cs);
         bn.as(key);
-        builder().exportedNodes.add(bn);
+        builder().box.services().exportedNodes.add(bn);
         return new DefaultExportedServiceConfiguration<>(builder(), bn);
     }
 
@@ -262,6 +262,21 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {
         return provide(Factory.findInjectable(implementation));
     }
+
+    /**
+     * Provides all services from the specified injector.
+     * 
+     * @param injector
+     *            the injector to provide services from
+     * @param wirelets
+     *            any wirelets used to filter and transform the provided services
+     */
+    public void provideFrom(Injector injector, Wirelet... wirelets) {
+        ProvideFromInjector pa = new ProvideFromInjector(builder(), injector, WireletList.of(wirelets)); // Validates arguments
+        checkConfigurable();
+        pa.process();
+    }
+
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
     // public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
@@ -278,21 +293,20 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     // Outer.. checker configurable, node. finish den sidste o.s.v.
     // Saa kalder vi addNode(inner.foo);
 
-    /**
-     * Provides all services from the specified injector.
-     * 
-     * @param injector
-     *            the injector to provide services from
-     * @param wirelets
-     *            any wirelets used to filter the services
-     */
-    public void provideAll(Injector injector, Wirelet... wirelets) {
-        ProvideAll pa = new ProvideAll(builder(), injector, WireletList.of(wirelets)); // Validates arguments
-        checkConfigurable();
-        pa.process();
+    public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
+        // Installs as a static component.... new instance every time it is requested...
+        throw new UnsupportedOperationException();
     }
 
-    public void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
+    public <T> ProvidedComponentConfiguration<T> provideMany(Factory<T> factory) {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> ProvidedComponentConfiguration<T> provideMany(TypeLiteral<T> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
         AtProvidesGroup provides = builder().accessor.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
             owner.hasInstanceMembers = provides.hasInstanceMembers;

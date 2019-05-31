@@ -54,6 +54,9 @@ public interface ConfigSiteVisitor {
      */
     default void visitAnnotatedMethod(ConfigSite configSite, MethodDescriptor method, Annotation annotation) {}
 
+    // for example, @ComponentScan -> @Install
+    default void visitAnnotatedType(ConfigSite configSite, Class<?> type, Annotation annotation) {}
+
     /**
      * This method is visited whenever.
      * 
@@ -74,3 +77,4 @@ public interface ConfigSiteVisitor {
     default void visitUnknown(ConfigSite configSite) {}
 }
 // Look at ConfigurationSource in some closed project. Has a number of options as well
+//// Maybe linenumber + column number both start and stop, possible for -1 indicating unknown..

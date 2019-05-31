@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import java.lang.reflect.Method;
+package packed.internal.classscan;
 
 /**
  *
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+public class AnyBundleTypeDescriptor {
 
-    public void saveMethod(Method m) {}
-
-    // public static void support(AnyBundle b) {
-    //
-    // }
 }

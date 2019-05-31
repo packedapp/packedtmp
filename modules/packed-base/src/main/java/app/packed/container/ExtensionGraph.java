@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  *
  */
-public interface ExtensionGraph<T extends Extension<T>> {
+interface ExtensionGraph<T extends Extension<T>> {
 
     Optional<T> parentOf(T extension);
 

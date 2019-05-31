@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 
-import app.packed.container.ExtensionAnnotation;
+import app.packed.container.ActivateExtension;
 import app.packed.util.Key;
 
 /**
@@ -84,7 +84,7 @@ import app.packed.util.Key;
 
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
-@ExtensionAnnotation(InjectorExtension.class)
+@ActivateExtension(ProvideExtensionActivator.class)
 public @interface Provide {
 
     boolean prototype() default false;

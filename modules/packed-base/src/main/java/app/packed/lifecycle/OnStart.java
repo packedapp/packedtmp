@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.Container;
+import app.packed.container.App;
 import app.packed.inject.Injector;
 
 /**
@@ -38,8 +38,8 @@ import app.packed.inject.Injector;
  * }
  * </pre>
  *
- * Methods annotated with OnStart can have any service that is also available from {@link Container#use(Class)}
- * injected. For example, the following method will print out the name and the state of the container when it starts.
+ * Methods annotated with OnStart can have any service that is also available from {@link App#use(Class)} injected. For
+ * example, the following method will print out the name and the state of the container when it starts.
  *
  * <pre>
  * &#064;OnStart()
@@ -76,10 +76,10 @@ import app.packed.inject.Injector;
  * failing to start and moving to the shutdown phase.
  * <p>
  *
- * Normally services are not available from {@link Container#use(Class)} until all services have been successfully
- * started. However, by using this annotation. Services that not yet completed startup can be injected. It is up to the
- * user to make sure that invoking method on instances that injected this does not cause any problems. For example,
- * calling a method on another service that only works when the container is in the running phase.
+ * Normally services are not available from {@link App#use(Class)} until all services have been successfully started.
+ * However, by using this annotation. Services that not yet completed startup can be injected. It is up to the user to
+ * make sure that invoking method on instances that injected this does not cause any problems. For example, calling a
+ * method on another service that only works when the container is in the running phase.
  *
  * @see OnInitialize
  * @see OnStop

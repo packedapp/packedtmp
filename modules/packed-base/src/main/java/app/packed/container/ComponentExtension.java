@@ -15,18 +15,19 @@
  */
 package app.packed.container;
 
-import java.lang.reflect.Method;
-
 /**
  *
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+final class ComponentExtension extends Extension<ComponentExtension> {
 
-    public void saveMethod(Method m) {}
+    // install
+    // noget med Main, Entry points....
+    // Man kan f.eks. disable et Main.... EntryPointExtension....
 
-    // public static void support(AnyBundle b) {
-    //
-    // }
+    // @Main skal jo pege et paa en eller anden extension...
+
+    // Alternative to ComponentScan
+    void scanThisModule(Class<?>... classesInPackages) {}
+
+    void scanThisModule(String... packages) {}
 }

@@ -15,11 +15,8 @@
  */
 package app.packed.container;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import app.packed.inject.InjectorContract;
+import app.packed.lifecycle.LifecycleBundleContractPoints;
 
 /**
  * The contract of a bundle.
@@ -36,9 +33,9 @@ public class BundleContract {
     /** A service contract object. */
     private final InjectorContract services;
 
-    private final LifecyclePoints startingPoints = null;
+    private final LifecycleBundleContractPoints startingPoints = null;
 
-    private final LifecyclePoints stoppingPoints = null;
+    private final LifecycleBundleContractPoints stoppingPoints = null;
 
     private BundleContract(BundleContract.Builder builder) {
         InjectorContract.Builder s = builder.services;
@@ -56,11 +53,11 @@ public class BundleContract {
     }
 
     // Er detn bare tom for en injector bundle???? Det er den vel
-    public final LifecyclePoints startingPoints() {
+    public final LifecycleBundleContractPoints startingPoints() {
         return startingPoints;
     }
 
-    public final LifecyclePoints stoppingPoints() {
+    public final LifecycleBundleContractPoints stoppingPoints() {
         return stoppingPoints;
     }
 
@@ -98,29 +95,6 @@ public class BundleContract {
         public InjectorContract.Builder services() {
             InjectorContract.Builder s = services;
             return s == null ? services = InjectorContract.builder() : s;
-        }
-    }
-
-    /** An object representing the various hooks a bundle exposes. */
-    // This is more implementation details...
-    // For example, the number of methods might change...
-    // Might as well provide
-    public static final class Hooks {
-
-    }
-
-    public static final class LifecyclePoints {
-        // Navn + Description, alternative, Map<String, Optional<String>> name+ description
-        public Map<String, Optional<String>> exposed() {
-            return Map.of();
-        }
-
-        public Set<String> optional() {
-            return Set.of();
-        }
-
-        public Set<String> required() {
-            return Set.of();
         }
     }
 

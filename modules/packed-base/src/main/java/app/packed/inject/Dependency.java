@@ -47,6 +47,8 @@ import packed.internal.inject.InternalDependencyDescriptor;
 // Via Wildcard Qualifier methods (static? Dependency Chain). Jeg har en @Foo int fff
 // -- Som goer at jeg dependenr paa Configuration + XConverter.. Heh saa giver parameter index.. vel ikke mening
 // -- Kunne lave en limitation der siger at man kun maa transformere med 1 parameter...
+
+// ServiceDependency
 public interface Dependency {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx

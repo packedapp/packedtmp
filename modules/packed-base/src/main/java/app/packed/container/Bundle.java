@@ -17,13 +17,13 @@ package app.packed.container;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.contract.Contract;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -306,6 +306,12 @@ public abstract class Bundle extends AnyBundle {
     // injectorBuilder().wireInjector(injector, operations);
     // }
 
+    /**
+     * Prints the contract of the specified bundle.
+     * 
+     * @param bundle
+     *            the bundle to print the contract for
+     */
     protected static void printContract(Bundle bundle) {
         BundleContract.of(bundle).print();
     }
@@ -315,7 +321,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     static protected void run(Bundle bundle, String[] args, Wirelet... wirelets) {
-        run(bundle, ContainerWirelets.main(args).andThen(wirelets));
+        run(bundle, Wirelet.appMain(args).andThen(wirelets));
     }
 
     static protected void run(Bundle bundle, Wirelet... wirelets) {

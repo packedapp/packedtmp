@@ -54,7 +54,7 @@ import app.packed.container.Wirelet;
 // @ComponentScan because @EntityScan is probably different....
 /// I don't think it is reusable
 
-// If bundle is in a module-> ModulePath, if Bundle is on the classpath -> ClassPath
+// If the annotated bundle is on the modulepath -> ModulePath, if Bundle is on the classpath -> ClassPath
 public @interface ComponentScan {
 
     /** Maybe we have special viral debug wirelets.... */
@@ -62,34 +62,44 @@ public @interface ComponentScan {
     public static final Wirelet DEBUG_INFO = null;
 
     // Vil maaske gerne ogsaa have @ListenTo paa et tidspunkt...
+    // Problemet er hvad hvis
 
     // All med Type Components????
-    Class<?>[] annotations() default {}; // Kan man vaelge???? annotations= {Entity.class} <- we should have some kind of repositor
+    // Tager kun Install
+    // Kan man vaelge???? annotations= {Entity.class} <- we should have some kind of
+    // repositor
+
+    // Severity[FAIL, WARN, INFO?, IGNORE] onIn
+    // Basically what happens when you encounter a module that is not open to packed...
+    // But explicitly included....
+    boolean accessInacessibleModules() default true;
+    // Debug.run(new MyBundle());
 
     /**
-     * Forces the runtime to scan the classpath, even if the annotated bundle is registered with modulepath. The default
-     * value is <code>false</code> indicating that only the modulepath should be scanned if the bundle is defined on the
-     * modulepath.
+     * Returns the annotations that will result in the annotated type being installed as a component. The default
+     * implementation returns {@link Install}. Indicating that are all types annotated with {@link Install} will be
+     * installed as a component.
      * 
-     * @return whether or not to scan the classpath
+     * @return the annotations that will result in a type being installed as a component.
      */
-    boolean forceClasspathScan() default false;
+    Class<?>[] annotations() default { Install.class };
 
     /**
-     * Returns whether or not to scan the modulepath when looking for classes. The default value is <code>true</code>.
+     * Returns a list of module names that will be included in the component scanning. The default value is "." which
+     * indicates that only the module to which the annotated type or member belongs to is scanned. Module names are matched
+     * using regular expressions via {@link String#matches(String)} (or similar methods).
+     * <p>
+     * If the type that this annotation is placed on is on the class path. The value of this annotation is ignored.
+     * <p>
+     * Returning an empty array indicates that we should scan all modules that are readable .Module names starting with
+     * 'java.' or 'jdk.' are always ignored.
      * 
-     * @return whether or not to scan the modulepath
-     */
-
-    boolean forceModulepathScan() default false;
-
-    /**
-     * Returns a list of module names that will be included in the scanning.
-     * 
-     * @return a list of module names that will be included in the scanning
+     * @return a list of module names that should be scanned
      */
     // RegExp are okay
-    String[] modules() default {};
+    // Module.canOpen???? We skal jo ikke kunne scanne module vi ikke har adgang til. Selvom, Packed maaske har adgang til
+    // dem....canRead er vel bare
+    String[] modules() default { "." };
 
     /**
      * Returns a list of package names that will be included in the scanning.
@@ -98,15 +108,25 @@ public @interface ComponentScan {
      */
     // Special "*" <- All packages, "." <- current package only
     String[] packages() default {};
-
-    // Severity[FAIL, WARN, INFO?, IGNORE] onIn
-    // Basically what happens when you encounter a module that is not open to packed...
-    // But explicitly included....
-    boolean accessInacessibleModules() default true;
-    // Debug.run(new MyBundle());
 }
 
-@ComponentScan
+//
+/// **
+// * Forces the runtime to scan the classpath, even if the annotated bundle is registered with modulepath. The default
+// * value is <code>false</code> indicating that only the modulepath should be scanned if the bundle is defined on the
+// * modulepath.
+// *
+// * @return whether or not to scan the classpath
+// */
+// boolean forceClasspathScan() default false;
+//
+/// **
+// * Returns whether or not to scan the modulepath when looking for classes. The default value is <code>true</code>.
+// *
+// * @return whether or not to scan the modulepath
+// */
+// boolean forceModulepathScan() default false;
+@ComponentScan(modules = { "*" })
 class SomeBundle extends Bundle {
 
     public static void main(String[] args) {

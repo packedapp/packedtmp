@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package main;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.container.Extension;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.ProvideHelper;
 
@@ -38,17 +39,28 @@ import app.packed.inject.ProvideHelper;
 // Vi har en @RequiresInjection annotation....
 // Den er taenkt til at indikere at man kan injecte parameterene i @OnStart metoder...
 // Saa dependencies fra dem kan blive taget med i BundleContracten....
+// Uses(InjectorExtension.class)
 
-public @interface RequiresExtension {
-    Class<? extends Extension<?>> value();
+/// Paaa container annoteringer... Skal have nogle matchene metoder????
+
+// handleAnnotatedMethod(
+
+public @interface UsesExtension {
+    Class<? extends Extension<?>>[] value();
 }
 
-@interface InjectableTarget {
-    Class<?>[] helperClasses();
+@Target({ ElementType.ANNOTATION_TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@interface MethodInjectable {
+
+    String[] descriptions() default {};
+
+    Class<?>[] value();
 }
 
-@InjectableTarget(helperClasses = ProvideHelper.class)
-@RequiresExtension(InjectorExtension.class)
+@MethodInjectable(ProvideHelper.class)
+@UsesExtension(InjectorExtension.class)
 @interface NewProvides {}
 // In one @XMethod(extensions = InjectorExtension.class, injectSupported = true, injectHelperClasses =
 // ProvidesHelper.class)

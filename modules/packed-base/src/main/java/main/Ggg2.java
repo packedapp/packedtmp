@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package main;
 
 import java.time.LocalDate;
 
+import app.packed.container.App;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Provide;
@@ -48,7 +51,7 @@ public class Ggg2 extends Bundle {
         provide("asdsad");
         export(String.class);
 
-        link(new CBundle(), ContainerWirelets.name("foo"));
+        link(new CBundle(), Wirelet.name("foo"));
 
         link(new CBundle(), ServiceWirelets.provideAll(c -> c.provide(String.class).setDescription("foo")));
     }

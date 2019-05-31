@@ -48,7 +48,7 @@ public class InternalBundleDescriptor {
             }
         }
 
-        for (BuildtimeServiceNode<?> n : conf.exportedNodes) {
+        for (BuildtimeServiceNode<?> n : conf.box.services().exportedNodes) {
             if (n instanceof BuildtimeServiceNodeExported) {
                 builder.contract().services().addProvides(n.getKey());
             }

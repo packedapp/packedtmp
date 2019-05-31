@@ -81,7 +81,7 @@ public interface ContainerConfiguration {
 
     ComponentConfiguration install(Object instance);
 
-    ComponentConfiguration installStatics(Class<?> implementation);
+    ComponentConfiguration installStatic(Class<?> implementation);
 
     /**
      * Creates a link to another bundle.

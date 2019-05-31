@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
 import app.packed.inject.InjectionException;
 
 /**
+ * Typically used together with {@link ComponentScan} to indicate that a class should be installed.
+ * 
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Cake to use
  * <code>@Inject</code> annotations on the constructor or method that must have dependencies injected. However, in some
  * situations an annotation can be used for providing greater control over how dependencies are being injected.

@@ -15,18 +15,22 @@
  */
 package app.packed.container;
 
-import java.lang.reflect.Method;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
+ * A meta-annotation that can be placed on annotations...
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+@Target(ElementType.ANNOTATION_TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ActivateExtension {
 
-    public void saveMethod(Method m) {}
-
-    // public static void support(AnyBundle b) {
-    //
-    // }
+    /**
+     * Returns the extension that knows how do handle the types, fields or methods that are annotated...
+     * 
+     * @return the extension that knows how do handle
+     */
+    Class<? extends ExtensionGroupConfigurator<?, ?>> value();
 }

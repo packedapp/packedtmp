@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package main;
 
 import java.nio.file.Path;
 
@@ -22,7 +22,19 @@ import java.nio.file.Path;
  */
 public class Ddd {
 
+    @ScheduleAtFixedRate(10000)
+    static final Runnable r = () -> System.out.println("Hello");
+
+    @ScheduleAtFixedRate(10000)
+    public void hello() {
+        System.out.println("Hello");
+    }
+
     public static void main(String[] args) {
         System.out.println(Path.of("/").iterator().hasNext());
     }
+}
+
+@interface ScheduleAtFixedRate {
+    long value();
 }

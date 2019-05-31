@@ -18,6 +18,9 @@ package packed.internal.annotations;
 /**
  *
  */
+
+// ComponentExtension??? For activation
+
 public class AtMainGroup {
 
     final AtDependable main;

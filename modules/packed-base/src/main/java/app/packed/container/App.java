@@ -40,9 +40,10 @@ import packed.internal.inject.buildtime.ContainerBuilder;
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  * 
  */
+// Injector injector() vs extends Injector
 public interface App extends Injector, AutoCloseable {
 
-    /** An alias for calling {@link #shutdown()} to support the {@link AutoCloseable} interface. **/
+    /** An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. **/
     @Override
     default void close() {
         shutdown();
@@ -130,16 +131,15 @@ public interface App extends Injector, AutoCloseable {
     LifecycleOperations<? extends App> state();
 
     /**
-     * Creates a new application from the specified bundle. The state of the container when returned from this method is
-     * initialized.
+     * Creates a new application from the specified bundle. The state of the returned application will be initialized.
      *
      * @param bundle
-     *            the bundle to create the container from
+     *            the bundle to create an application from
      * @param wirelets
      *            wiring operations
-     * @return a new container
+     * @return a new application
      * @throws RuntimeException
-     *             if the container could not be created
+     *             if the application could not be created for some reason
      */
     static App of(AnyBundle bundle, Wirelet... wirelets) {
         // Would like a new name to of... So we can have a of(Bundle b, String[] args, Wirelet... wirelets) in AnyBundle
@@ -148,12 +148,24 @@ public interface App extends Injector, AutoCloseable {
         return new InternalApp(builder.build());
     }
 
-    static void run(AnyBundle bundle, Wirelet... operations) {
+    /**
+     * This method will create and start an {@link App application} from the specified bundle. Blocking until the
+     * application is terminated.
+     * 
+     * @param bundle
+     *            the bundle to create an application from
+     * @param wirelets
+     *            wirelet operations
+     * @throws RuntimeException
+     *             if the application did not run properly
+     */
+    static void run(AnyBundle bundle, Wirelet... wirelets) {
+        // CTRL-C ?? Obvious a wirelet, but default on or default off.
+
         // If has @Main will run Main and then exit
         // Otherwise will run until application is shutdown
 
         // Hedder execute, for ikke at navnene minder for meget om hinanden (run + running)
-        // Vi skal ogsaa
         throw new UnsupportedOperationException();
     }
 

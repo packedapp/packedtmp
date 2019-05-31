@@ -19,13 +19,19 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import packed.internal.bundle.AppPackedBundleSupport;
-import packed.internal.bundle.WireletList;
+import app.packed.inject.ServiceWirelets;
+import packed.internal.container.AppPackedBundleSupport;
+import packed.internal.container.WireletList;
+import packed.internal.inject.buildtime.DefaultContainerConfiguration;
 
 // Wire vs link....
 
@@ -110,6 +116,10 @@ public abstract class Wirelet {
             }
         });
     }
+
+    /** Invoked by subclasses. */
+    protected Wirelet() {}
+
     // For bedre error messages. This operation can only be used if the parent or child bundle
     // has installed the XXX extension (As an alternative, annotated the key with
     // @RequiresExtension(JMXExtension.class)....)
@@ -143,15 +153,58 @@ public abstract class Wirelet {
         return compose(l.toArray(i -> new Wirelet[i]));
     }
 
-    // protected void validate(); Validates that the operation can be used
+    protected void check() {
+        // checkApp() for Wirelet.appTimeToLive for example...
+    }
 
-    static Wirelet disableConfigSet() {
-        // Man skal vel ogsaa kunne enable den igen....
+    // force start, initialize, await start...
+    protected final void checkApp() {
+
+    }
+
+    /**
+     * Creates an {@link MainArgs} from the specified arguments. And returns a wirelet that provides it, via
+     * {@link ServiceWirelets#provide(Object)}, to the linked container.
+     * 
+     * @param args
+     *            the arguments to inject
+     * @return a wirelet that provides the specified arguments to the linked container
+     */
+    public static Wirelet appMain(String... args) {
+        return ServiceWirelets.provide(MainArgs.of(args));
+    }
+
+    /**
+     * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.
+     * 
+     * @param timeout
+     *            the timeout
+     * @param unit
+     *            the timeunit
+     * @return this option object
+     */
+    // These can only be used with a TopContainer with lifecycle...
+    // Container will be shutdown normally after the specified timeout
+
+    // Vi vil gerne have en version, vi kan refreshe ogsaa???
+    // Maaske vi bare ikke skal supportered det direkte.
+
+    // Teknisk set er det vel en app wirelet
+    public static Wirelet appTimeToLive(long timeout, TimeUnit unit) {
+        // Shuts down container normally
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet lookup(MethodHandles.Lookup lookup) {
-        throw new UnsupportedOperationException();
+    public static Wirelet appTimeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
+        appTimeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
+        // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
+        return new Wirelet() {
+
+            // @Override
+            // protected void process(BundleLink link) {
+            // link.mode().checkExecute();
+            // }
+        };
     }
 
     /**
@@ -167,51 +220,101 @@ public abstract class Wirelet {
         return WireletList.of(operations);
     }
 
-    // Ved ikke om det er noget vi kommer til at bruge...
-    // public static Wirelet of(Consumer<BundleLink> consumer) {
-    // requireNonNull(consumer, "consumer is null");
-    // return new Wirelet() {
-    //
-    // @Override
-    // protected void process(BundleLink link) {
-    // consumer.accept(link);
-    // }
-    // };
-    // }
-    // Kunne vaere rart, hvis man f.eks. kunne
-    // wire(SomeBundle.class, JaxRSSpec.v2_1.wireStrict());
-    // wire(SomeBundle.class, JettySpec.v23_1.wireStrict());
+    public static Wirelet configure(Configuration c) {
+        // This is for App, but why not for Injector also...
+        // we need config(String) for wire()..... configOptional() also maybe...
+        // Would be nice.. if config extends WiringOperations
+        // alternative c.wire();
+        // c.get("/sdfsdf").wire();
 
-    // Wirelet.implements)_
+        // Maaske skal nogle klasser bare implementere WiringOperation...
+        throw new UnsupportedOperationException();
+    }
 
-    /// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
-    // ComponentInstanceHook
-    // AnnotatedComponentTypeHook
-    // AnnotatedComponentMethodHook
+    // wire(new XBundle(), Wirelet.configure(Configuration.read("dddd");
+    // mapConfiguration, childConfiguration()
+    // ConfigurationWirelets.provide(Configuration c)
+    // ConfigurationWirelets.map(ConfigurationTransformer transformer)
+    // ConfigurationWirelets.mapChild(String childName) //calls map
+    // ConfigurationWirelets.mapChild(Configuration c, ConfigurationTransformer)
+    public static Wirelet configure(String childName) {
+        // Extracts the child named 'childName' for a configuration in the current context
+        // configure(c, "child")
+        throw new UnsupportedOperationException();
+    }
 
-    /// activeInstance(Startable.class)
-    /// activeAnnotatedMethod(onStart.class)...
-    //// De skal vaere en del af specifikationen
-    // Activators
-    // InstanceOfActivator (Component+<T>)
-    // AnnotatedTypeActivator
-    // AnnotatedMethodActivator
-    // ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
-    // Bundling -> import pipeline and an export pipeline where each element of the exposed api is processed through
+    public static Wirelet configure(Configuration c, String child) {
+        // configure(c, "child")
+        throw new UnsupportedOperationException();
+    }
 
-    // protected Configuration onConfiguration(@Nullable Configuration<?> configuration) {} or
-    // protected void onConfiguration(ConfigurationBuilder configuration) {} and then we check for overrides.
-    // ImportExportStage configuration.extractChild("jetty"); installContainer(XBundle.class, ConfigurationTransformer<>
-    // Kan ogsaa vaere en alm service, og saa naa den er der saa blive annoteringerne aktiveret....
-    /// Men ihvertfal conf bliver skubbet op fra roden... Man kan aldrig exportere en Configuration.. Eller det kan man vel
-    // godt.
-    // Optional Configuration-> You may provide a configuration if you want, mandatory you must provide a Confgiuration.
-    // A configuration is always bound with singleton scope, not lazy, not prototype
+    // protected void validate(); Validates that the operation can be used
 
-    // Fordi vi ikke har en ServiceConfiguration
-    // Make public... Vil helst have den i Lifecycle maaske. Saa kan vi ogsaa registere den paa
-    // onStart(String name)... skal kunne saette navnet, saa maaske
-    // onStart(CompletionStage).setName(); eller
-    // onStart(String startingPointName, CompletionStage)
-    // men hvis ogsaa skulle kunne vente a.la. onStart("cacheLoader").thenRun(sysout(yeah"));
+    static Wirelet disableConfigSet() {
+        // Man skal vel ogsaa kunne enable den igen....
+        throw new UnsupportedOperationException();
+    }
+
+    static Wirelet lookup(MethodHandles.Lookup lookup) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a wirelet that will set name of a container once wired, overriding any existing name it may have.
+     * 
+     * @param name
+     *            the name of the container
+     * @return a wirelet that will set name of a container once wired
+     */
+    public static Wirelet name(String name) {
+        return new DefaultContainerConfiguration.OverrideNameWiringOption(name);
+    }
 }
+
+// Ved ikke om det er noget vi kommer til at bruge...
+// public static Wirelet of(Consumer<BundleLink> consumer) {
+// requireNonNull(consumer, "consumer is null");
+// return new Wirelet() {
+//
+// @Override
+// protected void process(BundleLink link) {
+// consumer.accept(link);
+// }
+// };
+// }
+// Kunne vaere rart, hvis man f.eks. kunne
+// wire(SomeBundle.class, JaxRSSpec.v2_1.wireStrict());
+// wire(SomeBundle.class, JettySpec.v23_1.wireStrict());
+
+// Wirelet.implements)_
+
+/// Ideen er at JettySpec.23_1 kan vaere + JaxRSSpec.2_1
+// ComponentInstanceHook
+// AnnotatedComponentTypeHook
+// AnnotatedComponentMethodHook
+
+/// activeInstance(Startable.class)
+/// activeAnnotatedMethod(onStart.class)...
+//// De skal vaere en del af specifikationen
+// Activators
+// InstanceOfActivator (Component+<T>)
+// AnnotatedTypeActivator
+// AnnotatedMethodActivator
+// ServiceLoader.enabledInvocationOnComponentMethodsAnnotatedWith(xxx.class, ...);
+// Bundling -> import pipeline and an export pipeline where each element of the exposed api is processed through
+
+// protected Configuration onConfiguration(@Nullable Configuration<?> configuration) {} or
+// protected void onConfiguration(ConfigurationBuilder configuration) {} and then we check for overrides.
+// ImportExportStage configuration.extractChild("jetty"); installContainer(XBundle.class, ConfigurationTransformer<>
+// Kan ogsaa vaere en alm service, og saa naa den er der saa blive annoteringerne aktiveret....
+/// Men ihvertfal conf bliver skubbet op fra roden... Man kan aldrig exportere en Configuration.. Eller det kan man vel
+// godt.
+// Optional Configuration-> You may provide a configuration if you want, mandatory you must provide a Confgiuration.
+// A configuration is always bound with singleton scope, not lazy, not prototype
+
+// Fordi vi ikke har en ServiceConfiguration
+// Make public... Vil helst have den i Lifecycle maaske. Saa kan vi ogsaa registere den paa
+// onStart(String name)... skal kunne saette navnet, saa maaske
+// onStart(CompletionStage).setName(); eller
+// onStart(String startingPointName, CompletionStage)
+// men hvis ogsaa skulle kunne vente a.la. onStart("cacheLoader").thenRun(sysout(yeah"));

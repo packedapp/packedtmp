@@ -216,7 +216,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      *             {@link Wirelet#andThen(Wirelet)} thereof
      */
     public final void provideAll(Injector injector, Wirelet... options) {
-        injector().provideAll(injector, options);
+        injector().provideFrom(injector, options);
     }
 
     /**

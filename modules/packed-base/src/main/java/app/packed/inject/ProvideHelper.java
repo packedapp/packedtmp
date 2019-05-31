@@ -24,7 +24,6 @@ import java.util.OptionalInt;
 
 import app.packed.component.Component;
 import app.packed.container.App;
-import app.packed.container.Container;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
@@ -202,9 +201,9 @@ public interface ProvideHelper {
      */
     Optional<Component> component();
 
-    default Container container() {
-        throw new UnsupportedOperationException();
-    }
+    // default Container container() {
+    // throw new UnsupportedOperationException();
+    // }
 
     /**
      * Returns the injector through which injection was requested. If the injection was requested via a container, the

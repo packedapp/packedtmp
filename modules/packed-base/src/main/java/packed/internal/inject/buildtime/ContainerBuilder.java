@@ -30,10 +30,10 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Nullable;
-import packed.internal.bundle.WireletList;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.InternalContainer;
+import packed.internal.container.WireletList;
 import packed.internal.inject.Box;
 import packed.internal.inject.BoxType;
 import packed.internal.inject.ServiceNode;
@@ -48,8 +48,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     public final Box box;
 
-    public final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
-
     /** A list of bundle bindings, as we need to post process the exports. */
     ArrayList<BindInjectorFromBundle> injectorBundleBindings = new ArrayList<>();
 
@@ -57,8 +55,8 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     InternalInjector publicInjector;
 
-    public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... options) {
-        super(configurationSite, bundle, options);
+    public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... wirelets) {
+        super(configurationSite, bundle, wirelets);
         box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
     }
 
@@ -85,7 +83,7 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
-        for (BuildtimeServiceNodeExported<?> e : exportedNodes) {
+        for (BuildtimeServiceNodeExported<?> e : box.services().exportedNodes) {
             ServiceNode<?> sn = box.services().nodes.getRecursive(e.getKey());
             if (sn == null) {
                 throw new IllegalStateException("Could not find node to export " + e.getKey());

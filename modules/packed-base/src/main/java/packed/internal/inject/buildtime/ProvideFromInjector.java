@@ -26,18 +26,18 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import packed.internal.annotations.AtProvides;
-import packed.internal.bundle.AppPackedBundleSupport;
-import packed.internal.bundle.WireletList;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.container.AppPackedBundleSupport;
+import packed.internal.container.WireletList;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
 import packed.internal.inject.runtime.AbstractInjector;
 
 /** Provides services from an existing Injector. */
-public final class ProvideAll {
+public final class ProvideFromInjector {
 
     /** The injector we are providing services from. */
     private final Injector injector;
@@ -51,7 +51,7 @@ public final class ProvideAll {
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
 
-    public ProvideAll(ContainerBuilder containerConfiguration, Injector injector, Wirelet... wirelets) {
+    public ProvideFromInjector(ContainerBuilder containerConfiguration, Injector injector, Wirelet... wirelets) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);

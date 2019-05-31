@@ -22,7 +22,6 @@ import java.util.function.Consumer;
 import app.packed.component.ComponentInstaller;
 import app.packed.container.App;
 import app.packed.container.Bundle;
-import app.packed.container.Container;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
@@ -32,7 +31,7 @@ import app.packed.lifecycle.LifecycleState;
 import app.packed.util.Nullable;
 
 /**
- * A configuration object for a {@link Container}. This interface is typically used when configuring a new container via
+ * A configuration object for an {@link App}. This interface is typically used when configuring a new container via
  * 
  * <p>
  * This interface extends {@link InjectorConfigurator} with functionality for:
@@ -61,7 +60,7 @@ public interface AppConfigurator extends ComponentInstaller {
      *
      * @return the name of the container or null if the name has not been set
      * @see #setName(String)
-     * @see Container#name()
+     * @see App#name()
      */
     @Nullable
     String getName();
@@ -128,8 +127,8 @@ public interface AppConfigurator extends ComponentInstaller {
     AppConfigurator setDescription(@Nullable String description);
 
     /**
-     * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
-     * '_' or '-'. The name is case sensitive.
+     * Sets the {@link App#name() name} of the application. The name must consists only of alphanumeric characters and '_'
+     * or '-'. The name is case sensitive.
      * <p>
      * If no name is set using this method a unique name (among sibling containers) is generated at build time.
      *
@@ -139,7 +138,7 @@ public interface AppConfigurator extends ComponentInstaller {
      *             if the specified name is the empty string or if the name contains other characters then alphanumeric
      *             characters and '_' or '-'
      * @see #getName()
-     * @see Container#name()
+     * @see App#name()
      */
     void setName(@Nullable String name);
 

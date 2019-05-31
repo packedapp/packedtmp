@@ -32,6 +32,7 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
+import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
@@ -55,6 +56,8 @@ public final class InjectorBuilder {
 
     /** A set of all explicitly registered required service keys. */
     public final HashSet<Key<?>> required = new HashSet<>();
+
+    public final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
 
     InjectorBuilder(boolean exportNodes) {
         if (exportNodes) {

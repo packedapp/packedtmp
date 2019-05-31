@@ -23,15 +23,12 @@ import java.util.function.Consumer;
 import packed.internal.config.site.InternalConfigurationSite;
 
 /**
- * A configuration site represents the location where an object was configured/registered. This is typically either a
- * combination of a method and a line number, or a filename and a line number.
+ * A configuration site represents the location where an object was configured/registered. This can, for example, be a
+ * filename and a line number, an annotated method, or a class file with a line number.
  * <p>
- * A configuration site can have a parent, for example, the parent of a service registration will be the registration
- * point of its injector.
+ * A configuration site can have a parent, thereby nesting for example, tthe parent of a service registration will be
+ * the registration point of its injector.
  */
-// ConfigSite
-// we capture a configurating
-
 // We need to open up... If this a generic mechanism...
 
 // Can we intern them????? ClassValue<ConfigSite>
@@ -70,9 +67,9 @@ public interface ConfigSite {
     }
 
     /**
-     * Returns the configuration operation that was performed.
+     * Returns the name of the configuration operation that was performed.
      * 
-     * @return the configuration operation that was performed
+     * @return the name of the configuration operation that was performed
      */
     // If open up for custom operations... We should probably have a naming scheme...
     // maybe prefix all with packed.injectorBind
@@ -91,7 +88,8 @@ public interface ConfigSite {
     }
 
     /**
-     * Visits t
+     * Visits this configuration site. {@link #visitEach(ConfigSiteVisitor)} will also visit each descendant of this
+     * configuration site;
      * 
      * @param visitor
      *            the visitor

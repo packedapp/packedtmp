@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package main;
 
-import java.lang.reflect.Method;
+/** Various container wiring options. */
+public final class ContainerWirelets {
 
-/**
- *
- */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+    /** No instantiation. */
+    private ContainerWirelets() {}
 
-    public void saveMethod(Method m) {}
-
-    // public static void support(AnyBundle b) {
-    //
-    // }
 }

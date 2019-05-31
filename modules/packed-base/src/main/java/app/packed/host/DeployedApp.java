@@ -13,20 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.host;
 
-import java.lang.reflect.Method;
+import app.packed.container.App;
+import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 
 /**
  *
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-class NativeImageSupport {
+// A Deployed App can have dependencies to other apps???
+// Both From and to
+public interface DeployedApp extends App {
 
-    public void saveMethod(Method m) {}
+    void undeploy();
 
-    // public static void support(AnyBundle b) {
-    //
-    // }
+    // Ideen er egentligt at vi kan lave online redeployments
+    void replaceWith(Bundle b, Wirelet... wirelets);
+
+    // Eller ogsaa have vi en specific
+    // HotDeployer newHotDeployer(String name)
+
+    // Enten fungere den som en proxy.... Saa hosten har ingen ide om at vi skifter ud
+    // Eller ogsaa er den klar over det...
+
 }

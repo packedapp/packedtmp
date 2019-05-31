@@ -26,7 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
-import packed.internal.classscan.ComponentClassDescriptor;
+import packed.internal.classscan.OldComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.InternalDependencyDescriptor;
@@ -66,7 +66,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     /** The object instances of the component, the array will be passed along to InternalComponent. */
     public Object[] instances;
 
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
         this.parent = parent;
@@ -78,7 +78,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, ComponentClassDescriptor descriptor,
+    public InternalComponentConfiguration(ContainerBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
             @Nullable InternalComponentConfiguration<?> parent, T instance) {
         super(containerBuilder, configurationSite, descriptor, instance);
         this.parent = parent;
@@ -101,8 +101,8 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     }
 
     @Override
-    public ComponentClassDescriptor descriptor() {
-        return (ComponentClassDescriptor) super.descriptor();
+    public OldComponentClassDescriptor descriptor() {
+        return (OldComponentClassDescriptor) super.descriptor();
     }
 
     /** {@inheritDoc} */
