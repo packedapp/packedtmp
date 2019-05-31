@@ -20,6 +20,3 @@ To install and compile the source code locally, run:
 ```
 
 Note that Packed requires Java 11 to compile and run.
-
-
-Travis CI: https://travis-ci.org/packedapp/packedtmp
