@@ -24,6 +24,7 @@ import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionException;
+import app.packed.inject.InjectorExtension;
 import app.packed.inject.InstantiationMode;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.inject.InjectorBuilder;
@@ -53,7 +54,7 @@ final class DependencyGraph {
      */
     DependencyGraph(ContainerBuilder root) {
         this.root = requireNonNull(root);
-        this.ib = requireNonNull(root.box.services());
+        this.ib = requireNonNull(root.use(InjectorExtension.class).ib);
     }
 
     /** Also used for descriptors. */

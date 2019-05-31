@@ -22,7 +22,7 @@ package packed.internal.inject;
 // Saa wire vi jo stadig child containers.
 
 // Vi maa have en AppContext.... og en AppType....
-public enum BoxType {
+public enum ContainerType {
 
     /** A box targeting a Injector created from a bundle. */
     INJECTOR_VIA_BUNDLE,

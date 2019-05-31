@@ -25,15 +25,11 @@ import app.packed.inject.InjectorExtension;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.InternalContainer;
-import packed.internal.inject.Box;
-import packed.internal.inject.BoxType;
 
 /**
  * A builder of {@link Injector injectors}. Is both used via {@link InjectorConfigurator}.
  */
 public class ContainerBuilder extends DefaultContainerConfiguration {
-
-    public final Box box = new Box(BoxType.INJECTOR_VIA_BUNDLE);
 
     public ContainerBuilder(InternalConfigurationSite configurationSite, @Nullable AnyBundle bundle, Wirelet... wirelets) {
         super(configurationSite, bundle, wirelets);
@@ -55,6 +51,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
     public Injector buildInjector() {
         finish();
         new DependencyGraph(this).instantiate();
-        return box.services().publicInjector;
+        return use(InjectorExtension.class).ib.publicInjector;
     }
 }

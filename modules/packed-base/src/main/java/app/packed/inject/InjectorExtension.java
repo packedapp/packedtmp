@@ -61,7 +61,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public final InjectorBuilder ib = new InjectorBuilder();
 
     private InjectorBuilder ib() {
-        return builder().box.services();
+        return ib;
     }
 
     /**
