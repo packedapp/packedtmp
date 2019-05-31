@@ -34,7 +34,7 @@ public final class Box { /* extends Configurable???? */
      */
     public Box(BoxType type) {
         this.type = requireNonNull(type);
-        this.services = new InjectorBuilder(type.privateServices());
+        this.services = new InjectorBuilder();
     }
 
     /**

@@ -70,7 +70,9 @@ public final class InjectorBuilder {
 
     public InternalInjector publicInjector;
 
-    InjectorBuilder(boolean exportNodes) {
+    InjectorBuilder() {
+        boolean exportNodes = true;
+        // System.out.println(exportNodes);
         if (exportNodes) {
             nodes = new ServiceNodeMap();
             exports = new ServiceNodeMap();

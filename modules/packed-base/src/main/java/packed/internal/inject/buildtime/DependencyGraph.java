@@ -58,15 +58,15 @@ final class DependencyGraph {
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void analyze(ContainerBuilder builder) {
-        ib.privateInjector = new InternalInjector(builder, ib.nodes);
-        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(builder.box.services(), builder.configurationSite(), INJ, ib.privateInjector);
+    void analyze() {
+        ib.privateInjector = new InternalInjector(root, ib.nodes);
+        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(ib, root.configurationSite(), INJ, ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ib.nodes.put(d);
-        if (builder.bundle == null) {
+        if (root.bundle == null) {
             ib.publicInjector = ib.privateInjector;
         } else {
-            ib.publicInjector = new InternalInjector(builder, ib.exports);
+            ib.publicInjector = new InternalInjector(root, ib.exports);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
@@ -118,7 +118,7 @@ final class DependencyGraph {
     }
 
     void instantiate() {
-        analyze(root);
+        analyze();
 
         // Instantiate all singletons
         // System.out.println(root.box.services().exports);
