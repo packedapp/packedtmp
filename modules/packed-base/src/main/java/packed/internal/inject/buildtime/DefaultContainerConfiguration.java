@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnyBundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -78,11 +79,6 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
         this.wirelets = WireletList.of(wirelets);
     }
 
-    public final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
-        requireNonNull(wireletType, "wireletType is null");
-        requireNonNull(action, "action is null");
-    }
-
     public final void checkConfigurable() {
 
     }
@@ -97,6 +93,23 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
     @Override
     public final Set<Class<? extends Extension<?>>> extensionTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
+    }
+
+    public void buildBundle(BundleDescriptor.Builder builder) {
+        for (Extension<?> e : extensions.values()) {
+            e.buildBundle(builder);
+        }
+    }
+
+    public void finish() {
+        for (Extension<?> e : extensions.values()) {
+            e.onFinish();
+        }
+    }
+
+    public final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
+        requireNonNull(wireletType, "wireletType is null");
+        requireNonNull(action, "action is null");
     }
 
     /**
@@ -136,6 +149,14 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
     @Override
     public ComponentConfiguration installStatic(Class<?> implementation) {
         return new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
+    }
+
+    @Override
+    public final <T extends AnyBundle> T link(T child, Wirelet... options) {
+        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), child, options);
+        builder.build();
+        wirings.put(builder.getName(), builder);
+        return child;
     }
 
     /** {@inheritDoc} */
@@ -179,14 +200,6 @@ public class DefaultContainerConfiguration implements ContainerConfiguration {
             AppPackedContainerSupport.invoke().setExtensionConfiguration(e, this);
             return e;
         });
-    }
-
-    @Override
-    public final <T extends AnyBundle> T link(T child, Wirelet... options) {
-        ContainerBuilder builder = new ContainerBuilder(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), child, options);
-        builder.build();
-        wirings.put(builder.getName(), builder);
-        return child;
     }
 
     /** {@inheritDoc} */

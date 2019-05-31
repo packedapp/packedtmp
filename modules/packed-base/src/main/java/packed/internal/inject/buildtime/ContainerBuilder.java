@@ -18,14 +18,11 @@ package packed.internal.inject.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
 import app.packed.container.Bundle;
 import app.packed.container.Container;
-import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
@@ -36,7 +33,6 @@ import packed.internal.container.InternalContainer;
 import packed.internal.container.WireletList;
 import packed.internal.inject.Box;
 import packed.internal.inject.BoxType;
-import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.InternalInjector;
 
 /**
@@ -78,21 +74,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
         return publicInjector;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void finish() {
-        for (Extension<?> e : extensions.values()) {
-            e.onFinish();
-        }
-        for (BuildtimeServiceNodeExported<?> e : box.services().exportedNodes) {
-            ServiceNode<?> sn = box.services().nodes.getRecursive(e.getKey());
-            if (sn == null) {
-                throw new IllegalStateException("Could not find node to export " + e.getKey());
-            }
-            e.exposureOf = (ServiceNode) sn;
-            box.services().exports.put(e);
-        }
-    }
-
     public void link(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
         WireletList wl = WireletList.of(wirelets);
@@ -106,32 +87,6 @@ public class ContainerBuilder extends DefaultContainerConfiguration {
 
     public void disableAutomaticRequirements() {
         autoRequires = false;
-    }
-
-    /** Small for utility class for generate a best effort unique name for containers. */
-    static class InternalContainerNameGenerator {
-
-        /** Assigns unique IDs, starting with 1 when lazy naming containers. */
-        private static final AtomicLong ANONYMOUS_ID = new AtomicLong();
-
-        private static final ClassValue<Supplier<String>> BUNDLE_NAME_SUPPLIER = new ClassValue<>() {
-            private final AtomicLong L = new AtomicLong();
-
-            @Override
-            protected Supplier<String> computeValue(Class<?> type) {
-                String simpleName = type.getSimpleName();
-                String s = simpleName.endsWith("Bundle") && simpleName.length() > 6 ? simpleName.substring(simpleName.length() - 6) : simpleName;
-                return () -> s + L.incrementAndGet();
-            }
-        };
-
-        static String fromBundleType(Class<? extends Bundle> cl) {
-            return BUNDLE_NAME_SUPPLIER.get(cl).get();
-        }
-
-        static String next() {
-            return "Container" + ANONYMOUS_ID.incrementAndGet();
-        }
     }
 }
 

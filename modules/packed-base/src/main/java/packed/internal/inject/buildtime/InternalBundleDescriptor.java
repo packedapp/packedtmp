@@ -19,7 +19,6 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.ServiceNode;
 
 /**
  *
@@ -42,19 +41,8 @@ public class InternalBundleDescriptor {
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         builder.setBundleDescription(conf.getDescription());// Nahh, this is the runtime description
 
-        for (ServiceNode<?> n : conf.box.services().nodes) {
-            if (n instanceof BuildtimeServiceNode) {
-                builder.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
-            }
-        }
+        conf.buildBundle(builder);
 
-        for (BuildtimeServiceNode<?> n : conf.box.services().exportedNodes) {
-            if (n instanceof BuildtimeServiceNodeExported) {
-                builder.contract().services().addProvides(n.getKey());
-            }
-        }
-
-        conf.box.services().buildContract(builder.contract().services());
         return builder;
     }
 }

@@ -109,6 +109,8 @@ public abstract class Extension<T extends Extension<T>> {
      */
     public void onFinish() {}
 
+    public void buildBundle(BundleDescriptor.Builder builder) {}
+
     protected void onFirstUse() {}
 
     //

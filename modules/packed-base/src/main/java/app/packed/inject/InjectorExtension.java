@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.contract.Contract;
@@ -35,6 +36,7 @@ import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.WireletList;
 import packed.internal.inject.AppPackedInjectSupport;
+import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
@@ -181,12 +183,21 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         builder().disableAutomaticRequirements();
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void onFinish() {
         for (BuildtimeServiceNode<?> e : nodes) {
             if (!builder().box.services().nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());
             }
+        }
+        for (BuildtimeServiceNodeExported<?> e : builder().box.services().exportedNodes) {
+            ServiceNode<?> sn = builder().box.services().nodes.getRecursive(e.getKey());
+            if (sn == null) {
+                throw new IllegalStateException("Could not find node to export " + e.getKey());
+            }
+            e.exposureOf = (ServiceNode) sn;
+            builder().box.services().exports.put(e);
         }
     }
 
@@ -272,7 +283,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            any wirelets used to filter and transform the provided services
      */
     public void provideFrom(Injector injector, Wirelet... wirelets) {
-        ProvideFromInjector pa = new ProvideFromInjector(builder(), injector, WireletList.of(wirelets)); // Validates arguments
+        ProvideFromInjector pa = new ProvideFromInjector(builder(), builder().box.services(), injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
         pa.process();
     }
@@ -292,6 +303,24 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     // Outer.. checker configurable, node. finish den sidste o.s.v.
     // Saa kalder vi addNode(inner.foo);
+
+    /** {@inheritDoc} */
+    @Override
+    public void buildBundle(Builder builder) {
+        for (ServiceNode<?> n : builder().box.services().nodes) {
+            if (n instanceof BuildtimeServiceNode) {
+                builder.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
+            }
+        }
+
+        for (BuildtimeServiceNode<?> n : builder().box.services().exportedNodes) {
+            if (n instanceof BuildtimeServiceNodeExported) {
+                builder.contract().services().addProvides(n.getKey());
+            }
+        }
+
+        builder().box.services().buildContract(builder.contract().services());
+    }
 
     public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
         // Installs as a static component.... new instance every time it is requested...

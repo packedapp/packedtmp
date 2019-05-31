@@ -31,6 +31,7 @@ import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.WireletList;
+import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceWiringImportOperation;
@@ -51,8 +52,11 @@ public final class ProvideFromInjector {
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
 
-    public ProvideFromInjector(ContainerBuilder containerConfiguration, Injector injector, Wirelet... wirelets) {
+    private final InjectorBuilder ib;
+
+    public ProvideFromInjector(ContainerBuilder containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
+        this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);
         this.configurationSite = containerConfiguration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
@@ -107,7 +111,7 @@ public final class ProvideFromInjector {
 
         // Add all to the private node map
         for (BuildtimeServiceNode<?> node : nodes.values()) {
-            if (!containerConfiguration.box.services().nodes.putIfAbsent(node)) {
+            if (!ib.nodes.putIfAbsent(node)) {
                 throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }
