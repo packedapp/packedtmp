@@ -16,7 +16,8 @@
 package app.packed.component;
 
 import java.nio.file.Paths;
-import java.util.Optional;
+
+import app.packed.util.Nullable;
 
 /**
  * A component path points to a component in a container expressed in a string of characters in which path components,
@@ -32,16 +33,6 @@ import java.util.Optional;
  */
 public interface NewComponentPath extends Comparable<NewComponentPath>, CharSequence {
 
-    // App... er vel ikke skide noedvendigt eftersom componenter ikke er generalt tilgaengelig
-
-    /**
-     * Returns any instance id of the path.
-     * 
-     * @return any instance id of the path
-     */
-    /// Taenker det er lidt meget... at krave at man altid skal have en unique streng???
-    Optional<String> instanceId();
-
     /**
      * Returns the number of elements in this path. This is not a constant time operation as we might need to traverse
      * through all parents of this component, but it is usually really fast.
@@ -51,18 +42,19 @@ public interface NewComponentPath extends Comparable<NewComponentPath>, CharSequ
     int findDepth();
 
     /**
+     * Returns whether or not this component path represents a root component in a container hierarchy.
+     *
+     * @return whether or not this component path represents a root component in a container hierarchy
+     */
+    boolean isRoot();
+
+    /**
      * Returns the <em>parent path</em>, or null if this path does not have a parent (is a root).
      *
      * @return a path representing the path's parent
      */
+    @Nullable
     NewComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
-
-    /**
-     * Returns whether or not this component is the root component in a container hierarchy.
-     *
-     * @return whether or not this component is the root component
-     */
-    boolean isRoot();
 
     /**
      * Converts a path string, or a sequence of strings that when joined form a path string, to a {@code ComponentPath}.

@@ -34,13 +34,13 @@ public class ContainerFactory {
 
     public static App appOf(AnyBundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP_OF, bundle.getClass(), bundle, wirelets);
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP, bundle.getClass(), bundle, wirelets);
         return new DefaultApp(configuration.buildContainer());
     }
 
     public static Injector injectorOf(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, WiringType.INJECTOR_OF, bundle.getClass(), bundle, wirelets);
+        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, WiringType.INJECTOR, bundle.getClass(), bundle, wirelets);
         bundle.doConfigure(builder);
         return builder.buildInjector();
     }
@@ -49,7 +49,7 @@ public class ContainerFactory {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, WiringType.INJECTOR_OF, configurator.getClass(), null, wirelets);
+        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, WiringType.INJECTOR, configurator.getClass(), null, wirelets);
         configurator.accept(new InjectorConfigurator(builder));
         return builder.buildInjector();
     }

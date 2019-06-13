@@ -21,26 +21,25 @@ import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 
-/**
- *
- */
-abstract class AbstractNamedConfiguration {
+/** An abstract base class for the configuration of a component. */
+abstract class AbstractComponentConfiguration {
 
-    /** The description of the entity. */
+    /** The description of the component. */
     @Nullable
     String description;
 
-    /** The name of the entity. */
+    /** The name of the component. */
     @Nullable
     String name;
 
+    /** Any parent of the component. */
     @Nullable
-    final DefaultContainerConfiguration parent;
+    final AbstractComponentConfiguration parent;
 
     /** The configuration site of the component. */
     public final InternalConfigurationSite site;
 
-    AbstractNamedConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration parent) {
+    AbstractComponentConfiguration(InternalConfigurationSite site, AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);
         this.parent = parent;
     }
@@ -49,6 +48,10 @@ abstract class AbstractNamedConfiguration {
 
     public ConfigSite configurationSite() {
         return site;
+    }
+
+    void freezeName() {
+
     }
 
     @Nullable
@@ -61,12 +64,21 @@ abstract class AbstractNamedConfiguration {
         return name;
     }
 
-    void freezeName() {
+    public AbstractComponentConfiguration setDescription(@Nullable String description) {
+        checkConfigurable();
+        this.description = description;
+        return this;
+    }
 
+    AbstractComponentConfiguration setName0(@Nullable String name) {
+        checkConfigurable();
+        checkName(name);
+        this.name = name;
+        return this;
     }
 
     /**
-     * Checks the name of the container or component.
+     * Checks the name of the component.
      * 
      * @param name
      *            the name to check
@@ -77,18 +89,5 @@ abstract class AbstractNamedConfiguration {
 
         }
         return name;
-    }
-
-    public AbstractNamedConfiguration setDescription(@Nullable String description) {
-        checkConfigurable();
-        this.description = description;
-        return this;
-    }
-
-    AbstractNamedConfiguration setName0(@Nullable String name) {
-        checkConfigurable();
-        checkName(name);
-        this.name = name;
-        return this;
     }
 }

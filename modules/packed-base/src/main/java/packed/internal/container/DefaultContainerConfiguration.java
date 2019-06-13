@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
+import app.packed.container.App;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
@@ -43,11 +44,10 @@ import packed.internal.componentcache.ComponentLookup;
 import packed.internal.componentcache.ContainerConfiguratorCache;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.buildtime.DependencyGraph;
 import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public final class DefaultContainerConfiguration extends AbstractNamedConfiguration implements ContainerConfiguration {
+public final class DefaultContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
     public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
@@ -101,8 +101,8 @@ public final class DefaultContainerConfiguration extends AbstractNamedConfigurat
 
     public Container buildContainer() {
         configure();
+        use(InjectorExtension.class);
         finish();
-        new DependencyGraph(this).instantiate();
         return new InternalContainer(this, use(InjectorExtension.class).builder.publicInjector);
     }
 
@@ -110,8 +110,6 @@ public final class DefaultContainerConfiguration extends AbstractNamedConfigurat
         configure();
         finish();
         // TODO DependencyGraph move to extension....
-        DependencyGraph injectorBuilder = new DependencyGraph(this);
-        injectorBuilder.analyze();
 
         builder.setBundleDescription(description);
         builder.setName(name);
@@ -121,8 +119,8 @@ public final class DefaultContainerConfiguration extends AbstractNamedConfigurat
     }
 
     public Injector buildInjector() {
+        use(InjectorExtension.class);
         finish();
-        new DependencyGraph(this).instantiate();
         return use(InjectorExtension.class).builder.publicInjector;
     }
 
@@ -337,6 +335,23 @@ public final class DefaultContainerConfiguration extends AbstractNamedConfigurat
          */
         public OverrideNameWirelet(String name) {
             this.name = checkName(name);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> target() {
+        switch (wiringType) {
+        case APP:
+            return App.class;
+        case INJECTOR:
+            return Injector.class;
+        case DESCRIPTOR:
+            return BundleDescriptor.class;
+        case LINK:
+            return parent.target();
+        default:
+            throw new Error();
         }
     }
 }

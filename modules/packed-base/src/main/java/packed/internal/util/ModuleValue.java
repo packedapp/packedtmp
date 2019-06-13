@@ -18,6 +18,7 @@ package packed.internal.util;
 /**
  *
  */
+// We could have a special ClassModuleValue
 public abstract class ModuleValue<T> {
 
     /** The cache of values. */
@@ -48,5 +49,22 @@ public abstract class ModuleValue<T> {
     public final T get(Module module) {
         throw new UnsupportedOperationException();
     }
+}
 
+abstract class ClassValueModule<T> extends ClassValue<T> {
+
+    /** The cache of values. */
+    final ValueWeakHashMap<Module, T> cache = new ValueWeakHashMap<>();
+
+    /** {@inheritDoc} */
+    @Override
+    protected final T computeValue(Class<?> type) {
+        // computeIfAbsent....
+        return cache.get(type.getModule());
+
+        // If we need to call computeValueForModule...
+        //// We should check for stale items as well....
+    }
+
+    protected abstract T computeValueForModule(Module module);
 }

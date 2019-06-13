@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -43,6 +44,7 @@ import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
 import packed.internal.inject.buildtime.DefaultProvidedComponentConfiguration;
 import packed.internal.inject.buildtime.DefaultServiceConfiguration;
+import packed.internal.inject.buildtime.DependencyGraph;
 import packed.internal.inject.buildtime.ProvideFromInjector;
 import packed.internal.invokable.InternalFunction;
 
@@ -216,6 +218,15 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
             e.exposureOf = (ServiceNode) sn;
             builder.exports.put(e);
         }
+        DependencyGraph dg = new DependencyGraph(configuration);
+
+        if (target() == BundleDescriptor.class) {
+            dg.analyze();
+        } else {
+            dg.instantiate();
+        }
+        // if (target()==B)
+
     }
 
     /**

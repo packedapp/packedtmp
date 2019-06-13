@@ -27,13 +27,10 @@ import app.packed.container.ContainerConfiguration;
 public enum WiringType {
 
     /** */
-    APP_OF,
-
-    /** */
-    APP_RUN,
+    APP,
 
     /** A box targeting a Injector created from a bundle. */
-    INJECTOR_OF,
+    INJECTOR,
 
     /** A bundle descriptor. */
     DESCRIPTOR,
@@ -42,19 +39,19 @@ public enum WiringType {
      * A container wired via
      * {@link ContainerConfiguration#link(app.packed.container.AnyBundle, app.packed.container.Wirelet...)}
      */
-    LINK,
+    LINK;
 
-    /** A box targeting a Injector created using a configurator. */
-    INJECTOR_VIA_CONFIGURATOR;
-
-    public boolean privateServices() {
-        return this != INJECTOR_VIA_CONFIGURATOR;
-    }
-
-    public boolean unresolvedServicesAllowed() {
-        return false;
-        // return this == INJECTOR_VIA_BUNDLE;
-    }
+    // /** A box targeting a Injector created using a configurator. */
+    // INJECTOR_VIA_CONFIGURATOR;
+    //
+    // public boolean privateServices() {
+    // return this != INJECTOR_VIA_CONFIGURATOR;
+    // }
+    //
+    // public boolean unresolvedServicesAllowed() {
+    // return false;
+    // // return this == INJECTOR_VIA_BUNDLE;
+    // }
 
     // HOST
     // INJECTOR - via InjectorConfigurator

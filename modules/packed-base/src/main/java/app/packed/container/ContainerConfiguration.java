@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import app.packed.config.ConfigSite;
+import app.packed.inject.Injector;
 import app.packed.util.Nullable;
 
 /**
@@ -49,6 +50,13 @@ import app.packed.util.Nullable;
 // Environment <- Immutable??, Attachable??
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
 public interface ContainerConfiguration {
+
+    /**
+     * Returns one of {@link App}, {@link Injector} or {@link BundleDescriptor}.
+     * 
+     * @return what the target it
+     */
+    Class<?> target();
 
     void checkConfigurable();
 

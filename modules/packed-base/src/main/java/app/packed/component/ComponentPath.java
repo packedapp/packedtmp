@@ -20,6 +20,8 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Iterator;
 
+import app.packed.util.Nullable;
+
 /**
  * A component path points to a component in a container expressed in a string of characters in which path components,
  * separated by the delimiting character "/", represent each unique component.
@@ -111,6 +113,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
      *
      * @return a path representing the path's parent
      */
+    @Nullable
     ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
 
     /**

@@ -33,6 +33,31 @@ public interface NewComponentContext {
 
     // NU ER VI TILBAGE MED EN COMPONENT KAN HAVE EN ROLLE... (eller flere???)
 
+    // Role == ENUM?????
+
+    // Role = Container.class , type = DefaultContainer
+    // Role = Actor.class, type = SomeActor
+    // Role = Host.class, type = SomeHostImplementation?
+    // Role = Component.class, type = SomeComponent
+    // Role = Pooled.class, type = SomeElement.class
+    // Role = Singleton.class, type = ddddd
+    // Role = Statics.class, type = DDDDD
+    // Role = RunInScope.class, type = DDDDD
+    // Role = Unmanaged.class, type = DDDDD (Used with prototype services)
+    // Role = ActorSystem.class [holds actors]
+    // Role = Class, implementation = Class
+    // Role == Class only if users can define their own role....
+    // Role == JobManager.class
+    // Role == Job.class
+    // Role == ScheduledJob.class <- Is it a component????
+
+    // Charactariska = How Many Instances, Managaged/ Unmanaged, Dynamic-wire (host)
+
+    // Wirelets for components??????? Nej ikke udo
+    // install(Doo.class, name("fsdsfd"), description("weweqw));
+
+    // install(Role, implementation, wirelets);
+
     // Bundle.setDefaultRole <- On Runtime.
     // F.eks. Actor .withRole(Actor)
 
@@ -52,5 +77,7 @@ public interface NewComponentContext {
 
     // But about runtime hotswap, for example, for actors...
     // We kind of swap the type...
+
+    // We have a special component implementation for that...
 
 }

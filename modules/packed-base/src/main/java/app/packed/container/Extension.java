@@ -73,6 +73,13 @@ public abstract class Extension<T extends Extension<T>> {
         // weweew
     }
 
+    protected final Class<?> target() {
+        // Altsaa, taenker Class er daarlig. men om det skal vaere en enum eller andet det ved jeg ikke...
+        // Vi ligger os fast paa en haandfuld muligheder....
+        // BuildTarget + BuildTargetType
+        return configuration().target();
+    }
+
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
     /**
