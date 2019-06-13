@@ -44,7 +44,9 @@ import packed.internal.componentcache.ComponentLookup;
 import packed.internal.componentcache.ContainerConfiguratorCache;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
+import packed.internal.inject.runtime.DefaultInjector;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class DefaultContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -100,17 +102,12 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public Container buildContainer() {
-        configure();
-        use(InjectorExtension.class);
-        finish();
-        return new InternalContainer(this, use(InjectorExtension.class).builder.publicInjector);
+        return new InternalContainer(this, buildInjector());
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         configure();
         finish();
-        // TODO DependencyGraph move to extension....
-
         builder.setBundleDescription(description);
         builder.setName(name);
         for (Extension<?> e : extensions.values()) {
@@ -119,9 +116,14 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public Injector buildInjector() {
-        use(InjectorExtension.class);
+        configure();
         finish();
-        return use(InjectorExtension.class).builder.publicInjector;
+        if (extensions.containsKey(InjectorExtension.class)) {
+            return use(InjectorExtension.class).builder.publicInjector;
+        } else {
+            return new DefaultInjector(this, new ServiceNodeMap());
+        }
+
     }
 
     /** {@inheritDoc} */

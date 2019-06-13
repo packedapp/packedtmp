@@ -23,7 +23,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ActivateExtension;
 import app.packed.container.Extension;
 import app.packed.container.Main;
-import app.packed.inject.Provide;
 import app.packed.util.MethodDescriptor;
 
 /**
@@ -31,7 +30,7 @@ import app.packed.util.MethodDescriptor;
  */
 public class Dddd {
 
-    @Provide
+    // @Provide
     public void foo() {
 
     }
