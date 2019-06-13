@@ -33,30 +33,33 @@ import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.ComponentBuildNode;
+import packed.internal.container.DefaultComponentConfiguration;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.container.WireletList;
-import packed.internal.inject.AppPackedInjectSupport;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
-import packed.internal.inject.buildtime.DefaultExportedServiceConfiguration;
+import packed.internal.inject.buildtime.DefaultProvidedComponentConfiguration;
 import packed.internal.inject.buildtime.DefaultServiceConfiguration;
 import packed.internal.inject.buildtime.ProvideFromInjector;
 import packed.internal.invokable.InternalFunction;
 
 /**
- * An extension used with injection.
+ * This extension provides functionality for injection and service management.
  */
 // manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?
+
+// Registered registererUnqualifiedAnnotation <---
+// Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
+// Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
 public final class InjectorExtension extends Extension<InjectorExtension> {
 
     static final String CONFIG_SITE_PROVIDE = "injector.provide";
 
     @SuppressWarnings("exports")
-    public final InjectorBuilder ib = new InjectorBuilder();
+    public final InjectorBuilder builder = new InjectorBuilder();
 
     /**
      * Adds the specified key to the list of optional services.
@@ -72,7 +75,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        ib.addOptional(key);
+        builder.addOptional(key);
         // return this;
     }
 
@@ -87,7 +90,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public void addRequired(Key<?> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        ib.addRequired(key);
+        builder.addRequired(key);
     }
 
     <T> ProvidedComponentConfiguration<T> alias(Class<T> key) {
@@ -113,26 +116,26 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /** {@inheritDoc} */
     @Override
-    public void buildBundle(Builder builder) {
-        for (ServiceNode<?> n : ib.nodes) {
+    public void buildBundle(Builder descriptor) {
+        for (ServiceNode<?> n : builder.nodes) {
             if (n instanceof BuildtimeServiceNode) {
-                builder.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
+                descriptor.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
             }
         }
 
-        for (BuildtimeServiceNode<?> n : ib.exportedNodes) {
+        for (BuildtimeServiceNode<?> n : builder.exportedNodes) {
             if (n instanceof BuildtimeServiceNodeExported) {
-                builder.contract().services().addProvides(n.getKey());
+                descriptor.contract().services().addProvides(n.getKey());
             }
         }
 
-        ib.buildContract(builder.contract().services());
+        builder.buildContract(descriptor.contract().services());
     }
 
     // Why export
     // Need to export
 
-    private DefaultContainerConfiguration builder() {
+    private DefaultContainerConfiguration configuration() {
         return super.configuration;
     }
 
@@ -143,7 +146,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /**
      * Exposes an internal service outside of this bundle.
-     * 
      * 
      * <pre>
      *  {@code  
@@ -170,16 +172,16 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         requireNonNull(key, "key is null");
         checkConfigurable();
 
-        InternalConfigurationSite cs = builder().configurationSite().spawnStack(ConfigurationSiteType.BUNDLE_EXPOSE);
+        InternalConfigurationSite cs = configuration().configurationSite().thenStack(ConfigurationSiteType.BUNDLE_EXPOSE);
 
         // ServiceNode<T> node = box.services().nodes.getRecursive(key);
         // if (node == null) {
         // throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
         // }
-        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(ib, cs);
+        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder, cs);
         bn.as(key);
-        ib.exportedNodes.add(bn);
-        return new DefaultExportedServiceConfiguration<>(builder(), bn);
+        builder.exportedNodes.add(bn);
+        return new DefaultServiceConfiguration<>(configuration(), bn);
     }
 
     @SuppressWarnings("unchecked")
@@ -195,24 +197,24 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     // Kan vi lave denne generisk paa tvaers af extensions...
     // disableAutomaticRequirements()
     public void manualRequirementsManagement() {
-        ib.autoRequires = false;
+        builder.autoRequires = false;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void onFinish() {
-        for (BuildtimeServiceNode<?> e : ib.nodes2) {
-            if (!ib.nodes.putIfAbsent(e)) {
+        for (BuildtimeServiceNode<?> e : builder.nodes2) {
+            if (!builder.nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());
             }
         }
-        for (BuildtimeServiceNodeExported<?> e : ib.exportedNodes) {
-            ServiceNode<?> sn = ib.nodes.getRecursive(e.getKey());
+        for (BuildtimeServiceNodeExported<?> e : builder.exportedNodes) {
+            ServiceNode<?> sn = builder.nodes.getRecursive(e.getKey());
             if (sn == null) {
                 throw new IllegalStateException("Could not find node to export " + e.getKey());
             }
             e.exposureOf = (ServiceNode) sn;
-            ib.exports.put(e);
+            builder.exports.put(e);
         }
     }
 
@@ -243,17 +245,18 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         checkConfigurable();
+        InternalConfigurationSite configSite = configuration().configurationSite().thenStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
 
-        InternalConfigurationSite frame = builder().configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-        InternalFunction<T> func = AppPackedInjectSupport.toInternalFunction(factory);
-        ServiceClassDescriptor desc = builder().accessor.serviceDescriptorFor(func.getReturnTypeRaw());
+        // Okay det her fra Factory skal caches....Med methodHandle....
+        InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
+        ServiceClassDescriptor desc = configuration().accessor.serviceDescriptorFor(func.getReturnTypeRaw());
 
-        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(ib, frame, desc, InstantiationMode.SINGLETON, builder().accessor.readable(func),
-                (List) factory.dependencies());
+        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, desc, InstantiationMode.SINGLETON,
+                configuration().accessor.readable(func), (List) factory.dependencies());
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
-        ib.nodes2.add(node);
-        return new DefaultServiceConfiguration<>(builder(), new ComponentBuildNode(frame, builder()), node);
+        builder.nodes2.add(node);
+        return new DefaultProvidedComponentConfiguration<>(configuration(), new DefaultComponentConfiguration(configSite, configuration()), node);
     }
 
     /**
@@ -273,16 +276,15 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
+        InternalConfigurationSite configSite = configuration().configurationSite().thenStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
 
-        InternalConfigurationSite frame = builder().configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
-        ServiceClassDescriptor sdesc = builder().accessor.serviceDescriptorFor(instance.getClass());
-
-        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(ib, frame, sdesc, instance);
+        ServiceClassDescriptor sdesc = configuration().accessor.serviceDescriptorFor(instance.getClass());
+        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, sdesc, instance);
 
         scanForProvides(instance.getClass(), sc);
         sc.as((Key) Key.of(instance.getClass()));
-        ib.nodes2.add(sc);
-        return new DefaultServiceConfiguration<>(builder(), new ComponentBuildNode(frame, builder()), sc);
+        builder.nodes2.add(sc);
+        return new DefaultProvidedComponentConfiguration<>(configuration(), new DefaultComponentConfiguration(configSite, configuration()), sc);
     }
 
     public <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {
@@ -307,6 +309,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /**
      * Provides all services from the specified injector.
+     * <p>
+     * Wirelets can be used to transform and filter the services from the specified injector.
      * 
      * @param injector
      *            the injector to provide services from
@@ -314,9 +318,9 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            any wirelets used to filter and transform the provided services
      */
     public void provideFrom(Injector injector, Wirelet... wirelets) {
-        ProvideFromInjector pa = new ProvideFromInjector(builder(), ib, injector, WireletList.of(wirelets)); // Validates arguments
+        ProvideFromInjector pfi = new ProvideFromInjector(configuration(), builder, injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
-        pa.process();
+        pfi.process(); // Will create the necessary nodes.
     }
 
     public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
@@ -333,7 +337,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
-        AtProvidesGroup provides = builder().accessor.serviceDescriptorFor(type).provides;
+        AtProvidesGroup provides = configuration().accessor.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
             owner.hasInstanceMembers = provides.hasInstanceMembers;
             // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
@@ -351,9 +355,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
             // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
             // the same key, so we can just add them now without any verification
             for (AtProvides member : provides.members.values()) {
-                ib.nodes2.add(owner.provide(member));// put them directly
+                builder.nodes2.add(owner.provide(member));// put them directly
             }
         }
     }
-
 }

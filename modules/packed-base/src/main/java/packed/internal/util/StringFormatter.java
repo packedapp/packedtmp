@@ -29,12 +29,13 @@ import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.util.StringJoiner;
 
+import app.packed.util.MethodDescriptor;
+
 /** A utility class with various formatting routines. */
 public final class StringFormatter {
 
     /** Cannot instantiate. */
-    private StringFormatter() {
-    }
+    private StringFormatter() {}
 
     /**
      * Creates a short string representation of the specified type. Basically this method uses {@link Class#getSimpleName()}
@@ -159,6 +160,10 @@ public final class StringFormatter {
 
     public static String format(Method method) {
         return format(method.getDeclaringClass()) + "#" + method.getName() + "(" + format(method.getParameterTypes()) + ")";
+    }
+
+    public static String formatShortWithParameters(MethodDescriptor m) {
+        return m.getDeclaringClass().getSimpleName() + "#" + m.getName() + "(" + formatSimple(m.newMethod().getParameterTypes()) + ")";
     }
 
     public static String formatShortWithParameters(Method m) {

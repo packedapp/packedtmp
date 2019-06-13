@@ -34,7 +34,7 @@ import packed.internal.invokable.Function2Invokable;
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 
-    /** A cache of extracted type variables and dependencies from implementations of this class. */
+    /** A cache of extracted type variables and dependencies from subclasses of this class. */
     private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */

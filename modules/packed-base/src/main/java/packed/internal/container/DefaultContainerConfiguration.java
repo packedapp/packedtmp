@@ -38,75 +38,167 @@ import app.packed.inject.InjectorExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
+import packed.internal.componentcache.ComponentClassDescriptor;
+import packed.internal.componentcache.ComponentLookup;
+import packed.internal.componentcache.ContainerConfiguratorCache;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.buildtime.DefaultComponentConfiguration;
 import packed.internal.inject.buildtime.DependencyGraph;
+import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public final class DefaultContainerConfiguration implements ContainerConfiguration {
+public final class DefaultContainerConfiguration extends AbstractNamedConfiguration implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
     public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
 
-    /** The bundle we created this configuration from. Or null if we are using a configurator of some kind. */
+    /** The bundle we created this configuration from. Or null if we using a configurator. */
     @Nullable
     public final AnyBundle bundle;
 
+    /** The configurator cache. */
+    final ContainerConfiguratorCache ccc;
+
+    /** All child containers, in order of wiring order. */
+    // final LinkedHashMap<String, AbstractNamedConfiguration> children = new LinkedHashMap<>();
+
     /** All registered components. */
-    public final LinkedHashMap<String, ComponentBuildNode> components = new LinkedHashMap<>();
+    public final LinkedHashMap<String, DefaultComponentConfiguration> components = new LinkedHashMap<>();
 
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
 
-    /** An optional description of the container . */
-    @Nullable
-    private String description;
-
-    /** All extensions that are currently used. */
+    /** All extensions that are currently used by this configuration, ordered by first use. */
     private final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
     private boolean isConfigured;
 
-    /** The name of the container, or null if no name has been set. */
-    @Nullable
-    private String name;
+    /** All child containers, in order of wiring order. */
+    final LinkedHashMap<String, DefaultContainerConfiguration> links = new LinkedHashMap<>();
 
+    private ComponentLookup lookup;
+
+    /** Any parent container configuration. */
     @Nullable
     final DefaultContainerConfiguration parent;
 
     /** A list of wirelets used when creating this configuration. */
     private final WireletList wirelets;
 
-    /** All child containers, in order of wiring order. */
-    final LinkedHashMap<String, DefaultContainerConfiguration> links = new LinkedHashMap<>();
+    /** The type of wiring. */
+    final WiringType wiringType;
 
-    public DefaultContainerConfiguration(ContainerType type, @Nullable AnyBundle bundle, Wirelet... wirelets) {
-        this(type, null, bundle, wirelets);
-    }
-
-    public DefaultContainerConfiguration(DefaultContainerConfiguration parent, ContainerType type, @Nullable AnyBundle bundle, Wirelet... wirelets) {
-        this(type, requireNonNull(parent), bundle, wirelets);
-    }
-
-    private DefaultContainerConfiguration(ContainerType type, DefaultContainerConfiguration parent, @Nullable AnyBundle bundle, Wirelet... wirelets) {
+    DefaultContainerConfiguration(DefaultContainerConfiguration parent, WiringType wiringType, Class<?> configuratorType, @Nullable AnyBundle bundle,
+            Wirelet... wirelets) {
+        super(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), parent);
         this.configurationSite = InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF);
+        this.lookup = this.ccc = ContainerConfiguratorCache.of(configuratorType);
         this.bundle = bundle;
         this.parent = parent;
+        this.wiringType = requireNonNull(wiringType);
         this.wirelets = WireletList.of(wirelets);
     }
 
-    public Container build() {
+    public Container buildContainer() {
         configure();
-        return new InternalContainer(this, buildInjector());
+        finish();
+        new DependencyGraph(this).instantiate();
+        return new InternalContainer(this, use(InjectorExtension.class).builder.publicInjector);
+    }
+
+    public void buildDescriptor(BundleDescriptor.Builder builder) {
+        configure();
+        finish();
+        // TODO DependencyGraph move to extension....
+        DependencyGraph injectorBuilder = new DependencyGraph(this);
+        injectorBuilder.analyze();
+
+        builder.setBundleDescription(description);
+        builder.setName(name);
+        for (Extension<?> e : extensions.values()) {
+            e.buildBundle(builder);
+        }
     }
 
     public Injector buildInjector() {
         finish();
         new DependencyGraph(this).instantiate();
-        return use(InjectorExtension.class).ib.publicInjector;
+        return use(InjectorExtension.class).builder.publicInjector;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "bundle is null");
+
+        // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
+        // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
+        // loop situations, for example, if a bundle recursively links itself which fails by throwing
+        // java.lang.StackOverflowError instead.
+
+        DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
+        dcc.configure();
+        links.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
+        return bundle;
+    }
+
+    public void configure() {
+        if (isConfigured) {
+            return;
+        }
+        if (bundle != null) {
+            if (bundle.getClass().isAnnotationPresent(Install.class)) {
+                install(bundle);
+            }
+            bundle.doConfigure(this);
+        }
+        finalizeName();
+        isConfigured = true;
+    }
+
+    public void finish() {
+        for (Extension<?> e : extensions.values()) {
+            e.onFinish();
+        }
+    }
+
+    private void finalizeName() {
+        // See if we have any wirelet that overrides the name (wirelet name has already been verified)
+        wirelets.consumeLast(OverrideNameWirelet.class, w -> name = w.name);
+
+        if (name == null) {
+            name = finalizeNameWithPrefix(ccc.defaultPrefix());
+        } else {
+            String n = name;
+            if (n.endsWith("?")) {
+                name = finalizeNameWithPrefix(n.substring(0, n.length() - 1));
+            } else if (parent.components.containsKey(n)) {
+                throw new IllegalStateException();
+            } else if (parent.links.containsKey(n)) {
+                throw new IllegalStateException();
+            }
+        }
+        // TODO make name unmodifiable
+    }
+
+    private String finalizeNameWithPrefix(String prefix) {
+        if (parent == null) {
+            return prefix;
+        } else {
+            String newName = prefix;
+            int counter = 0;
+            for (;;) {
+                if (!parent.components.containsKey(newName) && !parent.links.containsKey(newName)) {
+                    return newName;
+                }
+                // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
+                // But it could also be a host???
+                newName = prefix + counter++;
+            }
+        }
+    }
+
+    @Override
     public final void checkConfigurable() {
 
     }
@@ -117,56 +209,10 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         return configurationSite;
     }
 
-    public void configure() {
-        if (!isConfigured) {
-            if (bundle != null) {
-                BundleClassCache bcc = BundleClassCache.of(bundle.getClass());
-                if (bundle.getClass().isAnnotationPresent(Install.class)) {
-                    install(bundle);
-                }
-                bundle.doConfigure(this);
-                if (name == null) {
-                    name = bcc.defaultName();
-                }
-            }
-        }
-        isConfigured = true;
-    }
-
-    public void createDescriptor(BundleDescriptor.Builder builder) {
-        configure();
-        // FinishAllChildren
-        finish();
-        builder.setBundleDescription(description);
-        builder.setName(name);
-        DependencyGraph injectorBuilder = new DependencyGraph(this);
-        injectorBuilder.analyze();
-
-        for (Extension<?> e : extensions.values()) {
-            e.buildBundle(builder);
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension<?>>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    public void finish() {
-        for (Extension<?> e : extensions.values()) {
-            e.onFinish();
-        }
-        wirelets.consumeLast(OverrideNameWirelet.class, w -> name = w.name);
-        if (name != null) {
-            String n = name;
-            if (n.endsWith("?")) {
-                n = n.substring(0, n.length() - 1);
-            }
-
-            name = n;
-        }
-
     }
 
     public <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
@@ -174,10 +220,9 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         requireNonNull(action, "action is null");
     }
 
-    /** {@inheritDoc} */
     @Override
-    public String getDescription() {
-        return description;
+    void freezeName() {
+
     }
 
     /**
@@ -206,40 +251,27 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
     }
 
     public ComponentConfiguration install(Factory<?> factory) {
-        return new DefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON);
+        return new OldDefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON);
     }
 
     public ComponentConfiguration install(Object instance) {
-        return new DefaultComponentConfiguration(this, instance);
+        requireNonNull(instance, "instance is null");
+        ComponentClassDescriptor ccd = lookup.componentDescriptorOf(instance.getClass());
+        OldDefaultComponentConfiguration dcc = new OldDefaultComponentConfiguration(this, instance);
+        ccd.initialize(this, dcc);
+        return dcc;
     }
 
     public ComponentConfiguration installStatic(Class<?> implementation) {
-        return new DefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
+        return new OldDefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(this, ContainerType.LINK, bundle, wirelets);
-
-        // Implementation node, we can do linking (calling bundle.configure) in two ways. Immediately or later after the parent
-        // has been fully configured. We choose immediately because we get nice stack traces.
-        configuration.configure();
-
-        // TODO what about name
-        links.put(configuration.getName(), configuration);
-        return bundle;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void lookup(Lookup lookup) {
+    public void lookup(@Nullable Lookup lookup) {
         // Actually I think null might be okay, then its standard module-info.java
-
         // Component X has access to G, but Packed does not have access
-
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to use public access (default)");
+        this.lookup = lookup == null ? ccc : ccc.withLookup(lookup);
         this.accessor = DescriptorFactory.get(lookup);
     }
 
@@ -265,7 +297,9 @@ public final class DefaultContainerConfiguration implements ContainerConfigurati
         requireNonNull(extensionType, "extensionType is null");
         return (T) extensions.computeIfAbsent(extensionType, k -> {
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
-            return ExtensionClassCache.newInstance(this, extensionType);
+            Extension<?> e = ExtensionClassCache.newInstance(extensionType);
+            AppPackedContainerSupport.invoke().initializeExtension(e, this);
+            return e;
         });
     }
 

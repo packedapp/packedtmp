@@ -224,7 +224,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BuildtimeServiceNode<?> provide(AtProvides atProvides) {
-        InternalConfigurationSite icss = configurationSite().spawnAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE, atProvides.provides,
+        InternalConfigurationSite icss = configurationSite().thenAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE, atProvides.provides,
                 atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;

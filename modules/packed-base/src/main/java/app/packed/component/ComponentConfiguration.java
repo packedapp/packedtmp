@@ -113,6 +113,10 @@ public interface ComponentConfiguration /* extends ComponentInstaller */ {
     @Nullable
     String getName();
 
+    default Class<?> type() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Sets the description of this component.
      *

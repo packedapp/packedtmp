@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionGroupConfigurator;
+import app.packed.container.ExtensionHookGroup;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
@@ -66,11 +66,12 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
     /** {@inheritDoc} */
     @Override
     public void accept(ComponentConfiguration cc, InjectorExtension e) {
+        // e.
         // TODO Auto-generated method stub
     }
 
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class Builder implements ExtensionGroupConfigurator.Builder<InjectorExtension> {
+    public final static class Builder implements ExtensionHookGroup.Builder<InjectorExtension> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;

@@ -30,24 +30,8 @@ import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.ContainerType;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.ContainerFactory;
 
-/**
- * An immutable bundle descriptor.
- * 
- * <p>
- * {@code BundleDescriptor} objects are immutable and safe for use by multiple concurrent threads.
- * </p>
- */
-// Pretty pringting http://www.lihaoyi.com/post/CompactStreamingPrettyPrintingofHierarchicalData.html
-// Abstract Bundle Descriptor
-
-// Description, Tags, runtimeType = {Container/Injector}, BundleFactory.class, Descriptor=InjectorBundleDescriptor
-// (maaske faas den fra BundleFactory)
-//Bundles do now support selectively deciding which bundles can import other bundles.
-//This is supported by modularity.
-//For example, that only ZBundle can import CXbundle. This is modules..
 /**
  * A bundle descriptor.
  *
@@ -58,7 +42,19 @@ import packed.internal.container.DefaultContainerConfiguration;
  *
  * <p>
  * In other words a bundle must provide descriptors that are equivalent on each run.
+ * <p>
+ * {@code BundleDescriptor} objects are immutable and safe for use by multiple concurrent threads.
+ * </p>
  */
+// Pretty pringting http://www.lihaoyi.com/post/CompactStreamingPrettyPrintingofHierarchicalData.html
+// Abstract Bundle Descriptor
+
+// Description, Tags, runtimeType = {Container/Injector}, BundleFactory.class, Descriptor=InjectorBundleDescriptor
+// (maaske faas den fra BundleFactory)
+// Bundles do now support selectively deciding which bundles can import other bundles.
+// This is supported by modularity.
+// For example, that only ZBundle can import CXbundle. This is modules..
+
 // includes implementation details....
 // name, id, type, stuff I think this is in the descriptor???
 
@@ -139,6 +135,11 @@ public class BundleDescriptor {
         return bundleType;
     }
 
+    // Kan ikke rigtig se hvordan det skulle fungere.... med mindre vi har
+
+    // <T extends AnyBundleDescriptor> List<T> children(Class<T> descriptorType) {
+    // Men hvem bestemmer hvilken descriptor type vi laver????
+    // Hvis det er en tom skal, der tager en Builder???
     public List<BundleDescriptor> children() {
         // Saa skal vi vel ogsaa have navne...
         // Maaske kan vi have Container? <- Indicating that it will be created with Container and then some postfix
@@ -218,7 +219,7 @@ public class BundleDescriptor {
      * the bundle belongs. If the bundle is in the unnamed module or on the class path this method returns
      * {@link Optional#empty()}.
      * 
-     * @return the version of the bundle
+     * @return the version of the bundle, or an empty optional if the bundle does not have a version
      * @see ModuleDescriptor#version()
      */
     public final Optional<Version> version() {
@@ -235,11 +236,7 @@ public class BundleDescriptor {
      * @return a descriptor for the specified bundle
      */
     public static BundleDescriptor of(Bundle bundle) {
-        requireNonNull(bundle, "bundle is null");
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
-        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(ContainerType.DESCRIPTOR, bundle);
-        conf.createDescriptor(builder);
-        return builder.build();
+        return ContainerFactory.of(bundle);
     }
 
     // /**

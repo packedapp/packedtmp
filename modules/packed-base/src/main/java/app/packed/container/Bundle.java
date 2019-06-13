@@ -323,7 +323,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     static protected void run(Bundle bundle, String[] args, Wirelet... wirelets) {
-        run(bundle, Wirelet.appMain(args).andThen(wirelets)); // + CTRL-C
+        run(bundle, Wirelet.appMainArgs(args).andThen(wirelets)); // + CTRL-C
     }
 
     static protected void run(Bundle bundle, Wirelet... wirelets) {

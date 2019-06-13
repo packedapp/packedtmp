@@ -55,7 +55,7 @@ public final class DependencyGraph {
      */
     public DependencyGraph(DefaultContainerConfiguration root) {
         this.root = requireNonNull(root);
-        this.ib = requireNonNull(root.use(InjectorExtension.class).ib);
+        this.ib = requireNonNull(root.use(InjectorExtension.class).builder);
     }
 
     /** Also used for descriptors. */

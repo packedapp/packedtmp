@@ -20,6 +20,9 @@ import app.packed.container.Extension;
 /**
  * An extension
  */
+
+// Configuring lifecycle for the container,
+//// Component lifecycle is hmmmmm
 public final class LifecycleExtension extends Extension<LifecycleExtension> {
 
     // @Override
@@ -41,4 +44,5 @@ public final class LifecycleExtension extends Extension<LifecycleExtension> {
     // Perhaps adding some custom annotations
 
     // ClassValue<Feature> -> IdentityHashMap<Feature, CachedConfiguration>>
+
 }

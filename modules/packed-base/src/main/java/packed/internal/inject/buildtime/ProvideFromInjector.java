@@ -36,7 +36,7 @@ import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.ServiceWiringImportOperation;
+import packed.internal.inject.InternalServiceWirelets;
 
 /** Provides services from an existing Injector. */
 public final class ProvideFromInjector {
@@ -56,7 +56,7 @@ public final class ProvideFromInjector {
         this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);
-        this.configurationSite = containerConfiguration.configurationSite().spawnStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        this.configurationSite = containerConfiguration.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
     /**
@@ -70,13 +70,11 @@ public final class ProvideFromInjector {
 
     public void process() {
         List<ServiceNode<?>> nodes;
-
         if (injector instanceof AbstractInjector) {
             nodes = ((AbstractInjector) injector).copyNodes();
         } else {
             throw new IllegalArgumentException("Currently only Injectors created by Packed are supported");
         }
-
         processImport(nodes);
     }
 
@@ -134,8 +132,8 @@ public final class ProvideFromInjector {
             Key<?> existing = node.key();
 
             // invoke the import function on the stage
-            if (stage instanceof ServiceWiringImportOperation) {
-                ((ServiceWiringImportOperation) stage).onEachService(node);
+            if (stage instanceof InternalServiceWirelets) {
+                ((InternalServiceWirelets) stage).onEachService(node);
             }
 
             if (node.key() == null) {

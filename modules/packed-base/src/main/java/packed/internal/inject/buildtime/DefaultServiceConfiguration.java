@@ -19,106 +19,71 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.ComponentBuildNode;
+import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  *
  */
-public class DefaultServiceConfiguration<T> implements ProvidedComponentConfiguration<T> {
+public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
-    /** The component we are exposing. */
-    private final ComponentBuildNode component;
+    /** The configuration site of this object. */
+    private final InternalConfigurationSite configurationSite;
 
-    private final DefaultContainerConfiguration dcc;
+    private final DefaultContainerConfiguration containerConfiguration;
 
-    /** The service we are exposing. */
-    private final BuildtimeServiceNode<T> service;
+    final BuildtimeServiceNode<T> node;
 
     /**
-     * @param service
+     * @param node
      */
-    public DefaultServiceConfiguration(DefaultContainerConfiguration dcc, ComponentBuildNode component, BuildtimeServiceNode<T> service) {
-        this.dcc = requireNonNull(dcc);
-        this.service = requireNonNull(service);
-        this.component = component;
-        component.serviceNode = service;
+    public DefaultServiceConfiguration(DefaultContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
+        this.containerConfiguration = requireNonNull(containerConfiguration);
+        this.configurationSite = node.configurationSite;
+        this.node = requireNonNull(node);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> as(Key<? super T> key) {
-        dcc.checkConfigurable();
-        service.as(key);
+    public ServiceConfiguration<T> as(Key<? super T> key) {
+        containerConfiguration.checkConfigurable();
+        node.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configurationSite() {
-        return service.configurationSite();
+        return configurationSite;
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public String getDescription() {
-        dcc.checkConfigurable();
-        return service.description;
+        return node.description;
     }
 
     /** {@inheritDoc} */
     @Override
     public @Nullable Key<?> getKey() {
-        return service.getKey();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public String getName() {
-        return component.name;
+        return node.getKey();
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return service.instantiationMode();
+        return node.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> lazy() {
-        dcc.checkConfigurable();
-        ((BuildtimeServiceNodeDefault<T>) service).lazy();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidedComponentConfiguration<T> prototype() {
-        dcc.checkConfigurable();
-        ((BuildtimeServiceNodeDefault<T>) service).prototype();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
-        dcc.checkConfigurable();
-        service.description = description;
-        component.description = description;
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidedComponentConfiguration<T> setName(String name) {
-        dcc.checkConfigurable();
-        component.name = name;
+    public ServiceConfiguration<T> setDescription(@Nullable String description) {
+        containerConfiguration.checkConfigurable();
+        node.description = description;
         return this;
     }
 }

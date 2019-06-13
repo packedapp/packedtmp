@@ -22,6 +22,15 @@ import app.packed.contract.Contract;
  */
 
 // http://www.methodsandtools.com/archive/onionsoftwarearchitecture.php
+
+// Layer extension? WiringExtension?
+
+// LayerWirelets.into()
+
+// Ved ikke om vi skal have navngivne layers???
+// Jeg taenker her paa f.eks at lave en host, med Hibernate+Web
+// Her er Hiberate i data-layer, og Web i presentatio-layer
+
 public class Layer {
 
     public Contract incoming() {

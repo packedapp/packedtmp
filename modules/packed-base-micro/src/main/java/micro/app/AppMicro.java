@@ -23,6 +23,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
@@ -40,6 +41,9 @@ import app.packed.container.Bundle;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 public class AppMicro {
+
+    @Param({ "0", "1", "10", "100", "1000", "10000", "100000", "1000000" })
+    static long dbSize;
 
     @Benchmark
     public App emptyApp() {

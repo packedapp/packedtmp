@@ -94,6 +94,8 @@ public final class DescriptorFactory {
     }
 
     public <T> InternalFunction<T> readable(InternalFunction<T> factory) {
+        // TODO needs to cached
+
         // TODO add field...
         if (factory instanceof ExecutableInvoker) {
             ExecutableInvoker<T> e = (ExecutableInvoker<T>) factory;

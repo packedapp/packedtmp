@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.Bundle;
 import app.packed.inject.Factory0;
 import app.packed.inject.Injector;
-import packed.internal.inject.ServiceWiringImportOperation;
+import packed.internal.inject.InternalServiceWirelets;
 
 /**
  *
@@ -42,7 +42,7 @@ public class InjectorBindBundleTest {
         };
 
         npe(() -> Injector.of(c -> c.link((Bundle) null)), "bundle");
-        npe(() -> Injector.of(c -> c.link(b, (ServiceWiringImportOperation[]) null)), "wirelets");
+        npe(() -> Injector.of(c -> c.link(b, (InternalServiceWirelets[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */

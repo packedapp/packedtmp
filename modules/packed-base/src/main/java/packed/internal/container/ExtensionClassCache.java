@@ -26,6 +26,7 @@ import java.lang.reflect.InaccessibleObjectException;
 import app.packed.container.Extension;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
@@ -85,22 +86,21 @@ final class ExtensionClassCache<T> {
      * 
      * @param <T>
      *            the type of extension
-     * @param containerConfiguration
-     *            the configuration of the container for which to create the extension for
      * @param extensionType
      *            the type of extension
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension<T>> T newInstance(DefaultContainerConfiguration containerConfiguration, Class<T> extensionType) {
+    static <T extends Extension<T>> T newInstance(Class<T> extensionType) {
+        // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get to 6 ns
         ExtensionClassCache<T> ei = (ExtensionClassCache<T>) CACHE.get(extensionType);
         Extension<T> e;
         try {
             e = (T) ei.mh.invoke();
         } catch (Throwable t) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(t);
             throw new RuntimeException("Could not instantiate extension '" + StringFormatter.format(ei.type) + "'", t);
         }
-        AppPackedContainerSupport.invoke().setExtensionConfiguration(e, containerConfiguration);
         return (T) e;
     }
 }

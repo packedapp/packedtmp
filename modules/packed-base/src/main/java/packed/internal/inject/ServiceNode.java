@@ -62,8 +62,8 @@ public interface ServiceNode<T> extends ServiceDescriptor {
     boolean needsResolving();
 
     /**
-     * Converts this node to a run-time node if a build-node, otherwise returns this. Build-nodes must return the same
-     * instance
+     * Converts this node to a run-time node if this node is a build-node, otherwise returns this. Build-nodes must always
+     * return the same runtime node instance
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */

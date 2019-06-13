@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -24,9 +22,7 @@ import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
-import packed.internal.container.ContainerType;
-import packed.internal.container.DefaultApp;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.ContainerFactory;
 
 /**
  * A application is a program.
@@ -138,17 +134,15 @@ public interface App extends Injector, AutoCloseable {
      *            wiring operations
      * @return a new application
      * @throws RuntimeException
-     *             if the application could not be properly created
+     *             if the application could not be constructed or initialized properly
      */
     static App of(AnyBundle bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(ContainerType.APP_OF, bundle, wirelets);
-        return new DefaultApp(configuration.build());
+        return ContainerFactory.appOf(bundle, wirelets);
     }
 
     /**
      * This method will create and start an {@link App application} from the specified bundle. Blocking until the
-     * application has terminated.
+     * application has fully terminated.
      * 
      * @param bundle
      *            the bundle that the application should be created from

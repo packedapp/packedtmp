@@ -52,24 +52,25 @@ import packed.internal.invokable.Function1Invokeable;
  * {@code jobs.MyJob} is returned. If it is not a component that requests the logger, an anonymous logger is returned.
  *
  * 
-
  * @see Factory0
  * @see Factory2
  */
 
+//TODO fix example
 /**
  * A special {@link Factory} type that wraps a {@link Supplier} in order to dynamically provide new instances.
  * <p>
  * Is typically used like this:
  *
  * <pre> {@code
- * Factory<Long> f = new Factory0<>(System::currentTimeMillis) {};}</pre>
+ * Factory<Long> f = new Factory1<>(System::currentTimeMillis) {}};</pre>
  * <p>
  * In this example we create a new class inheriting from Factory0 is order to capture information about the suppliers
- * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system.
+ * type variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining
+ * type information at runtime.
  * 
  * @param <T>
- *            The type of the single dependency this factory takes
+ *            The type of the single dependency that this factory takes
  * @param <R>
  *            the type of objects this factory constructs
  * @see Factory0
@@ -77,7 +78,7 @@ import packed.internal.invokable.Function1Invokeable;
  */
 public abstract class Factory1<T, R> extends Factory<R> {
 
-    /** A cache of extracted type variables and dependencies from implementations of this class. */
+    /** A cache of extracted type variables and dependencies from subclasses of this class. */
     private static final ClassValue<Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */

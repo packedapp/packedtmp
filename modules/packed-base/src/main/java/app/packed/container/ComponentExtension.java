@@ -60,7 +60,7 @@ public final class ComponentExtension extends Extension<ComponentExtension> {
     }
 
     // Alternative to ComponentScan
-    void scanThisModule(Class<?>... classesInPackages) {}
+    public void scanForInstall(Class<?>... classesInPackages) {}
 
-    void scanThisModule(String... packages) {}
+    public void scan(String... packages) {}
 }

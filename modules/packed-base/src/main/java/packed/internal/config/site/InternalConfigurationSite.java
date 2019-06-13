@@ -71,29 +71,29 @@ public interface InternalConfigurationSite extends ConfigSite {
     static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
-    default InternalConfigurationSite spawnAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
+    default InternalConfigurationSite thenAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
         if (DISABLED) {
             return UNKNOWN;
         }
         return new AnnotatedFieldConfigurationSite(this, cst, field, annotation);
     }
 
-    default InternalConfigurationSite spawnAnnotatedMember(ConfigurationSiteType cst, Annotation annotation, Member member) {
+    default InternalConfigurationSite thenAnnotatedMember(ConfigurationSiteType cst, Annotation annotation, Member member) {
         if (member instanceof MethodDescriptor) {
-            return spawnAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
+            return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
         } else {
-            return spawnAnnotatedField(cst, annotation, (FieldDescriptor) member);
+            return thenAnnotatedField(cst, annotation, (FieldDescriptor) member);
         }
     }
 
-    default InternalConfigurationSite spawnAnnotatedMethod(ConfigurationSiteType cst, Annotation annotation, MethodDescriptor method) {
+    default InternalConfigurationSite thenAnnotatedMethod(ConfigurationSiteType cst, Annotation annotation, MethodDescriptor method) {
         if (DISABLED) {
             return UNKNOWN;
         }
         return new AnnotatedMethodConfigurationSite(this, cst, method, annotation);
     }
 
-    default InternalConfigurationSite spawnStack(ConfigurationSiteType cst) {
+    default InternalConfigurationSite thenStack(ConfigurationSiteType cst) {
         if (DISABLED) {
             return UNKNOWN;
         }

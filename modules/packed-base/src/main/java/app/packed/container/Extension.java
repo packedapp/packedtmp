@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
+import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.container.DefaultContainerConfiguration;
 
@@ -36,15 +37,25 @@ import packed.internal.container.DefaultContainerConfiguration;
  */
 // Maybe rename to ContainerExtension because we rarely need to spell it out
 // Disallow registering extensions as a service???
+
+// Feature
 public abstract class Extension<T extends Extension<T>> {
 
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
+            @Override
+            public void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder) {
+                c.builder = builder;
+                c.configure();
+                c.builder = null;
+            }
+
             /** {@inheritDoc} */
             @Override
-            public void setExtensionConfiguration(Extension<?> extension, DefaultContainerConfiguration configuration) {
+            public void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
+                extension.onAdd();
             }
         });
     }
@@ -52,6 +63,17 @@ public abstract class Extension<T extends Extension<T>> {
     /** The configuration of the container in which the extension is registered. */
     @SuppressWarnings("exports")
     public DefaultContainerConfiguration configuration;
+
+    protected void build() {
+        // Maybe take an attributemap that is shared between all invocations
+        // default implementation processes children..
+        // So we should always call super.build();
+        // sadsad()
+        // super.build();
+        // weweew
+    }
+
+    public void buildBundle(BundleDescriptor.Builder builder) {}
 
     /**
      * Checks that the container that this extension belongs to is still configurable. Throwing an
@@ -61,7 +83,7 @@ public abstract class Extension<T extends Extension<T>> {
      *             if the container this extension is no longer configurable.
      */
     protected final ContainerConfiguration checkConfigurable() {
-        DefaultContainerConfiguration c = configuration;
+        DefaultContainerConfiguration c = configuration();
         c.checkConfigurable();
         return c;
     }
@@ -74,7 +96,8 @@ public abstract class Extension<T extends Extension<T>> {
     private DefaultContainerConfiguration configuration() {
         DefaultContainerConfiguration c = configuration;
         if (c == null) {
-            throw new IllegalStateException("This operation cannot be called from the contructor of the extension");
+            throw new IllegalStateException(
+                    "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden to perform initialization");
         }
         return c;
     }
@@ -90,6 +113,7 @@ public abstract class Extension<T extends Extension<T>> {
      * @param action
      *            The action to be performed for each wirelet
      */
+    // TODO replace with WireletList
     protected final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
         configuration().forEachWirelet(wireletType, action);
     }
@@ -109,13 +133,10 @@ public abstract class Extension<T extends Extension<T>> {
     }
 
     /**
-     * 
+     * This method is invoked by the runtime immediately after the extension has been added to a container configuration.
+     * And before the extension is made available to other extensions or users.
      */
-    public void onFinish() {}
-
-    public void buildBundle(BundleDescriptor.Builder builder) {}
-
-    protected void onFirstUse() {}
+    protected void onAdd() {}
 
     //
     // protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
@@ -158,15 +179,9 @@ public abstract class Extension<T extends Extension<T>> {
     // Failure to have two features creating the same contract type...
 
     /**
-     * If the underlying container has parent which uses this container, returns the parents
      * 
-     * @return if the underlying any parent of this container
-     * @throws IllegalStateException
-     *             if called from outside of {@link #onFinish()}.
      */
-    protected final Optional<T> parent() {
-        throw new UnsupportedOperationException();
-    }
+    public void onFinish() {}
 
     // Skal have en eller anden form for link med...
     // Hvor man kan gemme ting. f.eks. en Foo.class
@@ -177,21 +192,23 @@ public abstract class Extension<T extends Extension<T>> {
     // protected void onWireParent(@Nullable T parent, BundleLink link) {}
 
     /**
+     * If the underlying container has parent which uses this container, returns the parents
+     * 
+     * @return if the underlying any parent of this container
+     * @throws IllegalStateException
+     *             if called from outside of {@link #onFinish()}.
+     */
+    protected final Optional<T> parent() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Returns the path of the underlying container.
      * 
      * @return the path of the underlying container
      */
     protected final ComponentPath path() {
         throw new UnsupportedOperationException();
-    }
-
-    protected void build() {
-        // Maybe take an attributemap that is shared between all invocations
-        // default implementation processes children..
-        // So we should always call super.build();
-        // sadsad()
-        // super.build();
-        // weweew
     }
 
     /**

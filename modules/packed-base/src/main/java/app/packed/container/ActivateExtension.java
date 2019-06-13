@@ -25,6 +25,10 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+// FeatureAnnotation
+
+// Unfprtunantely, you cannot register random annotations for use. As this would break encapsulation.
+
 public @interface ActivateExtension {
 
     /**
@@ -32,5 +36,5 @@ public @interface ActivateExtension {
      * 
      * @return the extension that knows how do handle
      */
-    Class<? extends ExtensionGroupConfigurator<?, ?>> value();
+    Class<? extends ExtensionHookGroup<?, ?>> value();
 }

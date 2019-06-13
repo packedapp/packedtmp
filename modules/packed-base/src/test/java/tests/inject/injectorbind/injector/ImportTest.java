@@ -27,7 +27,7 @@ import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import packed.app.packed.inject2.OldServiceWirelets;
+import packed.internal.inject.OldServiceWirelets;
 
 /**
  *

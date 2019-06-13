@@ -18,7 +18,7 @@ package support.stubs;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import packed.app.packed.inject2.OldServiceWirelets;
+import packed.internal.inject.OldServiceWirelets;
 
 /**
  *

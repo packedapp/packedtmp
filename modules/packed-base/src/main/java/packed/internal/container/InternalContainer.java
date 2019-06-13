@@ -30,27 +30,21 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
 
-/**
- *
- */
-public class InternalContainer implements Container {
+/** The default implementation of Container. */
+public final class InternalContainer implements Container {
+
+    /** All the components of this container. */
+    final Map<String, InternalComponent> components;
+
+    /** All child containers of this container. */
+    final Map<String, InternalComponent> containers = Map.of();
 
     private final Injector injector;
 
     /** The name of the container. */
     private final String name;
 
-    final Map<String, InternalComponent> components;
-
-    /** All child containers of this container. */
-    // Kan vi have en child container og en component med samme navn???
-    // Det var ikke muligt foer fordi vi havde en root component
-
-    // Hmmmmmmmmm. Et problem, er at man
-
-    final Map<String, InternalComponent> containers = Map.of();
-
-    public InternalContainer(DefaultContainerConfiguration builder, Injector injector) {
+    public InternalContainer(DefaultContainerConfiguration configuration, Injector injector) {
         this.injector = requireNonNull(injector);
         // if (builder.root != null) {
         // builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
@@ -58,13 +52,23 @@ public class InternalContainer implements Container {
         // } else {
         // this.root = null;
         // }
-        if (builder.components.isEmpty()) {
+        if (configuration.components.isEmpty()) {
             components = Map.of();
         } else {
             components = Map.of();
         }
-        this.name = builder.getName();
+        this.name = configuration.getName();
         // this.name = builder.getName() == null ? "App" : builder.getName();
+    }
+
+    @Override
+    public ConfigSite configurationSite() {
+        return injector.configurationSite();
+    }
+
+    @Override
+    public Optional<String> description() {
+        return injector.description();
     }
 
     @Override
@@ -77,14 +81,11 @@ public class InternalContainer implements Container {
         return injector.get(key);
     }
 
+    /** {@inheritDoc} */
     @Override
-    public ConfigSite configurationSite() {
-        return injector.configurationSite();
-    }
-
-    @Override
-    public Optional<String> description() {
-        return injector.description();
+    public Optional<Component> getComponent(CharSequence path) {
+        throw new UnsupportedOperationException();
+        // return path == ComponentPath.ROOT || path.toString().equals("/") ? Optional.of(root) : Optional.empty();
     }
 
     @Override
@@ -112,15 +113,22 @@ public class InternalContainer implements Container {
         return injector.injectMembers(instance, lookup);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return name;
+    }
+
     @Override
     public Stream<ServiceDescriptor> services() {
         return injector.services();
     }
-    //
-    // @Override
-    // public Set<String> tags() {
-    // return injector.tags();
-    // }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifecycleOperations<? extends Container> state() {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public <T> T use(Class<T> key) {
@@ -130,27 +138,5 @@ public class InternalContainer implements Container {
     @Override
     public <T> T use(Key<T> key) {
         return injector.use(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Component> getComponent(CharSequence path) {
-        throw new UnsupportedOperationException();
-        // return path == ComponentPath.ROOT || path.toString().equals("/") ? Optional.of(root) : Optional.empty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String name() {
-        return name;
-        // Det eneste jeg ved er at man godt kan have 2 containere med det samme navn som sieblings.
-        // installContainer(Jetty.class); //Maaske man kan bestemme root component navnet???
-        // installContainer(Jetty.class);//Maaske man kan bestemme root component navnet???
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public LifecycleOperations<? extends Container> state() {
-        throw new UnsupportedOperationException();
     }
 }

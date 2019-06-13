@@ -25,12 +25,12 @@ import org.junit.jupiter.api.Test;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.util.Key;
-import packed.app.packed.inject2.OldServiceWirelets;
-import packed.internal.inject.ServiceWiringImportOperation;
+import packed.internal.inject.InternalServiceWirelets;
+import packed.internal.inject.OldServiceWirelets;
 import support.stubs.annotation.Left;
 import support.stubs.annotation.Right;
 
-/** Tests the {@link InjectorConfigurator#provideAll(Injector, ServiceWiringImportOperation...)} method. */
+/** Tests the {@link InjectorConfigurator#provideAll(Injector, InternalServiceWirelets...)} method. */
 public class SimpleInjectorImportsTest {
 
     /** Tests various null arguments. */
@@ -38,7 +38,7 @@ public class SimpleInjectorImportsTest {
     public void nullArguments() {
         Injector i = Injector.of(c -> c.provide("X"));
         npe(() -> Injector.of(c -> c.provideAll((Injector) null)), "injector");
-        npe(() -> Injector.of(c -> c.provideAll(i, (ServiceWiringImportOperation[]) null)), "wirelets");
+        npe(() -> Injector.of(c -> c.provideAll(i, (InternalServiceWirelets[]) null)), "wirelets");
 
         // TODO test error message
         assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.provideAll(i, OldServiceWirelets.NO_IMPORTS, null)));

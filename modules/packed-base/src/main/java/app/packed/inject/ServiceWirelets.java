@@ -17,37 +17,28 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 
 /**
- *
+ * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
  */
+// push, pull
+// receive
+
+// So we can push things in, rebind them
 public final class ServiceWirelets {
 
     /** No instantiation. */
     private ServiceWirelets() {}
 
-    // provide
-    // provideMapped
     // restrict optional services going in (some contract????) Bare besvaereligt at lave negative contracter.
     // Med mindre vi arbejder med commotative, associative osv. kontrakter...
 
-    /**
-     * Returns a wirelet that will provide the specified service, invoking this method is identical to
-     * {@code provide(service.getClass(), service)}. The service will be available in the receiving container if it is a
-     * requirement of the container
-     * 
-     * @param service
-     *            the service to provide
-     * @return a wirelet that will provide the specified service
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Wirelet provide(Object service) {
-        requireNonNull(service, "service is null");
-        return provide((Class) service.getClass(), service);
+    public static <T> Wirelet provide(Factory0<T> factory) {
+        throw new UnsupportedOperationException();
     }
 
     public static <T> Wirelet provide(Class<T> key, T service) {
@@ -59,24 +50,36 @@ public final class ServiceWirelets {
     }
 
     /**
+     * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
+     * service of the specific type as a requirement.
+     * <p>
+     * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
+     * 
+     * @param service
+     *            the service to provide
+     * @return a wirelet that will provide the specified service
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static Wirelet provide(Object service) {
+        requireNonNull(service, "service is null");
+        return provide((Class) service.getClass(), service);
+    }
+
+    /**
      * Returns a wirelet that will provide all services that the specified injector provides
      * 
      * @param injector
+     *            the injector to provide services from
+     * @param wirelets
+     *            for transforming and or restricting services
      * @return stuff
      */
-    public static Wirelet provideAll(Injector injector /* , Wirelet... wirelets */) {
+    public static Wirelet provideAll(Injector injector, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    // Can we have dependencies.... Det kan vi vel godt...
-    public static Wirelet provideAll(Consumer<InjectorConfigurator> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet provideOnly(Class<?>... keys) {
-        // Retain
-        // Only
-        // Predicate
+    // Problemet er at vi skal angive 2 noegler
+    public static Wirelet provideMapped(Mapper<?, ?> r) {
         throw new UnsupportedOperationException();
     }
 
@@ -88,12 +91,25 @@ public final class ServiceWirelets {
     // throw new UnsupportedOperationException();
     // }
 
-    // Problemet er at vi skal angive 2 noegler
-    public static Wirelet provideMapped(Rebinder<?, ?> r) {
+    public static void main(String[] args) {
+        provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
+    }
+
+    public static Wirelet provideOnly(Class<?>... keys) {
+        // Retain
+        // Only
+        // Predicate
         throw new UnsupportedOperationException();
     }
 
-    static class Rebinder<F, T> {}
+    // Maybe have a generic mapper, not only for injection...
+    // Transformer
+    static abstract class Mapper<T, R> {
+        protected Mapper(Function<? super T, ? extends R> function) {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 }
 
 /// into
@@ -104,3 +120,9 @@ public final class ServiceWirelets {
 /// outfrom
 //// Transformation
 //// Removal (contract??)
+
+// Can we have dependencies.... Det kan vi vel godt...
+// public static Wirelet provideAll(Consumer<InjectorConfigurator> c) {
+// return provideAll(Injector.of(configurator, wirelets));
+// throw new UnsupportedOperationException();
+// }

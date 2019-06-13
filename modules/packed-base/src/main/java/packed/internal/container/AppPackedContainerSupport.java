@@ -18,6 +18,8 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
+import app.packed.container.ExtensionHookGroup;
+import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public final class AppPackedContainerSupport {
@@ -32,7 +34,17 @@ public final class AppPackedContainerSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        public abstract void setExtensionConfiguration(Extension<?> e, DefaultContainerConfiguration configuration);
+        /**
+         * Initializes the extension with the configuration of the container in which it is registered.
+         * 
+         * @param extension
+         *            the extension to configure
+         * @param configuration
+         *            the configuration of the container in which the extension is registered
+         */
+        public abstract void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration);
+
+        public abstract void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
 
         /**
          * Initializes this class.

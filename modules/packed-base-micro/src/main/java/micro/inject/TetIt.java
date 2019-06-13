@@ -28,9 +28,11 @@ import app.packed.inject.Injector;
  */
 public class TetIt {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1_000_000; i++) {
+        System.in.read();
+        System.out.println("STarting");
+        for (int i = 0; i < 1_000_0000; i++) {
             Injector inj = Injector.of(c -> {
                 c.lookup(MethodHandles.lookup());
                 c.provide(Factory.ofInstance("foo"));

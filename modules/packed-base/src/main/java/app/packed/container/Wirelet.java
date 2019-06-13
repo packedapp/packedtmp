@@ -153,6 +153,7 @@ public abstract class Wirelet {
         return compose(l.toArray(i -> new Wirelet[i]));
     }
 
+    // void verify();
     protected void check() {
         // checkApp() for Wirelet.appTimeToLive for example...
     }
@@ -160,6 +161,16 @@ public abstract class Wirelet {
     // force start, initialize, await start...
     protected final void checkApp() {
 
+    }
+
+    public final Wirelet ifCondition() {
+        // Or Else
+
+        // Igen Predicate<Environment> <- Skal vaere statisk
+
+        // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
+        // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
+        return this;
     }
 
     /**
@@ -170,7 +181,7 @@ public abstract class Wirelet {
      *            the arguments to inject
      * @return a wirelet that provides the specified arguments to the linked container
      */
-    public static Wirelet appMain(String... args) {
+    public static Wirelet appMainArgs(String... args) {
         return ServiceWirelets.provide(MainArgs.of(args));
     }
 
@@ -235,15 +246,20 @@ public abstract class Wirelet {
     // mapConfiguration, childConfiguration()
     // ConfigurationWirelets.provide(Configuration c)
     // ConfigurationWirelets.map(ConfigurationTransformer transformer)
+    // or extract childOf
     // ConfigurationWirelets.mapChild(String childName) //calls map
     // ConfigurationWirelets.mapChild(Configuration c, ConfigurationTransformer)
-    public static Wirelet configure(String childName) {
-        // Extracts the child named 'childName' for a configuration in the current context
+    // ConfigWirelets.provide(c)
+    // ConfWirelets.provide(c)
+    // ConfSite
+
+    public static Wirelet configure(Configuration c, String child) {
         // configure(c, "child")
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet configure(Configuration c, String child) {
+    public static Wirelet configure(String childName) {
+        // Extracts the child named 'childName' for a configuration in the current context
         // configure(c, "child")
         throw new UnsupportedOperationException();
     }
@@ -261,11 +277,14 @@ public abstract class Wirelet {
 
     /**
      * Returns a wirelet that will set name of a container once wired, overriding any existing name it may have.
+     * <p>
+     * Will override any name set by {@link AnyBundle#setName(String)}.
      * 
      * @param name
      *            the name of the container
      * @return a wirelet that will set name of a container once wired
      */
+    // setName, set
     public static Wirelet name(String name) {
         return new DefaultContainerConfiguration.OverrideNameWirelet(name);
     }

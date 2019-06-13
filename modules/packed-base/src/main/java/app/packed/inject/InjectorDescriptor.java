@@ -21,6 +21,8 @@ package app.packed.inject;
 // Det er ikke meningen folk selv skal lave descriptor imodsaetning til contracts.
 // De skal heller ikke extendes....
 
+// De er primaert taenkt til at vaere taet knyttet til f.eks. en Injector
+
 // injector.descriptor();
 public interface InjectorDescriptor {
 

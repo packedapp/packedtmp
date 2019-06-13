@@ -32,6 +32,8 @@ import app.packed.util.Nullable;
 // Bundle b = new SomeBundle();
 // wire(b, setName("f1"));
 // wire(b, setName("f2"));
+
+// Kan vi genbruge et bundle???
 public abstract class AnyBundle {
 
     /** The configuration. */
@@ -177,10 +179,12 @@ public abstract class AnyBundle {
     }
 
     /**
-     * Returns a container extension of the specified type.
+     * Returns a extension of the specified type. Instantiating and registering one, if one has not already been registered.
      * 
      * @param <T>
+     *            the type of extension to return
      * @param extensionType
+     *            the type of extension to return
      * @return an extension of the specified type
      * @see ContainerConfiguration#use(Class)
      */

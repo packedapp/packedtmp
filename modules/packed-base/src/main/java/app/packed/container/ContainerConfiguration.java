@@ -43,6 +43,9 @@ import app.packed.util.Nullable;
 /// And we do not need the fields
 
 // Optional<Class<? extends AnyBundle>> bundleType();
+// -- or Class<?> configuratorType() <- This is the class for which all access is checked relative to
+/// Why shouldnt it be able to have @Install even if !A Bundle
+
 // Environment <- Immutable??, Attachable??
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
 public interface ContainerConfiguration {
@@ -97,16 +100,16 @@ public interface ContainerConfiguration {
     <T extends AnyBundle> T link(T child, Wirelet... wirelets);
 
     /**
-     * Registers a {@link Lookup} object that can is primarily used for accessing fields and methods on registered
+     * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
      * components.
      * <p>
-     * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     * Unless your private
+     * The lookup object passed to this method is never made available through the public API. Its use is strictly
+     * internally.
      * 
      * @param lookup
      *            the lookup object
      */
-    void lookup(Lookup lookup);
+    void lookup(@Nullable Lookup lookup);
 
     /**
      * Sets the description of this container.

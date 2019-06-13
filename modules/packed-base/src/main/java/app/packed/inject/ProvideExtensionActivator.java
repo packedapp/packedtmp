@@ -15,23 +15,23 @@
  */
 package app.packed.inject;
 
-import app.packed.container.ExtensionGroupConfigurator;
+import app.packed.container.ExtensionHookGroup;
 import packed.internal.annotations.AtProvidesGroup;
 
 /**
  *
  */
-final class ProvideExtensionActivator extends ExtensionGroupConfigurator<InjectorExtension, AtProvidesGroup.Builder> {
+final class ProvideExtensionActivator extends ExtensionHookGroup<InjectorExtension, AtProvidesGroup.Builder> {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-
+        System.out.println("Conf Provide extension");
     }
 
     /** {@inheritDoc} */
     @Override
-    protected AtProvidesGroup.Builder newBuilder(Class<?> componentType) {
+    public AtProvidesGroup.Builder newBuilder(Class<?> componentType) {
         return new AtProvidesGroup.Builder();
     }
 
@@ -39,23 +39,18 @@ final class ProvideExtensionActivator extends ExtensionGroupConfigurator<Injecto
     // @Override
     // protected void configure() {
     // // validation
-    //
     // // callbacks...
     // // setup validation...
-    //
     // onAnnotatedMethod(Provide.class, (h, m) -> {
     // // validate the mother fucker....
     // });
     // }
-    //
     // /** {@inheritDoc} */
     // @Override
     // protected MyBuilder newBuilder(Class<?> componentType) {
     // return new MyBuilder();
     // }
-    //
     // static class MyBuilder implements ExtensionActivator.Builder<InjectorExtension> {
-    //
     // /** {@inheritDoc} */
     // @Override
     // public BiConsumer<ComponentConfiguration, InjectorExtension> build() {

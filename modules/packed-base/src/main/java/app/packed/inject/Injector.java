@@ -26,8 +26,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.container.ContainerType;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.ContainerFactory;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -276,10 +275,7 @@ public interface Injector /* extends Taggable */ {
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
     static Injector of(Bundle bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(ContainerType.INJECTOR_OF, bundle, wirelets);
-        bundle.doConfigure(builder);
-        return builder.buildInjector();
+        return ContainerFactory.injectorOf(bundle, wirelets);
     }
 
     /**
@@ -290,12 +286,7 @@ public interface Injector /* extends Taggable */ {
      * @return the new injector
      */
     static Injector of(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-        requireNonNull(configurator, "configurator is null");
-        // Hmm vi burde have en public version af ContainerBuilder
-        // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(ContainerType.INJECTOR_OF, null, wirelets);
-        configurator.accept(new InjectorConfigurator(builder));
-        return builder.buildInjector();
+        return ContainerFactory.injectorOf(configurator, wirelets);
     }
 }
 

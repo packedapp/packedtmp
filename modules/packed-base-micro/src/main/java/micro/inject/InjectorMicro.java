@@ -28,6 +28,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.container.Bundle;
 import app.packed.inject.Injector;
 
 /**
@@ -52,7 +53,17 @@ public class InjectorMicro {
     }
 
     @Benchmark
-    public Injector injectorNeedsString() {
+    public Injector injectorStringExportedInstance() {
+        return Injector.of(new SimpleInjector());
+    }
+
+    @Benchmark
+    public String injectorStringInstanceUse() {
+        return Injector.of(new SimpleInjector()).use(String.class);
+    }
+
+    @Benchmark
+    public Injector injectorServiceNeedingString() {
         return Injector.of(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide("foo");
@@ -62,5 +73,13 @@ public class InjectorMicro {
 
     public static class NeedsString {
         NeedsString(String s) {}
+    }
+
+    static class SimpleInjector extends Bundle {
+
+        @Override
+        public void configure() {
+            export(provide("Hey"));
+        }
     }
 }

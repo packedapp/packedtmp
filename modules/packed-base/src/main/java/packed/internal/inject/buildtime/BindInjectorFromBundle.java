@@ -35,7 +35,7 @@ import packed.internal.container.WireletList;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.ServiceWiringImportOperation;
+import packed.internal.inject.InternalServiceWirelets;
 
 /**
  * An abstract class for the injector bind methods
@@ -150,8 +150,8 @@ public class BindInjectorFromBundle {
             Key<?> existing = node.key();
 
             // invoke the import function on the stage
-            if (stage instanceof ServiceWiringImportOperation) {
-                ((ServiceWiringImportOperation) stage).onEachService(node);
+            if (stage instanceof InternalServiceWirelets) {
+                ((InternalServiceWirelets) stage).onEachService(node);
             }
 
             if (node.key() == null) {
