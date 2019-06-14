@@ -39,6 +39,7 @@ import packed.internal.container.DefaultContainerConfiguration;
 // Disallow registering extensions as a service???
 
 // Feature
+// Configurator
 public abstract class Extension<T extends Extension<T>> {
 
     static {
@@ -61,8 +62,7 @@ public abstract class Extension<T extends Extension<T>> {
     }
 
     /** The configuration of the container in which the extension is registered. */
-    @SuppressWarnings("exports")
-    public DefaultContainerConfiguration configuration;
+    private DefaultContainerConfiguration configuration;
 
     protected void build() {
         // Maybe take an attributemap that is shared between all invocations
@@ -90,7 +90,7 @@ public abstract class Extension<T extends Extension<T>> {
      *             if the container this extension is no longer configurable.
      */
     protected final ContainerConfiguration checkConfigurable() {
-        DefaultContainerConfiguration c = configuration();
+        ContainerConfiguration c = configuration();
         c.checkConfigurable();
         return c;
     }
@@ -100,7 +100,7 @@ public abstract class Extension<T extends Extension<T>> {
      * 
      * @return the configuration of the container
      */
-    private DefaultContainerConfiguration configuration() {
+    protected final ContainerConfiguration configuration() {
         DefaultContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
@@ -122,7 +122,7 @@ public abstract class Extension<T extends Extension<T>> {
      */
     // TODO replace with WireletList
     protected final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
-        configuration().forEachWirelet(wireletType, action);
+        ((DefaultContainerConfiguration) configuration()).forEachWirelet(wireletType, action);
     }
 
     /**

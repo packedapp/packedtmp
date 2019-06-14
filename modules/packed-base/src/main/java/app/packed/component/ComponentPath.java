@@ -28,7 +28,7 @@ import app.packed.util.Nullable;
  * <p>
  * Implementations of this interface are always immutable and safe for use by multiple concurrent threads.
  * <p>
- * Two components paths are equal if their {@link #length()} is identical and for every valid char index
+ * Two component paths are equal if their {@link #length()} is identical and for every valid char index
  * {@link #charAt(int)} returns the same value for both paths. The hash code of a component path is identical to the
  * hash code of its string representation.
  * <p>
@@ -61,12 +61,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
             return 0;
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath parent() {
-            return null;
-        }
-
         @Override
         public int hashCode() {
             return toString().hashCode();
@@ -77,10 +71,21 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
             return true;
         }
 
+        @Override
+        public Iterator<Path> iterator() {
+            return Collections.emptyIterator();
+        }
+
         /** {@inheritDoc} */
         @Override
         public int length() {
             return 1;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath parent() {
+            return null;
         }
 
         /** {@inheritDoc} */
@@ -93,11 +98,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
         public String toString() {
             return "/";
         }
-
-        @Override
-        public Iterator<Path> iterator() {
-            return Collections.emptyIterator();
-        }
     };
 
     /**
@@ -109,19 +109,19 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
     int findDepth();
 
     /**
+     * Returns whether or not this component is the root component in a container hierarchy.
+     *
+     * @return whether or not this component is the root component
+     */
+    boolean isRoot();
+
+    /**
      * Returns the <em>parent path</em>, or null if this path does not have a parent (is a root).
      *
      * @return a path representing the path's parent
      */
     @Nullable
     ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
-
-    /**
-     * Returns whether or not this component is the root component in a container hierarchy.
-     *
-     * @return whether or not this component is the root component
-     */
-    boolean isRoot();
 
     /**
      * Converts a path string, or a sequence of strings that when joined form a path string, to a {@code ComponentPath}.

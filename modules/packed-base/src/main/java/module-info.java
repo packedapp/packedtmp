@@ -3,7 +3,7 @@ module app.packed.base {
     exports app.packed.component;
     exports app.packed.container;
     exports app.packed.contract;
-    exports app.packed.host;
+    exports app.packed.app;
     exports app.packed.hook;
     exports app.packed.inject;
     exports app.packed.lifecycle;

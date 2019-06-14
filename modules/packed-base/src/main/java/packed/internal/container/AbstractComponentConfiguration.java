@@ -64,7 +64,7 @@ abstract class AbstractComponentConfiguration {
         return name;
     }
 
-    public AbstractComponentConfiguration setDescription(@Nullable String description) {
+    public AbstractComponentConfiguration setDescription0(@Nullable String description) {
         checkConfigurable();
         this.description = description;
         return this;
@@ -89,5 +89,12 @@ abstract class AbstractComponentConfiguration {
 
         }
         return name;
+    }
+
+    enum NamingState {
+        OPEN, //
+        COMPONENT_NAME_CALLED, // which makes it immutable
+        FINALIZED // After Wiring and stuff
+        ;
     }
 }

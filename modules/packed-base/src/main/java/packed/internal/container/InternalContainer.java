@@ -18,11 +18,14 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
 import app.packed.inject.Injector;
@@ -52,7 +55,7 @@ public final class InternalContainer implements Container {
         // } else {
         // this.root = null;
         // }
-        if (configuration.components.isEmpty()) {
+        if (configuration.children.isEmpty()) {
             components = Map.of();
         } else {
             components = Map.of();
@@ -84,8 +87,17 @@ public final class InternalContainer implements Container {
     /** {@inheritDoc} */
     @Override
     public Optional<Component> getComponent(CharSequence path) {
+        requireNonNull(path, "path is null");
+        if (path.length() == 0) {
+            throw new IllegalArgumentException("Cannot specify the empty string");
+        }
+        // Make sure we never get parent components....
+        if (path.charAt(0) == '/') {
+
+        } else {
+
+        }
         throw new UnsupportedOperationException();
-        // return path == ComponentPath.ROOT || path.toString().equals("/") ? Optional.of(root) : Optional.empty();
     }
 
     @Override
@@ -138,5 +150,50 @@ public final class InternalContainer implements Container {
     @Override
     public <T> T use(Key<T> key) {
         return injector.use(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream components() {
+        return new InternalComponentStream(Stream.of(new ComponentWrapper()));
+    }
+
+    class ComponentWrapper implements Component {
+
+        /** {@inheritDoc} */
+        @Override
+        public Collection<Component> children() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite configurationSite() {
+            return InternalContainer.this.configurationSite();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<String> description() {
+            return InternalContainer.this.description();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return InternalContainer.this.name();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath path() {
+            return ComponentPath.ROOT;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentStream stream() {
+            return InternalContainer.this.components();
+        }
     }
 }

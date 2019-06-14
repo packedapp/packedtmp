@@ -16,11 +16,8 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -31,8 +28,8 @@ import java.util.stream.Stream;
  * of this class is normally acquired by invoking containerComponents or componentStream.
  *
  * <pre>
- * Container c = ...
- * System.out.println(&quot;Number of installed components = &quot; + c.componentStream().count());
+ * App app  = ...
+ * System.out.println(&quot;Number of components = &quot; + app.components().count());
  * </pre>
  * <p>
  * This interface will be extended in the future with additional methods.
@@ -49,52 +46,11 @@ import java.util.stream.Stream;
 // ContainerPrinter.print (.... or TreePrinter....).. Ideen er lidt at
 // sort(), skip, osv. ikke passer searlig godt ind...
 // filterOn
+
+// Altsaa vi kan vel bruge den her ogsaa paa build tid.....????
+// Hvis det er ren information... Lifecycle kan vaere UNKNOWN...
+// components.hasMethodAnnotation(Provide.class, Inject.class).print();
 public interface ComponentStream extends Stream<Component> {
-
-    /**
-     * Invokes the specified consumer for each component whose component instance is of the specific type.
-     * <p>
-     * Components that have not yet been fully initialized and where the initializing thread is different from the thread
-     * calling this method are ignored.
-     *
-     * This is a <em>terminal operation</em>.
-     *
-     * @param <T>
-     *            the type of component instances to consume
-     * @param instanceType
-     *            the type of instances to invoke the consumer for
-     * @param consumer
-     *            the consumer to invoke for each match
-     */
-    <T> void forEachInstanceOf(Class<T> instanceType, BiConsumer<? super Component, ? super T> consumer);
-
-    <T> void forEachInstanceOf(Class<T> instanceType, Consumer<? super T> consumer);
-
-    /**
-     * Returns a new stream of all component instances.
-     *
-     * @return a new stream of all component instances
-     */
-    // Tager kun dem der er instantiated... Maaske skal vi endda have et generalt isInstantiatedFilter? return map(e ->
-    // e.getInstance());
-    Stream<Object> instances();
-
-    /**
-     * Returns a new stream of all component instances that are of the specified type.
-     * <p>
-     * Invoking this method is equivalent to {@code instances().filter(e -> instanceType.isAssignableFrom(e.getClass()))}.
-     * 
-     * @param <T>
-     *            The type of instances to include in the new stream
-     * @param instanceType
-     *            the component instance types to include in the new stream
-     * @return the new stream
-     */
-    @SuppressWarnings("unchecked")
-    default <T> Stream<T> instancesOfType(Class<T> instanceType) {
-        requireNonNull(instanceType, "instanceType is null");
-        return (Stream<T>) instances().filter(e -> instanceType.isAssignableFrom(e.getClass()));
-    }
 
     /**
      * Returns a new list containing all of the components in this stream in the order they where encountered. Is identical
@@ -128,18 +84,14 @@ public interface ComponentStream extends Stream<Component> {
     // requireNonNull(tag, "tag is null");
     // return filter(e -> e.tags().contains(tag));
     // }
+    //
+    // default <T> ComponentStream filterOnType(Class<T> type) {
+    // return filter(c -> {
+    // return c.instance().getClass().isAssignableFrom(type);
+    // });
+    // }
 
-    default <T> ComponentStream filterOnType(Class<T> type) {
-        return filter(c -> {
-            return c.instance().getClass().isAssignableFrom(type);
-        });
-    }
-
-    default <T> ComponentStream filterOnInstance(Class<T> type, Predicate<T> predicate) {
-        throw new UnsupportedOperationException();
-    }
-
-    /********** Overridden to provide co-a ComponentStream as a return value. **********/
+    /********** Overridden to provide ComponentStream as a return value. **********/
 
     /** {@inheritDoc} */
     @Override
@@ -181,3 +133,53 @@ public interface ComponentStream extends Stream<Component> {
     @Override // Only available from Java 9
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 }
+
+//
+// default <T> ComponentStream filterOnInstance(Class<T> type, Predicate<T> predicate) {
+// throw new UnsupportedOperationException();
+// }
+
+// /**
+// * Invokes the specified consumer for each component whose component instance is of the specific type.
+// * <p>
+// * Components that have not yet been fully initialized and where the initializing thread is different from the thread
+// * calling this method are ignored.
+// *
+// * This is a <em>terminal operation</em>.
+// *
+// * @param <T>
+// * the type of component instances to consume
+// * @param instanceType
+// * the type of instances to invoke the consumer for
+// * @param consumer
+// * the consumer to invoke for each match
+// */
+// <T> void forEachInstanceOf(Class<T> instanceType, BiConsumer<? super Component, ? super T> consumer);
+//
+// <T> void forEachInstanceOf(Class<T> instanceType, Consumer<? super T> consumer);
+//
+// /**
+// * Returns a new stream of all component instances.
+// *
+// * @return a new stream of all component instances
+// */
+// // Tager kun dem der er instantiated... Maaske skal vi endda have et generalt isInstantiatedFilter? return map(e ->
+// // e.getInstance());
+// Stream<Object> instances();
+//
+// /**
+// * Returns a new stream of all component instances that are of the specified type.
+// * <p>
+// * Invoking this method is equivalent to {@code instances().filter(e -> instanceType.isAssignableFrom(e.getClass()))}.
+// *
+// * @param <T>
+// * The type of instances to include in the new stream
+// * @param instanceType
+// * the component instance types to include in the new stream
+// * @return the new stream
+// */
+// @SuppressWarnings("unchecked")
+// default <T> Stream<T> instancesOfType(Class<T> instanceType) {
+// requireNonNull(instanceType, "instanceType is null");
+// return (Stream<T>) instances().filter(e -> instanceType.isAssignableFrom(e.getClass()));
+// }

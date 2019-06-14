@@ -16,9 +16,9 @@
 package app.packed.container;
 
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.List;
 import java.util.Set;
 
+import app.packed.app.App;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
@@ -174,5 +174,5 @@ public interface ContainerConfiguration {
      * 
      * @return a list of any wirelets that was used to create this configuration
      */
-    List<Wirelet> wirelets();
+    WireletList wirelets();
 }

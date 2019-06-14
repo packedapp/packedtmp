@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.lang.annotation.Annotation;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedMethodHook;
@@ -43,7 +44,7 @@ import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 
 // registerAnnotatedMethod(Provide.class, new ProvideVisitior(){});
 
-public abstract class ExtensionHookGroup<E extends Extension<E>, B extends ExtensionHookGroup.Builder<E>> {
+public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Supplier<BiConsumer<ComponentConfiguration, E>>> {
 
     ExtensionHookGroupConfiguration.Builder builder;
 
@@ -90,18 +91,18 @@ public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Exten
     // Eller kan extensionen selv klare det??? Ja for nu
     final void requireExtension(Class<? extends Extension<?>> extensionType) {}
 
-    // allowPrivateFields()
-    public interface Builder<E extends Extension<E>> {
-
-        /**
-         * Returns a consumer that will be invoked every time a component of the particular type is installed.
-         * 
-         * @return a consumer that will be invoked every time a component of the particular type is installed
-         * @throws RuntimeException
-         *             if the some property of the component type was invalid
-         */
-        BiConsumer<ComponentConfiguration, E> build();
-    }
+    // // allowPrivateFields()
+    // public interface Builder<E extends Extension<E>> {
+    //
+    // /**
+    // * Returns a consumer that will be invoked every time a component of the particular type is installed.
+    // *
+    // * @return a consumer that will be invoked every time a component of the particular type is installed
+    // * @throws RuntimeException
+    // * if the some property of the component type was invalid
+    // */
+    // BiConsumer<ComponentConfiguration, E> build();
+    // }
 }
 //// Er det maaden vi ogsaa skal fikse hooks paa...
 // public abstract class ExtensionMethodConfigurator {

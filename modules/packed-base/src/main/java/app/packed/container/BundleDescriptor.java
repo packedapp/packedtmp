@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.app.Main;
 import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;

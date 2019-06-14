@@ -15,7 +15,7 @@
  */
 package packed.internal.componentcache.exam;
 
-import app.packed.container.App;
+import app.packed.app.App;
 import app.packed.container.Bundle;
 
 /**

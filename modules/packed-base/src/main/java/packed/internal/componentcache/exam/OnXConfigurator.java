@@ -18,6 +18,7 @@ package packed.internal.componentcache.exam;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ExtensionHookGroup;
@@ -51,17 +52,16 @@ public class OnXConfigurator extends ExtensionHookGroup<MyExtension, OnXConfigur
         return new Builder();
     }
 
-    static class Builder implements ExtensionHookGroup.Builder<MyExtension> {
+    static class Builder implements Supplier<BiConsumer<ComponentConfiguration, MyExtension>> {
 
         List<MethodDescriptor> list = new ArrayList<>();
 
         /** {@inheritDoc} */
         @Override
-        public BiConsumer<ComponentConfiguration, MyExtension> build() {
+        public BiConsumer<ComponentConfiguration, MyExtension> get() {
             List<MethodDescriptor> l = List.copyOf(list);
             return (c, e) -> e.methods(c, l);
         }
-
     }
 
 }

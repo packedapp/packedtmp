@@ -24,7 +24,6 @@ import java.util.List;
 
 import app.packed.inject.Dependency;
 import app.packed.inject.InjectionException;
-import app.packed.inject.InjectorExtension;
 import app.packed.inject.InstantiationMode;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.container.DefaultContainerConfiguration;
@@ -53,9 +52,9 @@ public final class DependencyGraph {
      * @param root
      *            the root injector builder
      */
-    public DependencyGraph(DefaultContainerConfiguration root) {
+    public DependencyGraph(DefaultContainerConfiguration root, InjectorBuilder ib) {
         this.root = requireNonNull(root);
-        this.ib = requireNonNull(root.use(InjectorExtension.class).builder);
+        this.ib = requireNonNull(ib);
     }
 
     /** Also used for descriptors. */

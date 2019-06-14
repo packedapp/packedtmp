@@ -80,7 +80,7 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     @Override
     @Nullable
     public String getName() {
-        return component.name;
+        return component.getName();
     }
 
     /** {@inheritDoc} */
@@ -110,7 +110,7 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
         dcc.checkConfigurable();
         service.description = description;
-        component.description = description;
+        component.setDescription(description);
         return this;
     }
 
@@ -118,7 +118,7 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     @Override
     public ProvidedComponentConfiguration<T> setName(String name) {
         dcc.checkConfigurable();
-        component.name = name;
+        component.setName(name);
         return this;
     }
 }

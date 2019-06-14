@@ -17,72 +17,36 @@ package app.packed.component;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
-import app.packed.inject.Injector;
-import app.packed.inject.ProvidedComponentConfiguration;
 
 /**
  *
  */
-public interface Component /* extends Taggable */ {
+public interface Component {
 
     /**
-     * Returns an immutable view of this component's children. To remove or add children at runtime, use this component's
-     * installer.
+     * Returns an immutable view of this component's children.
      *
      * @return an immutable view of this component's children
      */
     Collection<Component> children();
 
     /**
-     * Returns the configuration site of the component.
+     * Returns the configuration site of this component.
      * 
-     * @return the configuration site of the component
+     * @return the configuration site of this component
      */
     ConfigSite configurationSite();
 
     /**
-     * Returns the container that this component is installed in.
+     * Returns the description of this component. Or an empty optional if no description has been set
      *
-     * @return the container that this component is installed in
-     */
-    Container container();
-
-    default void install(Consumer<? super ComponentInstaller> installer) {
-        // Maybe have a runtime component installer???
-        // maybe just allow prototypes for now...
-    }
-
-    /**
-     * Returns the description of this component Or null if no description has been set
+     * @return the description of this component. Or an empty optional if no description has been set
      *
-     * @return the description of this component. Or null if no description has been set
-     *
-     * @see ProvidedComponentConfiguration#setDescription(String)
+     * @see ComponentConfiguration#setDescription(String)
      */
     Optional<String> description();
-
-    /**
-     * Returns the private injector of this component.
-     *
-     * @return the private injector of this component
-     */
-    // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
-    // Maaske skal vi bare extende Injector.....
-    Injector injector();
-
-    /**
-     * Returns the component instance.
-     *
-     * @return the component instance
-     * @throws IllegalStateException
-     *             if invoking this method before the component has been initialized from another thread then the thread
-     *             that is initializing the component.
-     */
-    Object instance();
 
     /**
      * Returns the name of this component.
@@ -92,7 +56,7 @@ public interface Component /* extends Taggable */ {
      *
      * @return the name of this component
      *
-     * @see ProvidedComponentConfiguration#setName(String)
+     * @see ComponentConfiguration#setName(String)
      */
     String name();
 
@@ -109,6 +73,26 @@ public interface Component /* extends Taggable */ {
      * @return a component stream consisting of this component and all of its descendants in any order
      */
     ComponentStream stream();
-
-    // installContainer(Bundle...) <-man kan ikke ting fra den paa runtime... kun den anden vej...
 }
+
+/// **
+// * Returns the component instance.
+// *
+// * @return the component instance
+// * @throws IllegalStateException
+// * if invoking this method before the component has been initialized from another thread then the thread
+// * that is initializing the component.
+// */
+// Object instance();
+//
+// default void install(Consumer<? super ComponentInstaller> installer) {
+// // Maybe have a runtime component installer???
+// // maybe just allow prototypes for now...
+// }
+/// **
+// * Returns the container that this component is installed in.
+// *
+// * @return the container that this component is installed in
+// */
+// Container container();
+// installContainer(Bundle...) <-man kan ikke ting fra den paa runtime... kun den anden vej...

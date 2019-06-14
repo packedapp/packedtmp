@@ -28,7 +28,7 @@ import java.util.Set;
  * <p>
  * Tags can be any non-null string, even the empty string. Tags are case sensitive.
  */
-public interface Taggable {
+interface Taggable {
 
     /**
      * Returns an set of all tags present on the taggable object. The set returned is, unless otherwise specified, mutable

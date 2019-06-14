@@ -60,7 +60,7 @@ public class ServiceClassDescriptor {
 
         this.implementation = implementation;
         this.simpleName = implementation.getSimpleName();
-        this.provides = scanner.provides.build();
+        this.provides = scanner.provides.get();
         this.inject = scanner.inject.build();
     }
 

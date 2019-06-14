@@ -21,7 +21,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
 import app.packed.util.MethodDescriptor;
@@ -42,7 +44,7 @@ public final class Instance {
 
     private Instance(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
-        build = requireNonNull(b.b.build());
+        build = requireNonNull(b.b.get());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -53,17 +55,18 @@ public final class Instance {
 
     static class Builder {
 
-        final ExtensionHookGroup.Builder<?> b;
+        final Supplier<BiConsumer<ComponentConfiguration, ?>> b;
 
         /** The component type */
         final Class<?> componentType;
 
         final ExtensionHookGroupConfiguration conf;
 
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         Builder(Class<?> componentType, Class<? extends ExtensionHookGroup<?, ?>> cc) {
             this.componentType = requireNonNull(componentType);
             this.conf = ExtensionHookGroupConfiguration.FOR_CLASS.get(cc);
-            this.b = conf.egc.newBuilder(componentType);
+            this.b = (Supplier) conf.egc.newBuilder(componentType);
         }
 
         Instance build() {

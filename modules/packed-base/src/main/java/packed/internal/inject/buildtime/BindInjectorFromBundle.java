@@ -23,6 +23,7 @@ import java.util.List;
 
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletList;
 import app.packed.inject.InjectionException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -31,7 +32,6 @@ import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.container.WireletList;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
@@ -77,7 +77,7 @@ public class BindInjectorFromBundle {
     }
 
     void processExport() {
-        for (Wirelet s : wirelets.list()) {
+        for (Wirelet s : wirelets.toList()) {
             if (s instanceof Wirelet) {
                 throw new UnsupportedOperationException();
             }

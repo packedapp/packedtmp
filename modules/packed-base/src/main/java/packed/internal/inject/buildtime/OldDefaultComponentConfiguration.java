@@ -61,20 +61,20 @@ public class OldDefaultComponentConfiguration implements ComponentConfiguration 
     /** {@inheritDoc} */
     @Override
     public @Nullable String getDescription() {
-        return node.description;
+        return node.getDescription();
     }
 
     /** {@inheritDoc} */
     @Override
     public @Nullable String getName() {
-        return node.name;
+        return node.getName();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setDescription(@Nullable String description) {
         dcc.checkConfigurable();
-        node.description = description;
+        node.setDescription(description);
         return this;
     }
 
@@ -82,7 +82,7 @@ public class OldDefaultComponentConfiguration implements ComponentConfiguration 
     @Override
     public ComponentConfiguration setName(@Nullable String name) {
         dcc.checkConfigurable();
-        node.name = name;
+        node.setName(name);
         return this;
     }
 

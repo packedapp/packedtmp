@@ -27,8 +27,6 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
-import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleState;
 import app.packed.util.Nullable;
 
@@ -87,45 +85,31 @@ public class InternalComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Container container() {
-        return container;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Optional<String> description() {
         return Optional.ofNullable(description);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Object instance() {
-        // TODO we need to check the state of the component O think
-        // If the component was terminated without ever being initialized we should return any instance
-        return instances()[0];
-    }
-
-    private Object[] instances() {
-        // Instances are updated like this
-        // component.state = Initialized
-        // component.instances = configuration.instances[];
-        // component.configuration = null;
-
-        for (;;) {
-            Object[] instances = this.instances;
-            if (instances != null) {
-                return instances;
-            }
-            InternalComponentConfiguration<?> configuration = this.configuration;
-            if (configuration != null) {
-                if (Thread.currentThread() != configuration.initializationThread && getState() == LifecycleState.INITIALIZING) {
-                    throw new IllegalStateException("The Component instance has not been instantiated yet, component = " + path());
-                } else {
-                    return configuration.instances;
-                }
-            }
-        }
-    }
+    //
+    // private Object[] instances() {
+    // // Instances are updated like this
+    // // component.state = Initialized
+    // // component.instances = configuration.instances[];
+    // // component.configuration = null;
+    //
+    // for (;;) {
+    // Object[] instances = this.instances;
+    // if (instances != null) {
+    // return instances;
+    // }
+    // InternalComponentConfiguration<?> configuration = this.configuration;
+    // if (configuration != null) {
+    // if (Thread.currentThread() != configuration.initializationThread && getState() == LifecycleState.INITIALIZING) {
+    // throw new IllegalStateException("The Component instance has not been instantiated yet, component = " + path());
+    // } else {
+    // return configuration.instances;
+    // }
+    // }
+    // }
+    // }
 
     Object[] instancesIfAvailable() {
         for (;;) {
@@ -158,12 +142,6 @@ public class InternalComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Injector injector() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ComponentStream stream() {
         return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(InternalComponent::stream)));
     }
@@ -178,3 +156,11 @@ public class InternalComponent implements Component {
         return LifecycleState.INITIALIZING;
     }
 }
+//
+/// ** {@inheritDoc} */
+// @Override
+// public Object instance() {
+// // TODO we need to check the state of the component O think
+// // If the component was terminated without ever being initialized we should return any instance
+// return instances()[0];
+// }

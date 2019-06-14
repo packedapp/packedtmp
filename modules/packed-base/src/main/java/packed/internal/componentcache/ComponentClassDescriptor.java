@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
-import app.packed.container.ActivateExtension;
+import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
@@ -78,7 +78,7 @@ public final class ComponentClassDescriptor {
 
             @Override
             protected Class<? extends ExtensionHookGroup<?, ?>> computeValue(Class<?> type) {
-                ActivateExtension ae = type.getAnnotation(ActivateExtension.class);
+                ExtensionActivator ae = type.getAnnotation(ExtensionActivator.class);
                 return ae == null ? null : ae.value();
             }
         };

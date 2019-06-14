@@ -20,19 +20,19 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
-import app.packed.container.App;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletList;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
@@ -62,10 +62,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     final ContainerConfiguratorCache ccc;
 
     /** All child containers, in order of wiring order. */
-    // final LinkedHashMap<String, AbstractNamedConfiguration> children = new LinkedHashMap<>();
-
-    /** All registered components. */
-    public final LinkedHashMap<String, DefaultComponentConfiguration> components = new LinkedHashMap<>();
+    final LinkedHashMap<String, AbstractComponentConfiguration> children = new LinkedHashMap<>();
 
     /** The configuration site of this object. */
     private final InternalConfigurationSite configurationSite;
@@ -74,9 +71,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     private final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
     private boolean isConfigured;
-
-    /** All child containers, in order of wiring order. */
-    final LinkedHashMap<String, DefaultContainerConfiguration> links = new LinkedHashMap<>();
 
     private ComponentLookup lookup;
 
@@ -138,7 +132,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
         DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
         dcc.configure();
-        links.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
+        children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
         return bundle;
     }
 
@@ -172,9 +166,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             String n = name;
             if (n.endsWith("?")) {
                 name = finalizeNameWithPrefix(n.substring(0, n.length() - 1));
-            } else if (parent.components.containsKey(n)) {
-                throw new IllegalStateException();
-            } else if (parent.links.containsKey(n)) {
+            } else if (parent.children.containsKey(n)) {
                 throw new IllegalStateException();
             }
         }
@@ -188,7 +180,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             String newName = prefix;
             int counter = 0;
             for (;;) {
-                if (!parent.components.containsKey(newName) && !parent.links.containsKey(newName)) {
+                if (!parent.children.containsKey(newName)) {
                     return newName;
                 }
                 // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
@@ -305,8 +297,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public List<Wirelet> wirelets() {
-        return wirelets.list();
+    public WireletList wirelets() {
+        return wirelets;
     }
 
     /**

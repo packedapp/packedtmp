@@ -22,8 +22,9 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.OptionalInt;
 
+import app.packed.app.App;
 import app.packed.component.Component;
-import app.packed.container.App;
+import app.packed.component.ComponentContext;
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
@@ -240,7 +241,7 @@ public interface ProvideHelper {
      * Returns a new injection site for the specified injector, key and component.
      * <p>
      * This method is used to create injection site for methods such as {@link Injector#use(Key)} on
-     * {@link Component#injector() component injectors}.
+     * {@link ComponentContext#injector() component injectors}.
      * 
      * @param injector
      *            the injector from where injection is requested

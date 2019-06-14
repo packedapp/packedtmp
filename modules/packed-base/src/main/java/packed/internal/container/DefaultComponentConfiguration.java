@@ -28,28 +28,17 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
 /**
  *
  */
-public final class DefaultComponentConfiguration implements ComponentConfiguration {
+public final class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
 
     /** The configuration of the container that this component has been installed into. */
     final DefaultContainerConfiguration containerConfiguration;
 
-    /** The description of the component */
-    @Nullable
-    public String description;
-
     public Object instance;
-
-    /** The name of the component */
-    @Nullable
-    public String name;
 
     public BuildtimeServiceNode<?> serviceNode;
 
-    /** The configuration site of the component. */
-    public final InternalConfigurationSite site;
-
     public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
-        this.site = requireNonNull(site);
+        super(site, containerConfiguration);
         this.containerConfiguration = requireNonNull(containerConfiguration);
     }
 
@@ -57,12 +46,6 @@ public final class DefaultComponentConfiguration implements ComponentConfigurati
     @Override
     public ConfigSite configurationSite() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable String getDescription() {
-        return description;
     }
 
     /** {@inheritDoc} */
@@ -75,7 +58,7 @@ public final class DefaultComponentConfiguration implements ComponentConfigurati
         if (name == null) {
             name = UUID.randomUUID().toString();
         }
-        containerConfiguration.components.put(name, this);
+        containerConfiguration.children.put(name, this);
     }
 
     /** {@inheritDoc} */
@@ -92,5 +75,12 @@ public final class DefaultComponentConfiguration implements ComponentConfigurati
         containerConfiguration.checkConfigurable();
         this.name = name;
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void checkConfigurable() {
+        // TODO Auto-generated method stub
+
     }
 }

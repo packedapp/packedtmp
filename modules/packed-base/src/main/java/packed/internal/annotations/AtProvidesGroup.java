@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionHookGroup;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
@@ -71,7 +71,7 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
     }
 
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class Builder implements ExtensionHookGroup.Builder<InjectorExtension> {
+    public final static class Builder implements Supplier<BiConsumer<ComponentConfiguration, InjectorExtension>> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;
@@ -86,7 +86,7 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
          * @return the new group
          */
         @Override
-        public AtProvidesGroup build() {
+        public AtProvidesGroup get() {
             return members == null ? EMPTY : new AtProvidesGroup(this);
         }
 

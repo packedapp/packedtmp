@@ -94,6 +94,8 @@ import packed.internal.container.ContainerFactory;
 // getService(Class|Key) .get(InjectionSite)<---Nah
 // hasService -> contains
 // Description... hmm its just super helpful...
+// Injector does not have a name. In many cases there are a container behind an Injector.
+// But if, for example, a component has its own injector. That injector does not have a container behind it.
 public interface Injector /* extends Taggable */ {
 
     /**
@@ -274,6 +276,7 @@ public interface Injector /* extends Taggable */ {
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
+    // Maaske kan man ikke lave den fra en Bundle...? Jo, Hvis Configurator kan linke, saa er det jo ligegyldigt.
     static Injector of(Bundle bundle, Wirelet... wirelets) {
         return ContainerFactory.injectorOf(bundle, wirelets);
     }

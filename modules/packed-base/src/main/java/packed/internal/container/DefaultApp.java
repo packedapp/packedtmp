@@ -22,8 +22,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
+import app.packed.app.App;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.App;
 import app.packed.container.Container;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
@@ -129,4 +130,10 @@ public final class DefaultApp implements App {
     // public Set<String> tags() {
     // return container.tags();
     // }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream components() {
+        return container.components();
+    }
 }

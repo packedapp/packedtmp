@@ -19,10 +19,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
+import app.packed.app.Main;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ActivateExtension;
+import app.packed.container.ExtensionActivator;
 import app.packed.container.Extension;
-import app.packed.container.Main;
 import app.packed.util.MethodDescriptor;
 
 /**
@@ -57,6 +57,6 @@ public class Dddd {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @ActivateExtension(OnXConfigurator.class)
+    @ExtensionActivator(OnXConfigurator.class)
     public @interface OnX {}
 }

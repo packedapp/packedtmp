@@ -22,16 +22,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.ServiceWirelets;
 import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.container.WireletList;
 
 // Wire vs link....
 
@@ -81,6 +76,8 @@ import packed.internal.container.WireletList;
 // Linked: refering to the process of linking multiple bundles together. Linkages is final
 // Hosted: referers to wiring multiple apps together
 // Detached:
+
+// TODO move to component, if it will see general use...
 public abstract class Wirelet {
 
     static {
@@ -146,10 +143,10 @@ public abstract class Wirelet {
         return compose(this, requireNonNull(after, "after is null"));
     }
 
-    public final Wirelet andThen(Wirelet... nextOperations) {
+    public final Wirelet andThen(Wirelet... wirelets) {
         ArrayList<Wirelet> l = new ArrayList<>();
         l.add(this);
-        l.addAll(List.of(nextOperations));
+        l.addAll(List.of(wirelets));
         return compose(l.toArray(i -> new Wirelet[i]));
     }
 
@@ -171,51 +168,6 @@ public abstract class Wirelet {
         // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
         // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
         return this;
-    }
-
-    /**
-     * Creates an {@link MainArgs} from the specified arguments. And returns a wirelet that provides it, via
-     * {@link ServiceWirelets#provide(Object)}, to the linked container.
-     * 
-     * @param args
-     *            the arguments to inject
-     * @return a wirelet that provides the specified arguments to the linked container
-     */
-    public static Wirelet appMainArgs(String... args) {
-        return ServiceWirelets.provide(MainArgs.of(args));
-    }
-
-    /**
-     * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.
-     * 
-     * @param timeout
-     *            the timeout
-     * @param unit
-     *            the timeunit
-     * @return this option object
-     */
-    // These can only be used with a TopContainer with lifecycle...
-    // Container will be shutdown normally after the specified timeout
-
-    // Vi vil gerne have en version, vi kan refreshe ogsaa???
-    // Maaske vi bare ikke skal supportered det direkte.
-
-    // Teknisk set er det vel en app wirelet
-    public static Wirelet appTimeToLive(long timeout, TimeUnit unit) {
-        // Shuts down container normally
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet appTimeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
-        appTimeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
-        // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
-        return new Wirelet() {
-
-            // @Override
-            // protected void process(BundleLink link) {
-            // link.mode().checkExecute();
-            // }
-        };
     }
 
     /**

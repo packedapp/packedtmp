@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.LifecycleState;
@@ -91,6 +92,8 @@ public interface Container extends Injector {
     // Path... PackedPath, URL????? Just like 192.168.3.3 <- Is clearly an ip adress 192.155.3.2/foo is clearly a website
 
     LifecycleOperations<? extends Container> state();
+
+    ComponentStream components();
 }
 
 /// **

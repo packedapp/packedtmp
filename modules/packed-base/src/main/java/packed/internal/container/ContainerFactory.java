@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.app.App;
 import app.packed.container.AnyBundle;
-import app.packed.container.App;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
@@ -56,8 +56,8 @@ public class ContainerFactory {
 
     public static BundleDescriptor of(Bundle bundle) {
         requireNonNull(bundle, "bundle is null");
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, WiringType.DESCRIPTOR, bundle.getClass(), bundle);
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
     }

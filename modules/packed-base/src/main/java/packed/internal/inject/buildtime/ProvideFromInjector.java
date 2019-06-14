@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import app.packed.container.Wirelet;
+import app.packed.container.WireletList;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
@@ -31,7 +32,6 @@ import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.container.WireletList;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
@@ -95,7 +95,7 @@ public final class ProvideFromInjector {
         }
 
         // Process each wiring operation
-        for (Wirelet operation : wirelets.list()) {
+        for (Wirelet operation : wirelets.toList()) {
             if (operation instanceof Wirelet) {
                 AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);

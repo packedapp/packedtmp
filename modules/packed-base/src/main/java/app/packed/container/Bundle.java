@@ -15,7 +15,10 @@
  */
 package app.packed.container;
 
+import app.packed.app.App;
+import app.packed.app.AppWirelets;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentExtension;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -323,7 +326,7 @@ public abstract class Bundle extends AnyBundle {
     }
 
     static protected void run(Bundle bundle, String[] args, Wirelet... wirelets) {
-        run(bundle, Wirelet.appMainArgs(args).andThen(wirelets)); // + CTRL-C
+        run(bundle, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
     }
 
     static protected void run(Bundle bundle, Wirelet... wirelets) {

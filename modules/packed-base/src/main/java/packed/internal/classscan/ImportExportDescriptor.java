@@ -50,7 +50,7 @@ public class ImportExportDescriptor {
         // Meaning the annotations are probablye
 
         this.type = clazz;
-        this.provides = scanner.provides.build();
+        this.provides = scanner.provides.get();
     }
 
     /**

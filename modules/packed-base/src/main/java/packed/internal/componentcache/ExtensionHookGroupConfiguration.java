@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import app.packed.container.ActivateExtension;
+import app.packed.container.ExtensionActivator;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
 import app.packed.hook.AnnotatedMethodHook;
@@ -111,17 +111,16 @@ public class ExtensionHookGroupConfiguration {
             return new ExtensionHookGroupConfiguration(this);
         }
 
-        public <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType,
-                BiConsumer<? extends ExtensionHookGroup.Builder<?>, AnnotatedMethodHook<A>> consumer) {}
+        public <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<?, AnnotatedMethodHook<A>> consumer) {}
 
         /**
          * @param annotationType
          * @param consumer
          */
-        public void onAnnotatedMethodDescription(Class<?> annotationType, BiConsumer<? extends ExtensionHookGroup.Builder<?>, MethodDescriptor> consumer) {
+        public void onAnnotatedMethodDescription(Class<?> annotationType, BiConsumer<?, MethodDescriptor> consumer) {
             if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
                 throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
-                        + ActivateExtension.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+                        + ExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
             }
             list.add(new OnMethodDescription(annotationType, consumer));
             // TODO Auto-generated method stub
@@ -130,10 +129,9 @@ public class ExtensionHookGroupConfiguration {
 
     static class OnMethodDescription {
         final Class<?> annotationType;
-        final BiConsumer<? extends ExtensionHookGroup.Builder<?>, MethodDescriptor> consumer;
+        final BiConsumer<?, MethodDescriptor> consumer;
 
-        public OnMethodDescription(Class<?> annotationType,
-                BiConsumer<? extends app.packed.container.ExtensionHookGroup.Builder<?>, MethodDescriptor> consumer) {
+        public OnMethodDescription(Class<?> annotationType, BiConsumer<?, MethodDescriptor> consumer) {
             this.annotationType = annotationType;
             this.consumer = consumer;
         }
