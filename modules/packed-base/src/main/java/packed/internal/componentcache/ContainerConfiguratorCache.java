@@ -82,6 +82,12 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ComponentClassDescriptor componentDescriptorOf(Class<?> componentType) {
+        return descriptors.get(componentType);
+    }
+
     /**
      * Returns the default prefix for the container, if no name is explicitly set.
      * 
@@ -93,12 +99,6 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
             d = defaultPrefix = configuratorType.getSimpleName();
         }
         return d;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentClassDescriptor componentDescriptorOf(Class<?> componentType) {
-        return descriptors.get(componentType);
     }
 
     /**

@@ -42,7 +42,7 @@ public class OldDefaultComponentConfiguration implements ComponentConfiguration 
     OldDefaultComponentConfiguration(DefaultContainerConfiguration dcc, DefaultComponentConfiguration node) {
         this.node = requireNonNull(node);
         this.dcc = requireNonNull(dcc);
-        this.configurationSite = node.site;
+        this.configurationSite = (InternalConfigurationSite) node.configurationSite();
     }
 
     public OldDefaultComponentConfiguration(DefaultContainerConfiguration dcc, Object instance) {

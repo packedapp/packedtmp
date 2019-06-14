@@ -23,6 +23,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.container.AnyBundle;
+
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
  * of this class is normally acquired by invoking containerComponents or componentStream.
@@ -49,7 +51,12 @@ import java.util.stream.Stream;
 
 // Altsaa vi kan vel bruge den her ogsaa paa build tid.....????
 // Hvis det er ren information... Lifecycle kan vaere UNKNOWN...
-// components.hasMethodAnnotation(Provide.class, Inject.class).print();
+// components().hasMethodAnnotation(Provide.class, Inject.class).print();
+
+// Find all components that have a Dependency on a String
+// Is this available at runtime????
+// components().filter(ServiceFilters.hasDependency(String.class))).print();
+
 public interface ComponentStream extends Stream<Component> {
 
     /**
@@ -132,6 +139,10 @@ public interface ComponentStream extends Stream<Component> {
     /** {@inheritDoc} */
     @Override // Only available from Java 9
     ComponentStream takeWhile(Predicate<? super Component> predicate);
+
+    static ComponentStream of(AnyBundle bundle) {
+        throw new UnsupportedOperationException(); // Similar to descriptor..
+    }
 }
 
 //

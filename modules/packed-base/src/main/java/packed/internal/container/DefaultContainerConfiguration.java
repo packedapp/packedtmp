@@ -61,22 +61,10 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** The configurator cache. */
     final ContainerConfiguratorCache ccc;
 
-    /** All child containers, in order of wiring order. */
-    final LinkedHashMap<String, AbstractComponentConfiguration> children = new LinkedHashMap<>();
-
-    /** The configuration site of this object. */
-    private final InternalConfigurationSite configurationSite;
-
     /** All extensions that are currently used by this configuration, ordered by first use. */
     private final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
-    private boolean isConfigured;
-
     private ComponentLookup lookup;
-
-    /** Any parent container configuration. */
-    @Nullable
-    final DefaultContainerConfiguration parent;
 
     /** A list of wirelets used when creating this configuration. */
     private final WireletList wirelets;
@@ -87,10 +75,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     DefaultContainerConfiguration(DefaultContainerConfiguration parent, WiringType wiringType, Class<?> configuratorType, @Nullable AnyBundle bundle,
             Wirelet... wirelets) {
         super(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), parent);
-        this.configurationSite = InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF);
         this.lookup = this.ccc = ContainerConfiguratorCache.of(configuratorType);
         this.bundle = bundle;
-        this.parent = parent;
         this.wiringType = requireNonNull(wiringType);
         this.wirelets = WireletList.of(wirelets);
     }
@@ -130,6 +116,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead.
 
+        finish0();
         DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
         dcc.configure();
         children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
@@ -137,9 +124,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public void configure() {
-        if (isConfigured) {
-            return;
-        }
         if (bundle != null) {
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
@@ -147,10 +131,10 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             bundle.doConfigure(this);
         }
         finalizeName();
-        isConfigured = true;
     }
 
     public void finish() {
+        finish0();
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
@@ -198,7 +182,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** {@inheritDoc} */
     @Override
     public InternalConfigurationSite configurationSite() {
-        return configurationSite;
+        return (InternalConfigurationSite) super.configurationSite();
     }
 
     /** {@inheritDoc} */
@@ -246,12 +230,24 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return new OldDefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON);
     }
 
+    DefaultComponentConfiguration current;
+
     public ComponentConfiguration install(Object instance) {
         requireNonNull(instance, "instance is null");
-        ComponentClassDescriptor ccd = lookup.componentDescriptorOf(instance.getClass());
-        OldDefaultComponentConfiguration dcc = new OldDefaultComponentConfiguration(this, instance);
-        ccd.initialize(this, dcc);
+        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(instance.getClass());
+        // All validation should be done here..
+        finish0();
+
+        DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
+                this, descriptor);
+        descriptor.initialize(this, dcc);
         return dcc;
+    }
+
+    private void finish0() {
+        if (current != null) {
+            current.onFreeze();
+        }
     }
 
     public ComponentConfiguration installStatic(Class<?> implementation) {
@@ -269,10 +265,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public DefaultContainerConfiguration setDescription(String description) {
+    public void setDescription(String description) {
         checkConfigurable();
         this.description = description;
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -343,7 +338,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         case DESCRIPTOR:
             return BundleDescriptor.class;
         case LINK:
-            return parent.target();
+            return ((DefaultContainerConfiguration) parent).target();
         default:
             throw new Error();
         }

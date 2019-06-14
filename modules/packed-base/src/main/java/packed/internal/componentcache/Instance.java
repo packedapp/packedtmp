@@ -29,7 +29,6 @@ import app.packed.container.ExtensionHookGroup;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodDescription;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
 
 /**
  *
@@ -48,7 +47,7 @@ public final class Instance {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    void add(DefaultContainerConfiguration container, OldDefaultComponentConfiguration component) {
+    void add(DefaultContainerConfiguration container, ComponentConfiguration component) {
         Extension extension = container.use((Class) extensionType);
         build.accept(component, extension);
     }

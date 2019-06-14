@@ -25,6 +25,11 @@ import app.packed.config.ConfigSite;
  */
 public interface Component {
 
+    default Collection<?> features() {
+        // Ideen er f.eks. at kunne returnere alle services en
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns an immutable view of this component's children.
      *

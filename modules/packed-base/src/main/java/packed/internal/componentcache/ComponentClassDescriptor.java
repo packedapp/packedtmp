@@ -22,10 +22,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
 
 /**
  *
@@ -56,10 +56,26 @@ public final class ComponentClassDescriptor {
         this.groups = builder.builders.values().stream().map(e -> e.build()).toArray(i -> new Instance[i]);
     }
 
-    public void initialize(DefaultContainerConfiguration container, OldDefaultComponentConfiguration component) {
+    public void initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
         for (Instance c : groups) {
             c.add(container, component);
         }
+    }
+
+    /** The default prefix of the container. */
+    private volatile String defaultPrefix;
+
+    /**
+     * Returns the default prefix for the container, if no name is explicitly set.
+     * 
+     * @return the default prefix for the container, if no name is explicitly set
+     */
+    public String defaultPrefix() {
+        String d = defaultPrefix;
+        if (d == null) {
+            d = defaultPrefix = componentType.getSimpleName();
+        }
+        return d;
     }
 
     /**

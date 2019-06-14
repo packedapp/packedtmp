@@ -23,13 +23,13 @@ import java.util.Iterator;
 import app.packed.component.ComponentPath;
 
 /** The default implementation of {@link ComponentPath}. */
-final class InternalComponentPath implements ComponentPath {
+final class OldInternalComponentPath implements ComponentPath {
 
     /** The lazily initialized path string. */
     private String cached = null;
 
     /** The component that this path point at. */
-    private final AbstractComponent component;
+    private final OldInternalComponent component;
 
     /**
      * Creates a new path for the specified component
@@ -37,7 +37,7 @@ final class InternalComponentPath implements ComponentPath {
      * @param component
      *            the component to create the path for
      */
-    InternalComponentPath(AbstractComponent component) {
+    OldInternalComponentPath(OldInternalComponent component) {
         this.component = requireNonNull(component);
     }
 
@@ -62,7 +62,7 @@ final class InternalComponentPath implements ComponentPath {
     @Override
     public int findDepth() {
         int depth = 0;
-        AbstractComponent c = component;
+        OldInternalComponent c = component;
         while (c.parent != null) {
             depth++;
             c = c.parent;
@@ -95,7 +95,7 @@ final class InternalComponentPath implements ComponentPath {
     /** {@inheritDoc} */
     @Override
     public ComponentPath parent() {
-        AbstractComponent parent = component.parent;
+        OldInternalComponent parent = component.parent;
         return parent == null ? null : parent.path();
     }
 
@@ -130,7 +130,7 @@ final class InternalComponentPath implements ComponentPath {
      * @param sb
      *            the string builder to add to
      */
-    private static void toString(AbstractComponent component, StringBuilder sb) {
+    private static void toString(OldInternalComponent component, StringBuilder sb) {
         if (component.parent != null) {
             toString(component.parent, sb);
             sb.append("/");

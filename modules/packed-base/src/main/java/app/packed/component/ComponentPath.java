@@ -34,6 +34,7 @@ import app.packed.util.Nullable;
  * <p>
  * This interface will be extended in the future with additional methods.
  */
+// Iteralble Path??? Hmm, er det fulde paths eller del paths??? Den er lidt forvirrende
 public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>, CharSequence {
 
     /** A component path representing the root of a hierarchy. */
@@ -106,6 +107,10 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
      *
      * @return the number of elements in the path, or {@code 0} if this path represents a root component
      */
+    // Tror vi encoder depth i f.eks. en long/int state paa komponenten. 8 bit (256) burde vaere nok
+    // Saa hedder den ogsaa bare depth
+
+    // Kan maaske ogsaa encode ComponentTypen/capabilities i en int.... saa kan bitfitle den
     int findDepth();
 
     /**

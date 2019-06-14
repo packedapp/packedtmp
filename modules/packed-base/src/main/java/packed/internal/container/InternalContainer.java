@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -34,20 +35,15 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
 
 /** The default implementation of Container. */
-public final class InternalContainer implements Container {
+public final class InternalContainer extends AbstractComponent implements Container {
 
     /** All the components of this container. */
-    final Map<String, InternalComponent> components;
-
-    /** All child containers of this container. */
-    final Map<String, InternalComponent> containers = Map.of();
+    final Map<String, InternalComponent> components = new HashMap<>();
 
     private final Injector injector;
 
-    /** The name of the container. */
-    private final String name;
-
     public InternalContainer(DefaultContainerConfiguration configuration, Injector injector) {
+        super(null, configuration);
         this.injector = requireNonNull(injector);
         // if (builder.root != null) {
         // builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
@@ -55,23 +51,12 @@ public final class InternalContainer implements Container {
         // } else {
         // this.root = null;
         // }
-        if (configuration.children.isEmpty()) {
-            components = Map.of();
-        } else {
-            components = Map.of();
+        for (AbstractComponentConfiguration acc : configuration.children.values()) {
+            InternalComponent ic = new InternalComponent(this, (DefaultComponentConfiguration) acc);
+            components.put(ic.name(), ic);
         }
-        this.name = configuration.getName();
+
         // this.name = builder.getName() == null ? "App" : builder.getName();
-    }
-
-    @Override
-    public ConfigSite configurationSite() {
-        return injector.configurationSite();
-    }
-
-    @Override
-    public Optional<String> description() {
-        return injector.description();
     }
 
     @Override
@@ -125,12 +110,6 @@ public final class InternalContainer implements Container {
         return injector.injectMembers(instance, lookup);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String name() {
-        return name;
-    }
-
     @Override
     public Stream<ServiceDescriptor> services() {
         return injector.services();
@@ -155,7 +134,12 @@ public final class InternalContainer implements Container {
     /** {@inheritDoc} */
     @Override
     public ComponentStream components() {
-        return new InternalComponentStream(Stream.of(new ComponentWrapper()));
+        Stream.Builder<Component> builder = Stream.builder();
+        builder.accept(new ComponentWrapper());
+        for (InternalComponent ic : components.values()) {
+            builder.accept(ic);
+        }
+        return new InternalComponentStream(builder.build());
     }
 
     class ComponentWrapper implements Component {

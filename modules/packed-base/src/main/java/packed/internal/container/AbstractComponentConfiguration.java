@@ -17,6 +17,8 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.LinkedHashMap;
+
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -37,7 +39,10 @@ abstract class AbstractComponentConfiguration {
     final AbstractComponentConfiguration parent;
 
     /** The configuration site of the component. */
-    public final InternalConfigurationSite site;
+    private final InternalConfigurationSite site;
+
+    /** All child components, in order of insertion. */
+    final LinkedHashMap<String, AbstractComponentConfiguration> children = new LinkedHashMap<>();
 
     AbstractComponentConfiguration(InternalConfigurationSite site, AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);

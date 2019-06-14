@@ -43,7 +43,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
     public HashMap<String, InternalComponentConfiguration<?>> childrenExplicitNamed;
 
     /** The internal component, after it has been initialized. */
-    InternalComponent component;
+    OldInternalComponent component;
 
     /**
      * The thread that was used to create this configuration. This is needed, because some operations are only allowed from
@@ -213,9 +213,9 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     void init(InternalContainer container) {
         if (parent == null) {
-            component = new InternalComponent(container, this, null, false, getName());
+            component = new OldInternalComponent(container, this, null, false, getName());
         } else {
-            component = new InternalComponent(container, this, parent.component, false, getName());
+            component = new OldInternalComponent(container, this, parent.component, false, getName());
             parent.component.children.put(component.name(), component);
         }
     }

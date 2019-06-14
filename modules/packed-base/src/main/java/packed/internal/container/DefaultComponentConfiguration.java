@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.UUID;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
+import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
@@ -40,12 +40,15 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
     public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
         super(site, containerConfiguration);
         this.containerConfiguration = requireNonNull(containerConfiguration);
+        this.ccd = null;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configurationSite() {
-        throw new UnsupportedOperationException();
+    private final ComponentClassDescriptor ccd;
+
+    public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
+        super(site, containerConfiguration);
+        this.containerConfiguration = requireNonNull(containerConfiguration);
+        this.ccd = ccd;
     }
 
     /** {@inheritDoc} */
@@ -55,6 +58,9 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
     }
 
     public void onFreeze() {
+        if (name == null && ccd != null) {
+            name = ccd.defaultPrefix();
+        }
         if (name == null) {
             name = UUID.randomUUID().toString();
         }
