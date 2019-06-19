@@ -16,6 +16,7 @@
 package app.packed.hook;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 
 import app.packed.util.MethodDescriptor;
 
@@ -35,4 +36,6 @@ public interface AnnotatedMethodHook<T extends Annotation> extends Hook {
      * @return the annotated method
      */
     MethodDescriptor method();
+
+    MethodHandle create();
 }

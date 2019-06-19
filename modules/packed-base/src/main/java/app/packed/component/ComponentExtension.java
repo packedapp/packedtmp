@@ -58,8 +58,8 @@ public final class ComponentExtension extends Extension<ComponentExtension> {
         return configuration0().install(instance);
     }
 
-    public ComponentConfiguration installStatic(Class<?> implementation) {
-        return configuration0().installStatic(implementation);
+    public ComponentConfiguration installHelper(Class<?> implementation) {
+        return configuration0().installHelper(implementation);
     }
 
     // Alternative to ComponentScan

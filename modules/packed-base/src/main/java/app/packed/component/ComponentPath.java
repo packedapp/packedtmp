@@ -23,8 +23,8 @@ import java.util.Iterator;
 import app.packed.util.Nullable;
 
 /**
- * A component path points to a component in a container expressed in a string of characters in which path components,
- * separated by the delimiting character "/", represent each unique component.
+ * A component path points to a single component in hierarchy of components (component system) expressed in a string of
+ * characters in which path parts, separated by the delimiting character "/", represent each unique component.
  * <p>
  * Implementations of this interface are always immutable and safe for use by multiple concurrent threads.
  * <p>
@@ -53,13 +53,13 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
         }
 
         @Override
-        public boolean equals(Object other) {
-            return other instanceof ComponentPath && ((ComponentPath) other).isRoot();
+        public int depth() {
+            return 0;
         }
 
         @Override
-        public int findDepth() {
-            return 0;
+        public boolean equals(Object other) {
+            return other instanceof ComponentPath && ((ComponentPath) other).isRoot();
         }
 
         @Override
@@ -111,7 +111,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
     // Saa hedder den ogsaa bare depth
 
     // Kan maaske ogsaa encode ComponentTypen/capabilities i en int.... saa kan bitfitle den
-    int findDepth();
+    int depth();
 
     /**
      * Returns whether or not this component is the root component in a container hierarchy.
@@ -127,6 +127,16 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
      */
     @Nullable
     ComponentPath parent();// Should probably be optional??? Or for performance reasons nullable... hmm
+
+    /**
+     * Returns the string representation of this component path.
+     * <p>
+     * The returned path string uses the {@code '/'} character to separate names in the path.
+     *
+     * @return the string representation of this component path
+     */
+    @Override
+    String toString();
 
     /**
      * Converts a path string, or a sequence of strings that when joined form a path string, to a {@code ComponentPath}.

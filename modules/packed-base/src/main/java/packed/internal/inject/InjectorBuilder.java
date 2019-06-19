@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
-import app.packed.inject.Dependency;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InjectorContract;
 import app.packed.util.Key;
@@ -50,10 +50,10 @@ public final class InjectorBuilder {
     public final ServiceNodeMap exports;
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<Entry<BuildtimeServiceNode<?>, Dependency>> missingDependencies;
+    private ArrayList<Entry<BuildtimeServiceNode<?>, ServiceDependency>> missingDependencies;
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<BuildtimeServiceNode<?>, List<Dependency>> unresolvedDependencies;
+    IdentityHashMap<BuildtimeServiceNode<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final ServiceNodeMap nodes;
@@ -132,7 +132,7 @@ public final class InjectorBuilder {
     public void checkForMissingDependencies() {
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (Entry<BuildtimeServiceNode<?>, Dependency> e : missingDependencies) {
+            for (Entry<BuildtimeServiceNode<?>, ServiceDependency> e : missingDependencies) {
                 if (!e.getValue().isOptional() && !e.getKey().autoRequires) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
@@ -142,7 +142,7 @@ public final class InjectorBuilder {
                     if (dependencies.size() == 1) {
                         sb.append("single ");
                     }
-                    Dependency dependency = e.getValue();
+                    ServiceDependency dependency = e.getValue();
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
@@ -179,7 +179,7 @@ public final class InjectorBuilder {
         }
     }
 
-    public void recordMissingDependency(BuildtimeServiceNode<?> node, Dependency dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildtimeServiceNode<?> node, ServiceDependency dependency, boolean fromParent) {
 
     }
 
@@ -189,13 +189,13 @@ public final class InjectorBuilder {
      * @param node
      * @param dependency
      */
-    public void recordResolvedDependency(BuildtimeServiceNode<?> node, Dependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(BuildtimeServiceNode<?> node, ServiceDependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
         requireNonNull(node);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<Entry<BuildtimeServiceNode<?>, Dependency>> m = missingDependencies;
+        ArrayList<Entry<BuildtimeServiceNode<?>, ServiceDependency>> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }

@@ -25,19 +25,24 @@ import java.util.stream.Stream;
 import app.packed.app.App;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
 
-/** The default implementation of {@link App application}. Basically it is just wrapping a container instance. */
-public final class DefaultApp implements App {
+/** The default implementation of {@link App application}. Basically it is just wrapping an internal container. */
+final class DefaultApp implements App {
 
     /** The container we are wrapping. */
-    private final Container container;
+    private final InternalContainer container;
 
-    public DefaultApp(Container container) {
-        this.container = requireNonNull(container, "container is null");
+    DefaultApp(InternalContainer container) {
+        this.container = requireNonNull(container);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream components() {
+        return container.components();
     }
 
     /** {@inheritDoc} */
@@ -123,17 +128,5 @@ public final class DefaultApp implements App {
     @Override
     public LifecycleOperations<? extends App> state() {
         throw new UnsupportedOperationException();
-    }
-    //
-    // /** {@inheritDoc} */
-    // @Override
-    // public Set<String> tags() {
-    // return container.tags();
-    // }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream components() {
-        return container.components();
     }
 }

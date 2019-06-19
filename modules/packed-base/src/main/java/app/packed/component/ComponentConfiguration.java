@@ -32,7 +32,16 @@ import app.packed.util.Nullable;
  * install methods on, for example, {@link Bundle} or on another component configuration. It it also possible to install
  * components at runtime via {@link Component}.
  */
-public interface ComponentConfiguration /* extends ComponentInstaller */ {
+public interface ComponentConfiguration {
+
+    // Tror tit man godt selv vil instantiere den...
+    default <T extends FeatureHolder<?, ?>> T addFeature(Class<T> featureType) {
+        throw new UnsupportedOperationException();
+    }
+
+    default <T extends FeatureHolder<?, ?>> T addFeature(T feature) {
+        return feature;
+    }
 
     /**
      * Returns the configuration site where this configuration was created.
@@ -87,6 +96,14 @@ public interface ComponentConfiguration /* extends ComponentInstaller */ {
      * @see #addMixin(Factory)
      */
     default ComponentConfiguration addMixin(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    default ComponentConfiguration addMixinClass(Class<?> mixin) {
+        // Hvordan opfoere de sig med de forskellige typer... f.eks. prototype services...
+        // Prototypeservice er en type!
+
+        // Denne metode instantiere aldrig
         throw new UnsupportedOperationException();
     }
 

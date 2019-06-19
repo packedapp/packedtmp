@@ -28,4 +28,5 @@ class ComponentPrinter {
     // http://www.it.usyd.edu.au/~shhong/fab.pdf
     // http://www.nomnoml.com/
     // http://lisperati.com/vijual/
+    // https://mermaidjs.github.io/upgrading.html
 }

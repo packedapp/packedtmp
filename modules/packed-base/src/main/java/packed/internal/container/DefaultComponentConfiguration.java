@@ -30,6 +30,8 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
  */
 public final class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
 
+    private final ComponentClassDescriptor ccd;
+
     /** The configuration of the container that this component has been installed into. */
     final DefaultContainerConfiguration containerConfiguration;
 
@@ -43,18 +45,10 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
         this.ccd = null;
     }
 
-    private final ComponentClassDescriptor ccd;
-
     public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
         super(site, containerConfiguration);
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.ccd = ccd;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable String getName() {
-        return name;
     }
 
     public void onFreeze() {
@@ -63,6 +57,7 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
         }
         if (name == null) {
             name = UUID.randomUUID().toString();
+
         }
         containerConfiguration.children.put(name, this);
     }
@@ -70,23 +65,14 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setDescription(@Nullable String description) {
-        containerConfiguration.checkConfigurable();
-        this.description = description;
+        super.setDescription0(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setName(@Nullable String name) {
-        containerConfiguration.checkConfigurable();
-        this.name = name;
+        super.setDescription0(name);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void checkConfigurable() {
-        // TODO Auto-generated method stub
-
     }
 }

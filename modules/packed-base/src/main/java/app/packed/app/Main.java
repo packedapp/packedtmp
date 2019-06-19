@@ -19,15 +19,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
+import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
+import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.MethodDescriptor;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -41,6 +42,9 @@ import packed.internal.util.StringFormatter;
 
 // Main kan vel ogsaa bruges paa en injector???? Nahhh, hvordan styre vi det???
 // Maaske bare at alle annoteringer + extensions, udover Provide+Inject fejler???
+
+// Move main to app.packed.lifecycle ??? I think it has a lot to do with lifecycle....
+// Because it is actually important that people understand the model....
 @ExtensionActivator(MainExtensionHookGroup.class)
 public @interface Main {
 
@@ -57,13 +61,12 @@ public @interface Main {
 }
 
 /** Takes care of component methods annotated with {@link Main}. */
-final class MainExtensionHookGroup extends ExtensionHookGroup<ComponentExtension, MainExtensionHookGroup.Builder> {
+final class MainExtensionHookGroup extends ExtensionHookGroup<LifecycleExtension, MainExtensionHookGroup.Builder> {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        // b.forInjection
-        onAnnotatedMethodDescription(Main.class, (b, m) -> b.add(m));
+        onAnnotatedMethod(Main.class, (b, m) -> b.add(m));
     }
 
     /** {@inheritDoc} */
@@ -72,24 +75,29 @@ final class MainExtensionHookGroup extends ExtensionHookGroup<ComponentExtension
         return new Builder();
     }
 
-    static class Builder implements Supplier<BiConsumer<ComponentConfiguration, ComponentExtension>> {
+    // Vi aktivere lifecycle extensionen her, men det er vel ogsaa fint. Eneste issue er.
+    // Hvis en bundle har en Main for en eller andends skyld
+    static class Builder implements Supplier<BiConsumer<ComponentConfiguration, LifecycleExtension>> {
 
-        MethodDescriptor method;
+        private AnnotatedMethodHook<Main> hook;
 
-        private void add(MethodDescriptor method) {
-            if (this.method != null) {
-                throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(method.getDeclaringClass())
+        private void add(AnnotatedMethodHook<Main> hook) {
+            if (this.hook != null) {
+                throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hook.method().getDeclaringClass())
                         + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
-                        + StringFormatter.formatShortWithParameters(this.method) + ", " + StringFormatter.formatShortWithParameters(method));
+                        + StringFormatter.formatShortWithParameters(this.hook.method()) + ", " + StringFormatter.formatShortWithParameters(hook.method()));
             }
-            this.method = method;
+            this.hook = hook;
         }
 
         /** {@inheritDoc} */
         @Override
-        public BiConsumer<ComponentConfiguration, ComponentExtension> get() {
-            // Use Support class to invoke stuff on ComponentExtension...
-            return (c, e) -> {};
+        public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
+            MethodHandle mh = hook.create();
+            return (c, e) -> {
+                System.out.println(mh);
+                // e.addMain(mh);
+            };
         }
     }
 }

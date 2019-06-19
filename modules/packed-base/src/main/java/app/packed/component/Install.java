@@ -34,7 +34,10 @@ import app.packed.inject.InjectionException;
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+
 public @interface Install {
+
+    Class<?> as() default Component.class; // @install(as = Actor.class)
 
     /**
      * The description of the component. The default value is the empty string, which means that no description will be set.

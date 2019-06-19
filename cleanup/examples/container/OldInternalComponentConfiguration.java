@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package examples.container;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.Container;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Nullable;
@@ -34,13 +35,13 @@ import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
 /** The default implementation of {@link ProvidedComponentConfiguration}. */
-public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentConfiguration {
+public class OldInternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentConfiguration {
 
     /** A list of all children that have been added (lazily initialized). */
-    public ArrayList<InternalComponentConfiguration<?>> children;
+    public ArrayList<OldInternalComponentConfiguration<?>> children;
 
     /** A map of all children that have been added whose name has been explicitly set (lazily initialized). */
-    public HashMap<String, InternalComponentConfiguration<?>> childrenExplicitNamed;
+    public HashMap<String, OldInternalComponentConfiguration<?>> childrenExplicitNamed;
 
     /** The internal component, after it has been initialized. */
     OldInternalComponent component;
@@ -59,13 +60,14 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** The parent of this configuration, or null for the root component. */
     @Nullable
-    final InternalComponentConfiguration<?> parent;
+    final OldInternalComponentConfiguration<?> parent;
 
     /** The object instances of the component, the array will be passed along to InternalComponent. */
     public Object[] instances;
 
-    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
-            @Nullable InternalComponentConfiguration<?> parent, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
+    public OldInternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite,
+            OldComponentClassDescriptor descriptor, @Nullable OldInternalComponentConfiguration<?> parent, InternalFunction<T> function,
+            List<InternalDependencyDescriptor> dependencies) {
         super(containerBuilder, configurationSite, descriptor, InstantiationMode.SINGLETON, function, dependencies);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
@@ -76,8 +78,8 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
      * @param configurationSite
      * @param instance
      */
-    public InternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite, OldComponentClassDescriptor descriptor,
-            @Nullable InternalComponentConfiguration<?> parent, T instance) {
+    public OldInternalComponentConfiguration(InjectorBuilder containerBuilder, InternalConfigurationSite configurationSite,
+            OldComponentClassDescriptor descriptor, @Nullable OldInternalComponentConfiguration<?> parent, T instance) {
         super(containerBuilder, configurationSite, descriptor, instance);
         this.parent = parent;
         this.initializationThread = Thread.currentThread();
@@ -89,10 +91,10 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
      * @param action
      *            the action to invoke
      */
-    public void forEachRecursively(Consumer<? super InternalComponentConfiguration<?>> action) {
+    public void forEachRecursively(Consumer<? super OldInternalComponentConfiguration<?>> action) {
         action.accept(this);
         if (children != null) {
-            for (InternalComponentConfiguration<?> child : children) {
+            for (OldInternalComponentConfiguration<?> child : children) {
                 child.forEachRecursively(action);
             }
         }
@@ -133,7 +135,7 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
 
     /** {@inheritDoc} */
     @Override
-    public InternalComponentConfiguration<T> setDescription(String description) {
+    public OldInternalComponentConfiguration<T> setDescription(String description) {
         super.description = description;
         return this;
     }
@@ -211,11 +213,11 @@ public class InternalComponentConfiguration<T> extends BuildtimeServiceNodeDefau
         }
     }
 
-    void init(InternalContainer container) {
+    void init(Container container) {
         if (parent == null) {
-            component = new OldInternalComponent(container, this, null, false, getName());
+            // component = new OldInternalComponent(container, this, null, false, getName());
         } else {
-            component = new OldInternalComponent(container, this, parent.component, false, getName());
+            // component = new OldInternalComponent(container, this, parent.component, false, getName());
             parent.component.children.put(component.name(), component);
         }
     }

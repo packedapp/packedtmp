@@ -13,12 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package packed.internal.container;
+
+import app.packed.app.App;
+import app.packed.container.Bundle;
 
 /**
  *
  */
-// Host... Something that hosts app
-interface Host {
+public class XServiceTest extends Bundle {
 
+    @Override
+    protected void configure() {
+        install(Rrrr.class);
+    }
+
+    public static void main(String[] args) {
+        App.of(new XServiceTest());
+    }
+
+    public static class Rrrr {
+
+        public Rrrr() {
+            System.out.println("Hiiiii");
+        }
+    }
 }

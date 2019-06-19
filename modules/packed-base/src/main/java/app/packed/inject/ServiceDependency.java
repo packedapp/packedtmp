@@ -48,8 +48,8 @@ import packed.internal.inject.InternalDependencyDescriptor;
 // -- Som goer at jeg dependenr paa Configuration + XConverter.. Heh saa giver parameter index.. vel ikke mening
 // -- Kunne lave en limitation der siger at man kun maa transformere med 1 parameter...
 
-// ServiceDependency
-public interface Dependency {
+// ServiceDependency, a dependency is really general
+public interface ServiceDependency {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
@@ -104,12 +104,12 @@ public interface Dependency {
      */
     Optional<VariableDescriptor> variable();
 
-    public static <T> Dependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+    public static <T> ServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         return InternalDependencyDescriptor.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> List<Dependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
+    public static <T> List<ServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
         return (List) InternalDependencyDescriptor.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
     }
 }

@@ -18,16 +18,22 @@ package packed.internal.componentcache;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
+import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
+import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethod;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodDescription;
+import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodHandle;
 import packed.internal.container.DefaultContainerConfiguration;
 
 /**
@@ -83,6 +89,39 @@ public final class Instance {
                     ExtensionHookGroupConfiguration.OnMethodDescription omd = (OnMethodDescription) o;
                     if (omd.annotationType == annotation.annotationType()) {
                         ((BiConsumer) omd.consumer).accept(b, MethodDescriptor.of(method));
+                    }
+                } else if (o instanceof ExtensionHookGroupConfiguration.OnMethodHandle) {
+                    ExtensionHookGroupConfiguration.OnMethodHandle omd = (OnMethodHandle) o;
+                    if (omd.annotationType == annotation.annotationType()) {
+                        method.setAccessible(true);
+                        MethodHandle mh;
+                        try {
+                            mh = MethodHandles.lookup().unreflect(method);
+                        } catch (IllegalAccessException e) {
+                            throw new IllegalAccessRuntimeException("stuff", e);
+                        }
+                        ((BiConsumer) omd.consumer).accept(b, mh);
+                    }
+                } else if (o instanceof ExtensionHookGroupConfiguration.OnMethod) {
+                    ExtensionHookGroupConfiguration.OnMethod omd = (OnMethod) o;
+                    if (omd.annotationType == annotation.annotationType()) {
+                        ((BiConsumer) omd.consumer).accept(b, new AnnotatedMethodHook() {
+
+                            @Override
+                            public MethodDescriptor method() {
+                                return MethodDescriptor.of(method);
+                            }
+
+                            @Override
+                            public MethodHandle create() {
+                                method.setAccessible(true);
+                                try {
+                                    return MethodHandles.lookup().unreflect(method);
+                                } catch (IllegalAccessException e) {
+                                    throw new IllegalAccessRuntimeException("stuff", e);
+                                }
+                            }
+                        });
                     }
                 }
             }

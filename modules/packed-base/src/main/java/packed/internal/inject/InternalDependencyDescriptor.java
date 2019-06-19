@@ -31,7 +31,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.inject.Dependency;
+import app.packed.inject.ServiceDependency;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -50,9 +50,9 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /**
- * The default implementation of {@link Dependency}.
+ * The default implementation of {@link ServiceDependency}.
  */
-public final class InternalDependencyDescriptor implements Dependency {
+public final class InternalDependencyDescriptor implements ServiceDependency {
 
     /** The key of this dependency. */
     private final Key<?> key;

@@ -1,0 +1,45 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------------< it:basic >------------------------------
+[INFO] Building basic 0
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ basic ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/kasperni/Documents/packed-workspace/packed/modules/packed-base/src/it/basic/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.0:compile (default-compile) @ basic ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to /Users/kasperni/Documents/packed-workspace/packed/modules/packed-base/src/it/basic/target/classes
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ basic ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/kasperni/Documents/packed-workspace/packed/modules/packed-base/src/it/basic/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.0:testCompile (default-testCompile) @ basic ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ basic ---
+[INFO] Surefire report directory: /Users/kasperni/Documents/packed-workspace/packed/modules/packed-base/src/it/basic/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running onclasspath.BasicTest
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+Running onclasspath.AnotherTest
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+
+Results :
+
+Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ basic ---
+[INFO] Building jar: /Users/kasperni/Documents/packed-workspace/packed/modules/packed-base/src/it/basic/target/basic-0.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.842 s
+[INFO] Finished at: 2019-06-16T10:13:19+01:00
+[INFO] ------------------------------------------------------------------------

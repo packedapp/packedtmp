@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -28,8 +29,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.Container;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -47,12 +48,13 @@ import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
 import packed.internal.inject.runtime.DefaultInjector;
+import packed.internal.support.AppPackedContainerSupport;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class DefaultContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
-    public DescriptorFactory accessor = DescriptorFactory.PUBLIC;
+    public DescriptorFactory oldAccessor = DescriptorFactory.PUBLIC;
 
     /** The bundle we created this configuration from. Or null if we using a configurator. */
     @Nullable
@@ -72,6 +74,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** The type of wiring. */
     final WiringType wiringType;
 
+    public final ProgramExecution program = new ProgramExecution();
+
     DefaultContainerConfiguration(DefaultContainerConfiguration parent, WiringType wiringType, Class<?> configuratorType, @Nullable AnyBundle bundle,
             Wirelet... wirelets) {
         super(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), parent);
@@ -81,8 +85,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         this.wirelets = WireletList.of(wirelets);
     }
 
-    public Container buildContainer() {
-        return new InternalContainer(this, buildInjector());
+    public InternalContainer buildContainer() {
+        return new InternalContainer(null, this, buildInjector());
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -98,12 +102,18 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public Injector buildInjector() {
         configure();
         finish();
+        for (AbstractComponentConfiguration acc : children.values()) {
+            if (acc instanceof DefaultContainerConfiguration) {
+                DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                dcc.buildContainer();
+            }
+        }
+
         if (extensions.containsKey(InjectorExtension.class)) {
             return use(InjectorExtension.class).builder.publicInjector;
         } else {
             return new DefaultInjector(this, new ServiceNodeMap());
         }
-
     }
 
     /** {@inheritDoc} */
@@ -115,8 +125,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead.
-
-        finish0();
+        prepareNewComponent();
         DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
         dcc.configure();
         children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
@@ -134,7 +143,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public void finish() {
-        finish0();
+        prepareNewComponent();
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
@@ -150,8 +159,10 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             String n = name;
             if (n.endsWith("?")) {
                 name = finalizeNameWithPrefix(n.substring(0, n.length() - 1));
-            } else if (parent.children.containsKey(n)) {
-                throw new IllegalStateException();
+            } else if (parent != null && parent.children.containsKey(n)) {
+                if (parent.children.get(name) != this) {
+                    throw new IllegalStateException();
+                }
             }
         }
         // TODO make name unmodifiable
@@ -227,7 +238,17 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public ComponentConfiguration install(Factory<?> factory) {
-        return new OldDefaultComponentConfiguration(this, factory, InstantiationMode.SINGLETON);
+        requireNonNull(factory, "factory is null");
+        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(factory.rawType());
+
+        // All validation should be done by here..
+        prepareNewComponent();
+
+        DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
+                this, descriptor);
+        descriptor.initialize(this, dcc);
+        return dcc;
+
     }
 
     DefaultComponentConfiguration current;
@@ -235,8 +256,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public ComponentConfiguration install(Object instance) {
         requireNonNull(instance, "instance is null");
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(instance.getClass());
-        // All validation should be done here..
-        finish0();
+
+        // All validation should be done by here..
+        prepareNewComponent();
 
         DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
                 this, descriptor);
@@ -244,13 +266,13 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return dcc;
     }
 
-    private void finish0() {
+    private void prepareNewComponent() {
         if (current != null) {
             current.onFreeze();
         }
     }
 
-    public ComponentConfiguration installStatic(Class<?> implementation) {
+    public ComponentConfiguration installHelper(Class<?> implementation) {
         return new OldDefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
     }
 
@@ -260,21 +282,23 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // Actually I think null might be okay, then its standard module-info.java
         // Component X has access to G, but Packed does not have access
         this.lookup = lookup == null ? ccc : ccc.withLookup(lookup);
-        this.accessor = DescriptorFactory.get(lookup);
+        this.oldAccessor = DescriptorFactory.get(lookup);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setDescription(String description) {
+    public ContainerConfiguration setDescription(String description) {
         checkConfigurable();
         this.description = description;
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setName(@Nullable String name) {
+    public ContainerConfiguration setName(@Nullable String name) {
         checkConfigurable();
         this.name = checkName(name);
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -343,29 +367,20 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             throw new Error();
         }
     }
-}
-//
-// // Maybe should be able to define a namig strategy, to avoid reuse? Mostly for distributed
-// // Lazy initialized... Maybe this is part of the Specification/ContainerConfigurationProvider
-// final ConcurrentHashMap<String, AtomicLong> autoGeneratedComponentNames = new ConcurrentHashMap<>();
 
-// public void newOperation() {
-// AbstractFreezableNode c = currentNode;
-// if (c != null) {
-// c.freeze();
-// }
-// currentNode = null;
-// }
-//
-// final void checkConfigurable() {
-//
-// }
-//
-// public <T extends AbstractFreezableNode> T newOperation(T node) {
-// AbstractFreezableNode c = currentNode;
-// if (c != null) {
-// c.freeze();
-// }
-// currentNode = node;
-// return node;
-// }
+    private HashMap<String, DefaultLayer> layers;
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
+        HashMap<String, DefaultLayer> l = layers;
+        if (l == null) {
+            l = layers = new HashMap<>();
+        }
+        DefaultLayer newLayer = new DefaultLayer(this, name, dependencies);
+        if (l.putIfAbsent(name, newLayer) != null) {
+            throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
+        }
+        return newLayer;
+    }
+}

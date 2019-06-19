@@ -43,6 +43,9 @@ import packed.internal.container.ContainerFactory;
  * 
  */
 // Injector injector() vs extends Injector
+// Apps
+
+// Do we expose the attachments????
 public interface App extends Injector, AutoCloseable {
 
     /** An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. **/
@@ -194,5 +197,12 @@ public interface App extends Injector, AutoCloseable {
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
     // Basically we unwrap exceptions accordingly to some scheme in some way
 
+    // If you can stop an app via shutdown. You should also be able to introspec it
+
+    /**
+     * Calling this method does not effect the lifecycle state of this application.
+     * 
+     * @return a component stream
+     */
     ComponentStream components();
 }

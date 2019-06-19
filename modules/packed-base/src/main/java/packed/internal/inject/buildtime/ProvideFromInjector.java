@@ -30,13 +30,12 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.ServiceNode;
 import packed.internal.inject.InternalServiceWirelets;
+import packed.internal.inject.ServiceNode;
 
 /** Provides services from an existing Injector. */
 public final class ProvideFromInjector {
@@ -97,9 +96,9 @@ public final class ProvideFromInjector {
         // Process each wiring operation
         for (Wirelet operation : wirelets.toList()) {
             if (operation instanceof Wirelet) {
-                AppPackedBundleSupport.invoke().startWireOperation(operation);
+                // AppPackedBundleSupport.invoke().startWireOperation(operation);
                 nodes = processImportStage(operation, nodes);
-                AppPackedBundleSupport.invoke().finishWireOperation(operation);
+                // AppPackedBundleSupport.invoke().finishWireOperation(operation);
                 throw new Error();
             }
         }
@@ -113,7 +112,7 @@ public final class ProvideFromInjector {
     }
 
     private HashMap<Key<?>, BuildtimeServiceNode<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNode<?>> nodes) {
-        ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
+        ImportExportDescriptor ied = ImportExportDescriptor.from(null /* AppPackedBundleSupport.invoke().lookupFromWireOperation(stage) */, stage.getClass());
 
         for (AtProvides m : ied.provides.members.values()) {
             for (InternalDependencyDescriptor s : m.dependencies) {

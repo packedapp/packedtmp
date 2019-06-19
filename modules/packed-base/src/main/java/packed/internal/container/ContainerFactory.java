@@ -40,9 +40,9 @@ public class ContainerFactory {
 
     public static Injector injectorOf(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, WiringType.INJECTOR, bundle.getClass(), bundle, wirelets);
-        bundle.doConfigure(builder);
-        return builder.buildInjector();
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.INJECTOR, bundle.getClass(), bundle, wirelets);
+        bundle.doConfigure(configuration);
+        return configuration.buildInjector();
     }
 
     public static Injector injectorOf(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {

@@ -34,14 +34,14 @@ abstract class AbstractComponentConfiguration {
     @Nullable
     String name;
 
-    /** Any parent of the component. */
+    /** Any parent that the component has. */
     @Nullable
     final AbstractComponentConfiguration parent;
 
     /** The configuration site of the component. */
     private final InternalConfigurationSite site;
 
-    /** All child components, in order of insertion. */
+    /** Any children this component might have, in order of insertion. */
     final LinkedHashMap<String, AbstractComponentConfiguration> children = new LinkedHashMap<>();
 
     AbstractComponentConfiguration(InternalConfigurationSite site, AbstractComponentConfiguration parent) {
@@ -49,14 +49,23 @@ abstract class AbstractComponentConfiguration {
         this.parent = parent;
     }
 
-    protected abstract void checkConfigurable();
+    protected void checkConfigurable() {
+
+    }
 
     public ConfigSite configurationSite() {
         return site;
     }
 
     void freezeName() {
-
+        // Naming is permanent...
+        // When you add a new Component you cannot change the name of previous components.
+        // And if a name has not already been set, one is generated (determinisicly).
+        //
+        // When you call component.name() you cannot set afterwards set the name of the component
+        // Maybe have a isGenerated flag, so we can come with some good error text
+        //
+        // Cannot have a bundle and a component with the same name.
     }
 
     @Nullable

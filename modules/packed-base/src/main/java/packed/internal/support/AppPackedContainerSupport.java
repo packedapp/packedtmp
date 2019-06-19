@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
+import packed.internal.container.DefaultContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public final class AppPackedContainerSupport {
@@ -45,6 +46,8 @@ public final class AppPackedContainerSupport {
         public abstract void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration);
 
         public abstract void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
+
+        public abstract DefaultContainerConfiguration getContainer(Extension<?> extension);
 
         /**
          * Initializes this class.

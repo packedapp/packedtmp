@@ -13,34 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.component;
 
-import app.packed.contract.Contract;
+import app.packed.app.App;
 
 /**
  *
  */
+public class FeatureTest {
 
-// http://www.methodsandtools.com/archive/onionsoftwarearchitecture.php
+    // Skal vi have 3 typer.
+    // En for descriptor
+    // En for live unmodifiable
+    // En for live modifiable
 
-// Layer extension? WiringExtension?
+    public void foo(App app) {
 
-// LayerWirelets.into()
+        // Total number of services in the component tree
+        app.components().mapToInt(c -> c.use(Inj.SERVICES).size()).sum();
 
-// Ved ikke om vi skal have navngivne layers???
-// Jeg taenker her paa f.eks at lave en host, med Hibernate+Web
-// Her er Hiberate i data-layer, og Web i presentatio-layer
-
-public class Layer {
-
-    public Contract incoming() {
-        throw new UnsupportedOperationException();
+        app.components().forEachFeature(Inj.SERVICES, (c, s) -> System.out.println(c.path() + " exposes " + s.size() + " services"));
     }
-
-    public Contract outgoing() {
-        throw new UnsupportedOperationException();
-    }
-
-    // If we allow transformations w
-
 }

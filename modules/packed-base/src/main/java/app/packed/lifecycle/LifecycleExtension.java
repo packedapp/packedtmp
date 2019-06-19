@@ -15,6 +15,8 @@
  */
 package app.packed.lifecycle;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.container.Extension;
 
 /**
@@ -45,4 +47,7 @@ public final class LifecycleExtension extends Extension<LifecycleExtension> {
 
     // ClassValue<Feature> -> IdentityHashMap<Feature, CachedConfiguration>>
 
+    protected void addMain(MethodHandle mh) {
+
+    }
 }

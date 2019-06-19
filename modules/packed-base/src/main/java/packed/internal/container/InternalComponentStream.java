@@ -49,63 +49,6 @@ final class InternalComponentStream extends AbstractDelegatingStream<Component> 
         return with(stream.filter(predicate));
     }
 
-    // @Override
-    // public Stream<Object> instances() {
-    // return map(e -> e.instance());
-    // }
-    //
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // public <T> Stream<T> instancesOfType(Class<T> type) {
-    // return (Stream<T>) map(e -> {
-    // InternalComponent ic = (InternalComponent) e;
-    // Object[] instances = ic.instancesIfAvailable();
-    // if (instances != null) {
-    // Object instance = instances[0];
-    // if (type.isInstance(instance)) {
-    // return instance;
-    // }
-    // }
-    // return null;
-    // }).filter(e -> e != null);
-    // }
-    //
-    // /** {@inheritDoc} */
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // public <T> void forEachInstanceOf(Class<T> type, BiConsumer<? super Component, ? super T> consumer) {
-    // requireNonNull(type, "type is null");
-    // requireNonNull(consumer, "consumer is null");
-    // forEach(component -> {
-    // InternalComponent ic = (InternalComponent) component;
-    // Object[] instances = ic.instancesIfAvailable();
-    // if (instances != null) {
-    // Object instance = instances[0];
-    // if (type.isInstance(instance)) {
-    // consumer.accept(component, (T) instance);
-    // }
-    // }
-    // });
-    // }
-    //
-    // /** {@inheritDoc} */
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // public <T> void forEachInstanceOf(Class<T> type, Consumer<? super T> consumer) {
-    // requireNonNull(type, "type is null");
-    // requireNonNull(consumer, "consumer is null");
-    // forEach(component -> {
-    // InternalComponent ic = (InternalComponent) component;
-    // Object[] instances = ic.instancesIfAvailable();
-    // if (instances != null) {
-    // Object instance = instances[0];
-    // if (type.isInstance(instance)) {
-    // consumer.accept((T) instance);
-    // }
-    // }
-    // });
-    // }
-
     /** {@inheritDoc} */
     @Override
     public ComponentStream limit(long maxSize) {
@@ -142,3 +85,60 @@ final class InternalComponentStream extends AbstractDelegatingStream<Component> 
         return new InternalComponentStream(s);
     }
 }
+
+// @Override
+// public Stream<Object> instances() {
+// return map(e -> e.instance());
+// }
+//
+// @SuppressWarnings("unchecked")
+// @Override
+// public <T> Stream<T> instancesOfType(Class<T> type) {
+// return (Stream<T>) map(e -> {
+// InternalComponent ic = (InternalComponent) e;
+// Object[] instances = ic.instancesIfAvailable();
+// if (instances != null) {
+// Object instance = instances[0];
+// if (type.isInstance(instance)) {
+// return instance;
+// }
+// }
+// return null;
+// }).filter(e -> e != null);
+// }
+//
+// /** {@inheritDoc} */
+// @SuppressWarnings("unchecked")
+// @Override
+// public <T> void forEachInstanceOf(Class<T> type, BiConsumer<? super Component, ? super T> consumer) {
+// requireNonNull(type, "type is null");
+// requireNonNull(consumer, "consumer is null");
+// forEach(component -> {
+// InternalComponent ic = (InternalComponent) component;
+// Object[] instances = ic.instancesIfAvailable();
+// if (instances != null) {
+// Object instance = instances[0];
+// if (type.isInstance(instance)) {
+// consumer.accept(component, (T) instance);
+// }
+// }
+// });
+// }
+//
+// /** {@inheritDoc} */
+// @SuppressWarnings("unchecked")
+// @Override
+// public <T> void forEachInstanceOf(Class<T> type, Consumer<? super T> consumer) {
+// requireNonNull(type, "type is null");
+// requireNonNull(consumer, "consumer is null");
+// forEach(component -> {
+// InternalComponent ic = (InternalComponent) component;
+// Object[] instances = ic.instancesIfAvailable();
+// if (instances != null) {
+// Object instance = instances[0];
+// if (type.isInstance(instance)) {
+// consumer.accept((T) instance);
+// }
+// }
+// });
+// }

@@ -18,14 +18,12 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.DefaultContainerConfiguration;
 
 // Wire vs link....
@@ -78,41 +76,8 @@ import packed.internal.container.DefaultContainerConfiguration;
 // Detached:
 
 // TODO move to component, if it will see general use...
+// TODO ConfigurationSite disabled, enabled, hierachical
 public abstract class Wirelet {
-
-    static {
-        AppPackedBundleSupport.Helper.init(new AppPackedBundleSupport.Helper() {
-
-            @Override
-            public List<Wirelet> extractWiringOperations(Wirelet[] operations, Class<?> type) {
-                throw new UnsupportedOperationException();
-                // return WireletList.operationsExtract(operations, type);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void finishWireOperation(Wirelet operation) {
-                // operation.onFinish();
-            }
-
-            @Override
-            public Lookup lookupFromWireOperation(Wirelet operation) {
-                throw new UnsupportedOperationException();
-            }
-
-            // /** {@inheritDoc} */
-            // @Override
-            // public void process(Wirelet operation, BundleLink link) {
-            // operation.process(link);
-            // }
-
-            /** {@inheritDoc} */
-            @Override
-            public void startWireOperation(Wirelet operation) {
-                // operation.process(null);
-            }
-        });
-    }
 
     /** Invoked by subclasses. */
     protected Wirelet() {}
@@ -228,15 +193,14 @@ public abstract class Wirelet {
     }
 
     /**
-     * Returns a wirelet that will set name of a container once wired, overriding any existing name it may have.
-     * <p>
-     * Will override any name set by {@link AnyBundle#setName(String)}.
+     * Returns a wirelet that will set the name of a container once wired, overriding any name that has previously been set,
+     * for example, via {@link AnyBundle#setName(String)}.
      * 
      * @param name
      *            the name of the container
      * @return a wirelet that will set name of a container once wired
      */
-    // setName, set
+    // setName
     public static Wirelet name(String name) {
         return new DefaultContainerConfiguration.OverrideNameWirelet(name);
     }

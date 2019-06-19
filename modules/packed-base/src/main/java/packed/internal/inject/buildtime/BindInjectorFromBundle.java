@@ -30,12 +30,11 @@ import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.container.AppPackedBundleSupport;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.ServiceNode;
 import packed.internal.inject.InternalServiceWirelets;
+import packed.internal.inject.ServiceNode;
 
 /**
  * An abstract class for the injector bind methods
@@ -131,7 +130,7 @@ public class BindInjectorFromBundle {
     }
 
     HashMap<Key<?>, BuildtimeServiceNodeImport<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNodeImport<?>> nodes) {
-        ImportExportDescriptor ied = ImportExportDescriptor.from(AppPackedBundleSupport.invoke().lookupFromWireOperation(stage), stage.getClass());
+        ImportExportDescriptor ied = ImportExportDescriptor.from(null, null);
 
         for (AtProvides m : ied.provides.members.values()) {
             for (InternalDependencyDescriptor s : m.dependencies) {

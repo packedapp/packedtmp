@@ -160,8 +160,8 @@ public abstract class AnyBundle {
     }
 
     /**
-     * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
-     * '_', '-' or '.'. The name is case sensitive.
+     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
+     * is case sensitive.
      * <p>
      * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
      * such a way that it will have a unique name among other sibling container.

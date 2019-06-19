@@ -24,8 +24,8 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
-import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.support.AppPackedContainerSupport;
 
 /**
  * Container extensions are used to extend containers with functionality.
@@ -57,6 +57,11 @@ public abstract class Extension<T extends Extension<T>> {
             public void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
                 extension.onAdd();
+            }
+
+            @Override
+            public DefaultContainerConfiguration getContainer(Extension<?> extension) {
+                return extension.configuration;
             }
         });
     }

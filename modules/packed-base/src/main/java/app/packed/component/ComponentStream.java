@@ -16,8 +16,12 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -69,6 +73,21 @@ public interface ComponentStream extends Stream<Component> {
      */
     default List<Component> toList() {
         return collect(Collectors.toList());
+    }
+
+    default <A> void forEachFeature(Feature<A, ?> feature, BiConsumer<Component, ? super A> action) {
+        requireNonNull(feature, "feature is null");
+        requireNonNull(action, "action is null");
+        forEach(c -> {
+            Optional<A> o = c.get(feature);
+            if (o.isPresent()) {
+                action.accept(c, o.get());
+            }
+        });
+    }
+
+    default <T extends Feature<?, ?>> Stream<T> feature(T feature) {
+        throw new UnsupportedOperationException();
     }
 
     // /**

@@ -186,7 +186,7 @@ public interface ProvideHelper {
      * 
      * @return any dependency this class might have
      */
-    default Optional<Dependency> dependency() {
+    default Optional<ServiceDependency> dependency() {
         throw new UnsupportedOperationException();
     }
 
@@ -214,11 +214,11 @@ public interface ProvideHelper {
      */
     Injector injector();// HMMMMM,
 
-    static ProvideHelper of(Injector injector, Dependency dependency) {
+    static ProvideHelper of(Injector injector, ServiceDependency dependency) {
         return new InjectionSiteForDependency(injector, dependency, null);
     }
 
-    static ProvideHelper of(Injector injector, Dependency dependency, Component componenent) {
+    static ProvideHelper of(Injector injector, ServiceDependency dependency, Component componenent) {
         return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -250,7 +250,7 @@ public interface ProvideHelper {
      * @param component
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
-     * @see #of(Injector, Dependency)
+     * @see #of(Injector, ServiceDependency)
      */
     static ProvideHelper of(Injector injector, Key<?> key, Component component) {
         return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));

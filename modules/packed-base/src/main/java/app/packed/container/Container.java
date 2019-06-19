@@ -61,7 +61,7 @@ import app.packed.lifecycle.LifecycleState;
 
 // Services can have injector injected??? Only Components can have a Container???
 
-public interface Container extends Injector {
+public interface Container extends Injector /* , Component ??? */ {
 
     // ListenerManager listenerManager(); // listeners()...???, container.jobs().
 

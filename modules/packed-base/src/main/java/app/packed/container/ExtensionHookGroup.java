@@ -16,11 +16,11 @@
 package app.packed.container;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 
@@ -82,6 +82,10 @@ public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Suppl
 
     protected final <A extends Annotation> void onAnnotatedMethodDescription(Class<A> annotationType, BiConsumer<B, MethodDescriptor> consumer) {
         builder().onAnnotatedMethodDescription(annotationType, consumer);
+    }
+
+    protected final <A extends Annotation> void onAnnotatedMethodHandle(Class<A> annotationType, BiConsumer<B, MethodHandle> consumer) {
+        builder().onAnnotatedMethodHandle(annotationType, consumer);
     }
 
     protected final <A extends Annotation> void onTypeAnnotation(Class<A> annotationType, BiConsumer<B, A> consumer) {

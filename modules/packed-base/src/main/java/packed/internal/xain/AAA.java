@@ -16,7 +16,7 @@
 package packed.internal.xain;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.Dependency;
+import app.packed.inject.ServiceDependency;
 
 /**
  *
@@ -28,7 +28,7 @@ public class AAA {
         // Includere key + optional..
         /// Saa kan Injector descriptor.. includere alle requirements
         // i En liste, men der vil vi jo gerne have config site, component + dvs andet...
-        Dependency dependency;
+        ServiceDependency dependency;
 
     }
 }

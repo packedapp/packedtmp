@@ -25,17 +25,14 @@ import app.packed.component.ComponentStream;
 /**
  *
  */
-public class InternalComponent extends AbstractComponent implements Component {
+final class InternalComponent extends AbstractComponent implements Component {
 
     /** The container in which this component lives. */
     final InternalContainer container;
 
-    /** The container in which this component lives. */
-    final InternalComponent parent = null;
-
-    InternalComponent(InternalContainer parent, DefaultComponentConfiguration configuration) {
-        super(parent, configuration);
-        this.container = parent;
+    InternalComponent(InternalContainer container, DefaultComponentConfiguration configuration) {
+        super(container, configuration);
+        this.container = container;
     }
 
     /** {@inheritDoc} */
@@ -46,7 +43,7 @@ public class InternalComponent extends AbstractComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream stream() {
+    public ComponentStream components() {
         return new InternalComponentStream(Stream.of(this));
     }
 }

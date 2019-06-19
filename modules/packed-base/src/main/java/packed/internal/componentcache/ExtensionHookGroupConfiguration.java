@@ -27,14 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import app.packed.container.ExtensionActivator;
+import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
-import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
-import packed.internal.container.AppPackedContainerSupport;
 import packed.internal.container.NativeImageSupport;
+import packed.internal.support.AppPackedContainerSupport;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -111,7 +111,13 @@ public class ExtensionHookGroupConfiguration {
             return new ExtensionHookGroupConfiguration(this);
         }
 
-        public <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<?, AnnotatedMethodHook<A>> consumer) {}
+        public <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<?, AnnotatedMethodHook<A>> consumer) {
+            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
+                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
+                        + ExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+            }
+            list.add(new OnMethod(annotationType, consumer));
+        }
 
         /**
          * @param annotationType
@@ -125,6 +131,25 @@ public class ExtensionHookGroupConfiguration {
             list.add(new OnMethodDescription(annotationType, consumer));
             // TODO Auto-generated method stub
         }
+
+        public void onAnnotatedMethodHandle(Class<?> annotationType, BiConsumer<?, MethodHandle> consumer) {
+            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
+                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
+                        + ExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+            }
+            list.add(new OnMethodHandle(annotationType, consumer));
+            // TODO Auto-generated method stub
+        }
+    }
+
+    static class OnMethod {
+        final Class<?> annotationType;
+        final BiConsumer<?, ? extends AnnotatedMethodHook<?>> consumer;
+
+        public OnMethod(Class<?> annotationType, BiConsumer<?, ? extends AnnotatedMethodHook<?>> consumer) {
+            this.annotationType = annotationType;
+            this.consumer = consumer;
+        }
     }
 
     static class OnMethodDescription {
@@ -132,6 +157,16 @@ public class ExtensionHookGroupConfiguration {
         final BiConsumer<?, MethodDescriptor> consumer;
 
         public OnMethodDescription(Class<?> annotationType, BiConsumer<?, MethodDescriptor> consumer) {
+            this.annotationType = annotationType;
+            this.consumer = consumer;
+        }
+    }
+
+    static class OnMethodHandle {
+        final Class<?> annotationType;
+        final BiConsumer<?, MethodHandle> consumer;
+
+        public OnMethodHandle(Class<?> annotationType, BiConsumer<?, MethodHandle> consumer) {
             this.annotationType = annotationType;
             this.consumer = consumer;
         }

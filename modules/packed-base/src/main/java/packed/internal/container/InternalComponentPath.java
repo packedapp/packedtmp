@@ -60,7 +60,7 @@ final class InternalComponentPath implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
-    public int findDepth() {
+    public int depth() {
         int depth = 0;
         AbstractComponent c = component;
         while (c.parent != null) {

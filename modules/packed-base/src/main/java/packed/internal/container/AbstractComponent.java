@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import java.util.Optional;
 
+import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
@@ -24,7 +25,7 @@ import app.packed.util.Nullable;
 /**
  *
  */
-abstract class AbstractComponent {
+abstract class AbstractComponent implements Component {
 
     /** The configuration site of the component. */
     private final ConfigSite configurationSite;

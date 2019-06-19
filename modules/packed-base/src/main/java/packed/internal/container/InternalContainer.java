@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,49 +29,59 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
 
 /** The default implementation of Container. */
-public final class InternalContainer extends AbstractComponent implements Container {
+final class InternalContainer extends AbstractComponent implements Component {
 
     /** All the components of this container. */
-    final Map<String, InternalComponent> components = new HashMap<>();
+    final Map<String, AbstractComponent> components = new HashMap<>();
 
     private final Injector injector;
 
-    public InternalContainer(DefaultContainerConfiguration configuration, Injector injector) {
-        super(null, configuration);
-        this.injector = requireNonNull(injector);
-        // if (builder.root != null) {
-        // builder.root.forEachRecursively(componentConfiguration -> componentConfiguration.init(this));
-        // this.root = requireNonNull(builder.root.component);
-        // } else {
-        // this.root = null;
-        // }
-        for (AbstractComponentConfiguration acc : configuration.children.values()) {
-            InternalComponent ic = new InternalComponent(this, (DefaultComponentConfiguration) acc);
-            components.put(ic.name(), ic);
-        }
+    /** {@inheritDoc} */
+    @Override
+    public Collection<Component> children() {
+        return Collections.unmodifiableCollection(components.values());
+    }
 
-        // this.name = builder.getName() == null ? "App" : builder.getName();
+    public InternalContainer(InternalContainer parent, DefaultContainerConfiguration configuration, Injector injector) {
+        super(parent, configuration);
+        this.injector = requireNonNull(injector);
+        for (AbstractComponentConfiguration acc : configuration.children.values()) {
+            if (acc instanceof DefaultComponentConfiguration) {
+                InternalComponent ic = new InternalComponent(this, (DefaultComponentConfiguration) acc);
+                components.put(ic.name(), ic);
+            } else {
+                DefaultContainerConfiguration dcc = (packed.internal.container.DefaultContainerConfiguration) acc;
+                InternalContainer ic = new InternalContainer(this, dcc, injector);
+                components.put(ic.name(), ic);
+            }
+        }
     }
 
     @Override
+    public ComponentStream components() {
+        return new InternalComponentStream(Stream.concat(Stream.of(this), components.values().stream().flatMap(AbstractComponent::components)));
+        //
+        // Stream.Builder<Component> builder = Stream.builder();
+        // builder.accept(new ComponentWrapper());
+        // for (AbstractComponent ic : components.values()) {
+        // builder.accept(ic);
+        // }
+        // return new InternalComponentStream(builder.build());
+    }
+
     public <T> Optional<T> get(Class<T> key) {
         return injector.get(key);
     }
 
-    @Override
     public <T> Optional<T> get(Key<T> key) {
         return injector.get(key);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Optional<Component> getComponent(CharSequence path) {
         requireNonNull(path, "path is null");
         if (path.length() == 0) {
@@ -85,61 +96,36 @@ public final class InternalContainer extends AbstractComponent implements Contai
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public <T> Optional<ServiceDescriptor> getDescriptor(Class<T> serviceType) {
         return injector.getDescriptor(serviceType);
     }
 
-    @Override
     public <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
         return injector.getDescriptor(key);
     }
 
-    @Override
     public boolean hasService(Class<?> key) {
         return injector.hasService(key);
     }
 
-    @Override
     public boolean hasService(Key<?> key) {
         return injector.hasService(key);
     }
 
-    @Override
     public <T> T injectMembers(T instance, Lookup lookup) {
         return injector.injectMembers(instance, lookup);
     }
 
-    @Override
     public Stream<ServiceDescriptor> services() {
         return injector.services();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public LifecycleOperations<? extends Container> state() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public <T> T use(Class<T> key) {
         return injector.use(key);
     }
 
-    @Override
     public <T> T use(Key<T> key) {
         return injector.use(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream components() {
-        Stream.Builder<Component> builder = Stream.builder();
-        builder.accept(new ComponentWrapper());
-        for (InternalComponent ic : components.values()) {
-            builder.accept(ic);
-        }
-        return new InternalComponentStream(builder.build());
     }
 
     class ComponentWrapper implements Component {
@@ -148,6 +134,12 @@ public final class InternalContainer extends AbstractComponent implements Contai
         @Override
         public Collection<Component> children() {
             throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentStream components() {
+            return InternalContainer.this.components();
         }
 
         /** {@inheritDoc} */
@@ -172,12 +164,6 @@ public final class InternalContainer extends AbstractComponent implements Contai
         @Override
         public ComponentPath path() {
             return ComponentPath.ROOT;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentStream stream() {
-            return InternalContainer.this.components();
         }
     }
 }

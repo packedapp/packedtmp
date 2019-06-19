@@ -79,7 +79,6 @@ public interface ContainerConfiguration {
      *
      * @return the description of this container. Or null if the description has not been set.
      * @see #setDescription(String)
-     * @see Container#description()
      */
     @Nullable
     String getDescription();
@@ -113,6 +112,8 @@ public interface ContainerConfiguration {
      * <p>
      * The lookup object passed to this method is never made available through the public API. Its use is strictly
      * internally.
+     * <p>
+     * This method allows passing null, which clears any lookup object that has previously been set.
      * 
      * @param lookup
      *            the lookup object
@@ -125,16 +126,15 @@ public interface ContainerConfiguration {
      * @param description
      *            the description to set
      * @see #getDescription()
-     * @see Container#description()
      * @throws IllegalStateException
      *             if this configuration can no longer be configured
      */
-    void setDescription(@Nullable String description);
+    ContainerConfiguration setDescription(@Nullable String description);
 
     /**
-     * Sets the {@link Container#name() name} of the container. The name must consists only of alphanumeric characters and
-     * '_', '-' or '.'. The string may end with a '?' indicating that the runtime might place the '?' with a runtime chosen
-     * post-fix string in case other components or containers have the same name. The name is case sensitive.
+     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The
+     * string may end with a '?' indicating that the runtime might place the '?' with a runtime chosen post-fix string in
+     * case other components or containers have the same name. The name is case sensitive.
      * <p>
      * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
      * such a way that it will have a unique name among other sibling container.
@@ -146,7 +146,7 @@ public interface ContainerConfiguration {
      *             characters and '_', '-' or '.', or contains a '?' at any position then the last position of the string.
      * @see #getName()
      */
-    void setName(@Nullable String name);
+    ContainerConfiguration setName(@Nullable String name);
 
     /**
      * Returns an extension of the specified type. If this is the first time the extension is requested this method will
@@ -174,4 +174,14 @@ public interface ContainerConfiguration {
      * @return a list of any wirelets that was used to create this configuration
      */
     WireletList wirelets();
+
+    /**
+     * Creates a new layer.
+     * 
+     * @param name
+     *            the name of layer
+     * @param dependencies
+     * @return the new layer
+     */
+    ContainerLayer newLayer(String name, ContainerLayer... dependencies);
 }

@@ -18,8 +18,9 @@ package app.packed.component;
 import app.packed.inject.Injector;
 
 /**
- *
+ * A component context can be injected into what every I call it...
  */
+// Husk at der teoretisk set ogsaa er en ComponentContext
 public interface ComponentContext {
     // PrototypeContext
 
@@ -52,6 +53,10 @@ public interface ComponentContext {
     // Role == JobManager.class
     // Role == Job.class
     // Role == ScheduledJob.class <- Is it a component????
+
+    // Stateless, Statefull, DistributedObject, Entity <-
+
+    // Requestlets, Scopelets, ...
 
     // Charactariska = How Many Instances, Managaged/ Unmanaged, Dynamic-wire (host)
 
@@ -90,4 +95,6 @@ public interface ComponentContext {
     // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
     // Maaske skal vi bare extende Injector.....
     Injector injector();
+
+    // Container
 }

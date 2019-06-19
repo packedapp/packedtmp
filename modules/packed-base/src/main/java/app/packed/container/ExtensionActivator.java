@@ -29,6 +29,15 @@ import java.lang.annotation.Target;
 
 // Unfprtunantely, you cannot register random annotations for use. As this would break encapsulation.
 // ActivateExtension
+
+// Stort problem. Nu har vi lige pludselig Runtime komponenter der bliver registeret naar en container allerede koerer.
+/// F.eks. Actors faar lige pludselig en lifecycle annoterering...
+
+// Vi har vel i virkeligheden 3 interesante ting...
+// Extension
+// Online-Component
+// Hook
+// Online-Hook
 public @interface ExtensionActivator {
 
     /**

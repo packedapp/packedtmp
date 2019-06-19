@@ -45,6 +45,9 @@ public final class ComponentClassDescriptor {
 
     private final Instance[] groups;
 
+    /** The simple name of the component type. */
+    private volatile String simpleName;
+
     /**
      * Creates a new descriptor.
      * 
@@ -56,26 +59,23 @@ public final class ComponentClassDescriptor {
         this.groups = builder.builders.values().stream().map(e -> e.build()).toArray(i -> new Instance[i]);
     }
 
-    public void initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
-        for (Instance c : groups) {
-            c.add(container, component);
-        }
-    }
-
-    /** The default prefix of the container. */
-    private volatile String defaultPrefix;
-
     /**
      * Returns the default prefix for the container, if no name is explicitly set.
      * 
      * @return the default prefix for the container, if no name is explicitly set
      */
     public String defaultPrefix() {
-        String d = defaultPrefix;
-        if (d == null) {
-            d = defaultPrefix = componentType.getSimpleName();
+        String s = simpleName;
+        if (s == null) {
+            s = simpleName = componentType.getSimpleName();
         }
-        return d;
+        return s;
+    }
+
+    public void initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
+        for (Instance c : groups) {
+            c.add(container, component);
+        }
     }
 
     /**

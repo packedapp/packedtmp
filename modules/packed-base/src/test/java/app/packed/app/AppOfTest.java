@@ -28,6 +28,7 @@ import app.packed.container.ContainerConfiguration;
 /** Tests {@link App#of(app.packed.container.AnyBundle, app.packed.container.Wirelet...)} */
 public class AppOfTest {
 
+    /** Tests the empty app with no components. */
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
@@ -52,7 +53,5 @@ public class AppOfTest {
 
         // Check that configuration site
         assertThat(empty.configurationSite()).isSameAs(cc.configurationSite());
-
-        empty.components().forEach(e -> System.out.println(e.path() + " " + e.configurationSite()));
     }
 }

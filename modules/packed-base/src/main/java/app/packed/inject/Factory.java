@@ -61,6 +61,23 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 // probably rename defaultKey to key.
 
 // Split-module class hierachies, must
+
+// Factories only
+//
+// Is it the responsibility of the factory or the injector to inject fields and methods???
+// + Factory
+//
+// + Injector
+// Then we can disable it on a case to case basis
+// You can actually use factories without injection
+//
+//
+//
+//
+// -------------------------
+// ServiceDescriptor
+// Refereres fra InjectorDescriptor....
+// Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
 public class Factory<T> {
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
@@ -175,7 +192,7 @@ public class Factory<T> {
      * @return a list of all of the dependencies of this factory
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final List<Dependency> dependencies() {
+    public final List<ServiceDependency> dependencies() {
         return (List) factory.dependencies;
     }
 

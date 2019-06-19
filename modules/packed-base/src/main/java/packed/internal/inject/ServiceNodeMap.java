@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.inject.Dependency;
+import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 
@@ -60,7 +60,7 @@ public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
         nodes.values().forEach(action);
     }
 
-    public ServiceNode<?> getNode(Dependency dependency) {
+    public ServiceNode<?> getNode(ServiceDependency dependency) {
         return getRecursive(dependency.key());
     }
 

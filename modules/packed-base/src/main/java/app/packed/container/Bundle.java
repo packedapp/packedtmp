@@ -44,7 +44,7 @@ import app.packed.util.TypeLiteral;
  * <ul>
  * <li><b>{@link Bundle}</b> which bundles information about services, and creates {@link Injector} instances using
  * .</li>
- * <li><b>{@link Bundle}</b> which bundles information about both services and components, and creates {@link Container}
+ * <li><b>{@link Bundle}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
  */
@@ -156,46 +156,8 @@ public abstract class Bundle extends AnyBundle {
         return component().install(instance);
     }
 
-    // protected ComponentServiceConfiguration<?> installBundle() {
-    // return containerBuilderX().installService(this);
-    // }
-
-    protected final void main(String methodName, Class<?>... arguments) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected final Layer mainLayer(Layer... predecessors) {
-        // Layers are an AnyBundle thingy...
-        // Can only be called once???
-        throw new UnsupportedOperationException();
-    }
-
-    protected final Layer newEmptyLayer(String name, Layer... predecessors) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @param name
-     *            the name of the layer, must be unique among all layers defined in the same bundle
-     * @param predecessors
-     *            preds
-     * @return the new layer
-     * @throws IllegalArgumentException
-     *             if the specified name is the empty string, "main" or if another layer with the same name has been
-     *             registered
-     */
-    protected final Layer newLayer(String name, Layer... predecessors) {
-        // maybe "" is just the main layer...
-
-        // Okay we need to able to addLayers as predessestors to the main layer....
-        // sucessotorToMainLayer, precessorToMainLayer() only available for empty layer...
-
-        // check same bundle
-        // Maybe skip name and have a setter... If you put every bundle into its own layer it is a bit annoying...
-
-        // The
-
-        throw new UnsupportedOperationException();
+    protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
+        return configuration().newLayer(name, dependencies);
     }
 
     /**
@@ -240,12 +202,6 @@ public abstract class Bundle extends AnyBundle {
         return injector().provide(implementation);
     }
 
-    // // /** The internal configuration to delegate to */
-    // // We probably want to null this out...
-    // // If we install the bundle as a component....
-    // // We do not not want any more garbage then needed.
-    // // private InjectorBuilder injectorBuilder;
-
     protected final void requireService(Class<?> key) {
         injector().addRequired(Key.of(key));
     }
@@ -257,59 +213,6 @@ public abstract class Bundle extends AnyBundle {
     protected final void serviceManualRequirements() {
         injector().manualRequirementsManagement();
     }
-
-    // /**
-    // * Install the specified component instance.
-    // * <p>
-    // * If this install operation is the first install operation of the container. The component will be installed as the
-    // * root component of the container. All subsequent install operations on this bundle will have have component as its
-    // * parent. If you wish to have a specific component as a parent, the various install methods on
-    // * {@link ComponentConfiguration} can be used to specify a specific parent.
-    // *
-    // * @param <T>
-    // * the type of component to install
-    // * @param instance
-    // * the component instance to install
-    // * @return this configuration
-    // */
-    // protected final <T> ComponentConfiguration<T> install(T instance) {
-    // return containerBuilderX().install(instance);
-    // }
-
-    // or have mainLayer() and then
-    // newEmptyLayer(String name, includeMainAsSuccessor, BundleLayer... )
-    // newEmptyLayer("Infrastructure", false);
-
-    // Basically there are 4 types of new layer
-    // empty
-    // import from main layer
-    // export to main layer
-    // share with main layer
-
-    // protected final void wireContainer(Bundle bundle, WiringOperation... stages) {
-    // containerBuilderX().wireContainer(bundle, stages);
-    // }
-
-    // protected final void wireInjector(Bundle bundle, WiringOperation... operations) {
-    // injectorBuilder().wireInjector(bundle, operations);
-    // }
-    //
-    // /**
-    // * Imports the services that are available in the specified injector.
-    // *
-    // * @param injector
-    // * the injector to import services from
-    // * @param stages
-    // * any number of filters that restricts the services that are imported. Or makes them available under
-    // * different keys
-    // * @see InjectorConfiguration#wireInjector(Injector, WiringOperation...)
-    // * @throws IllegalArgumentException
-    // * if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
-    // * (via {@link WiringOperation#andThen(WiringOperation)} thereof
-    // */
-    // protected final void wireInjector(Injector injector, WiringOperation... operations) {
-    // injectorBuilder().wireInjector(injector, operations);
-    // }
 
     /**
      * Prints the contract of the specified bundle.
@@ -333,6 +236,57 @@ public abstract class Bundle extends AnyBundle {
         App.run(bundle, wirelets);
     }
 }
+
+// /**
+// * Install the specified component instance.
+// * <p>
+// * If this install operation is the first install operation of the container. The component will be installed as the
+// * root component of the container. All subsequent install operations on this bundle will have have component as its
+// * parent. If you wish to have a specific component as a parent, the various install methods on
+// * {@link ComponentConfiguration} can be used to specify a specific parent.
+// *
+// * @param <T>
+// * the type of component to install
+// * @param instance
+// * the component instance to install
+// * @return this configuration
+// */
+// protected final <T> ComponentConfiguration<T> install(T instance) {
+// return containerBuilderX().install(instance);
+// }
+
+// protected final void wireContainer(Bundle bundle, WiringOperation... stages) {
+// containerBuilderX().wireContainer(bundle, stages);
+// }
+
+// protected final void wireInjector(Bundle bundle, WiringOperation... operations) {
+// injectorBuilder().wireInjector(bundle, operations);
+// }
+//
+// /**
+// * Imports the services that are available in the specified injector.
+// *
+// * @param injector
+// * the injector to import services from
+// * @param stages
+// * any number of filters that restricts the services that are imported. Or makes them available under
+// * different keys
+// * @see InjectorConfiguration#wireInjector(Injector, WiringOperation...)
+// * @throws IllegalArgumentException
+// * if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
+// * (via {@link WiringOperation#andThen(WiringOperation)} thereof
+// */
+// protected final void wireInjector(Injector injector, WiringOperation... operations) {
+// injectorBuilder().wireInjector(injector, operations);
+// }
+
+// protected ComponentServiceConfiguration<?> installBundle() {
+// return containerBuilderX().installService(this);
+// }
+//
+// protected final void main(String methodName, Class<?>... arguments) {
+// throw new UnsupportedOperationException();
+// }
 
 // public interface Restrictions {
 // void service(Class<?> clazz);

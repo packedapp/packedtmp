@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import app.packed.component.Component;
-import app.packed.inject.Dependency;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.Injector;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
@@ -40,12 +40,12 @@ public class InjectionSiteForDependency implements ProvideHelper {
     private final Component component;
 
     /** The key of the service that was requested */
-    private final Dependency dependency;
+    private final ServiceDependency dependency;
 
     /** The injector from where the service was requested. */
     private final Injector injector;
 
-    public InjectionSiteForDependency(Injector injector, Dependency dependency, @Nullable Component component) {
+    public InjectionSiteForDependency(Injector injector, ServiceDependency dependency, @Nullable Component component) {
         this.injector = requireNonNull(injector, "injector is null");
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
