@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 
 import app.packed.component.Component;
@@ -22,9 +24,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 
-/**
- *
- */
+/** An abstract base implementation of {@link Component}. */
 abstract class AbstractComponent implements Component {
 
     /** The configuration site of the component. */
@@ -34,31 +34,48 @@ abstract class AbstractComponent implements Component {
     @Nullable
     private final String description;
 
-    /** The name of the component. The name is unique among other siblings. */
+    /** The name of the component. The name is guaranteed to be unique between siblings. */
     private final String name;
 
-    /** The container in which this component lives. */
+    /** The parent component, iff this component has a parent. */
+    @Nullable
     final AbstractComponent parent;
 
-    AbstractComponent(AbstractComponent parent, AbstractComponentConfiguration configuration) {
-        this.configurationSite = configuration.configurationSite();
+    /**
+     * Creates a new abstract component.
+     * 
+     * @param parent
+     *            the parent component, iff this component has a parent.
+     * @param configuration
+     *            the configuration used for creating this component
+     */
+    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration) {
         this.parent = parent;
+        this.configurationSite = requireNonNull(configuration.configurationSite());
         this.description = configuration.getDescription();
-        this.name = configuration.name;
+        this.name = requireNonNull(configuration.name);
     }
 
+    /** {@inheritDoc} */
+    @Override
     public final ConfigSite configurationSite() {
         return configurationSite;
     }
 
+    /** {@inheritDoc} */
+    @Override
     public final Optional<String> description() {
         return Optional.ofNullable(description);
     }
 
+    /** {@inheritDoc} */
+    @Override
     public final String name() {
         return name;
     }
 
+    /** {@inheritDoc} */
+    @Override
     public final ComponentPath path() {
         return new InternalComponentPath(this);
     }

@@ -35,14 +35,6 @@ import app.packed.util.Nullable;
  */
 public interface ProvidedComponentConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {
 
-    // /**
-    // * Prohibits the component for being available as a dependency to other services/components.
-    // *
-    // * @return this component configuration
-    // */
-    // @Override
-    // ComponentServiceConfiguration<?> asNone();
-
     /**
      * @param implementation
      *            the mixin implementation to add
@@ -203,3 +195,11 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
     // throw new UnsupportedOperationException();
     // }
 }
+
+/// **
+// * Prohibits the component for being available as a dependency to other services/components.
+// *
+// * @return this component configuration
+// */
+// @Override
+// ComponentServiceConfiguration<?> asNone();

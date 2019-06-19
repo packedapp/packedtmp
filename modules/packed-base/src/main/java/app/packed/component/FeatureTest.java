@@ -30,8 +30,8 @@ public class FeatureTest {
     public void foo(App app) {
 
         // Total number of services in the component tree
-        app.components().mapToInt(c -> c.use(Inj.SERVICES).size()).sum();
+        app.stream().mapToInt(c -> c.use(Inj.SERVICES).size()).sum();
 
-        app.components().forEachFeature(Inj.SERVICES, (c, s) -> System.out.println(c.path() + " exposes " + s.size() + " services"));
+        app.stream().forEachFeature(Inj.SERVICES, (c, s) -> System.out.println(c.path() + " exposes " + s.size() + " services"));
     }
 }

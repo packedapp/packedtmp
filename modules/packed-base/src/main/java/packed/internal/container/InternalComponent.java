@@ -43,7 +43,7 @@ final class InternalComponent extends AbstractComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream components() {
+    public ComponentStream stream() {
         return new InternalComponentStream(Stream.of(this));
     }
 }

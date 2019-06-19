@@ -34,13 +34,6 @@ public interface Component {
     Collection<Component> children();
 
     /**
-     * Returns a component stream consisting of this component and all of its descendants in any order.
-     *
-     * @return a component stream consisting of this component and all of its descendants in any order
-     */
-    ComponentStream components();
-
-    /**
      * Returns the configuration site of this component.
      * 
      * @return the configuration site of this component
@@ -58,14 +51,6 @@ public interface Component {
      */
     Optional<String> description();
 
-    default <T> Optional<T> get(Feature<T, ?> feature) {
-        throw new UnsupportedOperationException();
-    }
-
-    default <T> T use(Feature<T, ?> feature) {
-        throw new UnsupportedOperationException();
-    }
-
     default Collection<?> features() {
         // Features vs en selvstaendig komponent....
         //// Altsaa det ser jo dumt ud hvis vi har
@@ -77,6 +62,10 @@ public interface Component {
 
         // Ideen er f.eks. at kunne returnere alle services en component exposer, men ikke give adgang til det...
         // How does it relate to AttributeMap?
+        throw new UnsupportedOperationException();
+    }
+
+    default <T> Optional<T> get(Feature<T, ?> feature) {
         throw new UnsupportedOperationException();
     }
 
@@ -98,4 +87,17 @@ public interface Component {
      * @return the path of this component
      */
     ComponentPath path();
+
+    /**
+     * Returns a component stream consisting of this component and all of its descendants in any order.
+     *
+     * @return a component stream consisting of this component and all of its descendants in any order
+     */
+    // What is the difference between components and children someone is going to ask....
+    // So we renamed it to stream();
+    ComponentStream stream();
+
+    default <T> T use(Feature<T, ?> feature) {
+        throw new UnsupportedOperationException();
+    }
 }

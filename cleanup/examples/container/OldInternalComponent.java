@@ -142,7 +142,7 @@ public class OldInternalComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream components() {
+    public ComponentStream stream() {
         throw new UnsupportedOperationException();
         // return new InternalComponentStream(Stream.concat(Stream.of(this),
         // children.values().stream().flatMap(OldInternalComponent::components)));

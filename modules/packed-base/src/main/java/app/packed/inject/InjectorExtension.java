@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
@@ -66,10 +65,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     /** Creates a new injector extension. */
     InjectorExtension() {}
 
-    public <T> void provideOptionalFallback(Class<T> t, T instance) {
-        // Ideen er vi kan lave en default service...
-    }
-
     /**
      * Adds the specified key to the list of optional services.
      * <p>
@@ -111,15 +106,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         // Den er ikke super brugbar..
         // Smid en static provides paa bundlen...
         // Og saa provide
-
-        class Doo extends Bundle {
-
-            @Provide
-            CharSequence alias(String str) {
-                return str;
-            }
-        }
-        System.out.println(new Doo());
         throw new UnsupportedOperationException();
     }
 
@@ -141,12 +127,12 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         builder.buildContract(descriptor.contract().services());
     }
 
-    // Why export
-    // Need to export
-
     private DefaultContainerConfiguration configuration0() {
         return (DefaultContainerConfiguration) configuration();
     }
+
+    // Why export
+    // Need to export
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         requireNonNull(key, "key is null");
@@ -308,22 +294,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return provide(Factory.findInjectable(implementation));
     }
 
-    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
-
-    // public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-    // // Hmm, hvor er wirelets'ene til????
-    // // Maaske bare bedst at droppe den????
-    //
-    // Injector injector = Injector.of(configurator, wirelets);
-    // }
-
-    // Services are the default implementation of injection....
-
-    // Export
-
-    // Outer.. checker configurable, node. finish den sidste o.s.v.
-    // Saa kalder vi addNode(inner.foo);
-
     /**
      * Provides all services from the specified injector.
      * <p>
@@ -340,6 +310,22 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         pfi.process(); // Will create the necessary nodes.
     }
 
+    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
+
+    // public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+    // // Hmm, hvor er wirelets'ene til????
+    // // Maaske bare bedst at droppe den????
+    //
+    // Injector injector = Injector.of(configurator, wirelets);
+    // }
+
+    // Services are the default implementation of injection....
+
+    // Export
+
+    // Outer.. checker configurable, node. finish den sidste o.s.v.
+    // Saa kalder vi addNode(inner.foo);
+
     public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
         // Installs as a static component.... new instance every time it is requested...
         throw new UnsupportedOperationException();
@@ -351,6 +337,10 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     public <T> ProvidedComponentConfiguration<T> provideMany(TypeLiteral<T> implementation) {
         throw new UnsupportedOperationException();
+    }
+
+    public <T> void provideOptionalFallback(Class<T> t, T instance) {
+        // Ideen er vi kan lave en default service...
     }
 
     private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {

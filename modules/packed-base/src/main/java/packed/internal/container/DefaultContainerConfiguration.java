@@ -37,7 +37,6 @@ import app.packed.container.WireletList;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
-import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
 import packed.internal.componentcache.ComponentClassDescriptor;
@@ -46,7 +45,6 @@ import packed.internal.componentcache.ContainerConfiguratorCache;
 import packed.internal.config.site.ConfigurationSiteType;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.buildtime.OldDefaultComponentConfiguration;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
 
@@ -78,7 +76,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     DefaultContainerConfiguration(DefaultContainerConfiguration parent, WiringType wiringType, Class<?> configuratorType, @Nullable AnyBundle bundle,
             Wirelet... wirelets) {
-        super(InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF), parent);
+        super(parent == null ? InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF)
+                : parent.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_OF), parent);
         this.lookup = this.ccc = ContainerConfiguratorCache.of(configuratorType);
         this.bundle = bundle;
         this.wiringType = requireNonNull(wiringType);
@@ -260,8 +259,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // All validation should be done by here..
         prepareNewComponent();
 
-        DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
-                this, descriptor);
+        DefaultComponentConfiguration dcc = current = new FixedInstanceComponentConfiguration(
+                configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor, instance);
+
         descriptor.initialize(this, dcc);
         return dcc;
     }
@@ -273,7 +273,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public ComponentConfiguration installHelper(Class<?> implementation) {
-        return new OldDefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
+        throw new UnsupportedOperationException();
+        // return new OldDefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
     }
 
     /** {@inheritDoc} */

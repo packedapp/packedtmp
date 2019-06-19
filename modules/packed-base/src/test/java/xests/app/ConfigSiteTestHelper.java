@@ -13,31 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package xests.app;
 
-import app.packed.container.Bundle;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.lang.StackWalker.StackFrame;
+
+import app.packed.config.ConfigSite;
 
 /**
  *
  */
-public class MainTest extends Bundle {
+public class ConfigSiteTestHelper {
 
-    @Override
-    protected void configure() {
-        install(new MyMain());
+    public static StackFrame caller() {
+        return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(1).findFirst()).get();
     }
 
-    public static void main(String[] args) {
-        var app = App.of(new MainTest());
-        app.stream().forEach(e -> System.out.println(e.path()));
-
-    }
-
-    static class MyMain {
-
-        @Main
-        public static void say() {
-            System.out.println("HelloWorld");
-        }
+    public static void assertIdenticalPlusLine(StackFrame expected, int lineDifference, ConfigSite cs) {
+        int line = expected.getLineNumber();
+        assertThat(cs).hasToString(expected.toString().replace(":" + line, ":" + (line + lineDifference)));
     }
 }

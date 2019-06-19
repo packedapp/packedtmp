@@ -43,8 +43,7 @@ public class AppOfTest {
         assertThat(empty.description()).isEmpty();
         assertThat(empty.name()).isNotNull();
         assertThat(empty.configurationSite()).isNotNull();
-
-        assertThat(empty.components()).size().isEqualTo(1);
+        assertThat(empty.stream()).size().isEqualTo(1);
 
         ContainerConfiguration cc = requireNonNull(ar.get());
 

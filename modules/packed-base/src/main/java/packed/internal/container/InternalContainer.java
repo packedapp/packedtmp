@@ -21,50 +21,51 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 
 /** The default implementation of Container. */
 final class InternalContainer extends AbstractComponent implements Component {
 
     /** All the components of this container. */
-    final Map<String, AbstractComponent> components = new HashMap<>();
+    final Map<String, AbstractComponent> children = new HashMap<>();
 
     private final Injector injector;
 
     /** {@inheritDoc} */
     @Override
     public Collection<Component> children() {
-        return Collections.unmodifiableCollection(components.values());
+        return Collections.unmodifiableCollection(children.values());
     }
 
-    public InternalContainer(InternalContainer parent, DefaultContainerConfiguration configuration, Injector injector) {
+    public InternalContainer(@Nullable AbstractComponent parent, DefaultContainerConfiguration configuration, Injector injector) {
         super(parent, configuration);
         this.injector = requireNonNull(injector);
         for (AbstractComponentConfiguration acc : configuration.children.values()) {
             if (acc instanceof DefaultComponentConfiguration) {
                 InternalComponent ic = new InternalComponent(this, (DefaultComponentConfiguration) acc);
-                components.put(ic.name(), ic);
+                children.put(ic.name(), ic);
             } else {
                 DefaultContainerConfiguration dcc = (packed.internal.container.DefaultContainerConfiguration) acc;
                 InternalContainer ic = new InternalContainer(this, dcc, injector);
-                components.put(ic.name(), ic);
+                children.put(ic.name(), ic);
             }
         }
     }
 
     @Override
-    public ComponentStream components() {
-        return new InternalComponentStream(Stream.concat(Stream.of(this), components.values().stream().flatMap(AbstractComponent::components)));
+    public ComponentStream stream() {
+        return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(AbstractComponent::stream)));
         //
         // Stream.Builder<Component> builder = Stream.builder();
         // builder.accept(new ComponentWrapper());
@@ -80,20 +81,6 @@ final class InternalContainer extends AbstractComponent implements Component {
 
     public <T> Optional<T> get(Key<T> key) {
         return injector.get(key);
-    }
-
-    public Optional<Component> getComponent(CharSequence path) {
-        requireNonNull(path, "path is null");
-        if (path.length() == 0) {
-            throw new IllegalArgumentException("Cannot specify the empty string");
-        }
-        // Make sure we never get parent components....
-        if (path.charAt(0) == '/') {
-
-        } else {
-
-        }
-        throw new UnsupportedOperationException();
     }
 
     public <T> Optional<ServiceDescriptor> getDescriptor(Class<T> serviceType) {
@@ -128,42 +115,40 @@ final class InternalContainer extends AbstractComponent implements Component {
         return injector.use(key);
     }
 
-    class ComponentWrapper implements Component {
-
-        /** {@inheritDoc} */
-        @Override
-        public Collection<Component> children() {
-            throw new UnsupportedOperationException();
+    public Component getComponent0(CharSequence path) {
+        requireNonNull(path, "path is null");
+        if (path.length() == 0) {
+            throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentStream components() {
-            return InternalContainer.this.components();
+        if (path.charAt(0) == '/') {
+            if (path().toString().equals("/")) {
+                return this;
+            }
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigSite configurationSite() {
-            return InternalContainer.this.configurationSite();
+        Component c = children.get(path);
+        if (c == null) {
+            String p = path.toString();
+            String[] splits = p.split("/");
+            if (splits.length > 1) {
+                AbstractComponent ac = children.get(splits[0]);
+                if (ac instanceof InternalContainer) {
+                    return ((InternalContainer) ac).getComponent0(splits[1]);
+                }
+            }
         }
+        return c;
+    }
 
-        /** {@inheritDoc} */
-        @Override
-        public Optional<String> description() {
-            return InternalContainer.this.description();
+    /**
+     * @param path
+     */
+    public Component useComponent(CharSequence path) {
+        Component c = getComponent0(path);
+        if (c == null) {
+            // Maybe try an match with some fuzzy logic, if children is a resonable size)
+            List<?> list = stream().map(e -> e.path()).collect(Collectors.toList());
+            throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
         }
-
-        /** {@inheritDoc} */
-        @Override
-        public String name() {
-            return InternalContainer.this.name();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath path() {
-            return ComponentPath.ROOT;
-        }
+        return c;
     }
 }

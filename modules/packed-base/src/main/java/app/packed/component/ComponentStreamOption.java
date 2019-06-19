@@ -23,8 +23,8 @@ package app.packed.component;
 //// Det var maaske taenkt som en boot ting...
 /// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
 /// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
-
 // a.la. components.mapToVirtual....
+
 final class ComponentStreamOption {
 
     // order

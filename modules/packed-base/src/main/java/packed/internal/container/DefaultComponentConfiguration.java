@@ -17,8 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.UUID;
-
 import app.packed.component.ComponentConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.componentcache.ComponentClassDescriptor;
@@ -28,14 +26,12 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
 /**
  *
  */
-public final class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
+public class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
 
     private final ComponentClassDescriptor ccd;
 
     /** The configuration of the container that this component has been installed into. */
     final DefaultContainerConfiguration containerConfiguration;
-
-    public Object instance;
 
     public BuildtimeServiceNode<?> serviceNode;
 
@@ -55,10 +51,6 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
         if (name == null && ccd != null) {
             name = ccd.defaultPrefix();
         }
-        if (name == null) {
-            name = UUID.randomUUID().toString();
-
-        }
         containerConfiguration.children.put(name, this);
     }
 
@@ -72,7 +64,7 @@ public final class DefaultComponentConfiguration extends AbstractComponentConfig
     /** {@inheritDoc} */
     @Override
     public ComponentConfiguration setName(@Nullable String name) {
-        super.setDescription0(name);
+        super.setName0(name);
         return this;
     }
 }

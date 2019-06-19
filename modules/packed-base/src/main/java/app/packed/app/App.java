@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
@@ -204,5 +205,7 @@ public interface App extends Injector, AutoCloseable {
      * 
      * @return a component stream
      */
-    ComponentStream components();
+    ComponentStream stream();
+
+    Component useComponent(CharSequence path);
 }

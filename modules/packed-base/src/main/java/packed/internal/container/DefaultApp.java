@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import app.packed.app.App;
+import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceDescriptor;
@@ -41,8 +42,8 @@ final class DefaultApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream components() {
-        return container.components();
+    public ComponentStream stream() {
+        return container.stream();
     }
 
     /** {@inheritDoc} */
@@ -128,5 +129,12 @@ final class DefaultApp implements App {
     @Override
     public LifecycleOperations<? extends App> state() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component useComponent(CharSequence path) {
+        // TODO Auto-generated method stub
+        return container.useComponent(path);
     }
 }

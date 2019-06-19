@@ -35,7 +35,7 @@ import packed.internal.invokable.InternalFunction;
 import packed.internal.util.Checks;
 
 /** The default implementation of {@link ProvidedComponentConfiguration}. */
-public class OldInternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> implements ComponentConfiguration {
+public class OldInternalComponentConfiguration<T> extends BuildtimeServiceNodeDefault<T> {
 
     /** A list of all children that have been added (lazily initialized). */
     public ArrayList<OldInternalComponentConfiguration<?>> children;
@@ -127,14 +127,10 @@ public class OldInternalComponentConfiguration<T> extends BuildtimeServiceNodeDe
     // return this;
     // }
 
-    /** {@inheritDoc} */
-    @Override
     public @Nullable String getName() {
         return name;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public OldInternalComponentConfiguration<T> setDescription(String description) {
         super.description = description;
         return this;
@@ -144,8 +140,6 @@ public class OldInternalComponentConfiguration<T> extends BuildtimeServiceNodeDe
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentConfiguration setName(String name) {
         // checkConfigurable();
         if (!Objects.equals(name, this.name)) {
@@ -167,7 +161,8 @@ public class OldInternalComponentConfiguration<T> extends BuildtimeServiceNodeDe
             }
             this.name = name;
         }
-        return this;
+        // return this;
+        throw new UnsupportedOperationException();
     }
     //
     // /** {@inheritDoc} */
