@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerSource;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
@@ -159,7 +159,7 @@ public interface ComponentStream extends Stream<Component> {
     @Override // Only available from Java 9
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 
-    static ComponentStream of(AnyBundle bundle) {
+    static ComponentStream of(ContainerSource bundle) {
         throw new UnsupportedOperationException(); // Similar to descriptor..
     }
 }

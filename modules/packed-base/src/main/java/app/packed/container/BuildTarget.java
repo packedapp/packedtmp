@@ -15,12 +15,73 @@
  */
 package app.packed.container;
 
+import java.util.Optional;
+
+import app.packed.util.Nullable;
+import packed.internal.container.DefaultContainerImage;
+
 /**
  *
  */
-class BuildTarget {
+// Maybe an interface???
+public final class BuildTarget {
 
-    enum Type {
-        APP, INJECTOR, DESCRIPTOR;
+    @Nullable
+    private final DefaultContainerImage image;
+
+    /**
+     * Creates a new build target.
+     * 
+     * @param image
+     */
+    BuildTarget(@Nullable DefaultContainerImage image) {
+        this.image = image;
+    }
+
+    /** Any image that is used in building this entity. */
+    public Optional<ContainerImage> image() {
+        return Optional.ofNullable(image);
+    }
+
+    /** Any image that is used in building this entity. */
+    public ContainerSource source() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Type target() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean registerForNative() {
+        return true;
+    }
+
+    public enum Type {
+        APP, MODEL, INJECTOR, IMAGE;
     }
 }
+
+// APP
+// INJECTOR
+// DESCRIPTOR
+// NATIVE_IMAGE_GENRATION
+// CONTAINER_IMAGE_GENERATION
+// NATIVE_IMAGE_GENERATION + CONTAINER_IMAGE_GENERATION
+
+// Image -> App
+// Image -> Injector
+// Image -> Descriptor
+
+// AnyBundle -> App
+// AnyBundle -> Injector
+// AnyBundle -> Descriptor
+// AnyBundle -> Image
+
+// Graal -> App
+// Graal -> Injector
+// Graal -> Descriptor
+// Graal -> ContainerImage
+
+// Graal + Image -> App
+// Graal + Image -> Injector
+// Graal + Image -> Descriptor

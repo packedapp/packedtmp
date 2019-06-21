@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
@@ -213,12 +212,11 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         }
         DependencyGraph dg = new DependencyGraph(configuration0(), builder);
 
-        if (target() == BundleDescriptor.class) {
-            dg.analyze();
-        } else {
+        if (buildContext().outputType().isInstantiating()) {
             dg.instantiate();
+        } else {
+            dg.analyze();
         }
-        // if (target()==B)
     }
 
     /**

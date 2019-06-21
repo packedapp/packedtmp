@@ -24,6 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InaccessibleObjectException;
 
 import app.packed.container.Extension;
+import app.packed.container.NativeImage;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -78,7 +79,7 @@ final class ExtensionClassCache<T> {
                     + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
         }
 
-        NativeImageSupport.registerConstructor(constructor);
+        NativeImage.registerConstructor(constructor);
     }
 
     /**

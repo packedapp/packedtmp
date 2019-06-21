@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link LifecycleState#STOPPING} state.
+ * {@link RunState#STOPPING} state.
  * <p>
  * Static methods annotated with OnStop are ignore.
  *

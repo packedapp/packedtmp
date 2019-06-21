@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.container;
+
+import app.packed.component.Component;
+
+/**
+ * 
+ * <p>
+ * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
+ * of sealed types if they become available.
+ */
+public interface ContainerSource {}
+// Not sure we can link to ContainerImages...
+// So ContainerSource is maybe more like an AppSource
+
+class LiveReload implements ContainerSource {
+    // Bliver redeployet hver gang en fil aendrer sig....
+    // Det bliver loaded i sit eget module layer...
+}
+
+abstract class SoftLink implements Component {
+
+    // Ideen er egentlig at man kan live replace alle componenter....
+    //// Det skal maaske ikke vaere en softlink....
+}

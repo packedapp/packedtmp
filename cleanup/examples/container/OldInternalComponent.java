@@ -27,7 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.Container;
-import app.packed.lifecycle.LifecycleState;
+import app.packed.lifecycle.RunState;
 import app.packed.util.Nullable;
 
 /**
@@ -119,7 +119,7 @@ public class OldInternalComponent implements Component {
             }
             OldInternalComponentConfiguration<?> configuration = this.configuration;
             if (configuration != null) {
-                if (Thread.currentThread() != configuration.initializationThread && getState() == LifecycleState.INITIALIZING) {
+                if (Thread.currentThread() != configuration.initializationThread && getState() == RunState.INITIALIZING) {
                     return null;
                 } else {
                     return configuration.instances;
@@ -154,8 +154,8 @@ public class OldInternalComponent implements Component {
     // return tags;
     // }
 
-    public LifecycleState getState() {
-        return LifecycleState.INITIALIZING;
+    public RunState getState() {
+        return RunState.INITIALIZING;
     }
 }
 //

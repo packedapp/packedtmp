@@ -48,7 +48,7 @@ public class AppConfigurationSiteTest {
 
     /** Tests that the various bind operations gets the right configuration site. */
     @Test
-    public void configSiteSingleComponent() {
+    public void configSiteTwoComponentsOneContainer() {
         AtomicReference<StackFrame> ar = new AtomicReference<>();
 
         StackFrame f1 = ConfigSiteTestHelper.caller();
@@ -57,21 +57,29 @@ public class AppConfigurationSiteTest {
             protected void configure() {
                 ar.set(ConfigSiteTestHelper.caller());
                 install("foo").setName("foo");
+                install("doo").setName("doo");
             }
         });
 
         Component container = app.useComponent("/");
-        Component component = app.useComponent("foo");
+        Component component1 = app.useComponent("foo");
+        Component component2 = app.useComponent("doo");
 
         // Test Container
         assertThat(container.configurationSite()).isSameAs(app.configurationSite());
         assertThat(container.configurationSite().hasParent()).isFalse();
         ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, container.configurationSite());
 
-        // Test Component
-        assertThat(component.configurationSite().hasParent()).isTrue();
-        assertThat(component.configurationSite().parent().get()).isSameAs(container.configurationSite());
-        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 1, component.configurationSite());
+        // Test Component 1
+        assertThat(component1.configurationSite().hasParent()).isTrue();
+        assertThat(component1.configurationSite().parent().get()).isSameAs(container.configurationSite());
+        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 1, component1.configurationSite());
+
+        // Test Component 1
+        assertThat(component2.configurationSite().hasParent()).isTrue();
+        assertThat(component2.configurationSite().parent().get()).isSameAs(container.configurationSite());
+        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 2, component2.configurationSite());
+
     }
 
     /** Tests that the various bind operations gets the right configuration site. */

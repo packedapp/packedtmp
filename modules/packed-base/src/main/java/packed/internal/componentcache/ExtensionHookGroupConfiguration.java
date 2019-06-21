@@ -31,9 +31,9 @@ import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
+import app.packed.container.NativeImage;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
-import packed.internal.container.NativeImageSupport;
 import packed.internal.support.AppPackedContainerSupport;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeVariableExtractorUtil;
@@ -101,7 +101,7 @@ public class ExtensionHookGroupConfiguration {
                         + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
             }
 
-            NativeImageSupport.registerConstructor(constructor);
+            NativeImage.registerConstructor(constructor);
             try {
                 egc = (ExtensionHookGroup<?, ?>) mh.invoke();
             } catch (Throwable e) {

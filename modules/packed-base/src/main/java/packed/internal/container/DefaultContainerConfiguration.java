@@ -24,13 +24,14 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
+import app.packed.container.BuildContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
+import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -61,7 +62,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** The configurator cache. */
     final ContainerConfiguratorCache ccc;
 
-    /** All extensions that are currently used by this configuration, ordered by first use. */
+    /** All the extensions registered with this extension, ordered by first use. */
     private final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
     private ComponentLookup lookup;
@@ -72,12 +73,13 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** The type of wiring. */
     final WiringType wiringType;
 
-    public final ProgramExecution program = new ProgramExecution();
+    final InternalBuildContext buildContext;
 
     DefaultContainerConfiguration(DefaultContainerConfiguration parent, WiringType wiringType, Class<?> configuratorType, @Nullable AnyBundle bundle,
             Wirelet... wirelets) {
         super(parent == null ? InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF)
                 : parent.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_OF), parent);
+        this.buildContext = parent == null ? new InternalBuildContext(this, wiringType.toOutputType()) : parent.buildContext;
         this.lookup = this.ccc = ContainerConfiguratorCache.of(configuratorType);
         this.bundle = bundle;
         this.wiringType = requireNonNull(wiringType);
@@ -101,13 +103,14 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public Injector buildInjector() {
         configure();
         finish();
-        for (AbstractComponentConfiguration acc : children.values()) {
-            if (acc instanceof DefaultContainerConfiguration) {
-                DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
-                dcc.buildContainer();
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (acc instanceof DefaultContainerConfiguration) {
+                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                    dcc.buildContainer();
+                }
             }
         }
-
         if (extensions.containsKey(InjectorExtension.class)) {
             return use(InjectorExtension.class).builder.publicInjector;
         } else {
@@ -117,9 +120,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
-
+    public <T extends ContainerSource> T link(T source, Wirelet... wirelets) {
+        requireNonNull(source, "source is null");
+        AnyBundle bundle = (AnyBundle) source;
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
@@ -127,8 +130,11 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         prepareNewComponent();
         DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
         dcc.configure();
+        if (children == null) {
+            children = new LinkedHashMap<>();
+        }
         children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
-        return bundle;
+        return source;
     }
 
     public void configure() {
@@ -158,7 +164,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             String n = name;
             if (n.endsWith("?")) {
                 name = finalizeNameWithPrefix(n.substring(0, n.length() - 1));
-            } else if (parent != null && parent.children.containsKey(n)) {
+            } else if (parent != null && parent.children != null && parent.children.containsKey(n)) {
                 if (parent.children.get(name) != this) {
                     throw new IllegalStateException();
                 }
@@ -174,7 +180,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             String newName = prefix;
             int counter = 0;
             for (;;) {
-                if (!parent.children.containsKey(newName)) {
+                if (parent.children == null || !parent.children.containsKey(newName)) {
                     return newName;
                 }
                 // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
@@ -352,23 +358,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> target() {
-        switch (wiringType) {
-        case APP:
-            return App.class;
-        case INJECTOR:
-            return Injector.class;
-        case DESCRIPTOR:
-            return BundleDescriptor.class;
-        case LINK:
-            return ((DefaultContainerConfiguration) parent).target();
-        default:
-            throw new Error();
-        }
-    }
-
     private HashMap<String, DefaultLayer> layers;
 
     /** {@inheritDoc} */
@@ -383,5 +372,11 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
         }
         return newLayer;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BuildContext buildContext() {
+        return buildContext;
     }
 }

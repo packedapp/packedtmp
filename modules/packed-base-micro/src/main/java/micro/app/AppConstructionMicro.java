@@ -23,7 +23,6 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
@@ -40,13 +39,47 @@ import app.packed.container.Bundle;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
-public class AppMicro {
-
-    @Param({ "0", "1", "10", "100", "1000", "10000", "100000", "1000000" })
-    static long dbSize;
+public class AppConstructionMicro {
 
     @Benchmark
     public App emptyApp() {
         return App.of(new Bundle() {});
+    }
+
+    @Benchmark
+    public App oneComponent() {
+        return App.of(new Bundle() {
+
+            @Override
+            public void configure() {
+                install("foo");
+            }
+        });
+    }
+
+    @Benchmark
+    public App fiveComponents() {
+        return App.of(new Bundle() {
+
+            @Override
+            public void configure() {
+                install("foo").setName("1");
+                install("foo").setName("2");
+                install("foo").setName("3");
+                install("foo").setName("4");
+                install("foo").setName("5");
+            }
+        });
+    }
+
+    @Benchmark
+    public App oneContainer() {
+        return App.of(new Bundle() {
+
+            @Override
+            public void configure() {
+                link(new Bundle() {});
+            }
+        });
     }
 }

@@ -81,7 +81,7 @@ import packed.internal.container.ContainerFactory;
 public class BundleDescriptor {
 
     /** The type of the bundle. */
-    private final Class<? extends Bundle> bundleType;
+    private final Class<? extends AnyBundle> bundleType;
 
     /** A Services object. */
     private final BundleContract contract;
@@ -132,7 +132,7 @@ public class BundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public final Class<? extends Bundle> bundleType() {
+    public final Class<? extends AnyBundle> bundleType() {
         return bundleType;
     }
 
@@ -274,7 +274,7 @@ public class BundleDescriptor {
         private String bundleDescription;
 
         /** The bundleType */
-        private final Class<? extends Bundle> bundleType;
+        private final Class<? extends AnyBundle> bundleType;
 
         private BundleContract.Builder contract = new BundleContract.Builder();
 
@@ -282,7 +282,7 @@ public class BundleDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Builder(Class<? extends Bundle> bundleType) {
+        public Builder(Class<? extends AnyBundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
@@ -303,7 +303,7 @@ public class BundleDescriptor {
         /**
          * @return the bundleType
          */
-        public final Class<? extends Bundle> bundleType() {
+        public final Class<? extends AnyBundle> bundleType() {
             return bundleType;
         }
 

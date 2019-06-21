@@ -42,7 +42,7 @@ abstract class AbstractComponentConfiguration {
     private final InternalConfigurationSite site;
 
     /** Any children this component might have, in order of insertion. */
-    final LinkedHashMap<String, AbstractComponentConfiguration> children = new LinkedHashMap<>();
+    LinkedHashMap<String, AbstractComponentConfiguration> children;
 
     AbstractComponentConfiguration(InternalConfigurationSite site, AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);

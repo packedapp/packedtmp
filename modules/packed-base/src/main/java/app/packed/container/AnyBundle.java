@@ -34,7 +34,7 @@ import app.packed.util.Nullable;
 // wire(b, setName("f2"));
 
 // Kan vi genbruge et bundle???
-public abstract class AnyBundle {
+public abstract class AnyBundle implements ContainerSource {
 
     /** The configuration. */
     private ContainerConfiguration configuration;
@@ -125,7 +125,7 @@ public abstract class AnyBundle {
      * @return the specified bundle
      * @see ContainerConfiguration#link(AnyBundle, Wirelet...)
      */
-    protected final <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
+    protected final <T extends ContainerSource> T link(T bundle, Wirelet... wirelets) {
         return configuration().link(bundle, wirelets);
     }
 

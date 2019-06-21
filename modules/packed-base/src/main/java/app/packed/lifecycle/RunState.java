@@ -16,7 +16,7 @@
 package app.packed.lifecycle;
 
 /**
- * An enum containing all valid lifecycle states.
+ * An enum containing all valid run states.
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
@@ -31,7 +31,7 @@ package app.packed.lifecycle;
 // Failure on Initializain -> Stopping or Terminated?
 // Stop called on Initialized -> Stopping or Terminated? (should be same as above)
 // Stop while starting
-public enum LifecycleState {
+public enum RunState {
 
     /**
      * The initial state in the lifecycle of an entity. This state is typically used for reading and validating the
@@ -79,8 +79,8 @@ public enum LifecycleState {
      *            the states to check
      * @return true if the entity is in any of the specified states, otherwise false
      */
-    public boolean isAnyOf(LifecycleState... states) {
-        for (LifecycleState s : states) {
+    public boolean isAnyOf(RunState... states) {
+        for (RunState s : states) {
             if (s == this) {
                 return true;
             }

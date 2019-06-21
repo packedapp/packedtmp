@@ -69,22 +69,6 @@ public abstract class Extension<T extends Extension<T>> {
     /** The configuration of the container in which the extension is registered. */
     private DefaultContainerConfiguration configuration;
 
-    protected void build() {
-        // Maybe take an attributemap that is shared between all invocations
-        // default implementation processes children..
-        // So we should always call super.build();
-        // sadsad()
-        // super.build();
-        // weweew
-    }
-
-    protected final Class<?> target() {
-        // Altsaa, taenker Class er daarlig. men om det skal vaere en enum eller andet det ved jeg ikke...
-        // Vi ligger os fast paa en haandfuld muligheder....
-        // BuildTarget + BuildTargetType
-        return configuration().target();
-    }
-
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
     /**
@@ -189,6 +173,13 @@ public abstract class Extension<T extends Extension<T>> {
     // createContract(); or
     // addToContract(ContractBuilder b)
     // Failure to have two features creating the same contract type...
+
+    protected final BuildContext buildContext() {
+        // Maybe take an attributemap that is shared between all invocations
+        // default implementation processes children..
+        // So we should always call super.build();
+        return configuration.buildContext();
+    }
 
     /**
      * 

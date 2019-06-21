@@ -37,6 +37,11 @@ import packed.internal.config.site.InternalConfigurationSite;
 // No matter what, we should never new ConfigSite*** in any way
 
 // Can lazily generate line numbers from AnnotatedMethods+fields via reading of classinfo
+
+// https://api.flutter.dev/flutter/package-source_span_source_span/package-source_span_source_span-library.html
+
+// ConfigSite chain
+// https://api.flutter.dev/flutter/package-stack_trace_stack_trace/Chain-class.html
 public interface ConfigSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */

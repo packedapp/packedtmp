@@ -51,14 +51,16 @@ final class InternalContainer extends AbstractComponent implements Component {
     public InternalContainer(@Nullable AbstractComponent parent, DefaultContainerConfiguration configuration, Injector injector) {
         super(parent, configuration);
         this.injector = requireNonNull(injector);
-        for (AbstractComponentConfiguration acc : configuration.children.values()) {
-            if (acc instanceof DefaultComponentConfiguration) {
-                InternalComponent ic = new InternalComponent(this, (DefaultComponentConfiguration) acc);
-                children.put(ic.name(), ic);
-            } else {
-                DefaultContainerConfiguration dcc = (packed.internal.container.DefaultContainerConfiguration) acc;
-                InternalContainer ic = new InternalContainer(this, dcc, injector);
-                children.put(ic.name(), ic);
+        if (configuration.children != null) {
+            for (AbstractComponentConfiguration acc : configuration.children.values()) {
+                if (acc instanceof DefaultComponentConfiguration) {
+                    InternalComponent ic = new InternalComponent(this, (DefaultComponentConfiguration) acc);
+                    children.put(ic.name(), ic);
+                } else {
+                    DefaultContainerConfiguration dcc = (packed.internal.container.DefaultContainerConfiguration) acc;
+                    InternalContainer ic = new InternalContainer(this, dcc, injector);
+                    children.put(ic.name(), ic);
+                }
             }
         }
     }
@@ -115,7 +117,7 @@ final class InternalContainer extends AbstractComponent implements Component {
         return injector.use(key);
     }
 
-    public Component getComponent0(CharSequence path) {
+    public Component findComponent(CharSequence path) {
         requireNonNull(path, "path is null");
         if (path.length() == 0) {
             throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
@@ -132,7 +134,7 @@ final class InternalContainer extends AbstractComponent implements Component {
             if (splits.length > 1) {
                 AbstractComponent ac = children.get(splits[0]);
                 if (ac instanceof InternalContainer) {
-                    return ((InternalContainer) ac).getComponent0(splits[1]);
+                    return ((InternalContainer) ac).findComponent(splits[1]);
                 }
             }
         }
@@ -143,7 +145,7 @@ final class InternalContainer extends AbstractComponent implements Component {
      * @param path
      */
     public Component useComponent(CharSequence path) {
-        Component c = getComponent0(path);
+        Component c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)
             List<?> list = stream().map(e -> e.path()).collect(Collectors.toList());

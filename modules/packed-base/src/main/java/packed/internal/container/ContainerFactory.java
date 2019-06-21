@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 
 import app.packed.app.App;
 import app.packed.container.AnyBundle;
-import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
@@ -32,14 +32,16 @@ import app.packed.inject.InjectorConfigurator;
  */
 public class ContainerFactory {
 
-    public static App appOf(AnyBundle bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
+    public static App appOf(ContainerSource source, Wirelet... wirelets) {
+        requireNonNull(source, "source is null");
+        AnyBundle bundle = (AnyBundle) source;
         DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP, bundle.getClass(), bundle, wirelets);
         return new DefaultApp(configuration.buildContainer());
     }
 
-    public static Injector injectorOf(Bundle bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "bundle is null");
+    public static Injector injectorOf(ContainerSource source, Wirelet... wirelets) {
+        requireNonNull(source, "source is null");
+        AnyBundle bundle = (AnyBundle) source;
         DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.INJECTOR, bundle.getClass(), bundle, wirelets);
         bundle.doConfigure(configuration);
         return configuration.buildInjector();
@@ -54,12 +56,25 @@ public class ContainerFactory {
         return builder.buildInjector();
     }
 
-    public static BundleDescriptor of(Bundle bundle) {
-        requireNonNull(bundle, "bundle is null");
+    public static BundleDescriptor of(ContainerSource source) {
+        requireNonNull(source, "source is null");
+        AnyBundle bundle = (AnyBundle) source;
         DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, WiringType.DESCRIPTOR, bundle.getClass(), bundle);
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
+    }
+
+    public static class ConfiguratorWrapper implements ContainerSource {
+        final Consumer<? super InjectorConfigurator> configurator;
+
+        ConfiguratorWrapper(Consumer<? super InjectorConfigurator> configurator) {
+            this.configurator = requireNonNull(configurator, "configurator is null");
+        }
+
+        public Class<?> getType() {
+            return configurator.getClass();
+        }
     }
 
 }

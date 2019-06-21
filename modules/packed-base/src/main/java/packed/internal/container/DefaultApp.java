@@ -36,14 +36,14 @@ final class DefaultApp implements App {
     /** The container we are wrapping. */
     private final InternalContainer container;
 
+    /**
+     * Creates a new default app.
+     * 
+     * @param container
+     *            the container to wrap
+     */
     DefaultApp(InternalContainer container) {
         this.container = requireNonNull(container);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream stream() {
-        return container.stream();
     }
 
     /** {@inheritDoc} */
@@ -133,8 +133,13 @@ final class DefaultApp implements App {
 
     /** {@inheritDoc} */
     @Override
+    public ComponentStream stream() {
+        return container.stream();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Component useComponent(CharSequence path) {
-        // TODO Auto-generated method stub
         return container.useComponent(path);
     }
 }

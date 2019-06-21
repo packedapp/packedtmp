@@ -70,13 +70,13 @@ interface LifecycleSpecificOperations<T> {
      * first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @throws InterruptedException
      *             if interrupted while waiting
      * @see #await( long, TimeUnit)
-     * @see #whenAt(LifecycleState)
+     * @see #whenAt(RunState)
      */
     // on(LifecycleState.INITIALIZED).await();
     void await() throws InterruptedException;
@@ -86,7 +86,7 @@ interface LifecycleSpecificOperations<T> {
      * whichever happens first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param timeout
@@ -97,7 +97,7 @@ interface LifecycleSpecificOperations<T> {
      *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #whenAt(LifecycleState)
+     * @see #whenAt(RunState)
      */
     boolean await(long timeout, TimeUnit unit) throws InterruptedException;
 
@@ -167,7 +167,7 @@ interface LifecycleSpecificOperations<T> {
     // Do we want to add this to configuration? ContainerConfiguration.whenAtState(Running.class, print "Yeah");
     // We want a CompletionFuture instead. We want something like join() to be available.
     // whenAt(LifeState.INITIALIZING).then(c->c.install(ccc));
-    CompletionStage<T> whenAt(LifecycleState state);
+    CompletionStage<T> whenAt(RunState state);
 
     // boolean isRestartable()
     // boolean isRestarting();

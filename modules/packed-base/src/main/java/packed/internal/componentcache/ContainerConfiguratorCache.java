@@ -22,6 +22,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
+import app.packed.container.AnyBundle;
+import app.packed.container.ContainerSource;
+import packed.internal.container.ContainerFactory;
 import packed.internal.util.LookupValue;
 
 /** A cache for a bundle implementation. */
@@ -121,6 +124,14 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
      */
     public static ContainerConfiguratorCache of(Class<?> configuratorType) {
         return CACHE.get(configuratorType);
+    }
+
+    public static ContainerConfiguratorCache get(ContainerSource source) {
+        if (source instanceof AnyBundle) {
+            return CACHE.get(source.getClass());
+        } else {
+            return CACHE.get(((ContainerFactory.ConfiguratorWrapper) source).getType());
+        }
     }
 
     static final class PerLookup implements ComponentLookup {

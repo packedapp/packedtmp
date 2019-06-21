@@ -13,23 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+package app.packed.container;
 
 /**
  *
  */
-// Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
-// Det er f.eks. extensions der kan faa det...
-public class NativeImageSupport {
+// ExternalContainerSource???
+public class DynamicContainerLoader implements ContainerSource {
 
-    public static void registerConstructor(Constructor<?> c) {}
-
-    public void saveMethod(Method m) {}
-
-    // public static void support(AnyBundle b) {
-    //
-    // }
 }

@@ -59,25 +59,25 @@ public interface LifecycleOperations<T> {
      * first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(LifecycleState, long, TimeUnit)
+     * @see #await(RunState, long, TimeUnit)
      * @see #getState()
-     * @see #whenAt(LifecycleState)
+     * @see #whenAt(RunState)
      */
-    void await(LifecycleState state) throws InterruptedException;
+    void await(RunState state) throws InterruptedException;
 
     /**
      * Blocks until the object has reached the requested state, or the timeout occurs, or the current thread is interrupted,
      * whichever happens first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link LifecycleState#RUNNING} state and the object has already been stopped. This method
+     * attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method
      * will return immediately with true.
      *
      * @param state
@@ -90,11 +90,11 @@ public interface LifecycleOperations<T> {
      *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(LifecycleState)
+     * @see #await(RunState)
      * @see #getState()
-     * @see #whenAt(LifecycleState)
+     * @see #whenAt(RunState)
      */
-    boolean await(LifecycleState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * If the owning object has been shutdown because of a failure, returns the failure. Otherwise returns
@@ -119,10 +119,10 @@ public interface LifecycleOperations<T> {
      * Calling this method will never block the current thread.
      *
      * @return the current state of the component
-     * @see #await(LifecycleState, long, TimeUnit)
-     * @see #whenAt(LifecycleState)
+     * @see #await(RunState, long, TimeUnit)
+     * @see #whenAt(RunState)
      */
-    LifecycleState getState();
+    RunState getState();
 
     /**
      * Returns <code>true</code> if the owning object has been shutdown because of a failture. Otherwise returns
@@ -150,7 +150,7 @@ public interface LifecycleOperations<T> {
     // c.lifecycle().runOn(LifecycleState.STOPPING, () -> System.out.print("Stopping"));
     // }
 
-    default CompletableFuture<?> runOn(LifecycleState state, Runnable action) {
+    default CompletableFuture<?> runOn(RunState state, Runnable action) {
         throw new UnsupportedOperationException();
     }
 
@@ -168,14 +168,14 @@ public interface LifecycleOperations<T> {
      *            the action to execute
      * @return true if the action was executed, otherwise false
      */
-    boolean runIfStateIs(LifecycleState state, Runnable action);
+    boolean runIfStateIs(RunState state, Runnable action);
 
     // runUnderLockIfStateIs() //check state, lock, check state igen
     // runUnderLockIf(Predicate) <--- bliver noedt til at eksekvere
     // runUnderLock()
 
     // Maaaske byt them, ud saa kan vi have vargs state
-    default <V> V supplyIfStateAt(LifecycleState state, Supplier<V> action) {
+    default <V> V supplyIfStateAt(RunState state, Supplier<V> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -195,13 +195,13 @@ public interface LifecycleOperations<T> {
      * @param state
      *            the state for which to return a completion stage
      * @return a completion stage for the specified state
-     * @see #await(LifecycleState, long, TimeUnit)
+     * @see #await(RunState, long, TimeUnit)
      * @see #getState()
      */
     // Do we want to add this to configuration? ContainerConfiguration.whenAtState(Running.class, print "Yeah");
     // We want a CompletionFuture instead. We want something like join() to be available.
     // whenAt(LifeState.INITIALIZING).then(c->c.install(ccc));
-    CompletionStage<T> whenAt(LifecycleState state);
+    CompletionStage<T> whenAt(RunState state);
 
     // boolean isRestartable()
     // boolean isRestarting();

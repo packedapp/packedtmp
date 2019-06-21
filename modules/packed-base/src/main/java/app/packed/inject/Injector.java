@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import packed.internal.container.ContainerFactory;
@@ -277,7 +278,7 @@ public interface Injector /* extends Taggable */ {
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
     // Maaske kan man ikke lave den fra en Bundle...? Jo, Hvis Configurator kan linke, saa er det jo ligegyldigt.
-    static Injector of(Bundle bundle, Wirelet... wirelets) {
+    static Injector of(ContainerSource bundle, Wirelet... wirelets) {
         return ContainerFactory.injectorOf(bundle, wirelets);
     }
 

@@ -25,7 +25,7 @@ import app.packed.inject.Injector;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link LifecycleState#STARTING} state.
+ * {@link RunState#STARTING} state.
  *
  * <p>
  * A simple usage example:

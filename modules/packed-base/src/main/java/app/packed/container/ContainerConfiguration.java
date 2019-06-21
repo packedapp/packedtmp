@@ -20,7 +20,6 @@ import java.util.Set;
 
 import app.packed.app.App;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Injector;
 import app.packed.util.Nullable;
 
 /**
@@ -51,12 +50,7 @@ import app.packed.util.Nullable;
 // See #Extension Implementation notes for information about how to make sure it can be instantiated...
 public interface ContainerConfiguration {
 
-    /**
-     * Returns one of {@link App}, {@link Injector} or {@link BundleDescriptor}.
-     * 
-     * @return what the target it
-     */
-    Class<?> target();
+    BuildContext buildContext();
 
     void checkConfigurable();
 
@@ -93,18 +87,17 @@ public interface ContainerConfiguration {
     String getName();
 
     /**
-     * Creates a link to another bundle.
+     * Creates a link to another container.
      * <p>
-     * All links made using this method between two bundles are permanent. If you need dynamic stuff you can use hosts and
-     * applications.
+     * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
      * 
      * @param child
-     *            the child bundle
+     *            the source of the child
      * @param wirelets
      *            optional wiring options
-     * @return a bundle link
+     * @return the specified child source
      */
-    <T extends AnyBundle> T link(T child, Wirelet... wirelets);
+    <T extends ContainerSource> T link(T child, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered

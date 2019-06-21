@@ -165,12 +165,6 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         }
         return new WireletList(wirelets);
     }
-
-    public static WireletList of(Wirelet wirelet1, Wirelet wirelet2) {
-        requireNonNull(wirelet1, "wirelet1 is null");
-        requireNonNull(wirelet2, "wirelet2 is null");
-        return new WireletList(wirelet1, wirelet2); // we might provide optimized versions in the future
-    }
 }
 
 // static List<Wirelet> operationsExtract(Wirelet[] operations, Class<?> type) {

@@ -23,12 +23,13 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
-import app.packed.lifecycle.LifecycleState;
 import app.packed.lifecycle.OnInitialize;
+import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerFactory;
 
 /**
@@ -82,7 +83,7 @@ public interface App extends Injector, AutoCloseable {
      * unique name.
      *
      * @return the name of this application
-     * @see AnyBundle#setName(String)
+     * @see ContainerConfiguration#setName(String)
      */
     String name();
 
@@ -156,7 +157,7 @@ public interface App extends Injector, AutoCloseable {
     /**
      * Creates a new application from the specified bundle. The state of the returned application will be initialized.
      *
-     * @param bundle
+     * @param source
      *            the bundle that the application should be created from
      * @param wirelets
      *            wiring operations
@@ -164,32 +165,32 @@ public interface App extends Injector, AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be constructed or initialized properly
      */
-    static App of(AnyBundle bundle, Wirelet... wirelets) {
-        return ContainerFactory.appOf(bundle, wirelets);
+    static App of(ContainerSource source, Wirelet... wirelets) {
+        return ContainerFactory.appOf(source, wirelets);
     }
 
     /**
      * This method will create and start an {@link App application} from the specified bundle. Blocking until the
      * application has fully terminated.
      * 
-     * @param bundle
+     * @param source
      *            the bundle that the application should be created from
      * @param wirelets
      *            wirelets
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    static void run(AnyBundle bundle, Wirelet... wirelets) {
+    static void run(ContainerSource source, Wirelet... wirelets) {
         // CTRL-C ?? Obvious a wirelet, but default on or default off.
         // Paa Bundle syntes jeg den er paa, men ikke her...
 
         // If has @Main will run Main and then exit
         // Otherwise will run until application is shutdown
 
-        try (App app = of(bundle, wirelets)) {
+        try (App app = of(source, wirelets)) {
             app.start();
             try {
-                app.state().await(LifecycleState.TERMINATED);
+                app.state().await(RunState.TERMINATED);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

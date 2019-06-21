@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import app.packed.container.BuildContext;
+import app.packed.container.BuildContext.OutputType;
 import app.packed.container.ContainerConfiguration;
 
 /** The type of box. */
@@ -41,6 +43,18 @@ public enum WiringType {
      */
     LINK;
 
+    BuildContext.OutputType toOutputType() {
+        switch (this) {
+        case APP:
+            return OutputType.APP;
+        case INJECTOR:
+            return OutputType.INJECTOR;
+        case DESCRIPTOR:
+            return OutputType.MODEL;
+        default:
+            throw new UnsupportedOperationException();
+        }
+    }
     // /** A box targeting a Injector created using a configurator. */
     // INJECTOR_VIA_CONFIGURATOR;
     //

@@ -17,6 +17,8 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.LinkedHashMap;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.componentcache.ComponentClassDescriptor;
@@ -50,6 +52,9 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
     public void onFreeze() {
         if (name == null && ccd != null) {
             name = ccd.defaultPrefix();
+        }
+        if (containerConfiguration.children == null) {
+            containerConfiguration.children = new LinkedHashMap<>();
         }
         containerConfiguration.children.put(name, this);
     }

@@ -18,13 +18,40 @@ package app.packed.container;
 /**
  *
  */
-// Ideen er du kan bygge et image... Og saa blive ved med at instantiere det
-// Alt er ligesom paa plads... Det er kun dine input parameter der er anderledes.....
-// I love it.....
+public interface ContainerImage extends ContainerSource {
 
-// Minder ufattelig meget om et bundle. Men har ingen mutable operations....
+    /**
+     * Returns the name of the container that this image creates.
+     * 
+     * @return the name of the container that this image creates
+     */
+    String name();
 
-class ContainerImage {
+    /**
+     * Returns the type of bundle that used to create this image.
+     * <p>
+     * If this image was created from an existing image, the new image image will retain the original image source bundle
+     * type.
+     * 
+     * @return the original source type of this image
+     */
+    // sourceType?? bundleType
+    Class<? extends AnyBundle> source();
 
+    ContainerImage with(Wirelet... wirelets);
+
+    /**
+     * Returns a new container image retaining original functionality but re
+     * 
+     * @param name
+     *            the name
+     * @return the new container image
+     */
+    default ContainerImage withName(String name) {
+        return with(Wirelet.name(name));
+    }
+
+    static ContainerImage of(ContainerSource source) {
+        throw new UnsupportedOperationException();
+    }
 }
-// Bundle -> Container Image -> Container|BundleDescriptor|NativeImage
