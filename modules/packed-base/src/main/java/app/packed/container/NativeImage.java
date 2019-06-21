@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
  */
 // Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
 // Det er f.eks. extensions der kan faa det...
+// Skal vi have en instance af det?????
 
 // NativeImageHelper, NativeImageSupport
 public final class NativeImage {

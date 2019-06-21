@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import app.packed.app.App;
 import app.packed.container.AnyBundle;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerImage;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
@@ -32,8 +33,19 @@ import app.packed.inject.InjectorConfigurator;
  */
 public class ContainerFactory {
 
+    public static ContainerImage imageOf(ContainerSource source, Wirelet... wirelets) {
+        requireNonNull(source, "source is null");
+        AnyBundle bundle = (AnyBundle) source;
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP, bundle.getClass(), bundle, wirelets);
+        return configuration.buildImage();
+    }
+
     public static App appOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
+        if (source instanceof DefaultContainerImage) {
+            DefaultContainerImage image = (DefaultContainerImage) source;
+            return new DefaultApp(image.dcc.buildFromImage());
+        }
         AnyBundle bundle = (AnyBundle) source;
         DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP, bundle.getClass(), bundle, wirelets);
         return new DefaultApp(configuration.buildContainer());

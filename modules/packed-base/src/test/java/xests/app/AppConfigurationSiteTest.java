@@ -25,14 +25,12 @@ import org.junit.jupiter.api.Test;
 import app.packed.app.App;
 import app.packed.component.Component;
 import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import support.util.ConfigSiteTestHelper;
 
-/**
- * Tests {@link App#configurationSite()}.
- */
+/** Tests {@link App#configurationSite()}. */
 public class AppConfigurationSiteTest {
 
-    /** Tests that the various bind operations gets the right configuration site. */
+    /** Tests that the keep the root configuration site. */
     @Test
     public void configSiteEmptyApp() {
         StackFrame f1 = ConfigSiteTestHelper.caller();
@@ -46,7 +44,7 @@ public class AppConfigurationSiteTest {
         ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, app.configurationSite());
     }
 
-    /** Tests that the various bind operations gets the right configuration site. */
+    /** Tests an app with two components. */
     @Test
     public void configSiteTwoComponentsOneContainer() {
         AtomicReference<StackFrame> ar = new AtomicReference<>();
@@ -82,7 +80,7 @@ public class AppConfigurationSiteTest {
 
     }
 
-    /** Tests that the various bind operations gets the right configuration site. */
+    /** Tests an app with a child container. */
     @Test
     public void configSiteComponentInContainerContainer() {
         AtomicReference<StackFrame> ar1 = new AtomicReference<>();
@@ -96,10 +94,11 @@ public class AppConfigurationSiteTest {
                 link(new Bundle() {
                     @Override
                     public void configure() {
+                        setName("woo");
                         ar2.set(ConfigSiteTestHelper.caller());
                         install("foo").setName("foo");
                     }
-                }, Wirelet.name("woo"));
+                });
             }
         });
 

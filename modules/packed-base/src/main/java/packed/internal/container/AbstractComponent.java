@@ -35,6 +35,9 @@ abstract class AbstractComponent implements Component {
     private final String description;
 
     /** The name of the component. The name is guaranteed to be unique between siblings. */
+    // TODO I think we need to remove final. Problem is with Host. Where we putIfAbsent.
+    // There is a small window where it might have been overridden....
+    // Unless we create the container in computeIfAbsent.... which I just think we should....
     private final String name;
 
     /** The parent component, iff this component has a parent. */

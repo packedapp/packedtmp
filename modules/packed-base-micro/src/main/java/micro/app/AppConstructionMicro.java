@@ -28,7 +28,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.app.App;
-import app.packed.container.Bundle;
 
 /**
  *
@@ -43,43 +42,37 @@ public class AppConstructionMicro {
 
     @Benchmark
     public App emptyApp() {
-        return App.of(new Bundle() {});
+        return App.of(VariousBundles.empty());
     }
 
     @Benchmark
     public App oneComponent() {
-        return App.of(new Bundle() {
-
-            @Override
-            public void configure() {
-                install("foo");
-            }
-        });
+        return App.of(VariousBundles.oneComponent());
     }
 
     @Benchmark
     public App fiveComponents() {
-        return App.of(new Bundle() {
-
-            @Override
-            public void configure() {
-                install("foo").setName("1");
-                install("foo").setName("2");
-                install("foo").setName("3");
-                install("foo").setName("4");
-                install("foo").setName("5");
-            }
-        });
+        return App.of(VariousBundles.fiveComponents());
     }
 
     @Benchmark
     public App oneContainer() {
-        return App.of(new Bundle() {
-
-            @Override
-            public void configure() {
-                link(new Bundle() {});
-            }
-        });
+        return App.of(VariousBundles.oneContainer());
     }
+
+    @Benchmark
+    public App emptyAppFromImage() {
+        return App.of(VariousBundles.EMPTY_IMAGE);
+    }
+
+    @Benchmark
+    public App oneComponentFromImage() {
+        return App.of(VariousBundles.ONE_COMPONENT_IMAGE);
+    }
+
+    @Benchmark
+    public App fiveComponentsFromImage() {
+        return App.of(VariousBundles.FIVE_CONTAINER_IMAGE);
+    }
+
 }

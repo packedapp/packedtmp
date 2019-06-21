@@ -87,7 +87,7 @@ public interface ContainerConfiguration {
     String getName();
 
     /**
-     * Creates a link to another container.
+     * Creates a link to another container represented by a container source.
      * <p>
      * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
      * 
@@ -95,8 +95,10 @@ public interface ContainerConfiguration {
      *            the source of the child
      * @param wirelets
      *            optional wiring options
-     * @return the specified child source
+     * @return the specified source
      */
+    // Maaske skal vi ikke returnere sourcen? Taenker folk tror de kan configure den bagefter saa.
+    // Det vil vi jo helst ikke som i link(MyBundle()).setStuff(x);
     <T extends ContainerSource> T link(T child, Wirelet... wirelets);
 
     /**

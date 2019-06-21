@@ -48,6 +48,8 @@ import packed.internal.container.ContainerFactory;
 // Apps
 
 // Do we expose the attachments????
+
+// Container wrapper...Hmm A descriptor as well?
 public interface App extends Injector, AutoCloseable {
 
     /** An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. **/
@@ -155,10 +157,11 @@ public interface App extends Injector, AutoCloseable {
     LifecycleOperations<? extends App> state();
 
     /**
-     * Creates a new application from the specified bundle. The state of the returned application will be initialized.
+     * Creates a new application from the specified container source. The state of the returned application will be
+     * initialized.
      *
      * @param source
-     *            the bundle that the application should be created from
+     *            the source that creates the container that should be wrapped.
      * @param wirelets
      *            wiring operations
      * @return a new application
@@ -170,11 +173,11 @@ public interface App extends Injector, AutoCloseable {
     }
 
     /**
-     * This method will create and start an {@link App application} from the specified bundle. Blocking until the
+     * This method will create and start an {@link App application} from the container source. Blocking until the
      * application has fully terminated.
      * 
      * @param source
-     *            the bundle that the application should be created from
+     *            the source that creates the container that should be wrapped.
      * @param wirelets
      *            wirelets
      * @throws RuntimeException

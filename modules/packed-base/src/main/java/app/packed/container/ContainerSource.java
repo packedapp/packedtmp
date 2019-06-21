@@ -18,11 +18,13 @@ package app.packed.container;
 import app.packed.component.Component;
 
 /**
- * 
+ * A single source for a container. This is typically a subclass of {@link AnyBundle} or pregenerated
+ * {@link ContainerImage container image}.
  * <p>
  * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
  * of sealed types if they become available.
  */
+// ContainerFactory?? But this maybe implies that you can invoke it multiple times
 public interface ContainerSource {}
 // Not sure we can link to ContainerImages...
 // So ContainerSource is maybe more like an AppSource

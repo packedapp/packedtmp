@@ -18,7 +18,7 @@ package app.packed.container;
 import java.util.Optional;
 
 import app.packed.util.Nullable;
-import packed.internal.container.DefaultContainerImage;
+import packed.internal.container.DefaultContainerImageExpe;
 
 /**
  *
@@ -27,14 +27,14 @@ import packed.internal.container.DefaultContainerImage;
 public final class BuildTarget {
 
     @Nullable
-    private final DefaultContainerImage image;
+    private final DefaultContainerImageExpe image;
 
     /**
      * Creates a new build target.
      * 
      * @param image
      */
-    BuildTarget(@Nullable DefaultContainerImage image) {
+    BuildTarget(@Nullable DefaultContainerImageExpe image) {
         this.image = image;
     }
 

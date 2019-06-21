@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import packed.internal.container.ContainerFactory;
+
 /**
  *
  */
@@ -51,7 +53,16 @@ public interface ContainerImage extends ContainerSource {
         return with(Wirelet.name(name));
     }
 
-    static ContainerImage of(ContainerSource source) {
-        throw new UnsupportedOperationException();
+    /**
+     * Creates a new container image from the specified source.
+     * 
+     * @param source
+     *            the source to create an image from
+     * @return the new image
+     * @throws RuntimeException
+     *             if the image could not be corrected
+     */
+    static ContainerImage of(ContainerSource source, Wirelet... wirelets) {
+        return ContainerFactory.imageOf(source, wirelets);
     }
 }

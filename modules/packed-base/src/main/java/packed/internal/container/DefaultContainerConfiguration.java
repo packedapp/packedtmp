@@ -91,8 +91,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
-        configure();
-        finish();
+        finish1stPass();
+        finish2ndPass();
         builder.setBundleDescription(description);
         builder.setName(name);
         for (Extension<?> e : extensions.values()) {
@@ -101,8 +101,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public Injector buildInjector() {
-        configure();
-        finish();
+        finish1stPass();
+        finish2ndPass();
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof DefaultContainerConfiguration) {
@@ -118,18 +118,49 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
     }
 
+    public DefaultContainerImage buildImage() {
+        finish1stPass();
+        buildImage0();
+        return new DefaultContainerImage(this);
+    }
+
+    private void buildImage0() {
+        finish2ndPass();
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (acc instanceof DefaultContainerConfiguration) {
+                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                    dcc.buildImage0();
+                }
+            }
+        }
+    }
+
+    InternalContainer buildFromImage() {
+        return new InternalContainer(null, this, buildFromImageInjector());
+    }
+
+    private DefaultInjector buildFromImageInjector() {
+        if (extensions.containsKey(InjectorExtension.class)) {
+            return use(InjectorExtension.class).builder.publicInjector;
+        } else {
+            return new DefaultInjector(this, new ServiceNodeMap());
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T extends ContainerSource> T link(T source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
+
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead.
         prepareNewComponent();
         DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
-        dcc.configure();
+        dcc.finish1stPass();
         if (children == null) {
             children = new LinkedHashMap<>();
         }
@@ -137,7 +168,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return source;
     }
 
-    public void configure() {
+    public void finish1stPass() {
         if (bundle != null) {
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
@@ -147,7 +178,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         finalizeName();
     }
 
-    public void finish() {
+    public void finish2ndPass() {
         prepareNewComponent();
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
@@ -159,7 +190,11 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         wirelets.consumeLast(OverrideNameWirelet.class, w -> name = w.name);
 
         if (name == null) {
-            name = finalizeNameWithPrefix(ccc.defaultPrefix());
+            if (parent == null) {
+                name = "App";
+            } else {
+                name = finalizeNameWithPrefix(ccc.defaultPrefix());
+            }
         } else {
             String n = name;
             if (n.endsWith("?")) {

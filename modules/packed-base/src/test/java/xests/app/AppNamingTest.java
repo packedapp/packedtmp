@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package stubs.bundles;
+package xests.app;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
+
+import app.packed.app.App;
 import app.packed.container.Bundle;
 
 /**
  *
  */
-public class EmptyInjectorBundle extends Bundle {
+public class AppNamingTest {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {}
+    @Test
+    public void defaultNameIsApp() {
+        assertThat(App.of(new Bundle() {}).name()).isEqualTo("App");
+    }
 }
