@@ -20,11 +20,7 @@ package app.packed.util;
  */
 // support put/get... read+write single key only
 public final class AttachmentMap {
-    
-    
-    /**
-     * 
-     */
+
     public AttachmentMap immutable() {
         return this;
     }

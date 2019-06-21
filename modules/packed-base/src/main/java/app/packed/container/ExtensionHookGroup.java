@@ -71,6 +71,7 @@ public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Suppl
      * Creates a new builder.
      * 
      * @param componentType
+     *            the component type
      * @return the new builder
      */
     // Do we need an instantiation mode as an additional parameter??

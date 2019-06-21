@@ -287,6 +287,8 @@ public interface Injector /* extends Taggable */ {
      *
      * @param configurator
      *            a consumer used for configuring the injector
+     * @param wirelets
+     *            wirelets
      * @return the new injector
      */
     static Injector of(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {

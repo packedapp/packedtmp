@@ -31,7 +31,6 @@ import app.packed.container.BuildContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
-import app.packed.container.ContainerSource;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -150,9 +149,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerSource> T link(T source, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        AnyBundle bundle = (AnyBundle) source;
+    public <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "source is null");
 
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
@@ -165,7 +163,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             children = new LinkedHashMap<>();
         }
         children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
-        return source;
+        return bundle;
     }
 
     public void finish1stPass() {

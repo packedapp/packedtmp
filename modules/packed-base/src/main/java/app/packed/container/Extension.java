@@ -77,6 +77,7 @@ public abstract class Extension<T extends Extension<T>> {
      * 
      * @throws IllegalStateException
      *             if the container this extension is no longer configurable.
+     * @return the configuration of the container
      */
     protected final ContainerConfiguration checkConfigurable() {
         ContainerConfiguration c = configuration();

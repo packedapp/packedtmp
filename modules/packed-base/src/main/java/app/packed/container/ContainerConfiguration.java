@@ -91,6 +91,8 @@ public interface ContainerConfiguration {
      * <p>
      * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
      * 
+     * @param <T>
+     *            the type of container source
      * @param child
      *            the source of the child
      * @param wirelets
@@ -99,7 +101,7 @@ public interface ContainerConfiguration {
      */
     // Maaske skal vi ikke returnere sourcen? Taenker folk tror de kan configure den bagefter saa.
     // Det vil vi jo helst ikke som i link(MyBundle()).setStuff(x);
-    <T extends ContainerSource> T link(T child, Wirelet... wirelets);
+    <T extends AnyBundle> T link(T child, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
@@ -123,6 +125,7 @@ public interface ContainerConfiguration {
      * @see #getDescription()
      * @throws IllegalStateException
      *             if this configuration can no longer be configured
+     * @return this configuration
      */
     ContainerConfiguration setDescription(@Nullable String description);
 
@@ -140,6 +143,7 @@ public interface ContainerConfiguration {
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.', or contains a '?' at any position then the last position of the string.
      * @see #getName()
+     * @return this configuration
      */
     ContainerConfiguration setName(@Nullable String name);
 
@@ -164,7 +168,7 @@ public interface ContainerConfiguration {
 
     /**
      * Returns a list of any wirelets that was used to create this configuration. For example, via
-     * {@link App#of(AnyBundle, Wirelet...)}.
+     * {@link App#of(ContainerSource, Wirelet...)}.
      * 
      * @return a list of any wirelets that was used to create this configuration
      */
@@ -176,6 +180,7 @@ public interface ContainerConfiguration {
      * @param name
      *            the name of layer
      * @param dependencies
+     *            dependencies on other layers
      * @return the new layer
      */
     ContainerLayer newLayer(String name, ContainerLayer... dependencies);

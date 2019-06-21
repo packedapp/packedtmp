@@ -109,9 +109,13 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
     }
 
     /**
-     * Returns a list representation of this instance.
+     * Returns a list of all wirelets of the specified type
      * 
-     * @return a list representation of this instance
+     * @param <T>
+     *            the type of wirelets to return a list for
+     * @param wireletType
+     *            the type of wirelets to return a list for
+     * @return a list of all wirelets of the specified type
      */
     @SuppressWarnings("unchecked")
     public <T extends Wirelet> List<T> toList(Class<T> wireletType) {

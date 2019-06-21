@@ -41,7 +41,11 @@ public interface BuildContext {
      */
     OutputType outputType();
 
-    /** The source of the build, for example a bundle or an image. */
+    /**
+     * Returns the source of the build, for example a bundle or an image.
+     * 
+     * @return the source of the build, for example a bundle or an image
+     */
     ContainerSource source();
 
     /**
@@ -71,3 +75,28 @@ public interface BuildContext {
         }
     }
 }
+
+// APP
+// INJECTOR
+// DESCRIPTOR
+// NATIVE_IMAGE_GENRATION
+// CONTAINER_IMAGE_GENERATION
+// NATIVE_IMAGE_GENERATION + CONTAINER_IMAGE_GENERATION
+
+// Image -> App
+// Image -> Injector
+// Image -> Descriptor
+
+// AnyBundle -> App
+// AnyBundle -> Injector
+// AnyBundle -> Descriptor
+// AnyBundle -> Image
+
+// Graal -> App
+// Graal -> Injector
+// Graal -> Descriptor
+// Graal -> ContainerImage
+
+// Graal + Image -> App
+// Graal + Image -> Injector
+// Graal + Image -> Descriptor

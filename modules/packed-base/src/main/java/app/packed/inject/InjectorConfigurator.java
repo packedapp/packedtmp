@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
+import app.packed.container.AnyBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
@@ -247,7 +247,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void link(ContainerSource bundle, Wirelet... stages) {
+    public final void link(AnyBundle bundle, Wirelet... stages) {
         ((DefaultContainerConfiguration) configuration).link(bundle, stages);
     }
 }

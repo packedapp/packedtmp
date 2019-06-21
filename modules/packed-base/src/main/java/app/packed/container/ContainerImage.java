@@ -58,6 +58,8 @@ public interface ContainerImage extends ContainerSource {
      * 
      * @param source
      *            the source to create an image from
+     * @param wirelets
+     *            wirelets
      * @return the new image
      * @throws RuntimeException
      *             if the image could not be corrected
