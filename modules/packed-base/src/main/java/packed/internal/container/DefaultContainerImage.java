@@ -21,9 +21,7 @@ import app.packed.container.AnyBundle;
 import app.packed.container.ContainerImage;
 import app.packed.container.Wirelet;
 
-/**
- *
- */
+/** The default implementation of {@link ContainerImage}. */
 public class DefaultContainerImage implements ContainerImage {
 
     final DefaultContainerConfiguration dcc;
@@ -35,7 +33,7 @@ public class DefaultContainerImage implements ContainerImage {
     /** {@inheritDoc} */
     @Override
     public String name() {
-        throw new UnsupportedOperationException();
+        return dcc.name;
     }
 
     /** {@inheritDoc} */
@@ -47,6 +45,7 @@ public class DefaultContainerImage implements ContainerImage {
     /** {@inheritDoc} */
     @Override
     public ContainerImage with(Wirelet... wirelets) {
+        // We need to check that they can be used at image instantion time.
         throw new UnsupportedOperationException();
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xests.app;
+package zets.namepath;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,22 +23,23 @@ import app.packed.app.App;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
-/** Tests {@link App#name()}. */
-public class AppNamingTest {
+/** Tests naming of applications. */
+public class NamingTest {
 
-    /** Tests that the default name of an application is 'App'. */
-    @Test
+    /** Various basic tests. */
+    // @Test
     public void basics() {
+
         // Tests that default name is 'App'
         assertThat(App.of(new Bundle() {}).name()).isEqualTo("App");
 
-        /** Tests that we can set the name via an Wirelet. */
+        // Tests that we can set the name of application via an Wirelet.
         assertThat(App.of(new Bundle() {}, Wirelet.name("Boo")).name()).isEqualTo("Boo");
 
+        // A test bundle that set the name of a container to 'Foo'
         class SetNameToFooBundle extends Bundle {
             @Override
             public void configure() {
-                assertThat(getName()).isNull();
                 setName("Foo");
                 assertThat(getName()).isEqualTo("Foo");
             }
@@ -54,7 +55,16 @@ public class AppNamingTest {
         assertThat(App.of(new SetNameToFooBundle() {}, Wirelet.name("Boo"), Wirelet.name("Goo")).name()).isEqualTo("Goo");
     }
 
+    @Test
     public void testQuestionMarkNames() {
+        class SetNameToFooBundle extends Bundle {
+            @Override
+            public void configure() {
+                setName("Foo");
+                assertThat(getName()).isEqualTo("Boo");
+            }
+        }
 
+        assertThat(App.of(new SetNameToFooBundle() {}, Wirelet.name("Boo")).name()).isEqualTo("Boo");
     }
 }

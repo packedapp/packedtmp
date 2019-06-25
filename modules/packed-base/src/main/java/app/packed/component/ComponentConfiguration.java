@@ -34,6 +34,19 @@ import app.packed.util.Nullable;
  */
 public interface ComponentConfiguration {
 
+    /**
+     * 
+     * <p>
+     * The path returned by this method might differ from the final path is building an image. And the image is being
+     * deployed to a host.
+     * 
+     * @return the component path
+     */
+    default ComponentPath path() {
+
+        throw new UnsupportedOperationException();
+    }
+
     // Tror tit man godt selv vil instantiere den...
     default <T extends FeatureHolder<?, ?>> T addFeature(Class<T> featureType) {
         throw new UnsupportedOperationException();

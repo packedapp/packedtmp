@@ -30,7 +30,7 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
  */
 public class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
 
-    private final ComponentClassDescriptor ccd;
+    final ComponentClassDescriptor ccd;
 
     /** The configuration of the container that this component has been installed into. */
     final DefaultContainerConfiguration containerConfiguration;

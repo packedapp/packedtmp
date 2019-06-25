@@ -25,6 +25,12 @@ import app.packed.component.Component;
  * of sealed types if they become available.
  */
 // ContainerFactory?? But this maybe implies that you can invoke it multiple times
+
+// Properties
+// Repeatable - Non-repeatable..
+// Concurrent - Non-current (Bundles may be Repeatable but they will never be Concurrent)
+// The only reason we want to allow repeatable bundles. Is So we can create a descriptor
+// before we make
 public interface ContainerSource {}
 // Not sure we can link to ContainerImages...
 // So ContainerSource is maybe more like an AppSource

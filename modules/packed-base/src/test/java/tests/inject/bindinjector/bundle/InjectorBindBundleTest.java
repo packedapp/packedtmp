@@ -41,7 +41,7 @@ public class InjectorBindBundleTest {
             protected void configure() {}
         };
 
-        npe(() -> Injector.of(c -> c.link((Bundle) null)), "source");
+        npe(() -> Injector.of(c -> c.link((Bundle) null)), "bundle");
         npe(() -> Injector.of(c -> c.link(b, (InternalServiceWirelets[]) null)), "wirelets");
     }
 

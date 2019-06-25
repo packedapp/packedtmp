@@ -1,0 +1,14 @@
+Tests
+
+
+App.stream
+Component.stream();
+
+conf.link() with naming + wirelets
+
+ContainerImages with wirelets..
+
+ContainerConfiguration.setName() vs bundle.setName();
+
+//Also  annotations if support this.
+

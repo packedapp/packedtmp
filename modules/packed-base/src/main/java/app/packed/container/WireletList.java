@@ -23,13 +23,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-/** An wirelet list contains 0 or more wirelets. */
+/** An immutable list of wirelets. */
 public final class WireletList extends Wirelet implements Iterable<Wirelet> {
 
     /** An empty wirelet list. */
     private static final WireletList EMPTY = new WireletList();
 
-    /** The stages that have been combined */
+    /** The wirelest we are wrapping. */
     private final Wirelet[] wirelets;
 
     private WireletList(Wirelet... wirelets) {
@@ -100,9 +100,9 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
     }
 
     /**
-     * Returns a list representation of this instance.
+     * Returns an immutable {@link List} representation of all of the wirelets in this list.
      * 
-     * @return a list representation of this instance
+     * @return a immutable list representation of all of the wirelets in this list
      */
     public List<Wirelet> toList() {
         return List.of(wirelets);
@@ -149,7 +149,7 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
     }
 
     /**
-     * Returns a wirelet list containing zero wirelets.
+     * Returns a ampty wirelet list.
      *
      * @return an empty {@code WireletList}
      */
@@ -157,8 +157,20 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         return EMPTY;
     }
 
+    /**
+     * Returns a wirelet list containing one element.
+     * <p>
+     * If the specified wirelet is a WireletList this method will cast and return it as a {@code WireletList}.
+     * 
+     * @param wirelet
+     *            the single wirelet
+     * @return a {@code WireletList} containing the specified wirelet
+     */
     public static WireletList of(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
+        if (wirelet instanceof WireletList) {
+            return (WireletList) wirelet;
+        }
         return new WireletList(wirelet); // we might provide optimized versions in the future
     }
 
@@ -170,26 +182,3 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         return new WireletList(wirelets);
     }
 }
-
-// static List<Wirelet> operationsExtract(Wirelet[] operations, Class<?> type) {
-// requireNonNull(operations, "operations is null");
-// if (operations.length == 0) {
-// return List.of();
-// }
-// ArrayList<Wirelet> result = new ArrayList<>(operations.length);
-// for (Wirelet s : operations) {
-// requireNonNull(s, "The specified array of operations contained a null");
-// operationsExtract0(s, type, result);
-// }
-// return List.copyOf(result);
-// }
-//
-// private static void operationsExtract0(Wirelet o, Class<?> type, ArrayList<Wirelet> result) {
-// if (o instanceof WireletList) {
-// for (Wirelet ies : ((WireletList) o).wirelets) {
-// operationsExtract0(ies, type, result);
-// }
-// } else {
-// result.add(o);
-// }
-// }

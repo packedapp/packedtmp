@@ -237,7 +237,7 @@ public class BundleDescriptor {
      * @return a descriptor for the specified bundle
      */
     public static BundleDescriptor of(Bundle bundle) {
-        return ContainerFactory.of(bundle);
+        return ContainerFactory.descriptorOf(bundle);
     }
 
     // /**

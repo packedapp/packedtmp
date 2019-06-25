@@ -31,6 +31,7 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerFactory;
+import packed.internal.container.DefaultApp;
 
 /**
  * A application is a program.
@@ -190,8 +191,9 @@ public interface App extends Injector, AutoCloseable {
         // If has @Main will run Main and then exit
         // Otherwise will run until application is shutdown
 
-        try (App app = of(source, wirelets)) {
+        try (DefaultApp app = ContainerFactory.appOf(source, wirelets)) {
             app.start();
+            app.runMainSync();
             try {
                 app.state().await(RunState.TERMINATED);
             } catch (InterruptedException e) {

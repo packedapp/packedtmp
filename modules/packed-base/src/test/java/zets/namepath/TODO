@@ -1,0 +1,40 @@
+Tests
+
+App.name
+
+conf.link() with naming + wirelets
+
+ContainerImages with wirelets..
+
+ContainerConfiguration.setName() vs bundle.setName();
+
+
+BundleDescriptor...
+
+//Also  annotations if support this.
+
+
+
+Maybe make javadoc detailing the spec...
+
+
+spectest.
+
+/// Valid naming of components....
+/// Support for ?
+/// Support for adding a million components with the same name...
+
+-----
+App as default name...
+  If we have a host. I think I would 
+  //Maybe BundleName + App
+  
+// I mean we need a default name for bundles anyway
+/// I think we should use this for the app as well
+
+
+
+static class FoooAppBundle {
+
+}  
+

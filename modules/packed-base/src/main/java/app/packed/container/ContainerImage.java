@@ -15,22 +15,27 @@
  */
 package app.packed.container;
 
+import app.packed.app.App;
+import app.packed.inject.Injector;
 import packed.internal.container.ContainerFactory;
 
 /**
- *
+ * A pre-generate image of a container.
+ * <p>
+ * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
+ * container images. It can not be used with {@link AnyBundle#link(AnyBundle, Wirelet...)}.
  */
 public interface ContainerImage extends ContainerSource {
 
     /**
-     * Returns the name of the container that this image creates.
+     * Returns the name of containers that this image creates.
      * 
-     * @return the name of the container that this image creates
+     * @return the name of containers that this image creates
      */
     String name();
 
     /**
-     * Returns the type of bundle that used to create this image.
+     * Returns the type of bundle that was used to create this image.
      * <p>
      * If this image was created from an existing image, the new image image will retain the original image source bundle
      * type.
@@ -43,7 +48,7 @@ public interface ContainerImage extends ContainerSource {
     ContainerImage with(Wirelet... wirelets);
 
     /**
-     * Returns a new container image retaining original functionality but re
+     * Returns a new container image original functionality but re
      * 
      * @param name
      *            the name
@@ -54,15 +59,15 @@ public interface ContainerImage extends ContainerSource {
     }
 
     /**
-     * Creates a new container image from the specified source.
+     * Generates a new container image from the specified container source.
      * 
      * @param source
-     *            the source to create an image from
+     *            the container source to generate the image from
      * @param wirelets
      *            wirelets
-     * @return the new image
+     * @return the generated image
      * @throws RuntimeException
-     *             if the image could not be corrected
+     *             if the image could not be generated for some reason
      */
     static ContainerImage of(ContainerSource source, Wirelet... wirelets) {
         return ContainerFactory.imageOf(source, wirelets);

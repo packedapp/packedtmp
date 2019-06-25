@@ -31,7 +31,8 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.util.Key;
 
 /** The default implementation of {@link App application}. Basically it is just wrapping an internal container. */
-final class DefaultApp implements App {
+// I think we can move it to app.packed.app
+public final class DefaultApp implements App {
 
     /** The container we are wrapping. */
     private final InternalContainer container;
@@ -141,5 +142,13 @@ final class DefaultApp implements App {
     @Override
     public Component useComponent(CharSequence path) {
         return container.useComponent(path);
+    }
+
+    /**
+     * 
+     */
+    public void runMainSync() {
+        // TODO Auto-generated method stub
+
     }
 }

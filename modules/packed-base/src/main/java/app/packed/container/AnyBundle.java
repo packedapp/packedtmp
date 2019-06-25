@@ -116,17 +116,14 @@ public abstract class AnyBundle implements ContainerSource {
     /**
      * Links the specified bundle to this bundle.
      * 
-     * @param <T>
-     *            the type of bundle to link
      * @param bundle
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @return the specified bundle
      * @see ContainerConfiguration#link(AnyBundle, Wirelet...)
      */
-    protected final <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
-        return configuration().link(bundle, wirelets);
+    protected final void link(AnyBundle bundle, Wirelet... wirelets) {
+        configuration().link(bundle, wirelets);
     }
 
     /**

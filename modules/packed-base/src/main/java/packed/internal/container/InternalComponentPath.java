@@ -23,6 +23,9 @@ import java.util.Iterator;
 import app.packed.component.ComponentPath;
 
 /** The default implementation of {@link ComponentPath}. */
+// TODO, hmm I don't think we should hold on to AbstractComponent.
+// People might store the path somewhere. I don't think anyone would expect
+// it to be unsafe
 final class InternalComponentPath implements ComponentPath {
 
     /** The lazily initialized path string. */

@@ -95,8 +95,7 @@ final class MainExtensionHookGroup extends ExtensionHookGroup<LifecycleExtension
         public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
             MethodHandle mh = hook.create();
             return (c, e) -> {
-                System.out.println(mh);
-                // e.addMain(mh);
+                e.addMain(mh);
             };
         }
     }

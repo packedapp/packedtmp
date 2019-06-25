@@ -71,7 +71,7 @@ public interface InternalConfigurationSite extends ConfigSite {
     static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
-    default InternalConfigurationSite thenAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
+    default InternalConfigurationSite linkFromAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
         if (DISABLED) {
             return UNKNOWN;
         }
@@ -82,7 +82,7 @@ public interface InternalConfigurationSite extends ConfigSite {
         if (member instanceof MethodDescriptor) {
             return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
         } else {
-            return thenAnnotatedField(cst, annotation, (FieldDescriptor) member);
+            return linkFromAnnotatedField(cst, annotation, (FieldDescriptor) member);
         }
     }
 
@@ -94,6 +94,7 @@ public interface InternalConfigurationSite extends ConfigSite {
     }
 
     default InternalConfigurationSite thenStack(ConfigurationSiteType cst) {
+        // LinkFromCaptureStack
         if (DISABLED) {
             return UNKNOWN;
         }
@@ -154,3 +155,4 @@ public interface InternalConfigurationSite extends ConfigSite {
 //
 // Vi har en unik
 // operation
+// Hvis vi laver noget fra en config file er det saa naermest parent???

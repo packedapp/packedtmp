@@ -125,7 +125,7 @@ public abstract class Wirelet {
 
     }
 
-    public final Wirelet ifCondition() {
+    final Wirelet ifCondition() {
         // Or Else
 
         // Igen Predicate<Environment> <- Skal vaere statisk
@@ -202,7 +202,7 @@ public abstract class Wirelet {
      */
     // setName
     public static Wirelet name(String name) {
-        return new DefaultContainerConfiguration.OverrideNameWirelet(name);
+        return new DefaultContainerConfiguration.NameWirelet(name);
     }
 }
 

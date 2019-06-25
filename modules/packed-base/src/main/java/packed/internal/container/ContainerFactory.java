@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.app.App;
 import app.packed.container.AnyBundle;
+import app.packed.container.BuildContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerImage;
 import app.packed.container.ContainerSource;
@@ -33,51 +33,59 @@ import app.packed.inject.InjectorConfigurator;
  */
 public class ContainerFactory {
 
-    public static ContainerImage imageOf(ContainerSource source, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP, bundle.getClass(), bundle, wirelets);
-        return configuration.buildImage();
-    }
-
-    public static App appOf(ContainerSource source, Wirelet... wirelets) {
+    public static DefaultApp appOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         if (source instanceof DefaultContainerImage) {
             DefaultContainerImage image = (DefaultContainerImage) source;
             return new DefaultApp(image.dcc.buildFromImage());
         }
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.APP, bundle.getClass(), bundle, wirelets);
+
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.APP, bundle.getClass(), bundle, wirelets);
         return new DefaultApp(configuration.buildContainer());
     }
 
-    public static Injector injectorOf(ContainerSource source, Wirelet... wirelets) {
+    public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, WiringType.INJECTOR, bundle.getClass(), bundle, wirelets);
-        bundle.doConfigure(configuration);
-        return configuration.buildInjector();
+        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, BuildContext.OutputType.MODEL, bundle.getClass(), bundle);
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        conf.buildDescriptor(builder);
+        return builder.build();
+    }
+
+    public static ContainerImage imageOf(ContainerSource source, Wirelet... wirelets) {
+        requireNonNull(source, "source is null");
+        AnyBundle bundle = (AnyBundle) source;
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.IMAGE, bundle.getClass(), bundle,
+                wirelets);
+        return configuration.buildImage();
     }
 
     public static Injector injectorOf(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, WiringType.INJECTOR, configurator.getClass(), null, wirelets);
+        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR, configurator.getClass(), null,
+                wirelets);
         configurator.accept(new InjectorConfigurator(builder));
         return builder.buildInjector();
     }
 
-    public static BundleDescriptor of(ContainerSource source) {
+    public static Injector injectorOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, WiringType.DESCRIPTOR, bundle.getClass(), bundle);
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
-        conf.buildDescriptor(builder);
-        return builder.build();
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR, bundle.getClass(), bundle,
+                wirelets);
+        bundle.doConfigure(configuration);
+        return configuration.buildInjector();
     }
 
+    /**
+     * A wrapper around an injector configurator consumer inorder to let it implements {@link ContainerSource}.
+     */
     public static class ConfiguratorWrapper implements ContainerSource {
+
         final Consumer<? super InjectorConfigurator> configurator;
 
         ConfiguratorWrapper(Consumer<? super InjectorConfigurator> configurator) {

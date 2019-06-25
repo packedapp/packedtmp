@@ -52,7 +52,6 @@ public class AppNamingTest {
     private static class SetNameToFooBundle extends Bundle {
         @Override
         public void configure() {
-            assertThat(getName()).isNull();
             setName("Foo");
             assertThat(getName()).isEqualTo("Foo");
         }

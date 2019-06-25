@@ -228,12 +228,12 @@ public abstract class Bundle extends AnyBundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    static protected void run(Bundle bundle, String[] args, Wirelet... wirelets) {
-        run(bundle, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
+    static protected void run(ContainerSource source, String[] args, Wirelet... wirelets) {
+        run(source, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
     }
 
-    static protected void run(Bundle bundle, Wirelet... wirelets) {
-        App.run(bundle, wirelets);
+    static protected void run(ContainerSource source, Wirelet... wirelets) {
+        App.run(source, wirelets);
     }
 }
 

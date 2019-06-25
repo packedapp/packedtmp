@@ -15,10 +15,25 @@
  */
 package app.packed.container;
 
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+@Retention(CLASS)
+@Target(ElementType.MODULE)
+
 /**
  *
  */
-// ExternalContainerSource???
-public class DynamicContainerLoader implements ContainerSource {
+public @interface PackedModule {
 
+    // Boot with this module... for example, when used with "link"....
+    // Sort of like jar.mainClass but for bundles...
+
+    // Okay I think we need to allow link to take any container source....
+    // And just throw an IllegalArgumentException if using an image.
+
+    Class<? extends AnyBundle> bundle();
 }

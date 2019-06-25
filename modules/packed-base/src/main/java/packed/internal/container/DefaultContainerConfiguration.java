@@ -49,6 +49,7 @@ import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
 
 /** The default implementation of {@link ContainerConfiguration}. */
+// <T extends ComponentConfigurationCache>
 public final class DefaultContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
@@ -67,21 +68,17 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     private ComponentLookup lookup;
 
     /** A list of wirelets used when creating this configuration. */
-    private final WireletList wirelets;
-
-    /** The type of wiring. */
-    final WiringType wiringType;
+    final WireletList wirelets;
 
     final InternalBuildContext buildContext;
 
-    DefaultContainerConfiguration(DefaultContainerConfiguration parent, WiringType wiringType, Class<?> configuratorType, @Nullable AnyBundle bundle,
-            Wirelet... wirelets) {
+    DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, Class<?> configuratorType,
+            @Nullable AnyBundle bundle, Wirelet... wirelets) {
         super(parent == null ? InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF)
                 : parent.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_OF), parent);
-        this.buildContext = parent == null ? new InternalBuildContext(this, wiringType.toOutputType()) : parent.buildContext;
+        this.buildContext = parent == null ? new InternalBuildContext(this, outputType) : parent.buildContext;
         this.lookup = this.ccc = ContainerConfiguratorCache.of(configuratorType);
         this.bundle = bundle;
-        this.wiringType = requireNonNull(wiringType);
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -90,7 +87,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
-        finish1stPass();
+        configure();
         finish2ndPass();
         builder.setBundleDescription(description);
         builder.setName(name);
@@ -100,12 +97,13 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public Injector buildInjector() {
-        finish1stPass();
+        configure();
         finish2ndPass();
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof DefaultContainerConfiguration) {
                     DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                    dcc.getName();
                     dcc.buildContainer();
                 }
             }
@@ -118,7 +116,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public DefaultContainerImage buildImage() {
-        finish1stPass();
+        configure();
         buildImage0();
         return new DefaultContainerImage(this);
     }
@@ -149,77 +147,50 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public <T extends AnyBundle> T link(T bundle, Wirelet... wirelets) {
-        requireNonNull(bundle, "source is null");
+    public void link(AnyBundle bundle, Wirelet... wirelets) {
+        requireNonNull(bundle, "bundle is null");
 
+        prepareNewComponent(NamingState.LINK_CALLED);
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead.
-        prepareNewComponent();
-        DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, WiringType.LINK, bundle.getClass(), bundle, wirelets);
-        dcc.finish1stPass();
+        DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, null, bundle.getClass(), bundle, wirelets);
+        dcc.configure();
         if (children == null) {
             children = new LinkedHashMap<>();
         }
+        // Maaske skal man ikke tillade at saette navn efter man har linket....
+        // Maaske skal saet navn bare vaere den foerste expression
+        // Problemet er her at vi ikke vil kunne f.eks. faa hele en actor path....
+        // The name of the container must be set before installing new components or linking other containers
+        // And can only be set once...
+
         children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
-        return bundle;
     }
 
-    public void finish1stPass() {
+    private void configure() {
+        if (hasBeenCalled) {
+            return;
+            // throw new IllegalStateException();
+        }
+        hasBeenCalled = true;
         if (bundle != null) {
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
             bundle.doConfigure(this);
         }
-        finalizeName();
+        getName();// Initializes the name
     }
+
+    private boolean hasBeenCalled;
 
     public void finish2ndPass() {
-        prepareNewComponent();
+        // Technically we should have a finish statement here, but dont need it
+        prepareNewComponent(NamingState.GET_NAME_CALLED);
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
-        }
-    }
-
-    private void finalizeName() {
-        // See if we have any wirelet that overrides the name (wirelet name has already been verified)
-        wirelets.consumeLast(OverrideNameWirelet.class, w -> name = w.name);
-
-        if (name == null) {
-            if (parent == null) {
-                name = "App";
-            } else {
-                name = finalizeNameWithPrefix(ccc.defaultPrefix());
-            }
-        } else {
-            String n = name;
-            if (n.endsWith("?")) {
-                name = finalizeNameWithPrefix(n.substring(0, n.length() - 1));
-            } else if (parent != null && parent.children != null && parent.children.containsKey(n)) {
-                if (parent.children.get(name) != this) {
-                    throw new IllegalStateException();
-                }
-            }
-        }
-        // TODO make name unmodifiable
-    }
-
-    private String finalizeNameWithPrefix(String prefix) {
-        if (parent == null) {
-            return prefix;
-        } else {
-            String newName = prefix;
-            int counter = 0;
-            for (;;) {
-                if (parent.children == null || !parent.children.containsKey(newName)) {
-                    return newName;
-                }
-                // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
-                // But it could also be a host???
-                newName = prefix + counter++;
-            }
         }
     }
 
@@ -245,11 +216,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         requireNonNull(action, "action is null");
     }
 
-    @Override
-    void freezeName() {
-
-    }
-
     /**
      * Returns an extension of the specified type if installed, otherwise null.
      * 
@@ -265,12 +231,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return (T) extensions.get(extensionType);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String getName() {
-        return name;
-    }
-
     public ComponentConfiguration install(Class<?> implementation) {
         return install(Factory.findInjectable(implementation));
     }
@@ -280,7 +240,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(factory.rawType());
 
         // All validation should be done by here..
-        prepareNewComponent();
+        prepareNewComponent(NamingState.NEW_COMPONENT_CALLED);
 
         DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
                 this, descriptor);
@@ -296,7 +256,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(instance.getClass());
 
         // All validation should be done by here..
-        prepareNewComponent();
+        prepareNewComponent(NamingState.NEW_COMPONENT_CALLED);
 
         DefaultComponentConfiguration dcc = current = new FixedInstanceComponentConfiguration(
                 configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor, instance);
@@ -305,7 +265,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return dcc;
     }
 
-    private void prepareNewComponent() {
+    private void prepareNewComponent(NamingState state) {
         if (current != null) {
             current.onFreeze();
         }
@@ -328,16 +288,14 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** {@inheritDoc} */
     @Override
     public ContainerConfiguration setDescription(String description) {
-        checkConfigurable();
-        this.description = description;
+        setDescription0(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerConfiguration setName(@Nullable String name) {
-        checkConfigurable();
-        this.name = checkName(name);
+    public ContainerConfiguration setName(String name) {
+        setName0(name);
         return this;
     }
 
@@ -375,10 +333,10 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     /** A wiring option that overrides any existing container name. */
-    public static class OverrideNameWirelet extends Wirelet {
+    public static class NameWirelet extends Wirelet {
 
         /** The (checked) name to override with. */
-        private final String name;
+        final String name;
 
         /**
          * Creates a new option
@@ -386,7 +344,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
          * @param name
          *            the name to override any existing container name with
          */
-        public OverrideNameWirelet(String name) {
+        public NameWirelet(String name) {
             this.name = checkName(name);
         }
     }

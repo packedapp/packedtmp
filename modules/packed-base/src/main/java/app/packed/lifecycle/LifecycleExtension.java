@@ -16,6 +16,8 @@
 package app.packed.lifecycle;
 
 import java.lang.invoke.MethodHandle;
+import java.util.HashSet;
+import java.util.Set;
 
 import app.packed.container.Extension;
 
@@ -47,7 +49,10 @@ public final class LifecycleExtension extends Extension<LifecycleExtension> {
 
     // ClassValue<Feature> -> IdentityHashMap<Feature, CachedConfiguration>>
 
-    protected void addMain(MethodHandle mh) {
+    private Set<MethodHandle> s = new HashSet<>();
 
+    public void addMain(MethodHandle mh) {
+        System.out.println(mh);
+        s.add(mh);
     }
 }

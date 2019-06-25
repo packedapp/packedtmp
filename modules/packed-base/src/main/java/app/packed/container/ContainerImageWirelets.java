@@ -22,4 +22,13 @@ final class ContainerImageWirelets {
 
     // retainStackTracesForEachInstantiation...
     /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
+
+    // Maximum number of instantiations times...
+    // Could, for example, be one for native.
+    // The only think we want to instantiate the application once... And then forget everything
+
+    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
+    static Wirelet oneShot() {
+        throw new UnsupportedOperationException();
+    }
 }

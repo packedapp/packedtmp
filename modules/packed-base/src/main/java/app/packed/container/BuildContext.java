@@ -17,34 +17,35 @@ package app.packed.container;
 
 import app.packed.config.ConfigSite;
 
-/**
- *
- */
-// A build context is never available when we build something from an image.
-
 // CurrentState???
-
 // ErrorHandling / Notifications ???
+/// Yes, why not use it to log errors...
+/**
+ * A build context is never available when we build something from an image. Or is it???
+ * 
+ * <p>
+ * A
+ */
 public interface BuildContext {
 
     /**
-     * Returns the configuration site where the build process was started.
+     * Returns the configuration site that initialized the build process.
      * 
-     * @return the configuration site where the build process was started
+     * @return the configuration site that initialized the build process
      */
     ConfigSite configSite();
 
     /**
-     * What we are building.
+     * Returns the output type of the build process.
      * 
-     * @return what we are building.
+     * @return the output type of the build process
      */
     OutputType outputType();
 
     /**
-     * Returns the source of the build, for example a bundle or an image.
+     * Returns the source of the build, for example a bundle or a container image.
      * 
-     * @return the source of the build, for example a bundle or an image
+     * @return the source of the build, for example a bundle or a container image
      */
     ContainerSource source();
 
@@ -57,8 +58,10 @@ public interface BuildContext {
         throw new UnsupportedOperationException();
     }
 
+    /// Kan vi bruge dem for example med @UseExtension(onlyAllow=OutputType.INJECTOR) @OnStart
     public enum OutputType {
-        /** */
+
+        /** The output type of the process is an App */
         APP,
 
         /** */

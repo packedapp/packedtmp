@@ -41,4 +41,6 @@ public class Factory1Test {
         assertThat(d.parameterIndex()).isEmpty();
         assertThat(d.variable()).isEmpty();
     }
+
+    // TODO test that we can capture annotations
 }
