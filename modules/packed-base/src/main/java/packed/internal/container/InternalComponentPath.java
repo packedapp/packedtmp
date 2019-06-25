@@ -17,9 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.nio.file.Path;
-import java.util.Iterator;
-
 import app.packed.component.ComponentPath;
 
 /** The default implementation of {@link ComponentPath}. */
@@ -81,12 +78,6 @@ final class InternalComponentPath implements ComponentPath {
     @Override
     public boolean isRoot() {
         return component.parent == null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Iterator<Path> iterator() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

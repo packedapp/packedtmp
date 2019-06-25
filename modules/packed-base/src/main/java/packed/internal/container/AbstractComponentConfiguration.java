@@ -17,18 +17,26 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.AnyBundle;
+import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
 
 /** An abstract base class for the configuration of a component. */
 abstract class AbstractComponentConfiguration {
+
+    /** Any children this component might have, in order of insertion. */
+    LinkedHashMap<String, AbstractComponentConfiguration> children;
+
+    DefaultComponentConfiguration current;
 
     /** The description of the component. */
     @Nullable
@@ -38,6 +46,8 @@ abstract class AbstractComponentConfiguration {
     @Nullable
     String name;
 
+    private State state = State.INITIAL;
+
     /** Any parent that the component has. */
     @Nullable
     final DefaultContainerConfiguration parent;
@@ -45,19 +55,12 @@ abstract class AbstractComponentConfiguration {
     /** The configuration site of the component. */
     private final InternalConfigurationSite site;
 
-    /** Any children this component might have, in order of insertion. */
-    LinkedHashMap<String, AbstractComponentConfiguration> children;
-
     AbstractComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration parent) {
         this.site = requireNonNull(site);
         this.parent = parent;
     }
 
-    protected void checkConfigurable() {
-
-    }
-
-    DefaultComponentConfiguration current;
+    protected void checkConfigurable() {}
 
     public ConfigSite configurationSite() {
         return site;
@@ -71,24 +74,35 @@ abstract class AbstractComponentConfiguration {
     public final String getName() {
         String n = name;
         if (n == null) {
-            lazyInitializeName(NamingState.GET_NAME_CALLED, null);
+            lazyInitializeName(State.GET_NAME_INVOKED, null);
         }
         return name;
     }
 
-    AbstractComponentConfiguration setDescription(String description) {
-        // ContainerConfiguration does not currently extend ComponentConfiguration
-        requireNonNull(description, "description is null");
-        checkConfigurable();
-        this.description = description;
-        return this;
+    private void lazyInitializeName(E e, String name) {
+        if (!name.endsWith("?")) {
+            if (parent == null || parent.children == null || !parent.children.containsKey(name)) {
+                this.name = name;
+                return;
+            }
+            throw new RuntimeException("Name already exist " + name);
+        }
+
+        String prefix = name.substring(0, name.length() - 1);
+        String newName = prefix;
+        int counter = 0;
+        for (;;) {
+            if (parent.children == null || !parent.children.containsKey(newName)) {
+                name = newName;
+                return;
+            }
+            // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
+            // But it could also be a host???
+            newName = prefix + counter++;
+        }
     }
 
-    enum E {
-        BY_WIRE, BY_SET, IMPLICIT
-    }
-
-    protected void lazyInitializeName(NamingState reason, String name) {
+    protected void lazyInitializeName(State reason, String name) {
         if (this.name != null) {
             return;
         }
@@ -132,76 +146,55 @@ abstract class AbstractComponentConfiguration {
         }
 
         lazyInitializeName(e, n);
-        this.namingState = reason;
-        //
-        // if (namingState == NamingState.MUTABLE) {
-        // // Finalize name
-        // // See if we have any wirelet that overrides the name (wirelet name has already been verified)
-        //
-        // // TODO make name unmodifiable
-        // if (name == null) {
-        // if (parent == null) {
-        // name = "App";
-        // } else {
-        // name = finalizeNameWithPrefix(ccc.defaultPrefix());
-        // }
-        // } else {
-        // String n = name;
-        // if (n.endsWith("?")) {
-        // name = finalizeNameWithPrefix(n.substring(0, n.length() - 1));
-        // } else if (parent != null && parent.children != null && parent.children.containsKey(n)) {
-        // if (parent.children.get(name) != this) {
-        // throw new IllegalStateException();
-        // }
-        // }
-        // }
-
-        // }
+        this.state = reason;
     }
 
-    private void lazyInitializeName(E e, String name) {
-        if (!name.endsWith("?")) {
-            if (parent == null || parent.children == null || !parent.children.containsKey(name)) {
-                this.name = name;
-                return;
-            }
-            throw new RuntimeException("Name already exist " + name);
-        }
-
-        String prefix = name.substring(0, name.length() - 1);
-        String newName = prefix;
-        int counter = 0;
-        for (;;) {
-            if (parent.children == null || !parent.children.containsKey(newName)) {
-                name = newName;
-                return;
-            }
-            // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
-            // But it could also be a host???
-            newName = prefix + counter++;
-        }
+    AbstractComponentConfiguration setDescription(String description) {
+        requireNonNull(description, "description is null");
+        checkConfigurable();
+        this.description = description;
+        return this;
     }
 
     AbstractComponentConfiguration setName(String name) {
         requireNonNull(name, "name is null");
         checkName(name);
         checkConfigurable();
-        if (namingState == NamingState.MUTABLE) {
-            lazyInitializeName(NamingState.SET_NAME_CALLED, name);
+        if (state == State.INITIAL) {
+            lazyInitializeName(State.SET_NAME_INVOKED, name);
             // We only update this.name if wiring sets a name, never naming state
             // So make sure we do it here
-            this.namingState = NamingState.SET_NAME_CALLED;
+            this.state = State.SET_NAME_INVOKED;
             return this;
-        } else if (namingState == NamingState.SET_NAME_CALLED) {
+        } else if (state == State.SET_NAME_INVOKED) {
             throw new IllegalStateException("setName has already been invoked once");
-        } else if (namingState == NamingState.LINK_CALLED) {
+        } else if (state == State.LINK_INVOKED) {
             throw new IllegalStateException("Cannot call this method after containerConfiguration.link has been invoked");
-        } else if (namingState == NamingState.NEW_COMPONENT_CALLED) {
+        } else if (state == State.INSTALL_INVOKED) {
             // How this work @Install????
             // Maybe we can have a installFromScan method(), that is implicit called from the end of the configure method
             throw new IllegalStateException("Cannot call this method after installing new components in the container");
         } else /* if (namingState == NamingState.GET_NAME_CALLED) */ {
-            throw new IllegalStateException("Cannot call this method after calling getName()");
+            throw new IllegalStateException("Cannot call #setName(String) after #getName() has been invoked.");
+        }
+    }
+
+    public ComponentPath path() {
+        // Technically we don't need to do this for root containers. However, its more consistent.
+        // TODO freeze current componentName
+        lazyInitializeName(State.PATH_INVOKED, null);
+        if (parent == null) {
+            return ComponentPath.ROOT;
+        }
+        ArrayList<String> l = new ArrayList<>();
+        path0(l);
+        return new DefaultComponentPath(l.toArray(e -> new String[e]));
+    }
+
+    public void path0(ArrayList<String> addTo) {
+        if (parent != null) {
+            parent.path0(addTo);
+            addTo.add(requireNonNull(name));
         }
     }
 
@@ -219,20 +212,31 @@ abstract class AbstractComponentConfiguration {
         return name;
     }
 
-    NamingState namingState = NamingState.MUTABLE;
+    enum E {
+        BY_SET, BY_WIRE, IMPLICIT
+    }
 
-    enum NamingState {
-        /** */
-        MUTABLE,
+    enum State {
 
-        /** Used has called {@link ComponentConfiguration#getName()}. */
-        GET_NAME_CALLED, SET_NAME_CALLED,
+        /** The initial state. */
+        INITIAL,
+
+        /** {@link ComponentConfiguration#getName()} or {@link ContainerConfiguration#getName()} has been invoked. */
+        GET_NAME_INVOKED,
+
+        /** One of the install component methods has been invoked. */
+        INSTALL_INVOKED,
+
+        /** {@link ContainerConfiguration#link(AnyBundle, app.packed.container.Wirelet...)} has been invoked. */
+        LINK_INVOKED,
+
+        /** One of the install component methods has been invoked. */
+        PATH_INVOKED,
 
         /** */
-        LINK_CALLED,
+        SET_NAME_INVOKED,
+
         /** */
-        NEW_COMPONENT_CALLED
-        /* FINALIZED, we just check configurable */
-        ;
+        FINAL;
     }
 }

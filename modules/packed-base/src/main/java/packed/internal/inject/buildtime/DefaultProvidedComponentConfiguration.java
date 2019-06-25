@@ -17,6 +17,7 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
@@ -120,5 +121,11 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
         dcc.checkConfigurable();
         component.setName(name);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return component.path();
     }
 }

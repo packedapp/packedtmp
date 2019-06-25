@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.app.App;
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 
@@ -133,6 +134,13 @@ public interface ContainerConfiguration {
      * @return the new layer
      */
     ContainerLayer newLayer(String name, ContainerLayer... dependencies);
+
+    /**
+     * Returns the component path of the container.
+     * 
+     * @return the component path of the container
+     */
+    ComponentPath path();
 
     /**
      * Sets the description of this container.

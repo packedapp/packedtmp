@@ -19,6 +19,7 @@ import app.packed.app.App;
 import app.packed.app.AppWirelets;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.component.ComponentPath;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -98,6 +99,10 @@ public abstract class Bundle extends AnyBundle {
      */
     protected final <T> ServiceConfiguration<T> export(Class<T> key) {
         return injector().export(key);
+    }
+
+    protected final ComponentPath path() {
+        return configuration().path();
     }
 
     /**

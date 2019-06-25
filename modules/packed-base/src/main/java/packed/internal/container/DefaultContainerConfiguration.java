@@ -90,7 +90,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         configure();
         finish2ndPass();
         builder.setBundleDescription(description);
-        builder.setName(name);
+        builder.setName(getName());
         for (Extension<?> e : extensions.values()) {
             e.buildBundle(builder);
         }
@@ -150,7 +150,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public void link(AnyBundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
 
-        prepareNewComponent(NamingState.LINK_CALLED);
+        lazyInitializeName(State.LINK_INVOKED, null);
+        prepareNewComponent(State.LINK_INVOKED);
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
@@ -188,7 +189,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public void finish2ndPass() {
         // Technically we should have a finish statement here, but dont need it
-        prepareNewComponent(NamingState.GET_NAME_CALLED);
+        prepareNewComponent(State.GET_NAME_INVOKED);
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
@@ -240,7 +241,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(factory.rawType());
 
         // All validation should be done by here..
-        prepareNewComponent(NamingState.NEW_COMPONENT_CALLED);
+        prepareNewComponent(State.INSTALL_INVOKED);
 
         DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
                 this, descriptor);
@@ -250,11 +251,16 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public ComponentConfiguration install(Object instance) {
+        // TODO should we allow installing bundles in this way?????
+        // Or any other ContainerSource... Basically link(ContainerSource) <- without wirelets....
+        // I'm not sure.... Should we allow install(HelloWorldBundle.class)
+        //// Nah we don't allow setting the name after we have finished...
+
         requireNonNull(instance, "instance is null");
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(instance.getClass());
 
         // All validation should be done by here..
-        prepareNewComponent(NamingState.NEW_COMPONENT_CALLED);
+        prepareNewComponent(State.INSTALL_INVOKED);
 
         DefaultComponentConfiguration dcc = current = new FixedInstanceComponentConfiguration(
                 configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor, instance);
@@ -263,7 +269,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return dcc;
     }
 
-    private void prepareNewComponent(NamingState state) {
+    private void prepareNewComponent(State state) {
         if (current != null) {
             current.onFreeze();
         }
@@ -368,4 +374,5 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public BuildContext buildContext() {
         return buildContext;
     }
+
 }

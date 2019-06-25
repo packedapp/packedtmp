@@ -42,10 +42,7 @@ public interface ComponentConfiguration {
      * 
      * @return the component path
      */
-    default ComponentPath path() {
-
-        throw new UnsupportedOperationException();
-    }
+    ComponentPath path();
 
     // Tror tit man godt selv vil instantiere den...
     default <T extends FeatureHolder<?, ?>> T addFeature(Class<T> featureType) {

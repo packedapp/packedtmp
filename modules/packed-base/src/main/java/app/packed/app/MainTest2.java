@@ -16,39 +16,33 @@
 package app.packed.app;
 
 import app.packed.container.Bundle;
-import app.packed.container.ContainerImage;
 
 /**
  *
  */
-public class MainTest extends Bundle {
+public class MainTest2 extends Bundle {
 
     @Override
     protected void configure() {
-        install(new MyMain());
-        System.out.println(path());
+        link(new MyMain());
     }
 
     public static void main(String[] args) {
-        var app = App.of(new MainTest());
-        app.stream().forEach(e -> System.out.println(e.path()));
-
-        ContainerImage i = ContainerImage.of(new MainTest());
-
-        System.out.println("-----");
-        app = App.of(i);
-        app.stream().forEach(e -> System.out.println(e.path()));
-        app = App.of(i);
-        System.out.println("-----");
-        app.stream().forEach(e -> System.out.println(e.path()));
+        App.of(new MainTest2());
     }
 
-    static class MyMain {
+    static class MyMain extends Bundle {
+
+        @Override
+        protected void configure() {
+            System.out.println(path());
+            System.out.println(install("foo").path());
+            System.out.println(install(334).path());
+        }
 
         @Main
         public static void say() {
             System.out.println("HelloWorld");
-
         }
     }
 }

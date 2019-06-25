@@ -15,10 +15,8 @@
  */
 package app.packed.component;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Iterator;
+import java.util.stream.IntStream;
 
 import app.packed.util.Nullable;
 
@@ -35,7 +33,44 @@ import app.packed.util.Nullable;
  * This interface will be extended in the future with additional methods.
  */
 // Iteralble Path??? Hmm, er det fulde paths eller del paths??? Den er lidt forvirrende
-public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>, CharSequence {
+public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<Path>, */ CharSequence {
+
+    /** {@inheritDoc} */
+    @Override
+    default int compareTo(ComponentPath o) {
+        // TODO Auto-generated method stub
+        return toString().compareTo(o.toString());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default int length() {
+        return toString().length();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default char charAt(int index) {
+        return toString().charAt(index);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default CharSequence subSequence(int start, int end) {
+        return toString().subSequence(start, end);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default IntStream chars() {
+        return toString().chars();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default IntStream codePoints() {
+        return toString().codePoints();
+    }
 
     /** A component path representing the root of a hierarchy. */
     static final ComponentPath ROOT = new ComponentPath() {
@@ -70,11 +105,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, Iterable<Path>
         @Override
         public boolean isRoot() {
             return true;
-        }
-
-        @Override
-        public Iterator<Path> iterator() {
-            return Collections.emptyIterator();
         }
 
         /** {@inheritDoc} */
