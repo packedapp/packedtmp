@@ -249,8 +249,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     }
 
-    DefaultComponentConfiguration current;
-
     public ComponentConfiguration install(Object instance) {
         requireNonNull(instance, "instance is null");
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(instance.getClass());
@@ -287,15 +285,15 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public ContainerConfiguration setDescription(String description) {
-        setDescription0(description);
+    public DefaultContainerConfiguration setDescription(String description) {
+        super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerConfiguration setName(String name) {
-        setName0(name);
+    public DefaultContainerConfiguration setName(String name) {
+        super.setName(name);
         return this;
     }
 

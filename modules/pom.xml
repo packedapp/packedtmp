@@ -63,11 +63,16 @@
                 <version>2.3.0</version>
               </dependency>
             </dependencies>
-      </plugin>
+      </plugin><!--
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.2</version>
+        <configuration>
+          <excludes>
+            <exclude>packed/internal/asm/**/*</exclude>
+          </excludes>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -83,7 +88,7 @@
           </execution>
         </executions>
       </plugin>
-      <!--  -->
+        -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>

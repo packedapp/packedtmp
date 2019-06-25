@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.AnyBundle;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
@@ -56,6 +57,8 @@ abstract class AbstractComponentConfiguration {
 
     }
 
+    DefaultComponentConfiguration current;
+
     public ConfigSite configurationSite() {
         return site;
     }
@@ -73,7 +76,7 @@ abstract class AbstractComponentConfiguration {
         return name;
     }
 
-    public AbstractComponentConfiguration setDescription0(String description) {
+    AbstractComponentConfiguration setDescription(String description) {
         // ContainerConfiguration does not currently extend ComponentConfiguration
         requireNonNull(description, "description is null");
         checkConfigurable();
@@ -103,6 +106,21 @@ abstract class AbstractComponentConfiguration {
         }
         if (n == null) {
             if (parent == null) {
+                if (this instanceof DefaultContainerConfiguration) {
+                    @Nullable
+                    AnyBundle bundle = ((DefaultContainerConfiguration) this).bundle;
+                    if (bundle != null) {
+                        String nnn = bundle.getClass().getSimpleName();
+                        if (nnn.endsWith("Bundle")) {
+                            nnn = nnn.substring(0, nnn.length() - 6);
+                        }
+                        if (nnn.length() > 0) {
+                            // checkName, if not just App
+                            this.name = nnn;
+                            return;
+                        }
+                    }
+                }
                 this.name = "App";
                 return; // TODO fix
             }
@@ -164,7 +182,7 @@ abstract class AbstractComponentConfiguration {
         }
     }
 
-    AbstractComponentConfiguration setName0(String name) {
+    AbstractComponentConfiguration setName(String name) {
         requireNonNull(name, "name is null");
         checkName(name);
         checkConfigurable();
@@ -215,7 +233,6 @@ abstract class AbstractComponentConfiguration {
         /** */
         NEW_COMPONENT_CALLED
         /* FINALIZED, we just check configurable */
-
         ;
     }
 }

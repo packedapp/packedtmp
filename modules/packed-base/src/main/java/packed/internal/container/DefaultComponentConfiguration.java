@@ -61,15 +61,15 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration setDescription(@Nullable String description) {
-        super.setDescription0(description);
+    public DefaultComponentConfiguration setDescription(@Nullable String description) {
+        super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentConfiguration setName(@Nullable String name) {
-        super.setName0(name);
+    public DefaultComponentConfiguration setName(@Nullable String name) {
+        super.setName(name);
         return this;
     }
 }
