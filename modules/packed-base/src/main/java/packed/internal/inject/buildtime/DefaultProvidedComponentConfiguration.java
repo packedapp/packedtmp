@@ -46,7 +46,7 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
         this.dcc = requireNonNull(dcc);
         this.service = requireNonNull(service);
         this.component = component;
-        component.serviceNode = service;
+        // component.serviceNode = service;
     }
 
     /** {@inheritDoc} */

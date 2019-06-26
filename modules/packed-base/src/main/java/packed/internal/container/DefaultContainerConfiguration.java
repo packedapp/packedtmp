@@ -172,11 +172,10 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     private void configure() {
-        if (hasBeenCalled) {
+        if (state == State.FINAL) {
             return;
             // throw new IllegalStateException();
         }
-        hasBeenCalled = true;
         if (bundle != null) {
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
@@ -184,9 +183,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             AppPackedContainerSupport.invoke().doConfigure(bundle, this);
         }
         getName();// Initializes the name
+        this.state = State.FINAL;
     }
-
-    private boolean hasBeenCalled;
 
     public void finish2ndPass() {
         // Technically we should have a finish statement here, but dont need it
@@ -261,7 +259,13 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     private void prepareNewComponent(State state) {
         if (currentComponent != null) {
-            currentComponent.onFreeze();
+            if (currentComponent.name == null && currentComponent.ccd != null) {
+                currentComponent.name = currentComponent.ccd.defaultPrefix();
+            }
+            if (currentComponent.containerConfiguration.children == null) {
+                currentComponent.containerConfiguration.children = new LinkedHashMap<>();
+            }
+            currentComponent.containerConfiguration.children.put(currentComponent.name, currentComponent);
         }
     }
 

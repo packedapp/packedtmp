@@ -17,12 +17,9 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.LinkedHashMap;
-
 import app.packed.component.ComponentConfiguration;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
-import packed.internal.inject.buildtime.BuildtimeServiceNode;
 
 /**
  *
@@ -34,8 +31,6 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
     /** The configuration of the container that this component has been installed into. */
     final DefaultContainerConfiguration containerConfiguration;
 
-    public BuildtimeServiceNode<?> serviceNode;
-
     public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
         super(site, containerConfiguration);
         this.containerConfiguration = requireNonNull(containerConfiguration);
@@ -46,16 +41,6 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
         super(site, containerConfiguration);
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.ccd = ccd;
-    }
-
-    public void onFreeze() {
-        if (name == null && ccd != null) {
-            name = ccd.defaultPrefix();
-        }
-        if (containerConfiguration.children == null) {
-            containerConfiguration.children = new LinkedHashMap<>();
-        }
-        containerConfiguration.children.put(name, this);
     }
 
     /** {@inheritDoc} */

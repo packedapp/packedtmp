@@ -54,7 +54,7 @@ abstract class AbstractComponentConfiguration {
     private final InternalConfigurationSite site;
 
     /** The state of this configuration. */
-    private State state = State.INITIAL;
+    State state = State.INITIAL;
 
     /** The depth of the component in the hierarchy. */
     private final int depth;
