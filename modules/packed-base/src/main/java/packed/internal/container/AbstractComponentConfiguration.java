@@ -38,6 +38,9 @@ abstract class AbstractComponentConfiguration {
     @Nullable
     DefaultComponentConfiguration currentComponent;
 
+    /** The depth of the component in the hierarchy. */
+    private final int depth;
+
     /** The description of the component. */
     @Nullable
     String description;
@@ -56,9 +59,6 @@ abstract class AbstractComponentConfiguration {
     /** The state of this configuration. */
     State state = State.INITIAL;
 
-    /** The depth of the component in the hierarchy. */
-    private final int depth;
-
     /**
      * Creates a new abstract component configuration
      * 
@@ -73,12 +73,6 @@ abstract class AbstractComponentConfiguration {
         this.depth = parent == null ? 0 : parent.depth + 1;
     }
 
-    public final void checkConfigurable() {
-        if (state == State.FINAL) {
-            throw new IllegalStateException();
-        }
-    }
-
     void addVerifiedChild(AbstractComponentConfiguration configuration) {
         if (children == null) {
             children = new LinkedHashMap<>();
@@ -86,73 +80,14 @@ abstract class AbstractComponentConfiguration {
         children.put(configuration.name, configuration);
     }
 
+    public final void checkConfigurable() {
+        if (state == State.FINAL) {
+            throw new IllegalStateException();
+        }
+    }
+
     public final InternalConfigurationSite configurationSite() {
         return site;
-    }
-
-    @Nullable
-    public final String getDescription() {
-        return description;
-    }
-
-    public final String getName() {
-        String n = name;
-        if (n == null) {
-            lazyInitializeName(State.GET_NAME_INVOKED, null);
-        }
-        return name;
-    }
-
-    private void lazyInitializeName(E e, String name) {
-        if (!name.endsWith("?")) {
-            if (parent == null || parent.children == null || !parent.children.containsKey(name)) {
-                this.name = name;
-                return;
-            }
-            throw new RuntimeException("Name already exist " + name);
-        }
-
-        String prefix = name.substring(0, name.length() - 1);
-        String newName = prefix;
-        int counter = 0;
-        for (;;) {
-            if (parent == null || parent.children == null || !parent.children.containsKey(newName)) {
-                this.name = newName;
-                return;
-            }
-            // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
-            // But it could also be a host???
-            newName = prefix + counter++;
-        }
-    }
-
-    protected void lazyInitializeName(State reason, String name) {
-        if (this.name != null) {
-            return;
-        }
-        E e = E.IMPLICIT;
-        if (name != null) {
-            e = E.BY_SET;
-        }
-        String n = name;
-        if (this instanceof DefaultContainerConfiguration) {
-            Optional<NameWirelet> o = ((DefaultContainerConfiguration) this).wirelets().last(NameWirelet.class);
-            if (o.isPresent()) {
-                n = o.get().name;
-                e = E.BY_WIRE;
-            }
-        }
-        if (n == null) {
-
-            if (parent == null) {
-                this.name = defaultName();
-                return;
-            }
-            n = defaultName();
-        }
-
-        lazyInitializeName(e, n);
-        this.state = reason;
     }
 
     private String defaultName() {
@@ -178,6 +113,55 @@ abstract class AbstractComponentConfiguration {
             return ((DefaultComponentConfiguration) this).ccd.defaultPrefix();
         }
 
+    }
+
+    @Nullable
+    public final String getDescription() {
+        return description;
+    }
+
+    public final String getName() {
+        String n = name;
+        if (n == null) {
+            lazyInitializeName(State.GET_NAME_INVOKED, null);
+        }
+        return name;
+    }
+
+    protected void lazyInitializeName(State reason, String setName) {
+        if (this.name != null) {
+            return;
+        }
+        String n = setName;
+        if (this instanceof DefaultContainerConfiguration) {
+            Optional<NameWirelet> o = ((DefaultContainerConfiguration) this).wirelets().last(NameWirelet.class);
+            if (o.isPresent()) {
+                n = o.get().name;
+            }
+        }
+
+        boolean isFree = false;
+        if (n == null) {
+            n = defaultName();
+            isFree = true;
+        } else if (n.endsWith("?")) {
+            n = n.substring(0, n.length() - 1);
+            isFree = true;
+        }
+
+        if (parent != null && parent.children != null && parent.children.containsKey(n)) {
+            if (!isFree) {
+                throw new RuntimeException("Name already exist " + n);
+            }
+            int counter = 1;
+            String newName;
+            do {
+                newName = n + counter++;
+            } while (!parent.children.containsKey(newName));
+            n = newName;
+        }
+        this.name = n;
+        this.state = reason;
     }
 
     public final ComponentPath path() {
@@ -241,17 +225,16 @@ abstract class AbstractComponentConfiguration {
         return name;
     }
 
-    enum E {
-        BY_SET, BY_WIRE, IMPLICIT
-    }
-
     enum State {
 
-        /** The initial state. */
-        INITIAL,
+        /** */
+        FINAL,
 
         /** {@link ComponentConfiguration#getName()} or {@link ContainerConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
+
+        /** The initial state. */
+        INITIAL,
 
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
@@ -263,9 +246,6 @@ abstract class AbstractComponentConfiguration {
         PATH_INVOKED,
 
         /** Set name has been invoked. */
-        SET_NAME_INVOKED,
-
-        /** */
-        FINAL;
+        SET_NAME_INVOKED;
     }
 }
