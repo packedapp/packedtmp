@@ -39,7 +39,7 @@ public class DefaultContainerImage implements ContainerImage {
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return dcc.name;
+        return dcc.getName();
     }
 
     /** {@inheritDoc} */

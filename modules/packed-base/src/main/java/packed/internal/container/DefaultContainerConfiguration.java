@@ -86,7 +86,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         configure();
         finish2ndPass();
-        builder.setBundleDescription(description);
+        builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (Extension<?> e : extensions.values()) {
             e.buildBundle(builder);
@@ -138,7 +138,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // type.
 
         requireNonNull(bundle, "bundle is null");
-        lazyInitializeName(State.LINK_INVOKED, null);
+        initializeName(State.LINK_INVOKED, null);
         prepareNewComponent(State.LINK_INVOKED);
 
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
@@ -147,19 +147,15 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // java.lang.StackOverflowError instead of an infinite loop.
         DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, null, InternalContainerSource.of(bundle), wirelets);
         dcc.configure();
-        addVerifiedChild(dcc);
+        addChild(dcc);
     }
 
     private void configure() {
         if (state == State.FINAL) {
             return;
-            // throw new IllegalStateException();
         }
-        AnyBundle bundle = null;
         if (source.source instanceof AnyBundle) {
-            bundle = (AnyBundle) source.source;
-        }
-        if (bundle != null) {
+            AnyBundle bundle = (AnyBundle) source.source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
@@ -235,7 +231,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new FixedInstanceComponentConfiguration(
+        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(
                 configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor, instance);
 
         descriptor.initialize(this, dcc);
@@ -247,7 +243,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             if (currentComponent.name == null && currentComponent.ccd != null) {
                 currentComponent.name = currentComponent.ccd.defaultPrefix();
             }
-            addVerifiedChild(currentComponent);
+            addChild(currentComponent);
         }
     }
 

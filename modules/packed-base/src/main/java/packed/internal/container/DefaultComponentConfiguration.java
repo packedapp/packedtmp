@@ -15,8 +15,6 @@
  */
 package packed.internal.container;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.ComponentConfiguration;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
@@ -28,18 +26,8 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
 
     final ComponentClassDescriptor ccd;
 
-    /** The configuration of the container that this component has been installed into. */
-    final DefaultContainerConfiguration containerConfiguration;
-
-    public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration) {
-        super(site, containerConfiguration);
-        this.containerConfiguration = requireNonNull(containerConfiguration);
-        this.ccd = null;
-    }
-
     public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
         super(site, containerConfiguration);
-        this.containerConfiguration = requireNonNull(containerConfiguration);
         this.ccd = ccd;
     }
 

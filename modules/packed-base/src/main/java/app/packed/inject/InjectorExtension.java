@@ -257,7 +257,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
         builder.nodes2.add(node);
-        return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0()), node);
+        return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0(), null), node);
     }
 
     /**
@@ -285,7 +285,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         scanForProvides(instance.getClass(), sc);
         sc.as((Key) Key.of(instance.getClass()));
         builder.nodes2.add(sc);
-        return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0()), sc);
+        return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0(), null), sc);
     }
 
     public <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {

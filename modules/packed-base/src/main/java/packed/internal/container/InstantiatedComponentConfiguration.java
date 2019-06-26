@@ -23,7 +23,7 @@ import packed.internal.config.site.InternalConfigurationSite;
 /**
  *
  */
-public class FixedInstanceComponentConfiguration extends DefaultComponentConfiguration {
+public class InstantiatedComponentConfiguration extends DefaultComponentConfiguration {
 
     final Object instance;
 
@@ -32,7 +32,7 @@ public class FixedInstanceComponentConfiguration extends DefaultComponentConfigu
      * @param containerConfiguration
      * @param ccd
      */
-    public FixedInstanceComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration,
+    public InstantiatedComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration,
             ComponentClassDescriptor ccd, Object instance) {
         super(site, containerConfiguration, ccd);
         this.instance = requireNonNull(instance);

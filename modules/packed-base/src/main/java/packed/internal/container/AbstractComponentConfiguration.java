@@ -28,10 +28,10 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
 
-/** An abstract base class for the configuration of a component. */
+/** An abstract base class for a component configuration object. */
 abstract class AbstractComponentConfiguration {
 
-    /** Any children this component might have, in order of insertion. */
+    /** The children of this component (lazily initialized), in order of insertion. */
     @Nullable
     LinkedHashMap<String, AbstractComponentConfiguration> children;
 
@@ -43,21 +43,24 @@ abstract class AbstractComponentConfiguration {
 
     /** The description of the component. */
     @Nullable
-    String description;
+    private String description;
 
     /** The name of the component. */
     @Nullable
     String name;
 
-    /** Any parent that the component has. */
+    /** The parent of this component, or null if a root component. */
     @Nullable
-    final AbstractComponentConfiguration parent;
+    private final AbstractComponentConfiguration parent;
 
-    /** The configuration site of the component. */
+    /** The configuration site of this component. */
     private final InternalConfigurationSite site;
 
     /** The state of this configuration. */
     State state = State.INITIAL;
+
+    /** Whether or not the name can be postfix'able. Useful for images only */
+    boolean isNamePostfixable = false;
 
     /**
      * Creates a new abstract component configuration
@@ -73,7 +76,7 @@ abstract class AbstractComponentConfiguration {
         this.depth = parent == null ? 0 : parent.depth + 1;
     }
 
-    void addVerifiedChild(AbstractComponentConfiguration configuration) {
+    void addChild(AbstractComponentConfiguration configuration) {
         if (children == null) {
             children = new LinkedHashMap<>();
         }
@@ -90,7 +93,52 @@ abstract class AbstractComponentConfiguration {
         return site;
     }
 
-    private String defaultName() {
+    @Nullable
+    public final String getDescription() {
+        return description;
+    }
+
+    public final String getName() {
+        return initializeName(State.GET_NAME_INVOKED, null);
+    }
+
+    protected String initializeName(State state, String setName) {
+        String n = name;
+        if (n != null) {
+            return n;
+        }
+        n = setName;
+        if (this instanceof DefaultContainerConfiguration) {
+            Optional<NameWirelet> o = ((DefaultContainerConfiguration) this).wirelets().last(NameWirelet.class);
+            if (o.isPresent()) {
+                n = o.get().name;
+            }
+        }
+
+        boolean isFree = false;
+        if (n == null) {
+            n = initializeNameDefaultName();
+            isFree = true;
+        } else if (n.endsWith("?")) {
+            n = n.substring(0, n.length() - 1);
+            isFree = true;
+        }
+
+        if (parent != null && parent.children != null && parent.children.containsKey(n)) {
+            if (!isFree) {
+                throw new RuntimeException("Name already exist " + n);
+            }
+            int counter = 1;
+            String prefix = n;
+            do {
+                n = prefix + counter++;
+            } while (!parent.children.containsKey(n));
+        }
+        this.state = state;
+        return this.name = n;
+    }
+
+    private String initializeNameDefaultName() {
         if (this instanceof DefaultContainerConfiguration) {
             @Nullable
             AnyBundle bundle = (@Nullable AnyBundle) ((DefaultContainerConfiguration) this).source.source;
@@ -115,57 +163,14 @@ abstract class AbstractComponentConfiguration {
 
     }
 
-    @Nullable
-    public final String getDescription() {
-        return description;
-    }
-
-    public final String getName() {
-        String n = name;
-        if (n == null) {
-            lazyInitializeName(State.GET_NAME_INVOKED, null);
-        }
-        return name;
-    }
-
-    protected void lazyInitializeName(State reason, String setName) {
-        if (this.name != null) {
-            return;
-        }
-        String n = setName;
-        if (this instanceof DefaultContainerConfiguration) {
-            Optional<NameWirelet> o = ((DefaultContainerConfiguration) this).wirelets().last(NameWirelet.class);
-            if (o.isPresent()) {
-                n = o.get().name;
-            }
-        }
-
-        boolean isFree = false;
-        if (n == null) {
-            n = defaultName();
-            isFree = true;
-        } else if (n.endsWith("?")) {
-            n = n.substring(0, n.length() - 1);
-            isFree = true;
-        }
-
-        if (parent != null && parent.children != null && parent.children.containsKey(n)) {
-            if (!isFree) {
-                throw new RuntimeException("Name already exist " + n);
-            }
-            int counter = 1;
-            String newName;
-            do {
-                newName = n + counter++;
-            } while (!parent.children.containsKey(newName));
-            n = newName;
-        }
-        this.name = n;
-        this.state = reason;
-    }
-
+    /**
+     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
+     * path returned does not maintain any reference to this configuration object.
+     * 
+     * @return the path of this configuration.
+     */
     public final ComponentPath path() {
-        lazyInitializeName(State.PATH_INVOKED, null);// make sure setName cannot be called anymore
+        initializeName(State.PATH_INVOKED, null);
         switch (depth) {
         case 0:
             return ComponentPath.ROOT;
@@ -190,24 +195,24 @@ abstract class AbstractComponentConfiguration {
 
     AbstractComponentConfiguration setName(String name) {
         checkName(name);
-        checkConfigurable();
-        if (state == State.INITIAL) {
-            lazyInitializeName(State.SET_NAME_INVOKED, name);
-            // We only update this.name if wiring sets a name, never naming state
-            // So make sure we do it here
-            this.state = State.SET_NAME_INVOKED;
+        switch (state) {
+        case INITIAL:
+            initializeName(State.SET_NAME_INVOKED, name);
             return this;
-        } else if (state == State.SET_NAME_INVOKED) {
-            throw new IllegalStateException("setName has already been invoked once");
-        } else if (state == State.LINK_INVOKED) {
-            throw new IllegalStateException("Cannot call this method after containerConfiguration.link has been invoked");
-        } else if (state == State.INSTALL_INVOKED) {
-            // How this work @Install????
-            // Maybe we can have a installFromScan method(), that is implicit called from the end of the configure method
+        case FINAL:
+            checkConfigurable();
+        case GET_NAME_INVOKED:
+            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #getName()");
+        case PATH_INVOKED:
+            throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #path()");
+        case INSTALL_INVOKED:
             throw new IllegalStateException("Cannot call this method after installing new components in the container");
-        } else /* if (namingState == NamingState.GET_NAME_CALLED) */ {
-            throw new IllegalStateException("Cannot call #setName(String) after #getName() has been invoked.");
+        case LINK_INVOKED:
+            throw new IllegalStateException("Cannot call this method after containerConfiguration.link has been invoked");
+        case SET_NAME_INVOKED:
+            throw new IllegalStateException("Can only call #setName(String) once");
         }
+        throw new InternalError();
     }
 
     /**
