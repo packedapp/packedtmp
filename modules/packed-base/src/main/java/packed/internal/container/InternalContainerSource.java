@@ -15,7 +15,10 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.container.AnyBundle;
+import app.packed.container.ContainerSource;
 
 /**
  *
@@ -33,8 +36,17 @@ import app.packed.container.AnyBundle;
 
 public class InternalContainerSource {
 
-    public InternalContainerSource appOf(AnyBundle bundle) {
-        throw new UnsupportedOperationException();
+    final Class<?> type;
+    final ContainerSource source;
+
+    InternalContainerSource(ContainerSource source, Class<?> type) {
+        this.source = source;
+        this.type = requireNonNull(type);
+    }
+
+    public InternalContainerSource of(ContainerSource source) {
+        AnyBundle b = (AnyBundle) source;
+        return new InternalContainerSource(b, source.getClass());
     }
 
     public InternalContainerSource link(AnyBundle bundle) {
