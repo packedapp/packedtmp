@@ -36,24 +36,24 @@ public class SimpleInjectorImportsTest {
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
-        Injector i = Injector.of(c -> c.provide("X"));
-        npe(() -> Injector.of(c -> c.provideAll((Injector) null)), "injector");
-        npe(() -> Injector.of(c -> c.provideAll(i, (InternalServiceWirelets[]) null)), "wirelets");
+        Injector i = Injector.configure(c -> c.provide("X"));
+        npe(() -> Injector.configure(c -> c.provideAll((Injector) null)), "injector");
+        npe(() -> Injector.configure(c -> c.provideAll(i, (InternalServiceWirelets[]) null)), "wirelets");
 
         // TODO test error message
-        assertThatNullPointerException().isThrownBy(() -> Injector.of(c -> c.provideAll(i, OldServiceWirelets.NO_IMPORTS, null)));
+        assertThatNullPointerException().isThrownBy(() -> Injector.configure(c -> c.provideAll(i, OldServiceWirelets.NO_IMPORTS, null)));
     }
 
     /** Tests that we can import no services. */
     @Test
     @Disabled("After wiring refactoring")
     public void import0() {
-        Injector i1 = Injector.of(c -> {
+        Injector i1 = Injector.configure(c -> {
             c.provide("X");
             c.provide(123);
         });
 
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.provideAll(i1, OldServiceWirelets.NO_IMPORTS);
         });
         assertThat(i.services().count()).isEqualTo(0L);
@@ -63,9 +63,9 @@ public class SimpleInjectorImportsTest {
     @Test
     @Disabled
     public void import1() {
-        Injector i1 = Injector.of(c -> c.provide("X"));
+        Injector i1 = Injector.configure(c -> c.provide("X"));
 
-        Injector i = Injector.of(c -> c.provideAll(i1));
+        Injector i = Injector.configure(c -> c.provideAll(i1));
         assertThat(i.use(String.class)).isEqualTo("X");
 
     }
@@ -74,9 +74,9 @@ public class SimpleInjectorImportsTest {
     @Test
     @Disabled("After wiring refactoring")
     public void rebindChaining() {
-        Injector i1 = Injector.of(c -> c.provide("X"));
+        Injector i1 = Injector.configure(c -> c.provide("X"));
 
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.provideAll(i1, OldServiceWirelets.rebindImport(new Key<String>() {}, new Key<@Left String>() {}),
                     OldServiceWirelets.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
         });
@@ -89,10 +89,10 @@ public class SimpleInjectorImportsTest {
     @Disabled("After wiring refactoring")
     @Test
     public void rebindImports() {
-        Injector i1 = Injector.of(c -> c.provide("X"));
-        Injector i2 = Injector.of(c -> c.provide("Y"));
+        Injector i1 = Injector.configure(c -> c.provide("X"));
+        Injector i2 = Injector.configure(c -> c.provide("Y"));
 
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.provideAll(i1, OldServiceWirelets.rebindImport(new Key<String>() {}, new Key<@Left String>() {}));
             c.provideAll(i2, OldServiceWirelets.rebindImport(new Key<String>() {}, new Key<@Right String>() {}));
         });
@@ -105,10 +105,10 @@ public class SimpleInjectorImportsTest {
     @Test
     @Disabled("After wiring refactoring")
     public void rebindImports2() {
-        Injector i1 = Injector.of(c -> c.provide("X").as(new Key<@Left String>() {}));
-        Injector i2 = Injector.of(c -> c.provide("Y").as(new Key<@Right String>() {}));
+        Injector i1 = Injector.configure(c -> c.provide("X").as(new Key<@Left String>() {}));
+        Injector i2 = Injector.configure(c -> c.provide("Y").as(new Key<@Right String>() {}));
 
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.provideAll(i1);
             c.provideAll(i2);
         });
@@ -116,7 +116,7 @@ public class SimpleInjectorImportsTest {
         assertThat(i.use(new Key<@Right String>() {})).isEqualTo("Y");
 
         // Now let us switch them around
-        i = Injector.of(c -> {
+        i = Injector.configure(c -> {
             c.provideAll(i1, OldServiceWirelets.rebindImport(new Key<@Left String>() {}, new Key<@Right String>() {}));
             c.provideAll(i2, OldServiceWirelets.rebindImport(new Key<@Right String>() {}, new Key<@Left String>() {}));
         });

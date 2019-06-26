@@ -49,7 +49,7 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
         for (int i = 0; i < providers.length; i++) {
             RuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
             ProvideHelper is = null;
-            ProvideHelper.of(Injector.of(c -> {}), node.dependencies.get(i));
+            ProvideHelper.of(Injector.configure(c -> {}), node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);
         }
         // Create local injection site for each parameter.

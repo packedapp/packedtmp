@@ -34,8 +34,8 @@ import app.packed.util.MethodDescriptor;
 // Do we want to use it as a key... Or a class
 //// I think it depends
 /// Can
-
 // Maybe we can opti
+
 public abstract class Feature<A, B> {
 
     protected A fromComponent(Component c) {

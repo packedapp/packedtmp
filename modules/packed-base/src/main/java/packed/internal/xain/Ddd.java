@@ -15,26 +15,23 @@
  */
 package packed.internal.xain;
 
-import java.nio.file.Path;
+import app.packed.container.Bundle;
 
 /**
  *
  */
-public class Ddd {
 
-    @ScheduleAtFixedRate(10000)
-    static final Runnable r = () -> System.out.println("Hello");
+// AppBundle extends Bundle
+//// De der protected statiske metoder paa Bundle er lidt irriterende
+//// This
+public class Ddd extends Bundle {
 
-    @ScheduleAtFixedRate(10000)
-    public void hello() {
-        System.out.println("Hello");
+    @Override
+    public void configure() {
+        link(new JettyBundle().port(8080));
     }
 
-    public static void main(String[] args) {
-        System.out.println(Path.of("/").iterator().hasNext());
-    }
-}
+    public static void dd(JettyBundle b) {
 
-@interface ScheduleAtFixedRate {
-    long value();
+    }
 }

@@ -109,8 +109,8 @@ abstract class AbstractComponentConfiguration {
         String newName = prefix;
         int counter = 0;
         for (;;) {
-            if (parent.children == null || !parent.children.containsKey(newName)) {
-                name = newName;
+            if (parent == null || parent.children == null || !parent.children.containsKey(newName)) {
+                this.name = newName;
                 return;
             }
             // Maybe now keep track of the counter... In a prefix hashmap, Its probably benchmarking code though
@@ -142,18 +142,24 @@ abstract class AbstractComponentConfiguration {
                     AnyBundle bundle = ((DefaultContainerConfiguration) this).bundle;
                     if (bundle != null) {
                         String nnn = bundle.getClass().getSimpleName();
-                        if (nnn.endsWith("Bundle")) {
+                        if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
                             nnn = nnn.substring(0, nnn.length() - 6);
                         }
                         if (nnn.length() > 0) {
                             // checkName, if not just App
+                            // TODO need prefix
                             this.name = nnn;
                             return;
                         }
+                        if (nnn.length() == 0) {
+                            this.name = "Container";
+                            return;
+                        }
                     }
+                    this.name = "Unknown";
+                    return;
                 }
-                this.name = "App";
-                return; // TODO fix
+                throw new UnsupportedOperationException();
             }
             if (this instanceof DefaultContainerConfiguration) {
                 n = ((DefaultContainerConfiguration) this).ccc.defaultPrefix();

@@ -97,7 +97,7 @@ public class InternalParameterDescriptorTest {
     public void test2() {
         class X {}
 
-        Injector.of(c -> {
+        Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(X.class);
             c.provide(this);

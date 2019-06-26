@@ -82,7 +82,7 @@ public class FieldStaticTest {
             L = 1L;
             P = 1;
             S = 1;
-            Injector i = Injector.of(c -> {
+            Injector i = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
@@ -126,7 +126,7 @@ public class FieldStaticTest {
             L = 1L;
             P = 1;
             S = 1;
-            Injector i = Injector.of(c -> {
+            Injector i = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

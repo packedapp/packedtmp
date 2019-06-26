@@ -48,7 +48,7 @@ public class ProvideTest {
 
     @Test
     public void configurationSite() throws Throwable {
-        Injector inj = Injector.of(conf -> {
+        Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ProvidedComponentConfiguration<A> a = conf.provide(A.class);
             ProvidedComponentConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
@@ -65,7 +65,7 @@ public class ProvideTest {
 
     @Test
     public void bindInstance() {
-        Injector i = Injector.of(e -> {
+        Injector i = Injector.configure(e -> {
             ProvidedComponentConfiguration<A> sc = e.provide(A0);
             testConfiguration(sc, InstantiationMode.SINGLETON, Key.of(A.class));
         });

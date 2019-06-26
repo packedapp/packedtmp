@@ -182,7 +182,7 @@ public interface ProvideHelper {
 
     /**
      * If this helper class is created as the result of needing dependency injection. This method returns an empty optional
-     * if used from methods such as {@link App#use(Key)}.
+     * if used from methods such as {@link App#use(Class)}.
      * 
      * @return any dependency this class might have
      */

@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
@@ -48,15 +49,14 @@ import packed.internal.container.DefaultContainerImage;
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  * 
  */
-// Injector injector() vs extends Injector
-// Apps
-
+// Used to extend Injector... But just to many methods...
 // Do we expose the attachments????
+public interface App extends AutoCloseable {
 
-// Container wrapper...Hmm A descriptor as well?
-public interface App extends Injector, AutoCloseable {
-
-    /** An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. **/
+    /**
+     * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
+     * semantics as {@link #shutdown()} and can be used interchangeable.
+     **/
     @Override
     default void close() {
         shutdown();
@@ -67,23 +67,24 @@ public interface App extends Injector, AutoCloseable {
      * 
      * @return the configuration site of this application
      */
-    @Override
     ConfigSite configurationSite();
 
     /**
-     * Returns the description of this application. Or an empty optional if no description has been set
+     * Returns the description of this application. Or an empty optional if no description was set
      *
-     * @return the description of this application. Or an empty optional if no description has been set
+     * @return the description of this application. Or an empty optional if no description was set
      *
      * @see ComponentConfiguration#setDescription(String)
      */
-    @Override
     Optional<String> description();
+
+    // TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
+    Injector injector();
 
     /**
      * Returns the name of this application.
      * <p>
-     * The name is always identical to the name of the top level container in the application.
+     * The name is always identical to the name of the top level container that the application wraps.
      * <p>
      * If no name is explicitly set when configuring the application, the runtime will generate a (on a best-effort basis)
      * unique name.
@@ -92,6 +93,16 @@ public interface App extends Injector, AutoCloseable {
      * @see ContainerConfiguration#setName(String)
      */
     String name();
+
+    /**
+     * Returns the path of this application.
+     * <p>
+     * The path is always identical to the path of the top level container that the application wraps.
+     *
+     * @return the path of this application
+     * @see Component#path()
+     */
+    ComponentPath path();
 
     App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 
@@ -161,6 +172,43 @@ public interface App extends Injector, AutoCloseable {
     LifecycleOperations<? extends App> state();
 
     /**
+     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
+     * order.
+     * <p>
+     * Calling this method does not effect the lifecycle state of this application.
+     * 
+     * @return a component stream
+     */
+    ComponentStream stream();
+
+    /**
+     * @param <T>
+     *            the type of service to return
+     * @param key
+     *            the key of the service to return
+     * @return stuff
+     * @throws UnsupportedOperationException
+     *             if no service with the specified key exist
+     * @see Injector#use(Class)
+     */
+    <T> T use(Class<T> key);
+
+    /**
+     * <p>
+     * This method takes a {@link CharSequence} so it is easy to passe either a {@link String} or a {@link ComponentPath}.
+     * 
+     * @param path
+     *            the path of the component to return
+     * @throws IllegalArgumentException
+     *             if no component exists with the specified path
+     * @return a component with the specified path
+     */
+    // TODO throw UnknownPathException();;
+    Component useComponent(CharSequence path);
+
+    // If you can stop an app via shutdown. You should also be able to introspec it
+
+    /**
      * Creates a new application from the specified container source. The state of the returned application will be
      * initialized.
      *
@@ -210,15 +258,4 @@ public interface App extends Injector, AutoCloseable {
     }
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
     // Basically we unwrap exceptions accordingly to some scheme in some way
-
-    // If you can stop an app via shutdown. You should also be able to introspec it
-
-    /**
-     * Calling this method does not effect the lifecycle state of this application.
-     * 
-     * @return a component stream
-     */
-    ComponentStream stream();
-
-    Component useComponent(CharSequence path);
 }

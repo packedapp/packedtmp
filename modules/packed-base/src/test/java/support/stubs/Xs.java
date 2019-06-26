@@ -27,12 +27,12 @@ public class Xs {
 
     @Test
     public void main() {
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.provide("fooo");
             c.provide(1234);
         });
 
-        Injector i2 = Injector.of(c -> {
+        Injector i2 = Injector.configure(c -> {
             c.provideAll(i, OldServiceWirelets.peekImports(e -> {
                 new Exception().printStackTrace();
                 // System.out.println("Available " + e.getKey() + new Exception().printStackTrace());

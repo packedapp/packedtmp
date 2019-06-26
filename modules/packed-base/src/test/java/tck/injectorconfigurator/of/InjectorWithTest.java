@@ -35,7 +35,7 @@ public class InjectorWithTest {
 
     @Test
     public void get() {
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
             c.provide(A.class).as(new Key<@Left A>() {});

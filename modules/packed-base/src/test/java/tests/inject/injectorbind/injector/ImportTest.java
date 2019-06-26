@@ -37,7 +37,7 @@ public class ImportTest {
     // The import at (Xxxx) and (Yyyy) both defines are service with Key<ZoneId>
     public static void main(String[] args) {
 
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.link(new London(), OldServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("London") ZonedDateTime>() {}));
             c.link(new London(), OldServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin") ZonedDateTime>() {}));
         });

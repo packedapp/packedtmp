@@ -31,7 +31,7 @@ public class InjectorGetServiceTest {
 
     @Test
     public void isRuntimeServices() {
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(A.class);
         });

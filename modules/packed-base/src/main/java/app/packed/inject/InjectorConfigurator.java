@@ -32,7 +32,7 @@ import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#of(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike bundles
+ * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike bundles
  * all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>

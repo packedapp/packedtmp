@@ -49,8 +49,6 @@ public final class AppPackedContainerSupport {
 
         public abstract void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
 
-        public abstract DefaultContainerConfiguration getContainer(Extension<?> extension);
-
         public abstract void doConfigure(AnyBundle bundle, ContainerConfiguration configuration);
 
         /**

@@ -65,7 +65,7 @@ public class InjectorConfigurationSiteTest {
     /** Tests that the various bind operations gets the right configuration site. */
     @Test
     public void binding() {
-        Injector inj = Injector.of(conf -> {
+        Injector inj = Injector.configure(conf -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
             injectorCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(2).findFirst()).get();
             conf.lookup(MethodHandles.lookup());// The letter classes are not exported
@@ -106,11 +106,11 @@ public class InjectorConfigurationSiteTest {
      */
     @Test
     public void importServiceFrom() {
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.provide(123);
         });
 
-        Injector i2 = Injector.of(c -> {
+        Injector i2 = Injector.configure(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
             c.provideAll(i);
         });
@@ -123,7 +123,7 @@ public class InjectorConfigurationSiteTest {
         assertThat(cs.parent().get()).isSameAs(i.getDescriptor(Integer.class).get().configurationSite());
 
         // Lets make another injector and import the service yet again
-        Injector i3 = Injector.of(c -> {
+        Injector i3 = Injector.configure(c -> {
             sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
             c.provideAll(i2);
         });

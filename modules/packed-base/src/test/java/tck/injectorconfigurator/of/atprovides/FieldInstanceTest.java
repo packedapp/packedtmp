@@ -115,7 +115,7 @@ public class FieldInstanceTest {
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> Injector.of(c -> {
+        a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
             c.provide(PrototypeField.class).prototype();
@@ -125,7 +125,7 @@ public class FieldInstanceTest {
     }
 
     private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
-        return Injector.of(c -> {
+        return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });

@@ -236,6 +236,8 @@ public class BundleDescriptor {
      *            the bundle to return a descriptor for
      * @return a descriptor for the specified bundle
      */
+    // ContainerSource????
+    // For example, we should be able to take an image...
     public static BundleDescriptor of(Bundle bundle) {
         return ContainerFactory.descriptorOf(bundle);
     }

@@ -65,6 +65,10 @@ final class InternalContainer extends AbstractComponent implements Component {
         }
     }
 
+    public Injector injector() {
+        return injector;
+    }
+
     @Override
     public ComponentStream stream() {
         return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(AbstractComponent::stream)));

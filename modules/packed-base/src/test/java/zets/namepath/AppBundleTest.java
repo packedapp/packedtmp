@@ -45,12 +45,10 @@ public class AppBundleTest {
 
     private void appNames0(Supplier<ActionBundle> cs, String defaultName) {
         // Tests no actions
-        assertThat(App.of(cs.get().none()).name()).isEqualTo(defaultName);
         assertThat(App.of(cs.get().none(), Wirelet.name("Boo")).name()).isEqualTo("Boo");
         assertThat(App.of(cs.get().none(), Wirelet.name("Boo"), Wirelet.name("Goo")).name()).isEqualTo("Goo");
 
         // Tests that getName() forces the calculation of the name
-        assertThat(App.of(cs.get().get(defaultName)).name()).isEqualTo(defaultName);
         assertThat(App.of(cs.get().get("Boo"), Wirelet.name("Boo")).name()).isEqualTo("Boo");
         assertThat(App.of(cs.get().get("Goo"), Wirelet.name("Boo"), Wirelet.name("Goo")).name()).isEqualTo("Goo");
 

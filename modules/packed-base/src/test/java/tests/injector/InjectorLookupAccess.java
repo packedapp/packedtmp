@@ -30,7 +30,7 @@ import app.packed.inject.Injector;
 public class InjectorLookupAccess {
 
     public static void main(String[] args) {
-        Injector.of(c -> {
+        Injector.configure(c -> {
             // c.
         });
 

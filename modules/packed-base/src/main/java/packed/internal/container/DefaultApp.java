@@ -17,18 +17,16 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import app.packed.app.App;
 import app.packed.component.Component;
+import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.inject.ServiceDescriptor;
+import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
-import app.packed.util.Key;
 
 /** The default implementation of {@link App application}. Basically it is just wrapping an internal container. */
 // I think we can move it to app.packed.app
@@ -61,32 +59,8 @@ public final class DefaultApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public <T> Optional<T> get(Key<T> key) {
-        return container.get(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasService(Key<?> key) {
-        return container.hasService(key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> T injectMembers(T instance, Lookup lookup) {
-        return container.injectMembers(instance, lookup);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String name() {
         return container.name();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Stream<ServiceDescriptor> services() {
-        return container.services();
     }
 
     /** {@inheritDoc} */
@@ -150,5 +124,23 @@ public final class DefaultApp implements App {
     public void runMainSync() {
         // TODO Auto-generated method stub
 
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Injector injector() {
+        return container.injector();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> T use(Class<T> key) {
+        return container.use(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return container.path();
     }
 }

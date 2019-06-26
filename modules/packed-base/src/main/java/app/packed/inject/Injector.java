@@ -291,7 +291,9 @@ public interface Injector /* extends Taggable */ {
      *            wirelets
      * @return the new injector
      */
-    static Injector of(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+    // TODO I think move this to InjectorCongurator, InjectorConfigurator.spawn...
+    // or maybe Injector.configure() instead
+    static Injector configure(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         return ContainerFactory.injectorOf(configurator, wirelets);
     }
 }

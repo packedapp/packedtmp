@@ -62,6 +62,17 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         }
     }
 
+    /**
+     * Performs the given action for each of the wirelets of the specified type. Actions are performed in the registration
+     * order of the wirelets. Exceptions thrown by the action are relayed to the caller.
+     *
+     * @param <T>
+     *            the type of wirelets to process
+     * @param wireletType
+     *            the type of wirelets to process
+     * @param action
+     *            The action to be performed for each wirelet
+     */
     @SuppressWarnings("unchecked")
     public <T extends Wirelet> void forEach(Class<T> wireletType, Consumer<? super T> action) {
         requireNonNull(wireletType, "wireletType is null");

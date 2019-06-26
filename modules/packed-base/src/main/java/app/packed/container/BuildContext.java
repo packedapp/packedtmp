@@ -85,7 +85,8 @@ public interface BuildContext {
 
         /**
          * The output type of the process is an {@link App}. This is typically either via
-         * {@link Injector#of(ContainerSource, Wirelet...)} or {@link Injector#of(java.util.function.Consumer, Wirelet...)}.
+         * {@link Injector#of(ContainerSource, Wirelet...)} or
+         * {@link Injector#configure(java.util.function.Consumer, Wirelet...)}.
          */
         INJECTOR;
 

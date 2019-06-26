@@ -45,7 +45,7 @@ public class VarArgsInjectionTest {
     @Disabled
     // Fix this test
     public void varargs() {
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(VarArgsConstructor.class);
             c.provide(array);
@@ -55,7 +55,7 @@ public class VarArgsInjectionTest {
 
     @Test
     public void array() {
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(ArrayConstructor.class);
             c.provide(array);

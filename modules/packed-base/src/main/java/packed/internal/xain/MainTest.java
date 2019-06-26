@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package packed.internal.xain;
 
+import app.packed.app.App;
+import app.packed.app.Main;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerImage;
 

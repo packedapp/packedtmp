@@ -59,7 +59,7 @@ public class MethodInstanceTest {
     /** Can never bind prototypes that have non-static provided fields. */
     @Test
     public void providePrototype() {
-        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> Injector.of(c -> {
+        AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
             c.provide(SingletonMethod.class).prototype();
@@ -67,7 +67,7 @@ public class MethodInstanceTest {
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> Injector.of(c -> {
+        a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
             c.provide(LazyMethod.class).prototype();
@@ -75,7 +75,7 @@ public class MethodInstanceTest {
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
-        a = assertThatThrownBy(() -> Injector.of(c -> {
+        a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new AtomicBoolean());
             c.provide(PrototypeMethod.class).prototype();
@@ -122,7 +122,7 @@ public class MethodInstanceTest {
         }
 
         static void test(Consumer<? super InjectorConfigurator> configurator) {
-            Injector i = Injector.of(c -> {
+            Injector i = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });

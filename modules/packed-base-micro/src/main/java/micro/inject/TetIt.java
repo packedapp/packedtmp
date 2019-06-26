@@ -33,7 +33,7 @@ public class TetIt {
         System.in.read();
         System.out.println("STarting");
         for (int i = 0; i < 1_000_0000; i++) {
-            Injector inj = Injector.of(c -> {
+            Injector inj = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 c.provide(Factory.ofInstance("foo"));
                 c.provide(NeedsString.class);

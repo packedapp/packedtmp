@@ -18,7 +18,6 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -35,6 +34,12 @@ import packed.internal.support.AppPackedContainerSupport;
  * <p>
  * Subclasses of this class that are actively used should be final.
  */
+
+// Den eneste ting jeg kunne forstille mig at kunne vaere public.
+// Var en maade at se paa hvordan en extension blev aktiveret..
+// Men er det ikke bare noget logning istedet for metoder...
+// "InjectorExtension:" Activate
+//// Her er der noget vi gerne vil have viral.
 // Maybe rename to ContainerExtension because we rarely need to spell it out
 // Disallow registering extensions as a service???
 
@@ -52,21 +57,16 @@ public abstract class Extension<T extends Extension<T>> {
                 c.builder = null;
             }
 
+            @Override
+            public void doConfigure(AnyBundle bundle, ContainerConfiguration configuration) {
+                bundle.doConfigure(configuration);
+            }
+
             /** {@inheritDoc} */
             @Override
             public void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
                 extension.onAdd();
-            }
-
-            @Override
-            public DefaultContainerConfiguration getContainer(Extension<?> extension) {
-                return extension.configuration;
-            }
-
-            @Override
-            public void doConfigure(AnyBundle bundle, ContainerConfiguration configuration) {
-                bundle.doConfigure(configuration);
             }
         });
     }
@@ -75,6 +75,13 @@ public abstract class Extension<T extends Extension<T>> {
     private DefaultContainerConfiguration configuration;
 
     public void buildBundle(BundleDescriptor.Builder builder) {}
+
+    protected final BuildContext buildContext() {
+        // Maybe take an attributemap that is shared between all invocations
+        // default implementation processes children..
+        // So we should always call super.build();
+        return configuration().buildContext();
+    }
 
     /**
      * Checks that the container that this extension belongs to is still configurable. Throwing an
@@ -91,7 +98,8 @@ public abstract class Extension<T extends Extension<T>> {
     }
 
     /**
-     * Returns the configuration of the container or fails with an {@link IllegalStateException}.
+     * Returns the configuration of the container. Or fails with {@link IllegalStateException} if invoked from the
+     * constructor of an extension.
      * 
      * @return the configuration of the container
      */
@@ -99,25 +107,9 @@ public abstract class Extension<T extends Extension<T>> {
         DefaultContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
-                    "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden to perform initialization");
+                    "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden to perform initialization as an alternative");
         }
         return c;
-    }
-
-    /**
-     * Performs the given action for each of the wirelets of the specified type. Actions are performed in the registration
-     * order of the wirelets. Exceptions thrown by the action are relayed to the caller.
-     *
-     * @param <W>
-     *            the type of wirelets to process
-     * @param wireletType
-     *            the type of wirelets to process
-     * @param action
-     *            The action to be performed for each wirelet
-     */
-    // TODO replace with WireletList
-    protected final <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
-        ((DefaultContainerConfiguration) configuration()).forEachWirelet(wireletType, action);
     }
 
     /**
@@ -140,65 +132,10 @@ public abstract class Extension<T extends Extension<T>> {
      */
     protected void onAdd() {}
 
-    //
-    // protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
-    // // Ideen er at man kalde
-    // // bundleWith
-    // // configuration.
-    //
-    // // Vi ved vi er single traadet. Saa det er vel noget med at have en counter... der tikker en op hver gang vi kalder
-    // // mergeOperation
-    // return mergeOperations(() -> {
-    // configuration.install("foo");
-    // configuration.install("foo");
-    // return null;
-    // });
-    //
-    // // Don't think we need to have a separate verify step
-    // //
-    // // configuration.install("foo").setName("foo)";
-    // // configuration.install("foo").setName("foo)";
-    // // Would both be verified ok, because we do not make structural changes in the first step when verifying
-    //
-    // // What we would need was a command like functionality. Where to much trouble
-    //
-    // }
-
-    // protected final void newLine() {
-    // checksConfigurable
-    // FreezesAnyNode before
-
-    // Checks that the bundle/configurator/... is still active
-    // Freezes any previous node for modifications....
-    // Which means that everything is nodes....
-
-    // Because bind(x) followed by install(x) should work identical to
-    // Because install(x) followed by bind(x) should work identical to
-    // }
-
-    // createContract(); or
-    // addToContract(ContractBuilder b)
-    // Failure to have two features creating the same contract type...
-
-    protected final BuildContext buildContext() {
-        // Maybe take an attributemap that is shared between all invocations
-        // default implementation processes children..
-        // So we should always call super.build();
-        return configuration.buildContext();
-    }
-
     /**
      * 
      */
     public void onFinish() {}
-
-    // Skal have en eller anden form for link med...
-    // Hvor man kan gemme ting. f.eks. en Foo.class
-    // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
-    // protected void onWireChild(@Nullable T child, BundleLink link) {}
-    //
-    // // onWireChikd
-    // protected void onWireParent(@Nullable T parent, BundleLink link) {}
 
     /**
      * If the underlying container has parent which uses this container, returns the parents
@@ -211,13 +148,21 @@ public abstract class Extension<T extends Extension<T>> {
         throw new UnsupportedOperationException();
     }
 
+    // Skal have en eller anden form for link med...
+    // Hvor man kan gemme ting. f.eks. en Foo.class
+    // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
+    // protected void onWireChild(@Nullable T child, BundleLink link) {}
+    //
+    // // onWireChikd
+    // protected void onWireParent(@Nullable T parent, BundleLink link) {}
+
     /**
      * Returns the path of the underlying container.
      * 
      * @return the path of the underlying container
      */
     protected final ComponentPath path() {
-        throw new UnsupportedOperationException();
+        return configuration().path();
     }
 
     /**
@@ -237,7 +182,60 @@ public abstract class Extension<T extends Extension<T>> {
         // containeren
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Returns a list of any wirelets that was used to configure the container.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code configuration().wirelets()}.
+     * 
+     * @return a list of any wirelets that was used to configure the container
+     * 
+     */
+    protected final WireletList wirelets() {
+        return configuration().wirelets();
+    }
 }
+
+//
+// protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
+// // Ideen er at man kalde
+// // bundleWith
+// // configuration.
+//
+// // Vi ved vi er single traadet. Saa det er vel noget med at have en counter... der tikker en op hver gang vi kalder
+// // mergeOperation
+// return mergeOperations(() -> {
+// configuration.install("foo");
+// configuration.install("foo");
+// return null;
+// });
+//
+// // Don't think we need to have a separate verify step
+// //
+// // configuration.install("foo").setName("foo)";
+// // configuration.install("foo").setName("foo)";
+// // Would both be verified ok, because we do not make structural changes in the first step when verifying
+//
+// // What we would need was a command like functionality. Where to much trouble
+//
+// }
+
+// protected final void newLine() {
+// checksConfigurable
+// FreezesAnyNode before
+
+// Checks that the bundle/configurator/... is still active
+// Freezes any previous node for modifications....
+// Which means that everything is nodes....
+
+// Because bind(x) followed by install(x) should work identical to
+// Because install(x) followed by bind(x) should work identical to
+// }
+
+// createContract(); or
+// addToContract(ContractBuilder b)
+// Failure to have two features creating the same contract type...
+
 // If it uses other extensions... Either get them by constructor, or via use(xxx)
 /// F.eks. LifecycleExtension
 

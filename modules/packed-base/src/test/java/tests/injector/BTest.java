@@ -36,7 +36,7 @@ public class BTest {
         System.out.println(BundleDescriptor.of(new MyBundle()));
         System.out.println(String.class.getModule().getDescriptor());
 
-        i = Injector.of(c -> {
+        i = Injector.configure(c -> {
             c.link(new MyBundle());
             c.link(new MyBundle4());
             c.provide("123");

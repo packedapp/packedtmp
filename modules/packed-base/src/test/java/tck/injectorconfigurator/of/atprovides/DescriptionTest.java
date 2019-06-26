@@ -46,7 +46,7 @@ public class DescriptionTest {
     }
 
     private static Injector of(Consumer<? super InjectorConfigurator> consumer) {
-        return Injector.of(c -> {
+        return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
         });

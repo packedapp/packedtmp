@@ -77,6 +77,10 @@ import packed.internal.container.DefaultContainerConfiguration;
 
 // TODO move to component, if it will see general use...
 // TODO ConfigurationSite disabled, enabled, hierachical
+
+// Properties
+//// Inherited/Not-Inherited (F.eks. Logging, Disable ConfigSite, ...)
+//// OutputTargetType == App, Injector, Analyze, Image
 public abstract class Wirelet {
 
     /** Invoked by subclasses. */
@@ -105,14 +109,14 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet after) {
         // Maaske bare compose...
-        return compose(this, requireNonNull(after, "after is null"));
+        return WireletList.of(this, requireNonNull(after, "after is null"));
     }
 
     public final Wirelet andThen(Wirelet... wirelets) {
         ArrayList<Wirelet> l = new ArrayList<>();
         l.add(this);
         l.addAll(List.of(wirelets));
-        return compose(l.toArray(i -> new Wirelet[i]));
+        return WireletList.of(l.toArray(i -> new Wirelet[i]));
     }
 
     // void verify();
@@ -133,19 +137,6 @@ public abstract class Wirelet {
         // conditional(Predicate, Wirelet alt1) //alt1 if true, else no wirelet
         // conditional(Predicate, Wirelet alt1, Wirelet alt2). alt1 if true, otherwise alt2
         return this;
-    }
-
-    /**
-     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
-     * 
-     * @param operations
-     *            the operations to combine
-     * @return a new combined operation
-     * @see #andThen(Wirelet)
-     * @see #andThen(Wirelet...)
-     */
-    public static Wirelet compose(Wirelet... operations) {
-        return WireletList.of(operations);
     }
 
     public static Wirelet configure(Configuration c) {
@@ -205,6 +196,19 @@ public abstract class Wirelet {
         return new DefaultContainerConfiguration.NameWirelet(name);
     }
 }
+//
+/// **
+// * Creates a wiring operation by composing a sequence of zero or more wiring operations.
+// *
+// * @param operations
+// * the operations to combine
+// * @return a new combined operation
+// * @see #andThen(Wirelet)
+// * @see #andThen(Wirelet...)
+// */
+// public static Wirelet compose(Wirelet... operations) {
+// return WireletList.of(operations);
+// }
 
 // Ved ikke om det er noget vi kommer til at bruge...
 // public static Wirelet of(Consumer<BundleLink> consumer) {

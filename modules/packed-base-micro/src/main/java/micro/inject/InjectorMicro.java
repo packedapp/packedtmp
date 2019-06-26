@@ -44,12 +44,12 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector emptyInjector() {
-        return Injector.of(c -> {});
+        return Injector.configure(c -> {});
     }
 
     @Benchmark
     public Injector injectorStringInstance() {
-        return Injector.of(c -> c.provide("foo"));
+        return Injector.configure(c -> c.provide("foo"));
     }
 
     @Benchmark
@@ -64,7 +64,7 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector injectorServiceNeedingString() {
-        return Injector.of(c -> {
+        return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide("foo");
             c.provide(NeedsString.class);

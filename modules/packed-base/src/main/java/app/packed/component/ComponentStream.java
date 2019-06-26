@@ -63,6 +63,13 @@ import app.packed.container.ContainerSource;
 
 public interface ComponentStream extends Stream<Component> {
 
+    // Component source();
+    // int sourceDepth(); <- so we for example, can get all children....
+    // alternative is filterOnDepth(Path relativeTo, int depth)
+    // stream.filterOnDepth(App.path(), 4);
+    // vs
+    // stream.filterOnRelativeDepth(4);
+
     /**
      * Returns a new list containing all of the components in this stream in the order they where encountered. Is identical
      * to invoking {@code stream.collect(Collectors.toList())}.
@@ -162,6 +169,16 @@ public interface ComponentStream extends Stream<Component> {
     static ComponentStream of(ContainerSource bundle) {
         throw new UnsupportedOperationException(); // Similar to descriptor..
     }
+}
+// Alt det her kan vi vel saette paa streamen....
+//// Det var maaske taenkt som en boot ting...
+/// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
+/// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
+// a.la. components.mapToVirtual....
+
+final class ComponentStreamOption {
+
+    // order
 }
 
 //

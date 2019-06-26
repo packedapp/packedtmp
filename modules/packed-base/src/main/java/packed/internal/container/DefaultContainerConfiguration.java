@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
@@ -117,20 +116,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public DefaultContainerImage buildImage() {
         configure();
-        buildImage0();
-        return new DefaultContainerImage(this);
-    }
-
-    private void buildImage0() {
         finish2ndPass();
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof DefaultContainerConfiguration) {
-                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
-                    dcc.buildImage0();
-                }
-            }
-        }
+        return new DefaultContainerImage(this);
     }
 
     InternalContainer buildFromImage() {
@@ -186,11 +173,18 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         this.state = State.FINAL;
     }
 
-    public void finish2ndPass() {
-        // Technically we should have a finish statement here, but dont need it
+    final void finish2ndPass() {
         prepareNewComponent(State.GET_NAME_INVOKED);
         for (Extension<?> e : extensions.values()) {
-            e.onFinish();
+            e.onFinish(); // State final????
+        }
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (acc instanceof DefaultContainerConfiguration) {
+                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                    dcc.finish2ndPass();
+                }
+            }
         }
     }
 
@@ -198,11 +192,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     @Override
     public Set<Class<? extends Extension<?>>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    public <W> void forEachWirelet(Class<W> wireletType, Consumer<? super W> action) {
-        requireNonNull(wireletType, "wireletType is null");
-        requireNonNull(action, "action is null");
     }
 
     /**

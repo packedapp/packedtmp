@@ -28,9 +28,9 @@ public class InjectorDescriptionTest {
 
     @Test
     public void description() {
-        assertThat(Injector.of(c -> {}).description().isEmpty());
+        assertThat(Injector.configure(c -> {}).description().isEmpty());
 
-        Injector i = Injector.of(c -> {
+        Injector i = Injector.configure(c -> {
             assertThat(c.getDescription()).isNull();
 
             assertThat(c.setDescription("fooo")).isSameAs(c);

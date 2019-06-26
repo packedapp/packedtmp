@@ -13,19 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.xain;
+
+import java.nio.file.Path;
 
 /**
  *
  */
+public class Dddx {
 
-// Alt det her kan vi vel saette paa streamen....
-//// Det var maaske taenkt som en boot ting...
-/// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
-/// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
-// a.la. components.mapToVirtual....
+    @ScheduleAtFixedRate(10000)
+    static final Runnable r = () -> System.out.println("Hello");
 
-final class ComponentStreamOption {
+    @ScheduleAtFixedRate(10000)
+    public void hello() {
+        System.out.println("Hello");
+    }
 
-    // order
+    public static void main(String[] args) {
+        System.out.println(Path.of("/").iterator().hasNext());
+    }
+}
+
+@interface ScheduleAtFixedRate {
+    long value();
 }
