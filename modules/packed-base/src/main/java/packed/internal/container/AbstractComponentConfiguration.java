@@ -143,40 +143,41 @@ abstract class AbstractComponentConfiguration {
             }
         }
         if (n == null) {
+
             if (parent == null) {
-                if (this instanceof DefaultContainerConfiguration) {
-                    @Nullable
-                    AnyBundle bundle = (@Nullable AnyBundle) ((DefaultContainerConfiguration) this).source.source;
-                    if (bundle != null) {
-                        String nnn = bundle.getClass().getSimpleName();
-                        if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                            nnn = nnn.substring(0, nnn.length() - 6);
-                        }
-                        if (nnn.length() > 0) {
-                            // checkName, if not just App
-                            // TODO need prefix
-                            this.name = nnn;
-                            return;
-                        }
-                        if (nnn.length() == 0) {
-                            this.name = "Container";
-                            return;
-                        }
-                    }
-                    this.name = "Unknown";
-                    return;
-                }
-                throw new UnsupportedOperationException();
+                this.name = defaultName();
+                return;
             }
-            if (this instanceof DefaultContainerConfiguration) {
-                n = ((DefaultContainerConfiguration) this).ccc.defaultPrefix();
-            } else {
-                n = ((DefaultComponentConfiguration) this).ccd.defaultPrefix();
-            }
+            n = defaultName();
         }
 
         lazyInitializeName(e, n);
         this.state = reason;
+    }
+
+    private String defaultName() {
+        if (this instanceof DefaultContainerConfiguration) {
+            @Nullable
+            AnyBundle bundle = (@Nullable AnyBundle) ((DefaultContainerConfiguration) this).source.source;
+            if (bundle != null) {
+                String nnn = bundle.getClass().getSimpleName();
+                if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
+                    nnn = nnn.substring(0, nnn.length() - 6);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    return nnn;
+                }
+                if (nnn.length() == 0) {
+                    return "Container";
+                }
+            }
+            return "Unknown";
+        } else {
+            return ((DefaultComponentConfiguration) this).ccd.defaultPrefix();
+        }
+
     }
 
     public final ComponentPath path() {
