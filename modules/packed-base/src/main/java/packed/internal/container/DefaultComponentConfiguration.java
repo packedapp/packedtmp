@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedHashMap;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.util.Nullable;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigurationSite;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
@@ -61,14 +60,14 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public DefaultComponentConfiguration setDescription(@Nullable String description) {
+    public DefaultComponentConfiguration setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public DefaultComponentConfiguration setName(@Nullable String name) {
+    public DefaultComponentConfiguration setName(String name) {
         super.setName(name);
         return this;
     }

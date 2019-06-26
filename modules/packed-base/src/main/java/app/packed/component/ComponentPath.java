@@ -26,9 +26,8 @@ import app.packed.util.Nullable;
  * <p>
  * Implementations of this interface are always immutable and safe for use by multiple concurrent threads.
  * <p>
- * Two component paths are equal if their {@link #length()} is identical and for every valid char index
- * {@link #charAt(int)} returns the same value for both paths. The hash code of a component path is identical to the
- * hash code of its string representation.
+ * Two component paths are equal if their string representation are identical. The hash code of a component path is
+ * identical to the hash code of its string representation.
  * <p>
  * This interface will be extended in the future with additional methods.
  */
@@ -38,7 +37,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     /** {@inheritDoc} */
     @Override
     default int compareTo(ComponentPath o) {
-        // TODO Auto-generated method stub
         return toString().compareTo(o.toString());
     }
 

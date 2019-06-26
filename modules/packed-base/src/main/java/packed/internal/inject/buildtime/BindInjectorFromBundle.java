@@ -35,6 +35,7 @@ import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.InternalServiceWirelets;
 import packed.internal.inject.ServiceNode;
+import packed.internal.support.AppPackedContainerSupport;
 
 /**
  * An abstract class for the injector bind methods
@@ -71,7 +72,7 @@ public class BindInjectorFromBundle {
      * 
      */
     void processImport() {
-        bundle.doConfigure(newConfiguration);
+        AppPackedContainerSupport.invoke().doConfigure(bundle, newConfiguration);
         // processImport(newConfiguration.box.services().exportedNodes);
     }
 

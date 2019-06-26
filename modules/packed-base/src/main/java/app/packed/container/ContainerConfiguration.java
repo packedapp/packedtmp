@@ -52,10 +52,10 @@ import app.packed.util.Nullable;
 public interface ContainerConfiguration {
 
     /**
-     * Returns the build context of the container. A single build context object is shared among all containers that are
-     * connect using {@link #link(AnyBundle, Wirelet...)}.
+     * Returns the build context. A single build context object is shared among all containers that are connected using
+     * {@link #link(AnyBundle, Wirelet...)}.
      * 
-     * @return the build context of the container
+     * @return the build context
      */
     BuildContext buildContext();
 
@@ -97,17 +97,15 @@ public interface ContainerConfiguration {
     String getName();
 
     /**
-     * Creates a link to another container represented by a container source.
+     * Creates a link to another container represented by a bundle.
      * <p>
      * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
      * 
      * @param child
-     *            the source of the child
+     *            a bundle representing the child
      * @param wirelets
-     *            optional wiring options
+     *            optional wirelets
      */
-    // Metoden har nu returtype void. For at minimere risikoen for at folk bruger
-    // link(MyBundle()).setStuff(x) istedet for link(MyBundle().setStuff(x))
     void link(AnyBundle child, Wirelet... wirelets);
 
     /**
@@ -137,6 +135,9 @@ public interface ContainerConfiguration {
 
     /**
      * Returns the component path of the container.
+     * <p>
+     * Trying to call {@link #setName(String)} after invoking this method will result in an {@link IllegalStateException}
+     * being thrown.
      * 
      * @return the component path of the container
      */
@@ -198,7 +199,7 @@ public interface ContainerConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ContainerSource, Wirelet...)}.
+     * {@link App#of(ContainerSource, Wirelet...)} or {@link #link(AnyBundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

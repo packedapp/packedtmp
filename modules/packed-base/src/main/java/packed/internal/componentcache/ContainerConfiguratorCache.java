@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerSource;
-import packed.internal.container.ContainerFactory;
+import packed.internal.container.InjectorConfiguratorContainerSource;
 import packed.internal.util.LookupValue;
 
 /** A cache for a bundle implementation. */
@@ -130,7 +130,7 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         if (source instanceof AnyBundle) {
             return CACHE.get(source.getClass());
         } else {
-            return CACHE.get(((ContainerFactory.ConfiguratorWrapper) source).getType());
+            return CACHE.get(((InjectorConfiguratorContainerSource) source).getType());
         }
     }
 

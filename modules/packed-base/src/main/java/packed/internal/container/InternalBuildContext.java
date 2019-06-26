@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import app.packed.container.BuildContext;
 import app.packed.container.ContainerSource;
+import app.packed.container.WireletList;
 
 /**
  *
@@ -51,5 +52,11 @@ public class InternalBuildContext implements BuildContext {
     @Override
     public ContainerSource source() {
         return dcc.bundle;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public WireletList wirelets() {
+        return dcc.wirelets;
     }
 }

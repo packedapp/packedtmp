@@ -83,7 +83,7 @@ public abstract class AnyBundle implements ContainerSource {
     /** Configures the bundle using the various inherited methods that are available. */
     protected void configure() {}
 
-    public final void doConfigure(ContainerConfiguration configuration) {
+    final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;
         try {
             configure();

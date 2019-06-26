@@ -17,13 +17,11 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.config.ConfigSite;
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
@@ -34,9 +32,11 @@ import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
 abstract class AbstractComponentConfiguration {
 
     /** Any children this component might have, in order of insertion. */
+    @Nullable
     LinkedHashMap<String, AbstractComponentConfiguration> children;
 
-    DefaultComponentConfiguration current;
+    @Nullable
+    DefaultComponentConfiguration currentComponent;
 
     /** The description of the component. */
     @Nullable
@@ -46,23 +46,40 @@ abstract class AbstractComponentConfiguration {
     @Nullable
     String name;
 
-    private State state = State.INITIAL;
-
     /** Any parent that the component has. */
     @Nullable
-    final DefaultContainerConfiguration parent;
+    final AbstractComponentConfiguration parent;
 
     /** The configuration site of the component. */
     private final InternalConfigurationSite site;
 
-    AbstractComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration parent) {
+    /** The state of this configuration. */
+    private State state = State.INITIAL;
+
+    /** The depth of the component in the hierarchy. */
+    private final int depth;
+
+    /**
+     * Creates a new abstract component configuration
+     * 
+     * @param site
+     *            the configuration site of the component
+     * @param parent
+     *            the parent of the component, or null if the component is a root component
+     */
+    AbstractComponentConfiguration(InternalConfigurationSite site, @Nullable AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);
         this.parent = parent;
+        this.depth = parent == null ? 0 : parent.depth + 1;
     }
 
-    protected void checkConfigurable() {}
+    public final void checkConfigurable() {
+        if (state == State.FINAL) {
+            throw new IllegalStateException();
+        }
+    }
 
-    public ConfigSite configurationSite() {
+    public final InternalConfigurationSite configurationSite() {
         return site;
     }
 
@@ -149,6 +166,23 @@ abstract class AbstractComponentConfiguration {
         this.state = reason;
     }
 
+    public final ComponentPath path() {
+        lazyInitializeName(State.PATH_INVOKED, null);// make sure setName cannot be called anymore
+        switch (depth) {
+        case 0:
+            return ComponentPath.ROOT;
+        case 1:
+            return new DefaultComponentPath(name);
+        default:
+            String[] paths = new String[depth - 1];
+            AbstractComponentConfiguration acc = this;
+            for (int i = paths.length - 1; i >= 0; i--) {
+                paths[i] = acc.name;
+            }
+            return new DefaultComponentPath(paths);
+        }
+    }
+
     AbstractComponentConfiguration setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
@@ -157,7 +191,6 @@ abstract class AbstractComponentConfiguration {
     }
 
     AbstractComponentConfiguration setName(String name) {
-        requireNonNull(name, "name is null");
         checkName(name);
         checkConfigurable();
         if (state == State.INITIAL) {
@@ -179,25 +212,6 @@ abstract class AbstractComponentConfiguration {
         }
     }
 
-    public ComponentPath path() {
-        // Technically we don't need to do this for root containers. However, its more consistent.
-        // TODO freeze current componentName
-        lazyInitializeName(State.PATH_INVOKED, null);
-        if (parent == null) {
-            return ComponentPath.ROOT;
-        }
-        ArrayList<String> l = new ArrayList<>();
-        path0(l);
-        return new DefaultComponentPath(l.toArray(e -> new String[e]));
-    }
-
-    public void path0(ArrayList<String> addTo) {
-        if (parent != null) {
-            parent.path0(addTo);
-            addTo.add(requireNonNull(name));
-        }
-    }
-
     /**
      * Checks the name of the component.
      * 
@@ -205,7 +219,8 @@ abstract class AbstractComponentConfiguration {
      *            the name to check
      * @return the name if valid
      */
-    private static String checkName(String name) {
+    static String checkName(String name) {
+        requireNonNull(name, "name is null");
         if (name != null) {
 
         }
@@ -233,7 +248,7 @@ abstract class AbstractComponentConfiguration {
         /** One of the install component methods has been invoked. */
         PATH_INVOKED,
 
-        /** */
+        /** Set name has been invoked. */
         SET_NAME_INVOKED,
 
         /** */

@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import java.util.function.Supplier;
+
 import app.packed.component.Component;
 
 /**
@@ -31,7 +33,19 @@ import app.packed.component.Component;
 // Concurrent - Non-current (Bundles may be Repeatable but they will never be Concurrent)
 // The only reason we want to allow repeatable bundles. Is So we can create a descriptor
 // before we make
-public interface ContainerSource {}
+public interface ContainerSource {
+
+    static ContainerSource ofRepeatableBundle(Supplier<? extends AnyBundle> supplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Ideen er egentlig at have en scanner af en slags..
+    // Componenter for den pakke, med de annoteringer.. osv.
+    // CacheResult = true <- Vi tillader som default ikke
+    static ContainerSource ofComponentSelector(String s) {
+        throw new UnsupportedOperationException();
+    }
+}
 // Not sure we can link to ContainerImages...
 // So ContainerSource is maybe more like an AppSource
 

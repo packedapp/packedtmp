@@ -149,7 +149,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     @Override
     public void link(AnyBundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
-
+        // Metoden har nu returtype void. For at minimere risikoen for at folk bruger
+        // link(MyBundle()).setStuff(x) istedet for link(MyBundle().setStuff(x))
         lazyInitializeName(State.LINK_INVOKED, null);
         prepareNewComponent(State.LINK_INVOKED);
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
@@ -180,7 +181,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
-            bundle.doConfigure(this);
+            AppPackedContainerSupport.invoke().doConfigure(bundle, this);
         }
         getName();// Initializes the name
     }
@@ -193,17 +194,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         for (Extension<?> e : extensions.values()) {
             e.onFinish();
         }
-    }
-
-    @Override
-    public final void checkConfigurable() {
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InternalConfigurationSite configurationSite() {
-        return (InternalConfigurationSite) super.configurationSite();
     }
 
     /** {@inheritDoc} */
@@ -243,8 +233,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = current = new DefaultComponentConfiguration(configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL),
-                this, descriptor);
+        DefaultComponentConfiguration dcc = currentComponent = new DefaultComponentConfiguration(
+                configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor);
         descriptor.initialize(this, dcc);
         return dcc;
 
@@ -262,7 +252,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = current = new FixedInstanceComponentConfiguration(
+        DefaultComponentConfiguration dcc = currentComponent = new FixedInstanceComponentConfiguration(
                 configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor, instance);
 
         descriptor.initialize(this, dcc);
@@ -270,8 +260,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     private void prepareNewComponent(State state) {
-        if (current != null) {
-            current.onFreeze();
+        if (currentComponent != null) {
+            currentComponent.onFreeze();
         }
     }
 
@@ -322,20 +312,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return wirelets;
     }
 
-    /**
-     * Checks the name of the container or component.
-     * 
-     * @param name
-     *            the name to check
-     * @return the name if valid
-     */
-    private static String checkName(String name) {
-        if (name != null) {
-
-        }
-        return name;
-    }
-
     /** A wiring option that overrides any existing container name. */
     public static class NameWirelet extends Wirelet {
 
@@ -374,5 +350,4 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     public BuildContext buildContext() {
         return buildContext;
     }
-
 }

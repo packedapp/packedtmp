@@ -17,6 +17,8 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.container.AnyBundle;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
@@ -48,6 +50,8 @@ public final class AppPackedContainerSupport {
         public abstract void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
 
         public abstract DefaultContainerConfiguration getContainer(Extension<?> extension);
+
+        public abstract void doConfigure(AnyBundle bundle, ContainerConfiguration configuration);
 
         /**
          * Initializes this class.

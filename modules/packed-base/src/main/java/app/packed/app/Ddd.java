@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.app;
+
+import app.packed.container.Bundle;
 
 /**
  *
  */
-// Host... Something that hosts app
 
-// We should also be able to have a standalone host??
-// Host
-//// App1
-//// App2
-//// App3
-// ???? But I think that would mean that Host needs lifecycle controls... Which I'm a bit reluctant to add.
+// AppBundle extends Bundle
+//// De der protected statiske metoder paa Bundle er lidt irriterende
+//// This
+public class Ddd extends Bundle {
 
-// So Maybe
-// Container
-//// Host
-interface Host {
+    @Override
+    public void configure() {
+        link(new JettyBundle().port(8080));
+    }
 
-    public static void main(AnyBundle b) {}
+    public static void dd(JettyBundle b) {
+
+    }
 }

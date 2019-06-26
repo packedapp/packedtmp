@@ -27,18 +27,16 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
+import packed.internal.support.AppPackedContainerSupport;
 
 /**
  *
  */
 public class ContainerFactory {
 
+    // Flyt default App til .app
+    // Image skal vide om vi kan lave en Injector...
     public static DefaultApp appOf(ContainerSource source, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        if (source instanceof DefaultContainerImage) {
-            DefaultContainerImage image = (DefaultContainerImage) source;
-            return new DefaultApp(image.dcc.buildFromImage());
-        }
         AnyBundle bundle = (AnyBundle) source;
 
         DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.APP, bundle.getClass(), bundle, wirelets);
@@ -48,7 +46,7 @@ public class ContainerFactory {
     public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, BuildContext.OutputType.MODEL, bundle.getClass(), bundle);
+        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, BuildContext.OutputType.ANALYZE, bundle.getClass(), bundle);
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
@@ -57,8 +55,8 @@ public class ContainerFactory {
     public static ContainerImage imageOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.IMAGE, bundle.getClass(), bundle,
-                wirelets);
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.CONTAINER_IMAGE, bundle.getClass(),
+                bundle, wirelets);
         return configuration.buildImage();
     }
 
@@ -77,24 +75,7 @@ public class ContainerFactory {
         AnyBundle bundle = (AnyBundle) source;
         DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR, bundle.getClass(), bundle,
                 wirelets);
-        bundle.doConfigure(configuration);
+        AppPackedContainerSupport.invoke().doConfigure(bundle, configuration);
         return configuration.buildInjector();
     }
-
-    /**
-     * A wrapper around an injector configurator consumer inorder to let it implements {@link ContainerSource}.
-     */
-    public static class ConfiguratorWrapper implements ContainerSource {
-
-        final Consumer<? super InjectorConfigurator> configurator;
-
-        ConfiguratorWrapper(Consumer<? super InjectorConfigurator> configurator) {
-            this.configurator = requireNonNull(configurator, "configurator is null");
-        }
-
-        public Class<?> getType() {
-            return configurator.getClass();
-        }
-    }
-
 }

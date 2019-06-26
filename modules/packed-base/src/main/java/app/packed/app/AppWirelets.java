@@ -28,9 +28,12 @@ import app.packed.inject.ServiceWirelets;
  * {@link App#of(ContainerSource, Wirelet...)} or {@link App#run(ContainerSource, Wirelet...)}.
  */
 // InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
+
+// Do we allow them in Image????
+// I don't see why not... So
 public final class AppWirelets {
 
-    /** Cannot instantiate. */
+    /** No instantiation. */
     private AppWirelets() {}
 
     /**

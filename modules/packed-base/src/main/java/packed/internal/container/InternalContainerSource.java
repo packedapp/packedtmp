@@ -13,24 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
+
+import app.packed.container.AnyBundle;
 
 /**
  *
  */
-// Host... Something that hosts app
 
-// We should also be able to have a standalone host??
-// Host
-//// App1
-//// App2
-//// App3
-// ???? But I think that would mean that Host needs lifecycle controls... Which I'm a bit reluctant to add.
+// Ideen er vi wrapper container sourcen.
+// Saa vi kan returner. Den klasse vi skal bruge som standard for lookups.
+// Default name
 
-// So Maybe
-// Container
-//// Host
-interface Host {
+// ??? Do we want to include wirelets???
 
-    public static void main(AnyBundle b) {}
+// T what we want to return????
+
+// SourceDescriptor?
+
+public class InternalContainerSource {
+
+    public InternalContainerSource appOf(AnyBundle bundle) {
+        throw new UnsupportedOperationException();
+    }
+
+    public InternalContainerSource link(AnyBundle bundle) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -63,6 +63,11 @@ public abstract class Extension<T extends Extension<T>> {
             public DefaultContainerConfiguration getContainer(Extension<?> extension) {
                 return extension.configuration;
             }
+
+            @Override
+            public void doConfigure(AnyBundle bundle, ContainerConfiguration configuration) {
+                bundle.doConfigure(configuration);
+            }
         });
     }
 
