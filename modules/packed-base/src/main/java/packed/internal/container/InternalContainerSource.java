@@ -17,8 +17,11 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
+
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerSource;
+import packed.internal.componentcache.ContainerConfiguratorCache;
 
 /**
  *
@@ -36,17 +39,25 @@ import app.packed.container.ContainerSource;
 
 public class InternalContainerSource {
 
-    final Class<?> type;
-    final ContainerSource source;
+    final Class<?> configuratorType;
+    public final ContainerSource source;
 
-    InternalContainerSource(ContainerSource source, Class<?> type) {
+    InternalContainerSource(ContainerSource source, Class<?> configuratorType) {
         this.source = source;
-        this.type = requireNonNull(type);
+        this.configuratorType = requireNonNull(configuratorType);
     }
 
-    public InternalContainerSource of(ContainerSource source) {
+    ContainerConfiguratorCache cache() {
+        return ContainerConfiguratorCache.of(configuratorType);
+    }
+
+    public static InternalContainerSource of(ContainerSource source) {
         AnyBundle b = (AnyBundle) source;
         return new InternalContainerSource(b, source.getClass());
+    }
+
+    public static InternalContainerSource ofConsumer(Consumer<?> consumer) {
+        return new InternalContainerSource(null, consumer.getClass());
     }
 
     public InternalContainerSource link(AnyBundle bundle) {

@@ -79,6 +79,13 @@ abstract class AbstractComponentConfiguration {
         }
     }
 
+    void addVerifiedChild(AbstractComponentConfiguration configuration) {
+        if (children == null) {
+            children = new LinkedHashMap<>();
+        }
+        children.put(configuration.name, configuration);
+    }
+
     public final InternalConfigurationSite configurationSite() {
         return site;
     }
@@ -139,7 +146,7 @@ abstract class AbstractComponentConfiguration {
             if (parent == null) {
                 if (this instanceof DefaultContainerConfiguration) {
                     @Nullable
-                    AnyBundle bundle = ((DefaultContainerConfiguration) this).bundle;
+                    AnyBundle bundle = (@Nullable AnyBundle) ((DefaultContainerConfiguration) this).source.source;
                     if (bundle != null) {
                         String nnn = bundle.getClass().getSimpleName();
                         if (nnn.length() > 6 && nnn.endsWith("Bundle")) {

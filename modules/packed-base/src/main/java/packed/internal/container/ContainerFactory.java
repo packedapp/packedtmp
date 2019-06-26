@@ -37,16 +37,15 @@ public class ContainerFactory {
     // Flyt default App til .app
     // Image skal vide om vi kan lave en Injector...
     public static DefaultApp appOf(ContainerSource source, Wirelet... wirelets) {
-        AnyBundle bundle = (AnyBundle) source;
-
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.APP, bundle.getClass(), bundle, wirelets);
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.APP, InternalContainerSource.of(source),
+                wirelets);
         return new DefaultApp(configuration.buildContainer());
     }
 
     public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, BuildContext.OutputType.ANALYZE, bundle.getClass(), bundle);
+        DefaultContainerConfiguration conf = new DefaultContainerConfiguration(null, BuildContext.OutputType.ANALYZE, InternalContainerSource.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
@@ -54,9 +53,8 @@ public class ContainerFactory {
 
     public static ContainerImage imageOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
-        AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.CONTAINER_IMAGE, bundle.getClass(),
-                bundle, wirelets);
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.CONTAINER_IMAGE,
+                InternalContainerSource.of(source), wirelets);
         return configuration.buildImage();
     }
 
@@ -64,8 +62,8 @@ public class ContainerFactory {
         requireNonNull(configurator, "configurator is null");
         // Hmm vi burde have en public version af ContainerBuilder
         // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR, configurator.getClass(), null,
-                wirelets);
+        DefaultContainerConfiguration builder = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR,
+                InternalContainerSource.ofConsumer(configurator), wirelets);
         configurator.accept(new InjectorConfigurator(builder));
         return builder.buildInjector();
     }
@@ -73,8 +71,8 @@ public class ContainerFactory {
     public static Injector injectorOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
         AnyBundle bundle = (AnyBundle) source;
-        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR, bundle.getClass(), bundle,
-                wirelets);
+        DefaultContainerConfiguration configuration = new DefaultContainerConfiguration(null, BuildContext.OutputType.INJECTOR,
+                InternalContainerSource.of(source), wirelets);
         AppPackedContainerSupport.invoke().doConfigure(bundle, configuration);
         return configuration.buildInjector();
     }

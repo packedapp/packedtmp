@@ -51,7 +51,7 @@ public class InternalBuildContext implements BuildContext {
     /** {@inheritDoc} */
     @Override
     public ContainerSource source() {
-        return dcc.bundle;
+        return dcc.source.source;
     }
 
     /** {@inheritDoc} */

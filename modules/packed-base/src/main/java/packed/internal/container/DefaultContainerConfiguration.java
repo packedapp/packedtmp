@@ -54,10 +54,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** The lookup object. We default to public access */
     public DescriptorFactory oldAccessor = DescriptorFactory.PUBLIC;
 
-    /** The bundle we created this configuration from. Or null if we using a configurator. */
-    @Nullable
-    public final AnyBundle bundle;
-
     /** The configurator cache. */
     final ContainerConfiguratorCache ccc;
 
@@ -71,13 +67,15 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     final InternalBuildContext buildContext;
 
-    DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, Class<?> configuratorType,
-            @Nullable AnyBundle bundle, Wirelet... wirelets) {
+    public final InternalContainerSource source;
+
+    DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, InternalContainerSource source,
+            Wirelet... wirelets) {
         super(parent == null ? InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF)
                 : parent.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_OF), parent);
         this.buildContext = parent == null ? new InternalBuildContext(this, outputType) : parent.buildContext;
-        this.lookup = this.ccc = ContainerConfiguratorCache.of(configuratorType);
-        this.bundle = bundle;
+        this.source = requireNonNull(source);
+        this.lookup = this.ccc = source.cache();
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -135,33 +133,31 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** {@inheritDoc} */
     @Override
     public void link(AnyBundle bundle, Wirelet... wirelets) {
+        // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
+        // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
+        // type.
+
         requireNonNull(bundle, "bundle is null");
-        // Metoden har nu returtype void. For at minimere risikoen for at folk bruger
-        // link(MyBundle()).setStuff(x) istedet for link(MyBundle().setStuff(x))
         lazyInitializeName(State.LINK_INVOKED, null);
         prepareNewComponent(State.LINK_INVOKED);
+
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
-        // java.lang.StackOverflowError instead.
-        DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, null, bundle.getClass(), bundle, wirelets);
+        // java.lang.StackOverflowError instead of an infinite loop.
+        DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, null, InternalContainerSource.of(bundle), wirelets);
         dcc.configure();
-        if (children == null) {
-            children = new LinkedHashMap<>();
-        }
-        // Maaske skal man ikke tillade at saette navn efter man har linket....
-        // Maaske skal saet navn bare vaere den foerste expression
-        // Problemet er her at vi ikke vil kunne f.eks. faa hele en actor path....
-        // The name of the container must be set before installing new components or linking other containers
-        // And can only be set once...
-
-        children.put(dcc.name, dcc);// name has already been verified via configure()->finalizeName()
+        addVerifiedChild(dcc);
     }
 
     private void configure() {
         if (state == State.FINAL) {
             return;
             // throw new IllegalStateException();
+        }
+        AnyBundle bundle = null;
+        if (source.source instanceof AnyBundle) {
+            bundle = (AnyBundle) source.source;
         }
         if (bundle != null) {
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
@@ -251,10 +247,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
             if (currentComponent.name == null && currentComponent.ccd != null) {
                 currentComponent.name = currentComponent.ccd.defaultPrefix();
             }
-            if (currentComponent.containerConfiguration.children == null) {
-                currentComponent.containerConfiguration.children = new LinkedHashMap<>();
-            }
-            currentComponent.containerConfiguration.children.put(currentComponent.name, currentComponent);
+            addVerifiedChild(currentComponent);
         }
     }
 
