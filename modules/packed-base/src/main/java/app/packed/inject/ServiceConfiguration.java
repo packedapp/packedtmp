@@ -53,7 +53,7 @@ public interface ServiceConfiguration<T> /* extends Taggable */ {
      * 
      * @return the configuration site where this configuration was created
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns the description of this service. Or null if no description has been set.

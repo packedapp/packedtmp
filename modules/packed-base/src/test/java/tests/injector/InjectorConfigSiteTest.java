@@ -31,7 +31,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.TypeLiteral;
-import packed.internal.config.site.ConfigurationSiteType;
+import packed.internal.config.site.ConfigSiteType;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.D;
@@ -43,12 +43,12 @@ import support.stubs.Letters.I;
 import support.stubs.Letters.J;
 
 /**
- * Tests {@link ProvidedComponentConfiguration#configurationSite()} and {@link Injector#configurationSite()}.
+ * Tests {@link ProvidedComponentConfiguration#configSite()} and {@link Injector#configSite()}.
  * <p>
  * Most of the test are pretty hackish.
  */
 @Disabled
-public class InjectorConfigurationSiteTest {
+public class InjectorConfigSiteTest {
 
     /** A helper stack frame */
     StackFrame sfCreate;
@@ -81,9 +81,9 @@ public class InjectorConfigurationSiteTest {
             binding0(conf.provide(TypeLiteral.of(J.class)).prototype());
         });
         for (Entry<Class<?>, ConfigSite> e : sites.entrySet()) {
-            ConfigSite cs = inj.getDescriptor(e.getKey()).get().configurationSite();
+            ConfigSite cs = inj.getDescriptor(e.getKey()).get().configSite();
             assertThat(cs).isSameAs(e.getValue());
-            assertThat(cs.parent().get()).isSameAs(inj.configurationSite());
+            assertThat(cs.parent().get()).isSameAs(inj.configSite());
         }
     }
 
@@ -91,10 +91,10 @@ public class InjectorConfigurationSiteTest {
     private void binding0(ProvidedComponentConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
         int index = sc.getKey().typeLiteral().getRawType().getSimpleName().toString().charAt(0) - 'A';
-        ConfigSite cs = sc.configurationSite();
+        ConfigSite cs = sc.configSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
-        assertThat(cs.operation()).isEqualTo(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND.operation());
+        assertThat(cs.operation()).isEqualTo(ConfigSiteType.INJECTOR_CONFIGURATION_BIND.operation());
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
         sites.put(sc.getKey().typeLiteral().getRawType(), cs);
@@ -115,12 +115,12 @@ public class InjectorConfigurationSiteTest {
             c.provideAll(i);
         });
 
-        ConfigSite cs = i2.getDescriptor(Integer.class).get().configurationSite();
+        ConfigSite cs = i2.getDescriptor(Integer.class).get().configSite();
         // First site is "c.importServicesFrom(i);"
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i.getDescriptor(Integer.class).get().configurationSite());
+        assertThat(cs.parent().get()).isSameAs(i.getDescriptor(Integer.class).get().configSite());
 
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.configure(c -> {
@@ -128,12 +128,12 @@ public class InjectorConfigurationSiteTest {
             c.provideAll(i2);
         });
 
-        cs = i3.getDescriptor(Integer.class).get().configurationSite();
+        cs = i3.getDescriptor(Integer.class).get().configSite();
         // First site is "c.importServicesFrom(i);"
         line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i2.getDescriptor(Integer.class).get().configurationSite());
+        assertThat(cs.parent().get()).isSameAs(i2.getDescriptor(Integer.class).get().configSite());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class InjectorConfigurationSiteTest {
         // c.importServicesFrom(i, t -> {
         // sfCreate = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.findFirst()).get();
         // ServiceConfiguration<Integer> sc = t.importService(Integer.class);
-        // assertThat(sc.getConfigurationSite().parent().get()).isSameAs(i.getService(Integer.class).getConfigurationSite());
+        // assertThat(sc.getconfigSite().parent().get()).isSameAs(i.getService(Integer.class).configSite());
         // // Test that other method does not override configuration site
         // t.importService(Integer.class);
         // t.importAllServices();
@@ -160,12 +160,12 @@ public class InjectorConfigurationSiteTest {
         // t.importService(Key.of(Integer.class));
         // });
         // });
-        // ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
+        // configSite cs = i2.getService(Integer.class).configSite();
         // // First site is "c.importServicesFrom(i);"
         // int line = sfCreate.getLineNumber();
         // assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // // Parent site is "c.bind(123);"
-        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).getConfigurationSite());
+        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).getconfigSite());
         // }
         // // Tests importService(Key)
         // {
@@ -181,12 +181,12 @@ public class InjectorConfigurationSiteTest {
         // t.importService(Key.of(Integer.class));
         // });
         // });
-        // ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
+        // configSite cs = i2.getService(Integer.class).configSite();
         // // First site is "c.importServicesFrom(i);"
         // int line = sfCreate.getLineNumber();
         // assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // // Parent site is "c.bind(123);"
-        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).getConfigurationSite());
+        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).configSite());
         // }
         // // Tests importAllServices(Predicate)
         // {
@@ -202,12 +202,12 @@ public class InjectorConfigurationSiteTest {
         // t.importService(Key.of(Integer.class));
         // });
         // });
-        // ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
+        // configSite cs = i2.getService(Integer.class).configSite();
         // // First site is "c.importServicesFrom(i);"
         // int line = sfCreate.getLineNumber();
         // assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // // Parent site is "c.bind(123);"
-        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).getConfigurationSite());
+        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).configSite());
         // }
         // // Tests importAllServices()
         // {
@@ -223,12 +223,12 @@ public class InjectorConfigurationSiteTest {
         // t.importService(Key.of(Integer.class));
         // });
         // });
-        // ConfigurationSite cs = i2.getService(Integer.class).getConfigurationSite();
+        // configSite cs = i2.getService(Integer.class).configSite();
         // // First site is "c.importServicesFrom(i);"
         // int line = sfCreate.getLineNumber();
         // assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // // Parent site is "c.bind(123);"
-        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).getConfigurationSite());
+        // assertThat(cs.parent().get()).isSameAs(i.getService(Integer.class).configSite());
         // }
     }
 

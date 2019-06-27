@@ -25,13 +25,13 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 
 /** An abstract implementation of {@link ConfigSite}. */
-public abstract class AbstractConfigurationSite implements InternalConfigurationSite {
+public abstract class AbstractConfigSite implements InternalConfigSite {
 
-    final ConfigurationSiteType operation;
+    final ConfigSiteType operation;
 
     final ConfigSite parent;
 
-    AbstractConfigurationSite(ConfigSite parent, ConfigurationSiteType operation) {
+    AbstractConfigSite(ConfigSite parent, ConfigSiteType operation) {
         this.parent = parent;
         this.operation = requireNonNull(operation);
     }
@@ -52,12 +52,12 @@ public abstract class AbstractConfigurationSite implements InternalConfiguration
         return super.toString();
     }
 
-    public ConfigSite spawnOnAnnotatedField(ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
-        return new AnnotatedFieldConfigurationSite(this, operation, field, annotation);
+    public ConfigSite spawnOnAnnotatedField(ConfigSiteType operation, FieldDescriptor field, Annotation annotation) {
+        return new AnnotatedFieldConfigSite(this, operation, field, annotation);
     }
 
-    public ConfigSite spawnOnAnnotatedMethod(ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
-        return new AnnotatedMethodConfigurationSite(this, operation, method, annotation);
+    public ConfigSite spawnOnAnnotatedMethod(ConfigSiteType operation, MethodDescriptor method, Annotation annotation) {
+        return new AnnotatedMethodConfigSite(this, operation, method, annotation);
     }
 
     // @Override

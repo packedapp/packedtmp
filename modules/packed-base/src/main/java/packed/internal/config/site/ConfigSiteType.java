@@ -22,7 +22,7 @@ import static java.util.Objects.requireNonNull;
  */
 
 // Separate for bundle/configuration?????
-public enum ConfigurationSiteType {
+public enum ConfigSiteType {
 
     /** */
     BUNDLE_DESCRIPTOR_OF("Descriptor.of"),
@@ -48,7 +48,7 @@ public enum ConfigurationSiteType {
 
     final String f;
 
-    ConfigurationSiteType(String f) {
+    ConfigSiteType(String f) {
         this.f = requireNonNull(f);
     }
 

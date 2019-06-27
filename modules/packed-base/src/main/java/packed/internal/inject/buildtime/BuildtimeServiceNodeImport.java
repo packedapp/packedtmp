@@ -23,7 +23,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
@@ -39,9 +39,9 @@ public class BuildtimeServiceNodeImport<T> extends BuildtimeServiceNode<T> {
     final BindInjectorFromBundle binding;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildtimeServiceNodeImport(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, BindInjectorFromBundle binding,
+    BuildtimeServiceNodeImport(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, BindInjectorFromBundle binding,
             ServiceNode<T> node) {
-        super(injectorConfiguration, configurationSite, List.of());
+        super(injectorConfiguration, configSite, List.of());
         this.other = requireNonNull(node);
         this.binding = requireNonNull(binding);
         this.as((Key) node.key());

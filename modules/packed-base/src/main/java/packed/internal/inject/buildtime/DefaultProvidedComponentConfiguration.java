@@ -59,8 +59,8 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configurationSite() {
-        return service.configurationSite();
+    public ConfigSite configSite() {
+        return service.configSite();
     }
 
     /** {@inheritDoc} */

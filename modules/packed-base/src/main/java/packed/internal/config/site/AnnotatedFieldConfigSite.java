@@ -24,7 +24,7 @@ import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.FieldDescriptor;
 
 /** A configuration site originating from an annotated method. */
-public final class AnnotatedFieldConfigurationSite extends AbstractConfigurationSite {
+public final class AnnotatedFieldConfigSite extends AbstractConfigSite {
 
     // Maybe just a reference to AnnotatedField
 
@@ -35,7 +35,7 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
     private final FieldDescriptor field;
 
     // TODO do we just want to keep a reference to the Class<? extends Annotation>?
-    AnnotatedFieldConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, FieldDescriptor field, Annotation annotation) {
+    AnnotatedFieldConfigSite(ConfigSite parent, ConfigSiteType operation, FieldDescriptor field, Annotation annotation) {
         super(parent, operation);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
@@ -43,7 +43,7 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite replaceParent(ConfigSite newParent) {
+    public InternalConfigSite replaceParent(ConfigSite newParent) {
         return null;
     }
 
@@ -63,6 +63,6 @@ public final class AnnotatedFieldConfigurationSite extends AbstractConfiguration
     // sdsd
     // App.of
 
-    // CompletionSite.. for lifecycle as ConfigurationSite for configuration???
+    // CompletionSite.. for lifecycle as ConfigSite for configuration???
 
 }

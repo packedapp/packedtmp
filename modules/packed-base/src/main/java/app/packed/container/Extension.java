@@ -280,7 +280,7 @@ public abstract class Extension<T extends Extension<T>> {
 // Cache<ProvidesGroup>
 // cache.get(FooComponent.class);
 
-//// Supports Freezable and ConfigurationSite
+//// Supports Freezable and ConfigSite
 // protected final <S extends ServiceNode<S>> S addNode(S node) {
 // throw new UnsupportedOperationException();
 // }
@@ -291,6 +291,6 @@ public abstract class Extension<T extends Extension<T>> {
 // * @return this configuration site
 // */
 //// Det er hvor extensionen er blevet installeret...Tror vi skal vaere lidt mere complex foerend det giver mening
-// public final InternalConfigurationSite configurationSite() {
+// public final InternalConfigSite configSite() {
 // throw new UnsupportedOperationException();
 // }

@@ -42,7 +42,7 @@ public class AppOfTest {
         assertThat(empty).isNotNull();
         assertThat(empty.description()).isEmpty();
         assertThat(empty.name()).isNotNull();
-        assertThat(empty.configurationSite()).isNotNull();
+        assertThat(empty.configSite()).isNotNull();
         assertThat(empty.stream()).size().isEqualTo(1);
 
         ContainerConfiguration cc = requireNonNull(ar.get());
@@ -51,6 +51,6 @@ public class AppOfTest {
         assertThat(cc.extensions()).isEmpty();
 
         // Check that configuration site
-        assertThat(empty.configurationSite()).isSameAs(cc.configurationSite());
+        assertThat(empty.configSite()).isSameAs(cc.configSite());
     }
 }

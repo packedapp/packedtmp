@@ -25,11 +25,11 @@ import app.packed.component.ComponentPath;
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
 
 /** An abstract base class for a component configuration object. */
-abstract class AbstractComponentConfiguration {
+abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The children of this component (lazily initialized), in order of insertion. */
     @Nullable
@@ -54,7 +54,7 @@ abstract class AbstractComponentConfiguration {
     private final AbstractComponentConfiguration parent;
 
     /** The configuration site of this component. */
-    private final InternalConfigurationSite site;
+    private final InternalConfigSite site;
 
     /** The state of this configuration. */
     State state = State.INITIAL;
@@ -70,10 +70,16 @@ abstract class AbstractComponentConfiguration {
      * @param parent
      *            the parent of the component, or null if the component is a root component
      */
-    AbstractComponentConfiguration(InternalConfigurationSite site, @Nullable AbstractComponentConfiguration parent) {
+    AbstractComponentConfiguration(InternalConfigSite site, @Nullable AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);
         this.parent = parent;
-        this.depth = parent == null ? 0 : parent.depth + 1;
+        this.depth = parent == null ? 0 : parent.depth() + 1;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int depth() {
+        return depth;
     }
 
     void addChild(AbstractComponentConfiguration configuration) {
@@ -89,7 +95,7 @@ abstract class AbstractComponentConfiguration {
         }
     }
 
-    public final InternalConfigurationSite configurationSite() {
+    public final InternalConfigSite configSite() {
         return site;
     }
 
@@ -132,7 +138,7 @@ abstract class AbstractComponentConfiguration {
             String prefix = n;
             do {
                 n = prefix + counter++;
-            } while (!parent.children.containsKey(n));
+            } while (parent.children.containsKey(n));
         }
         this.state = state;
         return this.name = n;

@@ -15,31 +15,25 @@
  */
 package packed.internal.container;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Stream;
-
-import app.packed.component.Component;
-import app.packed.component.ComponentStream;
+import app.packed.app.App;
+import app.packed.container.Bundle;
 
 /**
  *
  */
-final class InternalComponent extends AbstractComponent implements Component {
+public class XTest extends Bundle {
 
-    InternalComponent(AbstractComponent container, DefaultComponentConfiguration configuration) {
-        super(container, configuration);
-    }
-
-    /** {@inheritDoc} */
     @Override
-    public Collection<Component> children() {
-        return Collections.emptySet();
+    protected void configure() {
+        installHelper(FFF.class).path();
+        installHelper(FFF.class).path();
+        installHelper(FFF.class).path();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream stream() {
-        return new InternalComponentStream(Stream.of(this));
+    public static void main(String[] args) {
+        App a = App.of(new XTest());
+        a.stream().forEach(e -> System.out.println(e.path()));
     }
+
+    public static class FFF {}
 }

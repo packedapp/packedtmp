@@ -62,7 +62,7 @@ public final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void analyze() {
         ib.privateInjector = new DefaultInjector(root, ib.nodes);
-        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(ib, root.configurationSite(), INJ, ib.privateInjector);
+        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(ib, root.configSite(), INJ, ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ib.nodes.put(d);
         // TODO replace with something a.la.
@@ -73,7 +73,7 @@ public final class DependencyGraph {
             ib.publicInjector = new DefaultInjector(root, ib.exports);
 
             // Add public injector
-            // bn = new BuildNodeInstance<>(c, InternalConfigurationSite.UNKNOWN, c.publicInjector);
+            // bn = new BuildNodeInstance<>(c, configSite.UNKNOWN, c.publicInjector);
             // bn.as(Injector.class);
             // c.public BuildNodeList.add(bn);
 

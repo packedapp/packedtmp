@@ -29,7 +29,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
@@ -46,7 +46,7 @@ public class BindInjectorFromBundle {
     final Bundle bundle;
 
     /** The configuration site of binding. */
-    final InternalConfigurationSite configurationSite;
+    final InternalConfigSite configSite;
 
     /** The configuration of the injector that binding another bundle or injector. */
     final DefaultContainerConfiguration injectorConfiguration;
@@ -58,14 +58,14 @@ public class BindInjectorFromBundle {
 
     final InjectorBuilder ib;
 
-    BindInjectorFromBundle(DefaultContainerConfiguration injectorConfiguration, InjectorBuilder ib, InternalConfigurationSite configurationSite, Bundle bundle,
+    BindInjectorFromBundle(DefaultContainerConfiguration injectorConfiguration, InjectorBuilder ib, InternalConfigSite configSite, Bundle bundle,
             WireletList wirelets) {
         this.ib = requireNonNull(ib);
         this.injectorConfiguration = requireNonNull(injectorConfiguration);
-        this.configurationSite = requireNonNull(configurationSite);
+        this.configSite = requireNonNull(configSite);
         this.wirelets = requireNonNull(wirelets);
         this.bundle = bundle;
-        this.newConfiguration = null;// new ContainerBuilder(configurationSite, bundle);
+        this.newConfiguration = null;// new ContainerBuilder(configSite, bundle);
     }
 
     /**
@@ -93,7 +93,7 @@ public class BindInjectorFromBundle {
         // throw new RuntimeException("OOPS " + k);
         // }
         // BuildtimeServiceNodeImport<?> e = new BuildtimeServiceNodeImport<>(newConfiguration.box.services(),
-        // configurationSite.replaceParent(node.configurationSite()), this, node);
+        // configSite.replaceParent(node.configSite()), this, node);
         // exports.add(e);
         // newConfiguration.box.services().nodes.put(e);
         // }
@@ -109,7 +109,7 @@ public class BindInjectorFromBundle {
         // for (ServiceNode<?> node : importableNodes) {
         // if (!node.isPrivate()) {
         // nodes.put(node.key(), new BuildtimeServiceNodeImport<>(injectorConfiguration.box.services(),
-        // configurationSite.replaceParent(node.configurationSite()), this, node));
+        // configSite.replaceParent(node.configSite()), this, node));
         // }
         // }
         // // Process each stage

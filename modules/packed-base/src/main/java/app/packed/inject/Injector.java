@@ -104,7 +104,7 @@ public interface Injector /* extends Taggable */ {
      * 
      * @return the configuration site of this injector
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns an optional description of this injector.

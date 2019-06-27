@@ -30,7 +30,7 @@ import packed.internal.inject.buildtime.BuildtimeServiceNode;
 public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
 
     /** The point where this node was registered. */
-    private final ConfigSite configurationSite;
+    private final ConfigSite configSite;
 
     /** An (optionally) description of the service. */
     @Nullable
@@ -46,15 +46,15 @@ public abstract class RuntimeServiceNode<T> implements ServiceNode<T> {
      *            the build node to create the runtime node from
      */
     RuntimeServiceNode(BuildtimeServiceNode<T> node) {
-        this.configurationSite = requireNonNull(node.configurationSite());
+        this.configSite = requireNonNull(node.configSite());
         this.description = node.getDescription();
         this.key = requireNonNull(node.key());
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ConfigSite configurationSite() {
-        return configurationSite;
+    public final ConfigSite configSite() {
+        return configSite;
     }
 
     /** {@inheritDoc} */

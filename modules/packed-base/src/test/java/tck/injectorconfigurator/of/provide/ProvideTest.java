@@ -47,7 +47,7 @@ import support.stubs.Letters.J;
 public class ProvideTest {
 
     @Test
-    public void configurationSite() throws Throwable {
+    public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ProvidedComponentConfiguration<A> a = conf.provide(A.class);
@@ -87,7 +87,7 @@ public class ProvideTest {
     static void testConfiguration(ProvidedComponentConfiguration<?> sc, InstantiationMode instantionMode, Key<?> key) {
 
         assertThat(sc.instantiationMode()).isSameAs(InstantiationMode.SINGLETON);
-        // ConfigurationSite;
+        // configSite;
         assertThat(sc.getDescription()).isNull();
         assertThat(sc.getKey()).isEqualTo(Key.of(A.class));
         // assertThat(sc.tags().isEmpty());

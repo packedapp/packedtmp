@@ -16,12 +16,14 @@
 package packed.internal.container;
 
 /**
- *
+ * An interface indicating that the object can (potentially) hold other objects. This interface mainly exists to allow
+ * component configurations to both have another component configuration as a parent. But also a live component such as
+ * a host as a parent.
  */
 // Host
 // No-Host
 // Container
-public abstract class ContainerHolder {
+public interface ComponentHolder {
 
-    // Eksistere primaert for at man kan spoerge parent'en om ting
+    int depth();
 }

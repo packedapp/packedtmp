@@ -28,8 +28,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.ConfigSiteType;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.runtime.RuntimeServiceNode;
@@ -66,9 +66,9 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BuildtimeServiceNodeDefault<?> parent;
 
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorBuilder, InternalConfigSite configSite, ServiceClassDescriptor descriptor,
             InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
-        super(injectorBuilder, configurationSite, dependencies);
+        super(injectorBuilder, configSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
         this.descriptor = requireNonNull(descriptor);
@@ -88,14 +88,14 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
      * 
      * @param injectorConfiguration
      *            the injector configuration
-     * @param configurationSite
+     * @param configSite
      *            the configuration site
      * @param instance
      *            the instance
      */
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigurationSite configurationSite, ServiceClassDescriptor descriptor,
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ServiceClassDescriptor descriptor,
             T instance) {
-        super(injectorConfiguration, configurationSite, List.of());
+        super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.descriptor = requireNonNull(descriptor);
         this.parent = null;
@@ -103,9 +103,9 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         this.function = null;
     }
 
-    BuildtimeServiceNodeDefault(InternalConfigurationSite configurationSite, AtProvides atProvides, InternalFunction<T> factory,
+    BuildtimeServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, InternalFunction<T> factory,
             BuildtimeServiceNodeDefault<?> parent) {
-        super(parent.injectorBuilder, configurationSite, atProvides.dependencies);
+        super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
@@ -224,7 +224,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BuildtimeServiceNode<?> provide(AtProvides atProvides) {
-        InternalConfigurationSite icss = configurationSite().thenAnnotatedMember(ConfigurationSiteType.INJECTOR_PROVIDE, atProvides.provides,
+        InternalConfigSite icss = configSite().thenAnnotatedMember(ConfigSiteType.INJECTOR_PROVIDE, atProvides.provides,
                 atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;

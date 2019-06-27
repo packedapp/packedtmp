@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a
@@ -45,13 +45,13 @@ import packed.internal.config.site.InternalConfigurationSite;
 public interface ConfigSite {
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
-    ConfigSite UNKNOWN = InternalConfigurationSite.UNKNOWN;
+    ConfigSite UNKNOWN = InternalConfigSite.UNKNOWN;
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.
      *
      * @param action
-     *            an action to be performed on each {@code ConfigurationSite} in the chain
+     *            an action to be performed on each {@code ConfigSite} in the chain
      */
     default void forEach(Consumer<? super ConfigSite> action) {
         requireNonNull(action, "action is null");

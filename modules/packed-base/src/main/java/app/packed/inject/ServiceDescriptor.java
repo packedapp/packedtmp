@@ -14,7 +14,7 @@ public interface ServiceDescriptor /* extends Taggable */ {
      * 
      * @return the configuration site of this service
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns the optional description of this service.

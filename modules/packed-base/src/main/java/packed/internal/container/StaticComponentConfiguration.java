@@ -23,19 +23,19 @@ import packed.internal.config.site.InternalConfigSite;
 /**
  *
  */
-public class InstantiatedComponentConfiguration extends DefaultComponentConfiguration {
+public class StaticComponentConfiguration extends DefaultComponentConfiguration {
 
-    final Object instance;
+    final Class<?> implementation;
 
     /**
      * @param site
      * @param containerConfiguration
      * @param ccd
      */
-    public InstantiatedComponentConfiguration(InternalConfigSite site, DefaultContainerConfiguration containerConfiguration,
-            ComponentClassDescriptor ccd, Object instance) {
+    public StaticComponentConfiguration(InternalConfigSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd,
+            Class<?> implementation) {
         super(site, containerConfiguration, ccd);
-        this.instance = requireNonNull(instance);
+        this.implementation = requireNonNull(implementation);
     }
 
 }

@@ -16,7 +16,8 @@
 package packed.internal.container;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
@@ -25,21 +26,27 @@ import app.packed.component.ComponentStream;
 /**
  *
  */
-final class InternalComponent extends AbstractComponent implements Component {
+public class DefaultHost extends AbstractComponent implements ComponentHolder {
 
-    InternalComponent(AbstractComponent container, DefaultComponentConfiguration configuration) {
-        super(container, configuration);
+    private final ConcurrentHashMap<String, DefaultApp> apps = new ConcurrentHashMap<>();
+
+    /**
+     * @param configuration
+     */
+    DefaultHost(AbstractComponentConfiguration configuration) {
+        super(null, configuration);
     }
 
     /** {@inheritDoc} */
     @Override
     public Collection<Component> children() {
-        return Collections.emptySet();
+        // TODO create live view
+        return apps.values().stream().map(e -> e.container).collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentStream stream() {
-        return new InternalComponentStream(Stream.of(this));
+        return new InternalComponentStream(Stream.concat(Stream.of(this), apps.values().stream().map(e -> e.container).flatMap(AbstractComponent::stream)));
     }
 }

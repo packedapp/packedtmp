@@ -21,6 +21,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
+import app.packed.component.ComponentPath;
+import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 
 /**
@@ -34,10 +36,15 @@ import app.packed.util.Nullable;
 // wire(b, setName("f2"));
 
 // Kan vi genbruge et bundle???
+// rename to ContainerBundle????
 public abstract class AnyBundle implements ContainerSource {
 
     /** The configuration. */
     private ContainerConfiguration configuration;
+
+    protected final BuildContext buildContext() {
+        return configuration.buildContext();
+    }
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
@@ -73,6 +80,10 @@ public abstract class AnyBundle implements ContainerSource {
                     "This method can only be called from within this bundles #configure() method. Maybe you tried to call #configure() directly");
         }
         return c;
+    }
+
+    protected final ConfigSite configSite() {
+        return configuration.configSite();
     }
 
     /** Configures the bundle using the various inherited methods that are available. */
@@ -148,6 +159,10 @@ public abstract class AnyBundle implements ContainerSource {
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
 
+    protected final ComponentPath path() {
+        return configuration().path();
+    }
+
     /**
      * @param description
      *            the description to set
@@ -188,5 +203,9 @@ public abstract class AnyBundle implements ContainerSource {
      */
     protected final <T extends Extension<T>> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
+    }
+
+    protected final WireletList wirelets() {
+        return configuration.wirelets();
     }
 }

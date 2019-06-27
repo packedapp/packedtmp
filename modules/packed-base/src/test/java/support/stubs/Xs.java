@@ -40,7 +40,7 @@ public class Xs {
         });
 
         System.out.println();
-        i2.getDescriptor(String.class).get().configurationSite().print();
+        i2.getDescriptor(String.class).get().configSite().print();
 
     }
 }

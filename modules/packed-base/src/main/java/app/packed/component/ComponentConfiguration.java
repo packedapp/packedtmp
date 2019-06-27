@@ -105,7 +105,7 @@ public interface ComponentConfiguration {
      * 
      * @return the configuration site where this configuration was created
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns the description of this component. Or null if the description has not been set.

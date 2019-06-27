@@ -27,8 +27,8 @@ import app.packed.component.Component;
 import app.packed.container.Bundle;
 import support.util.ConfigSiteTestHelper;
 
-/** Tests {@link App#configurationSite()}. */
-public class AppConfigurationSiteTest {
+/** Tests {@link App#configSite()}. */
+public class AppConfigSiteTest {
 
     /** Tests that the keep the root configuration site. */
     @Test
@@ -39,9 +39,9 @@ public class AppConfigurationSiteTest {
             protected void configure() {}
         });
 
-        assertThat(app.configurationSite()).isNotNull();
-        assertThat(app.configurationSite().hasParent()).isFalse();
-        ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, app.configurationSite());
+        assertThat(app.configSite()).isNotNull();
+        assertThat(app.configSite().hasParent()).isFalse();
+        ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, app.configSite());
     }
 
     /** Tests an app with two components. */
@@ -64,19 +64,19 @@ public class AppConfigurationSiteTest {
         Component component2 = app.useComponent("doo");
 
         // Test Container
-        assertThat(container.configurationSite()).isSameAs(app.configurationSite());
-        assertThat(container.configurationSite().hasParent()).isFalse();
-        ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, container.configurationSite());
+        assertThat(container.configSite()).isSameAs(app.configSite());
+        assertThat(container.configSite().hasParent()).isFalse();
+        ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, container.configSite());
 
         // Test Component 1
-        assertThat(component1.configurationSite().hasParent()).isTrue();
-        assertThat(component1.configurationSite().parent().get()).isSameAs(container.configurationSite());
-        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 1, component1.configurationSite());
+        assertThat(component1.configSite().hasParent()).isTrue();
+        assertThat(component1.configSite().parent().get()).isSameAs(container.configSite());
+        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 1, component1.configSite());
 
         // Test Component 1
-        assertThat(component2.configurationSite().hasParent()).isTrue();
-        assertThat(component2.configurationSite().parent().get()).isSameAs(container.configurationSite());
-        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 2, component2.configurationSite());
+        assertThat(component2.configSite().hasParent()).isTrue();
+        assertThat(component2.configSite().parent().get()).isSameAs(container.configSite());
+        ConfigSiteTestHelper.assertIdenticalPlusLine(ar.get(), 2, component2.configSite());
 
     }
 
@@ -107,18 +107,18 @@ public class AppConfigurationSiteTest {
         Component component = app.useComponent("woo/foo");
 
         // Test Root
-        assertThat(root.configurationSite()).isSameAs(app.configurationSite());
-        assertThat(root.configurationSite().hasParent()).isFalse();
-        ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, root.configurationSite());
+        assertThat(root.configSite()).isSameAs(app.configSite());
+        assertThat(root.configSite().hasParent()).isFalse();
+        ConfigSiteTestHelper.assertIdenticalPlusLine(f1, 1, root.configSite());
 
         // Test Container
-        assertThat(container.configurationSite().hasParent()).isTrue();
-        assertThat(container.configurationSite().parent().get()).isSameAs(root.configurationSite());
-        ConfigSiteTestHelper.assertIdenticalPlusLine(ar1.get(), 1, container.configurationSite());
+        assertThat(container.configSite().hasParent()).isTrue();
+        assertThat(container.configSite().parent().get()).isSameAs(root.configSite());
+        ConfigSiteTestHelper.assertIdenticalPlusLine(ar1.get(), 1, container.configSite());
 
         // Test Component
-        assertThat(component.configurationSite().hasParent()).isTrue();
-        assertThat(component.configurationSite().parent().get()).isSameAs(container.configurationSite());
-        ConfigSiteTestHelper.assertIdenticalPlusLine(ar2.get(), 1, component.configurationSite());
+        assertThat(component.configSite().hasParent()).isTrue();
+        assertThat(component.configSite().parent().get()).isSameAs(container.configSite());
+        ConfigSiteTestHelper.assertIdenticalPlusLine(ar2.get(), 1, component.configSite());
     }
 }

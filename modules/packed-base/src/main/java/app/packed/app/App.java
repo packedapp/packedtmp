@@ -67,7 +67,7 @@ public interface App extends AutoCloseable {
      * 
      * @return the configuration site of this application
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns the description of this application. Or an empty optional if no description was set

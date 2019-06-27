@@ -26,6 +26,8 @@ import app.packed.config.ConfigSite;
  */
 public interface Component {
 
+    int depth();
+
     /**
      * Returns an immutable view of all of this component's children.
      *
@@ -38,7 +40,7 @@ public interface Component {
      * 
      * @return the configuration site of this component
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns the description of this component. Or an empty optional if no description was set when configuring the

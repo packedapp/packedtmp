@@ -26,13 +26,13 @@ import app.packed.config.ConfigSiteVisitor;
  *
  */
 // Hmm er den brugt nogen steder???
-public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationSite {
+public final class AnnotatedTypeConfigSite extends AbstractConfigSite {
 
     final Class<?> clazz;
 
     final Annotation annotation;
 
-    AnnotatedTypeConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, Class<?> clazz, Annotation annotation) {
+    AnnotatedTypeConfigSite(ConfigSite parent, ConfigSiteType operation, Class<?> clazz, Annotation annotation) {
         super(parent, operation);
         this.clazz = requireNonNull(clazz);
         this.annotation = requireNonNull(annotation);
@@ -40,7 +40,7 @@ public final class AnnotatedTypeConfigurationSite extends AbstractConfigurationS
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite replaceParent(ConfigSite newParent) {
+    public InternalConfigSite replaceParent(ConfigSite newParent) {
         return null;
     }
 

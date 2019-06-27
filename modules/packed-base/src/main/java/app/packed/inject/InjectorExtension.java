@@ -31,8 +31,8 @@ import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.classscan.ServiceClassDescriptor;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.ConfigSiteType;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.InjectorBuilder;
@@ -166,7 +166,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         requireNonNull(key, "key is null");
         checkConfigurable();
 
-        InternalConfigurationSite cs = configuration0().configurationSite().thenStack(ConfigurationSiteType.BUNDLE_EXPOSE);
+        InternalConfigSite cs = configuration0().configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
 
         // ServiceNode<T> node = box.services().nodes.getRecursive(key);
         // if (node == null) {
@@ -246,7 +246,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         checkConfigurable();
-        InternalConfigurationSite configSite = configuration0().configurationSite().thenStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
         // Okay det her fra Factory skal caches....Med methodHandle....
         InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
@@ -277,7 +277,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
-        InternalConfigurationSite configSite = configuration0().configurationSite().thenStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
         ServiceClassDescriptor sdesc = configuration0().oldAccessor.serviceDescriptorFor(instance.getClass());
         BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, sdesc, instance);

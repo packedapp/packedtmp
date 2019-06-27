@@ -42,13 +42,13 @@ public class InjectorGetDescriptorTest {
 
         ServiceDescriptor a = i.getDescriptor(A.class).get();
 
-        // TODO configurationSite
+        // TODO configSite
         assertThat(a.description()).isEmpty();
         assertThat(a.key()).isEqualTo(Key.of(A.class));
         // assertThat(a.tags()).isEmpty();
 
         ServiceDescriptor aLeft = i.getDescriptor(new Key<@Left A>() {}).get();
-        // TODO configurationSite
+        // TODO configSite
         assertThat(aLeft.description()).isEmpty();
         assertThat(aLeft.key()).isEqualTo(new Key<@Left A>() {});
         // assertThat(aLeft.tags()).isEmpty();

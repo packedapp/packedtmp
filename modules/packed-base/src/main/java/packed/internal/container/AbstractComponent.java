@@ -28,7 +28,10 @@ import app.packed.util.Nullable;
 abstract class AbstractComponent implements Component {
 
     /** The configuration site of the component. */
-    private final ConfigSite configurationSite;
+    private final ConfigSite configSite;
+
+    /** The depth of the component in a tree of components. */
+    private final int depth;
 
     /** The description of this component (optional). */
     @Nullable
@@ -57,15 +60,22 @@ abstract class AbstractComponent implements Component {
      */
     AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration) {
         this.parent = parent;
-        this.configurationSite = requireNonNull(configuration.configurationSite());
+        this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
         this.name = requireNonNull(configuration.name);
+        this.depth = configuration.depth();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final ConfigSite configurationSite() {
-        return configurationSite;
+    public final ConfigSite configSite() {
+        return configSite;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int depth() {
+        return depth;
     }
 
     /** {@inheritDoc} */

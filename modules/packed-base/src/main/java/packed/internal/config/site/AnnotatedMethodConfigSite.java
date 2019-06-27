@@ -26,13 +26,13 @@ import app.packed.util.MethodDescriptor;
 /**
  *
  */
-public final class AnnotatedMethodConfigurationSite extends AbstractConfigurationSite {
+public final class AnnotatedMethodConfigSite extends AbstractConfigSite {
 
     private final MethodDescriptor method;
 
     final Annotation annotation;
 
-    AnnotatedMethodConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, MethodDescriptor method, Annotation annotation) {
+    AnnotatedMethodConfigSite(ConfigSite parent, ConfigSiteType operation, MethodDescriptor method, Annotation annotation) {
         super(parent, operation);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
@@ -40,7 +40,7 @@ public final class AnnotatedMethodConfigurationSite extends AbstractConfiguratio
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigurationSite replaceParent(ConfigSite newParent) {
+    public InternalConfigSite replaceParent(ConfigSite newParent) {
         return null;
     }
 

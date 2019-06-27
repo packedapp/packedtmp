@@ -51,7 +51,7 @@ public class ServiceUtils {
 
     static class CopyOfConfiguration implements ServiceDescriptor {
 
-        private final ConfigSite configurationSite;
+        private final ConfigSite configSite;
 
         private final @Nullable String description;
 
@@ -62,14 +62,14 @@ public class ServiceUtils {
         CopyOfConfiguration(ProvidedComponentConfiguration<?> bne) {
             this.key = bne.getKey();
             // this.tags = Set.copyOf(bne.tags());
-            this.configurationSite = bne.configurationSite();
+            this.configSite = bne.configSite();
             this.description = bne.getDescription();
         }
 
         /** {@inheritDoc} */
         @Override
-        public ConfigSite configurationSite() {
-            return configurationSite;
+        public ConfigSite configSite() {
+            return configSite;
         }
 
         /** {@inheritDoc} */
@@ -120,8 +120,8 @@ public class ServiceUtils {
 
         /** {@inheritDoc} */
         @Override
-        public ConfigSite configurationSite() {
-            return configuration.configurationSite();
+        public ConfigSite configSite() {
+            return configuration.configSite();
         }
 
         /** {@inheritDoc} */

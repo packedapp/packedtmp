@@ -39,7 +39,7 @@ public class InternalBuildContext implements BuildContext {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return dcc.configurationSite();
+        return dcc.configSite();
     }
 
     /** {@inheritDoc} */

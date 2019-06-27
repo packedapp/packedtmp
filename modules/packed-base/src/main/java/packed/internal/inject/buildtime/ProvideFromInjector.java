@@ -28,8 +28,8 @@ import app.packed.inject.Injector;
 import app.packed.util.Key;
 import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.ConfigSiteType;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.InjectorBuilder;
@@ -47,7 +47,7 @@ public final class ProvideFromInjector {
     final WireletList wirelets;
 
     /** The configuration site of this object. */
-    private final InternalConfigurationSite configurationSite;
+    private final InternalConfigSite configSite;
 
     private final InjectorBuilder ib;
 
@@ -55,7 +55,7 @@ public final class ProvideFromInjector {
         this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);
-        this.configurationSite = containerConfiguration.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        this.configSite = containerConfiguration.configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
     /**
@@ -63,8 +63,8 @@ public final class ProvideFromInjector {
      * 
      * @return the configuration site of this configuration
      */
-    public final InternalConfigurationSite configurationSite() {
-        return configurationSite;
+    public final InternalConfigSite configSite() {
+        return configSite;
     }
 
     public void process() {
@@ -87,7 +87,7 @@ public final class ProvideFromInjector {
         HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(ib, configurationSite.replaceParent(node.configurationSite()), this,
+                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(ib, configSite.replaceParent(node.configSite()), this,
                         node);
                 nodes.put(node.key(), n);
             }

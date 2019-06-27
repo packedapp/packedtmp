@@ -13,11 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.config.site;
+package app.packed.app;
+
+import app.packed.container.Wirelet;
+import app.packed.util.Key;
 
 /**
  *
  */
-public class PathConfigurationSite {
+public class HostWirelets {
 
+    public static Wirelet key(Key<? extends Host> key) {
+        throw new UnsupportedOperationException();
+    }
 }

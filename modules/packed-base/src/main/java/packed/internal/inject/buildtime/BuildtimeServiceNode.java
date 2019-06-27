@@ -25,7 +25,7 @@ import app.packed.inject.ProvideHelper;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.InternalServiceDescriptor;
@@ -45,7 +45,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
     public boolean autoRequires;
 
     /** The configuration site of this object. */
-    protected final InternalConfigurationSite configurationSite;
+    protected final InternalConfigSite configSite;
 
     /** The dependencies of this node. */
     public final List<InternalDependencyDescriptor> dependencies;
@@ -76,9 +76,9 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
     @Nullable
     private RuntimeServiceNode<T> runtimeNode;
 
-    BuildtimeServiceNode(InjectorBuilder injectorBuilder, InternalConfigurationSite configurationSite, List<InternalDependencyDescriptor> dependencies) {
-        this.configurationSite = requireNonNull(configurationSite);
-        // super(configurationSite);
+    BuildtimeServiceNode(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
+        this.configSite = requireNonNull(configSite);
+        // super(configSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceNode<?>[dependencies.size()];
@@ -119,8 +119,8 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
      * @return the configuration site of this configuration
      */
     @Override
-    public final InternalConfigurationSite configurationSite() {
-        return configurationSite;
+    public final InternalConfigSite configSite() {
+        return configSite;
     }
 
     /**
@@ -181,7 +181,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
     // }
 
     public final ServiceDescriptor toDescriptor() {
-        return new InternalServiceDescriptor(key, configurationSite, description /* immutableCopyOfTags() */);
+        return new InternalServiceDescriptor(key, configSite, description /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */

@@ -66,7 +66,7 @@ public interface ContainerConfiguration {
      * 
      * @return the configuration site of the container
      */
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns an immutable view of all of the extension types that are used by this container.

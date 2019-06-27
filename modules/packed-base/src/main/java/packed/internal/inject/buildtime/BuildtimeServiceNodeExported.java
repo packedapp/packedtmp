@@ -20,7 +20,7 @@ import java.util.List;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
@@ -37,11 +37,11 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
     /**
      * @param configuration
      *            the injector configuration this node is being added to
-     * @param configurationSite
+     * @param configSite
      *            the configuration site of the exposure
      */
-    public BuildtimeServiceNodeExported(InjectorBuilder configuration, InternalConfigurationSite configurationSite) {
-        super(configuration, configurationSite, List.of());
+    public BuildtimeServiceNodeExported(InjectorBuilder configuration, InternalConfigSite configSite) {
+        super(configuration, configSite, List.of());
     }
 
     @Override

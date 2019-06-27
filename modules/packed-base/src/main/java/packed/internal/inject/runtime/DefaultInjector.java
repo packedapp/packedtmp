@@ -26,7 +26,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
@@ -37,7 +37,7 @@ import packed.internal.util.KeyBuilder;
 public final class DefaultInjector extends AbstractInjector {
 
     /** The configuration site of this injector. */
-    private final InternalConfigurationSite configurationSite;
+    private final InternalConfigSite configSite;
 
     /** An optional description of the injector. */
     @Nullable
@@ -52,15 +52,15 @@ public final class DefaultInjector extends AbstractInjector {
 
     public DefaultInjector(DefaultContainerConfiguration containerConfiguration, ServiceNodeMap services) {
         this.parent = null;
-        this.configurationSite = requireNonNull(containerConfiguration.configurationSite());
+        this.configSite = requireNonNull(containerConfiguration.configSite());
         this.description = containerConfiguration.getDescription();
         this.services = requireNonNull(services);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configurationSite() {
-        return configurationSite;
+    public ConfigSite configSite() {
+        return configSite;
     }
 
     @Override

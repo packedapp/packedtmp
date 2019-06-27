@@ -22,7 +22,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration;
 
 /**
@@ -31,7 +31,7 @@ import packed.internal.container.DefaultContainerConfiguration;
 public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** The configuration site of this object. */
-    private final InternalConfigurationSite configurationSite;
+    private final InternalConfigSite configSite;
 
     private final DefaultContainerConfiguration containerConfiguration;
 
@@ -42,7 +42,7 @@ public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
      */
     public DefaultServiceConfiguration(DefaultContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
-        this.configurationSite = node.configurationSite;
+        this.configSite = node.configSite;
         this.node = requireNonNull(node);
     }
 
@@ -56,8 +56,8 @@ public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configurationSite() {
-        return configurationSite;
+    public ConfigSite configSite() {
+        return configSite;
     }
 
     /** {@inheritDoc} */

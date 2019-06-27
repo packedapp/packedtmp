@@ -19,7 +19,6 @@ import app.packed.app.App;
 import app.packed.app.AppWirelets;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.component.ComponentPath;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
@@ -101,10 +100,6 @@ public abstract class Bundle extends AnyBundle {
         return injector().export(key);
     }
 
-    protected final ComponentPath path() {
-        return configuration().path();
-    }
-
     /**
      * Exposes an internal service outside of this bundle.
      * 
@@ -159,6 +154,10 @@ public abstract class Bundle extends AnyBundle {
 
     protected final ComponentConfiguration install(Object instance) {
         return component().install(instance);
+    }
+
+    protected final ComponentConfiguration installHelper(Class<?> implementation) {
+        return component().installHelper(implementation);
     }
 
     protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {

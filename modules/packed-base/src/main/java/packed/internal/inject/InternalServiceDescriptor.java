@@ -28,7 +28,7 @@ import app.packed.util.Nullable;
 public class InternalServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
-    private final ConfigSite configurationSite;
+    private final ConfigSite configSite;
 
     /** An optional description of the service. */
     @Nullable
@@ -40,12 +40,12 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
     // private final Set<String> tags;
 
     /**
-     * @param configurationSite
+     * @param configSite
      * @param description
      * @param key
      */
-    public InternalServiceDescriptor(Key<?> key, ConfigSite configurationSite, String description /* Set<String> tags */) {
-        this.configurationSite = requireNonNull(configurationSite);
+    public InternalServiceDescriptor(Key<?> key, ConfigSite configSite, String description /* Set<String> tags */) {
+        this.configSite = requireNonNull(configSite);
         this.description = description;
         this.key = requireNonNull(key);
         // this.tags = requireNonNull(tags);
@@ -53,8 +53,8 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configurationSite() {
-        return configurationSite;
+    public ConfigSite configSite() {
+        return configSite;
     }
 
     /** {@inheritDoc} */
@@ -77,7 +77,7 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
 
     @Override
     public String toString() {
-        return "InternalServiceDescriptor [configurationSite=" + configurationSite + ", description=" + description + ", key=" + key /* + ", tags=" + tags */
+        return "InternalServiceDescriptor [configSite=" + configSite + ", description=" + description + ", key=" + key /* + ", tags=" + tags */
                 + "]";
     }
 }

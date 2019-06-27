@@ -33,12 +33,12 @@ import app.packed.util.MethodDescriptor;
  * The interface used internally for a configuration. This method includes methods that we are not yet ready to put out
  * onto the public interface.
  */
-public interface InternalConfigurationSite extends ConfigSite {
+public interface InternalConfigSite extends ConfigSite {
 
     static final boolean DISABLED = false;
 
     /** A site that is used if a location of configuration site could not be determined. */
-    InternalConfigurationSite UNKNOWN = new InternalConfigurationSite() {
+    InternalConfigSite UNKNOWN = new InternalConfigSite() {
 
         @Override
         public String operation() {
@@ -51,7 +51,7 @@ public interface InternalConfigurationSite extends ConfigSite {
         }
 
         @Override
-        public InternalConfigurationSite replaceParent(ConfigSite newParent) {
+        public InternalConfigSite replaceParent(ConfigSite newParent) {
             return UNKNOWN;
         }
 
@@ -66,19 +66,19 @@ public interface InternalConfigurationSite extends ConfigSite {
         }
     };
 
-    InternalConfigurationSite replaceParent(ConfigSite newParent);
+    InternalConfigSite replaceParent(ConfigSite newParent);
 
     static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
-    default InternalConfigurationSite linkFromAnnotatedField(ConfigurationSiteType cst, Annotation annotation, FieldDescriptor field) {
+    default InternalConfigSite linkFromAnnotatedField(ConfigSiteType cst, Annotation annotation, FieldDescriptor field) {
         if (DISABLED) {
             return UNKNOWN;
         }
-        return new AnnotatedFieldConfigurationSite(this, cst, field, annotation);
+        return new AnnotatedFieldConfigSite(this, cst, field, annotation);
     }
 
-    default InternalConfigurationSite thenAnnotatedMember(ConfigurationSiteType cst, Annotation annotation, Member member) {
+    default InternalConfigSite thenAnnotatedMember(ConfigSiteType cst, Annotation annotation, Member member) {
         if (member instanceof MethodDescriptor) {
             return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
         } else {
@@ -86,32 +86,32 @@ public interface InternalConfigurationSite extends ConfigSite {
         }
     }
 
-    default InternalConfigurationSite thenAnnotatedMethod(ConfigurationSiteType cst, Annotation annotation, MethodDescriptor method) {
+    default InternalConfigSite thenAnnotatedMethod(ConfigSiteType cst, Annotation annotation, MethodDescriptor method) {
         if (DISABLED) {
             return UNKNOWN;
         }
-        return new AnnotatedMethodConfigurationSite(this, cst, method, annotation);
+        return new AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
-    default InternalConfigurationSite thenStack(ConfigurationSiteType cst) {
+    default InternalConfigSite thenStack(ConfigSiteType cst) {
         // LinkFromCaptureStack
         if (DISABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
-        return sf.isPresent() ? new StackFrameConfigurationSite(this, cst, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new StackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
     }
 
-    static InternalConfigurationSite ofStack(ConfigurationSiteType cst) {
+    static InternalConfigSite ofStack(ConfigSiteType cst) {
         if (DISABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
-        return sf.isPresent() ? new StackFrameConfigurationSite(null, cst, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new StackFrameConfigSite(null, cst, sf.get()) : UNKNOWN;
     }
 
     /** A programmatic configuration site from a {@link StackFrame}. */
-    static class StackFrameConfigurationSite extends AbstractConfigurationSite {
+    static class StackFrameConfigSite extends AbstractConfigSite {
 
         /** The stack frame. */
         private final StackFrame stackFrame;
@@ -120,7 +120,7 @@ public interface InternalConfigurationSite extends ConfigSite {
          * @param parent
          * @param operation
          */
-        StackFrameConfigurationSite(ConfigSite parent, ConfigurationSiteType operation, StackFrame caller) {
+        StackFrameConfigSite(ConfigSite parent, ConfigSiteType operation, StackFrame caller) {
             super(parent, operation);
             this.stackFrame = requireNonNull(caller);
         }
@@ -133,8 +133,8 @@ public interface InternalConfigurationSite extends ConfigSite {
 
         /** {@inheritDoc} */
         @Override
-        public InternalConfigurationSite replaceParent(ConfigSite newParent) {
-            return new StackFrameConfigurationSite(newParent, super.operation, stackFrame);
+        public InternalConfigSite replaceParent(ConfigSite newParent) {
+            return new StackFrameConfigSite(newParent, super.operation, stackFrame);
         }
 
         /** {@inheritDoc} */

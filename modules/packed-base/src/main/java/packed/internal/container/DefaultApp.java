@@ -33,7 +33,7 @@ import app.packed.lifecycle.LifecycleOperations;
 public final class DefaultApp implements App {
 
     /** The container we are wrapping. */
-    private final InternalContainer container;
+    final DefaultContainer container;
 
     /**
      * Creates a new default app.
@@ -41,14 +41,14 @@ public final class DefaultApp implements App {
      * @param container
      *            the container to wrap
      */
-    DefaultApp(InternalContainer container) {
+    DefaultApp(DefaultContainer container) {
         this.container = requireNonNull(container);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configurationSite() {
-        return container.configurationSite();
+    public ConfigSite configSite() {
+        return container.configSite();
     }
 
     /** {@inheritDoc} */

@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import app.packed.component.ComponentConfiguration;
 import packed.internal.componentcache.ComponentClassDescriptor;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.InternalConfigSite;
 
 /**
  *
@@ -26,7 +26,7 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
 
     final ComponentClassDescriptor ccd;
 
-    public DefaultComponentConfiguration(InternalConfigurationSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
+    public DefaultComponentConfiguration(InternalConfigSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
         super(site, containerConfiguration);
         this.ccd = ccd;
     }
@@ -43,5 +43,9 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
     public DefaultComponentConfiguration setName(String name) {
         super.setName(name);
         return this;
+    }
+
+    public AbstractComponent instantiate(AbstractComponent parent) {
+        return new InternalComponent(parent, this);
     }
 }

@@ -56,8 +56,8 @@ import packed.internal.container.DefaultContainerConfiguration;
 // A bundling always has a bundle (source) and a target???
 
 // WiringOptions
-/// kunne have en bundle.disableConfigurationSite()... <- Saa har man den kun paa toplevel app'en....
-//// NoConfigurationSite, ForceConfigurationSite
+/// kunne have en bundle.disableConfigSite()... <- Saa har man den kun paa toplevel app'en....
+//// NoConfiguSite, ForceConfigSite
 
 //// ExportTransient -> Meaning everything is exported out again from the bundle
 //// exportTransient(Filter) <-Kunne ogsaa vaere paa WiredBundle
@@ -76,7 +76,7 @@ import packed.internal.container.DefaultContainerConfiguration;
 // Detached:
 
 // TODO move to component, if it will see general use...
-// TODO ConfigurationSite disabled, enabled, hierachical
+// TODO ConfigSite disabled, enabled, hierachical
 
 // Properties
 //// Inherited/Not-Inherited (F.eks. Logging, Disable ConfigSite, ...)

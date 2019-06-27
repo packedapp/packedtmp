@@ -41,8 +41,8 @@ import packed.internal.classscan.DescriptorFactory;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.componentcache.ComponentLookup;
 import packed.internal.componentcache.ContainerConfiguratorCache;
-import packed.internal.config.site.ConfigurationSiteType;
-import packed.internal.config.site.InternalConfigurationSite;
+import packed.internal.config.site.ConfigSiteType;
+import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
@@ -71,16 +71,16 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, InternalContainerSource source,
             Wirelet... wirelets) {
-        super(parent == null ? InternalConfigurationSite.ofStack(ConfigurationSiteType.INJECTOR_OF)
-                : parent.configurationSite().thenStack(ConfigurationSiteType.INJECTOR_OF), parent);
+        super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF)
+                : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
         this.buildContext = parent == null ? new InternalBuildContext(this, outputType) : parent.buildContext;
         this.source = requireNonNull(source);
         this.lookup = this.ccc = source.cache();
         this.wirelets = WireletList.of(wirelets);
     }
 
-    public InternalContainer buildContainer() {
-        return new InternalContainer(null, this, buildInjector());
+    public DefaultContainer buildContainer() {
+        return new DefaultContainer(null, this, buildInjector());
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -118,8 +118,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         return new DefaultContainerImage(this);
     }
 
-    InternalContainer buildFromImage() {
-        return new InternalContainer(null, this, buildFromImageInjector());
+    DefaultContainer buildFromImage() {
+        return new DefaultContainer(null, this, buildFromImageInjector());
     }
 
     private DefaultInjector buildFromImageInjector() {
@@ -213,7 +213,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         prepareNewComponent(State.INSTALL_INVOKED);
 
         DefaultComponentConfiguration dcc = currentComponent = new DefaultComponentConfiguration(
-                configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor);
+                configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this, descriptor);
         descriptor.initialize(this, dcc);
         return dcc;
 
@@ -232,7 +232,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         prepareNewComponent(State.INSTALL_INVOKED);
 
         DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(
-                configurationSite().thenStack(ConfigurationSiteType.COMPONENT_INSTALL), this, descriptor, instance);
+                configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this, descriptor, instance);
 
         descriptor.initialize(this, dcc);
         return dcc;
@@ -248,8 +248,15 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public ComponentConfiguration installHelper(Class<?> implementation) {
-        throw new UnsupportedOperationException();
-        // return new OldDefaultComponentConfiguration(this, Factory.findInjectable(implementation), InstantiationMode.NONE);
+        requireNonNull(implementation, "implementation is null");
+        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(implementation);
+        prepareNewComponent(State.INSTALL_INVOKED);
+
+        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(
+                configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this, descriptor, implementation);
+
+        descriptor.initialize(this, dcc);
+        return dcc;
     }
 
     /** {@inheritDoc} */

@@ -118,7 +118,7 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
      * @return the configuration site where this configuration was created
      */
     @Override
-    ConfigSite configurationSite();
+    ConfigSite configSite();
 
     /**
      * Returns the description of this service. Or null if no description has been set.
