@@ -43,6 +43,16 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
     }
 
     /**
+     * Returns whether or not this field is a final field.
+     *
+     * @return whether or not this field is a final field
+     * @see Modifier#isFinal(int)
+     */
+    default boolean isFinal() {
+        return Modifier.isFinal(getModifiers());
+    }
+
+    /**
      * Creates a new {@link Field} corresponding to this descriptor.
      *
      * @return a new field

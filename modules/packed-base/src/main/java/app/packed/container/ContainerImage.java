@@ -72,4 +72,8 @@ public interface ContainerImage extends ContainerSource {
     static ContainerImage of(ContainerSource source, Wirelet... wirelets) {
         return ContainerFactory.imageOf(source, wirelets);
     }
+
+    // ofRepeatable();
+    // Ideen er vi f.eks. gerne vil instantiere bygge hele containeren. Men f.eks. ikke initializere
+    // wirelet.checkNotFrom();
 }

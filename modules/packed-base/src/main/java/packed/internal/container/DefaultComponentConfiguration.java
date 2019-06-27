@@ -45,6 +45,7 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
         return this;
     }
 
+    @Override
     public AbstractComponent instantiate(AbstractComponent parent) {
         return new DefaultComponent(parent, this);
     }

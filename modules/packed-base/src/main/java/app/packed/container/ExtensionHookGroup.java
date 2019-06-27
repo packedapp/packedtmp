@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.hook.AnnotatedFieldHook;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 
@@ -76,6 +77,10 @@ public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Suppl
      */
     // Do we need an instantiation mode as an additional parameter??
     public abstract B newBuilder(Class<?> componentType);
+
+    protected final <A extends Annotation> void onAnnotatedField(Class<A> annotationType, BiConsumer<B, AnnotatedFieldHook<A>> consumer) {
+
+    }
 
     protected final <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<B, AnnotatedMethodHook<A>> consumer) {
         builder().onAnnotatedMethod(annotationType, consumer);

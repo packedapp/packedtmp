@@ -19,8 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.component.Component;
@@ -31,6 +33,10 @@ import app.packed.util.Nullable;
 
 /** An abstract base implementation of {@link Component}. */
 abstract class AbstractComponent implements Component {
+
+    /** Any child components this component might have. Is null if we know the component will never have any children. */
+    @Nullable
+    private final Map<String, AbstractComponent> children;
 
     /** The configuration site of the component. */
     private final ConfigSite configSite;
@@ -54,9 +60,6 @@ abstract class AbstractComponent implements Component {
     /** The parent component, iff this component has a parent. */
     @Nullable
     final AbstractComponent parent;
-    /** All the components of this container. */
-    // Move this to abstract component and just use null???
-    final Map<String, AbstractComponent> children;
 
     /**
      * Creates a new abstract component.
@@ -72,16 +75,17 @@ abstract class AbstractComponent implements Component {
         this.description = configuration.getDescription();
         this.name = requireNonNull(configuration.name);
         this.depth = configuration.depth();
-        children = configuration.initializeChildren(this);
+        this.children = configuration.initializeChildren(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public final Collection<Component> children() {
-        if (children == null) {
+        Map<String, AbstractComponent> c = children;
+        if (c == null) {
             return Collections.emptySet();
         }
-        return Collections.unmodifiableCollection(children.values());
+        return Collections.unmodifiableCollection(c.values());
     }
 
     /** {@inheritDoc} */
@@ -102,6 +106,47 @@ abstract class AbstractComponent implements Component {
         return Optional.ofNullable(description);
     }
 
+    public Component findComponent(CharSequence path) {
+        return findComponent(path.toString());
+
+    }
+
+    private Component findComponent(String path) {
+        if (path.length() == 0) {
+            throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
+        }
+        if (path.charAt(0) == '/' && path.length() == 1) {
+            if (path().toString().equals("/")) {
+                return this;
+            }
+        }
+        // Vi smider IllegalArgumentException hvis man absolute path, og man ikke har samme prefix....
+
+        // TODO fix for non-absolute paths....
+        //
+        Component c = children.get(path);
+        if (c == null) {
+            String p = path.toString();
+            String[] splits = p.split("/");
+            Map<String, AbstractComponent> chi = children;
+            for (int i = 1; i < splits.length; i++) {
+                if (chi == null) {
+                    return null;
+                }
+                String ch = splits[i];
+                AbstractComponent ac = chi.get(ch);
+                if (ac == null) {
+                    return null;
+                }
+                if (i == splits.length - 1) {
+                    return ac;
+                }
+                chi = ac.children;
+            }
+        }
+        return c;
+    }
+
     /** {@inheritDoc} */
     @Override
     public final String name() {
@@ -116,9 +161,23 @@ abstract class AbstractComponent implements Component {
 
     @Override
     public final ComponentStream stream() {
-        if (children == null) {
+        Map<String, AbstractComponent> c = children;
+        if (c == null) {
             return new InternalComponentStream(Stream.of(this));
         }
-        return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(AbstractComponent::stream)));
+        return new InternalComponentStream(Stream.concat(Stream.of(this), c.values().stream().flatMap(AbstractComponent::stream)));
+    }
+
+    /**
+     * @param path
+     */
+    public Component useComponent(CharSequence path) {
+        Component c = findComponent(path);
+        if (c == null) {
+            // Maybe try an match with some fuzzy logic, if children is a resonable size)
+            List<?> list = stream().map(e -> e.path()).collect(Collectors.toList());
+            throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
+        }
+        return c;
     }
 }

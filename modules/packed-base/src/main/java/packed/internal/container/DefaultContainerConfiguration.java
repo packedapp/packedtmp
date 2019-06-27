@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -69,6 +70,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public final InternalContainerSource source;
 
+    final IdentityHashMap<Class<?>, Object> sidecars = new IdentityHashMap<>();
+
     DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, InternalContainerSource source,
             Wirelet... wirelets) {
         super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF) : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
@@ -80,6 +83,12 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public DefaultContainer buildContainer() {
         return new DefaultContainer(null, this, buildInjector());
+    }
+
+    public void installSidecar(Object sidecar) {
+        // InstantiationContext...
+        // Virker ikke med images...
+        sidecars.put(sidecar.getClass(), sidecar);
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -248,14 +257,12 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public ComponentConfiguration installHelper(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
-        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(implementation);
         prepareNewComponent(State.INSTALL_INVOKED);
 
+        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(implementation);
         DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
                 descriptor, implementation);
-
-        descriptor.initialize(this, dcc);
-        return dcc;
+        return descriptor.initialize(this, dcc);
     }
 
     /** {@inheritDoc} */

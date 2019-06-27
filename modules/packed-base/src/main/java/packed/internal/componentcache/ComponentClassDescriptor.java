@@ -72,10 +72,11 @@ public final class ComponentClassDescriptor {
         return s;
     }
 
-    public void initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
+    public ComponentConfiguration initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
         for (Instance c : groups) {
             c.add(container, component);
         }
+        return component;
     }
 
     /**

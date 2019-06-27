@@ -15,6 +15,7 @@
  */
 package packed.internal.componentcache.exam;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -22,6 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ExtensionHookGroup;
+import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.exam.Dddd.MyExtension;
 import packed.internal.componentcache.exam.Dddd.OnX;
@@ -62,6 +64,37 @@ public class OnXConfigurator extends ExtensionHookGroup<MyExtension, OnXConfigur
             List<MethodDescriptor> l = List.copyOf(list);
             return (c, e) -> e.methods(c, l);
         }
+    }
+
+    public interface FieldHook<A extends Annotation> {
+        A annotation();
+
+        FieldDescriptor field();
+
+        void access(FieldAccessMode... fam);
+
+        // void onRead();
+        // void onReadStatic();
+        // void onReadInstance();
+        // void forRead();
+        // void forWrite();
+        // void forStatic();
+        // void forInstance();
+    }
+
+    enum FieldAccessMode {
+        /** */
+        READ_STATIC,
+        /** */
+        READ_INSTANCE,
+        /** */
+        WRITE_STATIC, // Do we want to allow writes to static fields????
+        /** */
+        WRITE_INSTANCE;
+    }
+
+    interface FieldReader {
+
     }
 
 }
