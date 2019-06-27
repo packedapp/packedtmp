@@ -59,6 +59,10 @@ public interface Component {
     Optional<String> description();
 
     default Collection<?> features() {
+        // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
+        // F.eks. All dependencies for a component... Is this really a feature??
+        // Dependencies for a component is the once only the component uses. For a container it is all
+        // required dependencies for the module
         // Features vs en selvstaendig komponent....
         //// Altsaa det ser jo dumt ud hvis vi har
         //// /Foo

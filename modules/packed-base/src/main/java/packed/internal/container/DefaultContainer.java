@@ -29,7 +29,7 @@ final class DefaultContainer extends AbstractComponent implements Component {
 
     public DefaultContainer(@Nullable AbstractComponent parent, DefaultContainerConfiguration configuration, InstantiationContext ic) {
         super(parent, configuration, ic);
-        Injector i = ic.getOrNull(configuration, DefaultInjector.class);
+        Injector i = ic.get(configuration, DefaultInjector.class);
         if (i == null) {
             i = new DefaultInjector(configuration, new ServiceNodeMap());
         }

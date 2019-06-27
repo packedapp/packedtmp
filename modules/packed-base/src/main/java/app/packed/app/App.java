@@ -51,6 +51,9 @@ import packed.internal.container.DefaultContainerImage;
  */
 // Used to extend Injector... But just to many methods...
 // Do we expose the attachments????
+// Branch -> A collection of components
+// Component Tree
+// Trunk <- Root Branch -> The top app
 public interface App extends AutoCloseable {
 
     /**

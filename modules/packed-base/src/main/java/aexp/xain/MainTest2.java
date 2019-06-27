@@ -13,15 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.xain;
+package aexp.xain;
 
+import app.packed.app.App;
+import app.packed.app.Main;
 import app.packed.container.Bundle;
 
 /**
  *
  */
-public class JettyBundle extends Bundle {
-    public JettyBundle port(int port) {
-        return this;
+public class MainTest2 extends Bundle {
+
+    @Override
+    protected void configure() {
+        link(new MyMain());
+    }
+
+    public static void main(String[] args) {
+        App.of(new MainTest2());
+    }
+
+    static class MyMain extends Bundle {
+
+        @Override
+        protected void configure() {
+            System.out.println(path());
+            System.out.println(install("foo").path());
+            System.out.println(install(334).path());
+        }
+
+        @Main
+        public static void say() {
+            System.out.println("HelloWorld");
+        }
     }
 }

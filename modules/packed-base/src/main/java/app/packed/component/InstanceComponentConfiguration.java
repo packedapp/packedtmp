@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
-
-import app.packed.container.Bundle;
+package app.packed.component;
 
 /**
  *
  */
-public class ComponentTest extends Bundle {
+// Ideen er egentlig lidt... at vi kan f.eks kalde
+// ScheduleExtension.schedule(component, c->c.scheduleThisMethod());
+public interface InstanceComponentConfiguration<T> extends ComponentConfiguration {
 
 }

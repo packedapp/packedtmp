@@ -20,10 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.app.App;
 import app.packed.component.Component;
-import app.packed.container.AnyBundle;
+import app.packed.component.ComponentStream;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import zets.namepath.ConfAction;
 
 /**
  *
@@ -32,17 +31,12 @@ public class AppTester {
 
     private final App app;
 
-    public AppTester(ContainerSource source, Wirelet... wirelets) {
-        this(App.of(source, wirelets));
-    }
-
     public AppTester(App app) {
         this.app = requireNonNull(app);
     }
 
-    public AppTester nameIs(String expected) {
-        assertThat(app.name()).isEqualTo(expected);
-        return this;
+    public AppTester(ContainerSource source, Wirelet... wirelets) {
+        this(App.of(source, wirelets));
     }
 
     public void assertPathExist(CharSequence s) {
@@ -53,24 +47,17 @@ public class AppTester {
         }
     }
 
+    public AppTester nameIs(String expected) {
+        assertThat(app.name()).isEqualTo(expected);
+        return this;
+    }
+
+    public ComponentStream stream() {
+        return app.stream();
+    }
+
     public static AppTester of(ContainerSource source, Wirelet... wirelets) {
         return new AppTester(App.of(source, wirelets));
     }
 
-    public static AppTester of(ConfAction action, Wirelet... wirelets) {
-        return of(new TestBundle(action), wirelets);
-    }
-
-    static class TestBundle extends AnyBundle {
-        final ConfAction ca;
-
-        TestBundle(ConfAction ca) {
-            this.ca = requireNonNull(ca);
-        }
-
-        @Override
-        public void configure() {
-            ca.apply(configuration());
-        }
-    }
 }

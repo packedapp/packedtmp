@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package aexp.app;
 
-import app.packed.app.App;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+import app.packed.container.ExtensionActivator;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 /**
  *
  */
-public class FeatureTest {
-
-    // Skal vi have 3 typer.
-    // En for descriptor
-    // En for live unmodifiable
-    // En for live modifiable
-
-    public void foo(App app) {
-
-        // Total number of services in the component tree
-        app.stream().mapToInt(c -> c.use(Inj.SERVICES).size()).sum();
-
-        app.stream().forEachFeature(Inj.SERVICES, (c, s) -> System.out.println(c.path() + " exposes " + s.size() + " services"));
-    }
-}
+@ExtensionActivator(SomeActivator.class)
+public @interface SomeAnnotation {}

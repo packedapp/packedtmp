@@ -25,7 +25,7 @@ import zets.name.spi.AppTester;
 /**
  *
  */
-public class ChildrenNameTest extends AbstractBaseTest {
+public class NameChildrenTest extends AbstractBaseTest {
 
     @Test
     public void childName() {

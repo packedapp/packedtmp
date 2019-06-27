@@ -13,28 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.xain;
+package aexp.app;
 
-import java.nio.file.Path;
+import app.packed.app.App;
+import app.packed.container.Bundle;
+import app.packed.container.ContainerImage;
 
 /**
  *
  */
-public class Dddx {
+public class RunMe extends Bundle {
 
-    @ScheduleAtFixedRate(10000)
-    static final Runnable r = () -> System.out.println("Hello");
-
-    @ScheduleAtFixedRate(10000)
-    public void hello() {
-        System.out.println("Hello");
+    @Override
+    public void configure() {
+        install(new Foo());
     }
 
     public static void main(String[] args) {
-        System.out.println(Path.of("/").iterator().hasNext());
+        App.of(new RunMe());
+        System.out.println("------");
+        ContainerImage ci = ContainerImage.of(new RunMe());
+        System.out.println("------");
+        App.of(ci);
+        App.of(ci);
     }
-}
 
-@interface ScheduleAtFixedRate {
-    long value();
+    public static class Foo {
+
+        @SomeAnnotation
+        public void foo() {}
+    }
 }

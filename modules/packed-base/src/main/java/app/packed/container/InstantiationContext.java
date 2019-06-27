@@ -15,20 +15,44 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.IdentityHashMap;
 
+import app.packed.util.Nullable;
+
 /**
- * Like build context. But for instantiation....
+ * An instantiation context is created for every delimited tree hierachy.
+ * <p>
+ * <strong>Note that this implementation is not synchronized.</strong>
  */
-public class InstantiationContext {
+public final class InstantiationContext {
 
-    private IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> m = new IdentityHashMap<>();
+    /** All context objects. */
+    private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T> T get(ContainerConfiguration dcc, Class<T> type) {
-        var e = m.get(dcc);
+    @Nullable
+    public <T> T get(ContainerConfiguration configuration, Class<T> type) {
+        requireNonNull(configuration, "configuration is null");
+        requireNonNull(type, "type is null");
+        var e = map.get(configuration);
+        return e == null ? null : (T) e.get(type);
+    }
+
+    public void put(ContainerConfiguration configuration, Object obj) {
+        requireNonNull(configuration, "configuration is null");
+        requireNonNull(obj, "obj is null");
+        map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T use(ContainerConfiguration configuration, Class<T> type) {
+        requireNonNull(configuration, "configuration is null");
+        requireNonNull(type, "type is null");
+        var e = map.get(configuration);
         if (e == null) {
-            throw new IllegalStateException();
+            throw new IllegalArgumentException();
         }
         Object o = e.get(type);
         if (o == null) {
@@ -37,20 +61,10 @@ public class InstantiationContext {
         return (T) o;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getOrNull(ContainerConfiguration dcc, Class<T> type) {
-        var e = m.get(dcc);
-        if (e == null) {
-            return null;
-        }
-        Object o = e.get(type);
-        if (o == null) {
-            return null;
-        }
-        return (T) o;
+    enum Type {
+        APP, INJECTOR; // <- Saa et image, for exempel kan lave begge dele...
     }
 
-    public void put(ContainerConfiguration dcc, Object o) {
-        m.computeIfAbsent(dcc, e -> new IdentityHashMap<>()).put(o.getClass(), o);
-    }
+    // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());
+    // link(SomeBundle.class, LifecycleWirelets.start(SomeGroup)); //all in same group will be started
 }

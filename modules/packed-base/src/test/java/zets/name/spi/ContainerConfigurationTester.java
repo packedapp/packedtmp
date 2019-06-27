@@ -18,9 +18,15 @@ package zets.name.spi;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.function.Consumer;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.component.ComponentPath;
+import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 
 /**
  *
@@ -33,13 +39,8 @@ public class ContainerConfigurationTester {
         this.cc = requireNonNull(cc);
     }
 
-    public ContainerConfigurationTester nameIs(String name) {
-        assertThat(cc.getName()).isEqualTo(name);
-        return this;
-    }
-
-    public ContainerConfigurationTester pathIs(String path) {
-        assertThat(cc.path().toString()).isEqualTo(path);
+    public ContainerConfigurationTester getNameIs(String expected) {
+        assertThat(cc.getName()).isEqualTo(expected);
         return this;
     }
 
@@ -66,5 +67,29 @@ public class ContainerConfigurationTester {
             // Check name???
             return this;
         }
+    }
+
+    public ContainerConfigurationTester link(AnyBundle child, Wirelet... wirelets) {
+        cc.link(child, wirelets);
+        return this;
+    }
+
+    public ComponentPath path() {
+        return cc.path();
+    }
+
+    public ContainerConfigurationTester pathIs(String expected) {
+        assertThat(cc.path().toString()).isEqualTo(expected);
+        return this;
+    }
+
+    public ContainerConfigurationTester setName(String name) {
+        assertThat(cc.setName(name)).isEqualTo(cc);
+        return this;
+    }
+
+    public <T extends Extension<T>> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
+        consumer.accept(cc.use(extensionType));
+        return this;
     }
 }

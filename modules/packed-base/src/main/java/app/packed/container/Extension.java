@@ -66,7 +66,7 @@ public abstract class Extension<T extends Extension<T>> {
             @Override
             public void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
-                extension.onAdd();
+                extension.onExtensionAdded();
             }
         });
     }
@@ -127,28 +127,35 @@ public abstract class Extension<T extends Extension<T>> {
     }
 
     /**
-     * This method is invoked by the runtime immediately after the extension has been added to a container configuration.
-     * And before the extension is made available to other extensions or users.
+     * Invoked
      */
-    protected void onAdd() {}
+    public void onContainerConfigured() {}
 
     /**
+     * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
+     * invoked multiple times. Even by multiple threads
      * 
+     * @param context
+     *            an instantiation context object
      */
-    public void onFinish() {}
+    public void onContainerInstantiate(InstantiationContext context) {}
+
+    /**
+     * This method is invoked exactly once by the runtime immediately after the extension is added to a container
+     * configuration. And before the extension is made available to other extensions or users.
+     */
+    protected void onExtensionAdded() {}
 
     /**
      * If the underlying container has parent which uses this container, returns the parents
      * 
      * @return if the underlying any parent of this container
      * @throws IllegalStateException
-     *             if called from outside of {@link #onFinish()}.
+     *             if called from outside of {@link #onContainerConfigured()}.
      */
     protected final Optional<T> parent() {
         throw new UnsupportedOperationException();
     }
-
-    public void onInstantiate(InstantiationContext context) {}
 
     // Skal have en eller anden form for link med...
     // Hvor man kan gemme ting. f.eks. en Foo.class

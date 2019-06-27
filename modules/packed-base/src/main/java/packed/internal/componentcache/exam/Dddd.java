@@ -50,7 +50,7 @@ public class Dddd {
 
         /** {@inheritDoc} */
         @Override
-        protected void onAdd() {
+        protected void onExtensionAdded() {
             System.out.println("ADDED extension");
         }
 

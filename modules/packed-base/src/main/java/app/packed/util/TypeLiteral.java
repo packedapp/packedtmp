@@ -28,7 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import packed.internal.util.AppPackedUtilSupport;
+import packed.internal.support.AppPackedUtilSupport;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalParameterDescriptor;

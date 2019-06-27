@@ -1,5 +1,3 @@
-Tests
-
 App.name
 
 conf.link() with naming + wirelets
@@ -31,10 +29,3 @@ App as default name...
   
 // I mean we need a default name for bundles anyway
 /// I think we should use this for the app as well
-
-
-
-static class FoooAppBundle {
-
-}  
-

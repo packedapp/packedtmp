@@ -200,10 +200,11 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         case 1:
             return new DefaultComponentPath(name);
         default:
-            String[] paths = new String[depth - 1];
+            String[] paths = new String[depth];
             AbstractComponentConfiguration acc = this;
-            for (int i = paths.length - 1; i >= 0; i--) {
+            for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
+                acc = acc.parent;
             }
             return new DefaultComponentPath(paths);
         }
@@ -233,7 +234,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         case LINK_INVOKED:
             throw new IllegalStateException("Cannot call this method after containerConfiguration.link has been invoked");
         case SET_NAME_INVOKED:
-            throw new IllegalStateException("Can only call #setName(String) once");
+            throw new IllegalStateException("#setName(String) can only be called once for a container");
         }
         throw new InternalError();
     }

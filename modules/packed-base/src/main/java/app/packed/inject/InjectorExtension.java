@@ -110,7 +110,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /** {@inheritDoc} */
     @Override
-    public void onInstantiate(InstantiationContext context) {
+    public void onContainerInstantiate(InstantiationContext context) {
         context.put(configuration(), builder.publicInjector);
     }
 
@@ -218,7 +218,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void onFinish() {
+    public void onContainerConfigured() {
         for (BuildtimeServiceNode<?> e : builder.nodes2) {
             if (!builder.nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());

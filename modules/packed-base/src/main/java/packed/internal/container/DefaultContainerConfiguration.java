@@ -107,7 +107,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     private void instantiate(InstantiationContext ic) {
         for (Extension<?> e : extensions.values()) {
-            e.onInstantiate(ic);
+            e.onContainerInstantiate(ic);
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -187,7 +187,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     final void finish2ndPass() {
         prepareNewComponent(State.GET_NAME_INVOKED);
         for (Extension<?> e : extensions.values()) {
-            e.onFinish(); // State final????
+            e.onContainerConfigured(); // State final????
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -239,6 +239,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public ComponentConfiguration install(Object instance) {
+        // TODO we should allow Class instances, TypeVariable, Factory, und so weither.... Eller ogsaa skal kalde den rette
+        // metode...
+        // Eller maaske have installInstance();
         // TODO should we allow installing bundles in this way?????
         // Or any other ContainerSource... Basically link(ContainerSource) <- without wirelets....
         // I'm not sure.... Should we allow install(HelloWorldBundle.class)
@@ -249,6 +252,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
+        initializeName(State.INSTALL_INVOKED, null);
 
         DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL),
                 this, descriptor, instance);

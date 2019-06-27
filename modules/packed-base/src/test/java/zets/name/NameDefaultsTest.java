@@ -20,18 +20,19 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.container.AnyBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import zets.name.spi.AbstractBaseTest;
 import zets.name.spi.ContainerConfigurationTester;
 
-/** Tests if a container name is not explicitly set. */
-public class DefaultNameTest extends AbstractBaseTest {
+/** Tests that a proper name is generated if the name of a container is not explicitly set. */
+public class NameDefaultsTest extends AbstractBaseTest {
 
     /** Tests the */
     @Test
     public void bundles() {
-        check(f -> new AbstractTesterBundle(f) {}, "Container");
+        check(f -> new AbstractTesterBundle(f) {}, "Container"); // Anonymous class
         check(f -> new S(f), "S");
         check(f -> new Bundle(f), "Bundle");
         check(f -> new HelloWorld(f), "HelloWorld");
@@ -42,17 +43,53 @@ public class DefaultNameTest extends AbstractBaseTest {
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         appOf(cs.apply(c -> {})).nameIs(defaultName);
         // We can override default name
-        appOf(cs.apply(c -> c.nameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
+        appOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
 
         // Images
         imageOf(cs.apply(c -> {})).nameIs(defaultName);
         imageOf(cs.apply(c -> {})).nameIs(defaultName);
         imageOf(cs.apply(c -> {})).newApp().nameIs(defaultName);
 
-        // We can override default name
-        imageOf(cs.apply(c -> c.nameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
-        imageOf(cs.apply(c -> c.nameIs("Boo")), Wirelet.name("Boo")).newApp().nameIs("Boo");
+        // We can override default name from images
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).nameIs("Boo");
+        imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).newApp().nameIs("Boo");
 
+        // As a child
+        appOf(new AbstractTesterBundle(c -> {
+            c.link((AnyBundle) cs.apply(cc -> {
+                cc.pathIs("/" + defaultName);
+            }));
+        }) {}).nameIs("Container");
+
+        // As multiple children
+        appOf(new AbstractTesterBundle(c -> {
+            c.link((AnyBundle) cs.apply(cc -> {
+                cc.pathIs("/" + defaultName);
+            }));
+            c.link((AnyBundle) cs.apply(cc -> {
+                cc.pathIs("/" + defaultName + "1");
+            }));
+        }) {}).nameIs("Container");
+
+        // As two level nested
+        appOf(new AbstractTesterBundle(c -> {
+            c.link((AnyBundle) cs.apply(cc -> {
+                cc.link((AnyBundle) cs.apply(ccc -> {
+                    ccc.pathIs("/" + defaultName + "/" + defaultName);
+                }));
+            }));
+        }) {}).nameIs("Container");
+
+        // As 3 level nested
+        appOf(new AbstractTesterBundle(c -> {
+            c.link((AnyBundle) cs.apply(cc -> {
+                cc.link((AnyBundle) cs.apply(ccc -> {
+                    ccc.link((AnyBundle) cs.apply(cccc -> {
+                        cccc.pathIs("/" + defaultName + "/" + defaultName + "/" + defaultName);
+                    }));
+                }));
+            }));
+        }) {}).nameIs("Container");
     }
 
     /** We normally remove the suffix 'Bundle', so make sure Bundle works */

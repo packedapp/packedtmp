@@ -13,23 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.deprecated;
+package aexp.xain;
 
-import app.packed.container.Bundle;
-import app.packed.inject.Injector;
+import java.nio.file.Path;
 
 /**
  *
  */
-public class SimpleInjector extends Bundle {
+public class Dddx {
 
-    @Override
-    public void configure() {
-        export(provide("Hej"));
+    @ScheduleAtFixedRate(10000)
+    static final Runnable r = () -> System.out.println("Hello");
+
+    @ScheduleAtFixedRate(10000)
+    public void hello() {
+        System.out.println("Hello");
     }
 
     public static void main(String[] args) {
-        Injector i = Injector.of(new SimpleInjector());
-        System.out.println(i.use(String.class));
+        System.out.println(Path.of("/").iterator().hasNext());
     }
+}
+
+@interface ScheduleAtFixedRate {
+    long value();
 }
