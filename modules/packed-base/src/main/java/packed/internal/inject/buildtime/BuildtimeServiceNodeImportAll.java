@@ -29,20 +29,20 @@ import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
 
 /** A build node that imports a service from another injector. */
-public class BuildtimeServiceNodeImport<T> extends BuildtimeServiceNode<T> {
+public class BuildtimeServiceNodeImportAll<T> extends BuildtimeServiceNode<T> {
 
     /** The node to import. */
     final ServiceNode<T> other;
 
     /** The bind injector source. */
-    final BindInjectorFromBundle binding;
+    final ImportAllFromInjector injectorToImportFrom;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildtimeServiceNodeImport(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, BindInjectorFromBundle binding,
+    BuildtimeServiceNodeImportAll(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ImportAllFromInjector injectorToImportFrom,
             ServiceNode<T> node) {
         super(injectorConfiguration, configSite, List.of());
         this.other = requireNonNull(node);
-        this.binding = requireNonNull(binding);
+        this.injectorToImportFrom = requireNonNull(injectorToImportFrom);
         this.as((Key) node.key());
         description = node.description().orElse(null);
         // this.tags().addAll(node.tags());

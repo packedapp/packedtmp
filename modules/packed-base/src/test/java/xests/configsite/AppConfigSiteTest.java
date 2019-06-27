@@ -103,8 +103,8 @@ public class AppConfigSiteTest {
         });
 
         Component root = app.useComponent("/");
-        Component container = app.useComponent("woo");
-        Component component = app.useComponent("woo/foo");
+        Component container = app.useComponent("/woo");
+        Component component = app.useComponent("/woo/foo");
 
         // Test Root
         assertThat(root.configSite()).isSameAs(app.configSite());

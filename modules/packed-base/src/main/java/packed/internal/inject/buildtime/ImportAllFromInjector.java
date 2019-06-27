@@ -36,7 +36,7 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /** Provides services from an existing Injector. */
-public final class ProvideFromInjector {
+public final class ImportAllFromInjector {
 
     /** The injector we are providing services from. */
     private final Injector injector;
@@ -49,7 +49,7 @@ public final class ProvideFromInjector {
 
     private final InjectorBuilder ib;
 
-    public ProvideFromInjector(DefaultContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
+    public ImportAllFromInjector(DefaultContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
         this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);
@@ -85,7 +85,7 @@ public final class ProvideFromInjector {
         HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(ib, configSite.replaceParent(node.configSite()), this, node);
+                BuildtimeServiceNodeImportAll<?> n = new BuildtimeServiceNodeImportAll<>(ib, configSite.replaceParent(node.configSite()), this, node);
                 nodes.put(node.key(), n);
             }
         }

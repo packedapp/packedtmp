@@ -28,6 +28,10 @@ import app.packed.container.Wirelet;
  */
 public abstract class AbstractBaseTest {
 
+    public static AppTester appOf(Consumer<? super ContainerConfigurationTester> source, Wirelet... wirelets) {
+        return new AppTester(new AbstractTesterBundle(source) {}, wirelets);
+    }
+
     public static AppTester appOf(ContainerSource source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
     }

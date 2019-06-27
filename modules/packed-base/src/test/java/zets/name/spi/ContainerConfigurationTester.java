@@ -18,6 +18,8 @@ package zets.name.spi;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentExtension;
 import app.packed.container.ContainerConfiguration;
 
 /**
@@ -39,6 +41,12 @@ public class ContainerConfigurationTester {
     public ContainerConfigurationTester pathIs(String path) {
         assertThat(cc.path().toString()).isEqualTo(path);
         return this;
+    }
+
+    public ComponentConfiguration installHelper(Class<?> implementation) {
+        ComponentConfiguration conf = cc.use(ComponentExtension.class).installHelper(implementation);
+        assertThat(conf).isNotNull();
+        return conf;
     }
 
     public ContainerConfigurationTester isConfigurable() {

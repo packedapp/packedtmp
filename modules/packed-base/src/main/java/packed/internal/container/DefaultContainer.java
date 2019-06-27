@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import app.packed.component.Component;
@@ -41,7 +42,7 @@ final class DefaultContainer extends AbstractComponent implements Component {
         if (path.length() == 0) {
             throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
         }
-        if (path.charAt(0) == '/') {
+        if (path.charAt(0) == '/' && path.length() == 1) {
             if (path().toString().equals("/")) {
                 return this;
             }
@@ -50,11 +51,20 @@ final class DefaultContainer extends AbstractComponent implements Component {
         if (c == null) {
             String p = path.toString();
             String[] splits = p.split("/");
-            if (splits.length > 1) {
-                AbstractComponent ac = children.get(splits[0]);
-                if (ac instanceof DefaultContainer) {
-                    return ((DefaultContainer) ac).findComponent(splits[1]);
+            Map<String, AbstractComponent> chi = children;
+            for (int i = 1; i < splits.length; i++) {
+                if (chi == null) {
+                    return null;
                 }
+                String ch = splits[i];
+                AbstractComponent ac = chi.get(ch);
+                if (ac == null) {
+                    return null;
+                }
+                if (i == splits.length - 1) {
+                    return ac;
+                }
+                chi = ac.children;
             }
         }
         return c;

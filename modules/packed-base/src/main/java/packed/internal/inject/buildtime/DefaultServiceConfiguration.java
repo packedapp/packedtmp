@@ -42,7 +42,7 @@ public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
      */
     public DefaultServiceConfiguration(DefaultContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
-        this.configSite = node.configSite;
+        this.configSite = node.configSite();
         this.node = requireNonNull(node);
     }
 

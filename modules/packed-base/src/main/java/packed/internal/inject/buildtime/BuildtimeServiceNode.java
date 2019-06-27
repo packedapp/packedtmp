@@ -44,7 +44,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
     public boolean autoRequires;
 
     /** The configuration site of this object. */
-    protected final InternalConfigSite configSite;
+    private final InternalConfigSite configSite;
 
     /** The dependencies of this node. */
     public final List<InternalDependencyDescriptor> dependencies;

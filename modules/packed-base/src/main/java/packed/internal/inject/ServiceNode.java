@@ -16,18 +16,20 @@
 package packed.internal.inject;
 
 import app.packed.component.Component;
-import app.packed.inject.ServiceDependency;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.util.KeyBuilder;
 
 /**
- * A node is the base interface for internally registered services.
+ * A service node represent the provider of a service either at {@link BuildtimeServiceNode build-time } or at
+ * {@link RuntimeServiceNode runtime-time}.
  *
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
  * at runtime.

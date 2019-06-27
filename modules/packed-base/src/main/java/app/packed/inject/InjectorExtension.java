@@ -42,7 +42,7 @@ import packed.internal.inject.buildtime.DefaultProvidedComponentConfiguration;
 import packed.internal.inject.buildtime.DefaultServiceConfiguration;
 import packed.internal.inject.buildtime.DependencyGraph;
 import packed.internal.inject.buildtime.InjectorBuilder;
-import packed.internal.inject.buildtime.ProvideFromInjector;
+import packed.internal.inject.buildtime.ImportAllFromInjector;
 import packed.internal.invokable.InternalFunction;
 
 /**
@@ -194,7 +194,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
      *            any wirelets used to filter and transform the provided services
      */
     public void importAll(Injector injector, Wirelet... wirelets) {
-        ProvideFromInjector pfi = new ProvideFromInjector(configuration0(), builder, injector, WireletList.of(wirelets)); // Validates arguments
+        ImportAllFromInjector pfi = new ImportAllFromInjector(configuration0(), builder, injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
         pfi.process(); // Will create the necessary nodes.
     }

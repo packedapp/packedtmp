@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.app.App;
+import app.packed.component.Component;
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -42,6 +43,14 @@ public class AppTester {
     public AppTester nameIs(String expected) {
         assertThat(app.name()).isEqualTo(expected);
         return this;
+    }
+
+    public void assertPathExist(CharSequence s) {
+        Component cc = app.useComponent(s);
+        assertThat(cc).isNotNull();
+        if (s.toString().startsWith("/")) {
+            assertThat(cc.path().toString()).isEqualTo(s.toString());
+        }
     }
 
     public static AppTester of(ContainerSource source, Wirelet... wirelets) {

@@ -78,12 +78,12 @@ public final class DependencyGraph {
 
         }
 
-        if (ib.injectorBundleBindings != null) {
-            for (BindInjectorFromBundle bi : ib.injectorBundleBindings) {
-                bi.processExport();
-                // new DependencyGraph(bi.newConfiguration).instantiate();
-            }
-        }
+        // if (ib.injectorBundleBindings != null) {
+        // for (BindInjectorFromBundle bi : ib.injectorBundleBindings) {
+        // bi.processExport();
+        // // new DependencyGraph(bi.newConfiguration).instantiate();
+        // }
+        // }
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies(this);
