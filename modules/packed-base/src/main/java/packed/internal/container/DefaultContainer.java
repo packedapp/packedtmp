@@ -16,17 +16,25 @@
 package packed.internal.container;
 
 import app.packed.component.Component;
+import app.packed.container.InstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
+import packed.internal.inject.ServiceNodeMap;
+import packed.internal.inject.runtime.DefaultInjector;
 
 /** The default implementation of Container. */
 final class DefaultContainer extends AbstractComponent implements Component {
 
     private final Injector injector;
 
-    public DefaultContainer(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, Injector injector) {
-        super(parent, configuration);
-        this.injector = injector;
+    public DefaultContainer(@Nullable AbstractComponent parent, DefaultContainerConfiguration configuration, InstantiationContext ic) {
+        super(parent, configuration, ic);
+        Injector i = ic.getOrNull(configuration, DefaultInjector.class);
+        if (i == null) {
+            i = new DefaultInjector(configuration, new ServiceNodeMap());
+        }
+        this.injector = i;
+
     }
 
     public Injector injector() {

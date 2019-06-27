@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package app.packed.container;
 
 import java.util.IdentityHashMap;
 
@@ -22,10 +22,10 @@ import java.util.IdentityHashMap;
  */
 public class InstantiationContext {
 
-    private IdentityHashMap<DefaultComponentConfiguration, IdentityHashMap<Class<?>, Object>> m = new IdentityHashMap<>();
+    private IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> m = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public <T> T get(DefaultComponentConfiguration dcc, Class<T> type) {
+    public <T> T get(ContainerConfiguration dcc, Class<T> type) {
         var e = m.get(dcc);
         if (e == null) {
             throw new IllegalStateException();
@@ -37,7 +37,20 @@ public class InstantiationContext {
         return (T) o;
     }
 
-    public void put(DefaultComponentConfiguration dcc, Object o) {
+    @SuppressWarnings("unchecked")
+    public <T> T getOrNull(ContainerConfiguration dcc, Class<T> type) {
+        var e = m.get(dcc);
+        if (e == null) {
+            return null;
+        }
+        Object o = e.get(type);
+        if (o == null) {
+            return null;
+        }
+        return (T) o;
+    }
+
+    public void put(ContainerConfiguration dcc, Object o) {
         m.computeIfAbsent(dcc, e -> new IdentityHashMap<>()).put(o.getClass(), o);
     }
 }

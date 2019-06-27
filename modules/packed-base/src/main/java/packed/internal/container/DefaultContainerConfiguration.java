@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
@@ -32,10 +31,10 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
+import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Factory;
-import app.packed.inject.Injector;
 import app.packed.inject.InjectorExtension;
 import app.packed.util.Nullable;
 import packed.internal.classscan.DescriptorFactory;
@@ -70,8 +69,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public final InternalContainerSource source;
 
-    final IdentityHashMap<Class<?>, Object> sidecars = new IdentityHashMap<>();
-
     DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, InternalContainerSource source,
             Wirelet... wirelets) {
         super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF) : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
@@ -82,13 +79,20 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public DefaultContainer buildContainer() {
-        return new DefaultContainer(null, this, buildInjector());
-    }
-
-    public void installSidecar(Object sidecar) {
-        // InstantiationContext...
-        // Virker ikke med images...
-        sidecars.put(sidecar.getClass(), sidecar);
+        configure();
+        finish2ndPass();
+        InstantiationContext ic = new InstantiationContext();
+        instantiate(ic);
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (acc instanceof DefaultContainerConfiguration) {
+                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                    dcc.getName();
+                    dcc.buildContainer();
+                }
+            }
+        }
+        return new DefaultContainer(null, this, ic);
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -101,7 +105,20 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
     }
 
-    public Injector buildInjector() {
+    private void instantiate(InstantiationContext ic) {
+        for (Extension<?> e : extensions.values()) {
+            e.onInstantiate(ic);
+        }
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (acc instanceof DefaultContainerConfiguration) {
+                    ((DefaultContainerConfiguration) acc).instantiate(ic);
+                }
+            }
+        }
+    }
+
+    public DefaultInjector buildInjector() {
         configure();
         finish2ndPass();
         if (children != null) {
@@ -127,15 +144,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     DefaultContainer buildFromImage() {
-        return new DefaultContainer(null, this, buildFromImageInjector());
-    }
-
-    private DefaultInjector buildFromImageInjector() {
-        if (extensions.containsKey(InjectorExtension.class)) {
-            return use(InjectorExtension.class).builder.publicInjector;
-        } else {
-            return new DefaultInjector(this, new ServiceNodeMap());
-        }
+        InstantiationContext ic = new InstantiationContext();
+        instantiate(ic);
+        return new DefaultContainer(null, this, ic);
     }
 
     /** {@inheritDoc} */
@@ -348,12 +359,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    AbstractComponent instantiate(AbstractComponent parent) {
-        Injector i = null;
-        if (parent instanceof DefaultContainer) {
-            i = ((DefaultContainer) parent).injector();
-        }
-        // TODO Auto-generated method stub
-        return new DefaultContainer(parent, this, i);
+    AbstractComponent instantiate(AbstractComponent parent, InstantiationContext ic) {
+        return new DefaultContainer(parent, this, ic);
     }
 }

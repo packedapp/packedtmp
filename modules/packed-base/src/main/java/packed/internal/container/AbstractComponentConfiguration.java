@@ -26,6 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.InstantiationContext;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
@@ -84,13 +85,13 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         return depth;
     }
 
-    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent) {
+    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, InstantiationContext ic) {
         if (children == null) {
             return null;
         }
         HashMap<String, AbstractComponent> result = new HashMap<>();
         for (AbstractComponentConfiguration acc : children.values()) {
-            AbstractComponent ac = acc.instantiate(parent);
+            AbstractComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
         return result;
@@ -183,7 +184,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     }
 
-    abstract AbstractComponent instantiate(AbstractComponent parent);
+    abstract AbstractComponent instantiate(AbstractComponent parent, InstantiationContext ic);
 
     /**
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component

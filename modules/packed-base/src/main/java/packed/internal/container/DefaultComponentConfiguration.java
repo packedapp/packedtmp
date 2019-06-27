@@ -16,6 +16,7 @@
 package packed.internal.container;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.InstantiationContext;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigSite;
 
@@ -46,7 +47,7 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
     }
 
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent) {
-        return new DefaultComponent(parent, this);
+    public AbstractComponent instantiate(AbstractComponent parent, InstantiationContext ic) {
+        return new DefaultComponent(parent, this, ic);
     }
 }

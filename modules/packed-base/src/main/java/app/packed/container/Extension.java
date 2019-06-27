@@ -148,6 +148,8 @@ public abstract class Extension<T extends Extension<T>> {
         throw new UnsupportedOperationException();
     }
 
+    public void onInstantiate(InstantiationContext context) {}
+
     // Skal have en eller anden form for link med...
     // Hvor man kan gemme ting. f.eks. en Foo.class
     // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle

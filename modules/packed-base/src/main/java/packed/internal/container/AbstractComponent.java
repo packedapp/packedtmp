@@ -29,6 +29,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.InstantiationContext;
 import app.packed.util.Nullable;
 
 /** An abstract base implementation of {@link Component}. */
@@ -69,13 +70,13 @@ abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration) {
+    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, InstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
         this.name = requireNonNull(configuration.name);
         this.depth = configuration.depth();
-        this.children = configuration.initializeChildren(this);
+        this.children = configuration.initializeChildren(this, ic);
     }
 
     /** {@inheritDoc} */

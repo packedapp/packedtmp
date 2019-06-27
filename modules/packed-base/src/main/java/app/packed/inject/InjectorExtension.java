@@ -21,6 +21,7 @@ import java.util.List;
 
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
+import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.contract.Contract;
@@ -41,8 +42,8 @@ import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
 import packed.internal.inject.buildtime.DefaultProvidedComponentConfiguration;
 import packed.internal.inject.buildtime.DefaultServiceConfiguration;
 import packed.internal.inject.buildtime.DependencyGraph;
-import packed.internal.inject.buildtime.InjectorBuilder;
 import packed.internal.inject.buildtime.ImportAllFromInjector;
+import packed.internal.inject.buildtime.InjectorBuilder;
 import packed.internal.invokable.InternalFunction;
 
 /**
@@ -105,6 +106,12 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         // Smid en static provides paa bundlen...
         // Og saa provide
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onInstantiate(InstantiationContext context) {
+        context.put(configuration(), builder.publicInjector);
     }
 
     /** {@inheritDoc} */

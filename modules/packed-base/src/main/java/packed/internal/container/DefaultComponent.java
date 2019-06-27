@@ -16,13 +16,14 @@
 package packed.internal.container;
 
 import app.packed.component.Component;
+import app.packed.container.InstantiationContext;
 
 /**
  *
  */
 final class DefaultComponent extends AbstractComponent implements Component {
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration) {
-        super(container, configuration);
+    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, InstantiationContext ic) {
+        super(container, configuration, ic);
     }
 }
