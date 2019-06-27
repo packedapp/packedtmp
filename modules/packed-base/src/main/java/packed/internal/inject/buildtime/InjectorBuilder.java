@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,16 +25,16 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
-import app.packed.inject.ServiceDependency;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.buildtime.BindInjectorFromBundle;
-import packed.internal.inject.buildtime.BuildtimeServiceNode;
-import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
+import packed.internal.inject.ServiceNode;
+import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
@@ -42,6 +42,7 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 // Kan vi have en InjectorBuilder uden en InjectorExtension???
 // Giver ikke saa meget mening....Configurationen skal jo ske gennem InjectorExtension
+// Men ja, InjectorConfigurator behoever vel ikke en extension????
 public final class InjectorBuilder {
 
     public boolean autoRequires = true;

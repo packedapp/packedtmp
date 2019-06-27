@@ -17,10 +17,15 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 
@@ -49,6 +54,9 @@ abstract class AbstractComponent implements Component {
     /** The parent component, iff this component has a parent. */
     @Nullable
     final AbstractComponent parent;
+    /** All the components of this container. */
+    // Move this to abstract component and just use null???
+    final Map<String, AbstractComponent> children;
 
     /**
      * Creates a new abstract component.
@@ -64,6 +72,16 @@ abstract class AbstractComponent implements Component {
         this.description = configuration.getDescription();
         this.name = requireNonNull(configuration.name);
         this.depth = configuration.depth();
+        children = configuration.initializeChildren(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Collection<Component> children() {
+        if (children == null) {
+            return Collections.emptySet();
+        }
+        return Collections.unmodifiableCollection(children.values());
     }
 
     /** {@inheritDoc} */
@@ -94,5 +112,13 @@ abstract class AbstractComponent implements Component {
     @Override
     public final ComponentPath path() {
         return new InternalComponentPath(this);
+    }
+
+    @Override
+    public final ComponentStream stream() {
+        if (children == null) {
+            return new InternalComponentStream(Stream.of(this));
+        }
+        return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(AbstractComponent::stream)));
     }
 }

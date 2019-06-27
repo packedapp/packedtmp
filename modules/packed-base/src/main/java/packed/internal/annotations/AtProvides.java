@@ -28,7 +28,7 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /** A descriptor for a member annotated with {@link Provide}. */

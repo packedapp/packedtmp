@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.container;
 
-import app.packed.container.Bundle;
-import app.packed.inject.Injector;
+import app.packed.component.Component;
 
 /**
  *
  */
-public class SimpleInjector extends Bundle {
+final class DefaultComponent extends AbstractComponent implements Component {
 
-    @Override
-    public void configure() {
-        export(provide("Hej"));
-    }
-
-    public static void main(String[] args) {
-        Injector i = Injector.of(new SimpleInjector());
-        System.out.println(i.use(String.class));
+    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration) {
+        super(container, configuration);
     }
 }

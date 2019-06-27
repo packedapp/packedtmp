@@ -22,7 +22,7 @@ import java.util.function.BiFunction;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invokable.Function2Invokable;
 
 /**

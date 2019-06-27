@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /**
  *

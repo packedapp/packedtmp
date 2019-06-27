@@ -71,8 +71,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, InternalContainerSource source,
             Wirelet... wirelets) {
-        super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF)
-                : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
+        super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF) : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
         this.buildContext = parent == null ? new InternalBuildContext(this, outputType) : parent.buildContext;
         this.source = requireNonNull(source);
         this.lookup = this.ccc = source.cache();
@@ -212,8 +211,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new DefaultComponentConfiguration(
-                configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this, descriptor);
+        DefaultComponentConfiguration dcc = currentComponent = new DefaultComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
+                descriptor);
         descriptor.initialize(this, dcc);
         return dcc;
 
@@ -231,8 +230,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(
-                configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this, descriptor, instance);
+        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL),
+                this, descriptor, instance);
 
         descriptor.initialize(this, dcc);
         return dcc;
@@ -252,8 +251,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(implementation);
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(
-                configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this, descriptor, implementation);
+        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
+                descriptor, implementation);
 
         descriptor.initialize(this, dcc);
         return dcc;
@@ -338,5 +337,16 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     @Override
     public BuildContext buildContext() {
         return buildContext;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    AbstractComponent instantiate(AbstractComponent parent) {
+        Injector i = null;
+        if (parent instanceof DefaultContainer) {
+            i = ((DefaultContainer) parent).injector();
+        }
+        // TODO Auto-generated method stub
+        return new DefaultContainer(parent, this, i);
     }
 }

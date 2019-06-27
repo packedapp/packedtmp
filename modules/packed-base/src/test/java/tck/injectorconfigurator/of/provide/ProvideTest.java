@@ -28,17 +28,13 @@ import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
-import app.packed.util.TypeLiteral;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.C;
-import support.stubs.Letters.D;
 import support.stubs.Letters.E;
 import support.stubs.Letters.F;
-import support.stubs.Letters.G;
 import support.stubs.Letters.H;
 import support.stubs.Letters.I;
-import support.stubs.Letters.J;
 
 /**
  *
@@ -53,13 +49,10 @@ public class ProvideTest {
             ProvidedComponentConfiguration<A> a = conf.provide(A.class);
             ProvidedComponentConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
             ProvidedComponentConfiguration<C> c = conf.provide(C0);
-            ProvidedComponentConfiguration<D> d = conf.provide(TypeLiteral.of(D.class));
             ProvidedComponentConfiguration<E> e = conf.provide(E.class).lazy();
             ProvidedComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            ProvidedComponentConfiguration<G> g = conf.provide(TypeLiteral.of(G.class)).lazy();
             ProvidedComponentConfiguration<H> h = conf.provide(H.class).prototype();
             ProvidedComponentConfiguration<I> i = conf.provide(Factory.findInjectable(I.class)).prototype();
-            ProvidedComponentConfiguration<J> j = conf.provide(TypeLiteral.of(J.class)).prototype();
         });
     }
 

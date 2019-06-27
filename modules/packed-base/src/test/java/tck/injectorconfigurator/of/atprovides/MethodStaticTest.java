@@ -38,7 +38,7 @@ public class MethodStaticTest {
         MixedMethodsInstantiable.test(c -> c.provide(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
         MixedMethodsInstantiable.test(c -> c.provide(Factory.findInjectable(MixedMethodsInstantiable.class)));
-        MixedMethodsInstantiable.test(c -> c.provide(new TypeLiteral<MixedMethodsInstantiable>() {}));
+        MixedMethodsInstantiable.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsInstantiable>() {})));
     }
 
     /** Tests lazy {@link Provide#instantionMode()} on static methods. */
@@ -46,7 +46,7 @@ public class MethodStaticTest {
     public void provideLazy() {
         MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).lazy());
         MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedMethodsNoInstantiation.class)).lazy());
-        MixedMethodsNoInstantiation.test(c -> c.provide(new TypeLiteral<MixedMethodsNoInstantiation>() {}).lazy());
+        MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsNoInstantiation>() {})).lazy());
     }
 
     /** Tests prototype {@link Provide#instantionMode()} on static methods. */
@@ -54,7 +54,7 @@ public class MethodStaticTest {
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.provide(MixedMethodsNoInstantiation.class).prototype());
         MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(MixedMethodsNoInstantiation.class)).prototype());
-        MixedMethodsNoInstantiation.test(c -> c.provide(new TypeLiteral<MixedMethodsNoInstantiation>() {}).prototype());
+        MixedMethodsNoInstantiation.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsNoInstantiation>() {})).prototype());
     }
 
     /** A helper class that can be instantiated. */

@@ -27,13 +27,12 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
-import app.packed.util.TypeLiteral;
 import packed.internal.container.DefaultContainerConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike bundles
- * all services are automatically exported once defined. For example useful in tests.
+ * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
+ * bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
@@ -76,12 +75,65 @@ public class InjectorConfigurator /* implements Taggable */ {
     }
 
     /**
+     * Binds all services from the specified injector.
+     * <p>
+     * A simple example, importing a singleton {@code String} service from one injector into another:
+     * 
+     * <pre> {@code
+     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
+     * 
+     * Injector importTo = Injector.of(c -&gt; {
+     *   c.bind(12345); 
+     *   c.provideAll(importFrom);
+     * });
+     * 
+     * System.out.println(importTo.with(String.class));// prints "foostring"}}
+     * </pre>
+     * <p>
+     * It is possible to specify one or import stages that can restrict or transform the imported services.
+     * <p>
+     * For example, the following example takes the injector we created in the previous example, and creates a new injector
+     * that only imports the {@code String.class} service.
+     * 
+     * <pre>
+     * Injector i = Injector.of(c -&gt; {
+     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
+     * });
+     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
+     * Injector i = Injector.of(c -&gt; {
+     *   c.provideAll(importTo, InjectorImportStage.reject(Integer.class));
+     * });
+     * </pre> @param injector the injector to bind services from
+     * 
+     * @param injector
+     *            the injector to import services from
+     * @param options
+     *            any number of stages that restricts or transforms the services that are imported
+     * @throws IllegalArgumentException
+     *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
+     *             {@link Wirelet#andThen(Wirelet)} thereof
+     */
+    public final void importAll(Injector injector, Wirelet... options) {
+        injector().importAll(injector, options);
+    }
+
+    /**
      * Returns an instance of the injector extension.
      * 
      * @return an instance of the injector extension
      */
     private InjectorExtension injector() {
         return configuration.use(InjectorExtension.class);
+    }
+
+    /**
+     * @param bundle
+     *            the bundle to bind
+     * @param stages
+     *            optional import/export stages
+     */
+    public final void link(AnyBundle bundle, Wirelet... stages) {
+        ((DefaultContainerConfiguration) configuration).link(bundle, stages);
     }
 
     /**
@@ -173,53 +225,6 @@ public class InjectorConfigurator /* implements Taggable */ {
         return injector().provide(instance);
     }
 
-    public final <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injector().provide(implementation);
-    }
-
-    /**
-     * Binds all services from the specified injector.
-     * <p>
-     * A simple example, importing a singleton {@code String} service from one injector into another:
-     * 
-     * <pre> {@code
-     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
-     * 
-     * Injector importTo = Injector.of(c -&gt; {
-     *   c.bind(12345); 
-     *   c.provideAll(importFrom);
-     * });
-     * 
-     * System.out.println(importTo.with(String.class));// prints "foostring"}}
-     * </pre>
-     * <p>
-     * It is possible to specify one or import stages that can restrict or transform the imported services.
-     * <p>
-     * For example, the following example takes the injector we created in the previous example, and creates a new injector
-     * that only imports the {@code String.class} service.
-     * 
-     * <pre>
-     * Injector i = Injector.of(c -&gt; {
-     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
-     * });
-     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
-     * Injector i = Injector.of(c -&gt; {
-     *   c.provideAll(importTo, InjectorImportStage.reject(Integer.class));
-     * });
-     * </pre> @param injector the injector to bind services from
-     * 
-     * @param injector
-     *            the injector to import services from
-     * @param options
-     *            any number of stages that restricts or transforms the services that are imported
-     * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
-     *             {@link Wirelet#andThen(Wirelet)} thereof
-     */
-    public final void provideAll(Injector injector, Wirelet... options) {
-        injector().provideFrom(injector, options);
-    }
-
     /**
      * Sets the (nullable) description of the injector, the description can later be obtained via
      * {@link Injector#description()}.
@@ -240,16 +245,6 @@ public class InjectorConfigurator /* implements Taggable */ {
     // public final Set<String> tags() {
     // return configuration.tags();
     // }
-
-    /**
-     * @param bundle
-     *            the bundle to bind
-     * @param stages
-     *            optional import/export stages
-     */
-    public final void link(AnyBundle bundle, Wirelet... stages) {
-        ((DefaultContainerConfiguration) configuration).link(bundle, stages);
-    }
 }
 // addStatics(); useStatics()
 // @OnHook

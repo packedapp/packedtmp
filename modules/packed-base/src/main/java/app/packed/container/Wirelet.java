@@ -32,7 +32,7 @@ import packed.internal.container.DefaultContainerConfiguration;
 // Klasse -> Vi kan have protected metoder
 /**
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
- * {@link InjectorConfigurator#provideAll(Injector, Wirelet...)} or
+ * {@link InjectorConfigurator#importAll(Injector, Wirelet...)} or
  * <p>
  * As a rule of thumb wirelets are evaluated in order. For example, ContainerWirelets.name("ffff"),
  * ContainerWirelets.name("sdsdsd"). Will first the change the name to ffff, and then change it to sdsds. Maybe an

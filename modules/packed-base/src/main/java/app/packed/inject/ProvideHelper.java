@@ -31,8 +31,8 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.InjectionSiteForDependency;
-import packed.internal.inject.InjectionSiteForKey;
+import packed.internal.inject.util.InjectionSiteForDependency;
+import packed.internal.inject.util.InjectionSiteForKey;
 
 /**
  * An instance of this class is available for any component method annotated with {@link Provide}.

@@ -29,6 +29,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
 import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invokable.FieldAccessor;
 
 /** An abstract implementation of an injector. */
@@ -66,13 +67,13 @@ public abstract class AbstractInjector implements Injector {
     }
 
     @Nullable
-    final <T> T getInstanceOrNull(Class<T> key) {
+    private <T> T getInstanceOrNull(Class<T> key) {
         requireNonNull(key, "key is null");
         return getInstanceOrNull(Key.of(key));
     }
 
     @Nullable
-    final <T> T getInstanceOrNull(Key<T> key) {
+    private <T> T getInstanceOrNull(Key<T> key) {
         ServiceNode<T> n = findNode(key);
         if (n == null) {
             return null;

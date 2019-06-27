@@ -46,6 +46,6 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
     }
 
     public AbstractComponent instantiate(AbstractComponent parent) {
-        return new InternalComponent(parent, this);
+        return new DefaultComponent(parent, this);
     }
 }

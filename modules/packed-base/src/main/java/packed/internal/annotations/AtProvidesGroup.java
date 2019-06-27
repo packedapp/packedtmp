@@ -31,7 +31,7 @@ import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;

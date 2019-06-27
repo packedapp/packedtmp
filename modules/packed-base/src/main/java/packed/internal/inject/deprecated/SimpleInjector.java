@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.annotations;
+package packed.internal.inject.deprecated;
 
-import java.util.List;
-
-import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.InvokableMember;
+import app.packed.container.Bundle;
+import app.packed.inject.Injector;
 
 /**
  *
  */
-public class AtHook extends AtDependable {
+public class SimpleInjector extends Bundle {
 
-    /**
-     * @param invokable
-     * @param dependencies
-     */
-    AtHook(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
-        super(invokable, dependencies);
+    @Override
+    public void configure() {
+        export(provide("Hej"));
     }
 
+    public static void main(String[] args) {
+        Injector i = Injector.of(new SimpleInjector());
+        System.out.println(i.use(String.class));
+    }
 }

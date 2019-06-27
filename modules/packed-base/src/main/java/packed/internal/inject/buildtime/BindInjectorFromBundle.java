@@ -31,10 +31,8 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.inject.InjectorBuilder;
-import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.InternalServiceWirelets;
 import packed.internal.inject.ServiceNode;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.support.AppPackedContainerSupport;
 
 /**
@@ -150,9 +148,9 @@ public class BindInjectorFromBundle {
             Key<?> existing = node.key();
 
             // invoke the import function on the stage
-            if (stage instanceof InternalServiceWirelets) {
-                ((InternalServiceWirelets) stage).onEachService(node);
-            }
+            // if (stage instanceof InternalServiceWirelets) {
+            // ((InternalServiceWirelets) stage).onEachService(node);
+            // }
 
             if (node.key() == null) {
                 iterator.remove();

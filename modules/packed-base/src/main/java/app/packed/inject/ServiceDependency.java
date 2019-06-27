@@ -26,7 +26,7 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or

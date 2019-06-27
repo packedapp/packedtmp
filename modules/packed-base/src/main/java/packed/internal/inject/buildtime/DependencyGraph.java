@@ -28,11 +28,10 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.inject.InjectorBuilder;
-import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.DefaultInjector;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.KeyBuilder;
 
 public final class DependencyGraph {

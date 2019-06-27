@@ -27,7 +27,6 @@ import app.packed.contract.Contract;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import app.packed.util.TypeLiteral;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.classscan.ServiceClassDescriptor;
@@ -35,7 +34,6 @@ import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
 import packed.internal.container.DefaultContainerConfiguration;
-import packed.internal.inject.InjectorBuilder;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
@@ -43,6 +41,7 @@ import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
 import packed.internal.inject.buildtime.DefaultProvidedComponentConfiguration;
 import packed.internal.inject.buildtime.DefaultServiceConfiguration;
 import packed.internal.inject.buildtime.DependencyGraph;
+import packed.internal.inject.buildtime.InjectorBuilder;
 import packed.internal.inject.buildtime.ProvideFromInjector;
 import packed.internal.invokable.InternalFunction;
 
@@ -185,6 +184,22 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     /**
+     * Imports all the services from the specified injector and makes available.
+     * <p>
+     * Wirelets can be used to transform and filter the services from the specified injector.
+     * 
+     * @param injector
+     *            the injector to provide services from
+     * @param wirelets
+     *            any wirelets used to filter and transform the provided services
+     */
+    public void importAll(Injector injector, Wirelet... wirelets) {
+        ProvideFromInjector pfi = new ProvideFromInjector(configuration0(), builder, injector, WireletList.of(wirelets)); // Validates arguments
+        checkConfigurable();
+        pfi.process(); // Will create the necessary nodes.
+    }
+
+    /**
      * Requires that all requirements are explicitly added via either {@link #addOptional(Key)}, {@link #addRequired(Key)}
      * or via implementing a {@link Contract}.
      */
@@ -288,26 +303,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0(), null), sc);
     }
 
-    public <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return provide(Factory.findInjectable(implementation));
-    }
-
-    /**
-     * Provides all services from the specified injector.
-     * <p>
-     * Wirelets can be used to transform and filter the services from the specified injector.
-     * 
-     * @param injector
-     *            the injector to provide services from
-     * @param wirelets
-     *            any wirelets used to filter and transform the provided services
-     */
-    public void provideFrom(Injector injector, Wirelet... wirelets) {
-        ProvideFromInjector pfi = new ProvideFromInjector(configuration0(), builder, injector, WireletList.of(wirelets)); // Validates arguments
-        checkConfigurable();
-        pfi.process(); // Will create the necessary nodes.
-    }
-
     // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 
     // public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
@@ -330,10 +325,6 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
     }
 
     public <T> ProvidedComponentConfiguration<T> provideMany(Factory<T> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ProvidedComponentConfiguration<T> provideMany(TypeLiteral<T> implementation) {
         throw new UnsupportedOperationException();
     }
 

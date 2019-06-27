@@ -42,7 +42,7 @@ public class MethodInstanceTest {
         MixedMethods.test(c -> c.provide(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
         MixedMethods.test(c -> c.provide(Factory.findInjectable(MixedMethods.class)));
-        MixedMethods.test(c -> c.provide(new TypeLiteral<MixedMethods>() {}));
+        MixedMethods.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethods>() {})));
     }
 
     /** Tests lazy {@link Provide#instantionMode()} on instance methods. */
@@ -50,8 +50,7 @@ public class MethodInstanceTest {
     public void provideLazy() {
         MixedMethods.test(c -> c.provide(MixedMethods.class).lazy());
         MixedMethods.test(c -> c.provide(Factory.findInjectable(MixedMethods.class)).lazy());
-        MixedMethods.test(c -> c.provide(new TypeLiteral<MixedMethods>() {}).lazy());
-
+        MixedMethods.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethods>() {})).lazy());
         // Correct support FOR LAZY->LAZY and LAZY->PROTOTYPE is not implemented yet.
         // As we instantiate the parent no matter what. We just dont test it here
     }

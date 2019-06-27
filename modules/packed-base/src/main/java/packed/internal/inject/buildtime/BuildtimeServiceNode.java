@@ -26,11 +26,10 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.inject.InjectorBuilder;
-import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.InternalServiceDescriptor;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNode;
+import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalServiceDescriptor;
 import packed.internal.util.KeyBuilder;
 
 /**

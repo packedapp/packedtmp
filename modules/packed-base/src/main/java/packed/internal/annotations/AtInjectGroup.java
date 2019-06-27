@@ -24,8 +24,8 @@ import java.util.List;
 
 import app.packed.inject.Inject;
 import app.packed.util.Nullable;
-import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 

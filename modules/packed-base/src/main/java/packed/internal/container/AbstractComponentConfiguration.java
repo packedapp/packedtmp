@@ -17,7 +17,9 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
@@ -80,6 +82,18 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     @Override
     public final int depth() {
         return depth;
+    }
+
+    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent) {
+        if (children == null) {
+            return null;
+        }
+        HashMap<String, AbstractComponent> result = new HashMap<>();
+        for (AbstractComponentConfiguration acc : children.values()) {
+            AbstractComponent ac = acc.instantiate(parent);
+            result.put(ac.name(), ac);
+        }
+        return result;
     }
 
     void addChild(AbstractComponentConfiguration configuration) {
@@ -168,6 +182,8 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         }
 
     }
+
+    abstract AbstractComponent instantiate(AbstractComponent parent);
 
     /**
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component

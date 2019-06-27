@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Bundle;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory0;
 import app.packed.inject.Injector;
-import packed.internal.inject.InternalServiceWirelets;
 
 /**
  *
@@ -42,7 +42,7 @@ public class InjectorBindBundleTest {
         };
 
         npe(() -> Injector.configure(c -> c.link((Bundle) null)), "bundle");
-        npe(() -> Injector.configure(c -> c.link(b, (InternalServiceWirelets[]) null)), "wirelets");
+        npe(() -> Injector.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */

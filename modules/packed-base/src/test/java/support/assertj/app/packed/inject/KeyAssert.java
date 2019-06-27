@@ -18,7 +18,7 @@ package support.assertj.app.packed.inject;
 import org.assertj.core.api.AbstractAssert;
 
 import app.packed.util.Key;
-import packed.internal.inject.InternalDependencyDescriptor;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /**
  *

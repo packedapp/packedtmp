@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,6 +39,7 @@ import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.TypeLiteral;
 import app.packed.util.VariableDescriptor;
+import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.util.AppPackedUtilSupport;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;

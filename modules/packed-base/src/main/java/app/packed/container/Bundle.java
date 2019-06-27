@@ -30,7 +30,6 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import app.packed.util.TypeLiteral;
 
 /**
  * Bundles provide a simply way to package components and build modular application. This is useful, for example, for:
@@ -200,10 +199,6 @@ public abstract class Bundle extends AnyBundle {
 
     protected final <T> ProvidedComponentConfiguration<T> provide(T instance) {
         return injector().provide(instance);
-    }
-
-    protected final <T> ProvidedComponentConfiguration<T> provide(TypeLiteral<T> implementation) {
-        return injector().provide(implementation);
     }
 
     protected final void requireService(Class<?> key) {

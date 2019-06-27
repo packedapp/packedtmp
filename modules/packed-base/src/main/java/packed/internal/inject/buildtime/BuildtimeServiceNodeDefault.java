@@ -30,12 +30,11 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.inject.InjectorBuilder;
-import packed.internal.inject.InternalDependencyDescriptor;
 import packed.internal.inject.runtime.RuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
 import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
 import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.invokable.InvokableMember;
 

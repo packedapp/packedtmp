@@ -17,50 +17,23 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentStream;
 import app.packed.inject.Injector;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /** The default implementation of Container. */
 final class DefaultContainer extends AbstractComponent implements Component {
 
     /** All the components of this container. */
-    final Map<String, AbstractComponent> children = new HashMap<>();
 
     private final Injector injector;
 
     public DefaultContainer(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, Injector injector) {
         super(parent, configuration);
-        this.injector = requireNonNull(injector);
-        if (configuration.children != null) {
-            for (AbstractComponentConfiguration acc : configuration.children.values()) {
-                if (acc instanceof DefaultComponentConfiguration) {
-                    AbstractComponent ac = ((DefaultComponentConfiguration) acc).instantiate(this);
-                    children.put(ac.name(), ac);
-                } else {
-                    DefaultContainerConfiguration dcc = (packed.internal.container.DefaultContainerConfiguration) acc;
-                    DefaultContainer ic = new DefaultContainer(this, dcc, injector);
-                    children.put(ic.name(), ic);
-                }
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Collection<Component> children() {
-        return Collections.unmodifiableCollection(children.values());
+        this.injector = injector;
     }
 
     public Component findComponent(CharSequence path) {
@@ -87,43 +60,11 @@ final class DefaultContainer extends AbstractComponent implements Component {
         return c;
     }
 
-    public <T> Optional<T> get(Class<T> key) {
-        return injector.get(key);
-    }
-
-    public <T> Optional<T> get(Key<T> key) {
-        return injector.get(key);
-    }
-
-    public boolean hasService(Class<?> key) {
-        return injector.hasService(key);
-    }
-
-    public boolean hasService(Key<?> key) {
-        return injector.hasService(key);
-    }
-
     public Injector injector() {
         return injector;
     }
 
-    @Override
-    public ComponentStream stream() {
-        return new InternalComponentStream(Stream.concat(Stream.of(this), children.values().stream().flatMap(AbstractComponent::stream)));
-        //
-        // Stream.Builder<Component> builder = Stream.builder();
-        // builder.accept(new ComponentWrapper());
-        // for (AbstractComponent ic : components.values()) {
-        // builder.accept(ic);
-        // }
-        // return new InternalComponentStream(builder.build());
-    }
-
     public <T> T use(Class<T> key) {
-        return injector.use(key);
-    }
-
-    public <T> T use(Key<T> key) {
         return injector.use(key);
     }
 

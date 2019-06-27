@@ -32,10 +32,8 @@ import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
-import packed.internal.inject.InjectorBuilder;
-import packed.internal.inject.InternalDependencyDescriptor;
-import packed.internal.inject.InternalServiceWirelets;
 import packed.internal.inject.ServiceNode;
+import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /** Provides services from an existing Injector. */
 public final class ProvideFromInjector {
@@ -87,8 +85,7 @@ public final class ProvideFromInjector {
         HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(ib, configSite.replaceParent(node.configSite()), this,
-                        node);
+                BuildtimeServiceNodeProvideAll<?> n = new BuildtimeServiceNodeProvideAll<>(ib, configSite.replaceParent(node.configSite()), this, node);
                 nodes.put(node.key(), n);
             }
         }
@@ -131,9 +128,9 @@ public final class ProvideFromInjector {
             Key<?> existing = node.key();
 
             // invoke the import function on the stage
-            if (stage instanceof InternalServiceWirelets) {
-                ((InternalServiceWirelets) stage).onEachService(node);
-            }
+            // if (stage instanceof InternalServiceWirelets) {
+            // ((InternalServiceWirelets) stage).onEachService(node);
+            // }
 
             if (node.key() == null) {
                 iterator.remove();
