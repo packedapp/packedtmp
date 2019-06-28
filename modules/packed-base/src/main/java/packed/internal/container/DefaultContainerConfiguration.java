@@ -26,6 +26,7 @@ import java.util.Set;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.AnyBundle;
+import app.packed.container.ArtifactType;
 import app.packed.container.BuildContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
@@ -69,7 +70,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     public final InternalContainerSource source;
 
-    DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable BuildContext.OutputType outputType, InternalContainerSource source,
+    DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable ArtifactType outputType, InternalContainerSource source,
             Wirelet... wirelets) {
         super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF) : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
         this.buildContext = parent == null ? new InternalBuildContext(this, outputType) : parent.buildContext;
@@ -93,21 +94,28 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public DefaultContainer buildContainer() {
+        InstantiationContext ic = new InstantiationContext();
+        DefaultContainer dc = buildContainer(ic);
+        methodHandlePassing0(dc, ic);
+        return dc;
+    }
+
+    public DefaultContainer buildContainer(InstantiationContext ic) {
         configure();
         finish2ndPass();
-        InstantiationContext ic = new InstantiationContext();
         instantiate(ic);
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof DefaultContainerConfiguration) {
                     DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
                     dcc.getName();
-                    dcc.buildContainer();
+                    dcc.buildContainer(ic);
                 }
             }
         }
         DefaultContainer dc = new DefaultContainer(null, this, ic);
-        methodHandlePassing0(dc, ic);
+        ic.put(this, dc);
+
         return dc;
     }
 

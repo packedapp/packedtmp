@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.ArtifactType;
 import app.packed.container.BuildContext;
 import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
@@ -29,11 +30,11 @@ public class InternalBuildContext implements BuildContext {
 
     private final DefaultContainerConfiguration dcc;
 
-    private final OutputType outputType;
+    private final ArtifactType packaging;
 
-    InternalBuildContext(DefaultContainerConfiguration dcc, OutputType outputType) {
+    InternalBuildContext(DefaultContainerConfiguration dcc, ArtifactType packaging) {
         this.dcc = requireNonNull(dcc);
-        this.outputType = requireNonNull(outputType);
+        this.packaging = requireNonNull(packaging);
     }
 
     /** {@inheritDoc} */
@@ -44,8 +45,8 @@ public class InternalBuildContext implements BuildContext {
 
     /** {@inheritDoc} */
     @Override
-    public OutputType outputType() {
-        return outputType;
+    public ArtifactType packaging() {
+        return packaging;
     }
 
     /** {@inheritDoc} */

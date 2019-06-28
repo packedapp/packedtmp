@@ -32,6 +32,7 @@ public class MainTest extends Bundle {
     }
 
     public static void main(String[] args) {
+        MyMain.foo();
         var app = App.of(new MainTest());
         app.stream().forEach(e -> System.out.println(e.path()));
 
@@ -49,8 +50,16 @@ public class MainTest extends Bundle {
 
         @Main
         public static void say() {
-            System.out.println("HelloWorld");
+            System.out.println("!!!!!!!!!!!HelloWorld!!!!!!!!!!!");
+        }
 
+        @Main
+        public static void say2() {
+            System.out.println("!!!!!!!!!!!HelloWorld!!!!!!!!!!!");
+        }
+
+        static void foo() {
+            // throw new Error();
         }
     }
 

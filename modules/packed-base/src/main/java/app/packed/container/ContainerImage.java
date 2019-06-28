@@ -25,14 +25,7 @@ import packed.internal.container.ContainerFactory;
  * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
  * container images. It can not be used with {@link AnyBundle#link(AnyBundle, Wirelet...)}.
  */
-public interface ContainerImage extends ContainerSource {
-
-    /**
-     * Returns the name of containers that this image creates.
-     * 
-     * @return the name of containers that this image creates
-     */
-    String name();
+public interface ContainerImage extends ContainerSource, Artifact {
 
     /**
      * Returns the type of bundle that was used to create this image.

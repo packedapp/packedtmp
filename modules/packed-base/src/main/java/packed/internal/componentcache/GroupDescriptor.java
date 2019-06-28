@@ -48,10 +48,10 @@ public final class GroupDescriptor {
     @SuppressWarnings("rawtypes")
     private final BiConsumer build;
 
+    final List<MethodConsumer<?>> consumers;
+
     /** The type of extension. */
     private final Class<? extends Extension<?>> extensionType;
-
-    final List<MethodConsumer<?>> consumers;
 
     private GroupDescriptor(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
@@ -73,6 +73,8 @@ public final class GroupDescriptor {
         final Class<?> componentType;
 
         final ExtensionHookGroupConfiguration conf;
+
+        private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         Builder(Class<?> componentType, Class<? extends ExtensionHookGroup<?, ?>> cc) {
@@ -142,8 +144,6 @@ public final class GroupDescriptor {
             // conf.forAnnotatedMethods();
             // MethodHandle mh = lookup.acquireMethodHandle(componentType, method);
         }
-
-        private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
     }
 
     static class MethodConsumer<S> {

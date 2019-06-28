@@ -15,9 +15,7 @@
  */
 package app.packed.container;
 
-import app.packed.app.App;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Injector;
 
 // CurrentState???
 // ErrorHandling / Notifications ???
@@ -45,7 +43,7 @@ public interface BuildContext {
      * 
      * @return the output type of the build process
      */
-    OutputType outputType();
+    ArtifactType packaging();
 
     /**
      * Returns the source of the build, for example a bundle or a container image.
@@ -60,45 +58,6 @@ public interface BuildContext {
      * @return a list of wirelets
      */
     WireletList wirelets();
-
-    /// Kan vi bruge dem for example med @UseExtension(onlyAllow=OutputType.INJECTOR) @OnStart
-    /** The output type of a build process. */
-    public enum OutputType {
-
-        /**
-         * The output type is an analyze. This is typically via {@link BundleDescriptor#of(Bundle)} or when analyzing an
-         * application for graal.
-         */
-        ANALYZE,
-
-        /**
-         * The output type of the process is an {@link App}. This is typically either via
-         * {@link App#of(ContainerSource, Wirelet...)} or {@link App#run(ContainerSource, Wirelet...)}.
-         */
-        APP,
-
-        /**
-         * The output type of the build process is a {@link ContainerImage}. This is typically via
-         * {@link ContainerImage#of(ContainerSource, Wirelet...)}.
-         */
-        CONTAINER_IMAGE,
-
-        /**
-         * The output type of the process is an {@link App}. This is typically either via
-         * {@link Injector#of(ContainerSource, Wirelet...)} or
-         * {@link Injector#configure(java.util.function.Consumer, Wirelet...)}.
-         */
-        INJECTOR;
-
-        /**
-         * Returns whether or not output will result in any kind of instantiation.
-         * 
-         * @return whether or not output will result in any kind of instantiation
-         */
-        public boolean isInstantiating() {
-            return this == APP || this == INJECTOR;
-        }
-    }
 }
 // Specials -> IsFromImage, isNativeImageGenerate, isNativeImageBuild
 

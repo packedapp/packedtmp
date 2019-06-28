@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
@@ -50,11 +51,17 @@ public final class DefaultInjector extends AbstractInjector {
     /** All services that this injector provides. */
     private final ServiceNodeMap services;
 
+    private final String name;
+
+    private final ComponentPath path;
+
     public DefaultInjector(DefaultContainerConfiguration containerConfiguration, ServiceNodeMap services) {
         this.parent = null;
+        this.name = containerConfiguration.getName();
         this.configSite = requireNonNull(containerConfiguration.configSite());
         this.description = containerConfiguration.getDescription();
         this.services = requireNonNull(services);
+        this.path = containerConfiguration.path();
     }
 
     /** {@inheritDoc} */
@@ -97,5 +104,17 @@ public final class DefaultInjector extends AbstractInjector {
     @Override
     public Stream<ServiceDescriptor> services() {
         return (Stream) services.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return name;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return path;
     }
 }

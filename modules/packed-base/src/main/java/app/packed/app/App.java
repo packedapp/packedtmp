@@ -17,15 +17,13 @@ package app.packed.app;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.config.ConfigSite;
+import app.packed.container.Artifact;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -54,7 +52,7 @@ import packed.internal.container.DefaultContainerImage;
 // Branch -> A collection of components
 // Component Tree
 // Trunk <- Root Branch -> The top app
-public interface App extends AutoCloseable {
+public interface App extends AutoCloseable, Artifact {
 
     /**
      * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
@@ -64,22 +62,6 @@ public interface App extends AutoCloseable {
     default void close() {
         shutdown();
     }
-
-    /**
-     * Returns the configuration site of this application.
-     * 
-     * @return the configuration site of this application
-     */
-    ConfigSite configSite();
-
-    /**
-     * Returns the description of this application. Or an empty optional if no description was set
-     *
-     * @return the description of this application. Or an empty optional if no description was set
-     *
-     * @see ComponentConfiguration#setDescription(String)
-     */
-    Optional<String> description();
 
     // TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
     Injector injector();
@@ -95,17 +77,8 @@ public interface App extends AutoCloseable {
      * @return the name of this application
      * @see ContainerConfiguration#setName(String)
      */
+    @Override
     String name();
-
-    /**
-     * Returns the path of this application.
-     * <p>
-     * The path is always identical to the path of the top level container that the application wraps.
-     *
-     * @return the path of this application
-     * @see Component#path()
-     */
-    ComponentPath path();
 
     App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 

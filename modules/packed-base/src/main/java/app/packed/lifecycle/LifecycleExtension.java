@@ -19,7 +19,9 @@ import java.lang.invoke.MethodHandle;
 import java.util.HashSet;
 import java.util.Set;
 
+import app.packed.app.Main;
 import app.packed.container.Extension;
+import packed.internal.support.AppPackedLifecycleSupport;
 
 /**
  * An extension
@@ -28,6 +30,16 @@ import app.packed.container.Extension;
 // Configuring lifecycle for the container,
 //// Component lifecycle is hmmmmm
 public final class LifecycleExtension extends Extension<LifecycleExtension> {
+    static {
+
+        AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {
+
+            @Override
+            public void doConfigure(LifecycleExtension extension, MethodHandle mh) {
+                extension.addMain(mh);
+            }
+        });
+    }
 
     // @Override
     // protected void onWireChild(@Nullable LifecycleExtension child, O link) {
@@ -51,7 +63,13 @@ public final class LifecycleExtension extends Extension<LifecycleExtension> {
 
     private Set<MethodHandle> s = new HashSet<>();
 
-    public void addMain(MethodHandle mh) {
+    /**
+     * This method once for each component method that is annotated with {@link Main}.
+     * 
+     * @param mh
+     */
+    private void addMain(MethodHandle mh) {
+        // TODO check that we do not have multiple @Main methods
         System.out.println(mh);
         s.add(mh);
     }

@@ -22,8 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.Artifact;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
@@ -97,23 +96,7 @@ import packed.internal.container.ContainerFactory;
 // Description... hmm its just super helpful...
 // Injector does not have a name. In many cases there are a container behind an Injector.
 // But if, for example, a component has its own injector. That injector does not have a container behind it.
-public interface Injector /* extends Taggable */ {
-
-    /**
-     * Returns the configuration site of this injector.
-     * 
-     * @return the configuration site of this injector
-     */
-    ConfigSite configSite();
-
-    /**
-     * Returns an optional description of this injector.
-     *
-     * @return an optional description of this injector
-     * @see InjectorConfigurator#setDescription(String)
-     * @see Bundle#setDescription(String)
-     */
-    Optional<String> description();
+public interface Injector extends Artifact /* extends Taggable */ {
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you

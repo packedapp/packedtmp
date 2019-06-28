@@ -26,17 +26,18 @@ public class MainTest2 extends Bundle {
 
     @Override
     protected void configure() {
-        link(new MyMain());
+        link(new MyMainX());
     }
 
     public static void main(String[] args) {
         App.of(new MainTest2());
     }
 
-    static class MyMain extends Bundle {
+    static class MyMainX extends Bundle {
 
         @Override
         protected void configure() {
+            install(this);
             System.out.println(path());
             System.out.println(install("foo").path());
             System.out.println(install(334).path());
@@ -44,7 +45,7 @@ public class MainTest2 extends Bundle {
 
         @Main
         public static void say() {
-            System.out.println("HelloWorld");
+            System.out.println("HelloWorld!!");
         }
     }
 }

@@ -17,8 +17,11 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
+import app.packed.component.ComponentPath;
+import app.packed.config.ConfigSite;
 import app.packed.container.AnyBundle;
 import app.packed.container.ContainerImage;
 import app.packed.container.ContainerSource;
@@ -62,6 +65,24 @@ public class DefaultContainerImage implements ContainerImage {
 
     public AbstractInjector newInjector(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> description() {
+        return Optional.ofNullable(dcc.getDescription());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return dcc.path();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configSite() {
+        return dcc.configSite();
     }
 }
 

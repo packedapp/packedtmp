@@ -36,6 +36,9 @@ public class NameChildrenTest extends AbstractBaseTest {
 
         a = appOf(c -> assertThat(c.installHelper(Fff.class).path().toString()).isEqualTo("/Fff"));
         a.assertPathExist("/Fff");
+
+        // TODO FIX names for anonymous classes...
+        // appOf(c -> assertThat(c.installHelper(new Object() {}.getClass()).getName()).isNotEqualTo(""));
     }
 
     @Test

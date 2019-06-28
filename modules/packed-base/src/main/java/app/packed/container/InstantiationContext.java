@@ -26,7 +26,15 @@ import app.packed.util.Nullable;
  * <p>
  * <strong>Note that this implementation is not synchronized.</strong>
  */
+// ArtifactInstantiationContext
+// Packaging -> App, Injector, Injector, Model
 public final class InstantiationContext {
+
+    public WireletList wirelets() {
+        // Unless we are creating an image...
+        // This method returns the same as BuildContext.wirelets()
+        throw new UnsupportedOperationException();
+    }
 
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();

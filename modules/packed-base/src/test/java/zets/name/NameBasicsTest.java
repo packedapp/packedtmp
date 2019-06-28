@@ -23,6 +23,7 @@ import zets.name.spi.AbstractBaseTest;
 /**
  * Various basic test for naming of components.
  */
+// These are basically container names, and not component names
 public class NameBasicsTest extends AbstractBaseTest {
 
     @Test

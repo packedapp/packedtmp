@@ -29,6 +29,8 @@ import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.container.DefaultContainer;
+import packed.internal.support.AppPackedLifecycleSupport;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -45,6 +47,9 @@ import packed.internal.util.StringFormatter;
 
 // Move main to app.packed.lifecycle ??? I think it has a lot to do with lifecycle....
 // Because it is actually important that people understand the model....
+// It is really heavily related to App actually because, you cannot have a Main for a Container
+// Only a main for an App.
+// Furthermore we also want to put cli here...
 @ExtensionActivator(MainExtensionHookGroup.class)
 public @interface Main {
 
@@ -75,8 +80,6 @@ final class MainExtensionHookGroup extends ExtensionHookGroup<LifecycleExtension
         return new Builder();
     }
 
-    // Vi aktivere lifecycle extensionen her, men det er vel ogsaa fint. Eneste issue er.
-    // Hvis en bundle har en Main for en eller andends skyld
     static class Builder implements Supplier<BiConsumer<ComponentConfiguration, LifecycleExtension>> {
 
         private AnnotatedMethodHook<Main> hook;
@@ -94,9 +97,12 @@ final class MainExtensionHookGroup extends ExtensionHookGroup<LifecycleExtension
         @Override
         public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
             MethodHandle mh = hook.create();
-            return (c, e) -> {
-                e.addMain(mh);
-            };
+            hook.onMethodReady(DefaultContainer.class, (a, b) -> {
+                b.run();
+            });
+
+            // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
+            return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
         }
     }
 }

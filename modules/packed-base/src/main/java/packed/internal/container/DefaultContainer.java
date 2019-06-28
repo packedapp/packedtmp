@@ -23,7 +23,7 @@ import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 
 /** The default implementation of Container. */
-final class DefaultContainer extends AbstractComponent implements Component {
+public final class DefaultContainer extends AbstractComponent implements Component {
 
     private final Injector injector;
 

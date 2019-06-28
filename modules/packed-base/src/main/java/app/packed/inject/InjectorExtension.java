@@ -234,7 +234,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         }
         DependencyGraph dg = new DependencyGraph(configuration0(), builder);
 
-        if (buildContext().outputType().isInstantiating()) {
+        if (buildContext().packaging().isInstantiating()) {
             dg.instantiate();
         } else {
             dg.analyze();
