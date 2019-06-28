@@ -37,7 +37,7 @@ abstract class AbstractComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
-    private final Map<String, AbstractComponent> children;
+    final Map<String, AbstractComponent> children;
 
     /** The configuration site of the component. */
     private final ConfigSite configSite;

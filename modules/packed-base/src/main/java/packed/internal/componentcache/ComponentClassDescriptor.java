@@ -25,6 +25,7 @@ import java.util.IdentityHashMap;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
+import app.packed.container.InstantiationContext;
 import packed.internal.container.DefaultContainerConfiguration;
 
 /**
@@ -43,7 +44,7 @@ public final class ComponentClassDescriptor {
     /** The component type. */
     private final Class<?> componentType;
 
-    private final Instance[] groups;
+    private final GroupDescriptor[] groups;
 
     /** The simple name of the component type. */
     private volatile String simpleName;
@@ -56,7 +57,16 @@ public final class ComponentClassDescriptor {
      */
     private ComponentClassDescriptor(ComponentClassDescriptor.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.groups = builder.builders.values().stream().map(e -> e.build()).toArray(i -> new Instance[i]);
+        this.groups = builder.builders.values().stream().map(e -> e.build()).toArray(i -> new GroupDescriptor[i]);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void process(DefaultContainerConfiguration cc, InstantiationContext ic) {
+        for (GroupDescriptor d : groups) {
+            for (GroupDescriptor.MethodConsumer mc : d.consumers) {
+                mc.prepare(cc, ic);
+            }
+        }
     }
 
     /**
@@ -73,7 +83,7 @@ public final class ComponentClassDescriptor {
     }
 
     public ComponentConfiguration initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
-        for (Instance c : groups) {
+        for (GroupDescriptor c : groups) {
             c.add(container, component);
         }
         return component;
@@ -100,7 +110,7 @@ public final class ComponentClassDescriptor {
             }
         };
 
-        private final IdentityHashMap<Class<? extends ExtensionHookGroup<?, ?>>, Instance.Builder> builders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends ExtensionHookGroup<?, ?>>, GroupDescriptor.Builder> builders = new IdentityHashMap<>();
 
         private final ComponentLookup cl;
 
@@ -128,7 +138,7 @@ public final class ComponentClassDescriptor {
                     for (Annotation a : annotations) {
                         Class<? extends ExtensionHookGroup<?, ?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
                         if (cc != null) {
-                            builders.computeIfAbsent(cc, m -> new Instance.Builder(componentType, m)).onAnnotatedField(cl, field, a);
+                            builders.computeIfAbsent(cc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedField(cl, field, a);
                         }
                     }
                 }
@@ -137,7 +147,7 @@ public final class ComponentClassDescriptor {
                     for (Annotation a : annotations) {
                         Class<? extends ExtensionHookGroup<?, ?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
                         if (cc != null) {
-                            builders.computeIfAbsent(cc, m -> new Instance.Builder(componentType, m)).onAnnotatedMethod(cl, method, a);
+                            builders.computeIfAbsent(cc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedMethod(cl, method, a);
                         }
                     }
                 }

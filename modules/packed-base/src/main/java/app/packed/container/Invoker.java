@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.container;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
+/**
+ *
+ */
+public interface Invoker {
 
-import app.packed.util.MethodDescriptor;
-
-/*** A hook representing an annotated method on an instance. */
-public interface AnnotatedMethodHook<T extends Annotation> extends Hook {
-
-    /**
-     * Returns the annotation value.
-     *
-     * @return the annotation value
-     */
-    T annotation();
-
-    /**
-     * Returns the annotated method.
-     * 
-     * @return the annotated method
-     */
-    MethodDescriptor method();
-
-    MethodHandle create();
 }

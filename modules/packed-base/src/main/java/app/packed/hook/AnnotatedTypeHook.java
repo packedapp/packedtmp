@@ -40,7 +40,7 @@ public interface AnnotatedTypeHook<T extends Annotation> extends Hook {
     /// nahhhh....Hvad hvis de ikke er eksporteret... Og vi har vel svaert ved at filtrer dem....
     <S extends Annotation> Collection<AnnotatedFieldHook<S>> annotatedFieldHooks(Class<S> annotationType);
 
-    <S extends Annotation> Collection<AnnotatedMethodHook<S>> annotatedMethodHooks(Class<S> annotationType);
+    <S extends Annotation> Collection<OldAnnotatedMethodHook<S>> annotatedMethodHooks(Class<S> annotationType);
 
     /**
      * Returns the annotation value.

@@ -16,6 +16,7 @@
 package app.packed.container;
 
 import java.lang.invoke.MethodHandle;
+import java.util.function.BiConsumer;
 
 import app.packed.util.MethodDescriptor;
 
@@ -32,6 +33,8 @@ public interface AnnotatedMethodHook<T> {
 
     // Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
     MethodHandle create();
+
+    <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 
     // Problemet er her den callback vi skal smide tilbage paa
     //// Vi kan require en Service...

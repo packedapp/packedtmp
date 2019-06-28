@@ -22,13 +22,17 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
+import app.packed.container.InstantiationContext;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethod;
@@ -37,9 +41,9 @@ import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodHa
 import packed.internal.container.DefaultContainerConfiguration;
 
 /**
- *
+ * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
-public final class Instance {
+public final class GroupDescriptor {
 
     @SuppressWarnings("rawtypes")
     private final BiConsumer build;
@@ -47,9 +51,12 @@ public final class Instance {
     /** The type of extension. */
     private final Class<? extends Extension<?>> extensionType;
 
-    private Instance(Builder b) {
+    final List<MethodConsumer<?>> consumers;
+
+    private GroupDescriptor(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
-        build = requireNonNull(b.b.get());
+        this.build = requireNonNull(b.b.get());
+        this.consumers = List.copyOf(b.consumers);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -74,8 +81,8 @@ public final class Instance {
             this.b = (Supplier) conf.egc.newBuilder(componentType);
         }
 
-        Instance build() {
-            return new Instance(this);
+        GroupDescriptor build() {
+            return new GroupDescriptor(this);
         }
 
         void onAnnotatedField(ComponentLookup lookup, Field field, Annotation annotation) {
@@ -108,11 +115,6 @@ public final class Instance {
                         ((BiConsumer) omd.consumer).accept(b, new AnnotatedMethodHook() {
 
                             @Override
-                            public MethodDescriptor method() {
-                                return MethodDescriptor.of(method);
-                            }
-
-                            @Override
                             public MethodHandle create() {
                                 method.setAccessible(true);
                                 try {
@@ -120,6 +122,18 @@ public final class Instance {
                                 } catch (IllegalAccessException e) {
                                     throw new IllegalAccessRuntimeException("stuff", e);
                                 }
+                            }
+
+                            @Override
+                            public MethodDescriptor method() {
+                                return MethodDescriptor.of(method);
+                            }
+
+                            @Override
+                            public void onMethodReady(Class key, BiConsumer consumer) {
+                                requireNonNull(key, "key is null");
+                                requireNonNull(consumer, "consumer is null");
+                                consumers.add(new MethodConsumer<>(key, consumer, create()));
                             }
                         });
                     }
@@ -129,5 +143,39 @@ public final class Instance {
             // MethodHandle mh = lookup.acquireMethodHandle(componentType, method);
         }
 
+        private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
+    }
+
+    static class MethodConsumer<S> {
+        final BiConsumer<S, Runnable> consumer;
+        final Class<S> key;
+        final MethodHandle mh;
+
+        /**
+         * @param key
+         * @param consumer
+         */
+        public MethodConsumer(Class<S> key, BiConsumer<S, Runnable> consumer, MethodHandle mh) {
+            this.key = requireNonNull(key);
+            this.consumer = requireNonNull(consumer, "consumer is null");
+            this.mh = requireNonNull(mh);
+
+        }
+
+        void prepare(ContainerConfiguration cc, InstantiationContext ic) {
+            S s = ic.use(cc, key);
+            Runnable r = new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        mh.invoke();
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+            consumer.accept(s, r);
+        }
     }
 }

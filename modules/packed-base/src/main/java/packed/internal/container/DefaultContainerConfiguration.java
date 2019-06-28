@@ -78,6 +78,20 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         this.wirelets = WireletList.of(wirelets);
     }
 
+    private void methodHandlePassing0(AbstractComponent ac, InstantiationContext ic) {
+        if (children != null) {
+            for (AbstractComponentConfiguration a : children.values()) {
+                AbstractComponent child = ac.children.get(a.name);
+                if (a instanceof DefaultContainerConfiguration) {
+                    ((DefaultContainerConfiguration) a).methodHandlePassing0(child, ic);
+                } else {
+                    DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) a;
+                    dcc.ccd.process(this, ic);
+                }
+            }
+        }
+    }
+
     public DefaultContainer buildContainer() {
         configure();
         finish2ndPass();
@@ -92,7 +106,9 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
                 }
             }
         }
-        return new DefaultContainer(null, this, ic);
+        DefaultContainer dc = new DefaultContainer(null, this, ic);
+        methodHandlePassing0(dc, ic);
+        return dc;
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
