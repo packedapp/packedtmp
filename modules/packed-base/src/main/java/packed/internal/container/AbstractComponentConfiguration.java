@@ -101,6 +101,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         if (children == null) {
             children = new LinkedHashMap<>();
         }
+        requireNonNull(configuration.name);
         children.put(configuration.name, configuration);
     }
 

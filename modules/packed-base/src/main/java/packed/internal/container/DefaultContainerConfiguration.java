@@ -252,7 +252,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
-        initializeName(State.INSTALL_INVOKED, null);
 
         DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL),
                 this, descriptor, instance);
@@ -263,10 +262,11 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     private void prepareNewComponent(State state) {
         if (currentComponent != null) {
-            if (currentComponent.name == null && currentComponent.ccd != null) {
-                currentComponent.name = currentComponent.ccd.defaultPrefix();
-            }
+            currentComponent.initializeName(state, null);
+            requireNonNull(currentComponent.name);
             addChild(currentComponent);
+        } else {
+            initializeName(State.INSTALL_INVOKED, null);
         }
     }
 

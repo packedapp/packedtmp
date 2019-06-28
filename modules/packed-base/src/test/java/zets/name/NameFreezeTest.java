@@ -35,7 +35,65 @@ import zets.name.spi.ContainerConfigurationTester;
  * configuring it. And then later on, we change the name of the container in which it is configured, in such a way that
  * the path of the child changes. We want to avoid this.
  */
-public class NameFreezeContainerTest extends AbstractBaseTest {
+public class NameFreezeTest extends AbstractBaseTest {
+
+    @Test
+    public void component_setName_cannotBeCalledAfter_getName() {
+        checkThrowsISE(c -> {
+            c.use(ComponentExtension.class, e -> {
+                ComponentConfiguration ci = e.install(1);
+                ci.getName();
+                ci.setName("foo");
+            });
+        }, "Cannot call #setName(String) after name has been initialized via call to #getName()");
+    }
+
+    @Test
+    public void component_setName_cannotBeCalledAfter_install() {
+        checkThrowsISE(c -> {
+            c.use(ComponentExtension.class, e -> {
+                ComponentConfiguration ci = e.install(1);
+                e.install(1L);
+                ci.setName("foo");
+            });
+        }, "Cannot call this method after installing new components in the container");
+
+        // TODO we should actually have, more or less all the different kind of installs we have in
+        // ComponentExtension
+    }
+
+    @Test
+    public void component_setName_cannotBeCalledAfter_link() {
+        checkThrowsISE(c -> {
+            c.use(ComponentExtension.class, e -> {
+                ComponentConfiguration ci = e.install(1);
+                c.link(EMPTY_BUNDLE);
+                ci.setName("foo");
+            });
+        }, "Cannot call this method after containerConfiguration.link has been invoked");
+    }
+
+    @Test
+    public void component_setName_cannotBeCalledAfter_path() {
+        checkThrowsISE(c -> {
+            c.use(ComponentExtension.class, e -> {
+                ComponentConfiguration ci = e.install(1);
+                ci.path();
+                ci.setName("foo");
+            });
+        }, "Cannot call #setName(String) after name has been initialized via call to #path()");
+    }
+
+    @Test
+    public void component_setName_cannotBeCalledAfter_setName() {
+        checkThrowsISE(c -> {
+            c.use(ComponentExtension.class, e -> {
+                ComponentConfiguration ci = e.install(1);
+                ci.setName("foo");
+                ci.setName("foo");
+            });
+        }, "#setName(String) can only be called once");
+    }
 
     /**
      * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having observed the name via
@@ -43,7 +101,7 @@ public class NameFreezeContainerTest extends AbstractBaseTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_getName() {
-        containerThrowsISE(c -> c.getNameIs("Container").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #getName()");
+        checkThrowsISE(c -> c.getNameIs("Container").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #getName()");
     }
 
     /**
@@ -55,7 +113,7 @@ public class NameFreezeContainerTest extends AbstractBaseTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_install() {
-        containerThrowsISE(c -> c.use(ComponentExtension.class, e -> e.install("Foo")).setName("Bar"),
+        checkThrowsISE(c -> c.use(ComponentExtension.class, e -> e.install("Foo")).setName("Bar"),
                 "Cannot call this method after installing new components in the container");
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension
@@ -71,7 +129,7 @@ public class NameFreezeContainerTest extends AbstractBaseTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_link() {
-        containerThrowsISE(c -> c.link(EMPTY_BUNDLE).setName("Bar"), "Cannot call this method after containerConfiguration.link has been invoked");
+        checkThrowsISE(c -> c.link(EMPTY_BUNDLE).setName("Bar"), "Cannot call this method after containerConfiguration.link has been invoked");
     }
 
     /**
@@ -80,42 +138,20 @@ public class NameFreezeContainerTest extends AbstractBaseTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_path() {
-        containerThrowsISE(c -> c.pathIs("/").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #path()");
+        checkThrowsISE(c -> c.pathIs("/").setName("Bar"), "Cannot call #setName(String) after name has been initialized via call to #path()");
     }
 
     /** Test that we can only call {@link ContainerConfiguration#setName(String)} once. */
     @Test
     public void container_setName_cannotBeCalledAfter_setName() {
         // TODO should we drop this, I actually can't see any problems with this.
-        containerThrowsISE(c -> c.setName("Foo").setName("Bar"), "#setName(String) can only be called once");
+        checkThrowsISE(c -> c.setName("Foo").setName("Bar"), "#setName(String) can only be called once");
     }
 
-    private static void containerThrowsISE(Consumer<? super ContainerConfigurationTester> source, String message) {
+    private static void checkThrowsISE(Consumer<? super ContainerConfigurationTester> source, String message) {
         assertThatIllegalStateException().isThrownBy(() -> appOf(source)).withNoCause().withMessage(message);
 
         // TODO test for children as well
 
-    }
-
-    @Test
-    public void component_setName_cannotBeCalledAfter_install() {
-        containerThrowsISE(c -> {
-            c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.install(1);
-                e.install(1L);
-                ci.setName("foo");
-            });
-        }, "Cannot call this method after installing new components in the container");
-        // TODO we should actually have, more or less all the different kind of installs we have in
-        // ComponentExtension
-    }
-
-    static void componentThrowsISE(Consumer<? super ContainerConfigurationTester> source, String message) {
-
-        // TODO We actually also need to test for regular components as well...
-        // That installing a
-        // component name freeze...
-        // install another component
-        // link another container
     }
 }
