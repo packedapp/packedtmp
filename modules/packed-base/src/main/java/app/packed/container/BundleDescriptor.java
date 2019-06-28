@@ -78,6 +78,8 @@ import packed.internal.container.ContainerFactory;
 
 // I think add @Description as annotation??? IDK
 
+// ArtifactModel.. Hmm, not sure..
+// For example, we do not have a path
 public class BundleDescriptor {
 
     /** The type of the bundle. */
@@ -238,10 +240,14 @@ public class BundleDescriptor {
      */
     // ContainerSource????
     // For example, we should be able to take an image...
-    public static BundleDescriptor of(Bundle bundle) {
+    public static BundleDescriptor of(AnyBundle bundle) {
         return ContainerFactory.descriptorOf(bundle);
     }
 
+    // Or just have a descriptor() on ContainerImage();
+    public static BundleDescriptor of(ContainerImage image) {
+        return ContainerFactory.descriptorOf(image);
+    }
     // /**
     // * <p>A stream builder has a lifecycle, which starts in a building
     // * phase, during which elements can be added, and then transitions to a built

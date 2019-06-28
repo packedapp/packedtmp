@@ -39,11 +39,11 @@ public interface BuildContext {
     ConfigSite configSite();
 
     /**
-     * Returns the output type of the build process.
+     * Returns the type of artifact the build process produces.
      * 
-     * @return the output type of the build process
+     * @return the type of artifact the build process produces
      */
-    ArtifactType packaging();
+    ArtifactType artifactType();
 
     /**
      * Returns the source of the build, for example a bundle or a container image.

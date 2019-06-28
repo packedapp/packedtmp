@@ -45,7 +45,7 @@ public class InternalBuildContext implements BuildContext {
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactType packaging() {
+    public ArtifactType artifactType() {
         return packaging;
     }
 

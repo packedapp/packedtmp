@@ -94,7 +94,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     public DefaultContainer buildContainer() {
-        InstantiationContext ic = new InstantiationContext();
+        InstantiationContext ic = new DefaultInstantiationContext();
         DefaultContainer dc = buildContainer(ic);
         methodHandlePassing0(dc, ic);
         return dc;
@@ -168,7 +168,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     }
 
     DefaultContainer buildFromImage() {
-        InstantiationContext ic = new InstantiationContext();
+        InstantiationContext ic = new DefaultInstantiationContext();
         instantiate(ic);
         return new DefaultContainer(null, this, ic);
     }

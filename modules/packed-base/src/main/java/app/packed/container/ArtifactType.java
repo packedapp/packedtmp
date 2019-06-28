@@ -23,7 +23,7 @@ import app.packed.inject.Injector;
 public enum ArtifactType {
 
     /**
-     * The output type is an analyze. This is typically via {@link BundleDescriptor#of(Bundle)} or when analyzing an
+     * The output type is an analyze. This is typically via {@link BundleDescriptor#of(AnyBundle)} or when analyzing an
      * application for graal.
      */
     // Model??

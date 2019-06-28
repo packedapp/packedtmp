@@ -15,10 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.IdentityHashMap;
-
 import app.packed.util.Nullable;
 
 /**
@@ -27,52 +23,27 @@ import app.packed.util.Nullable;
  * <strong>Note that this implementation is not synchronized.</strong>
  */
 // ArtifactInstantiationContext
-// Packaging -> App, Injector, Injector, Model
-public final class InstantiationContext {
+public interface InstantiationContext {
 
-    public WireletList wirelets() {
-        // Unless we are creating an image...
-        // This method returns the same as BuildContext.wirelets()
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Returns the type of artifact that is being instantiated. Is either {@link ArtifactType#APP} or
+     * {@link ArtifactType#INJECTOR}.
+     * 
+     * @return the type of artifact that is being instantiated
+     */
+    ArtifactType artifactType();
 
-    /** All context objects. */
-    private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
-
-    @SuppressWarnings("unchecked")
     @Nullable
-    public <T> T get(ContainerConfiguration configuration, Class<T> type) {
-        requireNonNull(configuration, "configuration is null");
-        requireNonNull(type, "type is null");
-        var e = map.get(configuration);
-        return e == null ? null : (T) e.get(type);
-    }
+    <T> T get(ContainerConfiguration configuration, Class<T> type);
 
-    public void put(ContainerConfiguration configuration, Object obj) {
-        requireNonNull(configuration, "configuration is null");
-        requireNonNull(obj, "obj is null");
-        map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
-    }
+    void put(ContainerConfiguration configuration, Object obj);
 
-    @SuppressWarnings("unchecked")
-    public <T> T use(ContainerConfiguration configuration, Class<T> type) {
-        requireNonNull(configuration, "configuration is null");
-        requireNonNull(type, "type is null");
-        var e = map.get(configuration);
-        if (e == null) {
-            throw new IllegalArgumentException();
-        }
-        Object o = e.get(type);
-        if (o == null) {
-            throw new IllegalStateException();
-        }
-        return (T) o;
-    }
+    <T> T use(ContainerConfiguration configuration, Class<T> type);
 
-    enum Type {
-        APP, INJECTOR; // <- Saa et image, for exempel kan lave begge dele...
-    }
-
-    // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());
-    // link(SomeBundle.class, LifecycleWirelets.start(SomeGroup)); //all in same group will be started
+    /**
+     * Returns a list of wirelets that used to instantiate.
+     * 
+     * @return a list of wirelets that used to instantiate
+     */
+    WireletList wirelets();
 }
