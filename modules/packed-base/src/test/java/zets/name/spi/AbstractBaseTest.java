@@ -28,6 +28,8 @@ import app.packed.container.Wirelet;
  */
 public abstract class AbstractBaseTest {
 
+    public static final AnyBundle EMPTY_BUNDLE = new AnyBundle() {};
+
     public static AppTester appOf(Consumer<? super ContainerConfigurationTester> source, Wirelet... wirelets) {
         return new AppTester(new AbstractTesterBundle(source) {}, wirelets);
     }

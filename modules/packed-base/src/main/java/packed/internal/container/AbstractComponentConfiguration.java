@@ -210,14 +210,14 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         }
     }
 
-    AbstractComponentConfiguration setDescription(String description) {
+    public AbstractComponentConfiguration setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
         return this;
     }
 
-    AbstractComponentConfiguration setName(String name) {
+    public AbstractComponentConfiguration setName(String name) {
         checkName(name);
         switch (state) {
         case INITIAL:
@@ -234,7 +234,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         case LINK_INVOKED:
             throw new IllegalStateException("Cannot call this method after containerConfiguration.link has been invoked");
         case SET_NAME_INVOKED:
-            throw new IllegalStateException("#setName(String) can only be called once for a container");
+            throw new IllegalStateException("#setName(String) can only be called once");
         }
         throw new InternalError();
     }
