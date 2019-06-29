@@ -20,7 +20,9 @@ import app.packed.container.ContainerSource;
 /**
  *
  */
-public interface AppHost extends App, Host {
+// IDeen er at lave noget der baade er App og Host...
+// Men den kan jo ogsaa misforstaa en Host der holder apps.
+interface AppHost extends App, Host {
 
     static AppHost of(ContainerSource source) {
         throw new UnsupportedOperationException();

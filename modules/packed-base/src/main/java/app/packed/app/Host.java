@@ -35,7 +35,7 @@ import app.packed.container.Wirelet;
 // So Maybe
 // Container
 //// Host
-public interface Host {
+interface Host {
 
     public static void main(ContainerBundle b) {}
 

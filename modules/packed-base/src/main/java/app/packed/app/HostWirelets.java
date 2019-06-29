@@ -21,7 +21,7 @@ import app.packed.util.Key;
 /**
  *
  */
-public class HostWirelets {
+class HostWirelets {
 
     public static Wirelet key(Key<? extends Host> key) {
         throw new UnsupportedOperationException();

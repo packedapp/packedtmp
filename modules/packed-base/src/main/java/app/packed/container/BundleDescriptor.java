@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.app.Main;
+import app.packed.component.ComponentPath;
+import app.packed.config.ConfigSite;
 import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -85,7 +87,7 @@ import packed.internal.container.ContainerFactory;
 // More Like ContainerDescriptor????
 // Because we can also create from a ContainerImage
 /// Yes but that image is created from a bundle of some kind.
-public class BundleDescriptor {
+public class BundleDescriptor implements Artifact {
 
     /** The type of the bundle. */
     private final Class<? extends ContainerBundle> bundleType;
@@ -170,6 +172,7 @@ public class BundleDescriptor {
      * 
      * @see Bundle#setDescription(String)
      */
+    @Override
     public final Optional<String> description() {
         return Optional.ofNullable(description);
     }
@@ -194,6 +197,7 @@ public class BundleDescriptor {
      * 
      * @return the name of the bundle
      */
+    @Override
     public final String name() {
         return name;
     }
@@ -338,6 +342,20 @@ public class BundleDescriptor {
             this.name = requireNonNull(name);
             return this;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configSite() {
+        // Hmmm... Hvor vi har lavet descriptoren????
+        // TODO, should return ContainerImage.configSite if an image....
+        return ConfigSite.UNKNOWN;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return ComponentPath.ROOT;
     }
 }
 //

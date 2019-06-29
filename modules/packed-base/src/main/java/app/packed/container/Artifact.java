@@ -41,11 +41,11 @@ public interface Artifact {
     ConfigSite configSite();
 
     /**
-     * Returns the description of this artifact. Or an empty optional if no description was set
+     * Returns the description of this artifact. Or an empty optional if no description has been set
      * <p>
-     * The description is always identical to the description of the root container in the artifact.
+     * The returned description is always identical to the description of the artifact's root container.
      *
-     * @return the description of this artifact. Or an empty optional if no description was set
+     * @return the description of this artifact. Or an empty optional if no description has been set
      *
      * @see ComponentConfiguration#setDescription(String)
      */
@@ -54,23 +54,28 @@ public interface Artifact {
     /**
      * Returns the name of this artifact.
      * <p>
-     * The name is always identical to the name of the root container in the artifact.
+     * The returned name is always identical to the name of the artifact's root container.
      * <p>
-     * If no name is explicitly set when creating the artifact, the runtime will generate a name that is among any siblings.
+     * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
+     * unique among any of the artifact's siblings.
      * 
      * @return the name of this artifact
      */
     String name();
 
     /**
-     * Returns the path of this artifact.
+     * Returns the component path of this artifact.
      * <p>
-     * The path is always identical to the path of the root container in the artifact.
+     * The returned path is always identical to the path of the artifact's root container.
      *
-     * @return the path of this artifact
+     * @return the component path of this artifact
      * @see Component#path()
      */
     ComponentPath path();
-
-    // Stream();
 }
+
+// Kan puttes paa en artifact, og angiver hvilke stages man skal koere...
+@interface ArtifactModel {
+
+}
+// Stream(); Hmm lad os se paa det.. Det kraever jo vi en ens api om vi er i ContainerConfiguration eller Container.

@@ -35,6 +35,12 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** The configuration of the future artifact's root container. */
     private final PackedContainerConfiguration containerConfiguration;
 
+    /**
+     * Creates a new image.
+     * 
+     * @param containerConfiguration
+     *            the configuration of the container we wrap
+     */
     public PackedArtifactImage(PackedContainerConfiguration containerConfiguration) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
     }
@@ -54,6 +60,7 @@ public final class PackedArtifactImage implements ArtifactImage {
     /** {@inheritDoc} */
     @Override
     public String name() {
+        // If we set naming wirelets we need to run through them
         return containerConfiguration.getName();
     }
 
@@ -114,7 +121,6 @@ class DefaultContainerImageExpe {
 // Syntes jeg egentlig ikke. Det kunne vaere fedt hvis man kunne bruge det overalt.
 // F.eks. BundleContract.of(ImageBundle)
 // Saa kan vi jo evt. registrerer om man kan lave en Injector eller App ud af den...
-
 // Questions
 // ? Wirelets: Yes, No
 // ? Different Environments???

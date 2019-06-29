@@ -15,20 +15,21 @@
  */
 package app.packed.app;
 
-import app.packed.container.Bundle;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 
 /**
- *
+ * A deployed app is a special type of application that is deploy on a {@link Host}.
  */
-// A Deployed App can have dependencies to other apps???
+// A Deployed App can have dependencies to other apps on the same host or other hosts as well????
+// Maaske vi kan have noget HostLayer
 // Both From and to
-public interface DeployedApp extends App {
+interface DeployedApp extends App {
 
     void undeploy();
 
     // Ideen er egentligt at vi kan lave online redeployments
-    void replaceWith(Bundle b, Wirelet... wirelets);
+    void replaceWith(ContainerSource source, Wirelet... wirelets);
 
     // Eller ogsaa have vi en specific
     // HotDeployer newHotDeployer(String name)

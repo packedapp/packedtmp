@@ -21,7 +21,7 @@ import app.packed.util.Key;
 /**
  *
  */
-public interface HostConfiguration extends ComponentConfiguration {
+interface HostConfiguration extends ComponentConfiguration {
 
     HostConfiguration as(Key<? extends Host> key);
 }

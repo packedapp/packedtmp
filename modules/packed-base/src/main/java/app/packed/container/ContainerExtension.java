@@ -47,8 +47,9 @@ import packed.internal.support.AppPackedContainerSupport;
 // Men er det ikke bare noget logning istedet for metoder...
 // "InjectorExtension:" Activate
 //// Her er der noget vi gerne vil have viral.
-// Maybe rename to ContainerExtension because we rarely need to spell it out
+
 // Disallow registering extensions as a service???
+// Actually together with a lot of other types...
 
 // Feature
 // Configurator
@@ -86,10 +87,15 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
 
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
+    /**
+     * <p>
+     * Im thinking about throwing ISE on instantiation....
+     * 
+     * @throws IllegalStateException
+     *             if invoked from constructor or {@link #onPrepareContainerInstantiate(InstantiationContext)}.
+     * @return the build context
+     */
     protected final ArtifactBuildContext buildContext() {
-        // Maybe take an attributemap that is shared between all invocations
-        // default implementation processes children..
-        // So we should always call super.build();
         return configuration().buildContext();
     }
 
@@ -137,7 +143,11 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     }
 
     /**
-     * Invoked
+     * Invoked immediately after a container has been configured. Typically after {@link ContainerBundle#configure()} has
+     * returned.
+     * 
+     * <p>
+     * The default implementation does nothing.
      */
     public void onContainerConfigured() {}
 
@@ -215,30 +225,6 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     }
 }
 
-//
-// protected final <N extends AbstractFreezableNode> N mergeOperations(Supplier<N> supplier) {
-// // Ideen er at man kalde
-// // bundleWith
-// // configuration.
-//
-// // Vi ved vi er single traadet. Saa det er vel noget med at have en counter... der tikker en op hver gang vi kalder
-// // mergeOperation
-// return mergeOperations(() -> {
-// configuration.install("foo");
-// configuration.install("foo");
-// return null;
-// });
-//
-// // Don't think we need to have a separate verify step
-// //
-// // configuration.install("foo").setName("foo)";
-// // configuration.install("foo").setName("foo)";
-// // Would both be verified ok, because we do not make structural changes in the first step when verifying
-//
-// // What we would need was a command like functionality. Where to much trouble
-//
-// }
-
 // protected final void newLine() {
 // checksConfigurable
 // FreezesAnyNode before
@@ -281,35 +267,3 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
 // Direction of information, @OnHook creates a dependendy TO
 
 // Allow filters..., incoming wiring, outgoing wiring
-
-// Vi har noget cached information, per metoder, eller per field, eller per entity (class + mixins)
-
-// Provide context to annotated method, for example ProvisionContext to @Provides
-
-// Annotation + FieldDescriptor -> Provided
-/// Taenker maaske at vi kan implementer f.eks. hooks, helt uden interne apis.
-// Isaer hvis vi cacher information omkring annoteringer separate, i grupper
-// Cacher alle metoder der har en RequiresFeature... central. Og kan saa lave grupper udfra dem
-
-// Ide
-// Vi cacher alle metoder, og felter, som har en MetaAnnotering via RequiresFeature.
-// Vi kan saa requeste dem for hver service...Og gemme i et eller andet form for map.
-// Som API stiller til raadighed, Vi bliver noedt til at cache paa MethodLookup.
-// Eller hvis aaben paa noget andet..
-// Cache<ProvidesGroup>
-// cache.get(FooComponent.class);
-
-//// Supports Freezable and ConfigSite
-// protected final <S extends ServiceNode<S>> S addNode(S node) {
-// throw new UnsupportedOperationException();
-// }
-
-/// **
-// * The configuration site of this object. The api needs to be public...
-// *
-// * @return this configuration site
-// */
-//// Det er hvor extensionen er blevet installeret...Tror vi skal vaere lidt mere complex foerend det giver mening
-// public final InternalConfigSite configSite() {
-// throw new UnsupportedOperationException();
-// }

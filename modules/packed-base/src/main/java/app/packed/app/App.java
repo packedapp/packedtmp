@@ -23,12 +23,12 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.container.Artifact;
 import app.packed.container.ArtifactType;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
+import app.packed.lifecycle.RunState;
 import packed.internal.container.InternalContainerSource;
 import packed.internal.container.PackedApp;
 import packed.internal.container.PackedArtifactImage;
@@ -62,20 +62,6 @@ public interface App extends AutoCloseable, Artifact {
 
     // TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
     Injector injector();
-
-    /**
-     * Returns the name of this application.
-     * <p>
-     * The name is always identical to the name of the top level container that the application wraps.
-     * <p>
-     * If no name is explicitly set when configuring the application, the runtime will generate a (on a best-effort basis)
-     * unique name.
-     *
-     * @return the name of this application
-     * @see ContainerConfiguration#setName(String)
-     */
-    @Override
-    String name();
 
     App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 
@@ -183,10 +169,10 @@ public interface App extends AutoCloseable, Artifact {
 
     /**
      * Creates a new application from the specified container source. The state of the returned application will be
-     * initialized.
+     * {@link RunState#INITIALIZED}.
      *
      * @param source
-     *            the source that creates the container that should be wrapped.
+     *            the container source that will create the container that the application should wrap
      * @param wirelets
      *            wiring operations
      * @return a new application
@@ -202,8 +188,8 @@ public interface App extends AutoCloseable, Artifact {
     }
 
     /**
-     * This method will create and start an {@link App application} from the container source. Blocking until the
-     * application has fully terminated.
+     * This method will create and start an {@link App application} from the specified container source. Blocking until the
+     * run state of the application is {@link RunState#TERMINATED}.
      * 
      * @param source
      *            the source that creates the container that should be wrapped.
@@ -229,6 +215,8 @@ public interface App extends AutoCloseable, Artifact {
             // }
         }
     }
+
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
+    // Basalt set har vi vel bare en Wiring property der angiver det
     // Basically we unwrap exceptions accordingly to some scheme in some way
 }
