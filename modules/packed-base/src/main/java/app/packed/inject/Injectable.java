@@ -13,27 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import static java.lang.annotation.RetentionPolicy.CLASS;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-@Retention(CLASS)
-@Target(ElementType.MODULE)
+package app.packed.inject;
 
 /**
  *
  */
-public @interface PackedModule {
-
-    // Boot with this module... for example, when used with "link"....
-    // Sort of like jar.mainClass but for bundles...
-
-    // Okay I think we need to allow link to take any container source....
-    // And just throw an IllegalArgumentException if using an image.
-
-    Class<? extends ContainerBundle> bundle();
+// Ideen var vi f.eks. kunne have
+// @Injectable(ProvidesContext.class)
+// @Provides .... but we do not support keys here... So better not make it part of the API
+@interface Injectable {
+    Class<?>[] value();
 }

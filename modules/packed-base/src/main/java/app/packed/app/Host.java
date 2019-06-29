@@ -15,7 +15,7 @@
  */
 package app.packed.app;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -37,13 +37,13 @@ import app.packed.container.Wirelet;
 //// Host
 public interface Host {
 
-    public static void main(AnyBundle b) {}
+    public static void main(ContainerBundle b) {}
 
     public static Host of(ContainerSource source) {
         throw new UnsupportedOperationException();
     }
 
-    public static void addHost(ContainerConfiguration cc, AnyBundle bundle, Wirelet... wirelets) {
+    public static void addHost(ContainerConfiguration cc, ContainerBundle bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

@@ -64,7 +64,7 @@ import app.packed.util.Qualifier;
 // // Insta
 // // NativeImageWriter
 // }
-public abstract class Bundle extends AnyBundle {
+public abstract class Bundle extends ContainerBundle {
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use

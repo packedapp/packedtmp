@@ -25,9 +25,9 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ArtifactType;
-import app.packed.container.BuildContext;
+import app.packed.container.ArtifactBuildContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
@@ -175,7 +175,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public void link(AnyBundle bundle, Wirelet... wirelets) {
+    public void link(ContainerBundle bundle, Wirelet... wirelets) {
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.
@@ -197,8 +197,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         if (state == State.FINAL) {
             return;
         }
-        if (source.source instanceof AnyBundle) {
-            AnyBundle bundle = (AnyBundle) source.source;
+        if (source.source instanceof ContainerBundle) {
+            ContainerBundle bundle = (ContainerBundle) source.source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
@@ -381,7 +381,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public BuildContext buildContext() {
+    public ArtifactBuildContext buildContext() {
         return buildContext;
     }
 

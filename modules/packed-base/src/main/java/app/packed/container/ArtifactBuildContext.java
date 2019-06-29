@@ -17,30 +17,12 @@ package app.packed.container;
 
 import app.packed.config.ConfigSite;
 
-// CurrentState???
-// ErrorHandling / Notifications ???
-/// Taenker det ligger paa Extension'en fordi vi har jo ogsaa en InstantiationContext
-// hvor errors jo ogsaa kan ske..
-// hasErrors()...
-//// Maybe we want to log the actual extension as well.
-// so extension.log("fooo") instead
-/// Yes, why not use it to log errors...
 /**
  * A build context is create
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
-// ArtifactBuildContext
-// Det er saa her vi skal passe lidt paa.
-// Lige nu har en InstantiationContext per artifact og en BuildContext per Container...
-public interface BuildContext {
-
-    /**
-     * Returns the configuration site that initialized the build process.
-     * 
-     * @return the configuration site that initialized the build process
-     */
-    ConfigSite configSite();
+public interface ArtifactBuildContext {
 
     /**
      * Returns the type of artifact the build process produces.
@@ -50,23 +32,28 @@ public interface BuildContext {
     ArtifactType artifactType();
 
     /**
-     * Returns the source of the build, for example a bundle or a container image.
+     * Returns the configuration site that initialized the build process.
+     * 
+     * @return the configuration site that initialized the build process
+     */
+    ConfigSite configSite();
+
+    /**
+     * Returns the source of the build, for example a {@link ContainerBundle bundle} or an {@link ArtifactImage image}.
      * 
      * @return the source of the build, for example a bundle or a container image
      */
     ContainerSource source();
 
     /**
-     * Any wirelets used when initializing the build.
+     * Any wirelets that was used when initializing the build.
      * 
      * @return a list of wirelets
      */
     WireletList wirelets();
-
-    // WireletList artifactWirelets();
 }
 // Specials -> IsFromImage, isNativeImageGenerate, isNativeImageBuild
-
+// source instanceof ContainerImage
 // APP
 // INJECTOR
 // DESCRIPTOR

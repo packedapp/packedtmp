@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.ContainerImage;
+import app.packed.container.ArtifactImage;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
@@ -47,16 +47,16 @@ public class ContainerFactory {
 
     public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");
-        AnyBundle bundle = (AnyBundle) source;
+        ContainerBundle bundle = (ContainerBundle) source;
         PackedContainerConfiguration conf = new PackedContainerConfiguration(null, ArtifactType.ANALYZE, InternalContainerSource.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
     }
 
-    public static ContainerImage imageOf(ContainerSource source, Wirelet... wirelets) {
+    public static ArtifactImage imageOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(null, ArtifactType.CONTAINER_IMAGE, InternalContainerSource.of(source),
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(null, ArtifactType.ARTIFACT_IMAGE, InternalContainerSource.of(source),
                 wirelets);
         return configuration.buildImage();
     }
@@ -73,7 +73,7 @@ public class ContainerFactory {
 
     public static Injector injectorOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
-        AnyBundle bundle = (AnyBundle) source;
+        ContainerBundle bundle = (ContainerBundle) source;
         PackedContainerConfiguration configuration = new PackedContainerConfiguration(null, ArtifactType.INJECTOR, InternalContainerSource.of(source),
                 wirelets);
         AppPackedContainerSupport.invoke().doConfigure(bundle, configuration);

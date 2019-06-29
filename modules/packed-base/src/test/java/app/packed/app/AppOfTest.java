@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 
-/** Tests {@link App#of(app.packed.container.AnyBundle, app.packed.container.Wirelet...)} */
+/** Tests {@link App#of(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)} */
 public class AppOfTest {
 
     /** Tests the empty app with no components. */

@@ -25,8 +25,8 @@ import app.packed.inject.Injector;
 public enum ArtifactType {
 
     /**
-     * The output type is an analyze. This is typically via {@link BundleDescriptor#of(AnyBundle)} or when analyzing an
-     * application for graal.
+     * The output type is an analyze. This is typically via {@link BundleDescriptor#of(ContainerBundle)} or when analyzing
+     * an application for graal.
      */
     // Model??
     ANALYZE,
@@ -38,10 +38,10 @@ public enum ArtifactType {
     APP /* (app.packed.app.App.class) */,
 
     /**
-     * The output type of the build process is a {@link ContainerImage}. This is typically via
-     * {@link ContainerImage#of(ContainerSource, Wirelet...)}.
+     * The output type of the build process is a {@link ArtifactImage}. This is typically via
+     * {@link ArtifactImage#of(ContainerSource, Wirelet...)}.
      */
-    CONTAINER_IMAGE,
+    ARTIFACT_IMAGE,
 
     /**
      * The output type of the process is an {@link App}. This is typically either via

@@ -20,8 +20,8 @@ import java.util.function.Supplier;
 import app.packed.component.Component;
 
 /**
- * A single source for a container. This is typically a subclass of {@link AnyBundle} or pregenerated
- * {@link ContainerImage container image}.
+ * A single source for a container. This is typically a subclass of {@link ContainerBundle} or pregenerated
+ * {@link ArtifactImage container image}.
  * <p>
  * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
  * of sealed types if they become available.
@@ -33,9 +33,11 @@ import app.packed.component.Component;
 // Concurrent - Non-current (Bundles may be Repeatable but they will never be Concurrent)
 // The only reason we want to allow repeatable bundles. Is So we can create a descriptor
 // before we make
+
+// Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
 public interface ContainerSource {
 
-    static ContainerSource ofRepeatableBundle(Supplier<? extends AnyBundle> supplier) {
+    static ContainerSource ofRepeatableBundle(Supplier<? extends ContainerBundle> supplier) {
         throw new UnsupportedOperationException();
     }
 

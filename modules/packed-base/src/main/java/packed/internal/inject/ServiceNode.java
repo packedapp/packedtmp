@@ -72,7 +72,7 @@ public interface ServiceNode<T> extends ServiceDescriptor {
     AbstractRuntimeServiceNode<T> toRuntimeNode();
 
     default boolean isPrivate() {
-        return key().equals(KeyBuilder.INJECTOR_KEY) || key().equals(KeyBuilder.CONTAINER_KEY);
+        return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);
     }
 }
 

@@ -15,25 +15,25 @@
  */
 package micro.app;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerImage;
+import app.packed.container.ArtifactImage;
 
 /**
  *
  */
 public class VariousBundles {
 
-    public static final ContainerImage EMPTY_IMAGE = ContainerImage.of(empty());
-    public static final ContainerImage ONE_COMPONENT_IMAGE = ContainerImage.of(oneComponent());
-    public static final ContainerImage FIVE_CONTAINER_IMAGE = ContainerImage.of(fiveComponents());
-    public static final ContainerImage ONE_CONTAINER_IMAGE = ContainerImage.of(oneContainer());
+    public static final ArtifactImage EMPTY_IMAGE = ArtifactImage.of(empty());
+    public static final ArtifactImage ONE_COMPONENT_IMAGE = ArtifactImage.of(oneComponent());
+    public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.of(fiveComponents());
+    public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
 
-    public static AnyBundle empty() {
+    public static ContainerBundle empty() {
         return new Bundle() {};
     }
 
-    public static AnyBundle oneComponent() {
+    public static ContainerBundle oneComponent() {
         return new Bundle() {
 
             @Override
@@ -43,7 +43,7 @@ public class VariousBundles {
         };
     }
 
-    public static AnyBundle fiveComponents() {
+    public static ContainerBundle fiveComponents() {
         return new Bundle() {
 
             @Override
@@ -57,7 +57,7 @@ public class VariousBundles {
         };
     }
 
-    public static AnyBundle oneContainer() {
+    public static ContainerBundle oneContainer() {
         return new Bundle() {
 
             @Override

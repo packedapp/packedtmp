@@ -87,7 +87,7 @@ import packed.internal.container.ContainerFactory;
 public class BundleDescriptor {
 
     /** The type of the bundle. */
-    private final Class<? extends AnyBundle> bundleType;
+    private final Class<? extends ContainerBundle> bundleType;
 
     /** A Services object. */
     private final BundleContract contract;
@@ -138,7 +138,7 @@ public class BundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public final Class<? extends AnyBundle> bundleType() {
+    public final Class<? extends ContainerBundle> bundleType() {
         return bundleType;
     }
 
@@ -244,12 +244,12 @@ public class BundleDescriptor {
      */
     // ContainerSource????
     // For example, we should be able to take an image...
-    public static BundleDescriptor of(AnyBundle bundle) {
+    public static BundleDescriptor of(ContainerBundle bundle) {
         return ContainerFactory.descriptorOf(bundle);
     }
 
     // Or just have a descriptor() on ContainerImage();
-    public static BundleDescriptor of(ContainerImage image) {
+    public static BundleDescriptor of(ArtifactImage image) {
         return ContainerFactory.descriptorOf(image);
     }
     // /**
@@ -286,7 +286,7 @@ public class BundleDescriptor {
         private String bundleDescription;
 
         /** The bundleType */
-        private final Class<? extends AnyBundle> bundleType;
+        private final Class<? extends ContainerBundle> bundleType;
 
         private BundleContract.Builder contract = new BundleContract.Builder();
 
@@ -294,7 +294,7 @@ public class BundleDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Builder(Class<? extends AnyBundle> bundleType) {
+        public Builder(Class<? extends ContainerBundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
@@ -315,7 +315,7 @@ public class BundleDescriptor {
         /**
          * @return the bundleType
          */
-        public final Class<? extends AnyBundle> bundleType() {
+        public final Class<? extends ContainerBundle> bundleType() {
             return bundleType;
         }
 

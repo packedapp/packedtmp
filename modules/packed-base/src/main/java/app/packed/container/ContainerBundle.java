@@ -37,12 +37,12 @@ import app.packed.util.Nullable;
 
 // Kan vi genbruge et bundle???
 // rename to ContainerBundle????
-public abstract class AnyBundle implements ContainerSource {
+public abstract class ContainerBundle implements ContainerSource {
 
     /** The configuration. */
     private ContainerConfiguration configuration;
 
-    protected final BuildContext buildContext() {
+    protected final ArtifactBuildContext buildContext() {
         return configuration.buildContext();
     }
 
@@ -132,9 +132,9 @@ public abstract class AnyBundle implements ContainerSource {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ContainerConfiguration#link(AnyBundle, Wirelet...)
+     * @see ContainerConfiguration#link(ContainerBundle, Wirelet...)
      */
-    protected final void link(AnyBundle bundle, Wirelet... wirelets) {
+    protected final void link(ContainerBundle bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
     }
 

@@ -18,7 +18,7 @@ package app.packed.container;
 /**
  *
  */
-final class ContainerImageWirelets {
+final class ArtifactImageWirelets {
 
     // retainStackTracesForEachInstantiation...
     /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.

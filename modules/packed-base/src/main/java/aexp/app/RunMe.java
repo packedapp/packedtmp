@@ -17,7 +17,7 @@ package aexp.app;
 
 import app.packed.app.App;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerImage;
+import app.packed.container.ArtifactImage;
 
 /**
  *
@@ -32,7 +32,7 @@ public class RunMe extends Bundle {
     public static void main(String[] args) {
         App.of(new RunMe());
         System.out.println("------");
-        ContainerImage ci = ContainerImage.of(new RunMe());
+        ArtifactImage ci = ArtifactImage.of(new RunMe());
         System.out.println("------");
         App.of(ci);
         App.of(ci);

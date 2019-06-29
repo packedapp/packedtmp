@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ArtifactType;
-import app.packed.container.BuildContext;
+import app.packed.container.ArtifactBuildContext;
 import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 
-/** The default implementation of {@link BuildContext} */
-final class PackedBuildContext implements BuildContext {
+/** The default implementation of {@link ArtifactBuildContext} */
+final class PackedBuildContext implements ArtifactBuildContext {
 
     /** The artifact type. */
     private final ArtifactType artifactType;

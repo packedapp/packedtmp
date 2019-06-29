@@ -20,12 +20,12 @@ import app.packed.inject.Injector;
 import packed.internal.container.ContainerFactory;
 
 /**
- * A pre-generate image of a container.
+ * A pre-generated image of an artifact.
  * <p>
  * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
- * container images. It can not be used with {@link AnyBundle#link(AnyBundle, Wirelet...)}.
+ * artifact images. It can not be used with {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
  */
-public interface ContainerImage extends ContainerSource, Artifact {
+public interface ArtifactImage extends ContainerSource, Artifact {
 
     /**
      * Returns the type of bundle that was used to create this image.
@@ -36,9 +36,9 @@ public interface ContainerImage extends ContainerSource, Artifact {
      * @return the original source type of this image
      */
     // sourceType?? bundleType
-    Class<? extends AnyBundle> source();
+    Class<? extends ContainerBundle> source();
 
-    ContainerImage with(Wirelet... wirelets);
+    ArtifactImage with(Wirelet... wirelets);
 
     /**
      * Returns a new container image original functionality but re
@@ -47,7 +47,7 @@ public interface ContainerImage extends ContainerSource, Artifact {
      *            the name
      * @return the new container image
      */
-    default ContainerImage withName(String name) {
+    default ArtifactImage withName(String name) {
         return with(Wirelet.name(name));
     }
 
@@ -62,7 +62,7 @@ public interface ContainerImage extends ContainerSource, Artifact {
      * @throws RuntimeException
      *             if the image could not be generated for some reason
      */
-    static ContainerImage of(ContainerSource source, Wirelet... wirelets) {
+    static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
         return ContainerFactory.imageOf(source, wirelets);
     }
 

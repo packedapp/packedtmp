@@ -83,7 +83,7 @@ public final class DynamicContainerSource implements ContainerSource {
             Class<?> c = layer.findLoader(moduleName).loadClass(initializeMe);
             Constructor<?> cc = c.getConstructor();
             cc.setAccessible(true);
-            AnyBundle b = (AnyBundle) cc.newInstance();
+            ContainerBundle b = (ContainerBundle) cc.newInstance();
             // System.out.println(System.currentTimeMillis() - now);
             return b;
             // App aa = App.of(b);

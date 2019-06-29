@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.app.App;
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.PackedModule;
 import packed.internal.asm.AnnotationVisitor;
@@ -80,7 +80,7 @@ public class ModTest2 {
             Class<?> c = layer.findLoader(moduleName).loadClass(initializeMe);
             Constructor<?> cc = c.getConstructor();
             cc.setAccessible(true);
-            AnyBundle b = (AnyBundle) cc.newInstance();
+            ContainerBundle b = (ContainerBundle) cc.newInstance();
             // System.out.println(System.currentTimeMillis() - now);
             return b;
             // App aa = App.of(b);

@@ -22,16 +22,16 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.container.AnyBundle;
-import app.packed.container.ContainerImage;
+import app.packed.container.ContainerBundle;
+import app.packed.container.ArtifactImage;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Injector;
 import packed.internal.inject.AbstractInjector;
 
-/** The default implementation of {@link ContainerImage}. */
-final class PackedContainerImage implements ContainerImage {
+/** The default implementation of {@link ArtifactImage}. */
+final class PackedContainerImage implements ArtifactImage {
 
     /** The configuration of the future artifact's root container. */
     private final PackedContainerConfiguration containerConfiguration;
@@ -75,13 +75,13 @@ final class PackedContainerImage implements ContainerImage {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends AnyBundle> source() {
+    public Class<? extends ContainerBundle> source() {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ContainerImage with(Wirelet... wirelets) {
+    public ArtifactImage with(Wirelet... wirelets) {
         // We need to check that they can be used at image instantion time.
         throw new UnsupportedOperationException();
     }

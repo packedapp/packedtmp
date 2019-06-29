@@ -18,7 +18,7 @@ package aexp.xain;
 import app.packed.app.App;
 import app.packed.app.Main;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerImage;
+import app.packed.container.ArtifactImage;
 
 /**
  *
@@ -36,7 +36,7 @@ public class MainTest extends Bundle {
         var app = App.of(new MainTest());
         app.stream().forEach(e -> System.out.println(e.path()));
 
-        ContainerImage i = ContainerImage.of(new MainTest());
+        ArtifactImage i = ArtifactImage.of(new MainTest());
 
         System.out.println("-----");
         app = App.of(i);

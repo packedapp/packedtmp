@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import zets.name.spi.AbstractBaseTest;
@@ -56,25 +56,25 @@ public class NameDefaultsTest extends AbstractBaseTest {
 
         // As a child
         appOf(new AbstractTesterBundle(c -> {
-            c.link((AnyBundle) cs.apply(cc -> {
+            c.link((ContainerBundle) cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
         }) {}).nameIs("Container");
 
         // As multiple children
         appOf(new AbstractTesterBundle(c -> {
-            c.link((AnyBundle) cs.apply(cc -> {
+            c.link((ContainerBundle) cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
-            c.link((AnyBundle) cs.apply(cc -> {
+            c.link((ContainerBundle) cs.apply(cc -> {
                 cc.pathIs("/" + defaultName + "1");
             }));
         }) {}).nameIs("Container");
 
         // As two level nested
         appOf(new AbstractTesterBundle(c -> {
-            c.link((AnyBundle) cs.apply(cc -> {
-                cc.link((AnyBundle) cs.apply(ccc -> {
+            c.link((ContainerBundle) cs.apply(cc -> {
+                cc.link((ContainerBundle) cs.apply(ccc -> {
                     ccc.pathIs("/" + defaultName + "/" + defaultName);
                 }));
             }));
@@ -82,9 +82,9 @@ public class NameDefaultsTest extends AbstractBaseTest {
 
         // As 3 level nested
         appOf(new AbstractTesterBundle(c -> {
-            c.link((AnyBundle) cs.apply(cc -> {
-                cc.link((AnyBundle) cs.apply(ccc -> {
-                    ccc.link((AnyBundle) cs.apply(cccc -> {
+            c.link((ContainerBundle) cs.apply(cc -> {
+                cc.link((ContainerBundle) cs.apply(ccc -> {
+                    ccc.link((ContainerBundle) cs.apply(cccc -> {
                         cccc.pathIs("/" + defaultName + "/" + defaultName + "/" + defaultName);
                     }));
                 }));

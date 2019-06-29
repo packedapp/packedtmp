@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 
@@ -28,7 +28,7 @@ import app.packed.container.Wirelet;
  */
 public abstract class AbstractBaseTest {
 
-    public static final AnyBundle EMPTY_BUNDLE = new AnyBundle() {};
+    public static final ContainerBundle EMPTY_BUNDLE = new ContainerBundle() {};
 
     public static AppTester appOf(Consumer<? super ContainerConfigurationTester> source, Wirelet... wirelets) {
         return new AppTester(new AbstractTesterBundle(source) {}, wirelets);
@@ -42,7 +42,7 @@ public abstract class AbstractBaseTest {
         return new ContainerImageTester(source, wirelets);
     }
 
-    protected static abstract class AbstractTesterBundle extends AnyBundle {
+    protected static abstract class AbstractTesterBundle extends ContainerBundle {
         final Consumer<? super ContainerConfigurationTester> ca;
 
         protected AbstractTesterBundle(Consumer<? super ContainerConfigurationTester> ca) {

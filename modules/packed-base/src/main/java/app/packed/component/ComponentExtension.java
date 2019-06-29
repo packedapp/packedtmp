@@ -33,7 +33,7 @@ public final class ComponentExtension extends Extension<ComponentExtension> {
 
     // @Main skal jo pege et paa en eller anden extension...
 
-    private PackedContainerConfiguration configuration0() {
+    private PackedContainerConfiguration packedConfiguration() {
         return (PackedContainerConfiguration) configuration();
     }
 
@@ -41,7 +41,7 @@ public final class ComponentExtension extends Extension<ComponentExtension> {
     // Vi skal ikke til at have flere scans...
 
     public ComponentConfiguration install(Class<?> implementation) {
-        return configuration0().install(implementation);
+        return packedConfiguration().install(implementation);
     }
 
     // @Scoped
@@ -51,15 +51,15 @@ public final class ComponentExtension extends Extension<ComponentExtension> {
     // Need to export
 
     public ComponentConfiguration install(Factory<?> factory) {
-        return configuration0().install(factory);
+        return packedConfiguration().install(factory);
     }
 
     public ComponentConfiguration install(Object instance) {
-        return configuration0().install(instance);
+        return packedConfiguration().install(instance);
     }
 
     public ComponentConfiguration installHelper(Class<?> implementation) {
-        return configuration0().installHelper(implementation);
+        return packedConfiguration().installHelper(implementation);
     }
 
     public void scan(String... packages) {}

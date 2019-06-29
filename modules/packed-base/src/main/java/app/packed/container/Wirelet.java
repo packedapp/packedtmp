@@ -185,7 +185,7 @@ public abstract class Wirelet {
 
     /**
      * Returns a wirelet that will set the name of a container once wired, overriding any name that has previously been set,
-     * for example, via {@link AnyBundle#setName(String)}.
+     * for example, via {@link ContainerBundle#setName(String)}.
      * 
      * @param name
      *            the name of the container

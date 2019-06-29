@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import packed.internal.componentcache.ContainerConfiguratorCache;
 
@@ -53,7 +53,7 @@ public class InternalContainerSource {
     }
 
     public static InternalContainerSource of(ContainerSource source) {
-        AnyBundle b = (AnyBundle) source;
+        ContainerBundle b = (ContainerBundle) source;
         return new InternalContainerSource(b, source.getClass());
     }
 
@@ -61,7 +61,7 @@ public class InternalContainerSource {
         return new InternalContainerSource(null, consumer.getClass());
     }
 
-    public InternalContainerSource link(AnyBundle bundle) {
+    public InternalContainerSource link(ContainerBundle bundle) {
         throw new UnsupportedOperationException();
     }
 }

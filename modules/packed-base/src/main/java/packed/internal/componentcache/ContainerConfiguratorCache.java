@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import packed.internal.util.LookupValue;
 
@@ -126,7 +126,7 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
     }
 
     public static ContainerConfiguratorCache get(ContainerSource source) {
-        if (source instanceof AnyBundle) {
+        if (source instanceof ContainerBundle) {
             return CACHE.get(source.getClass());
         } else {
             throw new UnsupportedOperationException();

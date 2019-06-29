@@ -34,7 +34,14 @@ import packed.internal.support.AppPackedContainerSupport;
  * <p>
  * Subclasses of this class that are actively used should be final.
  */
-
+// CurrentState???
+// ErrorHandling / Notifications ???
+/// Taenker det ligger paa Extension'en fordi vi har jo ogsaa en InstantiationContext
+// hvor errors jo ogsaa kan ske..
+// hasErrors()...
+//// Maybe we want to log the actual extension as well.
+// so extension.log("fooo") instead
+/// Yes, why not use it to log errors...
 // Den eneste ting jeg kunne forstille mig at kunne vaere public.
 // Var en maade at se paa hvordan en extension blev aktiveret..
 // Men er det ikke bare noget logning istedet for metoder...
@@ -45,6 +52,8 @@ import packed.internal.support.AppPackedContainerSupport;
 
 // Feature
 // Configurator
+
+// ContainerExtension, ContainerPlugin
 // Plugin (maybe todays favorite)
 public abstract class Extension<T extends Extension<T>> {
 
@@ -59,7 +68,7 @@ public abstract class Extension<T extends Extension<T>> {
             }
 
             @Override
-            public void doConfigure(AnyBundle bundle, ContainerConfiguration configuration) {
+            public void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration) {
                 bundle.doConfigure(configuration);
             }
 
@@ -77,7 +86,7 @@ public abstract class Extension<T extends Extension<T>> {
 
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
-    protected final BuildContext buildContext() {
+    protected final ArtifactBuildContext buildContext() {
         // Maybe take an attributemap that is shared between all invocations
         // default implementation processes children..
         // So we should always call super.build();

@@ -23,12 +23,11 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigSite;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
@@ -38,7 +37,7 @@ import packed.internal.util.KeyBuilder;
 public final class DefaultInjector extends AbstractInjector {
 
     /** The configuration site of this injector. */
-    private final InternalConfigSite configSite;
+    private final ConfigSite configSite;
 
     /** An optional description of the injector. */
     @Nullable
@@ -55,7 +54,7 @@ public final class DefaultInjector extends AbstractInjector {
 
     private final ComponentPath path;
 
-    public DefaultInjector(PackedContainerConfiguration containerConfiguration, ServiceNodeMap services) {
+    public DefaultInjector(ContainerConfiguration containerConfiguration, ServiceNodeMap services) {
         this.parent = null;
         this.name = containerConfiguration.getName();
         this.configSite = requireNonNull(containerConfiguration.configSite());

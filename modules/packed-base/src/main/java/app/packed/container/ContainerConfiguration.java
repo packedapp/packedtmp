@@ -53,11 +53,11 @@ public interface ContainerConfiguration {
 
     /**
      * Returns the build context. A single build context object is shared among all containers that are connected using
-     * {@link #link(AnyBundle, Wirelet...)}.
+     * {@link #link(ContainerBundle, Wirelet...)}.
      * 
      * @return the build context
      */
-    BuildContext buildContext();
+    ArtifactBuildContext buildContext();
 
     void checkConfigurable();
 
@@ -106,7 +106,7 @@ public interface ContainerConfiguration {
      * @param wirelets
      *            optional wirelets
      */
-    void link(AnyBundle child, Wirelet... wirelets);
+    void link(ContainerBundle child, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
@@ -199,7 +199,7 @@ public interface ContainerConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ContainerSource, Wirelet...)} or {@link #link(AnyBundle, Wirelet...)}.
+     * {@link App#of(ContainerSource, Wirelet...)} or {@link #link(ContainerBundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

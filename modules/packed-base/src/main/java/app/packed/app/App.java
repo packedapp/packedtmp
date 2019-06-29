@@ -33,7 +33,7 @@ import packed.internal.container.ContainerFactory;
 import packed.internal.container.PackedApp;
 
 /**
- * A application is a program.
+ * An App (application) is a type of artifact is a program.
  * <p>
  * Applications are low overhead not using more then a few kilobytes.
  * <p>
@@ -44,10 +44,8 @@ import packed.internal.container.PackedApp;
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  * 
  */
-// Used to extend Injector... But just to many methods...
 // Do we expose the attachments????
 // Branch -> A collection of components
-// Component Tree
 // Trunk <- Root Branch -> The top app
 public interface App extends AutoCloseable, Artifact {
 

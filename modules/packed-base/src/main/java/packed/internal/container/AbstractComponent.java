@@ -107,7 +107,7 @@ abstract class AbstractComponent implements Component {
         return Optional.ofNullable(description);
     }
 
-    public Component findComponent(CharSequence path) {
+    public final Component findComponent(CharSequence path) {
         return findComponent(path.toString());
 
     }
@@ -172,7 +172,7 @@ abstract class AbstractComponent implements Component {
     /**
      * @param path
      */
-    public Component useComponent(CharSequence path) {
+    public final Component useComponent(CharSequence path) {
         Component c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)

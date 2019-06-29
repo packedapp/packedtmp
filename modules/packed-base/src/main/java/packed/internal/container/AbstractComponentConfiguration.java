@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
-import app.packed.container.AnyBundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.InstantiationContext;
 import app.packed.util.Nullable;
@@ -163,7 +163,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     private String initializeNameDefaultName() {
         if (this instanceof PackedContainerConfiguration) {
             @Nullable
-            AnyBundle bundle = (@Nullable AnyBundle) ((PackedContainerConfiguration) this).source.source;
+            ContainerBundle bundle = (@Nullable ContainerBundle) ((PackedContainerConfiguration) this).source.source;
             if (bundle != null) {
                 String nnn = bundle.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -269,7 +269,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerConfiguration#link(AnyBundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ContainerConfiguration#link(ContainerBundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */
