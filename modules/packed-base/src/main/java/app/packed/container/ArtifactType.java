@@ -19,6 +19,8 @@ import app.packed.app.App;
 import app.packed.inject.Injector;
 
 /// Kan vi bruge dem for example med @UseExtension(onlyAllow=OutputType.INJECTOR) @OnStart
+// Class<? extends Artifact???> instead, then we could maybe in some way allow user to build they own
+//artifact type. Maybe do like maven, and have goals you can attach.
 /** The type of artifact the build process creates. */
 public enum ArtifactType {
 

@@ -19,6 +19,8 @@ import app.packed.config.ConfigSite;
 
 // CurrentState???
 // ErrorHandling / Notifications ???
+/// Taenker det ligger paa Extension'en fordi vi har jo ogsaa en InstantiationContext
+// hvor errors jo ogsaa kan ske..
 // hasErrors()...
 //// Maybe we want to log the actual extension as well.
 // so extension.log("fooo") instead
@@ -27,8 +29,10 @@ import app.packed.config.ConfigSite;
  * A build context is create
  * 
  * A build context is never available when we build something from an image. Or is it???
- * 
  */
+// ArtifactBuildContext
+// Det er saa her vi skal passe lidt paa.
+// Lige nu har en InstantiationContext per artifact og en BuildContext per Container...
 public interface BuildContext {
 
     /**
@@ -58,6 +62,8 @@ public interface BuildContext {
      * @return a list of wirelets
      */
     WireletList wirelets();
+
+    // WireletList artifactWirelets();
 }
 // Specials -> IsFromImage, isNativeImageGenerate, isNativeImageBuild
 

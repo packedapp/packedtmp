@@ -24,7 +24,7 @@ import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.DefaultComponentConfiguration;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
@@ -34,7 +34,7 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     /** The component we are exposing. */
     private final DefaultComponentConfiguration component;
 
-    private final DefaultContainerConfiguration dcc;
+    private final PackedContainerConfiguration dcc;
 
     /** The service we are exposing. */
     private final BuildtimeServiceNode<T> service;
@@ -42,7 +42,7 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     /**
      * @param service
      */
-    public DefaultProvidedComponentConfiguration(DefaultContainerConfiguration dcc, DefaultComponentConfiguration component, BuildtimeServiceNode<T> service) {
+    public DefaultProvidedComponentConfiguration(PackedContainerConfiguration dcc, DefaultComponentConfiguration component, BuildtimeServiceNode<T> service) {
         this.dcc = requireNonNull(dcc);
         this.service = requireNonNull(service);
         this.component = component;

@@ -28,7 +28,7 @@ import packed.internal.invokable.InternalFunction;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
-public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
+public final class RuntimeLazyServiceNode<T> extends AbstractRuntimeServiceNode<T> {
 
     /** The lazily instantiated instance. */
     @Nullable
@@ -46,9 +46,9 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
      * @param factory
      *            the factory that will create the instance
      */
-    public RuntimeServiceNodeLazy(BuildtimeServiceNode<T> node, InternalFunction<T> factory, @Nullable RuntimeServiceNode<T> parent) {
+    public RuntimeLazyServiceNode(BuildtimeServiceNode<T> node, InternalFunction<T> factory, @Nullable AbstractRuntimeServiceNode<T> parent) {
         super(node);
-        this.lazy = new Sync(new RuntimeServiceNodePrototype<>(node, factory), parent);
+        this.lazy = new Sync(new RuntimePrototypeServiceNode<>(node, factory), parent);
     }
 
     /** {@inheritDoc} */
@@ -98,7 +98,7 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
 
-        RuntimeServiceNode<T> parent;
+        AbstractRuntimeServiceNode<T> parent;
 
         /**
          * Creates a new Sync object
@@ -106,7 +106,7 @@ public final class RuntimeServiceNodeLazy<T> extends RuntimeServiceNode<T> {
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(Provider<T> factory, @Nullable RuntimeServiceNode<T> parent) {
+        Sync(Provider<T> factory, @Nullable AbstractRuntimeServiceNode<T> parent) {
             super(1);
             this.factory = requireNonNull(factory);
         }

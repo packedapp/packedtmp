@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
  * <strong>Note that this implementation is not synchronized.</strong>
  */
 // ArtifactInstantiationContext
-public final class DefaultInstantiationContext implements InstantiationContext {
+final class PackedInstantiationContext implements InstantiationContext {
 
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
@@ -47,6 +47,7 @@ public final class DefaultInstantiationContext implements InstantiationContext {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     @Nullable
     public <T> T get(ContainerConfiguration configuration, Class<T> type) {
@@ -56,12 +57,14 @@ public final class DefaultInstantiationContext implements InstantiationContext {
         return e == null ? null : (T) e.get(type);
     }
 
+    @Override
     public void put(ContainerConfiguration configuration, Object obj) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(obj, "obj is null");
         map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T use(ContainerConfiguration configuration, Class<T> type) {
         requireNonNull(configuration, "configuration is null");
@@ -77,6 +80,7 @@ public final class DefaultInstantiationContext implements InstantiationContext {
         return (T) o;
     }
 
+    @Override
     public WireletList wirelets() {
         // Unless we are creating an image...
         // This method returns the same as BuildContext.wirelets()

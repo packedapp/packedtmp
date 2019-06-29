@@ -23,7 +23,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.support.AppPackedContainerSupport;
 
 /**
@@ -45,6 +45,7 @@ import packed.internal.support.AppPackedContainerSupport;
 
 // Feature
 // Configurator
+// Plugin (maybe todays favorite)
 public abstract class Extension<T extends Extension<T>> {
 
     static {
@@ -64,7 +65,7 @@ public abstract class Extension<T extends Extension<T>> {
 
             /** {@inheritDoc} */
             @Override
-            public void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration) {
+            public void initializeExtension(Extension<?> extension, PackedContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
                 extension.onExtensionAdded();
             }
@@ -72,7 +73,7 @@ public abstract class Extension<T extends Extension<T>> {
     }
 
     /** The configuration of the container in which the extension is registered. */
-    private DefaultContainerConfiguration configuration;
+    private PackedContainerConfiguration configuration;
 
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
@@ -104,7 +105,7 @@ public abstract class Extension<T extends Extension<T>> {
      * @return the configuration of the container
      */
     protected final ContainerConfiguration configuration() {
-        DefaultContainerConfiguration c = configuration;
+        PackedContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
                     "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden to perform initialization as an alternative");

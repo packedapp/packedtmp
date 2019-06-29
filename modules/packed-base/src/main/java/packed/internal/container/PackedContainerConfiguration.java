@@ -50,7 +50,7 @@ import packed.internal.support.AppPackedContainerSupport;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 // <T extends ComponentConfigurationCache>
-public final class DefaultContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The lookup object. We default to public access */
     public DescriptorFactory oldAccessor = DescriptorFactory.PUBLIC;
@@ -66,14 +66,14 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** A list of wirelets used when creating this configuration. */
     final WireletList wirelets;
 
-    final InternalBuildContext buildContext;
+    final PackedBuildContext buildContext;
 
     public final InternalContainerSource source;
 
-    DefaultContainerConfiguration(@Nullable DefaultContainerConfiguration parent, @Nullable ArtifactType outputType, InternalContainerSource source,
+    PackedContainerConfiguration(@Nullable PackedContainerConfiguration parent, @Nullable ArtifactType artifactType, InternalContainerSource source,
             Wirelet... wirelets) {
         super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF) : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
-        this.buildContext = parent == null ? new InternalBuildContext(this, outputType) : parent.buildContext;
+        this.buildContext = parent == null ? new PackedBuildContext(this, artifactType) : parent.buildContext;
         this.source = requireNonNull(source);
         this.lookup = this.ccc = source.cache();
         this.wirelets = WireletList.of(wirelets);
@@ -83,8 +83,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         if (children != null) {
             for (AbstractComponentConfiguration a : children.values()) {
                 AbstractComponent child = ac.children.get(a.name);
-                if (a instanceof DefaultContainerConfiguration) {
-                    ((DefaultContainerConfiguration) a).methodHandlePassing0(child, ic);
+                if (a instanceof PackedContainerConfiguration) {
+                    ((PackedContainerConfiguration) a).methodHandlePassing0(child, ic);
                 } else {
                     DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) a;
                     dcc.ccd.process(this, ic);
@@ -93,27 +93,27 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
     }
 
-    public DefaultContainer buildContainer() {
-        InstantiationContext ic = new DefaultInstantiationContext();
-        DefaultContainer dc = buildContainer(ic);
+    public PackedContainer buildContainer() {
+        InstantiationContext ic = new PackedInstantiationContext();
+        PackedContainer dc = buildContainer(ic);
         methodHandlePassing0(dc, ic);
         return dc;
     }
 
-    public DefaultContainer buildContainer(InstantiationContext ic) {
+    public PackedContainer buildContainer(InstantiationContext ic) {
         configure();
         finish2ndPass();
         instantiate(ic);
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof DefaultContainerConfiguration) {
-                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                if (acc instanceof PackedContainerConfiguration) {
+                    PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
                     dcc.getName();
                     dcc.buildContainer(ic);
                 }
             }
         }
-        DefaultContainer dc = new DefaultContainer(null, this, ic);
+        PackedContainer dc = new PackedContainer(null, this, ic);
         ic.put(this, dc);
 
         return dc;
@@ -135,8 +135,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof DefaultContainerConfiguration) {
-                    ((DefaultContainerConfiguration) acc).instantiate(ic);
+                if (acc instanceof PackedContainerConfiguration) {
+                    ((PackedContainerConfiguration) acc).instantiate(ic);
                 }
             }
         }
@@ -147,8 +147,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         finish2ndPass();
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof DefaultContainerConfiguration) {
-                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                if (acc instanceof PackedContainerConfiguration) {
+                    PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
                     dcc.getName();
                     dcc.buildContainer();
                 }
@@ -161,16 +161,16 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
     }
 
-    public DefaultContainerImage buildImage() {
+    public PackedContainerImage buildImage() {
         configure();
         finish2ndPass();
-        return new DefaultContainerImage(this);
+        return new PackedContainerImage(this);
     }
 
-    DefaultContainer buildFromImage() {
-        InstantiationContext ic = new DefaultInstantiationContext();
+    PackedContainer buildFromImage() {
+        InstantiationContext ic = new PackedInstantiationContext();
         instantiate(ic);
-        return new DefaultContainer(null, this, ic);
+        return new PackedContainer(null, this, ic);
     }
 
     /** {@inheritDoc} */
@@ -188,7 +188,7 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-        DefaultContainerConfiguration dcc = new DefaultContainerConfiguration(this, null, InternalContainerSource.of(bundle), wirelets);
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, null, InternalContainerSource.of(bundle), wirelets);
         dcc.configure();
         addChild(dcc);
     }
@@ -215,8 +215,8 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof DefaultContainerConfiguration) {
-                    DefaultContainerConfiguration dcc = (DefaultContainerConfiguration) acc;
+                if (acc instanceof PackedContainerConfiguration) {
+                    PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
                     dcc.finish2ndPass();
                 }
             }
@@ -315,14 +315,14 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public DefaultContainerConfiguration setDescription(String description) {
+    public PackedContainerConfiguration setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public DefaultContainerConfiguration setName(String name) {
+    public PackedContainerConfiguration setName(String name) {
         super.setName(name);
         return this;
     }
@@ -388,6 +388,6 @@ public final class DefaultContainerConfiguration extends AbstractComponentConfig
     /** {@inheritDoc} */
     @Override
     AbstractComponent instantiate(AbstractComponent parent, InstantiationContext ic) {
-        return new DefaultContainer(parent, this, ic);
+        return new PackedContainer(parent, this, ic);
     }
 }

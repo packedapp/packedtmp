@@ -26,7 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
 import app.packed.container.InstantiationContext;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
@@ -61,7 +61,7 @@ public final class ComponentClassDescriptor {
     }
 
     @SuppressWarnings("rawtypes")
-    public void process(DefaultContainerConfiguration cc, InstantiationContext ic) {
+    public void process(PackedContainerConfiguration cc, InstantiationContext ic) {
         for (GroupDescriptor d : groups) {
             for (GroupDescriptor.MethodConsumer mc : d.consumers) {
                 mc.prepare(cc, ic);
@@ -82,7 +82,7 @@ public final class ComponentClassDescriptor {
         return s;
     }
 
-    public ComponentConfiguration initialize(DefaultContainerConfiguration container, ComponentConfiguration component) {
+    public ComponentConfiguration initialize(PackedContainerConfiguration container, ComponentConfiguration component) {
         for (GroupDescriptor c : groups) {
             c.add(container, component);
         }

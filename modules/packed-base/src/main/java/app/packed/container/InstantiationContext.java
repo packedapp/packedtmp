@@ -22,7 +22,8 @@ import app.packed.util.Nullable;
  * <p>
  * <strong>Note that this implementation is not synchronized.</strong>
  */
-// ArtifactInstantiationContext
+// ArtifactInstantiationContext or ContainerInstantionationContext
+// Per Artifact or PerContainer???
 public interface InstantiationContext {
 
     /**

@@ -35,7 +35,7 @@ import app.packed.util.MethodDescriptor;
 //// I think it depends
 /// Can
 // Maybe we can opti
-
+// <ContainerConfiguration, Component, ComponentContext>
 public abstract class Feature<A, B> {
 
     protected A fromComponent(Component c) {

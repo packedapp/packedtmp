@@ -164,9 +164,9 @@ abstract class AbstractComponent implements Component {
     public final ComponentStream stream() {
         Map<String, AbstractComponent> c = children;
         if (c == null) {
-            return new InternalComponentStream(Stream.of(this));
+            return new PackedComponentStream(Stream.of(this));
         }
-        return new InternalComponentStream(Stream.concat(Stream.of(this), c.values().stream().flatMap(AbstractComponent::stream)));
+        return new PackedComponentStream(Stream.concat(Stream.of(this), c.values().stream().flatMap(AbstractComponent::stream)));
     }
 
     /**

@@ -34,7 +34,7 @@ import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
 import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
@@ -132,8 +132,8 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
         builder.buildContract(descriptor.contract().services());
     }
 
-    private DefaultContainerConfiguration configuration0() {
-        return (DefaultContainerConfiguration) configuration();
+    private PackedContainerConfiguration configuration0() {
+        return (PackedContainerConfiguration) configuration();
     }
 
     // Why export

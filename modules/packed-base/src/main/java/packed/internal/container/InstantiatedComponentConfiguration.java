@@ -32,7 +32,7 @@ public class InstantiatedComponentConfiguration extends DefaultComponentConfigur
      * @param containerConfiguration
      * @param ccd
      */
-    public InstantiatedComponentConfiguration(InternalConfigSite site, DefaultContainerConfiguration containerConfiguration,
+    public InstantiatedComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration,
             ComponentClassDescriptor ccd, Object instance) {
         super(site, containerConfiguration, ccd);
         this.instance = requireNonNull(instance);

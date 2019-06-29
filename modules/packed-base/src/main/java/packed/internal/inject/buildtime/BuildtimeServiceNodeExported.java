@@ -22,8 +22,8 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
+import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 
 /**
  * A build node that is created when a service is exposed.
@@ -76,7 +76,7 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
 
     /** {@inheritDoc} */
     @Override
-    RuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeServiceNodeDelegate<>(this, exposureOf);
+    AbstractRuntimeServiceNode<T> newRuntimeNode() {
+        return new RuntimeDelegateServiceNode<>(this, exposureOf);
     }
 }

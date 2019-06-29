@@ -30,10 +30,10 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.inject.runtime.RuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNodeLazy;
-import packed.internal.inject.runtime.RuntimeServiceNodePrototype;
-import packed.internal.inject.runtime.RuntimeServiceNodeSingleton;
+import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeLazyServiceNode;
+import packed.internal.inject.runtime.RuntimePrototypeServiceNode;
+import packed.internal.inject.runtime.RuntimeSingletonServiceNode;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invokable.InternalFunction;
 import packed.internal.invokable.InvokableMember;
@@ -191,23 +191,23 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    final RuntimeServiceNode<T> newRuntimeNode() {
+    final AbstractRuntimeServiceNode<T> newRuntimeNode() {
         T i = instance;
         if (i != null) {
-            return new RuntimeServiceNodeSingleton<>(this, i);
+            return new RuntimeSingletonServiceNode<>(this, i);
         }
 
         if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
                 || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
             if (instantionMode == InstantiationMode.PROTOTYPE) {
-                return new RuntimeServiceNodePrototype<>(this, fac());
+                return new RuntimePrototypeServiceNode<>(this, fac());
             } else {
-                return new RuntimeServiceNodeLazy<>(this, fac(), null);
+                return new RuntimeLazyServiceNode<>(this, fac(), null);
             }
         }
         // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
 
-        return new RuntimeServiceNodeLazy<>(this, fac(), null);
+        return new RuntimeLazyServiceNode<>(this, fac(), null);
 
     }
 

@@ -31,18 +31,46 @@ import app.packed.inject.Injector;
 import packed.internal.inject.AbstractInjector;
 
 /** The default implementation of {@link ContainerImage}. */
-public class DefaultContainerImage implements ContainerImage {
+final class PackedContainerImage implements ContainerImage {
 
-    final DefaultContainerConfiguration dcc;
+    /** The configuration of the future artifact's root container. */
+    private final PackedContainerConfiguration containerConfiguration;
 
-    DefaultContainerImage(DefaultContainerConfiguration dcc) {
-        this.dcc = requireNonNull(dcc);
+    PackedContainerImage(PackedContainerConfiguration containerConfiguration) {
+        this.containerConfiguration = requireNonNull(containerConfiguration);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configSite() {
+        return containerConfiguration.configSite();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> description() {
+        return Optional.ofNullable(containerConfiguration.getDescription());
     }
 
     /** {@inheritDoc} */
     @Override
     public String name() {
-        return dcc.getName();
+        return containerConfiguration.getName();
+    }
+
+    public PackedApp newApp(Wirelet... wirelets) {
+        WireletList.of(wirelets);
+        return new PackedApp(containerConfiguration.buildFromImage());
+    }
+
+    public AbstractInjector newInjector(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return containerConfiguration.path();
     }
 
     /** {@inheritDoc} */
@@ -56,33 +84,6 @@ public class DefaultContainerImage implements ContainerImage {
     public ContainerImage with(Wirelet... wirelets) {
         // We need to check that they can be used at image instantion time.
         throw new UnsupportedOperationException();
-    }
-
-    public DefaultApp newApp(Wirelet... wirelets) {
-        WireletList.of(wirelets);
-        return new DefaultApp(dcc.buildFromImage());
-    }
-
-    public AbstractInjector newInjector(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return Optional.ofNullable(dcc.getDescription());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath path() {
-        return dcc.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return dcc.configSite();
     }
 }
 

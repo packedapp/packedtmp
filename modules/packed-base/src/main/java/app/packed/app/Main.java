@@ -29,7 +29,7 @@ import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookGroup;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.container.DefaultContainer;
+import packed.internal.container.PackedContainer;
 import packed.internal.support.AppPackedLifecycleSupport;
 import packed.internal.util.StringFormatter;
 
@@ -97,7 +97,7 @@ final class MainExtensionHookGroup extends ExtensionHookGroup<LifecycleExtension
         @Override
         public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
             MethodHandle mh = hook.create();
-            hook.onMethodReady(DefaultContainer.class, (a, b) -> {
+            hook.onMethodReady(PackedContainer.class, (a, b) -> {
                 b.run();
             });
 

@@ -15,8 +15,6 @@
  */
 package app.packed.app;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
@@ -32,8 +30,7 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerFactory;
-import packed.internal.container.DefaultApp;
-import packed.internal.container.DefaultContainerImage;
+import packed.internal.container.PackedApp;
 
 /**
  * A application is a program.
@@ -197,10 +194,6 @@ public interface App extends AutoCloseable, Artifact {
      *             if the application could not be constructed or initialized properly
      */
     static App of(ContainerSource source, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        if (source instanceof DefaultContainerImage) {
-            return ((DefaultContainerImage) source).newApp(wirelets);
-        }
         return ContainerFactory.appOf(source, wirelets);
     }
 
@@ -222,7 +215,7 @@ public interface App extends AutoCloseable, Artifact {
         // If has @Main will run Main and then exit
         // Otherwise will run until application is shutdown
 
-        try (DefaultApp app = (DefaultApp) of(source, wirelets)) {
+        try (PackedApp app = (PackedApp) of(source, wirelets)) {
             app.start();
             app.runMainSync();
             try {

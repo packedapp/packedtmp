@@ -25,7 +25,7 @@ import app.packed.component.ComponentStream;
 import packed.internal.util.AbstractDelegatingStream;
 
 /** The default implementation of {@link ComponentStream}. */
-final class InternalComponentStream extends AbstractDelegatingStream<Component> implements ComponentStream {
+final class PackedComponentStream extends AbstractDelegatingStream<Component> implements ComponentStream {
 
     /**
      * Creates a new internal component stream.
@@ -33,7 +33,7 @@ final class InternalComponentStream extends AbstractDelegatingStream<Component> 
      * @param stream
      *            the stream of all components that we wrap.
      */
-    InternalComponentStream(Stream<Component> stream) {
+    PackedComponentStream(Stream<Component> stream) {
         super(stream);
     }
 
@@ -81,8 +81,8 @@ final class InternalComponentStream extends AbstractDelegatingStream<Component> 
 
     /** {@inheritDoc} */
     @Override
-    protected InternalComponentStream with(Stream<Component> s) {
-        return new InternalComponentStream(s);
+    protected PackedComponentStream with(Stream<Component> s) {
+        return new PackedComponentStream(s);
     }
 }
 

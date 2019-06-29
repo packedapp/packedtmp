@@ -38,6 +38,10 @@ import packed.internal.asm.Type;
 
 // Sikkerhed... MethodHandles.Lookup object?????
 //// Hvem har tilladelse til at loade moduler
+
+// Hele ideen er vel at vi kan lazy loade?
+// Ellers kunne vi vel ligesaa godt lave en Bundle direkte.
+
 public final class DynamicContainerSource implements ContainerSource {
 
     /** Lapp/packed/component/Install; */

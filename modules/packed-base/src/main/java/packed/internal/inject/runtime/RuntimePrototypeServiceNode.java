@@ -29,7 +29,7 @@ import packed.internal.invokable.InternalFunction;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> implements Provider<T> {
+public final class RuntimePrototypeServiceNode<T> extends AbstractRuntimeServiceNode<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -42,12 +42,12 @@ public final class RuntimeServiceNodePrototype<T> extends RuntimeServiceNode<T> 
     /**
      * @param node
      */
-    public RuntimeServiceNodePrototype(BuildtimeServiceNode<T> node, InternalFunction<T> function) {
+    public RuntimePrototypeServiceNode(BuildtimeServiceNode<T> node, InternalFunction<T> function) {
         super(node);
         this.invoker = requireNonNull(function);
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
-            RuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
+            AbstractRuntimeServiceNode<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
             ProvideHelper is = null;
             ProvideHelper.of(Injector.configure(c -> {}), node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);

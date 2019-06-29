@@ -24,12 +24,12 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.buildtime.BuildtimeServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNode;
+import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.util.KeyBuilder;
 
 /**
  * A service node represent the provider of a service either at {@link BuildtimeServiceNode build-time } or at
- * {@link RuntimeServiceNode runtime-time}.
+ * {@link AbstractRuntimeServiceNode runtime-time}.
  *
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
  * at runtime.
@@ -69,7 +69,7 @@ public interface ServiceNode<T> extends ServiceDescriptor {
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */
-    RuntimeServiceNode<T> toRuntimeNode();
+    AbstractRuntimeServiceNode<T> toRuntimeNode();
 
     default boolean isPrivate() {
         return key().equals(KeyBuilder.INJECTOR_KEY) || key().equals(KeyBuilder.CONTAINER_KEY);

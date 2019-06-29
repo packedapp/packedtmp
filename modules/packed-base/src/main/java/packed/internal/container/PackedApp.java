@@ -28,20 +28,19 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 
-/** The default implementation of {@link App application}. Basically it is just wrapping an internal container. */
-// I think we can move it to app.packed.app
-public final class DefaultApp implements App {
+/** The default implementation of {@link App application}. Basically just wrapping an internal container. */
+public final class PackedApp implements App {
 
     /** The container we are wrapping. */
-    final DefaultContainer container;
+    final PackedContainer container;
 
     /**
-     * Creates a new default app.
+     * Creates a new app.
      * 
      * @param container
      *            the container to wrap
      */
-    DefaultApp(DefaultContainer container) {
+    PackedApp(PackedContainer container) {
         this.container = requireNonNull(container);
     }
 
@@ -59,8 +58,27 @@ public final class DefaultApp implements App {
 
     /** {@inheritDoc} */
     @Override
+    public Injector injector() {
+        return container.injector();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String name() {
         return container.name();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return container.path();
+    }
+
+    /**
+     * 
+     */
+    public void runMainSync() {
+        // TODO Auto-generated method stub
     }
 
     /** {@inheritDoc} */
@@ -114,33 +132,13 @@ public final class DefaultApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public Component useComponent(CharSequence path) {
-        return container.useComponent(path);
-    }
-
-    /**
-     * 
-     */
-    public void runMainSync() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Injector injector() {
-        return container.injector();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public <T> T use(Class<T> key) {
         return container.use(key);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentPath path() {
-        return container.path();
+    public Component useComponent(CharSequence path) {
+        return container.useComponent(path);
     }
 }

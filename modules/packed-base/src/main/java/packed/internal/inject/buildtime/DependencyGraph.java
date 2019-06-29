@@ -27,7 +27,7 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
 import packed.internal.classscan.ServiceClassDescriptor;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.DefaultInjector;
@@ -42,7 +42,7 @@ public final class DependencyGraph {
     ArrayList<BuildtimeServiceNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
-    final DefaultContainerConfiguration root;
+    final PackedContainerConfiguration root;
 
     final InjectorBuilder ib;
 
@@ -52,7 +52,7 @@ public final class DependencyGraph {
      * @param root
      *            the root injector builder
      */
-    public DependencyGraph(DefaultContainerConfiguration root, InjectorBuilder ib) {
+    public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib) {
         this.root = requireNonNull(root);
         this.ib = requireNonNull(ib);
     }

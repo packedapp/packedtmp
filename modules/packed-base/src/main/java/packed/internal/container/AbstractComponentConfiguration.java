@@ -29,7 +29,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.InstantiationContext;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.container.DefaultContainerConfiguration.NameWirelet;
+import packed.internal.container.PackedContainerConfiguration.NameWirelet;
 
 /** An abstract base class for a component configuration object. */
 abstract class AbstractComponentConfiguration implements ComponentHolder {
@@ -130,8 +130,8 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
             return n;
         }
         n = setName;
-        if (this instanceof DefaultContainerConfiguration) {
-            Optional<NameWirelet> o = ((DefaultContainerConfiguration) this).wirelets().last(NameWirelet.class);
+        if (this instanceof PackedContainerConfiguration) {
+            Optional<NameWirelet> o = ((PackedContainerConfiguration) this).wirelets().last(NameWirelet.class);
             if (o.isPresent()) {
                 n = o.get().name;
             }
@@ -161,9 +161,9 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     }
 
     private String initializeNameDefaultName() {
-        if (this instanceof DefaultContainerConfiguration) {
+        if (this instanceof PackedContainerConfiguration) {
             @Nullable
-            AnyBundle bundle = (@Nullable AnyBundle) ((DefaultContainerConfiguration) this).source.source;
+            AnyBundle bundle = (@Nullable AnyBundle) ((PackedContainerConfiguration) this).source.source;
             if (bundle != null) {
                 String nnn = bundle.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -199,7 +199,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         case 0:
             return ComponentPath.ROOT;
         case 1:
-            return new DefaultComponentPath(name);
+            return new PackedComponentPath(name);
         default:
             String[] paths = new String[depth];
             AbstractComponentConfiguration acc = this;
@@ -207,7 +207,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
                 paths[i] = acc.name;
                 acc = acc.parent;
             }
-            return new DefaultComponentPath(paths);
+            return new PackedComponentPath(paths);
         }
     }
 

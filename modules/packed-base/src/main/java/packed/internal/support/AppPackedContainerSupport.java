@@ -22,7 +22,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookGroup;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public final class AppPackedContainerSupport {
@@ -45,7 +45,7 @@ public final class AppPackedContainerSupport {
          * @param configuration
          *            the configuration of the container in which the extension is registered
          */
-        public abstract void initializeExtension(Extension<?> extension, DefaultContainerConfiguration configuration);
+        public abstract void initializeExtension(Extension<?> extension, PackedContainerConfiguration configuration);
 
         public abstract void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
 

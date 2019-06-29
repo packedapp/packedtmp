@@ -38,7 +38,7 @@ import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethod;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodDescription;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodHandle;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
@@ -60,7 +60,7 @@ public final class GroupDescriptor {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    void add(DefaultContainerConfiguration container, ComponentConfiguration component) {
+    void add(PackedContainerConfiguration container, ComponentConfiguration component) {
         Extension extension = container.use((Class) extensionType);
         build.accept(component, extension);
     }

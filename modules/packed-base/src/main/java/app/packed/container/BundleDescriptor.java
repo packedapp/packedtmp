@@ -80,6 +80,10 @@ import packed.internal.container.ContainerFactory;
 
 // ArtifactModel.. Hmm, not sure..
 // For example, we do not have a path
+// We also take something that is not an artifact
+// More Like ContainerDescriptor????
+// Because we can also create from a ContainerImage
+/// Yes but that image is created from a bundle of some kind.
 public class BundleDescriptor {
 
     /** The type of the bundle. */

@@ -23,7 +23,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
@@ -33,14 +33,14 @@ public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
     /** The configuration site of this object. */
     private final InternalConfigSite configSite;
 
-    private final DefaultContainerConfiguration containerConfiguration;
+    private final PackedContainerConfiguration containerConfiguration;
 
     final BuildtimeServiceNode<T> node;
 
     /**
      * @param node
      */
-    public DefaultServiceConfiguration(DefaultContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
+    public DefaultServiceConfiguration(PackedContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.configSite = node.configSite();
         this.node = requireNonNull(node);

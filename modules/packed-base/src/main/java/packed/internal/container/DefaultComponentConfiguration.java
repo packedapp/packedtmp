@@ -27,7 +27,7 @@ public class DefaultComponentConfiguration extends AbstractComponentConfiguratio
 
     final ComponentClassDescriptor ccd;
 
-    public DefaultComponentConfiguration(InternalConfigSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
+    public DefaultComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
         super(site, containerConfiguration);
         this.ccd = ccd;
     }

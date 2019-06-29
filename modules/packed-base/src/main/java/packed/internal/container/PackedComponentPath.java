@@ -23,14 +23,12 @@ import java.util.StringJoiner;
 import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
 
-/**
- *
- */
-public class DefaultComponentPath implements ComponentPath {
+/** The default implementation of {@link ComponentPath}. */
+final class PackedComponentPath implements ComponentPath {
 
     private final String[] elements;
 
-    DefaultComponentPath(String... elements) {
+    PackedComponentPath(String... elements) {
         this.elements = requireNonNull(elements);
     }
 
@@ -38,6 +36,18 @@ public class DefaultComponentPath implements ComponentPath {
     @Override
     public int depth() {
         return elements.length;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof ComponentPath && toString().equals(obj.toString());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     /** {@inheritDoc} */
@@ -52,19 +62,7 @@ public class DefaultComponentPath implements ComponentPath {
         if (isRoot()) {
             return null;
         }
-        return new DefaultComponentPath(Arrays.copyOf(elements, elements.length - 1));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof ComponentPath && toString().equals(obj.toString());
+        return new PackedComponentPath(Arrays.copyOf(elements, elements.length - 1));
     }
 
     /** {@inheritDoc} */
@@ -76,5 +74,4 @@ public class DefaultComponentPath implements ComponentPath {
         }
         return sj.toString();
     }
-
 }

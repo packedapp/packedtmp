@@ -20,6 +20,6 @@ package packed.internal.inject.runtime;
  */
 // Ideen er egentlig at instancen er fra en component holder eller lignende....
 // Mere mht til Lazy saa vi slipper for at manage det
-public class RuntimeServiceNodeComponent {
+public class RuntimeComponentServiceNode {
 
 }

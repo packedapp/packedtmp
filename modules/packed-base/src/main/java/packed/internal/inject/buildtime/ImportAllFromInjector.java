@@ -30,7 +30,7 @@ import packed.internal.annotations.AtProvides;
 import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.util.InternalDependencyDescriptor;
@@ -49,7 +49,7 @@ public final class ImportAllFromInjector {
 
     private final InjectorBuilder ib;
 
-    public ImportAllFromInjector(DefaultContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
+    public ImportAllFromInjector(PackedContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
         this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);

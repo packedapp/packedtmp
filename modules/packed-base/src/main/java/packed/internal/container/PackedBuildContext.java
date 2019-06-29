@@ -23,41 +23,49 @@ import app.packed.container.BuildContext;
 import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 
-/**
- *
- */
-public class InternalBuildContext implements BuildContext {
+/** The default implementation of {@link BuildContext} */
+final class PackedBuildContext implements BuildContext {
 
-    private final DefaultContainerConfiguration dcc;
+    /** The artifact type. */
+    private final ArtifactType artifactType;
 
-    private final ArtifactType packaging;
+    /** The configuration of the artifacts root container. */
+    private final PackedContainerConfiguration configuration;
 
-    InternalBuildContext(DefaultContainerConfiguration dcc, ArtifactType packaging) {
-        this.dcc = requireNonNull(dcc);
-        this.packaging = requireNonNull(packaging);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return dcc.configSite();
+    /**
+     * Creates a new context object.
+     * 
+     * @param configuration
+     *            the configuration of the artifacts root container
+     * @param artifactType
+     *            the type of artifact we are building
+     */
+    PackedBuildContext(PackedContainerConfiguration configuration, ArtifactType artifactType) {
+        this.configuration = requireNonNull(configuration);
+        this.artifactType = requireNonNull(artifactType);
     }
 
     /** {@inheritDoc} */
     @Override
     public ArtifactType artifactType() {
-        return packaging;
+        return artifactType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configSite() {
+        return configuration.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public ContainerSource source() {
-        return dcc.source.source;
+        return configuration.source.source;
     }
 
     /** {@inheritDoc} */
     @Override
     public WireletList wirelets() {
-        return dcc.wirelets;
+        return configuration.wirelets;
     }
 }

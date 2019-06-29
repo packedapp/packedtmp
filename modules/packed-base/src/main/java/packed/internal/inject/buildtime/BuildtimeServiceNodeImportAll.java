@@ -25,8 +25,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNodeDelegate;
+import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
+import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 
 /** A build node that imports a service from another injector. */
 public class BuildtimeServiceNodeImportAll<T> extends BuildtimeServiceNode<T> {
@@ -80,7 +80,7 @@ public class BuildtimeServiceNodeImportAll<T> extends BuildtimeServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    RuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeServiceNodeDelegate<T>(this, other);
+    AbstractRuntimeServiceNode<T> newRuntimeNode() {
+        return new RuntimeDelegateServiceNode<T>(this, other);
     }
 }

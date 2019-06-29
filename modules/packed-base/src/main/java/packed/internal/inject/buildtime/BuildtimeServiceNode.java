@@ -27,7 +27,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.runtime.RuntimeServiceNode;
+import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.InternalServiceDescriptor;
 import packed.internal.util.KeyBuilder;
@@ -73,7 +73,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
 
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
-    private RuntimeServiceNode<T> runtimeNode;
+    private AbstractRuntimeServiceNode<T> runtimeNode;
 
     BuildtimeServiceNode(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
@@ -165,7 +165,7 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
      *
      * @return the new runtime node
      */
-    abstract RuntimeServiceNode<T> newRuntimeNode();
+    abstract AbstractRuntimeServiceNode<T> newRuntimeNode();
     //
     // protected void onFreeze() {
     // if (key != null) {
@@ -185,8 +185,8 @@ public abstract class BuildtimeServiceNode<T> implements ServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final RuntimeServiceNode<T> toRuntimeNode() {
-        RuntimeServiceNode<T> runtime = this.runtimeNode;
+    public final AbstractRuntimeServiceNode<T> toRuntimeNode() {
+        AbstractRuntimeServiceNode<T> runtime = this.runtimeNode;
         return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
 }

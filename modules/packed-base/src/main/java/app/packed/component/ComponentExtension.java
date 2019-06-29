@@ -17,7 +17,7 @@ package app.packed.component;
 
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An extension that provides basic functionality for installing components.
@@ -33,8 +33,8 @@ public final class ComponentExtension extends Extension<ComponentExtension> {
 
     // @Main skal jo pege et paa en eller anden extension...
 
-    private DefaultContainerConfiguration configuration0() {
-        return (DefaultContainerConfiguration) configuration();
+    private PackedContainerConfiguration configuration0() {
+        return (PackedContainerConfiguration) configuration();
     }
 
     // Selvfoelelig er det hele komponenter... Ogsaa scoped

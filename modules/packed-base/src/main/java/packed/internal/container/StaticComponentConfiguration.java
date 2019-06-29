@@ -32,7 +32,7 @@ public class StaticComponentConfiguration extends DefaultComponentConfiguration 
      * @param containerConfiguration
      * @param ccd
      */
-    public StaticComponentConfiguration(InternalConfigSite site, DefaultContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd,
+    public StaticComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd,
             Class<?> implementation) {
         super(site, containerConfiguration, ccd);
         this.implementation = requireNonNull(implementation);

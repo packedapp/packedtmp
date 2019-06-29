@@ -24,7 +24,7 @@ import java.util.List;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import packed.internal.container.DefaultContainerConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 
 // Wire vs link....
 
@@ -193,7 +193,7 @@ public abstract class Wirelet {
      */
     // setName
     public static Wirelet name(String name) {
-        return new DefaultContainerConfiguration.NameWirelet(name);
+        return new PackedContainerConfiguration.NameWirelet(name);
     }
 }
 //

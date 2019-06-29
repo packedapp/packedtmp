@@ -24,7 +24,7 @@ import app.packed.container.InstantiationContext;
  */
 public class DefaultHost extends AbstractComponent implements ComponentHolder {
 
-    final ConcurrentHashMap<String, DefaultApp> apps = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<String, PackedApp> apps = new ConcurrentHashMap<>();
 
     /**
      * @param configuration
