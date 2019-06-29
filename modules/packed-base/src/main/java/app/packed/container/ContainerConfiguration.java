@@ -73,7 +73,7 @@ public interface ContainerConfiguration {
      * 
      * @return an immutable view of all of the extension types that are used by this container
      */
-    Set<Class<? extends Extension<?>>> extensions();
+    Set<Class<? extends ContainerExtension<?>>> extensions();
 
     /**
      * Returns the description of this container. Or null if the description has not been set.
@@ -195,7 +195,7 @@ public interface ContainerConfiguration {
      *            the type of extension to return
      * @return an extension of the specified type
      */
-    <T extends Extension<T>> T use(Class<T> extensionType);
+    <T extends ContainerExtension<T>> T use(Class<T> extensionType);
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via

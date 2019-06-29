@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionHookGroup;
+import app.packed.container.ContainerExtension;
+import app.packed.container.ContainerExtensionHookGroup;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -45,9 +45,9 @@ public final class AppPackedContainerSupport {
          * @param configuration
          *            the configuration of the container in which the extension is registered
          */
-        public abstract void initializeExtension(Extension<?> extension, PackedContainerConfiguration configuration);
+        public abstract void initializeExtension(ContainerExtension<?> extension, PackedContainerConfiguration configuration);
 
-        public abstract void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
+        public abstract void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
 
         public abstract void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration);
 
@@ -73,7 +73,7 @@ public final class AppPackedContainerSupport {
         static final Helper SINGLETON;
 
         static {
-            new Extension() {};
+            new ContainerExtension() {};
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }

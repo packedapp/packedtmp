@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.BundleDescriptor.Builder;
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtension;
 import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -54,7 +54,7 @@ import packed.internal.invokable.InternalFunction;
 // Registered registererUnqualifiedAnnotation <---
 // Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
 // Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
-public final class InjectorExtension extends Extension<InjectorExtension> {
+public final class InjectorExtension extends ContainerExtension<InjectorExtension> {
 
     static final String CONFIG_SITE_PROVIDE = "injector.provide";
 

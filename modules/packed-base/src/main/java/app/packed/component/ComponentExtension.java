@@ -15,14 +15,14 @@
  */
 package app.packed.component;
 
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtension;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An extension that provides basic functionality for installing components.
  */
-public final class ComponentExtension extends Extension<ComponentExtension> {
+public final class ComponentExtension extends ContainerExtension<ComponentExtension> {
 
     /** Creates a new component extension. */
     ComponentExtension() {}

@@ -15,11 +15,11 @@
  */
 package app.packed.hook;
 
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtension;
 
 /**
  *
  */
-public class HooksExtension extends Extension<HooksExtension> {
+public class HooksExtension extends ContainerExtension<HooksExtension> {
 
 }

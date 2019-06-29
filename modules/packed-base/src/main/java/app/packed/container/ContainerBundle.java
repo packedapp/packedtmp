@@ -102,7 +102,7 @@ public abstract class ContainerBundle implements ContainerSource {
         }
     }
 
-    protected final Set<Class<? extends Extension<?>>> extensions() {
+    protected final Set<Class<? extends ContainerExtension<?>>> extensions() {
         return configuration().extensions();
     }
 
@@ -201,7 +201,7 @@ public abstract class ContainerBundle implements ContainerSource {
      * @return an extension of the specified type
      * @see ContainerConfiguration#use(Class)
      */
-    protected final <T extends Extension<T>> T use(Class<T> extensionType) {
+    protected final <T extends ContainerExtension<T>> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
 

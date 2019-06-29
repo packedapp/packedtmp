@@ -30,8 +30,8 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionHookGroup;
+import app.packed.container.ContainerExtension;
+import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.container.InstantiationContext;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
@@ -51,7 +51,7 @@ public final class GroupDescriptor {
     final List<MethodConsumer<?>> consumers;
 
     /** The type of extension. */
-    private final Class<? extends Extension<?>> extensionType;
+    private final Class<? extends ContainerExtension<?>> extensionType;
 
     private GroupDescriptor(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
@@ -61,7 +61,7 @@ public final class GroupDescriptor {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     void add(PackedContainerConfiguration container, ComponentConfiguration component) {
-        Extension extension = container.use((Class) extensionType);
+        ContainerExtension extension = container.use((Class) extensionType);
         build.accept(component, extension);
     }
 
@@ -77,7 +77,7 @@ public final class GroupDescriptor {
         private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        Builder(Class<?> componentType, Class<? extends ExtensionHookGroup<?, ?>> cc) {
+        Builder(Class<?> componentType, Class<? extends ContainerExtensionHookGroup<?, ?>> cc) {
             this.componentType = requireNonNull(componentType);
             this.conf = ExtensionHookGroupConfiguration.FOR_CLASS.get(cc);
             this.b = (Supplier) conf.egc.newBuilder(componentType);

@@ -21,8 +21,8 @@ import java.util.List;
 
 import app.packed.app.Main;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionActivator;
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtensionActivator;
+import app.packed.container.ContainerExtension;
 import app.packed.util.MethodDescriptor;
 
 /**
@@ -42,7 +42,7 @@ public class Dddd {
     @OnX
     public void xfoodd() {}
 
-    static class MyExtension extends Extension<MyExtension> {
+    static class MyExtension extends ContainerExtension<MyExtension> {
 
         void methods(ComponentConfiguration cc, List<MethodDescriptor> list) {
             System.out.println("Adding Component with " + list + " methods");
@@ -57,6 +57,6 @@ public class Dddd {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @ExtensionActivator(OnXConfigurator.class)
+    @ContainerExtensionActivator(OnXConfigurator.class)
     public @interface OnX {}
 }

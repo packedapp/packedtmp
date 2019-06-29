@@ -38,12 +38,12 @@ import java.lang.annotation.Target;
 // Online-Component
 // Hook
 // Online-Hook
-public @interface ExtensionActivator {
+public @interface ContainerExtensionActivator {
 
     /**
      * Returns the extension hook group that knows how do handle the types, fields or methods that are annotated...
      * 
      * @return the extension hook group that knows how do handle
      */
-    Class<? extends ExtensionHookGroup<?, ?>> value();
+    Class<? extends ContainerExtensionHookGroup<?, ?>> value();
 }

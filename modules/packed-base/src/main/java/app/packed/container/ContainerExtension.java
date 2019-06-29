@@ -55,13 +55,13 @@ import packed.internal.support.AppPackedContainerSupport;
 
 // ContainerExtension, ContainerPlugin
 // Plugin (maybe todays favorite)
-public abstract class Extension<T extends Extension<T>> {
+public abstract class ContainerExtension<T extends ContainerExtension<T>> {
 
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
             @Override
-            public void configureExtensionGroup(ExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder) {
+            public void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder) {
                 c.builder = builder;
                 c.configure();
                 c.builder = null;
@@ -74,7 +74,7 @@ public abstract class Extension<T extends Extension<T>> {
 
             /** {@inheritDoc} */
             @Override
-            public void initializeExtension(Extension<?> extension, PackedContainerConfiguration configuration) {
+            public void initializeExtension(ContainerExtension<?> extension, PackedContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
                 extension.onExtensionAdded();
             }

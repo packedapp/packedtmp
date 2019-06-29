@@ -26,14 +26,11 @@ import app.packed.container.WireletList;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
-import packed.internal.annotations.AtProvides;
-import packed.internal.classscan.ImportExportDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /** Provides services from an existing Injector. */
 public final class ImportAllFromInjector {
@@ -109,15 +106,19 @@ public final class ImportAllFromInjector {
     }
 
     private HashMap<Key<?>, BuildtimeServiceNode<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNode<?>> nodes) {
-        ImportExportDescriptor ied = ImportExportDescriptor.from(null /* AppPackedBundleSupport.invoke().lookupFromWireOperation(stage) */, stage.getClass());
-
-        for (AtProvides m : ied.provides.members.values()) {
-            for (InternalDependencyDescriptor s : m.dependencies) {
-                if (!nodes.containsKey(s.key())) {
-                    throw new InjectionException("not good man, " + s.key() + " is not in the set of incoming services");
-                }
-            }
-        }
+        // if (true) {
+        // throw new Error();
+        // }
+        // ImportExportDescriptor ied = ImportExportDescriptor.from(null /*
+        // AppPackedBundleSupport.invoke().lookupFromWireOperation(stage) */, stage.getClass());
+        //
+        // for (AtProvides m : ied.provides.members.values()) {
+        // for (InternalDependencyDescriptor s : m.dependencies) {
+        // if (!nodes.containsKey(s.key())) {
+        // throw new InjectionException("not good man, " + s.key() + " is not in the set of incoming services");
+        // }
+        // }
+        // }
 
         // Make runtime nodes....
 

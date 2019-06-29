@@ -45,7 +45,7 @@ import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 
 // registerAnnotatedMethod(Provide.class, new ProvideVisitior(){});
 
-public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Supplier<BiConsumer<ComponentConfiguration, E>>> {
+public abstract class ContainerExtensionHookGroup<E extends ContainerExtension<E>, B extends Supplier<BiConsumer<ComponentConfiguration, E>>> {
 
     ExtensionHookGroupConfiguration.Builder builder;
 
@@ -58,7 +58,7 @@ public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Suppl
     private ExtensionHookGroupConfiguration.Builder builder() {
         ExtensionHookGroupConfiguration.Builder b = builder;
         if (b == null) {
-            throw new IllegalStateException("This method can only be invoked from within " + ExtensionHookGroup.class.getSimpleName() + ".configure()");
+            throw new IllegalStateException("This method can only be invoked from within " + ContainerExtensionHookGroup.class.getSimpleName() + ".configure()");
         }
         return builder;
     }
@@ -99,7 +99,7 @@ public abstract class ExtensionHookGroup<E extends Extension<E>, B extends Suppl
     }
 
     // Eller kan extensionen selv klare det??? Ja for nu
-    final void requireExtension(Class<? extends Extension<?>> extensionType) {}
+    final void requireExtension(Class<? extends ContainerExtension<?>> extensionType) {}
 
     // // allowPrivateFields()
     // public interface Builder<E extends Extension<E>> {

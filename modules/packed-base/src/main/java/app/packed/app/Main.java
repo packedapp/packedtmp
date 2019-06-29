@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
-import app.packed.container.ExtensionActivator;
-import app.packed.container.ExtensionHookGroup;
+import app.packed.container.ContainerExtensionActivator;
+import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.container.PackedContainer;
@@ -50,7 +50,7 @@ import packed.internal.util.StringFormatter;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
-@ExtensionActivator(MainExtensionHookGroup.class)
+@ContainerExtensionActivator(MainExtensionHookGroup.class)
 public @interface Main {
 
     /**
@@ -63,10 +63,14 @@ public @interface Main {
     boolean shutdownOnCompletion() default true; // Taenker hellere det maa vaere noget @OnRunning()...
 
     boolean overridable() default true;
+
+    //// Nice performance measurement. Keep installing noop
+    // ContainerImages, with undeploy
+    boolean undeployOnCompletion() default true;
 }
 
 /** Takes care of component methods annotated with {@link Main}. */
-final class MainExtensionHookGroup extends ExtensionHookGroup<LifecycleExtension, MainExtensionHookGroup.Builder> {
+final class MainExtensionHookGroup extends ContainerExtensionHookGroup<LifecycleExtension, MainExtensionHookGroup.Builder> {
 
     /** {@inheritDoc} */
     @Override

@@ -23,8 +23,8 @@ import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionActivator;
-import app.packed.container.ExtensionHookGroup;
+import app.packed.container.ContainerExtensionActivator;
+import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.container.InstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -101,16 +101,16 @@ public final class ComponentClassDescriptor {
     /** A builder object for a component class descriptor. */
     static class Builder {
 
-        static final ClassValue<Class<? extends ExtensionHookGroup<?, ?>>> METHOD_ANNOTATION_ACTIVATOR = new ClassValue<>() {
+        static final ClassValue<Class<? extends ContainerExtensionHookGroup<?, ?>>> METHOD_ANNOTATION_ACTIVATOR = new ClassValue<>() {
 
             @Override
-            protected Class<? extends ExtensionHookGroup<?, ?>> computeValue(Class<?> type) {
-                ExtensionActivator ae = type.getAnnotation(ExtensionActivator.class);
+            protected Class<? extends ContainerExtensionHookGroup<?, ?>> computeValue(Class<?> type) {
+                ContainerExtensionActivator ae = type.getAnnotation(ContainerExtensionActivator.class);
                 return ae == null ? null : ae.value();
             }
         };
 
-        private final IdentityHashMap<Class<? extends ExtensionHookGroup<?, ?>>, GroupDescriptor.Builder> builders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends ContainerExtensionHookGroup<?, ?>>, GroupDescriptor.Builder> builders = new IdentityHashMap<>();
 
         private final ComponentLookup cl;
 
@@ -136,7 +136,7 @@ public final class ComponentClassDescriptor {
                 for (Field field : c.getDeclaredFields()) {
                     Annotation[] annotations = field.getAnnotations();
                     for (Annotation a : annotations) {
-                        Class<? extends ExtensionHookGroup<?, ?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
+                        Class<? extends ContainerExtensionHookGroup<?, ?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
                         if (cc != null) {
                             builders.computeIfAbsent(cc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedField(cl, field, a);
                         }
@@ -145,7 +145,7 @@ public final class ComponentClassDescriptor {
                 for (Method method : c.getDeclaredMethods()) {
                     Annotation[] annotations = method.getAnnotations();
                     for (Annotation a : annotations) {
-                        Class<? extends ExtensionHookGroup<?, ?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
+                        Class<? extends ContainerExtensionHookGroup<?, ?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
                         if (cc != null) {
                             builders.computeIfAbsent(cc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedMethod(cl, method, a);
                         }

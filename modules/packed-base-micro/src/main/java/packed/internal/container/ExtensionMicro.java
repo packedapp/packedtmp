@@ -27,7 +27,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtension;
 
 /**
  *
@@ -60,5 +60,5 @@ public class ExtensionMicro {
         return ExtensionClassCache3.newInstance(MyExtension.class);
     }
 
-    public static class MyExtension extends Extension<MyExtension> {}
+    public static class MyExtension extends ContainerExtension<MyExtension> {}
 }

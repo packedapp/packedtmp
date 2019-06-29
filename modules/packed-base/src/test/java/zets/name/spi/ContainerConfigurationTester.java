@@ -25,7 +25,7 @@ import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 
 /**
@@ -88,7 +88,7 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public <T extends Extension<T>> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
+    public <T extends ContainerExtension<T>> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
         consumer.accept(cc.use(extensionType));
         return this;
     }

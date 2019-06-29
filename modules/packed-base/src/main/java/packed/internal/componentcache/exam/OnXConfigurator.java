@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionHookGroup;
+import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.exam.Dddd.MyExtension;
@@ -31,7 +31,7 @@ import packed.internal.componentcache.exam.Dddd.OnX;
 /**
  *
  */
-public class OnXConfigurator extends ExtensionHookGroup<MyExtension, OnXConfigurator.Builder> {
+public class OnXConfigurator extends ContainerExtensionHookGroup<MyExtension, OnXConfigurator.Builder> {
 
     /** {@inheritDoc} */
     @Override

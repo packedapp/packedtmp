@@ -25,12 +25,12 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
-import app.packed.container.Extension;
+import app.packed.container.ContainerExtension;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
 
 /**
- * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
+ * A cache of {@link ContainerExtension} implementations. Is mainly used for instantiating new instances of extensions.
  */
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
@@ -52,7 +52,7 @@ final class ExtensionClassCacheWithCachedSupplier<T> {
     private final Supplier<T> s;
 
     /** The type of extension. */
-    final Class<? extends Extension<?>> type;
+    final Class<? extends ContainerExtension<?>> type;
 
     /**
      * Creates a new extension class cache.
@@ -60,7 +60,7 @@ final class ExtensionClassCacheWithCachedSupplier<T> {
      * @param type
      *            the extension type
      */
-    private ExtensionClassCacheWithCachedSupplier(Class<? extends Extension<?>> type) {
+    private ExtensionClassCacheWithCachedSupplier(Class<? extends ContainerExtension<?>> type) {
         this.type = requireNonNull(type);
         /// TODO Check not abstract
         Constructor<?> constructor;
@@ -98,7 +98,7 @@ final class ExtensionClassCacheWithCachedSupplier<T> {
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension<T>> T newInstance(Class<T> extensionType) {
+    static <T extends ContainerExtension<T>> T newInstance(Class<T> extensionType) {
         // Time goes from around 1000 ns to 10 ns when we cache
         return (T) CACHE.get(extensionType).get();
     }

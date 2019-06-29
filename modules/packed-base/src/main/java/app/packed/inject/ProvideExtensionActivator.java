@@ -15,13 +15,13 @@
  */
 package app.packed.inject;
 
-import app.packed.container.ExtensionHookGroup;
+import app.packed.container.ContainerExtensionHookGroup;
 import packed.internal.annotations.AtProvidesGroup;
 
 /**
  *
  */
-final class ProvideExtensionActivator extends ExtensionHookGroup<InjectorExtension, AtProvidesGroup.Builder> {
+final class ProvideExtensionActivator extends ContainerExtensionHookGroup<InjectorExtension, AtProvidesGroup.Builder> {
 
     /** {@inheritDoc} */
     @Override
