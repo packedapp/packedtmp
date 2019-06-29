@@ -34,14 +34,14 @@ import packed.internal.container.PackedContainerConfiguration.NameWirelet;
 /** An abstract base class for a component configuration object. */
 abstract class AbstractComponentConfiguration implements ComponentHolder {
 
-    /** The children of this component (lazily initialized), in order of insertion. */
+    /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
     LinkedHashMap<String, AbstractComponentConfiguration> children;
 
     @Nullable
     DefaultComponentConfiguration currentComponent;
 
-    /** The depth of the component in the hierarchy. */
+    /** The depth of the component in the hierarchy (including any parent artifacts). */
     private final int depth;
 
     /** The description of the component. */
@@ -62,7 +62,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     /** The state of this configuration. */
     State state = State.INITIAL;
 
-    /** Whether or not the name can be postfix'able. Useful for images only */
+    /** Whether or not the name can be postfix'able. Useful for images only. */
     boolean isNamePostfixable = false;
 
     /**

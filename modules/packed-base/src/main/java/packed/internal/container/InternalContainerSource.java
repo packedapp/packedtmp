@@ -40,6 +40,7 @@ import packed.internal.componentcache.ContainerConfiguratorCache;
 public class InternalContainerSource {
 
     final Class<?> configuratorType;
+
     public final ContainerSource source;
 
     InternalContainerSource(ContainerSource source, Class<?> configuratorType) {
