@@ -19,8 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.app.App;
-import app.packed.container.ArtifactImage;
 import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
@@ -34,23 +32,6 @@ import packed.internal.support.AppPackedContainerSupport;
  *
  */
 public class ContainerFactory {
-
-    public static App appOf(ContainerSource source, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).newApp(wirelets);
-        }
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.APP, InternalContainerSource.of(source), wirelets);
-        return new PackedApp(configuration.buildContainer());
-    }
-
-    public static ArtifactImage createImage(ContainerSource source, Wirelet... wirelets) {
-        if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).newImage(wirelets);
-        }
-        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, InternalContainerSource.forImage(source), wirelets);
-        return new PackedArtifactImage(c.build());
-    }
 
     public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");

@@ -22,14 +22,17 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.container.Artifact;
+import app.packed.container.ArtifactType;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
-import packed.internal.container.ContainerFactory;
+import packed.internal.container.InternalContainerSource;
 import packed.internal.container.PackedApp;
+import packed.internal.container.PackedArtifactImage;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An App (application) is a type of artifact is a program.
@@ -191,7 +194,11 @@ public interface App extends AutoCloseable, Artifact {
      *             if the application could not be constructed or initialized properly
      */
     static App of(ContainerSource source, Wirelet... wirelets) {
-        return ContainerFactory.appOf(source, wirelets);
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newApp(wirelets);
+        }
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.APP, InternalContainerSource.forApp(source), wirelets);
+        return new PackedApp(conf.build().instantiate());
     }
 
     /**

@@ -17,7 +17,9 @@ package app.packed.container;
 
 import app.packed.app.App;
 import app.packed.inject.Injector;
-import packed.internal.container.ContainerFactory;
+import packed.internal.container.InternalContainerSource;
+import packed.internal.container.PackedArtifactImage;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * A pre-generated image of an artifact.
@@ -27,9 +29,8 @@ import packed.internal.container.ContainerFactory;
  */
 public interface ArtifactImage extends ContainerSource, Artifact {
 
-    default App newApp(Wirelet... wirelets) {
-        return App.of(this, wirelets);
-    }
+    // Dont know if want this
+    // App newApp(Wirelet... wirelets);
 
     /**
      * Returns the type of bundle that was used to create this image.
@@ -67,7 +68,11 @@ public interface ArtifactImage extends ContainerSource, Artifact {
      *             if the image could not be generated for some reason
      */
     static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
-        return ContainerFactory.createImage(source, wirelets);
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newImage(wirelets);
+        }
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, InternalContainerSource.forImage(source), wirelets);
+        return new PackedArtifactImage(c.build());
     }
 
     // ofRepeatable();

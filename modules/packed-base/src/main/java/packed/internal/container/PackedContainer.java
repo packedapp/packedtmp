@@ -43,6 +43,7 @@ public final class PackedContainer extends AbstractComponent {
             i = new DefaultInjector(configuration, new ServiceNodeMap());
         }
         this.injector = i;
+        instantiationContext.put(configuration, this);
     }
 
     public Injector injector() {

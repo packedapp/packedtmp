@@ -52,28 +52,23 @@ import packed.internal.support.AppPackedContainerSupport;
 // <T extends ComponentConfigurationCache>
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    /** The lookup object. We default to public access */
-    public DescriptorFactory oldAccessor = DescriptorFactory.PUBLIC;
-
     /** The configurator cache. */
     final ContainerConfiguratorCache ccc;
 
     /** All the extensions registered with this extension, ordered by first use. */
     private final LinkedHashMap<Class<? extends Extension<?>>, Extension<?>> extensions = new LinkedHashMap<>();
 
+    private HashMap<String, DefaultLayer> layers;
+
     private ComponentLookup lookup;
 
-    /** A list of wirelets used when creating this configuration. */
-    final WireletList wirelets;
+    /** The lookup object. We default to public access */
+    public DescriptorFactory oldAccessor = DescriptorFactory.PUBLIC;
 
     public final InternalContainerSource source;
 
-    public PackedContainerConfiguration(PackedContainerConfiguration parent, InternalContainerSource source, Wirelet... wirelets) {
-        super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
-        this.source = requireNonNull(source);
-        this.lookup = this.ccc = source.cache();
-        this.wirelets = WireletList.of(wirelets);
-    }
+    /** Any wirelets that was used when creating this configuration. */
+    private final WireletList wirelets;
 
     public PackedContainerConfiguration(ArtifactType artifactType, InternalContainerSource source, Wirelet... wirelets) {
         super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactType);
@@ -82,42 +77,23 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.wirelets = WireletList.of(wirelets);
     }
 
-    private void methodHandlePassing0(AbstractComponent ac, InstantiationContext ic) {
-        if (children != null) {
-            for (AbstractComponentConfiguration a : children.values()) {
-                AbstractComponent child = ac.children.get(a.name);
-                if (a instanceof PackedContainerConfiguration) {
-                    ((PackedContainerConfiguration) a).methodHandlePassing0(child, ic);
-                } else {
-                    DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) a;
-                    dcc.ccd.process(this, ic);
-                }
-            }
-        }
+    public PackedContainerConfiguration(PackedContainerConfiguration parent, InternalContainerSource source, Wirelet... wirelets) {
+        super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
+        this.source = requireNonNull(source);
+        this.lookup = this.ccc = source.cache();
+        this.wirelets = WireletList.of(wirelets);
     }
 
-    public PackedContainer buildContainer() {
-        InstantiationContext ic = new PackedInstantiationContext();
-        PackedContainer dc = buildContainer(ic);
-        methodHandlePassing0(dc, ic);
-        return dc;
+    public PackedContainerConfiguration build() {
+        configure();
+        extensionsContainerConfigured();
+        return this;
     }
 
-    PackedContainer buildContainerFromImage() {
-        InstantiationContext ic = new PackedInstantiationContext();
-        prepareInstantiation(ic);
-        PackedContainer pc = new PackedContainer(null, this, ic);
-        ic.put(this, pc);
-        methodHandlePassing0(pc, ic);
-        return pc;
-    }
-
-    public PackedContainer buildContainer(InstantiationContext ic) {
-        build();
-        prepareInstantiation(ic);
-        PackedContainer dc = new PackedContainer(null, this, ic);
-        ic.put(this, dc);
-        return dc;
+    /** {@inheritDoc} */
+    @Override
+    public ArtifactBuildContext buildContext() {
+        return buildContext;
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -127,20 +103,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         for (Extension<?> e : extensions.values()) {
             e.buildBundle(builder);
         }
-    }
-
-    @Override
-    void prepareInstantiation(InstantiationContext ic) {
-        for (Extension<?> e : extensions.values()) {
-            e.onPrepareContainerInstantiate(ic);
-        }
-        super.prepareInstantiation(ic);
-    }
-
-    public PackedContainerConfiguration build() {
-        configure();
-        finish2ndPass();
-        return this;
     }
 
     public DefaultInjector buildInjector() {
@@ -153,29 +115,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void link(ContainerBundle bundle, Wirelet... wirelets) {
-        // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
-        // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-        // type.
-
-        requireNonNull(bundle, "bundle is null");
-        initializeName(State.LINK_INVOKED, null);
-        prepareNewComponent(State.LINK_INVOKED);
-
-        // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
-        // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
-        // loop situations, for example, if a bundle recursively links itself which fails by throwing
-        // java.lang.StackOverflowError instead of an infinite loop.
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, InternalContainerSource.of(bundle), wirelets);
-        dcc.configure();
-        addChild(dcc);
-    }
-
+    /**
+     * Should never be called recursively. Because link calls it
+     */
     private void configure() {
         if (state == State.FINAL) {
-            return;
+            throw new Error();
         }
         if (source.source instanceof ContainerBundle) {
             ContainerBundle bundle = (ContainerBundle) source.source;
@@ -188,7 +133,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.state = State.FINAL;
     }
 
-    final void finish2ndPass() {
+    /** {@inheritDoc} */
+    @Override
+    public Set<Class<? extends Extension<?>>> extensions() {
+        return Collections.unmodifiableSet(extensions.keySet());
+    }
+
+    final void extensionsContainerConfigured() {
         prepareNewComponent(State.GET_NAME_INVOKED);
         for (Extension<?> e : extensions.values()) {
             e.onContainerConfigured(); // State final????
@@ -197,31 +148,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof PackedContainerConfiguration) {
                     PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
-                    dcc.finish2ndPass();
+                    dcc.extensionsContainerConfigured();
                 }
             }
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension<?>>> extensions() {
-        return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    /**
-     * Returns an extension of the specified type if installed, otherwise null.
-     * 
-     * @param <T>
-     *            the type of extension to return
-     * @param extensionType
-     *            the type of extension to return
-     * @return an extension of the specified type if installed, otherwise null
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public <T extends Extension<T>> T getExtension(Class<T> extensionType) {
-        return (T) extensions.get(extensionType);
+    void extensionsPrepareInstantiation(InstantiationContext ic) {
+        for (Extension<?> e : extensions.values()) {
+            e.onPrepareContainerInstantiate(ic);
+        }
+        super.extensionsPrepareInstantiation(ic);
     }
 
     public ComponentConfiguration install(Class<?> implementation) {
@@ -264,16 +202,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return dcc;
     }
 
-    private void prepareNewComponent(State state) {
-        if (currentComponent != null) {
-            currentComponent.initializeName(state, null);
-            requireNonNull(currentComponent.name);
-            addChild(currentComponent);
-        } else {
-            initializeName(State.INSTALL_INVOKED, null);
-        }
-    }
-
     public ComponentConfiguration installHelper(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
         prepareNewComponent(State.INSTALL_INVOKED);
@@ -284,6 +212,44 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return descriptor.initialize(this, dcc);
     }
 
+    public PackedContainer instantiate() {
+        // TODO support instantiation wirelets...
+        PackedInstantiationContext pic = new PackedInstantiationContext();
+        extensionsPrepareInstantiation(pic);
+
+        // Will instantiate the whole container hierachy
+        PackedContainer pc = new PackedContainer(null, this, pic);
+        methodHandlePassing0(pc, pic);
+        return pc;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    PackedContainer instantiate(AbstractComponent parent, InstantiationContext ic) {
+        return new PackedContainer(parent, this, ic);
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void link(ContainerBundle bundle, Wirelet... wirelets) {
+        // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
+        // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
+        // type.
+
+        requireNonNull(bundle, "bundle is null");
+        initializeName(State.LINK_INVOKED, null);
+        prepareNewComponent(State.LINK_INVOKED);
+
+        // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
+        // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
+        // loop situations, for example, if a bundle recursively links itself which fails by throwing
+        // java.lang.StackOverflowError instead of an infinite loop.
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, InternalContainerSource.of(bundle), wirelets);
+        dcc.configure();
+        addChild(dcc);
+    }
+
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
@@ -291,6 +257,44 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // Component X has access to G, but Packed does not have access
         this.lookup = lookup == null ? ccc : ccc.withLookup(lookup);
         this.oldAccessor = DescriptorFactory.get(lookup);
+    }
+
+    private void methodHandlePassing0(AbstractComponent ac, InstantiationContext ic) {
+        if (children != null) {
+            for (AbstractComponentConfiguration a : children.values()) {
+                AbstractComponent child = ac.children.get(a.name);
+                if (a instanceof PackedContainerConfiguration) {
+                    ((PackedContainerConfiguration) a).methodHandlePassing0(child, ic);
+                } else {
+                    DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) a;
+                    dcc.ccd.process(this, ic);
+                }
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
+        HashMap<String, DefaultLayer> l = layers;
+        if (l == null) {
+            l = layers = new HashMap<>();
+        }
+        DefaultLayer newLayer = new DefaultLayer(this, name, dependencies);
+        if (l.putIfAbsent(name, newLayer) != null) {
+            throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
+        }
+        return newLayer;
+    }
+
+    private void prepareNewComponent(State state) {
+        if (currentComponent != null) {
+            currentComponent.initializeName(state, null);
+            requireNonNull(currentComponent.name);
+            addChild(currentComponent);
+        } else {
+            initializeName(State.INSTALL_INVOKED, null);
+        }
     }
 
     /** {@inheritDoc} */
@@ -342,33 +346,19 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             this.name = checkName(name);
         }
     }
-
-    private HashMap<String, DefaultLayer> layers;
-
-    /** {@inheritDoc} */
-    @Override
-    public ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        HashMap<String, DefaultLayer> l = layers;
-        if (l == null) {
-            l = layers = new HashMap<>();
-        }
-        DefaultLayer newLayer = new DefaultLayer(this, name, dependencies);
-        if (l.putIfAbsent(name, newLayer) != null) {
-            throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
-        }
-        return newLayer;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ArtifactBuildContext buildContext() {
-        return buildContext;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    PackedContainer instantiate(AbstractComponent parent, InstantiationContext ic) {
-        return new PackedContainer(parent, this, ic);
-
-    }
 }
+//
+/// **
+// * Returns an extension of the specified type if installed, otherwise null.
+// *
+// * @param <T>
+// * the type of extension to return
+// * @param extensionType
+// * the type of extension to return
+// * @return an extension of the specified type if installed, otherwise null
+// */
+// @SuppressWarnings("unchecked")
+// @Nullable
+// public <T extends Extension<T>> T getExtension(Class<T> extensionType) {
+// return (T) extensions.get(extensionType);
+// }

@@ -40,7 +40,7 @@ public final class PackedApp implements App {
      * @param container
      *            the container to wrap
      */
-    PackedApp(PackedContainer container) {
+    public PackedApp(PackedContainer container) {
         this.container = requireNonNull(container);
     }
 

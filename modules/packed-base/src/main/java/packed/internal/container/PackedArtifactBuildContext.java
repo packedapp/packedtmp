@@ -18,8 +18,8 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.ArtifactType;
 import app.packed.container.ArtifactBuildContext;
+import app.packed.container.ArtifactType;
 import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 
@@ -66,6 +66,6 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     /** {@inheritDoc} */
     @Override
     public WireletList wirelets() {
-        return configuration.wirelets;
+        return configuration.wirelets();
     }
 }

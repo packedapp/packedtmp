@@ -57,10 +57,9 @@ public final class PackedArtifactImage implements ArtifactImage {
         return containerConfiguration.getName();
     }
 
-    @Override
     public PackedApp newApp(Wirelet... wirelets) {
         WireletList.of(wirelets);
-        return new PackedApp(containerConfiguration.buildContainerFromImage());
+        return new PackedApp(containerConfiguration.instantiate());
     }
 
     public ArtifactImage newImage(Wirelet... wirelets) {
