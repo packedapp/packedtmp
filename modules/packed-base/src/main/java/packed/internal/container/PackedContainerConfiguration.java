@@ -116,12 +116,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     /**
-     * Should never be called recursively. Because link calls it
+     * Configures the configuration.
      */
     private void configure() {
-        if (state == State.FINAL) {
-            throw new Error();
-        }
         if (source.source instanceof ContainerBundle) {
             ContainerBundle bundle = (ContainerBundle) source.source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
@@ -129,8 +126,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             }
             AppPackedContainerSupport.invoke().doConfigure(bundle, this);
         }
-        getName();// Initializes the name
-        this.state = State.FINAL;
+        // Initializes the name of the container, and sets the state to State.FINAL
+        initializeName(State.FINAL, null);
     }
 
     /** {@inheritDoc} */
