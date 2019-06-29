@@ -110,7 +110,7 @@ public final class InjectorExtension extends Extension<InjectorExtension> {
 
     /** {@inheritDoc} */
     @Override
-    public void onContainerInstantiate(InstantiationContext context) {
+    public void onPrepareContainerInstantiate(InstantiationContext context) {
         context.put(configuration(), builder.publicInjector);
     }
 

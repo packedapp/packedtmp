@@ -105,7 +105,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     PackedContainer buildContainerFromImage() {
         InstantiationContext ic = new PackedInstantiationContext();
-        instantiate(ic);
+        prepareInstantiation(ic);
         PackedContainer pc = new PackedContainer(null, this, ic);
         ic.put(this, pc);
         methodHandlePassing0(pc, ic);
@@ -114,16 +114,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     public PackedContainer buildContainer(InstantiationContext ic) {
         build();
-        instantiate(ic);
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof PackedContainerConfiguration) {
-                    PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
-                    dcc.getName();
-                    dcc.buildContainer(ic);
-                }
-            }
-        }
+        prepareInstantiation(ic);
         PackedContainer dc = new PackedContainer(null, this, ic);
         ic.put(this, dc);
         return dc;
@@ -139,11 +130,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @Override
-    void instantiate(InstantiationContext ic) {
+    void prepareInstantiation(InstantiationContext ic) {
         for (Extension<?> e : extensions.values()) {
-            e.onContainerInstantiate(ic);
+            e.onPrepareContainerInstantiate(ic);
         }
-        super.instantiate(ic);
+        super.prepareInstantiation(ic);
     }
 
     public PackedContainerConfiguration build() {
@@ -154,15 +145,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     public DefaultInjector buildInjector() {
         build();
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof PackedContainerConfiguration) {
-                    PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
-                    dcc.getName();
-                    dcc.buildContainer();
-                }
-            }
-        }
+        new PackedContainer(null, this, new PackedInstantiationContext());
         if (extensions.containsKey(InjectorExtension.class)) {
             return use(InjectorExtension.class).builder.publicInjector;
         } else {
@@ -384,7 +367,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    AbstractComponent instantiate(AbstractComponent parent, InstantiationContext ic) {
+    PackedContainer instantiate(AbstractComponent parent, InstantiationContext ic) {
         return new PackedContainer(parent, this, ic);
+
     }
 }

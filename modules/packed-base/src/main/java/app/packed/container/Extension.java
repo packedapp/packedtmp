@@ -148,7 +148,7 @@ public abstract class Extension<T extends Extension<T>> {
      * @param context
      *            an instantiation context object
      */
-    public void onContainerInstantiate(InstantiationContext context) {}
+    public void onPrepareContainerInstantiate(InstantiationContext context) {}
 
     /**
      * This method is invoked exactly once by the runtime immediately after the extension is added to a container

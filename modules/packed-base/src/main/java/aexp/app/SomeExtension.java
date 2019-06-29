@@ -40,7 +40,7 @@ public class SomeExtension extends Extension<SomeExtension> {
 
     /** {@inheritDoc} */
     @Override
-    public void onContainerInstantiate(InstantiationContext context) {
+    public void onPrepareContainerInstantiate(InstantiationContext context) {
         System.out.println("Container Instantiated");
         context.put(configuration(), "FooBar");
     }

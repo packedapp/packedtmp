@@ -179,11 +179,11 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         return this.name = n;
     }
 
-    void instantiate(InstantiationContext ic) {
+    void prepareInstantiation(InstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (buildContext == acc.buildContext) {
-                    acc.instantiate(ic);
+                    acc.prepareInstantiation(ic);
                 }
             }
         }
