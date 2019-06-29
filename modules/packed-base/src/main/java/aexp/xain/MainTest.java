@@ -16,14 +16,16 @@
 package aexp.xain;
 
 import app.packed.app.App;
+import app.packed.app.AppBundle;
 import app.packed.app.Main;
-import app.packed.container.Bundle;
 import app.packed.container.ArtifactImage;
 
 /**
  *
  */
-public class MainTest extends Bundle {
+public class MainTest extends AppBundle {
+
+    static final ArtifactImage IMAGE = newImage(new MainTest());
 
     @Override
     protected void configure() {

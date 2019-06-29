@@ -18,7 +18,8 @@ package app.packed.container;
 import app.packed.config.ConfigSite;
 
 /**
- * A build context is create
+ * An artifact build context is created every time an build context is create . The context is shared among all
+ * extension of every container configuration for the artifact via {@link Extension#buildContext()}.
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
@@ -39,10 +40,13 @@ public interface ArtifactBuildContext {
     ConfigSite configSite();
 
     /**
-     * Returns the source of the build, for example a {@link ContainerBundle bundle} or an {@link ArtifactImage image}.
+     * Returns the container source of the build, for example a {@link ContainerBundle bundle}.
      * 
-     * @return the source of the build, for example a bundle or a container image
+     * @return the container source of the build, for example a bundle or a container image
      */
+    // Maybe a Class<?> sourceType() instead, eller har vi brug for at kunne access den???
+    /// Hmm kan jo starte med sourceType og saa altid tilfoeje source.
+    // Der hvor den ikke fungere skide godt er med InjectionConfigurator som jo bare er en Consumer
     ContainerSource source();
 
     /**

@@ -52,6 +52,12 @@ public class InternalContainerSource {
         return ContainerConfiguratorCache.of(configuratorType);
     }
 
+    public static InternalContainerSource forImage(ContainerSource source) {
+        requireNonNull(source, "source is null");
+        ContainerBundle b = (ContainerBundle) source;
+        return new InternalContainerSource(b, source.getClass());
+    }
+
     public static InternalContainerSource of(ContainerSource source) {
         ContainerBundle b = (ContainerBundle) source;
         return new InternalContainerSource(b, source.getClass());

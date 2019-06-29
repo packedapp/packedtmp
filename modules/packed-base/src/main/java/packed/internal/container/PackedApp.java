@@ -84,7 +84,8 @@ public final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public App shutdown() {
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
+        return this;
     }
 
     /** {@inheritDoc} */

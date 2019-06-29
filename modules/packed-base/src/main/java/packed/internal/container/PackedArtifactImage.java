@@ -22,21 +22,20 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ArtifactImage;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Injector;
-import packed.internal.inject.AbstractInjector;
 
 /** The default implementation of {@link ArtifactImage}. */
-final class PackedContainerImage implements ArtifactImage {
+public final class PackedArtifactImage implements ArtifactImage {
 
     /** The configuration of the future artifact's root container. */
     private final PackedContainerConfiguration containerConfiguration;
 
-    PackedContainerImage(PackedContainerConfiguration containerConfiguration) {
+    public PackedArtifactImage(PackedContainerConfiguration containerConfiguration) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
     }
 
@@ -58,12 +57,17 @@ final class PackedContainerImage implements ArtifactImage {
         return containerConfiguration.getName();
     }
 
+    @Override
     public PackedApp newApp(Wirelet... wirelets) {
         WireletList.of(wirelets);
-        return new PackedApp(containerConfiguration.buildFromImage());
+        return new PackedApp(containerConfiguration.buildContainerFromImage());
     }
 
-    public AbstractInjector newInjector(Wirelet... wirelets) {
+    public ArtifactImage newImage(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Injector newInjector(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -75,7 +79,7 @@ final class PackedContainerImage implements ArtifactImage {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends ContainerBundle> source() {
+    public Class<? extends ContainerBundle> sourceType() {
         throw new UnsupportedOperationException();
     }
 

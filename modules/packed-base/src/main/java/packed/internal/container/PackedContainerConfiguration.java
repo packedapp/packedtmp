@@ -25,10 +25,10 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
-import app.packed.container.ContainerBundle;
-import app.packed.container.ArtifactType;
 import app.packed.container.ArtifactBuildContext;
+import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
@@ -66,14 +66,17 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** A list of wirelets used when creating this configuration. */
     final WireletList wirelets;
 
-    final PackedBuildContext buildContext;
-
     public final InternalContainerSource source;
 
-    PackedContainerConfiguration(@Nullable PackedContainerConfiguration parent, @Nullable ArtifactType artifactType, InternalContainerSource source,
-            Wirelet... wirelets) {
-        super(parent == null ? InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF) : parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
-        this.buildContext = parent == null ? new PackedBuildContext(this, artifactType) : parent.buildContext;
+    public PackedContainerConfiguration(PackedContainerConfiguration parent, InternalContainerSource source, Wirelet... wirelets) {
+        super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
+        this.source = requireNonNull(source);
+        this.lookup = this.ccc = source.cache();
+        this.wirelets = WireletList.of(wirelets);
+    }
+
+    public PackedContainerConfiguration(ArtifactType artifactType, InternalContainerSource source, Wirelet... wirelets) {
+        super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactType);
         this.source = requireNonNull(source);
         this.lookup = this.ccc = source.cache();
         this.wirelets = WireletList.of(wirelets);
@@ -100,9 +103,17 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return dc;
     }
 
+    PackedContainer buildContainerFromImage() {
+        InstantiationContext ic = new PackedInstantiationContext();
+        instantiate(ic);
+        PackedContainer pc = new PackedContainer(null, this, ic);
+        ic.put(this, pc);
+        methodHandlePassing0(pc, ic);
+        return pc;
+    }
+
     public PackedContainer buildContainer(InstantiationContext ic) {
-        configure();
-        finish2ndPass();
+        build();
         instantiate(ic);
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -115,13 +126,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
         PackedContainer dc = new PackedContainer(null, this, ic);
         ic.put(this, dc);
-
         return dc;
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
-        configure();
-        finish2ndPass();
+        build();
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (Extension<?> e : extensions.values()) {
@@ -129,22 +138,22 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    private void instantiate(InstantiationContext ic) {
+    @Override
+    void instantiate(InstantiationContext ic) {
         for (Extension<?> e : extensions.values()) {
             e.onContainerInstantiate(ic);
         }
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (acc instanceof PackedContainerConfiguration) {
-                    ((PackedContainerConfiguration) acc).instantiate(ic);
-                }
-            }
-        }
+        super.instantiate(ic);
+    }
+
+    public PackedContainerConfiguration build() {
+        configure();
+        finish2ndPass();
+        return this;
     }
 
     public DefaultInjector buildInjector() {
-        configure();
-        finish2ndPass();
+        build();
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof PackedContainerConfiguration) {
@@ -159,18 +168,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         } else {
             return new DefaultInjector(this, new ServiceNodeMap());
         }
-    }
-
-    public PackedContainerImage buildImage() {
-        configure();
-        finish2ndPass();
-        return new PackedContainerImage(this);
-    }
-
-    PackedContainer buildFromImage() {
-        InstantiationContext ic = new PackedInstantiationContext();
-        instantiate(ic);
-        return new PackedContainer(null, this, ic);
     }
 
     /** {@inheritDoc} */
@@ -188,7 +185,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, null, InternalContainerSource.of(bundle), wirelets);
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, InternalContainerSource.of(bundle), wirelets);
         dcc.configure();
         addChild(dcc);
     }

@@ -19,10 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.container.ContainerBundle;
+import app.packed.app.App;
+import app.packed.container.ArtifactImage;
 import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.ArtifactImage;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
@@ -34,48 +35,47 @@ import packed.internal.support.AppPackedContainerSupport;
  */
 public class ContainerFactory {
 
-    // Flyt default App til .app
-    // Image skal vide om vi kan lave en Injector...
-    public static PackedApp appOf(ContainerSource source, Wirelet... wirelets) {
+    public static App appOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
-        if (source instanceof PackedContainerImage) {
-            return ((PackedContainerImage) source).newApp(wirelets);
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newApp(wirelets);
         }
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(null, ArtifactType.APP, InternalContainerSource.of(source), wirelets);
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.APP, InternalContainerSource.of(source), wirelets);
         return new PackedApp(configuration.buildContainer());
+    }
+
+    public static ArtifactImage createImage(ContainerSource source, Wirelet... wirelets) {
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newImage(wirelets);
+        }
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, InternalContainerSource.forImage(source), wirelets);
+        return new PackedArtifactImage(c.build());
     }
 
     public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle bundle = (ContainerBundle) source;
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(null, ArtifactType.ANALYZE, InternalContainerSource.of(source));
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, InternalContainerSource.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
     }
 
-    public static ArtifactImage imageOf(ContainerSource source, Wirelet... wirelets) {
-        requireNonNull(source, "source is null");
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(null, ArtifactType.ARTIFACT_IMAGE, InternalContainerSource.of(source),
-                wirelets);
-        return configuration.buildImage();
-    }
-
     public static Injector injectorOf(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         requireNonNull(configurator, "configurator is null");
-        // Hmm vi burde have en public version af ContainerBuilder
-        // Dvs. vi naar vi lige praecis har fundet ud af hvordan det skal fungere...
-        PackedContainerConfiguration builder = new PackedContainerConfiguration(null, ArtifactType.INJECTOR, InternalContainerSource.ofConsumer(configurator),
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, InternalContainerSource.ofConsumer(configurator),
                 wirelets);
-        configurator.accept(new InjectorConfigurator(builder));
-        return builder.buildInjector();
+        configurator.accept(new InjectorConfigurator(configuration));
+        return configuration.buildInjector();
     }
 
     public static Injector injectorOf(ContainerSource source, Wirelet... wirelets) {
         requireNonNull(source, "source is null");
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newInjector(wirelets);
+        }
         ContainerBundle bundle = (ContainerBundle) source;
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(null, ArtifactType.INJECTOR, InternalContainerSource.of(source),
-                wirelets);
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, InternalContainerSource.of(source), wirelets);
         AppPackedContainerSupport.invoke().doConfigure(bundle, configuration);
         return configuration.buildInjector();
     }

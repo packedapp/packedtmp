@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.container.ArtifactType;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.InstantiationContext;
@@ -65,6 +66,8 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     /** Whether or not the name can be postfix'able. Useful for images only. */
     boolean isNamePostfixable = false;
 
+    final PackedArtifactBuildContext buildContext;
+
     /**
      * Creates a new abstract component configuration
      * 
@@ -73,10 +76,26 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
      * @param parent
      *            the parent of the component, or null if the component is a root component
      */
-    AbstractComponentConfiguration(InternalConfigSite site, @Nullable AbstractComponentConfiguration parent) {
+    AbstractComponentConfiguration(InternalConfigSite site, AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);
         this.parent = parent;
-        this.depth = parent == null ? 0 : parent.depth() + 1;
+        this.depth = parent.depth() + 1;
+        this.buildContext = parent.buildContext;
+    }
+
+    /**
+     * A special constructor for a root container configuration
+     * 
+     * @param site
+     *            the configuration site of the artifact
+     * @param artifactType
+     *            the type of artifact we are building.
+     */
+    AbstractComponentConfiguration(InternalConfigSite site, ArtifactType artifactType) {
+        this.site = requireNonNull(site);
+        this.parent = null;
+        this.depth = 0;
+        this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactType);
     }
 
     /** {@inheritDoc} */
@@ -158,6 +177,16 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         }
         this.state = state;
         return this.name = n;
+    }
+
+    void instantiate(InstantiationContext ic) {
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (buildContext == acc.buildContext) {
+                    acc.instantiate(ic);
+                }
+            }
+        }
     }
 
     private String initializeNameDefaultName() {

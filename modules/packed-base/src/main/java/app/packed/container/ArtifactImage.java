@@ -27,6 +27,10 @@ import packed.internal.container.ContainerFactory;
  */
 public interface ArtifactImage extends ContainerSource, Artifact {
 
+    default App newApp(Wirelet... wirelets) {
+        return App.of(this, wirelets);
+    }
+
     /**
      * Returns the type of bundle that was used to create this image.
      * <p>
@@ -35,8 +39,8 @@ public interface ArtifactImage extends ContainerSource, Artifact {
      * 
      * @return the original source type of this image
      */
-    // sourceType?? bundleType
-    Class<? extends ContainerBundle> source();
+    // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
+    Class<? extends ContainerBundle> sourceType();
 
     ArtifactImage with(Wirelet... wirelets);
 
@@ -63,7 +67,7 @@ public interface ArtifactImage extends ContainerSource, Artifact {
      *             if the image could not be generated for some reason
      */
     static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
-        return ContainerFactory.imageOf(source, wirelets);
+        return ContainerFactory.createImage(source, wirelets);
     }
 
     // ofRepeatable();

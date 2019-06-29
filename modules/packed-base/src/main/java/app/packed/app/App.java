@@ -28,7 +28,6 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
-import app.packed.lifecycle.RunState;
 import packed.internal.container.ContainerFactory;
 import packed.internal.container.PackedApp;
 
@@ -216,11 +215,11 @@ public interface App extends AutoCloseable, Artifact {
         try (PackedApp app = (PackedApp) of(source, wirelets)) {
             app.start();
             app.runMainSync();
-            try {
-                app.state().await(RunState.TERMINATED);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            // try {
+            // app.state().await(RunState.TERMINATED);
+            // } catch (InterruptedException e) {
+            // throw new RuntimeException(e);
+            // }
         }
     }
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable

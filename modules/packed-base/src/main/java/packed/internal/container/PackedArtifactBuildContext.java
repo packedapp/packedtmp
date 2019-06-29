@@ -24,7 +24,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 
 /** The default implementation of {@link ArtifactBuildContext} */
-final class PackedBuildContext implements ArtifactBuildContext {
+final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** The artifact type. */
     private final ArtifactType artifactType;
@@ -40,7 +40,7 @@ final class PackedBuildContext implements ArtifactBuildContext {
      * @param artifactType
      *            the type of artifact we are building
      */
-    PackedBuildContext(PackedContainerConfiguration configuration, ArtifactType artifactType) {
+    PackedArtifactBuildContext(PackedContainerConfiguration configuration, ArtifactType artifactType) {
         this.configuration = requireNonNull(configuration);
         this.artifactType = requireNonNull(artifactType);
     }
