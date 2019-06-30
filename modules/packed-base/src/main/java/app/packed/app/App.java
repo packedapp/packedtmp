@@ -29,7 +29,7 @@ import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
-import packed.internal.container.InternalContainerSource;
+import packed.internal.container.ContainerConfigurator;
 import packed.internal.container.PackedApp;
 import packed.internal.container.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
@@ -183,7 +183,7 @@ public interface App extends AutoCloseable, Artifact {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newApp(wirelets);
         }
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.APP, InternalContainerSource.forApp(source), wirelets);
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.APP, ContainerConfigurator.forApp(source), wirelets);
         return new PackedApp(conf.build().instantiate());
     }
 

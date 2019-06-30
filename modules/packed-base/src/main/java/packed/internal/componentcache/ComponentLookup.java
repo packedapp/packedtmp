@@ -22,6 +22,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import packed.internal.invokable.ExecutableInvoker;
+import packed.internal.invokable.InternalFunction;
+
 /**
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and
  * one without.
@@ -32,6 +35,10 @@ public interface ComponentLookup {
 
     MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
 
+    default ServiceClassDescriptor serviceDescriptorFor(Class<?> type) {
+        return new ServiceClassDescriptor(type, lookup(), MemberScanner.forService(type, lookup()));
+    }
+
     default MethodHandle acquireMethodHandle(Class<?> componentType, Constructor<?> constructor) {
         throw new UnsupportedOperationException();
     }
@@ -40,5 +47,19 @@ public interface ComponentLookup {
         throw new UnsupportedOperationException();
     }
 
+    Lookup lookup();
+
+    default <T> InternalFunction<T> readable(InternalFunction<T> factory) {
+        // TODO needs to cached
+
+        // TODO add field...
+        if (factory instanceof ExecutableInvoker) {
+            ExecutableInvoker<T> e = (ExecutableInvoker<T>) factory;
+            if (!e.hasMethodHandle()) {
+                return e.withLookup(lookup());
+            }
+        }
+        return factory;
+    }
     // Maybe method for acquire
 }

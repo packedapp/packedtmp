@@ -36,7 +36,7 @@ public class ContainerFactory {
     public static BundleDescriptor descriptorOf(ContainerSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle bundle = (ContainerBundle) source;
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, InternalContainerSource.of(source));
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, ContainerConfigurator.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
@@ -44,7 +44,7 @@ public class ContainerFactory {
 
     public static Injector injectorOf(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         requireNonNull(configurator, "configurator is null");
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, InternalContainerSource.ofConsumer(configurator),
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerConfigurator.ofConsumer(configurator),
                 wirelets);
         configurator.accept(new InjectorConfigurator(configuration));
         return configuration.buildInjector();
@@ -56,7 +56,7 @@ public class ContainerFactory {
             return ((PackedArtifactImage) source).newInjector(wirelets);
         }
         ContainerBundle bundle = (ContainerBundle) source;
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, InternalContainerSource.of(source), wirelets);
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerConfigurator.of(source), wirelets);
         AppPackedContainerSupport.invoke().doConfigure(bundle, configuration);
         return configuration.buildInjector();
     }

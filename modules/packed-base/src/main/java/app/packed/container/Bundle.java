@@ -227,6 +227,9 @@ public abstract class Bundle extends ContainerBundle {
         BundleDescriptor.of(bundle).print();
     }
 
+    // runMain????.. maybe still so similar. Do we want to throw Exception???
+    // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
+    // executeMain
     static protected void run(ContainerSource source, String[] args, Wirelet... wirelets) {
         run(source, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
     }

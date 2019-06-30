@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.componentcache;
 
 import java.lang.invoke.MethodHandles;
 
@@ -50,7 +50,7 @@ public class ServiceClassDescriptor {
      * @param scanner
      *            a member scanner
      */
-    ServiceClassDescriptor(Class<?> implementation, MethodHandles.Lookup lookup, MemberScanner scanner) {
+    public ServiceClassDescriptor(Class<?> implementation, MethodHandles.Lookup lookup, MemberScanner scanner) {
         // Do we need to store lookup??? I think yes. And then collect all annotated Fields in a list
         // Or do we validate everything up front?????? With Hooks and stufff...
 

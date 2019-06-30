@@ -22,11 +22,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.container.ContainerBundle;
+import app.packed.container.ArtifactType;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
-import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.componentcache.ServiceClassDescriptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
@@ -66,7 +66,7 @@ public final class DependencyGraph {
         ib.nodes.put(d);
         // TODO replace with something a.la.
         // dcc.source.isInjectorConfigurator
-        if (!(root.source.source instanceof ContainerBundle)) {
+        if (root.buildContext().artifactType() == ArtifactType.INJECTOR) {
             ib.publicInjector = ib.privateInjector;
         } else {
             ib.publicInjector = new DefaultInjector(root, ib.exports);

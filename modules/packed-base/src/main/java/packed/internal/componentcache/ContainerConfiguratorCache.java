@@ -170,6 +170,19 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         public ComponentClassDescriptor componentDescriptorOf(Class<?> componentType) {
             return componentDescriptorOf(componentType);
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public Lookup lookup() {
+            return lookup;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Lookup lookup() {
+        // TODO fix, this method does not work
+        return MethodHandles.lookup();
     }
 }
 

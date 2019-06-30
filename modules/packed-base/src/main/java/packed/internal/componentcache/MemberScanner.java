@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.componentcache;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,7 +33,7 @@ import packed.internal.annotations.AtProvidesGroup;
  */
 // Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
 // https://github.com/classgraph/classgraph
-class MemberScanner {
+public class MemberScanner {
 
     final Class<?> clazz;
 
@@ -107,22 +107,6 @@ class MemberScanner {
                 }
             }
         }
-    }
-
-    public static MemberScanner forImportExportStage(Class<?> clazz, Lookup lookup) {
-        // TODO fix
-        MemberScanner ms = new MemberScanner(lookup, clazz);
-        ms.scanFields();
-        ms.scanMethods();
-        return ms;
-    }
-
-    public static MemberScanner forComponent(Class<?> clazz, Lookup lookup) {
-        // TODO fix
-        MemberScanner ms = new MemberScanner(lookup, clazz);
-        ms.scanFields();
-        ms.scanMethods();
-        return ms;
     }
 
     static MemberScanner forService(Class<?> clazz, Lookup lookup) {

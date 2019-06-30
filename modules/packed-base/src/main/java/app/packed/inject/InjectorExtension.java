@@ -30,7 +30,7 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
-import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.componentcache.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
@@ -272,10 +272,10 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
         // Okay det her fra Factory skal caches....Med methodHandle....
         InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
-        ServiceClassDescriptor desc = configuration0().oldAccessor.serviceDescriptorFor(func.getReturnTypeRaw());
+        ServiceClassDescriptor desc = configuration0().lookup.serviceDescriptorFor(func.getReturnTypeRaw());
 
         BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, desc, InstantiationMode.SINGLETON,
-                configuration0().oldAccessor.readable(func), (List) factory.dependencies());
+                configuration0().lookup.readable(func), (List) factory.dependencies());
         scanForProvides(func.getReturnTypeRaw(), node);
         node.as(factory.defaultKey());
         builder.nodes2.add(node);
@@ -301,7 +301,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         checkConfigurable();
         InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
-        ServiceClassDescriptor sdesc = configuration0().oldAccessor.serviceDescriptorFor(instance.getClass());
+        ServiceClassDescriptor sdesc = configuration0().lookup.serviceDescriptorFor(instance.getClass());
         BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, sdesc, instance);
 
         scanForProvides(instance.getClass(), sc);
@@ -340,7 +340,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     }
 
     private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
-        AtProvidesGroup provides = configuration0().oldAccessor.serviceDescriptorFor(type).provides;
+        AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
             owner.hasInstanceMembers = provides.hasInstanceMembers;
             // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {

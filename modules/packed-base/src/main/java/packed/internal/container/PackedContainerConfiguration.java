@@ -30,15 +30,14 @@ import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerExtension;
+import app.packed.container.ContainerLayer;
 import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectorExtension;
 import app.packed.util.Nullable;
-import packed.internal.classscan.DescriptorFactory;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.componentcache.ComponentLookup;
 import packed.internal.componentcache.ContainerConfiguratorCache;
@@ -49,37 +48,45 @@ import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-// <T extends ComponentConfigurationCache>
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The configurator cache. */
-    final ContainerConfiguratorCache ccc;
+    private final ContainerConfiguratorCache configuratorCache;
 
-    /** All the extensions registered with this extension, ordered by first use. */
+    /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends ContainerExtension<?>>, ContainerExtension<?>> extensions = new LinkedHashMap<>();
 
     private HashMap<String, DefaultLayer> layers;
 
-    private ComponentLookup lookup;
+    public ComponentLookup lookup;
 
-    public DescriptorFactory oldAccessor = DescriptorFactory.PUBLIC;
+    /** The source of the container configuration. */
+    final ContainerConfigurator configurator;
 
-    public final InternalContainerSource source;
-
-    /** Any wirelets that was used when creating this configuration. */
+    /** Any wirelets that was given by the user when creating this configuration. */
     private final WireletList wirelets;
 
-    public PackedContainerConfiguration(ArtifactType artifactType, InternalContainerSource source, Wirelet... wirelets) {
+    /**
+     * Creates a new container configuration.
+     * 
+     * @param artifactType
+     *            the type of artifact we are building
+     * @param configurator
+     *            the source source
+     * @param wirelets
+     *            any wirelets that was given by the user
+     */
+    public PackedContainerConfiguration(ArtifactType artifactType, ContainerConfigurator configurator, Wirelet... wirelets) {
         super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactType);
-        this.source = requireNonNull(source);
-        this.lookup = this.ccc = source.cache();
+        this.configurator = requireNonNull(configurator);
+        this.lookup = this.configuratorCache = configurator.cache();
         this.wirelets = WireletList.of(wirelets);
     }
 
-    public PackedContainerConfiguration(PackedContainerConfiguration parent, InternalContainerSource source, Wirelet... wirelets) {
+    private PackedContainerConfiguration(PackedContainerConfiguration parent, ContainerConfigurator configurator, Wirelet... wirelets) {
         super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
-        this.source = requireNonNull(source);
-        this.lookup = this.ccc = source.cache();
+        this.configurator = requireNonNull(configurator);
+        this.lookup = this.configuratorCache = configurator.cache();
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -118,8 +125,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * Configures the configuration.
      */
     private void configure() {
-        if (source.source instanceof ContainerBundle) {
-            ContainerBundle bundle = (ContainerBundle) source.source;
+        if (configurator.source instanceof ContainerBundle) {
+            ContainerBundle bundle = (ContainerBundle) configurator.source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
@@ -241,7 +248,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, InternalContainerSource.of(bundle), wirelets);
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, ContainerConfigurator.of(bundle), wirelets);
         dcc.configure();
         addChild(dcc);
     }
@@ -251,8 +258,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public void lookup(@Nullable Lookup lookup) {
         // Actually I think null might be okay, then its standard module-info.java
         // Component X has access to G, but Packed does not have access
-        this.lookup = lookup == null ? ccc : ccc.withLookup(lookup);
-        this.oldAccessor = DescriptorFactory.get(lookup);
+        this.lookup = lookup == null ? configuratorCache : configuratorCache.withLookup(lookup);
     }
 
     private void methodHandlePassing0(AbstractComponent ac, InstantiationContext ic) {

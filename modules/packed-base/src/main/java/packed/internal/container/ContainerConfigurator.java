@@ -37,13 +37,15 @@ import packed.internal.componentcache.ContainerConfiguratorCache;
 
 // SourceDescriptor?
 
-public class InternalContainerSource {
+// I virkeligheden er den vel en Configurator...
+// ContainerConfigurator
+public class ContainerConfigurator {
 
     final Class<?> configuratorType;
 
     public final ContainerSource source;
 
-    InternalContainerSource(ContainerSource source, Class<?> configuratorType) {
+    ContainerConfigurator(ContainerSource source, Class<?> configuratorType) {
         this.source = source;
         this.configuratorType = requireNonNull(configuratorType);
     }
@@ -52,28 +54,28 @@ public class InternalContainerSource {
         return ContainerConfiguratorCache.of(configuratorType);
     }
 
-    public static InternalContainerSource forImage(ContainerSource source) {
+    public static ContainerConfigurator forImage(ContainerSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle b = (ContainerBundle) source;
-        return new InternalContainerSource(b, source.getClass());
+        return new ContainerConfigurator(b, source.getClass());
     }
 
-    public static InternalContainerSource of(ContainerSource source) {
+    public static ContainerConfigurator of(ContainerSource source) {
         ContainerBundle b = (ContainerBundle) source;
-        return new InternalContainerSource(b, source.getClass());
+        return new ContainerConfigurator(b, source.getClass());
     }
 
-    public static InternalContainerSource forApp(ContainerSource source) {
+    public static ContainerConfigurator forApp(ContainerSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle b = (ContainerBundle) source;
-        return new InternalContainerSource(b, source.getClass());
+        return new ContainerConfigurator(b, source.getClass());
     }
 
-    public static InternalContainerSource ofConsumer(Consumer<?> consumer) {
-        return new InternalContainerSource(null, consumer.getClass());
+    public static ContainerConfigurator ofConsumer(Consumer<?> consumer) {
+        return new ContainerConfigurator(null, consumer.getClass());
     }
 
-    public InternalContainerSource link(ContainerBundle bundle) {
+    public ContainerConfigurator link(ContainerBundle bundle) {
         throw new UnsupportedOperationException();
     }
 }

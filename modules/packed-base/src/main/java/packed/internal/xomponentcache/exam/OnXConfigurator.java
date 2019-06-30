@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache.exam;
+package packed.internal.xomponentcache.exam;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
-import packed.internal.componentcache.exam.Dddd.MyExtension;
-import packed.internal.componentcache.exam.Dddd.OnX;
+import packed.internal.xomponentcache.exam.Dddd.MyExtension;
+import packed.internal.xomponentcache.exam.Dddd.OnX;
 
 /**
  *

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache.exam;
+package packed.internal.xomponentcache.exam;
 
 import app.packed.app.App;
 import app.packed.container.Bundle;

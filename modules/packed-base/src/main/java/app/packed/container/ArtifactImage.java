@@ -17,7 +17,7 @@ package app.packed.container;
 
 import app.packed.app.App;
 import app.packed.inject.Injector;
-import packed.internal.container.InternalContainerSource;
+import packed.internal.container.ContainerConfigurator;
 import packed.internal.container.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -71,7 +71,7 @@ public interface ArtifactImage extends ContainerSource, Artifact {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newImage(wirelets);
         }
-        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, InternalContainerSource.forImage(source), wirelets);
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerConfigurator.forImage(source), wirelets);
         return new PackedArtifactImage(c.build());
     }
 

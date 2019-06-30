@@ -27,7 +27,7 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
-import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.componentcache.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.runtime.AbstractRuntimeServiceNode;

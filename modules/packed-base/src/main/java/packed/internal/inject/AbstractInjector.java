@@ -28,7 +28,7 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
-import packed.internal.classscan.ServiceClassDescriptor;
+import packed.internal.componentcache.ServiceClassDescriptor;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invokable.FieldAccessor;
 

@@ -192,7 +192,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     private String initializeNameDefaultName() {
         if (this instanceof PackedContainerConfiguration) {
             @Nullable
-            ContainerBundle bundle = (@Nullable ContainerBundle) ((PackedContainerConfiguration) this).source.source;
+            ContainerBundle bundle = (@Nullable ContainerBundle) ((PackedContainerConfiguration) this).configurator.source;
             if (bundle != null) {
                 String nnn = bundle.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
