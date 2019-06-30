@@ -50,7 +50,10 @@ import packed.internal.support.AppPackedContainerSupport;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    /** The configurator cache. */
+    /** The source of the container configuration. */
+    final ContainerConfigurator configurator;
+
+    /** A configurator cache object, shared among container sources of the same type. */
     private final ContainerConfiguratorCache configuratorCache;
 
     /** All registered extensions, in order of registration. */
@@ -58,10 +61,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     private HashMap<String, DefaultLayer> layers;
 
+    /** A lookup object. shared among friendly people. */
     public ComponentLookup lookup;
-
-    /** The source of the container configuration. */
-    final ContainerConfigurator configurator;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     private final WireletList wirelets;
@@ -90,12 +91,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.wirelets = WireletList.of(wirelets);
     }
 
-    public PackedContainerConfiguration build() {
-        configure();
-        extensionsContainerConfigured();
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ArtifactBuildContext buildContext() {
@@ -103,7 +98,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
-        build();
+        doBuild();
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (ContainerExtension<?> e : extensions.values()) {
@@ -112,7 +107,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     public DefaultInjector buildInjector() {
-        build();
+        doBuild();
         new PackedContainer(null, this, new PackedInstantiationContext());
         if (extensions.containsKey(InjectorExtension.class)) {
             return use(InjectorExtension.class).builder.publicInjector;
@@ -134,6 +129,23 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
+    }
+
+    public PackedContainerConfiguration doBuild() {
+        configure();
+        extensionsContainerConfigured();
+        return this;
+    }
+
+    public PackedContainer doInstantiate() {
+        // TODO support instantiation wirelets for images
+        PackedInstantiationContext pic = new PackedInstantiationContext();
+        extensionsPrepareInstantiation(pic);
+
+        // Will instantiate the whole container hierachy
+        PackedContainer pc = new PackedContainer(null, this, pic);
+        methodHandlePassing0(pc, pic);
+        return pc;
     }
 
     /** {@inheritDoc} */
@@ -215,22 +227,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return descriptor.initialize(this, dcc);
     }
 
-    public PackedContainer instantiate() {
-        // TODO support instantiation wirelets...
-        PackedInstantiationContext pic = new PackedInstantiationContext();
-        extensionsPrepareInstantiation(pic);
-
-        // Will instantiate the whole container hierachy
-        PackedContainer pc = new PackedContainer(null, this, pic);
-        methodHandlePassing0(pc, pic);
-        return pc;
-    }
-
     /** {@inheritDoc} */
     @Override
     PackedContainer instantiate(AbstractComponent parent, InstantiationContext ic) {
         return new PackedContainer(parent, this, ic);
-
     }
 
     /** {@inheritDoc} */

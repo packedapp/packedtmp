@@ -50,13 +50,10 @@ import packed.internal.invokable.InternalFunction;
  * This extension provides functionality for injection and service management.
  */
 // manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?
-
 // Registered registererUnqualifiedAnnotation <---
 // Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
 // Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
 public final class InjectorExtension extends ContainerExtension<InjectorExtension> {
-
-    static final String CONFIG_SITE_PROVIDE = "injector.provide";
 
     @SuppressWarnings("exports")
     public final InjectorBuilder builder = new InjectorBuilder();
@@ -96,22 +93,10 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         builder.addRequired(key);
     }
 
-    <T> ProvidedComponentConfiguration<T> alias(Class<T> key) {
-        // Hvorfor har vi brug for alias????
-        // provide(BigFatClass.class);
-        // provide(BigFatClass.class).as(X.class);
-        // provide(BigFatClass.class).as(Y.class);
-
-        // Den er ikke super brugbar..
-        // Smid en static provides paa bundlen...
-        // Og saa provide
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiate(InstantiationContext context) {
-        context.put(configuration(), builder.publicInjector);
+        context.put(configuration(), builder.publicInjector); // Taken by PackedContainer
     }
 
     /** {@inheritDoc} */
@@ -135,9 +120,6 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     private PackedContainerConfiguration configuration0() {
         return (PackedContainerConfiguration) configuration();
     }
-
-    // Why export
-    // Need to export
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         requireNonNull(key, "key is null");
@@ -173,11 +155,6 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         checkConfigurable();
 
         InternalConfigSite cs = configuration0().configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-
-        // ServiceNode<T> node = box.services().nodes.getRecursive(key);
-        // if (node == null) {
-        // throw new IllegalArgumentException("Cannot expose non existing service, key = " + key);
-        // }
         BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder, cs);
         bn.as(key);
         builder.exportedNodes.add(bn);
@@ -310,35 +287,6 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0(), null), sc);
     }
 
-    // ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
-
-    // public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-    // // Hmm, hvor er wirelets'ene til????
-    // // Maaske bare bedst at droppe den????
-    //
-    // Injector injector = Injector.of(configurator, wirelets);
-    // }
-
-    // Services are the default implementation of injection....
-
-    // Export
-
-    // Outer.. checker configurable, node. finish den sidste o.s.v.
-    // Saa kalder vi addNode(inner.foo);
-
-    public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
-        // Installs as a static component.... new instance every time it is requested...
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> ProvidedComponentConfiguration<T> provideMany(Factory<T> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    public <T> void provideOptionalFallback(Class<T> t, T instance) {
-        // Ideen er vi kan lave en default service...
-    }
-
     private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
         AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;
         if (!provides.members.isEmpty()) {
@@ -363,3 +311,45 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         }
     }
 }
+
+//// ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
+//
+//// public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+//// // Hmm, hvor er wirelets'ene til????
+//// // Maaske bare bedst at droppe den????
+////
+//// Injector injector = Injector.of(configurator, wirelets);
+//// }
+//
+//// Services are the default implementation of injection....
+//
+//// Export
+//
+//// Outer.. checker configurable, node. finish den sidste o.s.v.
+//// Saa kalder vi addNode(inner.foo);
+//
+// public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
+// // Installs as a static component.... new instance every time it is requested...
+// throw new UnsupportedOperationException();
+// }
+//
+// public <T> ProvidedComponentConfiguration<T> provideMany(Factory<T> factory) {
+// throw new UnsupportedOperationException();
+// }
+//
+// public <T> void provideOptionalFallback(Class<T> t, T instance) {
+// // Ideen er vi kan lave en default service...
+// }
+
+//
+// <T> ProvidedComponentConfiguration<T> alias(Class<T> key) {
+// // Hvorfor har vi brug for alias????
+// // provide(BigFatClass.class);
+// // provide(BigFatClass.class).as(X.class);
+// // provide(BigFatClass.class).as(Y.class);
+//
+// // Den er ikke super brugbar..
+// // Smid en static provides paa bundlen...
+// // Og saa provide
+// throw new UnsupportedOperationException();
+// }

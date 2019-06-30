@@ -184,7 +184,7 @@ public interface App extends AutoCloseable, Artifact {
             return ((PackedArtifactImage) source).newApp(wirelets);
         }
         PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.APP, ContainerConfigurator.forApp(source), wirelets);
-        return new PackedApp(conf.build().instantiate());
+        return new PackedApp(conf.doBuild().doInstantiate());
     }
 
     /**

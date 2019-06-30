@@ -66,7 +66,7 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     public PackedApp newApp(Wirelet... wirelets) {
         WireletList.of(wirelets);
-        return new PackedApp(containerConfiguration.instantiate());
+        return new PackedApp(containerConfiguration.doInstantiate());
     }
 
     public ArtifactImage newImage(Wirelet... wirelets) {

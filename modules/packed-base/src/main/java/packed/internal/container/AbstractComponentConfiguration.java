@@ -35,6 +35,9 @@ import packed.internal.container.PackedContainerConfiguration.NameWirelet;
 /** An abstract base class for a component configuration object. */
 abstract class AbstractComponentConfiguration implements ComponentHolder {
 
+    /** The build context of the artifact this component configuration belongs to. */
+    final PackedArtifactBuildContext buildContext;
+
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
     LinkedHashMap<String, AbstractComponentConfiguration> children;
@@ -49,6 +52,9 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     @Nullable
     private String description;
 
+    /** Whether or not the name can be postfix'able. Useful for images only. */
+    boolean isNamePostfixable = false;
+
     /** The name of the component. */
     @Nullable
     String name;
@@ -62,11 +68,6 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The state of this configuration. */
     State state = State.INITIAL;
-
-    /** Whether or not the name can be postfix'able. Useful for images only. */
-    boolean isNamePostfixable = false;
-
-    final PackedArtifactBuildContext buildContext;
 
     /**
      * Creates a new abstract component configuration
@@ -98,24 +99,6 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactType);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final int depth() {
-        return depth;
-    }
-
-    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, InstantiationContext ic) {
-        if (children == null) {
-            return null;
-        }
-        HashMap<String, AbstractComponent> result = new HashMap<>();
-        for (AbstractComponentConfiguration acc : children.values()) {
-            AbstractComponent ac = acc.instantiate(parent, ic);
-            result.put(ac.name(), ac);
-        }
-        return result;
-    }
-
     void addChild(AbstractComponentConfiguration configuration) {
         if (children == null) {
             children = new LinkedHashMap<>();
@@ -134,6 +117,22 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         return site;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final int depth() {
+        return depth;
+    }
+
+    void extensionsPrepareInstantiation(InstantiationContext ic) {
+        if (children != null) {
+            for (AbstractComponentConfiguration acc : children.values()) {
+                if (buildContext == acc.buildContext) {
+                    acc.extensionsPrepareInstantiation(ic);
+                }
+            }
+        }
+    }
+
     @Nullable
     public final String getDescription() {
         return description;
@@ -141,6 +140,18 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     public final String getName() {
         return initializeName(State.GET_NAME_INVOKED, null);
+    }
+
+    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, InstantiationContext ic) {
+        if (children == null) {
+            return null;
+        }
+        HashMap<String, AbstractComponent> result = new HashMap<>();
+        for (AbstractComponentConfiguration acc : children.values()) {
+            AbstractComponent ac = acc.instantiate(parent, ic);
+            result.put(ac.name(), ac);
+        }
+        return result;
     }
 
     protected String initializeName(State state, String setName) {
@@ -177,16 +188,6 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         }
         this.state = state;
         return this.name = n;
-    }
-
-    void extensionsPrepareInstantiation(InstantiationContext ic) {
-        if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
-                if (buildContext == acc.buildContext) {
-                    acc.extensionsPrepareInstantiation(ic);
-                }
-            }
-        }
     }
 
     private String initializeNameDefaultName() {

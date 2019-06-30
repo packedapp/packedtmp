@@ -72,7 +72,7 @@ public interface ArtifactImage extends ContainerSource, Artifact {
             return ((PackedArtifactImage) source).newImage(wirelets);
         }
         PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerConfigurator.forImage(source), wirelets);
-        return new PackedArtifactImage(c.build());
+        return new PackedArtifactImage(c.doBuild());
     }
 
     // ofRepeatable();
