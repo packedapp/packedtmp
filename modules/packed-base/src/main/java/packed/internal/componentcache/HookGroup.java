@@ -34,7 +34,6 @@ import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.NativeImage;
-import app.packed.hook.OldAnnotatedFieldHook;
 import app.packed.hook.OnHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
@@ -166,7 +165,7 @@ final class HookGroup {
             }
             Parameter p = ps[0];
             Class<?> cl = p.getType();
-            if (cl == AnnotatedMethodHook.class || cl == OldAnnotatedFieldHook.class) {
+            if (cl == AnnotatedMethodHook.class || cl == AnnotatedFieldHook.class) {
                 ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
                 @SuppressWarnings("unchecked")
                 Class<? extends Annotation> anno = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];

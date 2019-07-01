@@ -33,6 +33,8 @@ public interface AnnotatedFieldHook<T> {
 
     VarHandle newVarHandle();
 
+    // TODO return getters and setters as well.
+
     // <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 
     // We throw access exception as a runtime exception, because there is no way the client (Extension).

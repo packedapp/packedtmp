@@ -25,7 +25,10 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.AnnotatedFieldHook;
+import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.hook.OnHook;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
@@ -88,6 +91,16 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
         @Override
         public AtProvidesGroup onBuild() {
             return members == null ? EMPTY : new AtProvidesGroup(this);
+        }
+
+        @OnHook
+        public void onProvide(AnnotatedMethodHook<Provide> amh) {
+            tryAdd(amh.lookup(), amh.method().newMethod(), amh.method().getAnnotations());
+        }
+
+        @OnHook
+        public void onProvide(AnnotatedFieldHook<Provide> amh) {
+            tryAdd(amh.lookup(), amh.field().newField(), amh.field().getAnnotations());
         }
 
         @Nullable
