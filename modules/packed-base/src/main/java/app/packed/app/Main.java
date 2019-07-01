@@ -27,6 +27,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookGroup;
+import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.container.PackedContainer;
@@ -100,7 +102,7 @@ final class MainExtensionHookGroup extends ContainerExtensionHookGroup<Lifecycle
         /** {@inheritDoc} */
         @Override
         public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
-            MethodHandle mh = hook.create();
+            MethodHandle mh = hook.newMethodHandle();
             hook.onMethodReady(PackedContainer.class, (a, b) -> {
                 b.run();
             });
@@ -108,5 +110,35 @@ final class MainExtensionHookGroup extends ContainerExtensionHookGroup<Lifecycle
             // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
             return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
         }
+    }
+}
+
+class Builder implements ContainerExtensionHookProcessor<LifecycleExtension> {
+
+    private AnnotatedMethodHook<Main> hook;
+
+    @OnHook
+    void add(AnnotatedMethodHook<Main> hook) {
+        // Replace with a List I think... Add hen just add all. And check in onBuild. We can even initialize it to new
+        // ArrayList(1) because
+        // If this method is called, it means that at least one main method exists....
+        if (this.hook != null) {
+            throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hook.method().getDeclaringClass())
+                    + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
+                    + StringFormatter.formatShortWithParameters(this.hook.method()) + ", " + StringFormatter.formatShortWithParameters(hook.method()));
+        }
+        this.hook = hook;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BiConsumer<ComponentConfiguration, LifecycleExtension> onBuild() {
+        MethodHandle mh = hook.newMethodHandle();
+        hook.onMethodReady(PackedContainer.class, (a, b) -> {
+            b.run();
+        });
+
+        // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
+        return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
     }
 }

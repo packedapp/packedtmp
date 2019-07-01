@@ -117,7 +117,7 @@ public final class GroupDescriptor {
                         ((BiConsumer) omd.consumer).accept(b, new AnnotatedMethodHook() {
 
                             @Override
-                            public MethodHandle create() {
+                            public MethodHandle newMethodHandle() {
                                 method.setAccessible(true);
                                 try {
                                     return MethodHandles.lookup().unreflect(method);
@@ -135,7 +135,7 @@ public final class GroupDescriptor {
                             public void onMethodReady(Class key, BiConsumer consumer) {
                                 requireNonNull(key, "key is null");
                                 requireNonNull(consumer, "consumer is null");
-                                consumers.add(new MethodConsumer<>(key, consumer, create()));
+                                consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
                             }
                         });
                     }

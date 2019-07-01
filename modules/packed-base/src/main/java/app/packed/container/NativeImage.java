@@ -34,6 +34,8 @@ public final class NativeImage {
         return Mode.NORMAL;
     }
 
+    public static void registerMethod(Method m) {}
+
     public static void registerConstructor(Constructor<?> c) {}
 
     // Saa der er jo 3 modes..

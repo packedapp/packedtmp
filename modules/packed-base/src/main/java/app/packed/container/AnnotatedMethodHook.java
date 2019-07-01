@@ -32,7 +32,7 @@ public interface AnnotatedMethodHook<T> {
     // Can do anything about access problems
 
     // Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
-    MethodHandle create();
+    MethodHandle newMethodHandle();
 
     <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 

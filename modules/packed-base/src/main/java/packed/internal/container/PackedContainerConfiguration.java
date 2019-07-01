@@ -295,6 +295,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             requireNonNull(currentComponent.name);
             addChild(currentComponent);
         } else {
+            // This look strange...
             initializeName(State.INSTALL_INVOKED, null);
         }
     }
