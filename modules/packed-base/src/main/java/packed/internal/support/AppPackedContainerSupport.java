@@ -20,8 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionHookGroup;
-import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
@@ -47,7 +45,8 @@ public final class AppPackedContainerSupport {
          */
         public abstract void initializeExtension(ContainerExtension<?> extension, PackedContainerConfiguration configuration);
 
-        public abstract void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder);
+        // public abstract void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c,
+        // ExtensionHookGroupConfiguration.Builder builder);
 
         public abstract void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration);
 

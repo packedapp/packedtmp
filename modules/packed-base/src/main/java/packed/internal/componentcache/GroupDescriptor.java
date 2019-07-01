@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,11 +29,13 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.AnnotatedFieldHook;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.InstantiationContext;
+import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.container.PackedContainerConfiguration;
@@ -44,7 +48,7 @@ public final class GroupDescriptor {
     @SuppressWarnings("rawtypes")
     private final BiConsumer build;
 
-    final List<MethodConsumer<?>> consumers;
+    final List<MethodConsumer<?>> methodConsumers;
 
     /** The type of extension. */
     private final Class<? extends ContainerExtension<?>> extensionType;
@@ -52,7 +56,7 @@ public final class GroupDescriptor {
     private GroupDescriptor(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
         this.build = requireNonNull(b.b.onBuild());
-        this.consumers = List.copyOf(b.consumers);
+        this.methodConsumers = List.copyOf(b.consumers);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -61,6 +65,7 @@ public final class GroupDescriptor {
         build.accept(component, extension);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     static class Builder {
 
         final ContainerExtensionHookProcessor<?> b;
@@ -68,13 +73,13 @@ public final class GroupDescriptor {
         /** The component type */
         final Class<?> componentType;
 
-        final ExtensionHookGroupConfiguration conf;
+        final HookGroup conf;
 
         private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
 
         Builder(Class<?> componentType, Class<? extends ContainerExtensionHookProcessor<?>> cc) {
             this.componentType = requireNonNull(componentType);
-            this.conf = ExtensionHookGroupConfiguration.FOR_CLASS.get(cc);
+            this.conf = HookGroup.FOR_CLASS.get(cc);
             this.b = conf.instantiate();
         }
 
@@ -83,10 +88,32 @@ public final class GroupDescriptor {
         }
 
         void onAnnotatedField(ComponentLookup lookup, Field field, Annotation annotation) {
+            AnnotatedFieldHook hook = new AnnotatedFieldHook() {
 
+                @Override
+                public Lookup lookup() {
+                    return lookup.lookup();// Temporary method
+                }
+
+                @Override
+                public FieldDescriptor field() {
+                    return FieldDescriptor.of(field);
+                }
+
+                @Override
+                public VarHandle newVarHandle() {
+                    field.setAccessible(true);
+                    try {
+                        return MethodHandles.lookup().unreflectVarHandle(field);
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalAccessRuntimeException("stuff", e);
+                    }
+                }
+            };
+
+            conf.invokeHookOnAnnotatedField(annotation.annotationType(), b, hook);
         }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         void onAnnotatedMethod(ComponentLookup lookup, Method method, Annotation annotation) {
             AnnotatedMethodHook hook = new AnnotatedMethodHook() {
 
@@ -111,13 +138,19 @@ public final class GroupDescriptor {
                     requireNonNull(consumer, "consumer is null");
                     consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
                 }
+
+                @Override
+                public Lookup lookup() {
+                    return lookup.lookup();// Temporary method
+                }
+
+                @Override
+                public Object annotation() {
+                    return annotation;
+                }
             };
-            conf.invokeAnnotatedMethod(annotation.annotationType(), b, hook);
-
+            conf.invokeHookOnAnnotatedMethod(annotation.annotationType(), b, hook);
         }
-
-        // conf.forAnnotatedMethods();
-        // MethodHandle mh = lookup.acquireMethodHandle(componentType, method);
     }
 }
 

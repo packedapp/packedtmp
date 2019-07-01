@@ -38,7 +38,6 @@ import packed.internal.container.PackedContainerConfiguration;
 // Som paa magisk vis faar componenten
 
 // Der eksistere end ComponentClassDescriptor per Class+ComponentLookup
-
 public final class ComponentClassDescriptor {
 
     /** The component type. */
@@ -83,7 +82,7 @@ public final class ComponentClassDescriptor {
     @SuppressWarnings("rawtypes")
     public void process(PackedContainerConfiguration cc, InstantiationContext ic) {
         for (GroupDescriptor d : groups) {
-            for (MethodConsumer mc : d.consumers) {
+            for (MethodConsumer mc : d.methodConsumers) {
                 mc.prepare(cc, ic);
             }
         }

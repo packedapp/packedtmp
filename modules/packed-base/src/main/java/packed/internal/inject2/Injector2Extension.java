@@ -13,31 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache;
+package packed.internal.inject2;
 
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.ContainerExtension;
-import packed.internal.inject2.ProvideHookProcessor;
 
 /**
  *
  */
 public final class Injector2Extension extends ContainerExtension<Injector2Extension> {
 
+    IdentityHashMap<ComponentConfiguration, NewService> cache = new IdentityHashMap<>();
+
+    NewService current;
+
     /** Creates a new injector extension. */
     Injector2Extension() {}
 
+    void onInstall(ProvideHookProcessor builder, ComponentConfiguration cc) {
+        IdentityHashMap<ComponentConfiguration, NewService> c = cache;
+        if (c == null) {
+            c = cache = new IdentityHashMap<>(1);
+        }
+        c.put(cc, new NewService(builder));
+    }
+
     public void provide(Object o) {
         // Must make sure we never recursively call into this method
-        NewService ns = new NewService();
 
-        ComponentExtension ce = configuration().use(ComponentExtension.class);
-        current = ns;
+        NewService ns = current = new NewService();
         try {
-            ce.install(o);
+            use(ComponentExtension.class).install(o);
         } finally {
             current = null;
         }
@@ -45,24 +54,24 @@ public final class Injector2Extension extends ContainerExtension<Injector2Extens
         System.out.println(ns);
     }
 
-    public void provide2(Object o) {
-        ComponentExtension ce = configuration().use(ComponentExtension.class);
-        ComponentConfiguration i = ce.install(o);
-        NewService ns = cache.get(i);
-        if (ns != null) {
+    public void provide2(Object instance) {
+        // Eneste ulempe ved den her form, er at vi burde lave checks inden....
+        ComponentConfiguration cc = use(ComponentExtension.class).install(instance);
 
+        NewService ns = null;
+        if (cache != null && (ns = cache.get(cc)) == null) {
+            ns = new NewService();
         }
-    }
-
-    IdentityHashMap<ComponentConfiguration, NewService> cache = new IdentityHashMap<>();
-
-    NewService current;
-
-    void onInstall(ProvideHookProcessor builder, ComponentConfiguration cc) {
-
+        System.out.println(ns.php);
     }
 
     static class NewService {
+        ProvideHookProcessor php;
 
+        NewService() {}
+
+        NewService(ProvideHookProcessor php) {
+            this.php = php;
+        }
     }
 }

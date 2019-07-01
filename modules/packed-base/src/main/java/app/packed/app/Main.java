@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
@@ -50,7 +51,7 @@ import packed.internal.util.StringFormatter;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
-@ContainerExtensionActivator(Builder.class)
+@ContainerExtensionActivator(MainProcessor.class)
 public @interface Main {
 
     /**
@@ -69,28 +70,27 @@ public @interface Main {
     boolean undeployOnCompletion() default true;
 }
 
-final class Builder extends ContainerExtensionHookProcessor<LifecycleExtension> {
+final class MainProcessor extends ContainerExtensionHookProcessor<LifecycleExtension> {
 
-    private AnnotatedMethodHook<Main> hook;
+    private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
 
     @OnHook
     void add(AnnotatedMethodHook<Main> hook) {
-        // Replace with a List I think... Add hen just add all. And check in onBuild. We can even initialize it to new
-        // ArrayList(1) because
-        // If this method is called, it means that at least one main method exists....
-        if (this.hook != null) {
-            throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hook.method().getDeclaringClass())
-                    + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
-                    + StringFormatter.formatShortWithParameters(this.hook.method()) + ", " + StringFormatter.formatShortWithParameters(hook.method()));
-        }
-        this.hook = hook;
+        hooks.add(hook);
     }
 
     /** {@inheritDoc} */
     @Override
     public BiConsumer<ComponentConfiguration, LifecycleExtension> onBuild() {
-        MethodHandle mh = hook.newMethodHandle();
-        hook.onMethodReady(PackedContainer.class, (a, b) -> {
+        if (hooks.size() > 1) {
+            throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hooks.get(0).method().getDeclaringClass())
+                    + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
+                    + StringFormatter.formatShortWithParameters(hooks.get(0).method()) + ", "
+                    + StringFormatter.formatShortWithParameters(hooks.get(1).method()));
+        }
+        AnnotatedMethodHook<Main> h = hooks.get(0);
+        MethodHandle mh = h.newMethodHandle();
+        h.onMethodReady(PackedContainer.class, (a, b) -> {
             b.run();
         });
 

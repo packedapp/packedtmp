@@ -22,37 +22,35 @@ import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import packed.internal.xomponentcache.exam.Dddd.MyExtension;
-import packed.internal.xomponentcache.exam.Dddd.OnX;
 
 /**
  *
  */
-public class OnXConfigurator extends ContainerExtensionHookGroup<MyExtension, OnXConfigurator.Builder> {
+public class OnXConfigurator /* extends ContainerExtensionHookGroup<MyExtension, OnXConfigurator.Builder> */ {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        onAnnotatedMethodDescription(OnX.class, (a, b) -> {
-            a.list.add(b);
-        });
-        // MethodBuilder
-
-        // if has Context argument
-        //// Function<Context> ->
-
-        // TODO Auto-generated method stub
-
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Builder newBuilder(Class<?> componentType) {
-        return new Builder();
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // protected void configure() {
+    // onAnnotatedMethodDescription(OnX.class, (a, b) -> {
+    // a.list.add(b);
+    // });
+    // // MethodBuilder
+    //
+    // // if has Context argument
+    // //// Function<Context> ->
+    //
+    // // TODO Auto-generated method stub
+    //
+    // }
+    //
+    // /** {@inheritDoc} */
+    // @Override
+    // public Builder newBuilder(Class<?> componentType) {
+    // return new Builder();
+    // }
 
     static class Builder implements Supplier<BiConsumer<ComponentConfiguration, MyExtension>> {
 

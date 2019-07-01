@@ -15,28 +15,25 @@
  */
 package app.packed.container;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.BiConsumer;
+import java.lang.invoke.VarHandle;
 
-import app.packed.util.MethodDescriptor;
+import app.packed.util.FieldDescriptor;
 
 /**
  *
  */
 // We could extend from an MethodHook
-public interface AnnotatedMethodHook<T> {
-
-    T annotation();
+public interface AnnotatedFieldHook<T> {
 
     // TODO remove this method
     Lookup lookup();
 
-    MethodDescriptor method();
+    FieldDescriptor field();
 
-    MethodHandle newMethodHandle();
+    VarHandle newVarHandle();
 
-    <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
+    // <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 
     // We throw access exception as a runtime exception, because there is no way the client (Extension).
     // Can do anything about access problems

@@ -20,7 +20,7 @@ import java.lang.annotation.Annotation;
 import app.packed.util.FieldDescriptor;
 
 /*** A hook representing an annotated field on an instance. */
-public interface AnnotatedFieldHook<T extends Annotation> extends Hook {
+public interface OldAnnotatedFieldHook<T extends Annotation> extends Hook {
 
     /**
      * Returns the annotation value.

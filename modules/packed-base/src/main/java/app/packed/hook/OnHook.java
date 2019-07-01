@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
- * of either {@link AnnotatedFieldHook}, {@link OldAnnotatedMethodHook}, {@link AnnotatedTypeHook} or
+ * of either {@link OldAnnotatedFieldHook}, {@link OldAnnotatedMethodHook}, {@link AnnotatedTypeHook} or
  * {@link InstanceOfHook}.
  */
 // Should also be able to take a Stream/List/Collection/Iterable

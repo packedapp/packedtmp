@@ -28,11 +28,13 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 
+import app.packed.container.AnnotatedFieldHook;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.NativeImage;
+import app.packed.hook.OldAnnotatedFieldHook;
 import app.packed.hook.OnHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
@@ -41,29 +43,33 @@ import packed.internal.util.TypeVariableExtractorUtil;
 /**
  *
  */
-public class ExtensionHookGroupConfiguration {
+final class HookGroup {
 
-    static final ClassValue<ExtensionHookGroupConfiguration> FOR_CLASS = new ClassValue<>() {
+    static final ClassValue<HookGroup> FOR_CLASS = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionHookGroupConfiguration computeValue(Class<?> type) {
-            return new ExtensionHookGroupConfiguration.Builder((Class<? extends ContainerExtensionHookProcessor<?>>) type).build();
+        protected HookGroup computeValue(Class<?> type) {
+            return new HookGroup.Builder((Class<? extends ContainerExtensionHookProcessor<?>>) type).build();
         }
     };
-    final HashMap<Class<? extends Annotation>, OnMethod> annotatedMethods;
+
+    private final HashMap<Class<? extends Annotation>, HookMethod> annotatedMethods;
+
+    final HashMap<Class<? extends Annotation>, HookMethod> annotatedFields;
 
     final MethodHandle mh;
 
     final Class<? extends ContainerExtension<?>> extensionClass;
 
-    private ExtensionHookGroupConfiguration(Builder builder) {
+    private HookGroup(Builder builder) {
         this.mh = requireNonNull(builder.mh);
-        extensionClass = builder.extensionClass;
+        this.extensionClass = builder.extensionClass;
         this.annotatedMethods = builder.annotatedMethods;
+        this.annotatedFields = builder.annotatedFields;
     }
 
-    public ContainerExtensionHookProcessor<?> instantiate() {
+    ContainerExtensionHookProcessor<?> instantiate() {
         try {
             return (ContainerExtensionHookProcessor<?>) mh.invoke();
         } catch (Throwable e) {
@@ -71,14 +77,15 @@ public class ExtensionHookGroupConfiguration {
         }
     }
 
-    public void invokeAnnotatedMethod(Class<? extends Annotation> an, ContainerExtensionHookProcessor<?> p, AnnotatedMethodHook<?> hook) {
+    void invokeHookOnAnnotatedField(Class<? extends Annotation> an, ContainerExtensionHookProcessor<?> p, AnnotatedFieldHook<?> hook) {
         requireNonNull(p);
-        OnMethod om = annotatedMethods.get(an);
+        HookMethod om = annotatedFields.get(an);
         if (om == null) {
             System.out.println(an);
-            System.out.println(annotatedMethods.keySet());
-            throw new IllegalStateException();
+            System.out.println(annotatedFields.keySet());
+            throw new IllegalStateException("" + an);
         }
+
         try {
             om.mh.invoke(p, hook);
         } catch (Throwable e) {
@@ -86,8 +93,26 @@ public class ExtensionHookGroupConfiguration {
         }
     }
 
-    public static class Builder {
-        final HashMap<Class<? extends Annotation>, OnMethod> annotatedMethods = new HashMap<>();
+    void invokeHookOnAnnotatedMethod(Class<? extends Annotation> an, ContainerExtensionHookProcessor<?> p, AnnotatedMethodHook<?> hook) {
+        requireNonNull(p);
+        HookMethod om = annotatedMethods.get(an);
+        if (om == null) {
+            System.out.println(an);
+            System.out.println(annotatedMethods.keySet());
+            throw new IllegalStateException("" + an);
+        }
+
+        try {
+            om.mh.invoke(p, hook);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static class Builder {
+        final HashMap<Class<? extends Annotation>, HookMethod> annotatedMethods = new HashMap<>();
+
+        final HashMap<Class<? extends Annotation>, HookMethod> annotatedFields = new HashMap<>();
 
         private final Class<? extends ContainerExtensionHookProcessor<?>> type;
 
@@ -102,7 +127,7 @@ public class ExtensionHookGroupConfiguration {
         }
 
         @SuppressWarnings("rawtypes")
-        ExtensionHookGroupConfiguration build() {
+        HookGroup build() {
             if ((Class) type == ContainerExtensionHookProcessor.class) {
                 throw new IllegalArgumentException();
             }
@@ -127,29 +152,37 @@ public class ExtensionHookGroupConfiguration {
             for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
                     if (method.isAnnotationPresent(OnHook.class)) {
-                        Parameter[] ps = method.getParameters();
-                        if (ps.length != 1) {
-                            throw new RuntimeException();
-                        }
-                        Parameter p = ps[0];
-                        Class<?> cl = p.getType();
-                        if (cl == AnnotatedMethodHook.class) {
-                            ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-                            @SuppressWarnings("unchecked")
-                            Class<? extends Annotation> anno = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
-                            addAnnotatedMethodHook(lookup, method, anno);
-                        } else {
-                            throw new UnsupportedOperationException("Unknown type " + cl);
-                        }
-                        // p.getParameterizedType()
-                        // method.
+                        addMethod(lookup, method);
                     }
                 }
             }
-            return new ExtensionHookGroupConfiguration(this);
+            return new HookGroup(this);
         }
 
-        private void addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
+        private void addMethod(Lookup lookup, Method method) {
+            Parameter[] ps = method.getParameters();
+            if (ps.length != 1) {
+                throw new RuntimeException();
+            }
+            Parameter p = ps[0];
+            Class<?> cl = p.getType();
+            if (cl == AnnotatedMethodHook.class || cl == OldAnnotatedFieldHook.class) {
+                ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
+                @SuppressWarnings("unchecked")
+                Class<? extends Annotation> anno = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
+                HookMethod om = addAnnotatedMethodHook(lookup, method, anno);
+                if (cl == AnnotatedMethodHook.class) {
+                    annotatedMethods.put(anno, om);
+                } else {
+                    annotatedFields.put(anno, om);
+                }
+
+            } else {
+                throw new UnsupportedOperationException("Unknown type " + cl);
+            }
+        }
+
+        private HookMethod addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
             if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
                 throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
                         + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
@@ -162,18 +195,18 @@ public class ExtensionHookGroupConfiguration {
                 throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
                         + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
             }
-            annotatedMethods.put(annotationType, new OnMethod(annotationType, mh));
+            return new HookMethod(annotationType, mh);
         }
     }
 
-    static class OnMethod {
+    // Egentlig har vi kun brug for MethodHandle, men vi gemmer den lige lidt endnu.
+    static class HookMethod {
         final Class<?> annotationType;
         final MethodHandle mh;
 
-        public OnMethod(Class<?> annotationType, MethodHandle mh) {
+        HookMethod(Class<?> annotationType, MethodHandle mh) {
             this.annotationType = annotationType;
             this.mh = mh;
         }
     }
-
 }

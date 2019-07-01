@@ -22,7 +22,6 @@ import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.hook.OnHook;
 import app.packed.inject.Provide2;
-import packed.internal.componentcache.Injector2Extension;
 
 /**
  *
@@ -41,6 +40,7 @@ public final class ProvideHookProcessor extends ContainerExtensionHookProcessor<
 
     @OnHook
     public void onProvidedMethod(AnnotatedMethodHook<Provide2> h) {
+        System.out.println("DD");
         // If Static
         // h.create()
     }
@@ -48,8 +48,7 @@ public final class ProvideHookProcessor extends ContainerExtensionHookProcessor<
     /** {@inheritDoc} */
     @Override
     public BiConsumer<ComponentConfiguration, Injector2Extension> onBuild() {
-        throw new UnsupportedOperationException();
-        // return (cc, e) -> e.onInstall(this, cc);
+        return (cc, e) -> e.onInstall(this, cc);
     }
 }
 // Or Just methods that take AnnotatedMethodHook<Provide2>

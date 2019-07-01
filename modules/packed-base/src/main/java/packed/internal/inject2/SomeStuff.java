@@ -13,30 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.annotations;
+package packed.internal.inject2;
+
+import app.packed.app.AppBundle;
+import app.packed.inject.Provide2;
 
 /**
  *
  */
+public class SomeStuff extends AppBundle {
 
-// ComponentExtension??? For activation
-
-public class AtMainGroup {
-
-    final AtDependable main;
-
-    /**
-     * Creates a new provides group
-     * 
-     * @param builder
-     *            the builder to create the group for
-     */
-    private AtMainGroup(Builder builder) {
-        this.main = builder.main;
+    @Override
+    protected final void configure() {
+        use(Injector2Extension.class).provide2(this);
     }
 
-    /** A builder for an {@link AtMainGroup}. */
-    public final static class Builder {
-        AtDependable main;
+    @Provide2
+    public static String goo() {
+        return "ddd";
+    }
+
+    public static void main(String[] args) {
+        run(new SomeStuff());
+        System.out.println("BNye");
     }
 }

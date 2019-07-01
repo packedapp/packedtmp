@@ -110,8 +110,24 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         return configuratorType;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Lookup lookup() {
+        // TODO fix, this method does not work
+        return MethodHandles.lookup();
+    }
+
     public ComponentLookup withLookup(Lookup lookup) {
         return lookup == null ? this : LOOKUP_CACHE.get(lookup);
+    }
+
+    public static ContainerConfiguratorCache get(ContainerSource source) {
+        if (source instanceof ContainerBundle) {
+            return CACHE.get(source.getClass());
+        } else {
+            throw new UnsupportedOperationException();
+            // return CACHE.get(((InjectorConfiguratorContainerSource) source).getType());
+        }
     }
 
     /**
@@ -123,15 +139,6 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
      */
     public static ContainerConfiguratorCache of(Class<?> configuratorType) {
         return CACHE.get(configuratorType);
-    }
-
-    public static ContainerConfiguratorCache get(ContainerSource source) {
-        if (source instanceof ContainerBundle) {
-            return CACHE.get(source.getClass());
-        } else {
-            throw new UnsupportedOperationException();
-            // return CACHE.get(((InjectorConfiguratorContainerSource) source).getType());
-        }
     }
 
     static final class PerLookup implements ComponentLookup {
@@ -176,13 +183,6 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         public Lookup lookup() {
             return lookup;
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Lookup lookup() {
-        // TODO fix, this method does not work
-        return MethodHandles.lookup();
     }
 }
 

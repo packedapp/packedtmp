@@ -22,7 +22,6 @@ import java.util.Optional;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
-import packed.internal.componentcache.ExtensionHookGroupConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.support.AppPackedContainerSupport;
 
@@ -61,12 +60,13 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
-            @Override
-            public void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder builder) {
-                c.builder = builder;
-                c.configure();
-                c.builder = null;
-            }
+            // @Override
+            // public void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder
+            // builder) {
+            // c.builder = builder;
+            // c.configure();
+            // c.builder = null;
+            // }
 
             @Override
             public void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration) {
@@ -152,6 +152,12 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     public void onContainerConfigured() {}
 
     /**
+     * This method is invoked exactly once by the runtime immediately after the extension is added to a container
+     * configuration. And before the extension is made available to other extensions or users.
+     */
+    protected void onExtensionAdded() {}
+
+    /**
      * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
      * invoked multiple times. Even by multiple threads
      * 
@@ -159,12 +165,6 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
      *            an instantiation context object
      */
     public void onPrepareContainerInstantiate(InstantiationContext context) {}
-
-    /**
-     * This method is invoked exactly once by the runtime immediately after the extension is added to a container
-     * configuration. And before the extension is made available to other extensions or users.
-     */
-    protected void onExtensionAdded() {}
 
     /**
      * If the underlying container has parent which uses this container, returns the parents
@@ -177,14 +177,6 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
         throw new UnsupportedOperationException();
     }
 
-    // Skal have en eller anden form for link med...
-    // Hvor man kan gemme ting. f.eks. en Foo.class
-    // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
-    // protected void onWireChild(@Nullable T child, BundleLink link) {}
-    //
-    // // onWireChikd
-    // protected void onWireParent(@Nullable T parent, BundleLink link) {}
-
     /**
      * Returns the path of the underlying container.
      * 
@@ -193,6 +185,14 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     protected final ComponentPath path() {
         return configuration().path();
     }
+
+    // Skal have en eller anden form for link med...
+    // Hvor man kan gemme ting. f.eks. en Foo.class
+    // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
+    // protected void onWireChild(@Nullable T child, BundleLink link) {}
+    //
+    // // onWireChikd
+    // protected void onWireParent(@Nullable T parent, BundleLink link) {}
 
     /**
      * Creates a new configuration site
@@ -210,6 +210,10 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
         // ConfigSite spawnConfigSite(ConfigSiteStackFilter f, String name) {} Den ved alt om config sites er disablet paa
         // containeren
         throw new UnsupportedOperationException();
+    }
+
+    public final <E extends ContainerExtension<E>> E use(Class<E> extensionType) {
+        return configuration.use(extensionType);
     }
 
     /**

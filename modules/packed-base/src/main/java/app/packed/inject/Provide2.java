@@ -15,17 +15,21 @@
  */
 package app.packed.inject;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.CLASS;
-
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(CLASS)
-@Target(TYPE)
+import app.packed.container.ContainerExtensionActivator;
+import packed.internal.inject2.ProvideHookProcessor;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
+
 /**
  *
  */
+@ContainerExtensionActivator(ProvideHookProcessor.class)
 public @interface Provide2 {
 
 }
