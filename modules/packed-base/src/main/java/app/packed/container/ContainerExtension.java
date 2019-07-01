@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
 import packed.internal.container.PackedContainerConfiguration;
@@ -88,6 +87,7 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
      * @return the build context
      */
     protected final ArtifactBuildContext buildContext() {
+        // Need to set up a contract for which methods we repeat here...
         return configuration().buildContext();
     }
 
@@ -169,15 +169,6 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns the path of the underlying container.
-     * 
-     * @return the path of the underlying container
-     */
-    protected final ComponentPath path() {
-        return configuration().path();
-    }
-
     // Skal have en eller anden form for link med...
     // Hvor man kan gemme ting. f.eks. en Foo.class
     // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
@@ -204,7 +195,7 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
         throw new UnsupportedOperationException();
     }
 
-    public final <E extends ContainerExtension<E>> E use(Class<E> extensionType) {
+    protected final <E extends ContainerExtension<E>> E use(Class<E> extensionType) {
         return configuration.use(extensionType);
     }
 
@@ -220,7 +211,16 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
         return configuration().wirelets();
     }
 }
-
+//
+/// **
+// * Returns the path of the underlying container.
+// *
+// * @return the path of the underlying container
+// * @see ContainerConfiguration#path()
+// */
+// protected final ComponentPath path() {
+// return configuration().path();
+// }
 // protected final void newLine() {
 // checksConfigurable
 // FreezesAnyNode before

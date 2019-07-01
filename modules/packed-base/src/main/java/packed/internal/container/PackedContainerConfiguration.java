@@ -129,6 +129,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);
+        super.state = State.FINAL; // Thing is here, that initialize name returns early if name!=null
     }
 
     public PackedContainerConfiguration doBuild() {
@@ -321,6 +322,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(extensionType, "extensionType is null");
         return (T) extensions.computeIfAbsent(extensionType, k -> {
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
+
+            // ContainerExtension<?> e = ExtensionClassCacheWithCachedSupplier.newInstance(extensionType);
             ContainerExtension<?> e = ExtensionClassCache.newInstance(extensionType);
             AppPackedContainerSupport.invoke().initializeExtension(e, this);
             return e;

@@ -67,7 +67,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     private final InternalConfigSite site;
 
     /** The state of this configuration. */
-    private State state = State.INITIAL;
+    State state = State.INITIAL;
 
     /**
      * Creates a new abstract component configuration
@@ -109,7 +109,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     public final void checkConfigurable() {
         if (state == State.FINAL) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("This configuration can no longer be modified");
         }
     }
 

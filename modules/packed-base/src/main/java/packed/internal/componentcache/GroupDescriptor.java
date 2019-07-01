@@ -39,6 +39,7 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
@@ -184,6 +185,7 @@ class MethodConsumer<S> {
                 try {
                     mh.invoke();
                 } catch (Throwable e) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new RuntimeException(e);
                 }
             }

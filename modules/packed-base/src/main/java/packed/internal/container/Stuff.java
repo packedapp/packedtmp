@@ -13,37 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package packed.internal.container;
 
+import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
 
 /**
  *
  */
-public class MainTest2 extends Bundle {
-
-    @Override
-    protected void configure() {
-        link(new MyMainX());
-    }
+public class Stuff {
 
     public static void main(String[] args) {
-        App.of(new MainTest2());
+        Bundle b = new Bundle() {
+            @Override
+            public void configure() {
+                install("foo");
+            }
+        };
+        ArtifactImage.of(b);
+        ArtifactImage.of(b);
     }
 
-    static class MyMainX extends Bundle {
-
-        @Override
-        protected void configure() {
-            install(this);
-            path();
-            install("foo").path();
-            install(334).path();
-        }
-
-        @Main
-        public static void say() {
-            System.out.println("HelloWorld!!");
-        }
-    }
 }

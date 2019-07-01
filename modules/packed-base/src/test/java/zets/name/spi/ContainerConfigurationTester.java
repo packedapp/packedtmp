@@ -18,6 +18,7 @@ package zets.name.spi;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
@@ -37,6 +38,17 @@ public class ContainerConfigurationTester {
 
     public ContainerConfigurationTester(ContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
+    }
+
+    /**
+     * @return the cc
+     */
+    public ContainerConfiguration configuration() {
+        return cc;
+    }
+
+    public Set<Class<? extends ContainerExtension<?>>> extensions() {
+        return cc.extensions();
     }
 
     public ContainerConfigurationTester getNameIs(String expected) {
@@ -86,6 +98,10 @@ public class ContainerConfigurationTester {
     public ContainerConfigurationTester setName(String name) {
         assertThat(cc.setName(name)).isEqualTo(cc);
         return this;
+    }
+
+    public <T extends ContainerExtension<T>> T use(Class<T> extensionType) {
+        return cc.use(extensionType);
     }
 
     public <T extends ContainerExtension<T>> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {

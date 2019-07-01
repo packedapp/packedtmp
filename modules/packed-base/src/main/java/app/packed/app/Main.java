@@ -90,9 +90,7 @@ final class MainProcessor extends ContainerExtensionHookProcessor<LifecycleExten
         }
         AnnotatedMethodHook<Main> h = hooks.get(0);
         MethodHandle mh = h.newMethodHandle();
-        h.onMethodReady(PackedContainer.class, (a, b) -> {
-            b.run();
-        });
+        h.onMethodReady(PackedContainer.class, (a, b) -> b.run());
 
         // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
         return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
