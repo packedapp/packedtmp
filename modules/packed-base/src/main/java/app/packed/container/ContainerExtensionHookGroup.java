@@ -20,10 +20,16 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
+import app.packed.app.Main;
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.lifecycle.LifecycleExtension;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.componentcache.ExtensionHookGroupConfiguration;
+import packed.internal.container.PackedContainer;
+import packed.internal.support.AppPackedLifecycleSupport;
+import packed.internal.util.StringFormatter;
 
 /**
  *
@@ -55,10 +61,11 @@ public abstract class ContainerExtensionHookGroup<E extends ContainerExtension<E
      * 
      * @return a hook group configuration builder
      */
-    private ExtensionHookGroupConfiguration.Builder builder() {
+    ExtensionHookGroupConfiguration.Builder builder() {
         ExtensionHookGroupConfiguration.Builder b = builder;
         if (b == null) {
-            throw new IllegalStateException("This method can only be invoked from within " + ContainerExtensionHookGroup.class.getSimpleName() + ".configure()");
+            throw new IllegalStateException(
+                    "This method can only be invoked from within " + ContainerExtensionHookGroup.class.getSimpleName() + ".configure()");
         }
         return builder;
     }
@@ -82,17 +89,11 @@ public abstract class ContainerExtensionHookGroup<E extends ContainerExtension<E
 
     }
 
-    protected final <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<B, AnnotatedMethodHook<A>> consumer) {
-        builder().onAnnotatedMethod(annotationType, consumer);
-    }
+    protected final <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<B, AnnotatedMethodHook<A>> consumer) {}
 
-    protected final <A extends Annotation> void onAnnotatedMethodDescription(Class<A> annotationType, BiConsumer<B, MethodDescriptor> consumer) {
-        builder().onAnnotatedMethodDescription(annotationType, consumer);
-    }
+    protected final <A extends Annotation> void onAnnotatedMethodDescription(Class<A> annotationType, BiConsumer<B, MethodDescriptor> consumer) {}
 
-    protected final <A extends Annotation> void onAnnotatedMethodHandle(Class<A> annotationType, BiConsumer<B, MethodHandle> consumer) {
-        builder().onAnnotatedMethodHandle(annotationType, consumer);
-    }
+    protected final <A extends Annotation> void onAnnotatedMethodHandle(Class<A> annotationType, BiConsumer<B, MethodHandle> consumer) {}
 
     protected final <A extends Annotation> void onTypeAnnotation(Class<A> annotationType, BiConsumer<B, A> consumer) {
         throw new UnsupportedOperationException();
@@ -113,6 +114,48 @@ public abstract class ContainerExtensionHookGroup<E extends ContainerExtension<E
     // */
     // BiConsumer<ComponentConfiguration, E> build();
     // }
+}
+
+/** Takes care of component methods annotated with {@link Main}. */
+final class MainExtensionHookGroup extends ContainerExtensionHookGroup<LifecycleExtension, MainExtensionHookGroup.Builder> {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        onAnnotatedMethod(Main.class, (b, m) -> b.add(m));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Builder newBuilder(Class<?> componentType) {
+        return new Builder();
+    }
+
+    static class Builder implements Supplier<BiConsumer<ComponentConfiguration, LifecycleExtension>> {
+
+        private AnnotatedMethodHook<Main> hook;
+
+        private void add(AnnotatedMethodHook<Main> hook) {
+            if (this.hook != null) {
+                throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hook.method().getDeclaringClass())
+                        + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
+                        + StringFormatter.formatShortWithParameters(this.hook.method()) + ", " + StringFormatter.formatShortWithParameters(hook.method()));
+            }
+            this.hook = hook;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
+            MethodHandle mh = hook.newMethodHandle();
+            hook.onMethodReady(PackedContainer.class, (a, b) -> {
+                b.run();
+            });
+
+            // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
+            return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
+        }
+    }
 }
 //// Er det maaden vi ogsaa skal fikse hooks paa...
 // public abstract class ExtensionMethodConfigurator {

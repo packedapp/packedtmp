@@ -24,6 +24,7 @@ import java.util.Optional;
 
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.util.Key;
+import packed.internal.annotations.AtProvidesGroup;
 
 /**
  * An annotation indicating that the annotated type, method or field provides a service of some kind. A field
@@ -84,7 +85,7 @@ import app.packed.util.Key;
 
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
-@ContainerExtensionActivator(ProvideExtensionActivator.class)
+@ContainerExtensionActivator(AtProvidesGroup.Builder.class)
 public @interface Provide {
 
     boolean prototype() default false;

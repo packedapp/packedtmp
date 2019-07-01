@@ -90,6 +90,7 @@ public class Foo {
                         + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
             }
             NativeImage.registerMethod(method);
+            System.out.println(mh);
         }
     }
 

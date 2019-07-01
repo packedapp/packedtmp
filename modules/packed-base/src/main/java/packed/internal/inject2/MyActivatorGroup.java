@@ -22,7 +22,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.inject.Provide2;
-import packed.internal.componentcache2.Injector2Extension;
+import packed.internal.componentcache.Injector2Extension;
 
 /**
  *

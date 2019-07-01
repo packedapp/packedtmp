@@ -23,18 +23,18 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InaccessibleObjectException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.util.HashMap;
 
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookGroup;
+import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.NativeImage;
+import app.packed.hook.OnHook;
 import app.packed.util.IllegalAccessRuntimeException;
-import app.packed.util.MethodDescriptor;
-import packed.internal.support.AppPackedContainerSupport;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -48,39 +48,62 @@ public class ExtensionHookGroupConfiguration {
         @SuppressWarnings("unchecked")
         @Override
         protected ExtensionHookGroupConfiguration computeValue(Class<?> type) {
-            return new ExtensionHookGroupConfiguration.Builder((Class<? extends ContainerExtensionHookGroup<?, ?>>) type).build();
+            return new ExtensionHookGroupConfiguration.Builder((Class<? extends ContainerExtensionHookProcessor<?>>) type).build();
         }
     };
+    final HashMap<Class<? extends Annotation>, OnMethod> annotatedMethods;
 
-    final ContainerExtensionHookGroup<?, ?> egc;
+    final MethodHandle mh;
 
     final Class<? extends ContainerExtension<?>> extensionClass;
 
-    final List<Object> list;
-
     private ExtensionHookGroupConfiguration(Builder builder) {
-        egc = requireNonNull(builder.egc);
+        this.mh = requireNonNull(builder.mh);
         extensionClass = builder.extensionClass;
-        this.list = builder.list;
+        this.annotatedMethods = builder.annotatedMethods;
+    }
+
+    public ContainerExtensionHookProcessor<?> instantiate() {
+        try {
+            return (ContainerExtensionHookProcessor<?>) mh.invoke();
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void invokeAnnotatedMethod(Class<? extends Annotation> an, ContainerExtensionHookProcessor<?> p, AnnotatedMethodHook<?> hook) {
+        requireNonNull(p);
+        OnMethod om = annotatedMethods.get(an);
+        if (om == null) {
+            System.out.println(an);
+            System.out.println(annotatedMethods.keySet());
+            throw new IllegalStateException();
+        }
+        try {
+            om.mh.invoke(p, hook);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class Builder {
-        final ArrayList<Object> list = new ArrayList<>();
-        ContainerExtensionHookGroup<?, ?> egc;
+        final HashMap<Class<? extends Annotation>, OnMethod> annotatedMethods = new HashMap<>();
 
-        final Class<? extends ContainerExtensionHookGroup<?, ?>> type;
+        private final Class<? extends ContainerExtensionHookProcessor<?>> type;
 
         final Class<? extends ContainerExtension<?>> extensionClass;
 
+        MethodHandle mh;
+
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        Builder(Class<? extends ContainerExtensionHookGroup<?, ?>> type) {
+        Builder(Class<? extends ContainerExtensionHookProcessor<?>> type) {
             this.type = requireNonNull(type);
-            extensionClass = (Class) TypeVariableExtractorUtil.findTypeParameterFromSuperClass(type, ContainerExtensionHookGroup.class, 0);
+            extensionClass = (Class) TypeVariableExtractorUtil.findTypeParameterFromSuperClass(type, ContainerExtensionHookProcessor.class, 0);
         }
 
         @SuppressWarnings("rawtypes")
         ExtensionHookGroupConfiguration build() {
-            if ((Class) type == ContainerExtensionHookGroup.class) {
+            if ((Class) type == ContainerExtensionHookProcessor.class) {
                 throw new IllegalArgumentException();
             }
             // TODO check not abstract...
@@ -92,7 +115,6 @@ public class ExtensionHookGroupConfiguration {
             }
 
             Lookup lookup = MethodHandles.lookup();
-            MethodHandle mh;
             try {
                 constructor.setAccessible(true);
                 mh = lookup.unreflectConstructor(constructor);
@@ -102,73 +124,56 @@ public class ExtensionHookGroupConfiguration {
             }
 
             NativeImage.registerConstructor(constructor);
-            try {
-                egc = (ContainerExtensionHookGroup<?, ?>) mh.invoke();
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
+            for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
+                for (Method method : c.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(OnHook.class)) {
+                        Parameter[] ps = method.getParameters();
+                        if (ps.length != 1) {
+                            throw new RuntimeException();
+                        }
+                        Parameter p = ps[0];
+                        Class<?> cl = p.getType();
+                        if (cl == AnnotatedMethodHook.class) {
+                            ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
+                            @SuppressWarnings("unchecked")
+                            Class<? extends Annotation> anno = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
+                            addAnnotatedMethodHook(lookup, method, anno);
+                        } else {
+                            throw new UnsupportedOperationException("Unknown type " + cl);
+                        }
+                        // p.getParameterizedType()
+                        // method.
+                    }
+                }
             }
-            AppPackedContainerSupport.invoke().configureExtensionGroup(egc, this);
             return new ExtensionHookGroupConfiguration(this);
         }
 
-        public <A extends Annotation> void onAnnotatedMethod(Class<A> annotationType, BiConsumer<?, AnnotatedMethodHook<A>> consumer) {
+        private void addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
             if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
                 throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
                         + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
             }
-            list.add(new OnMethod(annotationType, consumer));
-        }
-
-        /**
-         * @param annotationType
-         * @param consumer
-         */
-        public void onAnnotatedMethodDescription(Class<?> annotationType, BiConsumer<?, MethodDescriptor> consumer) {
-            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
-                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
-                        + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+            MethodHandle mh;
+            try {
+                method.setAccessible(true);
+                mh = lookup.unreflect(method);
+            } catch (IllegalAccessException | InaccessibleObjectException e) {
+                throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
+                        + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
             }
-            list.add(new OnMethodDescription(annotationType, consumer));
-            // TODO Auto-generated method stub
-        }
-
-        public void onAnnotatedMethodHandle(Class<?> annotationType, BiConsumer<?, MethodHandle> consumer) {
-            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
-                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
-                        + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
-            }
-            list.add(new OnMethodHandle(annotationType, consumer));
-            // TODO Auto-generated method stub
+            annotatedMethods.put(annotationType, new OnMethod(annotationType, mh));
         }
     }
 
     static class OnMethod {
         final Class<?> annotationType;
-        final BiConsumer<?, ? extends AnnotatedMethodHook<?>> consumer;
+        final MethodHandle mh;
 
-        public OnMethod(Class<?> annotationType, BiConsumer<?, ? extends AnnotatedMethodHook<?>> consumer) {
+        public OnMethod(Class<?> annotationType, MethodHandle mh) {
             this.annotationType = annotationType;
-            this.consumer = consumer;
+            this.mh = mh;
         }
     }
 
-    static class OnMethodDescription {
-        final Class<?> annotationType;
-        final BiConsumer<?, MethodDescriptor> consumer;
-
-        public OnMethodDescription(Class<?> annotationType, BiConsumer<?, MethodDescriptor> consumer) {
-            this.annotationType = annotationType;
-            this.consumer = consumer;
-        }
-    }
-
-    static class OnMethodHandle {
-        final Class<?> annotationType;
-        final BiConsumer<?, MethodHandle> consumer;
-
-        public OnMethodHandle(Class<?> annotationType, BiConsumer<?, MethodHandle> consumer) {
-            this.annotationType = annotationType;
-            this.consumer = consumer;
-        }
-    }
 }

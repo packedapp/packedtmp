@@ -25,19 +25,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionHookGroup;
+import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.InstantiationContext;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
-import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethod;
-import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodDescription;
-import packed.internal.componentcache.ExtensionHookGroupConfiguration.OnMethodHandle;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -55,7 +51,7 @@ public final class GroupDescriptor {
 
     private GroupDescriptor(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
-        this.build = requireNonNull(b.b.get());
+        this.build = requireNonNull(b.b.onBuild());
         this.consumers = List.copyOf(b.consumers);
     }
 
@@ -67,7 +63,7 @@ public final class GroupDescriptor {
 
     static class Builder {
 
-        final Supplier<BiConsumer<ComponentConfiguration, ?>> b;
+        final ContainerExtensionHookProcessor<?> b;
 
         /** The component type */
         final Class<?> componentType;
@@ -76,11 +72,10 @@ public final class GroupDescriptor {
 
         private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        Builder(Class<?> componentType, Class<? extends ContainerExtensionHookGroup<?, ?>> cc) {
+        Builder(Class<?> componentType, Class<? extends ContainerExtensionHookProcessor<?>> cc) {
             this.componentType = requireNonNull(componentType);
             this.conf = ExtensionHookGroupConfiguration.FOR_CLASS.get(cc);
-            this.b = (Supplier) conf.egc.newBuilder(componentType);
+            this.b = conf.instantiate();
         }
 
         GroupDescriptor build() {
@@ -93,89 +88,68 @@ public final class GroupDescriptor {
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         void onAnnotatedMethod(ComponentLookup lookup, Method method, Annotation annotation) {
-            for (Object o : conf.list) {
-                if (o instanceof ExtensionHookGroupConfiguration.OnMethodDescription) {
-                    ExtensionHookGroupConfiguration.OnMethodDescription omd = (OnMethodDescription) o;
-                    if (omd.annotationType == annotation.annotationType()) {
-                        ((BiConsumer) omd.consumer).accept(b, MethodDescriptor.of(method));
-                    }
-                } else if (o instanceof ExtensionHookGroupConfiguration.OnMethodHandle) {
-                    ExtensionHookGroupConfiguration.OnMethodHandle omd = (OnMethodHandle) o;
-                    if (omd.annotationType == annotation.annotationType()) {
-                        method.setAccessible(true);
-                        MethodHandle mh;
-                        try {
-                            mh = MethodHandles.lookup().unreflect(method);
-                        } catch (IllegalAccessException e) {
-                            throw new IllegalAccessRuntimeException("stuff", e);
-                        }
-                        ((BiConsumer) omd.consumer).accept(b, mh);
-                    }
-                } else if (o instanceof ExtensionHookGroupConfiguration.OnMethod) {
-                    ExtensionHookGroupConfiguration.OnMethod omd = (OnMethod) o;
-                    if (omd.annotationType == annotation.annotationType()) {
-                        ((BiConsumer) omd.consumer).accept(b, new AnnotatedMethodHook() {
-
-                            @Override
-                            public MethodHandle newMethodHandle() {
-                                method.setAccessible(true);
-                                try {
-                                    return MethodHandles.lookup().unreflect(method);
-                                } catch (IllegalAccessException e) {
-                                    throw new IllegalAccessRuntimeException("stuff", e);
-                                }
-                            }
-
-                            @Override
-                            public MethodDescriptor method() {
-                                return MethodDescriptor.of(method);
-                            }
-
-                            @Override
-                            public void onMethodReady(Class key, BiConsumer consumer) {
-                                requireNonNull(key, "key is null");
-                                requireNonNull(consumer, "consumer is null");
-                                consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
-                            }
-                        });
-                    }
-                }
-            }
-            // conf.forAnnotatedMethods();
-            // MethodHandle mh = lookup.acquireMethodHandle(componentType, method);
-        }
-    }
-
-    static class MethodConsumer<S> {
-        final BiConsumer<S, Runnable> consumer;
-        final Class<S> key;
-        final MethodHandle mh;
-
-        /**
-         * @param key
-         * @param consumer
-         */
-        public MethodConsumer(Class<S> key, BiConsumer<S, Runnable> consumer, MethodHandle mh) {
-            this.key = requireNonNull(key);
-            this.consumer = requireNonNull(consumer, "consumer is null");
-            this.mh = requireNonNull(mh);
-
-        }
-
-        void prepare(ContainerConfiguration cc, InstantiationContext ic) {
-            S s = ic.use(cc, key);
-            Runnable r = new Runnable() {
+            AnnotatedMethodHook hook = new AnnotatedMethodHook() {
 
                 @Override
-                public void run() {
+                public MethodHandle newMethodHandle() {
+                    method.setAccessible(true);
                     try {
-                        mh.invoke();
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
+                        return MethodHandles.lookup().unreflect(method);
+                    } catch (IllegalAccessException e) {
+                        throw new IllegalAccessRuntimeException("stuff", e);
                     }
                 }
+
+                @Override
+                public MethodDescriptor method() {
+                    return MethodDescriptor.of(method);
+                }
+
+                @Override
+                public void onMethodReady(Class key, BiConsumer consumer) {
+                    requireNonNull(key, "key is null");
+                    requireNonNull(consumer, "consumer is null");
+                    consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
+                }
             };
-            consumer.accept(s, r);
+            conf.invokeAnnotatedMethod(annotation.annotationType(), b, hook);
+
         }
+
+        // conf.forAnnotatedMethods();
+        // MethodHandle mh = lookup.acquireMethodHandle(componentType, method);
+    }
+}
+
+class MethodConsumer<S> {
+    final BiConsumer<S, Runnable> consumer;
+    final Class<S> key;
+    final MethodHandle mh;
+
+    /**
+     * @param key
+     * @param consumer
+     */
+    public MethodConsumer(Class<S> key, BiConsumer<S, Runnable> consumer, MethodHandle mh) {
+        this.key = requireNonNull(key);
+        this.consumer = requireNonNull(consumer, "consumer is null");
+        this.mh = requireNonNull(mh);
+
+    }
+
+    void prepare(ContainerConfiguration cc, InstantiationContext ic) {
+        S s = ic.use(cc, key);
+        Runnable r = new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    mh.invoke();
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        consumer.accept(s, r);
     }
 }

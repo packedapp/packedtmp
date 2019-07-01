@@ -21,7 +21,6 @@ import java.util.List;
 
 import app.packed.app.Main;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtension;
 import app.packed.util.MethodDescriptor;
 
@@ -57,6 +56,5 @@ public class Dddd {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @ContainerExtensionActivator(OnXConfigurator.class)
     public @interface OnX {}
 }

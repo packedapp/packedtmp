@@ -22,7 +22,7 @@ import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.hook.OnHook;
 import app.packed.inject.Provide2;
-import packed.internal.componentcache2.Injector2Extension;
+import packed.internal.componentcache.Injector2Extension;
 
 /**
  *
@@ -37,7 +37,7 @@ import packed.internal.componentcache2.Injector2Extension;
 // Hvorefter der bliver lavet en BiConsumer som bliver invokeret hver gang gang vi stoeder paa
 // komponent typen...
 
-public final class ProvideHookProcessor implements ContainerExtensionHookProcessor<Injector2Extension> {
+public final class ProvideHookProcessor extends ContainerExtensionHookProcessor<Injector2Extension> {
 
     @OnHook
     public void onProvidedMethod(AnnotatedMethodHook<Provide2> h) {

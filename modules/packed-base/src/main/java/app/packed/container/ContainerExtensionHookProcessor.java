@@ -24,6 +24,9 @@ import app.packed.component.ComponentConfiguration;
  */
 // Hook annotations must be annotated with @ActivateHook()
 // Maybe something with Cache, ExtensionComponentCache
-public interface ContainerExtensionHookProcessor<E extends ContainerExtension<E>> {
-    BiConsumer<ComponentConfiguration, E> onBuild();
+
+// This should be an interface... However, We need to fix the code that can extract E.
+// Right now it only deals with abstract classes. (TypeVariable, Key, ...) because thats what we needed at the time
+public abstract class ContainerExtensionHookProcessor<E extends ContainerExtension<E>> {
+    public abstract BiConsumer<ComponentConfiguration, E> onBuild();
 }

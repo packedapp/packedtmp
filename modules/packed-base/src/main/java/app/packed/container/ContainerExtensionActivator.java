@@ -46,5 +46,5 @@ public @interface ContainerExtensionActivator {
      * 
      * @return the extension hook group that knows how do handle
      */
-    Class<? extends ContainerExtensionHookGroup<?, ?>> value();
+    Class<? extends ContainerExtensionHookProcessor<?>> value();
 }

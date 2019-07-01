@@ -21,12 +21,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookGroup;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleExtension;
@@ -52,7 +50,7 @@ import packed.internal.util.StringFormatter;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
-@ContainerExtensionActivator(MainExtensionHookGroup.class)
+@ContainerExtensionActivator(Builder.class)
 public @interface Main {
 
     /**
@@ -71,49 +69,7 @@ public @interface Main {
     boolean undeployOnCompletion() default true;
 }
 
-/** Takes care of component methods annotated with {@link Main}. */
-final class MainExtensionHookGroup extends ContainerExtensionHookGroup<LifecycleExtension, MainExtensionHookGroup.Builder> {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        onAnnotatedMethod(Main.class, (b, m) -> b.add(m));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Builder newBuilder(Class<?> componentType) {
-        return new Builder();
-    }
-
-    static class Builder implements Supplier<BiConsumer<ComponentConfiguration, LifecycleExtension>> {
-
-        private AnnotatedMethodHook<Main> hook;
-
-        private void add(AnnotatedMethodHook<Main> hook) {
-            if (this.hook != null) {
-                throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hook.method().getDeclaringClass())
-                        + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
-                        + StringFormatter.formatShortWithParameters(this.hook.method()) + ", " + StringFormatter.formatShortWithParameters(hook.method()));
-            }
-            this.hook = hook;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BiConsumer<ComponentConfiguration, LifecycleExtension> get() {
-            MethodHandle mh = hook.newMethodHandle();
-            hook.onMethodReady(PackedContainer.class, (a, b) -> {
-                b.run();
-            });
-
-            // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
-            return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
-        }
-    }
-}
-
-class Builder implements ContainerExtensionHookProcessor<LifecycleExtension> {
+final class Builder extends ContainerExtensionHookProcessor<LifecycleExtension> {
 
     private AnnotatedMethodHook<Main> hook;
 
