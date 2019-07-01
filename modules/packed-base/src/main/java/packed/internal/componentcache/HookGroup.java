@@ -37,6 +37,7 @@ import app.packed.container.NativeImage;
 import app.packed.hook.OnHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
@@ -88,6 +89,7 @@ final class HookGroup {
         try {
             om.mh.invoke(p, hook);
         } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new RuntimeException(e);
         }
     }
@@ -104,6 +106,7 @@ final class HookGroup {
         try {
             om.mh.invoke(p, hook);
         } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new RuntimeException(e);
         }
     }

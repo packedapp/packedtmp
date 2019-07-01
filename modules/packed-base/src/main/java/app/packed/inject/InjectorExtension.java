@@ -249,38 +249,41 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         checkConfigurable();
         InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
+        ComponentConfiguration install = use(ComponentExtension.class).install(factory);
+
         // Okay det her fra Factory skal caches....Med methodHandle....
         InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
         ServiceClassDescriptor desc = configuration0().lookup.serviceDescriptorFor(func.getReturnTypeRaw());
 
         BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, desc, InstantiationMode.SINGLETON,
                 configuration0().lookup.readable(func), (List) factory.dependencies());
-        Class<?> type = func.getReturnTypeRaw();
-        AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;
-        if (!provides.members.isEmpty()) {
-            node.hasInstanceMembers = provides.hasInstanceMembers;
-            // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-            // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-            // prototypes");
-            // }
+        if (apg != null) {
+            if (!apg.members.isEmpty()) {
+                node.hasInstanceMembers = apg.hasInstanceMembers;
+                // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+                // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
+                // prototypes");
+                // }
 
-            // First check that we do not have existing services with any of the provided keys
-            // for (Key<?> k : provides.members.keySet()) {
-            // // if (builder().box.services().nodes.containsKey(k)) {
-            // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-            // // }
-            // }
+                // First check that we do not have existing services with any of the provided keys
+                // for (Key<?> k : provides.members.keySet()) {
+                // // if (builder().box.services().nodes.containsKey(k)) {
+                // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
+                // // }
+                // }
 
-            // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-            // the same key, so we can just add them now without any verification
-            for (AtProvides member : provides.members.values()) {
-                builder.nodes2.add(node.provide(member));// put them directly
+                // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
+                // the same key, so we can just add them now without any verification
+                for (AtProvides member : apg.members.values()) {
+                    builder.nodes2.add(node.provide(member));// put them directly
+                }
             }
+            apg = null;
         }
 
         node.as(factory.defaultKey());
         builder.nodes2.add(node);
-        return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0(), null), node);
+        return new DefaultProvidedComponentConfiguration<>(configuration0(), (DefaultComponentConfiguration) install, node);
     }
 
     /**
@@ -337,35 +340,34 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     }
 
     public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
-        System.out.println("Set " + apg.members);
         this.apg = apg;
     }
 
     AtProvidesGroup apg;
-
-    private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
-        AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;
-        if (!provides.members.isEmpty()) {
-            owner.hasInstanceMembers = provides.hasInstanceMembers;
-            // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-            // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-            // prototypes");
-            // }
-
-            // First check that we do not have existing services with any of the provided keys
-            // for (Key<?> k : provides.members.keySet()) {
-            // // if (builder().box.services().nodes.containsKey(k)) {
-            // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-            // // }
-            // }
-
-            // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-            // the same key, so we can just add them now without any verification
-            for (AtProvides member : provides.members.values()) {
-                builder.nodes2.add(owner.provide(member));// put them directly
-            }
-        }
-    }
+    //
+    // private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
+    // AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;
+    // if (!provides.members.isEmpty()) {
+    // owner.hasInstanceMembers = provides.hasInstanceMembers;
+    // // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+    // // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
+    // // prototypes");
+    // // }
+    //
+    // // First check that we do not have existing services with any of the provided keys
+    // // for (Key<?> k : provides.members.keySet()) {
+    // // // if (builder().box.services().nodes.containsKey(k)) {
+    // // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
+    // // // }
+    // // }
+    //
+    // // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
+    // // the same key, so we can just add them now without any verification
+    // for (AtProvides member : provides.members.values()) {
+    // builder.nodes2.add(owner.provide(member));// put them directly
+    // }
+    // }
+    // }
 }
 
 //// ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
