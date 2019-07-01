@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentExtension;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerExtension;
 import app.packed.container.InstantiationContext;
@@ -278,6 +280,22 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         checkConfigurable();
         InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
+        ComponentConfiguration install = use(ComponentExtension.class).install(instance);
+
+        ServiceClassDescriptor sdesc = configuration0().lookup.serviceDescriptorFor(instance.getClass());
+        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, sdesc, instance);
+
+        scanForProvides(instance.getClass(), sc);
+        sc.as((Key) Key.of(instance.getClass()));
+        builder.nodes2.add(sc);
+        return new DefaultProvidedComponentConfiguration<>(configuration0(), (DefaultComponentConfiguration) install, sc);
+    }
+
+    public <T> ProvidedComponentConfiguration<T> provide2(T instance) {
+        requireNonNull(instance, "instance is null");
+        checkConfigurable();
+        InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
+
         ServiceClassDescriptor sdesc = configuration0().lookup.serviceDescriptorFor(instance.getClass());
         BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, sdesc, instance);
 
@@ -286,6 +304,13 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         builder.nodes2.add(sc);
         return new DefaultProvidedComponentConfiguration<>(configuration0(), new DefaultComponentConfiguration(configSite, configuration0(), null), sc);
     }
+
+    public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
+        System.out.println("Set " + apg.members);
+        this.apg = apg;
+    }
+
+    AtProvidesGroup apg;
 
     private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
         AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;

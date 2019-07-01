@@ -69,8 +69,7 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
     /** {@inheritDoc} */
     @Override
     public void accept(ComponentConfiguration cc, InjectorExtension e) {
-        // e.
-        // TODO Auto-generated method stub
+        e.set(cc, this);
     }
 
     /** A builder for an {@link AtProvidesGroup}. */

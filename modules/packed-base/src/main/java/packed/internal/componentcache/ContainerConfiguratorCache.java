@@ -175,7 +175,7 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         /** {@inheritDoc} */
         @Override
         public ComponentClassDescriptor componentDescriptorOf(Class<?> componentType) {
-            return componentDescriptorOf(componentType);
+            return descriptors.get(componentType);
         }
 
         /** {@inheritDoc} */
