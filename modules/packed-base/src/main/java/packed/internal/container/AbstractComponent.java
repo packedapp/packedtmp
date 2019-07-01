@@ -157,7 +157,7 @@ abstract class AbstractComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public final ComponentPath path() {
-        return new InternalComponentPath(this);
+        return PackedComponentPath.of(this);
     }
 
     @Override

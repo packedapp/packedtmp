@@ -60,14 +60,6 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
-            // @Override
-            // public void configureExtensionGroup(ContainerExtensionHookGroup<?, ?> c, ExtensionHookGroupConfiguration.Builder
-            // builder) {
-            // c.builder = builder;
-            // c.configure();
-            // c.builder = null;
-            // }
-
             @Override
             public void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration) {
                 bundle.doConfigure(configuration);

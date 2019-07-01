@@ -16,7 +16,8 @@
 package packed.internal.inject2;
 
 import app.packed.app.AppBundle;
-import app.packed.inject.Provide2;
+import app.packed.inject.Injector;
+import app.packed.inject.Provide;
 
 /**
  *
@@ -26,14 +27,16 @@ public class SomeStuff extends AppBundle {
     @Override
     protected final void configure() {
         use(Injector2Extension.class).provide2(this);
+        // export(String.class);
     }
 
-    @Provide2
+    @Provide(export = true)
     public static String goo() {
         return "ddd";
     }
 
     public static void main(String[] args) {
+        Injector.of(new SomeStuff()).services().forEach(e -> System.out.println(e.key()));
         run(new SomeStuff());
         System.out.println("BNye");
     }

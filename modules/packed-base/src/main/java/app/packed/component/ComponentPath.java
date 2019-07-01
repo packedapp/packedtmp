@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.stream.IntStream;
 
 import app.packed.util.Nullable;
+import packed.internal.container.PackedComponentPath;
 
 /**
  * A component path points to a single component in hierarchy of components (component system) expressed in a string of
@@ -71,63 +72,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     }
 
     /** A component path representing the root of a hierarchy. */
-    static final ComponentPath ROOT = new ComponentPath() {
-
-        /** {@inheritDoc} */
-        @Override
-        public char charAt(int index) {
-            return toString().charAt(index);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int compareTo(ComponentPath other) {
-            return other.isRoot() ? 0 : 1;
-        }
-
-        @Override
-        public int depth() {
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof ComponentPath && ((ComponentPath) other).isRoot();
-        }
-
-        @Override
-        public int hashCode() {
-            return toString().hashCode();
-        }
-
-        @Override
-        public boolean isRoot() {
-            return true;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int length() {
-            return 1;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath parent() {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public CharSequence subSequence(int start, int end) {
-            return toString().subSequence(start, end);
-        }
-
-        @Override
-        public String toString() {
-            return "/";
-        }
-    };
+    static final ComponentPath ROOT = PackedComponentPath.ROOT;
 
     /**
      * Returns the number of elements in this path. This is not a constant time operation as we might need to traverse

@@ -24,11 +24,71 @@ import app.packed.component.ComponentPath;
 import app.packed.util.Nullable;
 
 /** The default implementation of {@link ComponentPath}. */
-final class PackedComponentPath implements ComponentPath {
+public final class PackedComponentPath implements ComponentPath {
 
     private final String[] elements;
 
-    PackedComponentPath(String... elements) {
+    /** A component path representing the root of a hierarchy. */
+    //
+    public static final ComponentPath ROOT = new ComponentPath() {
+
+        /** {@inheritDoc} */
+        @Override
+        public char charAt(int index) {
+            return toString().charAt(index);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int compareTo(ComponentPath other) {
+            return other.isRoot() ? 0 : 1;
+        }
+
+        @Override
+        public int depth() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof ComponentPath && ((ComponentPath) other).isRoot();
+        }
+
+        @Override
+        public int hashCode() {
+            return toString().hashCode();
+        }
+
+        @Override
+        public boolean isRoot() {
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int length() {
+            return 1;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentPath parent() {
+            return null;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public CharSequence subSequence(int start, int end) {
+            return toString().subSequence(start, end);
+        }
+
+        @Override
+        public String toString() {
+            return "/";
+        }
+    };
+
+    private PackedComponentPath(String... elements) {
         this.elements = requireNonNull(elements);
     }
 
@@ -41,7 +101,28 @@ final class PackedComponentPath implements ComponentPath {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ComponentPath && toString().equals(obj.toString());
+        if (obj instanceof PackedComponentPath) {
+            PackedComponentPath pcp = (PackedComponentPath) obj;
+            if (pcp.elements.length != elements.length) {
+                return false;
+            }
+            for (int i = 0; i < elements.length; i++) {
+                if (!pcp.elements[i].equals(elements[i])) {
+                    return false;
+                }
+            }
+            return true;
+        } else if (obj instanceof ComponentPath) {
+            ComponentPath pcp = (ComponentPath) obj;
+            if (pcp.depth() != elements.length) {
+                return false;
+            }
+            if (elements.length == 0) {
+                return true;
+            }
+            return pcp.toString().equals(toString());
+        }
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -74,4 +155,72 @@ final class PackedComponentPath implements ComponentPath {
         }
         return sj.toString();
     }
+
+    static ComponentPath of(AbstractComponent component) {
+        int depth = component.depth();
+        switch (depth) {
+        case 0:
+            return ROOT;
+        case 1:
+            return new PackedComponentPath(component.name());
+        default:
+            String[] paths = new String[depth];
+            AbstractComponent acc = component;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.name();
+                acc = acc.parent;
+            }
+            return new PackedComponentPath(paths);
+        }
+    }
+
+    static ComponentPath of(AbstractComponentConfiguration cc) {
+        int depth = cc.depth();
+        switch (depth) {
+        case 0:
+            return ROOT;
+        case 1:
+            return new PackedComponentPath(cc.name);
+        default:
+            String[] paths = new String[depth];
+            AbstractComponentConfiguration acc = cc;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.name;
+                acc = acc.parent;
+            }
+            return new PackedComponentPath(paths);
+        }
+    }
 }
+/// ** {@inheritDoc} */
+// @Override
+// public String toString() {
+// String cached = this.cached;
+// if (cached != null) {
+// return cached;
+// }
+// if (component.parent == null) {
+// cached = "/";
+// } else {
+// StringBuilder sb = new StringBuilder();
+// toString(component, sb);
+// cached = sb.toString();
+// }
+// return this.cached = cached;
+// }
+//
+/// **
+// * Used for recursively constructing the path string.
+// *
+// * @param component
+// * the component to add
+// * @param sb
+// * the string builder to add to
+// */
+// private static void toString(AbstractComponent component, StringBuilder sb) {
+// if (component.parent != null) {
+// toString(component.parent, sb);
+// sb.append("/");
+// sb.append(component.name());
+// }
+// }

@@ -61,13 +61,13 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The parent of this component, or null if a root component. */
     @Nullable
-    private final AbstractComponentConfiguration parent;
+    final AbstractComponentConfiguration parent;
 
     /** The configuration site of this component. */
     private final InternalConfigSite site;
 
     /** The state of this configuration. */
-    State state = State.INITIAL;
+    private State state = State.INITIAL;
 
     /**
      * Creates a new abstract component configuration
@@ -225,20 +225,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
      */
     public final ComponentPath path() {
         initializeName(State.PATH_INVOKED, null);
-        switch (depth) {
-        case 0:
-            return ComponentPath.ROOT;
-        case 1:
-            return new PackedComponentPath(name);
-        default:
-            String[] paths = new String[depth];
-            AbstractComponentConfiguration acc = this;
-            for (int i = depth - 1; i >= 0; i--) {
-                paths[i] = acc.name;
-                acc = acc.parent;
-            }
-            return new PackedComponentPath(paths);
-        }
+        return PackedComponentPath.of(this);
     }
 
     public AbstractComponentConfiguration setDescription(String description) {
