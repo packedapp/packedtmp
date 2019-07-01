@@ -47,8 +47,6 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-    final ServiceClassDescriptor descriptor;
-
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
     private InternalFunction<T> function;
@@ -70,7 +68,6 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         super(injectorBuilder, configSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
-        this.descriptor = requireNonNull(descriptor);
         this.instantionMode = requireNonNull(instantionMode);
 
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
@@ -92,33 +89,25 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ServiceClassDescriptor descriptor,
-            T instance) {
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ServiceClassDescriptor descriptor, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
-        this.descriptor = requireNonNull(descriptor);
         this.parent = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
     }
 
-    BuildtimeServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, InternalFunction<T> factory,
-            BuildtimeServiceNodeDefault<?> parent) {
+    BuildtimeServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, InternalFunction<T> factory, BuildtimeServiceNodeDefault<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
-        this.descriptor = null;
         description = atProvides.description;
     }
 
     @Override
     BuildtimeServiceNode<?> declaringNode() {
         return parent;
-    }
-
-    protected ServiceClassDescriptor descriptor() {
-        return descriptor;
     }
 
     private InternalFunction<T> fac() {
@@ -223,8 +212,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BuildtimeServiceNode<?> provide(AtProvides atProvides) {
-        InternalConfigSite icss = configSite().thenAnnotatedMember(ConfigSiteType.INJECTOR_PROVIDE, atProvides.provides,
-                atProvides.member);
+        InternalConfigSite icss = configSite().thenAnnotatedMember(ConfigSiteType.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {

@@ -18,27 +18,19 @@ package packed.internal.componentcache;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provide;
 import packed.internal.annotations.AtInjectGroup;
-import packed.internal.annotations.AtProvidesGroup;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
  */
 // Qualifier, default key...
+
+// Den er sgu lidt svaerre at slippe af med...
+
 public class ServiceClassDescriptor {
 
     /** A group of all members annotated with {@link Inject}. */
     public final AtInjectGroup inject;
-
-    /** A group of all members annotated with {@link Provide}. */
-    public final AtProvidesGroup provides;
-
-    /** The simple name of the class as returned by {@link Class#getSimpleName()}. (Quite a slow operation) */
-    public final String simpleName;
-
-    /** The class this descriptor is created from. */
-    public final Class<?> implementation;
 
     /**
      * Creates a new descriptor.
@@ -58,9 +50,6 @@ public class ServiceClassDescriptor {
         // Or maybe just throw it in an invoker?? The classes you register, are normally there for a reason.
         // Meaning the annotations are probablye
 
-        this.implementation = implementation;
-        this.simpleName = implementation.getSimpleName();
-        this.provides = scanner.provides.onBuild();
         this.inject = scanner.inject.build();
     }
 
@@ -75,6 +64,5 @@ public class ServiceClassDescriptor {
      */
     public static ServiceClassDescriptor from(MethodHandles.Lookup lookup, Class<?> type) {
         return new ServiceClassDescriptor(type, lookup, MemberScanner.forService(type, lookup));
-        // return DescriptorFactory.get(lookup).serviceDescriptorFor(type);
     }
 }

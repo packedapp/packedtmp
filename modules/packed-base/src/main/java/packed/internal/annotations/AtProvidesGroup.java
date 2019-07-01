@@ -15,10 +15,7 @@
  */
 package packed.internal.annotations;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,38 +86,22 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
          */
         @Override
         public AtProvidesGroup onBuild() {
+            if (members == null) {
+                throw new Error();
+            }
             return members == null ? EMPTY : new AtProvidesGroup(this);
         }
 
         @OnHook
         public void onProvide(AnnotatedMethodHook<Provide> amh) {
-            tryAdd(amh.lookup(), amh.method().newMethod(), amh.method().getAnnotations());
+            InternalMethodDescriptor descriptor = (InternalMethodDescriptor) amh.method();
+            tryAdd0(amh.lookup(), descriptor, Key.fromMethodReturnType(descriptor.newMethod()), amh.annotation(),
+                    InternalDependencyDescriptor.fromExecutable(descriptor));
         }
 
         @OnHook
         public void onProvide(AnnotatedFieldHook<Provide> amh) {
-            tryAdd(amh.lookup(), amh.field().newField(), amh.field().getAnnotations());
-        }
-
-        @Nullable
-        public AtProvides tryAdd(Lookup lookup, Field field, Annotation[] annotations) {
-            for (Annotation a : annotations) {
-                if (a.annotationType() == Provide.class) {
-                    return tryAdd0(lookup, InternalFieldDescriptor.of(field), Key.fromField(field), (Provide) a, List.of());
-                }
-            }
-            return null;
-        }
-
-        @Nullable
-        public AtProvides tryAdd(Lookup lookup, Method method, Annotation[] annotations) {
-            for (Annotation a : annotations) {
-                if (a.annotationType() == Provide.class) {
-                    InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
-                    return tryAdd0(lookup, descriptor, Key.fromMethodReturnType(method), (Provide) a, InternalDependencyDescriptor.fromExecutable(descriptor));
-                }
-            }
-            return null;
+            tryAdd0(amh.lookup(), InternalFieldDescriptor.of(amh.field()), Key.fromField(amh.field().newField()), amh.annotation(), List.of());
         }
 
         private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,

@@ -25,6 +25,7 @@ import app.packed.util.FieldDescriptor;
  */
 // We could extend from an MethodHook
 public interface AnnotatedFieldHook<T> {
+    T annotation();
 
     // TODO remove this method
     Lookup lookup();

@@ -341,6 +341,11 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
     public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
         this.apg = apg;
+        // TODO, ja det er jo saa ikke nok...
+        // Hvis det ikke os der er ved at installere en component (via provide)
+        // Skal vi jo statid tilfoeje build nodes.
+
+        // Saa det er nok bedst hvis vi seatter ServiceNode
     }
 
     AtProvidesGroup apg;

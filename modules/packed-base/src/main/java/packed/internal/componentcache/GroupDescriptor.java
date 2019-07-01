@@ -109,6 +109,11 @@ public final class GroupDescriptor {
                         throw new IllegalAccessRuntimeException("stuff", e);
                     }
                 }
+
+                @Override
+                public Object annotation() {
+                    return annotation;
+                }
             };
 
             conf.invokeHookOnAnnotatedField(annotation.annotationType(), b, hook);

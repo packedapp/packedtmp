@@ -23,10 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.inject.Inject;
-import app.packed.inject.Provide;
 import packed.internal.annotations.AtDependable;
 import packed.internal.annotations.AtInjectGroup;
-import packed.internal.annotations.AtProvidesGroup;
 
 /**
  *
@@ -36,9 +34,6 @@ import packed.internal.annotations.AtProvidesGroup;
 public class MemberScanner {
 
     final Class<?> clazz;
-
-    /** A builder for members annotated with {@link Provide}. */
-    AtProvidesGroup.Builder provides = new AtProvidesGroup.Builder();
 
     /** A builder for members annotated with {@link Inject}. */
     AtInjectGroup.Builder inject = new AtInjectGroup.Builder();
@@ -74,8 +69,6 @@ public class MemberScanner {
                     // Multiple annotations
                     AtDependable fInject = inject.createIfInjectable(lookup, method, annotations);
 
-                    provides.tryAdd(lookup, method, annotations);
-
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
                         if (fInject != null) {
@@ -95,8 +88,6 @@ public class MemberScanner {
                 if (annotations.length > 0) {
                     // Multiple annotations
                     AtDependable fInject = inject.createIfInjectable(lookup, field, annotations);
-
-                    provides.tryAdd(lookup, field, annotations);
 
                     // We need to to some checks when we have multiple annotations...
                     if (annotations.length > 1) {
