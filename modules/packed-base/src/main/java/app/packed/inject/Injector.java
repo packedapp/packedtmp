@@ -23,10 +23,13 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.container.Artifact;
+import app.packed.container.ArtifactType;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.container.ContainerFactory;
+import packed.internal.container.ContainerConfigurator;
+import packed.internal.container.PackedArtifactImage;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -252,7 +255,7 @@ public interface Injector extends Artifact /* extends Taggable */ {
     /**
      * Creates a new injector from the specified bundle.
      *
-     * @param bundle
+     * @param source
      *            a bundle to create an injector from
      * @param wirelets
      *            various operations
@@ -260,9 +263,12 @@ public interface Injector extends Artifact /* extends Taggable */ {
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
-    // Maaske kan man ikke lave den fra en Bundle...? Jo, Hvis Configurator kan linke, saa er det jo ligegyldigt.
-    static Injector of(ContainerSource bundle, Wirelet... wirelets) {
-        return ContainerFactory.injectorOf(bundle, wirelets);
+    static Injector of(ContainerSource source, Wirelet... wirelets) {
+        if (source instanceof PackedArtifactImage) {
+            return ((PackedArtifactImage) source).newInjector(wirelets);
+        }
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerConfigurator.of(source), wirelets);
+        return conf.buildInjector();
     }
 
     /**
@@ -277,7 +283,11 @@ public interface Injector extends Artifact /* extends Taggable */ {
     // TODO I think move this to InjectorCongurator, InjectorConfigurator.spawn...
     // or maybe Injector.configure() instead
     static Injector configure(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-        return ContainerFactory.injectorOf(configurator, wirelets);
+        requireNonNull(configurator, "configurator is null");
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerConfigurator.ofConsumer(configurator),
+                wirelets);
+        configurator.accept(new InjectorConfigurator(configuration));
+        return configuration.buildInjector();
     }
 }
 

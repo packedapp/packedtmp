@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
-import app.packed.container.ContainerBundle;
 import app.packed.container.Bundle;
+import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
@@ -49,7 +49,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param configuration
      *            the configuration to wrap
      */
-    public InjectorConfigurator(ContainerConfiguration configuration) {
+    InjectorConfigurator(ContainerConfiguration configuration) {
         this.configuration = requireNonNull(configuration, "configuration is null");
     }
 
