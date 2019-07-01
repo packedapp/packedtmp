@@ -27,7 +27,6 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtProvides;
-import packed.internal.componentcache.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
@@ -63,8 +62,8 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BuildtimeServiceNodeDefault<?> parent;
 
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorBuilder, InternalConfigSite configSite, ServiceClassDescriptor descriptor,
-            InstantiationMode instantionMode, InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorBuilder, InternalConfigSite configSite, InstantiationMode instantionMode,
+            InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, configSite, dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
@@ -89,7 +88,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ServiceClassDescriptor descriptor, T instance) {
+    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;

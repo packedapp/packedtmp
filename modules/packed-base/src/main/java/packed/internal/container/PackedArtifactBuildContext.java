@@ -30,18 +30,18 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     private final ArtifactType artifactType;
 
     /** The configuration of the artifacts root container. */
-    private final PackedContainerConfiguration configuration;
+    private final PackedContainerConfiguration rootContainerConfiguration;
 
     /**
-     * Creates a new context object.
+     * Creates a new build context object.
      * 
-     * @param configuration
+     * @param rootContainerConfiguration
      *            the configuration of the artifacts root container
      * @param artifactType
      *            the type of artifact we are building
      */
-    PackedArtifactBuildContext(PackedContainerConfiguration configuration, ArtifactType artifactType) {
-        this.configuration = requireNonNull(configuration);
+    PackedArtifactBuildContext(PackedContainerConfiguration rootContainerConfiguration, ArtifactType artifactType) {
+        this.rootContainerConfiguration = requireNonNull(rootContainerConfiguration);
         this.artifactType = requireNonNull(artifactType);
     }
 
@@ -54,18 +54,18 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return configuration.configSite();
+        return rootContainerConfiguration.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public ContainerSource source() {
-        return configuration.configurator.source;
+        return rootContainerConfiguration.configurator.source;
     }
 
     /** {@inheritDoc} */
     @Override
     public WireletList wirelets() {
-        return configuration.wirelets();
+        return rootContainerConfiguration.wirelets();
     }
 }

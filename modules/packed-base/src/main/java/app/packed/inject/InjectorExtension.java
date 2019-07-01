@@ -32,7 +32,6 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
-import packed.internal.componentcache.ServiceClassDescriptor;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
@@ -253,9 +252,8 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
         // Okay det her fra Factory skal caches....Med methodHandle....
         InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
-        ServiceClassDescriptor desc = configuration0().lookup.serviceDescriptorFor(func.getReturnTypeRaw());
 
-        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, desc, InstantiationMode.SINGLETON,
+        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, InstantiationMode.SINGLETON,
                 configuration0().lookup.readable(func), (List) factory.dependencies());
         if (apg != null) {
             if (!apg.members.isEmpty()) {
@@ -307,8 +305,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
         ComponentConfiguration install = use(ComponentExtension.class).install(instance);
 
-        ServiceClassDescriptor sdesc = configuration0().lookup.serviceDescriptorFor(instance.getClass());
-        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, sdesc, instance);
+        BuildtimeServiceNodeDefault<T> sc = new BuildtimeServiceNodeDefault<T>(builder, configSite, instance);
 
         if (apg != null) {
             if (!apg.members.isEmpty()) {
