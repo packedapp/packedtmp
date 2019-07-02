@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerSource;
+import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**
@@ -34,11 +34,11 @@ public abstract class AbstractBaseTest {
         return new AppTester(new AbstractTesterBundle(source) {}, wirelets);
     }
 
-    public static AppTester appOf(ContainerSource source, Wirelet... wirelets) {
+    public static AppTester appOf(ArtifactSource source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
     }
 
-    public static ContainerImageTester imageOf(ContainerSource source, Wirelet... wirelets) {
+    public static ContainerImageTester imageOf(ArtifactSource source, Wirelet... wirelets) {
         return new ContainerImageTester(source, wirelets);
     }
 

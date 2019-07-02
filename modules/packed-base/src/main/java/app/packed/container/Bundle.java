@@ -230,11 +230,11 @@ public abstract class Bundle extends ContainerBundle {
     // runMain????.. maybe still so similar. Do we want to throw Exception???
     // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
     // executeMain
-    static protected void run(ContainerSource source, String[] args, Wirelet... wirelets) {
+    static protected void run(ArtifactSource source, String[] args, Wirelet... wirelets) {
         run(source, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
     }
 
-    static protected void run(ContainerSource source, Wirelet... wirelets) {
+    static protected void run(ArtifactSource source, Wirelet... wirelets) {
         App.run(source, wirelets);
     }
 }

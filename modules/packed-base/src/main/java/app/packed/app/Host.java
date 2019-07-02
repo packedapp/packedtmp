@@ -17,7 +17,7 @@ package app.packed.app;
 
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerSource;
+import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**
@@ -39,7 +39,7 @@ interface Host {
 
     public static void main(ContainerBundle b) {}
 
-    public static Host of(ContainerSource source) {
+    public static Host of(ArtifactSource source) {
         throw new UnsupportedOperationException();
     }
 

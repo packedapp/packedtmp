@@ -67,9 +67,6 @@ public final class InjectorBuilder {
 
     public final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
 
-    /** A list of bundle bindings, as we need to post process the exports. */
-    // public ArrayList<BindInjectorFromBundle> injectorBundleBindings = new ArrayList<>();
-
     public DefaultInjector privateInjector;
 
     public DefaultInjector publicInjector;

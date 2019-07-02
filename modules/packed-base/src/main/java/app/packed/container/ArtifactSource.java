@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 import app.packed.component.Component;
 
 /**
- * A single source for a container. This is typically a subclass of {@link ContainerBundle} or pregenerated
+ * A source of an artificate. This is typically a subclass of {@link ContainerBundle} or pregenerated
  * {@link ArtifactImage container image}.
  * <p>
  * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
@@ -35,16 +35,16 @@ import app.packed.component.Component;
 // before we make
 
 // Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
-public interface ContainerSource {
+public interface ArtifactSource {
 
-    static ContainerSource ofRepeatableBundle(Supplier<? extends ContainerBundle> supplier) {
+    static ArtifactSource ofRepeatableBundle(Supplier<? extends ContainerBundle> supplier) {
         throw new UnsupportedOperationException();
     }
 
     // Ideen er egentlig at have en scanner af en slags..
     // Componenter for den pakke, med de annoteringer.. osv.
     // CacheResult = true <- Vi tillader som default ikke
-    static ContainerSource ofComponentSelector(String s) {
+    static ArtifactSource ofComponentSelector(String s) {
         throw new UnsupportedOperationException();
     }
 }

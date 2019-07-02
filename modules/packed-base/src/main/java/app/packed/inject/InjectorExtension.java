@@ -77,7 +77,6 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         requireNonNull(key, "key is null");
         checkConfigurable();
         builder.addOptional(key);
-        // return this;
     }
 
     /**

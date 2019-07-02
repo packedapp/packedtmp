@@ -37,7 +37,7 @@ import app.packed.util.Nullable;
 
 // Kan vi genbruge et bundle???
 // rename to ContainerBundle????
-public abstract class ContainerBundle implements ContainerSource {
+public abstract class ContainerBundle implements ArtifactSource {
 
     /** The configuration. */
     private ContainerConfiguration configuration;

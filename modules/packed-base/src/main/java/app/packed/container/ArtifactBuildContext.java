@@ -47,7 +47,7 @@ public interface ArtifactBuildContext {
     // Maybe a Class<?> sourceType() instead, eller har vi brug for at kunne access den???
     /// Hmm kan jo starte med sourceType og saa altid tilfoeje source.
     // Der hvor den ikke fungere skide godt er med InjectionConfigurator som jo bare er en Consumer
-    ContainerSource source();
+    ArtifactSource source();
 
     /**
      * Any wirelets that was used when initializing the build.

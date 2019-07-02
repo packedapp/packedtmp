@@ -51,7 +51,7 @@ import packed.internal.support.AppPackedContainerSupport;
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The source of the container configuration. */
-    final ContainerConfigurator configurator;
+    final ContainerSource configurator;
 
     /** A configurator cache object, shared among container sources of the same type. */
     private final ContainerConfiguratorCache configuratorCache;
@@ -77,14 +77,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets that was given by the user
      */
-    public PackedContainerConfiguration(ArtifactType artifactType, ContainerConfigurator configurator, Wirelet... wirelets) {
+    public PackedContainerConfiguration(ArtifactType artifactType, ContainerSource configurator, Wirelet... wirelets) {
         super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactType);
         this.configurator = requireNonNull(configurator);
         this.lookup = this.configuratorCache = configurator.cache();
         this.wirelets = WireletList.of(wirelets);
     }
 
-    private PackedContainerConfiguration(PackedContainerConfiguration parent, ContainerConfigurator configurator, Wirelet... wirelets) {
+    private PackedContainerConfiguration(PackedContainerConfiguration parent, ContainerSource configurator, Wirelet... wirelets) {
         super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
         this.configurator = requireNonNull(configurator);
         this.lookup = this.configuratorCache = configurator.cache();
@@ -249,7 +249,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, ContainerConfigurator.of(bundle), wirelets);
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, ContainerSource.of(bundle), wirelets);
         dcc.configure();
         addChild(dcc);
     }
@@ -320,14 +320,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings("unchecked")
     public <T extends ContainerExtension<T>> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return (T) extensions.computeIfAbsent(extensionType, k -> {
+        ContainerExtension<?> ce = extensions.get(extensionType);
+        if (ce == null) {
+            // We do not use computeIfAbsent because extensions might install other extensions.
+            // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
-
-            // ContainerExtension<?> e = ExtensionClassCacheWithCachedSupplier.newInstance(extensionType);
-            ContainerExtension<?> e = ExtensionClassCache.newInstance(extensionType);
-            AppPackedContainerSupport.invoke().initializeExtension(e, this);
-            return e;
-        });
+            ce = ExtensionClassCache.newInstance(extensionType);
+            extensions.put(extensionType, ce);
+            AppPackedContainerSupport.invoke().initializeExtension(ce, this);
+        }
+        return (T) ce;
     }
 
     /** {@inheritDoc} */

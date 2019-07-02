@@ -33,19 +33,19 @@ public enum ArtifactType {
 
     /**
      * The output type of the process is an {@link App}. This is typically either via
-     * {@link App#of(ContainerSource, Wirelet...)} or {@link App#run(ContainerSource, Wirelet...)}.
+     * {@link App#of(ArtifactSource, Wirelet...)} or {@link App#run(ArtifactSource, Wirelet...)}.
      */
     APP /* (app.packed.app.App.class) */,
 
     /**
      * The output type of the build process is a {@link ArtifactImage}. This is typically via
-     * {@link ArtifactImage#of(ContainerSource, Wirelet...)}.
+     * {@link ArtifactImage#of(ArtifactSource, Wirelet...)}.
      */
     ARTIFACT_IMAGE,
 
     /**
      * The output type of the process is an {@link App}. This is typically either via
-     * {@link Injector#of(ContainerSource, Wirelet...)} or
+     * {@link Injector#of(ArtifactSource, Wirelet...)} or
      * {@link Injector#configure(java.util.function.Consumer, Wirelet...)}.
      */
     INJECTOR;

@@ -19,13 +19,13 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.container.ContainerSource;
+import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.ServiceWirelets;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
- * {@link App#of(ContainerSource, Wirelet...)} or {@link App#run(ContainerSource, Wirelet...)}.
+ * {@link App#of(ArtifactSource, Wirelet...)} or {@link App#run(ArtifactSource, Wirelet...)}.
  */
 // InvalidWireletApplicationException -> Thrown when trying to apply a wirelet in a situation where it cannot be used
 

@@ -15,7 +15,7 @@
  */
 package app.packed.app;
 
-import app.packed.container.ContainerSource;
+import app.packed.container.ArtifactSource;
 
 /**
  *
@@ -24,7 +24,7 @@ import app.packed.container.ContainerSource;
 // Men den kan jo ogsaa misforstaa en Host der holder apps.
 interface AppHost extends App, Host {
 
-    static AppHost of(ContainerSource source) {
+    static AppHost of(ArtifactSource source) {
         throw new UnsupportedOperationException();
     }
 }

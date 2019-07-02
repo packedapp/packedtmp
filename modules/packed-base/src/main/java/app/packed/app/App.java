@@ -22,14 +22,14 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.container.Artifact;
+import app.packed.container.ArtifactSource;
 import app.packed.container.ArtifactType;
-import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
-import packed.internal.container.ContainerConfigurator;
+import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedApp;
 import packed.internal.container.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
@@ -47,9 +47,7 @@ import packed.internal.container.PackedContainerConfiguration;
  * 
  */
 // Do we expose the attachments????
-// Branch -> A collection of components
-// Trunk <- Root Branch -> The top app
-public interface App extends AutoCloseable, Artifact {
+public interface App extends Artifact, AutoCloseable {
 
     /**
      * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
@@ -168,23 +166,23 @@ public interface App extends AutoCloseable, Artifact {
     // If you can stop an app via shutdown. You should also be able to introspec it
 
     /**
-     * Creates a new application from the specified container source. The state of the returned application will be
+     * Creates a new application from the specified source. The state of the returned application is
      * {@link RunState#INITIALIZED}.
      *
      * @param source
-     *            the container source that will create the container that the application should wrap
+     *            the source of the application
      * @param wirelets
-     *            wiring operations
+     *            any wirelets to use in the construction of the application
      * @return a new application
      * @throws RuntimeException
-     *             if the application could not be constructed or initialized properly
+     *             if the application could not be constructed properly
      */
-    static App of(ContainerSource source, Wirelet... wirelets) {
+    static App of(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newApp(wirelets);
         }
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.APP, ContainerConfigurator.forApp(source), wirelets);
-        return new PackedApp(conf.doBuild().doInstantiate());
+        PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactType.APP, ContainerSource.forApp(source), wirelets);
+        return new PackedApp(pcc.doBuild().doInstantiate());
     }
 
     /**
@@ -192,13 +190,13 @@ public interface App extends AutoCloseable, Artifact {
      * run state of the application is {@link RunState#TERMINATED}.
      * 
      * @param source
-     *            the source that creates the container that should be wrapped.
+     *            the source of the application
      * @param wirelets
      *            wirelets
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    static void run(ContainerSource source, Wirelet... wirelets) {
+    static void run(ArtifactSource source, Wirelet... wirelets) {
         // CTRL-C ?? Obvious a wirelet, but default on or default off.
         // Paa Bundle syntes jeg den er paa, men ikke her...
 

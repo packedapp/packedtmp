@@ -34,7 +34,7 @@ import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.ContainerConfigurator;
+import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -251,18 +251,18 @@ public class BundleDescriptor implements Artifact {
     // ContainerSource????
     // For example, we should be able to take an image...
     public static BundleDescriptor of(ContainerBundle bundle) {
-        return of((ContainerSource) bundle);
+        return of((ArtifactSource) bundle);
     }
 
     // Or just have a descriptor() on ContainerImage();
     public static BundleDescriptor of(ArtifactImage image) {
-        return of((ContainerSource) image);
+        return of((ArtifactSource) image);
     }
 
-    private static BundleDescriptor of(ContainerSource source) {
+    private static BundleDescriptor of(ArtifactSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle bundle = (ContainerBundle) source;
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, ContainerConfigurator.of(source));
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, ContainerSource.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();

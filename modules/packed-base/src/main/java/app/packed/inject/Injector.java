@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.container.Artifact;
+import app.packed.container.ArtifactSource;
 import app.packed.container.ArtifactType;
-import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.container.ContainerConfigurator;
+import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -99,7 +99,7 @@ import packed.internal.container.PackedContainerConfiguration;
 // Description... hmm its just super helpful...
 // Injector does not have a name. In many cases there are a container behind an Injector.
 // But if, for example, a component has its own injector. That injector does not have a container behind it.
-public interface Injector extends Artifact /* extends Taggable */ {
+public interface Injector extends Artifact {
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
@@ -263,11 +263,11 @@ public interface Injector extends Artifact /* extends Taggable */ {
      * @throws IllegalArgumentException
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
-    static Injector of(ContainerSource source, Wirelet... wirelets) {
+    static Injector of(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newInjector(wirelets);
         }
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerConfigurator.of(source), wirelets);
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.of(source), wirelets);
         return conf.buildInjector();
     }
 
@@ -284,7 +284,7 @@ public interface Injector extends Artifact /* extends Taggable */ {
     // or maybe Injector.configure() instead
     static Injector configure(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         requireNonNull(configurator, "configurator is null");
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerConfigurator.ofConsumer(configurator),
+        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.ofConsumer(configurator),
                 wirelets);
         configurator.accept(new InjectorConfigurator(configuration));
         return configuration.buildInjector();

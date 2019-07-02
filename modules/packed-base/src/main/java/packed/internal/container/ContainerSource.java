@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.container.ContainerBundle;
-import app.packed.container.ContainerSource;
+import app.packed.container.ArtifactSource;
 import packed.internal.componentcache.ContainerConfiguratorCache;
 
 /**
@@ -39,13 +39,13 @@ import packed.internal.componentcache.ContainerConfiguratorCache;
 
 // I virkeligheden er den vel en Configurator...
 // ContainerConfigurator
-public class ContainerConfigurator {
+public class ContainerSource {
 
     final Class<?> configuratorType;
 
-    public final ContainerSource source;
+    public final ArtifactSource source;
 
-    ContainerConfigurator(ContainerSource source, Class<?> configuratorType) {
+    ContainerSource(ArtifactSource source, Class<?> configuratorType) {
         this.source = source;
         this.configuratorType = requireNonNull(configuratorType);
     }
@@ -54,28 +54,28 @@ public class ContainerConfigurator {
         return ContainerConfiguratorCache.of(configuratorType);
     }
 
-    public static ContainerConfigurator forImage(ContainerSource source) {
+    public static ContainerSource forImage(ArtifactSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle b = (ContainerBundle) source;
-        return new ContainerConfigurator(b, source.getClass());
+        return new ContainerSource(b, source.getClass());
     }
 
-    public static ContainerConfigurator of(ContainerSource source) {
+    public static ContainerSource of(ArtifactSource source) {
         ContainerBundle b = (ContainerBundle) source;
-        return new ContainerConfigurator(b, source.getClass());
+        return new ContainerSource(b, source.getClass());
     }
 
-    public static ContainerConfigurator forApp(ContainerSource source) {
+    public static ContainerSource forApp(ArtifactSource source) {
         requireNonNull(source, "source is null");
         ContainerBundle b = (ContainerBundle) source;
-        return new ContainerConfigurator(b, source.getClass());
+        return new ContainerSource(b, source.getClass());
     }
 
-    public static ContainerConfigurator ofConsumer(Consumer<?> consumer) {
-        return new ContainerConfigurator(null, consumer.getClass());
+    public static ContainerSource ofConsumer(Consumer<?> consumer) {
+        return new ContainerSource(null, consumer.getClass());
     }
 
-    public ContainerConfigurator link(ContainerBundle bundle) {
+    public ContainerSource link(ContainerBundle bundle) {
         throw new UnsupportedOperationException();
     }
 }

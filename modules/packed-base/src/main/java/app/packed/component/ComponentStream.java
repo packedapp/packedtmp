@@ -27,8 +27,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.container.ContainerSource;
-
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
  * of this class is normally acquired by invoking containerComponents or componentStream.
@@ -166,9 +164,6 @@ public interface ComponentStream extends Stream<Component> {
     @Override // Only available from Java 9
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 
-    static ComponentStream of(ContainerSource bundle) {
-        throw new UnsupportedOperationException(); // Similar to descriptor..
-    }
 }
 // Alt det her kan vi vel saette paa streamen....
 //// Det var maaske taenkt som en boot ting...

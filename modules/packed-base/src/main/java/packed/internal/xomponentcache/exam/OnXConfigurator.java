@@ -16,15 +16,8 @@
 package packed.internal.xomponentcache.exam;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.util.FieldDescriptor;
-import app.packed.util.MethodDescriptor;
-import packed.internal.xomponentcache.exam.Dddd.MyExtension;
 
 /**
  *
@@ -51,18 +44,6 @@ public class OnXConfigurator /* extends ContainerExtensionHookGroup<MyExtension,
     // public Builder newBuilder(Class<?> componentType) {
     // return new Builder();
     // }
-
-    static class Builder implements Supplier<BiConsumer<ComponentConfiguration, MyExtension>> {
-
-        List<MethodDescriptor> list = new ArrayList<>();
-
-        /** {@inheritDoc} */
-        @Override
-        public BiConsumer<ComponentConfiguration, MyExtension> get() {
-            List<MethodDescriptor> l = List.copyOf(list);
-            return (c, e) -> e.methods(c, l);
-        }
-    }
 
     public interface FieldHook<A extends Annotation> {
         A annotation();

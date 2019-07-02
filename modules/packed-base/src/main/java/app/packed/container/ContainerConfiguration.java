@@ -199,7 +199,7 @@ public interface ContainerConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ContainerSource, Wirelet...)} or {@link #link(ContainerBundle, Wirelet...)}.
+     * {@link App#of(ArtifactSource, Wirelet...)} or {@link #link(ContainerBundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

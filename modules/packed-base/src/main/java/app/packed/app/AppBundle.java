@@ -17,7 +17,7 @@ package app.packed.app;
 
 import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerSource;
+import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**
@@ -25,7 +25,7 @@ import app.packed.container.Wirelet;
  */
 public abstract class AppBundle extends Bundle {
 
-    protected static ArtifactImage newImage(ContainerSource source, Wirelet... wirelets) {
+    protected static ArtifactImage newImage(ArtifactSource source, Wirelet... wirelets) {
         return ArtifactImage.of(source, wirelets);
     }
 }

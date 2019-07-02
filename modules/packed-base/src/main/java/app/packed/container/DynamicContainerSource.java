@@ -42,12 +42,12 @@ import packed.internal.asm.Type;
 // Hele ideen er vel at vi kan lazy loade?
 // Ellers kunne vi vel ligesaa godt lave en Bundle direkte.
 
-public final class DynamicContainerSource implements ContainerSource {
+public final class DynamicContainerSource implements ArtifactSource {
 
     /** Lapp/packed/component/Install; */
     static final String PACKED_MODULE_DESCRIPTOR = Type.getDescriptor(PackedModule.class);
 
-    public static ContainerSource load(Path... paths) {
+    public static ArtifactSource load(Path... paths) {
         try {
             return load0(paths);
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public final class DynamicContainerSource implements ContainerSource {
         }
     }
 
-    private static ContainerSource load0(Path... paths) throws Exception {
+    private static ArtifactSource load0(Path... paths) throws Exception {
         ModuleFinder mf = ModuleFinder.of(paths);
 
         String moduleName = null;

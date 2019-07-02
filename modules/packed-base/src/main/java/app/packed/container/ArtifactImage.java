@@ -17,20 +17,28 @@ package app.packed.container;
 
 import app.packed.app.App;
 import app.packed.inject.Injector;
-import packed.internal.container.ContainerConfigurator;
+import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
- * A pre-generated image of an artifact.
+ * Artifact images are immutable ahead-of-time configured {@link Artifact artifacts}. Creating artifacts in Packed is
+ * already really fast, and you can easily create one 10 or hundres of microseconds. But by using artificat images you
+ * can into hundres or thousounds of nanoseconds.
+ * <p>
+ * Use cases:
+ * 
+ * 
+ * <p>
+ * Limitations:
+ * 
+ * No structural changes... Only whole artifacts
+ * 
  * <p>
  * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
  * artifact images. It can not be used with {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
  */
-public interface ArtifactImage extends ContainerSource, Artifact {
-
-    // Dont know if want this
-    // App newApp(Wirelet... wirelets);
+public interface ArtifactImage extends Artifact, ArtifactSource {
 
     /**
      * Returns the type of bundle that was used to create this image.
@@ -43,7 +51,10 @@ public interface ArtifactImage extends ContainerSource, Artifact {
     // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
     Class<? extends ContainerBundle> sourceType();
 
-    ArtifactImage with(Wirelet... wirelets);
+    default ArtifactImage with(Wirelet... wirelets) {
+        // BundleDescriptor.of(image.with(ServiceWirelets.provide("fpp")));
+        return of(this, wirelets);
+    }
 
     /**
      * Returns a new container image original functionality but re
@@ -57,25 +68,23 @@ public interface ArtifactImage extends ContainerSource, Artifact {
     }
 
     /**
-     * Generates a new container image from the specified container source.
-     * 
+     * Creates a new image from the specified source.
+     *
      * @param source
-     *            the container source to generate the image from
+     *            the source of the image
      * @param wirelets
-     *            wirelets
-     * @return the generated image
+     *            any wirelets to use in the construction of the image
+     * @return a new image
      * @throws RuntimeException
-     *             if the image could not be generated for some reason
+     *             if the image could not be constructed properly
      */
-    static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
+    static ArtifactImage of(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof PackedArtifactImage) {
             return ((PackedArtifactImage) source).newImage(wirelets);
         }
-        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerConfigurator.forImage(source), wirelets);
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerSource.forImage(source), wirelets);
         return new PackedArtifactImage(c.doBuild());
     }
-
-    // ofRepeatable();
-    // Ideen er vi f.eks. gerne vil instantiere bygge hele containeren. Men f.eks. ikke initializere
-    // wirelet.checkNotFrom();
 }
+// ofRepeatable();
+// wirelet.checkNotFrom();
