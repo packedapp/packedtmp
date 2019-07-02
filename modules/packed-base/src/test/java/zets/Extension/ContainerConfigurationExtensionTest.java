@@ -23,14 +23,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
+import zets.Extension.ExtensionStubs.TestExtension1;
+import zets.Extension.ExtensionStubs.TestExtension2;
 import zets.name.spi.AbstractBaseTest;
 
-/** Tests the various extension methods on {@link ContainerConfiguration}. */
-public class ExtensionOnContainerConfigurationTest extends AbstractBaseTest {
+/** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
+public class ContainerConfigurationExtensionTest extends AbstractBaseTest {
 
+    /** Tests basic use of {@link ContainerConfiguration#use(Class)}. */
     @Test
-    public void basic() {
+    public void use() {
         appOf(e -> e.use(TestExtension1.class, i -> {
             assertThat(i).isNotNull();
             assertThat(i).isExactlyInstanceOf(TestExtension1.class);
@@ -40,8 +42,9 @@ public class ExtensionOnContainerConfigurationTest extends AbstractBaseTest {
         }));
     }
 
+    /** Tests basic use of {@link ContainerConfiguration#extensions()}. */
     @Test
-    public void extensionTypes() {
+    public void extensions() {
         appOf(e -> {
             assertThat(e.extensions()).isEmpty();
             e.use(TestExtension1.class);
@@ -78,9 +81,4 @@ public class ExtensionOnContainerConfigurationTest extends AbstractBaseTest {
         assertThat(r.get().use(TestExtension1.class)).isSameAs(t1.get());
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }
-
-    public static class TestExtension1 extends ContainerExtension<TestExtension1> {}
-
-    public static class TestExtension2 extends ContainerExtension<TestExtension2> {}
-
 }

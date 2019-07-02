@@ -58,9 +58,12 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
     @SuppressWarnings("exports")
     public final InjectorBuilder builder = new InjectorBuilder();
+    private PackedContainerConfiguration configuration;
 
     /** Creates a new injector extension. */
-    InjectorExtension() {}
+    InjectorExtension(PackedContainerConfiguration configuration) {
+        this.configuration = requireNonNull(configuration);
+    }
 
     /**
      * Adds the specified key to the list of optional services.
@@ -96,7 +99,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiate(InstantiationContext context) {
-        context.put(configuration(), builder.publicInjector); // Taken by PackedContainer
+        context.put(configuration, builder.publicInjector); // Taken by PackedContainer
     }
 
     /** {@inheritDoc} */
@@ -115,10 +118,6 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         }
 
         builder.buildContract(descriptor.contract().services());
-    }
-
-    private PackedContainerConfiguration configuration0() {
-        return (PackedContainerConfiguration) configuration();
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
@@ -154,11 +153,11 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         requireNonNull(key, "key is null");
         checkConfigurable();
 
-        InternalConfigSite cs = configuration0().configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
+        InternalConfigSite cs = configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
         BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder, cs);
         bn.as(key);
         builder.exportedNodes.add(bn);
-        return new DefaultServiceConfiguration<>(configuration0(), bn);
+        return new DefaultServiceConfiguration<>(configuration, bn);
     }
 
     @SuppressWarnings("unchecked")
@@ -178,7 +177,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
      *            any wirelets used to filter and transform the provided services
      */
     public void importAll(Injector injector, Wirelet... wirelets) {
-        ImportAllFromInjector pfi = new ImportAllFromInjector(configuration0(), builder, injector, WireletList.of(wirelets)); // Validates arguments
+        ImportAllFromInjector pfi = new ImportAllFromInjector(configuration, builder, injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
         pfi.process(); // Will create the necessary nodes.
     }
@@ -195,7 +194,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void onContainerConfigured() {
+    public void onConfigured() {
         for (BuildtimeServiceNode<?> e : builder.nodes2) {
             if (!builder.nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());
@@ -209,7 +208,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
             e.exposureOf = (ServiceNode) sn;
             builder.exports.put(e);
         }
-        DependencyGraph dg = new DependencyGraph(configuration0(), builder);
+        DependencyGraph dg = new DependencyGraph(configuration, builder);
 
         if (buildContext().artifactType().isInstantiating()) {
             dg.instantiate();
@@ -245,7 +244,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         checkConfigurable();
-        InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalConfigSite configSite = configuration.configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
         ComponentConfiguration install = use(ComponentExtension.class).install(factory);
 
@@ -253,7 +252,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
 
         BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, InstantiationMode.SINGLETON,
-                configuration0().lookup.readable(func), (List) factory.dependencies());
+                configuration.lookup.readable(func), (List) factory.dependencies());
         if (apg != null) {
             if (!apg.members.isEmpty()) {
                 node.hasInstanceMembers = apg.hasInstanceMembers;
@@ -280,7 +279,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
         node.as(factory.defaultKey());
         builder.nodes2.add(node);
-        return new DefaultProvidedComponentConfiguration<>(configuration0(), (DefaultComponentConfiguration) install, node);
+        return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) install, node);
     }
 
     /**
@@ -300,7 +299,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
         checkConfigurable();
-        InternalConfigSite configSite = configuration0().configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
+        InternalConfigSite configSite = configuration.configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
 
         ComponentConfiguration install = use(ComponentExtension.class).install(instance);
 
@@ -332,7 +331,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         // scanForProvides(instance.getClass(), sc);
         sc.as((Key) Key.of(instance.getClass()));
         builder.nodes2.add(sc);
-        return new DefaultProvidedComponentConfiguration<>(configuration0(), (DefaultComponentConfiguration) install, sc);
+        return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) install, sc);
     }
 
     public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
@@ -347,7 +346,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     AtProvidesGroup apg;
     //
     // private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
-    // AtProvidesGroup provides = configuration0().lookup.serviceDescriptorFor(type).provides;
+    // AtProvidesGroup provides = configuration.lookup.serviceDescriptorFor(type).provides;
     // if (!provides.members.isEmpty()) {
     // owner.hasInstanceMembers = provides.hasInstanceMembers;
     // // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {

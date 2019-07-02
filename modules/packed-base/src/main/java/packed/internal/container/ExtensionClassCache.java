@@ -54,6 +54,9 @@ final class ExtensionClassCache<T> {
     /** The type of extension. */
     private final Class<? extends ContainerExtension<?>> type;
 
+    /** Whether or not the constructor needs an instanceof {@link PackedContainerConfiguration}. */
+    private final boolean needsPackedContainerConfiguration;
+
     /**
      * Creates a new extension class cache.
      * 
@@ -62,13 +65,20 @@ final class ExtensionClassCache<T> {
      */
     private ExtensionClassCache(Class<? extends ContainerExtension<?>> type) {
         this.type = requireNonNull(type);
+        boolean needsPackedContainerConfiguration = false;
 
         Constructor<?> constructor;
         try {
             constructor = type.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be installed.");
+            try {
+                constructor = type.getDeclaredConstructor(PackedContainerConfiguration.class);
+                needsPackedContainerConfiguration = true;
+            } catch (NoSuchMethodException ee) {
+                throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be installed.");
+            }
         }
+        this.needsPackedContainerConfiguration = needsPackedContainerConfiguration;
 
         Lookup lookup = MethodHandles.lookup();
         try {
@@ -92,12 +102,16 @@ final class ExtensionClassCache<T> {
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends ContainerExtension<T>> T newInstance(Class<T> extensionType) {
+    static <T extends ContainerExtension<T>> T newInstance(PackedContainerConfiguration pcc, Class<T> extensionType) {
         // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get to 6 ns
         ExtensionClassCache<T> ei = (ExtensionClassCache<T>) CACHE.get(extensionType);
         ContainerExtension<T> e;
         try {
-            e = (T) ei.mh.invoke();
+            if (ei.needsPackedContainerConfiguration) {
+                e = (T) ei.mh.invoke(pcc);
+            } else {
+                e = (T) ei.mh.invoke();
+            }
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
             throw new RuntimeException("Could not instantiate extension '" + StringFormatter.format(ei.type) + "'", t);

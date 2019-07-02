@@ -158,7 +158,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     final void extensionsContainerConfigured() {
         prepareNewComponent(State.GET_NAME_INVOKED);
         for (ContainerExtension<?> e : extensions.values()) {
-            e.onContainerConfigured(); // State final????
+            e.onConfigured(); // State final????
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -325,8 +325,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             // We do not use computeIfAbsent because extensions might install other extensions.
             // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
-            ce = ExtensionClassCache.newInstance(extensionType);
-            extensions.put(extensionType, ce);
+            ce = ExtensionClassCache.newInstance(this, extensionType);
+            extensions.put(extensionType, ce); // make sure we add it here before calling Extension#ExtensionAdded
             AppPackedContainerSupport.invoke().initializeExtension(ce, this);
         }
         return (T) ce;

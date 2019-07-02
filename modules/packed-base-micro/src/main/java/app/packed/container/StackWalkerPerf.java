@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.Warmup;
  *
  */
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 10, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(1)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -44,13 +44,17 @@ public class StackWalkerPerf {
     static final StackWalker sw = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     @Benchmark
-    public Class<?> empty() {
+    public StackWalker stackWalkerSetup() {
+        return StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+    }
+
+    @Benchmark
+    public Class<?> stackWalkerCallerClass() {
         return sw.getCallerClass();
     }
 
     @Benchmark
-    public Lookup lookup() {
+    public Lookup reflectionCallerClass() {
         return MethodHandles.lookup();
     }
-
 }

@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.config.ConfigSite;
 import app.packed.util.AttachmentMap;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.support.AppPackedContainerSupport;
@@ -40,20 +39,16 @@ import packed.internal.support.AppPackedContainerSupport;
 //// Maybe we want to log the actual extension as well.
 // so extension.log("fooo") instead
 /// Yes, why not use it to log errors...
+
 // Den eneste ting jeg kunne forstille mig at kunne vaere public.
 // Var en maade at se paa hvordan en extension blev aktiveret..
 // Men er det ikke bare noget logning istedet for metoder...
 // "InjectorExtension:" Activate
 //// Her er der noget vi gerne vil have viral.
 
-// Disallow registering extensions as a service???
-// Actually together with a lot of other types...
+// Disallow registering extensions as a service??? Actually together with a lot of other types...
 
-// Feature
-// Configurator
-
-// ContainerExtension, ContainerPlugin
-// Plugin (maybe todays favorite)
+// ContainerExtension vs ContainerPlugin
 public abstract class ContainerExtension<T extends ContainerExtension<T>> {
 
     static {
@@ -68,13 +63,15 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
             @Override
             public void initializeExtension(ContainerExtension<?> extension, PackedContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
-                extension.onExtensionAdded();
+                extension.onAdd();
             }
         });
     }
 
-    /** The configuration of the container in which the extension is registered. */
-    private PackedContainerConfiguration configuration;
+    /**
+     * The configuration of the container in which the extension is registered. See static initializer for how it is set.
+     */
+    private ContainerConfiguration configuration;
 
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
@@ -92,17 +89,14 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     }
 
     /**
-     * Checks that the container that this extension belongs to is still configurable. Throwing an
-     * {@link IllegalStateException} if it is not.
+     * Checks that the container that this extension belongs to is configurable. Throwing an {@link IllegalStateException}
+     * if it is not.
      * 
      * @throws IllegalStateException
      *             if the container this extension is no longer configurable.
-     * @return the configuration of the container
      */
-    protected final ContainerConfiguration checkConfigurable() {
-        ContainerConfiguration c = configuration();
-        c.checkConfigurable();
-        return c;
+    protected final void checkConfigurable() {
+        configuration().checkConfigurable();
     }
 
     /**
@@ -111,8 +105,9 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
      * 
      * @return the configuration of the container
      */
-    protected final ContainerConfiguration configuration() {
-        PackedContainerConfiguration c = configuration;
+    private ContainerConfiguration configuration() {
+        // When calling this method remember to add test to BasicExtensionTest
+        ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
                     "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden to perform initialization as an alternative");
@@ -135,19 +130,22 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
     }
 
     /**
-     * Invoked immediately after a container has been configured. Typically after {@link ContainerBundle#configure()} has
-     * returned.
+     * This method is invoked (exactly once) by the runtime immediately after the extension is added to the configuration of
+     * a container. For example, via a call to {@link ContainerConfiguration#use(Class)}. After this method has returned the
+     * extension instance is returned to the user.
+     * <p>
+     * {@link #onConfigured()} is the next callback method invoked by the runtime.
+     */
+    protected void onAdd() {}
+
+    /**
+     * Invoked immediately after a container has been succesfully configured. Typically after
+     * {@link ContainerBundle#configure()} has returned.
      * 
      * <p>
      * The default implementation does nothing.
      */
-    public void onContainerConfigured() {}
-
-    /**
-     * This method is invoked exactly once by the runtime immediately after the extension is added to a container
-     * configuration. And before the extension is made available to other extensions or users.
-     */
-    protected void onExtensionAdded() {}
+    public void onConfigured() {}
 
     /**
      * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
@@ -163,40 +161,27 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
      * 
      * @return if the underlying any parent of this container
      * @throws IllegalStateException
-     *             if called from outside of {@link #onContainerConfigured()}.
+     *             if called from outside of {@link #onConfigured()}.
      */
     protected final Optional<T> parent() {
         throw new UnsupportedOperationException();
     }
 
-    // Skal have en eller anden form for link med...
-    // Hvor man kan gemme ting. f.eks. en Foo.class
-    // Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
-    // protected void onWireChild(@Nullable T child, BundleLink link) {}
-    //
-    // // onWireChikd
-    // protected void onWireParent(@Nullable T parent, BundleLink link) {}
-
     /**
-     * Creates a new configuration site
+     * Returns an extension of the specified type. Invoking this method is equivalent to calling
+     * {@link ContainerConfiguration#use(Class)}.
      * 
-     * <p>
-     * If the gathering of a stack-based configuration is disabled. This method return {@link ConfigSite#UNKNOWN}.
-     * 
-     * @param name
-     *            the name of the operation
-     * @return the new configuration site
+     * @param <E>
+     *            the type of extension to return
+     * @param extensionType
+     *            the type of extension to return
+     * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             if the underlying container configuration is no longer modifiable and an extension of the specified type
+     *             has not already been installed
      */
-    protected final ConfigSite spawnConfigSite(String name) {
-        // Have a depth indicator.....
-        // + ConfigSiteStackFilter.create("com.acme")
-        // ConfigSite spawnConfigSite(ConfigSiteStackFilter f, String name) {} Den ved alt om config sites er disablet paa
-        // containeren
-        throw new UnsupportedOperationException();
-    }
-
     protected final <E extends ContainerExtension<E>> E use(Class<E> extensionType) {
-        return configuration.use(extensionType);
+        return configuration().use(extensionType);
     }
 
     /**
@@ -211,6 +196,61 @@ public abstract class ContainerExtension<T extends ContainerExtension<T>> {
         return configuration().wirelets();
     }
 }
+
+//// Invoked to let the runtime know that configured() needs to be run
+// The usecase is trying to register some services from an Extension..
+// registerConfigurationNeed()
+
+// Problem is about calling an extension that thing it is finished with stuff.
+
+// Alternatives.... Dependency links between Extensions in some way....
+// 1) Require all dependencies to be listed in the constructor of an extension
+//// - Requiring an extension we might never need.
+//// - More complex to implement
+//// | No dependency circles between extensions
+// 2) Registering usage of extensions via #use() per extension
+//// - More memory
+//// -
+// | regis
+// 3) registeredForMoreConfiguration need
+// Every time a user invokes a function that needs stuff we need to call
+/// registeredForConfiguration to make that it can be called again
+//// - more code
+//// - possible infinite loops.
+
+/// 2 implementation
+/// lazy initialized IdentityHashMap for each extension with every use of extensions
+/// when finished.
+/// We create an array of all extensions and put them all into.
+// Run through all extension. The first extension with no dependencies
+// Can really optimize this for 1 (obiously), two (last one is always dependency free)
+
+// Skal have en eller anden form for link med...
+// Hvor man kan gemme ting. f.eks. en Foo.class
+// Det er ogsaa her man kan specificere at et bundle har en dependency paa et andet bundle
+// protected void onWireChild(@Nullable T child, BundleLink link) {}
+//
+// // onWireChikd
+// protected void onWireParent(@Nullable T parent, BundleLink link) {}
+
+// /**
+// * Creates a new configuration site
+// *
+// * <p>
+// * If the gathering of a stack-based configuration is disabled. This method return {@link ConfigSite#UNKNOWN}.
+// *
+// * @param name
+// * the name of the operation
+// * @return the new configuration site
+// */
+// private final ConfigSite spawnConfigSite(String name) {
+// // Have a depth indicator.....
+// // + ConfigSiteStackFilter.create("com.acme")
+// // ConfigSite spawnConfigSite(ConfigSiteStackFilter f, String name) {} Den ved alt om config sites er disablet paa
+// // containeren
+// throw new UnsupportedOperationException();
+// }
+
 //
 /// **
 // * Returns the path of the underlying container.

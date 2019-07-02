@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.container.ContainerExtension;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
@@ -24,8 +26,12 @@ import packed.internal.container.PackedContainerConfiguration;
  */
 public final class ComponentExtension extends ContainerExtension<ComponentExtension> {
 
+    private final PackedContainerConfiguration configuration;
+
     /** Creates a new component extension. */
-    ComponentExtension() {}
+    ComponentExtension(PackedContainerConfiguration configuration) {
+        this.configuration = requireNonNull(configuration);
+    }
 
     // install
     // noget med Main, Entry points....
@@ -33,15 +39,11 @@ public final class ComponentExtension extends ContainerExtension<ComponentExtens
 
     // @Main skal jo pege et paa en eller anden extension...
 
-    private PackedContainerConfiguration packedConfiguration() {
-        return (PackedContainerConfiguration) configuration();
-    }
-
     // Selvfoelelig er det hele komponenter... Ogsaa scoped
     // Vi skal ikke til at have flere scans...
 
     public ComponentConfiguration install(Class<?> implementation) {
-        return packedConfiguration().install(implementation);
+        return configuration.install(implementation);
     }
 
     // @Scoped
@@ -51,15 +53,15 @@ public final class ComponentExtension extends ContainerExtension<ComponentExtens
     // Need to export
 
     public ComponentConfiguration install(Factory<?> factory) {
-        return packedConfiguration().install(factory);
+        return configuration.install(factory);
     }
 
     public ComponentConfiguration install(Object instance) {
-        return packedConfiguration().install(instance);
+        return configuration.install(instance);
     }
 
     public ComponentConfiguration installHelper(Class<?> implementation) {
-        return packedConfiguration().installHelper(implementation);
+        return configuration.installHelper(implementation);
     }
 
     public void scan(String... packages) {}

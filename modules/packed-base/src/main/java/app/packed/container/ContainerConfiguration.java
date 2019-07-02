@@ -194,6 +194,9 @@ public interface ContainerConfiguration {
      * @param extensionType
      *            the type of extension to return
      * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             if the configuration is no longer modifiable and an extension of the specified type has not already been
+     *             installed
      */
     <T extends ContainerExtension<T>> T use(Class<T> extensionType);
 

@@ -24,10 +24,13 @@ import java.util.function.Consumer;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
+import app.packed.config.ConfigSite;
+import app.packed.container.ArtifactBuildContext;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletList;
 
 /**
  *
@@ -38,6 +41,14 @@ public class ContainerConfigurationTester {
 
     public ContainerConfigurationTester(ContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
+    }
+
+    public ArtifactBuildContext buildContext() {
+        return cc.buildContext();
+    }
+
+    public ConfigSite configSite() {
+        return cc.configSite();
     }
 
     /**
@@ -107,5 +118,9 @@ public class ContainerConfigurationTester {
     public <T extends ContainerExtension<T>> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
         consumer.accept(cc.use(extensionType));
         return this;
+    }
+
+    public WireletList wirelets() {
+        return cc.wirelets();
     }
 }

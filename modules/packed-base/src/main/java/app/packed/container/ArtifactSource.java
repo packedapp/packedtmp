@@ -20,8 +20,8 @@ import java.util.function.Supplier;
 import app.packed.component.Component;
 
 /**
- * A source of an artificate. This is typically a subclass of {@link ContainerBundle} or pregenerated
- * {@link ArtifactImage container image}.
+ * A source of an artifact. This is typically a subclass of {@link ContainerBundle} or pregenerated {@link ArtifactImage
+ * container image}.
  * <p>
  * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
  * of sealed types if they become available.

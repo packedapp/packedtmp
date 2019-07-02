@@ -27,7 +27,7 @@ import zets.name.spi.AbstractBaseTest;
  */
 public class ExtensionDependenciesTest extends AbstractBaseTest {
 
-    /** Test that we can depend on an uninstalled extension via {@link ContainerExtension#onExtensionAdded}. */
+    /** Test that we can depend on an uninstalled extension via {@link ContainerExtension#onAdd}. */
     @Test
     public void testCanCallUseFromOnExtensionAdded() {
         appOf(c -> {
@@ -52,7 +52,7 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
     static class Ex1 extends ContainerExtension<Ex1> {
         /** {@inheritDoc} */
         @Override
-        protected void onExtensionAdded() {
+        protected void onAdd() {
             use(Ex2.class);
         }
 
@@ -61,7 +61,7 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
     static class Ex2 extends ContainerExtension<Ex2> {
         /** {@inheritDoc} */
         @Override
-        protected void onExtensionAdded() {
+        protected void onAdd() {
             use(Ex3.class);
         }
     }
@@ -69,7 +69,7 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
     static class Ex3 extends ContainerExtension<Ex3> {
         /** {@inheritDoc} */
         @Override
-        protected void onExtensionAdded() {
+        protected void onAdd() {
             // use(Ex2.class);
         }
     }
@@ -77,7 +77,7 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
     static class ExRecursive1 extends ContainerExtension<ExRecursive1> {
         /** {@inheritDoc} */
         @Override
-        protected void onExtensionAdded() {
+        protected void onAdd() {
             use(ExRecursive2.class);
         }
     }
@@ -85,7 +85,7 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
     static class ExRecursive2 extends ContainerExtension<ExRecursive2> {
         /** {@inheritDoc} */
         @Override
-        protected void onExtensionAdded() {
+        protected void onAdd() {
             use(ExRecursive1.class);
         }
     }
