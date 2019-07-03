@@ -40,13 +40,13 @@ import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.buildtime.BuildtimeServiceNode;
-import packed.internal.inject.buildtime.BuildtimeServiceNodeDefault;
-import packed.internal.inject.buildtime.BuildtimeServiceNodeExported;
-import packed.internal.inject.buildtime.DefaultProvidedComponentConfiguration;
-import packed.internal.inject.buildtime.DefaultServiceConfiguration;
+import packed.internal.inject.buildtime.BuildServiceNode;
+import packed.internal.inject.buildtime.BuildServiceNodeDefault;
+import packed.internal.inject.buildtime.BuildServiceNodeExported;
+import packed.internal.inject.buildtime.PackedProvidedComponentConfiguration;
+import packed.internal.inject.buildtime.PackedServiceConfiguration;
 import packed.internal.inject.buildtime.DependencyGraph;
-import packed.internal.inject.buildtime.ImportAllFromInjector;
+import packed.internal.inject.buildtime.InjectorImporter;
 import packed.internal.inject.buildtime.InjectorBuilder;
 
 /**
@@ -57,6 +57,8 @@ import packed.internal.inject.buildtime.InjectorBuilder;
 // Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
 // Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
 public final class InjectorExtension extends ContainerExtension<InjectorExtension> {
+
+    static FeatureKey<BuildServiceNodeDefault<?>> FK = new FeatureKey<>() {};
 
     @SuppressWarnings("exports")
     public final InjectorBuilder builder = new InjectorBuilder();
@@ -102,21 +104,15 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
     /** {@inheritDoc} */
     @Override
-    public void onPrepareContainerInstantiate(InstantiationContext context) {
-        context.put(configuration, builder.publicInjector); // Taken by PackedContainer
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void buildBundle(Builder descriptor) {
         for (ServiceNode<?> n : builder.nodes) {
-            if (n instanceof BuildtimeServiceNode) {
-                descriptor.addServiceDescriptor(((BuildtimeServiceNode<?>) n).toDescriptor());
+            if (n instanceof BuildServiceNode) {
+                descriptor.addServiceDescriptor(((BuildServiceNode<?>) n).toDescriptor());
             }
         }
 
-        for (BuildtimeServiceNode<?> n : builder.exportedNodes) {
-            if (n instanceof BuildtimeServiceNodeExported) {
+        for (BuildServiceNode<?> n : builder.exportedNodes) {
+            if (n instanceof BuildServiceNodeExported) {
                 descriptor.contract().services().addProvides(n.getKey());
             }
         }
@@ -158,10 +154,10 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         checkConfigurable();
 
         InternalConfigSite cs = configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        BuildtimeServiceNodeExported<T> bn = new BuildtimeServiceNodeExported<>(builder, cs);
+        BuildServiceNodeExported<T> bn = new BuildServiceNodeExported<>(builder, cs);
         bn.as(key);
         builder.exportedNodes.add(bn);
-        return new DefaultServiceConfiguration<>(configuration, bn);
+        return new PackedServiceConfiguration<>(configuration, bn);
     }
 
     @SuppressWarnings("unchecked")
@@ -181,7 +177,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
      *            any wirelets used to filter and transform the provided services
      */
     public void importAll(Injector injector, Wirelet... wirelets) {
-        ImportAllFromInjector pfi = new ImportAllFromInjector(configuration, builder, injector, WireletList.of(wirelets)); // Validates arguments
+        InjectorImporter pfi = new InjectorImporter(configuration, builder, injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
         pfi.process(); // Will create the necessary nodes.
     }
@@ -199,17 +195,17 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void onConfigured() {
-        for (BuildtimeServiceNode<?> e : builder.nodes2) {
+        for (BuildServiceNode<?> e : builder.nodes2) {
             if (!builder.nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());
             }
         }
-        for (BuildtimeServiceNodeExported<?> e : builder.exportedNodes) {
+        for (BuildServiceNodeExported<?> e : builder.exportedNodes) {
             ServiceNode<?> sn = builder.nodes.getRecursive(e.getKey());
             if (sn == null) {
                 throw new IllegalStateException("Could not find node to export " + e.getKey());
             }
-            e.exposureOf = (ServiceNode) sn;
+            e.exportOf = (ServiceNode) sn;
             builder.exports.put(e);
         }
         DependencyGraph dg = new DependencyGraph(configuration, builder);
@@ -219,6 +215,12 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         } else {
             dg.analyze();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void onPrepareContainerInstantiate(InstantiationContext context) {
+        context.put(configuration, builder.publicInjector); // Taken by PackedContainer
     }
 
     /**
@@ -231,6 +233,32 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
      */
     public <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
         return provide(Factory.findInjectable(implementation));
+    }
+
+    /**
+     *
+     * <p>
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param factory
+     *            the factory used for creating the component instance
+     * @return the configuration of the component that was installed
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
+        requireNonNull(factory, "factory is null");
+        checkConfigurable();
+        ComponentConfiguration cc = use(ComponentExtension.class).install(factory);
+        BuildServiceNodeDefault<?> sc = cc.features().get(FK);
+        if (sc == null) {
+            sc = new BuildServiceNodeDefault<>(builder, cc, InstantiationMode.SINGLETON, configuration.lookup.readable(factory.factory.function),
+                    (List) factory.dependencies());
+        }
+        sc.as((Key) factory.defaultKey());
+        builder.nodes2.add(sc);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
     }
 
     /**
@@ -254,52 +282,26 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
         ComponentConfiguration cc = use(ComponentExtension.class).install(instance);
 
         // First see if we have installed a node via @Provides annotations.
-        BuildtimeServiceNodeDefault<?> sc = cc.features().get(FK);
+        BuildServiceNodeDefault<?> sc = cc.features().get(FK);
         if (sc == null) {
-            sc = new BuildtimeServiceNodeDefault<T>(builder, (InternalConfigSite) cc.configSite(), instance);
+            sc = new BuildServiceNodeDefault<T>(builder, (InternalConfigSite) cc.configSite(), instance);
         }
 
         sc.as((Key) Key.of(instance.getClass()));
         builder.nodes2.add(sc);
-        return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) cc, (BuildtimeServiceNodeDefault) sc);
-    }
-
-    /**
-     *
-     * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param factory
-     *            the factory used for creating the component instance
-     * @return the configuration of the component that was installed
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        ComponentConfiguration cc = use(ComponentExtension.class).install(factory);
-        BuildtimeServiceNodeDefault<?> sc = cc.features().get(FK);
-        if (sc == null) {
-            sc = new BuildtimeServiceNodeDefault<>(builder, (InternalConfigSite) cc.configSite(), InstantiationMode.SINGLETON,
-                    configuration.lookup.readable(factory.factory.function), (List) factory.dependencies());
-        }
-        sc.as((Key) factory.defaultKey());
-        builder.nodes2.add(sc);
-        return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) cc, (BuildtimeServiceNodeDefault) sc);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
-        BuildtimeServiceNodeDefault sc;
+        BuildServiceNodeDefault sc;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
-            sc = new BuildtimeServiceNodeDefault(builder, (InternalConfigSite) cc.configSite(), instance);
+            sc = new BuildServiceNodeDefault(builder, (InternalConfigSite) cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
-            sc = new BuildtimeServiceNodeDefault<>(builder, (InternalConfigSite) cc.configSite(), InstantiationMode.SINGLETON,
-                    configuration.lookup.readable(factory.factory.function), (List) factory.dependencies());
+            sc = new BuildServiceNodeDefault<>(builder, cc, InstantiationMode.SINGLETON, configuration.lookup.readable(factory.factory.function),
+                    (List) factory.dependencies());
         }
 
         sc.hasInstanceMembers = apg.hasInstanceMembers;
@@ -309,10 +311,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
             builder.nodes2.add(sc.provide(member));// put them directly
         }
         cc.features().set(FK, sc);
-        // this.apg = apg;
     }
-
-    static FeatureKey<BuildtimeServiceNodeDefault<?>> FK = new FeatureKey<>() {};
 }
 
 // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {

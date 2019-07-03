@@ -25,57 +25,52 @@ import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.DefaultComponentConfiguration;
-import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
  */
-public final class DefaultProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
+public final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
 
     /** The component we are exposing. */
     private final DefaultComponentConfiguration component;
 
-    private final PackedContainerConfiguration dcc;
-
     /** The service we are exposing. */
-    private final BuildtimeServiceNode<T> service;
+    private final BuildServiceNode<T> buildNode;
 
     /**
-     * @param service
+     * @param buildNode
      */
-    public DefaultProvidedComponentConfiguration(PackedContainerConfiguration dcc, DefaultComponentConfiguration component, BuildtimeServiceNode<T> service) {
-        this.dcc = requireNonNull(dcc);
-        this.service = requireNonNull(service);
+    public PackedProvidedComponentConfiguration(DefaultComponentConfiguration component, BuildServiceNode<T> buildNode) {
+        this.buildNode = requireNonNull(buildNode);
         this.component = component;
-        // component.serviceNode = service;
     }
 
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> as(Key<? super T> key) {
-        dcc.checkConfigurable();
-        service.as(key);
+        component.checkConfigurable();
+        buildNode.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return service.configSite();
+        return buildNode.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public String getDescription() {
-        dcc.checkConfigurable();
-        return service.description;
+        return buildNode.description;
     }
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable Key<?> getKey() {
-        return service.getKey();
+    @Nullable
+    public Key<?> getKey() {
+        return buildNode.getKey();
     }
 
     /** {@inheritDoc} */
@@ -88,38 +83,36 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return service.instantiationMode();
+        return buildNode.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> lazy() {
-        dcc.checkConfigurable();
-        ((BuildtimeServiceNodeDefault<T>) service).lazy();
+        component.checkConfigurable();
+        ((BuildServiceNodeDefault<T>) buildNode).lazy();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> prototype() {
-        dcc.checkConfigurable();
-        ((BuildtimeServiceNodeDefault<T>) service).prototype();
+        component.checkConfigurable();
+        ((BuildServiceNodeDefault<T>) buildNode).prototype();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
-        dcc.checkConfigurable();
-        service.description = description;
         component.setDescription(description);
+        buildNode.description = description;
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> setName(String name) {
-        dcc.checkConfigurable();
         component.setName(name);
         return this;
     }

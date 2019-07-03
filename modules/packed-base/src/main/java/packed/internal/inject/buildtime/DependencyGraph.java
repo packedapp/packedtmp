@@ -39,7 +39,7 @@ public final class DependencyGraph {
     static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), DefaultInjector.class);
 
     /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<BuildtimeServiceNode<?>> detectCyclesFor;
+    ArrayList<BuildServiceNode<?>> detectCyclesFor;
 
     /** The root injector builder. */
     final PackedContainerConfiguration root;
@@ -61,7 +61,7 @@ public final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void analyze() {
         ib.privateInjector = new DefaultInjector(root, ib.nodes);
-        BuildtimeServiceNodeDefault d = new BuildtimeServiceNodeDefault<>(ib, root.configSite(), ib.privateInjector);
+        BuildServiceNodeDefault d = new BuildServiceNodeDefault<>(ib, root.configSite(), ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ib.nodes.put(d);
         // TODO replace with something a.la.
@@ -107,9 +107,9 @@ public final class DependencyGraph {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<BuildtimeServiceNode<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BuildtimeServiceNode<?>> dependencies = new ArrayDeque<>();
-        for (BuildtimeServiceNode<?> node : detectCyclesFor) {
+        ArrayDeque<BuildServiceNode<?>> stack = new ArrayDeque<>();
+        ArrayDeque<BuildServiceNode<?>> dependencies = new ArrayDeque<>();
+        for (BuildServiceNode<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
@@ -127,8 +127,8 @@ public final class DependencyGraph {
         // System.out.println(root.box.services().exports);
 
         for (ServiceNode<?> node : ib.nodes) {
-            if (node instanceof BuildtimeServiceNodeDefault) {
-                BuildtimeServiceNodeDefault<?> s = (BuildtimeServiceNodeDefault<?>) node;
+            if (node instanceof BuildServiceNodeDefault) {
+                BuildServiceNodeDefault<?> s = (BuildServiceNodeDefault<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
@@ -150,7 +150,7 @@ public final class DependencyGraph {
         InjectorBuilder services = graph.ib;
 
         for (ServiceNode<?> nn : services.nodes) {
-            BuildtimeServiceNode<?> node = (BuildtimeServiceNode<?>) nn;
+            BuildServiceNode<?> node = (BuildServiceNode<?>) nn;
 
             if (node.needsResolving()) {
                 graph.detectCyclesFor.add(node);

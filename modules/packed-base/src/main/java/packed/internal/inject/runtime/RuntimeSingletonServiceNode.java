@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
-import packed.internal.inject.buildtime.BuildtimeServiceNode;
+import packed.internal.inject.buildtime.BuildServiceNode;
 
 /**
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
@@ -45,7 +45,7 @@ public final class RuntimeSingletonServiceNode<T> extends AbstractRuntimeService
      * @param instance
      *            the singleton instance
      */
-    public RuntimeSingletonServiceNode(BuildtimeServiceNode<T> buildNode, T instance) {
+    public RuntimeSingletonServiceNode(BuildServiceNode<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
         this.instantionMode = buildNode.instantiationMode();

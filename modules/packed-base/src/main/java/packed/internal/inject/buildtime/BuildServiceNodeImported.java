@@ -29,58 +29,57 @@ import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 
 /** A build node that imports a service from another injector. */
-public class BuildtimeServiceNodeImportAll<T> extends BuildtimeServiceNode<T> {
+public class BuildServiceNodeImported<T> extends BuildServiceNode<T> {
 
     /** The node to import. */
-    final ServiceNode<T> other;
+    final ServiceNode<T> importFrom;
 
     /** The bind injector source. */
-    final ImportAllFromInjector injectorToImportFrom;
+    final InjectorImporter injectorImporter;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildtimeServiceNodeImportAll(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ImportAllFromInjector injectorToImportFrom,
-            ServiceNode<T> node) {
+    BuildServiceNodeImported(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, InjectorImporter injectorToImportFrom,
+            ServiceNode<T> importFrom) {
         super(injectorConfiguration, configSite, List.of());
-        this.other = requireNonNull(node);
-        this.injectorToImportFrom = requireNonNull(injectorToImportFrom);
-        this.as((Key) node.key());
-        description = node.description().orElse(null);
-        // this.tags().addAll(node.tags());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public InstantiationMode instantiationMode() {
-        return other.instantiationMode();
+        this.importFrom = requireNonNull(importFrom);
+        this.injectorImporter = requireNonNull(injectorToImportFrom);
+        this.as((Key) importFrom.key());
+        description = importFrom.description().orElse(null);
     }
 
     @Override
     @Nullable
-    BuildtimeServiceNode<?> declaringNode() {
-        return (other instanceof BuildtimeServiceNode) ? ((BuildtimeServiceNode<?>) other).declaringNode() : null;
+    BuildServiceNode<?> declaringNode() {
+        return (importFrom instanceof BuildServiceNode) ? ((BuildServiceNode<?>) importFrom).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvideHelper site) {
-        return other.getInstance(site);
+        return importFrom.getInstance(site);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public InstantiationMode instantiationMode() {
+        return importFrom.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return other.needsInjectionSite();
+        return importFrom.needsInjectionSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return other.needsResolving();
+        return importFrom.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
     AbstractRuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeDelegateServiceNode<T>(this, other);
+        return new RuntimeDelegateServiceNode<T>(this, importFrom);
     }
 }

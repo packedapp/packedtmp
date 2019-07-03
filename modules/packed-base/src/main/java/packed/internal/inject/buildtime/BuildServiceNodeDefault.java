@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvideHelper;
@@ -41,7 +42,7 @@ import packed.internal.invokable.InvokableMember;
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
  * makes extending it with {@link ProvidedComponentConfiguration} much easier.
  */
-public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
+public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -60,11 +61,11 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     private InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final BuildtimeServiceNodeDefault<?> parent;
+    private final BuildServiceNodeDefault<?> parent;
 
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorBuilder, InternalConfigSite configSite, InstantiationMode instantionMode,
+    public BuildServiceNodeDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode,
             InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
-        super(injectorBuilder, configSite, dependencies);
+        super(injectorBuilder, (InternalConfigSite) cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
         this.instantionMode = requireNonNull(instantionMode);
@@ -88,7 +89,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildtimeServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
+    public BuildServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
@@ -96,7 +97,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         this.function = null;
     }
 
-    BuildtimeServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, InternalFunction<T> factory, BuildtimeServiceNodeDefault<?> parent) {
+    BuildServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, InternalFunction<T> factory, BuildServiceNodeDefault<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -105,7 +106,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     }
 
     @Override
-    BuildtimeServiceNode<?> declaringNode() {
+    BuildServiceNode<?> declaringNode() {
         return parent;
     }
 
@@ -133,7 +134,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
         return i;
     }
 
-    public BuildtimeServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {
+    public BuildServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -210,7 +211,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public BuildtimeServiceNode<?> provide(AtProvides atProvides) {
+    public BuildServiceNode<?> provide(AtProvides atProvides) {
         InternalConfigSite icss = configSite().thenAnnotatedMember(ConfigSiteType.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
@@ -219,7 +220,7 @@ public class BuildtimeServiceNodeDefault<T> extends BuildtimeServiceNode<T> {
             // fi = fi.withInstance(this.instance);
         }
 
-        BuildtimeServiceNodeDefault<?> node = new BuildtimeServiceNodeDefault<>(icss, atProvides, fi, this);
+        BuildServiceNodeDefault<?> node = new BuildServiceNodeDefault<>(icss, atProvides, fi, this);
         node.as((Key) atProvides.key);
         return node;
     }

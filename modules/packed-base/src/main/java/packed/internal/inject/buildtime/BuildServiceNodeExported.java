@@ -26,12 +26,12 @@ import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 
 /**
- * A build node that is created when a service is exposed.
+ * A build node representing an exported service.
  */
-public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<T> {
+public final class BuildServiceNodeExported<T> extends BuildServiceNode<T> {
 
     /** The node that is exposed. */
-    public ServiceNode<T> exposureOf;
+    public ServiceNode<T> exportOf;
 
     /**
      * @param configuration
@@ -39,21 +39,21 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
      * @param configSite
      *            the configuration site of the exposure
      */
-    public BuildtimeServiceNodeExported(InjectorBuilder configuration, InternalConfigSite configSite) {
+    public BuildServiceNodeExported(InjectorBuilder configuration, InternalConfigSite configSite) {
         super(configuration, configSite, List.of());
     }
 
     @Override
     @Nullable
-    BuildtimeServiceNode<?> declaringNode() {
+    BuildServiceNode<?> declaringNode() {
         // Skal vi ikke returnere exposureOf?? istedet for .declaringNode
-        return (exposureOf instanceof BuildtimeServiceNode) ? ((BuildtimeServiceNode<?>) exposureOf).declaringNode() : null;
+        return (exportOf instanceof BuildServiceNode) ? ((BuildServiceNode<?>) exportOf).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return exposureOf.instantiationMode();
+        return exportOf.instantiationMode();
     }
 
     /** {@inheritDoc} */
@@ -77,6 +77,6 @@ public final class BuildtimeServiceNodeExported<T> extends BuildtimeServiceNode<
     /** {@inheritDoc} */
     @Override
     AbstractRuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeDelegateServiceNode<>(this, exposureOf);
+        return new RuntimeDelegateServiceNode<>(this, exportOf);
     }
 }

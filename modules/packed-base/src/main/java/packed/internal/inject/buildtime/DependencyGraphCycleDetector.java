@@ -39,20 +39,20 @@ final class DependencyGraphCycleDetector {
      * @throws InjectionException
      *             if there is a cycle in the graph
      */
-    static DependencyCycle detectCycle(BuildtimeServiceNode<?> node, ArrayDeque<BuildtimeServiceNode<?>> stack, ArrayDeque<BuildtimeServiceNode<?>> dependencies) {
+    static DependencyCycle detectCycle(BuildServiceNode<?> node, ArrayDeque<BuildServiceNode<?>> stack, ArrayDeque<BuildServiceNode<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             ServiceNode<?> dependency = node.resolvedDependencies[i];
-            if (dependency instanceof BuildtimeServiceNode) {
-                BuildtimeServiceNode<?> to = (BuildtimeServiceNode<?>) dependency;
+            if (dependency instanceof BuildServiceNode) {
+                BuildServiceNode<?> to = (BuildServiceNode<?>) dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
-                BuildtimeServiceNode<?> owner = to.declaringNode();
+                BuildServiceNode<?> owner = to.declaringNode();
                 if (owner != null) {
                     to = owner;
                 }
 
-                if (to.needsResolving() && to instanceof BuildtimeServiceNodeDefault) {
-                    BuildtimeServiceNodeDefault<?> ic = (BuildtimeServiceNodeDefault<?>) to;
+                if (to.needsResolving() && to instanceof BuildServiceNodeDefault) {
+                    BuildServiceNodeDefault<?> ic = (BuildServiceNodeDefault<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);
                         // See if the component is already on the stack -> A cycle has been detected
@@ -81,15 +81,15 @@ final class DependencyGraphCycleDetector {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<BuildtimeServiceNode<?>> dependencies;
+        final ArrayDeque<BuildServiceNode<?>> dependencies;
 
-        DependencyCycle(ArrayDeque<BuildtimeServiceNode<?>> dependencies) {
+        DependencyCycle(ArrayDeque<BuildServiceNode<?>> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 
         @Override
         public String toString() {
-            ArrayList<BuildtimeServiceNode<?>> list = new ArrayList<>(dependencies);
+            ArrayList<BuildServiceNode<?>> list = new ArrayList<>(dependencies);
             // This method does not yet support Provides methods
 
             // Try checking this out and running some examples, it should have better error messages.
@@ -103,7 +103,7 @@ final class DependencyGraphCycleDetector {
 
             // Uncomments the 3
             // sb.append(format(s.factory.mirror.getType()));
-            for (BuildtimeServiceNode<?> n : list) {
+            for (BuildServiceNode<?> n : list) {
                 System.out.println(n);
                 sb.append(" -");
                 // s = (BuildNodeOldFactory<?>) n;

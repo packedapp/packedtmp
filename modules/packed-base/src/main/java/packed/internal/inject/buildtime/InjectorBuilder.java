@@ -51,10 +51,10 @@ public final class InjectorBuilder {
     public final ServiceNodeMap exports;
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<Entry<BuildtimeServiceNode<?>, ServiceDependency>> missingDependencies;
+    private ArrayList<Entry<BuildServiceNode<?>, ServiceDependency>> missingDependencies;
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<BuildtimeServiceNode<?>, List<ServiceDependency>> unresolvedDependencies;
+    IdentityHashMap<BuildServiceNode<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final ServiceNodeMap nodes;
@@ -65,13 +65,13 @@ public final class InjectorBuilder {
     /** A set of all explicitly registered required service keys. */
     public final HashSet<Key<?>> required = new HashSet<>();
 
-    public final ArrayList<BuildtimeServiceNodeExported<?>> exportedNodes = new ArrayList<>();
+    public final ArrayList<BuildServiceNodeExported<?>> exportedNodes = new ArrayList<>();
 
     public DefaultInjector privateInjector;
 
     public DefaultInjector publicInjector;
 
-    public ArrayList<BuildtimeServiceNode<?>> nodes2 = new ArrayList<>();
+    public ArrayList<BuildServiceNode<?>> nodes2 = new ArrayList<>();
 
     public InjectorBuilder() {
         boolean exportNodes = true;
@@ -130,7 +130,7 @@ public final class InjectorBuilder {
     public void checkForMissingDependencies() {
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (Entry<BuildtimeServiceNode<?>, ServiceDependency> e : missingDependencies) {
+            for (Entry<BuildServiceNode<?>, ServiceDependency> e : missingDependencies) {
                 if (!e.getValue().isOptional() && !e.getKey().autoRequires) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
@@ -177,7 +177,7 @@ public final class InjectorBuilder {
         }
     }
 
-    public void recordMissingDependency(BuildtimeServiceNode<?> node, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildServiceNode<?> node, ServiceDependency dependency, boolean fromParent) {
 
     }
 
@@ -187,13 +187,13 @@ public final class InjectorBuilder {
      * @param node
      * @param dependency
      */
-    public void recordResolvedDependency(BuildtimeServiceNode<?> node, ServiceDependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(BuildServiceNode<?> node, ServiceDependency dependency, @Nullable ServiceNode<?> resolvedTo, boolean fromParent) {
         requireNonNull(node);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<Entry<BuildtimeServiceNode<?>, ServiceDependency>> m = missingDependencies;
+        ArrayList<Entry<BuildServiceNode<?>, ServiceDependency>> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }

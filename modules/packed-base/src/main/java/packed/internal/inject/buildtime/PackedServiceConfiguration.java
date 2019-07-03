@@ -22,33 +22,28 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
  */
-public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
-
-    /** The configuration site of this object. */
-    private final InternalConfigSite configSite;
+public class PackedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     private final PackedContainerConfiguration containerConfiguration;
 
-    final BuildtimeServiceNode<T> node;
+    final BuildServiceNode<T> node;
 
     /**
      * @param node
      */
-    public DefaultServiceConfiguration(PackedContainerConfiguration containerConfiguration, BuildtimeServiceNode<T> node) {
+    public PackedServiceConfiguration(PackedContainerConfiguration containerConfiguration, BuildServiceNode<T> node) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
-        this.configSite = node.configSite();
         this.node = requireNonNull(node);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> as(Key<? super T> key) {
+    public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
         containerConfiguration.checkConfigurable();
         node.as(key);
         return this;
@@ -57,7 +52,7 @@ public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return configSite;
+        return node.configSite();
     }
 
     /** {@inheritDoc} */
@@ -81,7 +76,8 @@ public class DefaultServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceConfiguration<T> setDescription(@Nullable String description) {
+    public ServiceConfiguration<T> setDescription(String description) {
+        requireNonNull(description, "description is null");
         containerConfiguration.checkConfigurable();
         node.description = description;
         return this;

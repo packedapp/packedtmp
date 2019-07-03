@@ -33,7 +33,7 @@ import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
 
 /** Provides services from an existing Injector. */
-public final class ImportAllFromInjector {
+public final class InjectorImporter {
 
     /** The injector we are providing services from. */
     private final Injector injector;
@@ -46,7 +46,7 @@ public final class ImportAllFromInjector {
 
     private final InjectorBuilder ib;
 
-    public ImportAllFromInjector(PackedContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
+    public InjectorImporter(PackedContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
         this.ib = requireNonNull(ib);
         this.injector = requireNonNull(injector, "injector is null");
         this.wirelets = WireletList.of(wirelets);
@@ -79,10 +79,10 @@ public final class ImportAllFromInjector {
     private void processImport(List<? extends ServiceNode<?>> externalNodes) {
 
         // First create service build nodes for every existing node
-        HashMap<Key<?>, BuildtimeServiceNode<?>> nodes = new HashMap<>();
+        HashMap<Key<?>, BuildServiceNode<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildtimeServiceNodeImportAll<?> n = new BuildtimeServiceNodeImportAll<>(ib, configSite.replaceParent(node.configSite()), this, node);
+                BuildServiceNodeImported<?> n = new BuildServiceNodeImported<>(ib, configSite.replaceParent(node.configSite()), this, node);
                 nodes.put(node.key(), n);
             }
         }
@@ -98,14 +98,14 @@ public final class ImportAllFromInjector {
         }
 
         // Add all to the private node map
-        for (BuildtimeServiceNode<?> node : nodes.values()) {
+        for (BuildServiceNode<?> node : nodes.values()) {
             if (!ib.nodes.putIfAbsent(node)) {
                 throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }
     }
 
-    private HashMap<Key<?>, BuildtimeServiceNode<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildtimeServiceNode<?>> nodes) {
+    private HashMap<Key<?>, BuildServiceNode<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildServiceNode<?>> nodes) {
         // if (true) {
         // throw new Error();
         // }
@@ -122,10 +122,10 @@ public final class ImportAllFromInjector {
 
         // Make runtime nodes....
 
-        HashMap<Key<?>, BuildtimeServiceNode<?>> newNodes = new HashMap<>();
+        HashMap<Key<?>, BuildServiceNode<?>> newNodes = new HashMap<>();
 
-        for (Iterator<BuildtimeServiceNode<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
-            BuildtimeServiceNode<?> node = iterator.next();
+        for (Iterator<BuildServiceNode<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
+            BuildServiceNode<?> node = iterator.next();
             Key<?> existing = node.key();
 
             // invoke the import function on the stage
