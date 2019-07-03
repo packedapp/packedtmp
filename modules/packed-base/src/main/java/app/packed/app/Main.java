@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;

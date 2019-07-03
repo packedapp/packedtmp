@@ -24,12 +24,12 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
-import packed.internal.asm.AnnotationVisitor;
-import packed.internal.asm.Attribute;
-import packed.internal.asm.ClassReader;
-import packed.internal.asm.ClassVisitor;
-import packed.internal.asm.Opcodes;
-import packed.internal.asm.Type;
+import packed.internal.thirdparty.asm.AnnotationVisitor;
+import packed.internal.thirdparty.asm.Attribute;
+import packed.internal.thirdparty.asm.ClassReader;
+import packed.internal.thirdparty.asm.ClassVisitor;
+import packed.internal.thirdparty.asm.Opcodes;
+import packed.internal.thirdparty.asm.Type;
 
 //A ContainerSource that can change.... But you cannot link a dynamic Container Source.
 // Except if you change a container -> The whole artifact needs to be reloaded

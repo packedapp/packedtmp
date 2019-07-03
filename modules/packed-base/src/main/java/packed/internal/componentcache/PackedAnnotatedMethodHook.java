@@ -13,33 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.componentcache;
 
 /**
- * Represent an annotated field on a component instance.
+ *
  */
-public interface InstanceOfHook<T> {
+final class PackedAnnotatedMethodHook {
 
-    /**
-     * Returns the actual type (assignable to T).
-     * 
-     * @return the actual type
-     */
-    // Syntes det er rimeligt at klassen er til raadighed,
-    // Den er det jo paa runtime
-    Class<? extends T> actualType();
-
-    /**
-     * Returns the instance.
-     *
-     * @return the instance
-     */
-    T instance();
-
-    /**
-     * Returns the
-     * 
-     * @return the type we are hooked on
-     */
-    Class<T> type();
 }

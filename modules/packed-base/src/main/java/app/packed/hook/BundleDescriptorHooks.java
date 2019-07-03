@@ -30,7 +30,7 @@ public class BundleDescriptorHooks {
 
     // Permissions-> For AOP, For Invocation, for da shizzla
 
-    public Map<Class<? extends Class<?>>, Collection<OldAnnotatedFieldHook<?>>> annotatedFieldExports() {
+    public Map<Class<? extends Class<?>>, Collection<AnnotatedFieldHook<?>>> annotatedFieldExports() {
         return Map.of();
     }
 
@@ -43,8 +43,9 @@ public class BundleDescriptorHooks {
      *            the type of field hook
      * @return a collection of all exported annotated field hooks of the particular type
      */
+    /// Ehmmm no, AnnotatedFieldHook is unsafe
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Annotation> Collection<OldAnnotatedFieldHook<T>> annotatedFieldExports(Class<T> annotationType) {
+    public <T extends Annotation> Collection<AnnotatedFieldHook<T>> annotatedFieldExports(Class<T> annotationType) {
         requireNonNull(annotationType, "annotationType is null");
         return (Collection) annotatedFieldExports().getOrDefault(annotationType, List.of());
     }
@@ -54,6 +55,7 @@ public class BundleDescriptorHooks {
      * 
      * @return a collection of all hooks that the bundle exports in no particular order
      */
+    // Maybe have a HookVisitor...
     public Collection<Hook> exports() {
         return Set.of();
     }

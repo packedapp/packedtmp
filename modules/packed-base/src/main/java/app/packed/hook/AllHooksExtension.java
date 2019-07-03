@@ -72,7 +72,7 @@ public final class AllHooksExtension extends ContainerExtension<AllHooksExtensio
     }
 
     // We could also explicit export it...
-    public <T extends Annotation> AllHooksExtension onAnnotatedField(Class<T> annotationType, Consumer<? super OldAnnotatedFieldHook<T>> consumer) {
+    public <T extends Annotation> AllHooksExtension onAnnotatedField(Class<T> annotationType, Consumer<? super AnnotatedFieldHook<T>> consumer) {
         // Lifecycle....
         throw new UnsupportedOperationException();
     }

@@ -16,10 +16,9 @@
 package app.packed.hook;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 
 /** A hook representing a instance whose type is annotated with a specific type. */
-public interface AnnotatedTypeHook<T extends Annotation> extends Hook {
+public interface AnnotatedTypeHook<T extends Annotation> {
 
     /**
      * Returns the actual type that is annotated.
@@ -27,20 +26,6 @@ public interface AnnotatedTypeHook<T extends Annotation> extends Hook {
      * @return the actual type that is annotated
      */
     Class<?> actualType(); // What if AOP?
-
-    /**
-     * Returns a collection of fields annotated with the specified hook annotation. The hooks are returned in any order.
-     * 
-     * @param <S>
-     *            the type of stuff
-     * @param annotationType
-     *            the type of annotation
-     * @return stuff
-     */
-    /// nahhhh....Hvad hvis de ikke er eksporteret... Og vi har vel svaert ved at filtrer dem....
-    <S extends Annotation> Collection<OldAnnotatedFieldHook<S>> annotatedFieldHooks(Class<S> annotationType);
-
-    <S extends Annotation> Collection<OldAnnotatedMethodHook<S>> annotatedMethodHooks(Class<S> annotationType);
 
     /**
      * Returns the annotation value.
@@ -59,6 +44,20 @@ public interface AnnotatedTypeHook<T extends Annotation> extends Hook {
     // component.instance();
     Object instance();
 }
+/// **
+// * Returns a collection of fields annotated with the specified hook annotation. The hooks are returned in any order.
+// *
+// * @param <S>
+// * the type of stuff
+// * @param annotationType
+// * the type of annotation
+// * @return stuff
+// */
+///// nahhhh....Hvad hvis de ikke er eksporteret... Og vi har vel svaert ved at filtrer dem....
+// <S extends Annotation> Collection<AnnotatedFieldHook<S>> annotatedFieldHooks(Class<S> annotationType);
+//
+// <S extends Annotation> Collection<AnnotatedMethodHook<S>> annotatedMethodHooks(Class<S> annotationType);
+
 // TODO skal vi ogsaa have dem paa InstanceOfHook??? Ja det syntes jeg
 
 // Eneste problem er hvis vi smider exceptions...

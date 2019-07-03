@@ -70,8 +70,7 @@
         <version>0.8.2</version>
         <configuration>
           <excludes>
-            <exclude>packed/internal/asm/**/*</exclude>
-            <exclude>aexp/**/*</exclude>
+            <exclude>packed/internal/thirdparty/**/*</exclude>
           </excludes>
         </configuration>
         <executions>

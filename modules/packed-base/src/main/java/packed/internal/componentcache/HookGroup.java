@@ -26,14 +26,14 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 
-import app.packed.container.AnnotatedFieldHook;
-import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.NativeImage;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
@@ -54,13 +54,13 @@ final class HookGroup {
         }
     };
 
-    private final HashMap<Class<? extends Annotation>, HookMethod> annotatedMethods;
+    final IdentityHashMap<Class<? extends Annotation>, HookMethod> annotatedFields;
 
-    final HashMap<Class<? extends Annotation>, HookMethod> annotatedFields;
-
-    final MethodHandle mh;
+    private final IdentityHashMap<Class<? extends Annotation>, HookMethod> annotatedMethods;
 
     final Class<? extends ContainerExtension<?>> extensionClass;
+
+    final MethodHandle mh;
 
     private HookGroup(Builder builder) {
         this.mh = requireNonNull(builder.mh);
@@ -77,8 +77,9 @@ final class HookGroup {
         }
     }
 
-    void invokeHookOnAnnotatedField(Class<? extends Annotation> an, ContainerExtensionHookProcessor<?> p, AnnotatedFieldHook<?> hook) {
+    void invokeHookOnAnnotatedField(ContainerExtensionHookProcessor<?> p, AnnotatedFieldHook<?> hook) {
         requireNonNull(p);
+        Class<? extends Annotation> an = hook.annotation().annotationType();
         HookMethod om = annotatedFields.get(an);
         if (om == null) {
             System.out.println(an);
@@ -112,20 +113,59 @@ final class HookGroup {
     }
 
     static class Builder {
-        final HashMap<Class<? extends Annotation>, HookMethod> annotatedMethods = new HashMap<>();
+        final IdentityHashMap<Class<? extends Annotation>, HookMethod> annotatedFields = new IdentityHashMap<>();
 
-        final HashMap<Class<? extends Annotation>, HookMethod> annotatedFields = new HashMap<>();
-
-        private final Class<? extends ContainerExtensionHookProcessor<?>> type;
+        final IdentityHashMap<Class<? extends Annotation>, HookMethod> annotatedMethods = new IdentityHashMap<>();
 
         final Class<? extends ContainerExtension<?>> extensionClass;
 
         MethodHandle mh;
 
+        private final Class<? extends ContainerExtensionHookProcessor<?>> type;
+
         @SuppressWarnings({ "unchecked", "rawtypes" })
         Builder(Class<? extends ContainerExtensionHookProcessor<?>> type) {
             this.type = requireNonNull(type);
             extensionClass = (Class) TypeVariableExtractorUtil.findTypeParameterFromSuperClass(type, ContainerExtensionHookProcessor.class, 0);
+        }
+
+        private HookMethod addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
+            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
+                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
+                        + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+            }
+            MethodHandle mh;
+            try {
+                method.setAccessible(true);
+                mh = lookup.unreflect(method);
+            } catch (IllegalAccessException | InaccessibleObjectException e) {
+                throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
+                        + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
+            }
+            return new HookMethod(annotationType, mh);
+        }
+
+        private void addMethod(Lookup lookup, Method method) {
+            Parameter[] ps = method.getParameters();
+            if (ps.length != 1) {
+                throw new RuntimeException();
+            }
+            Parameter p = ps[0];
+            Class<?> cl = p.getType();
+            if (cl == AnnotatedMethodHook.class || cl == AnnotatedFieldHook.class) {
+                ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
+                @SuppressWarnings("unchecked")
+                Class<? extends Annotation> anno = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
+                HookMethod om = addAnnotatedMethodHook(lookup, method, anno);
+                if (cl == AnnotatedMethodHook.class) {
+                    annotatedMethods.put(anno, om);
+                } else {
+                    annotatedFields.put(anno, om);
+                }
+
+            } else {
+                throw new UnsupportedOperationException("Unknown type " + cl);
+            }
         }
 
         @SuppressWarnings("rawtypes")
@@ -159,45 +199,6 @@ final class HookGroup {
                 }
             }
             return new HookGroup(this);
-        }
-
-        private void addMethod(Lookup lookup, Method method) {
-            Parameter[] ps = method.getParameters();
-            if (ps.length != 1) {
-                throw new RuntimeException();
-            }
-            Parameter p = ps[0];
-            Class<?> cl = p.getType();
-            if (cl == AnnotatedMethodHook.class || cl == AnnotatedFieldHook.class) {
-                ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-                @SuppressWarnings("unchecked")
-                Class<? extends Annotation> anno = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
-                HookMethod om = addAnnotatedMethodHook(lookup, method, anno);
-                if (cl == AnnotatedMethodHook.class) {
-                    annotatedMethods.put(anno, om);
-                } else {
-                    annotatedFields.put(anno, om);
-                }
-
-            } else {
-                throw new UnsupportedOperationException("Unknown type " + cl);
-            }
-        }
-
-        private HookMethod addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
-            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
-                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
-                        + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
-            }
-            MethodHandle mh;
-            try {
-                method.setAccessible(true);
-                mh = lookup.unreflect(method);
-            } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
-                        + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-            }
-            return new HookMethod(annotationType, mh);
         }
     }
 

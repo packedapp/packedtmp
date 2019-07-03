@@ -17,8 +17,8 @@ package packed.internal.annotations;
 
 import java.util.List;
 
-import app.packed.hook.OldAnnotatedFieldHook;
-import app.packed.hook.OldAnnotatedMethodHook;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 
 /**
@@ -28,10 +28,10 @@ public class AtHookGroup {
 
     // Allow List<AnnotatedFieldHook<Get>>
 
-    /** All hook methods that takes a single {@link OldAnnotatedFieldHook} as a parameter. */
+    /** All hook methods that takes a single {@link AnnotatedFieldHook} as a parameter. */
     public final List<AtLifecycle> annotatedFieldHooks;
 
-    /** All hook methods that takes a single {@link OldAnnotatedMethodHook} as a parameter. */
+    /** All hook methods that takes a single {@link AnnotatedMethodHook} as a parameter. */
     public final List<AtLifecycle> annotatedMethodHooks;
 
     /**
@@ -48,10 +48,10 @@ public class AtHookGroup {
     /** A builder for an {@link AtHookGroup}. */
     public final static class Builder {
 
-        /** All hook methods that takes a single {@link OldAnnotatedFieldHook} as a parameter. */
+        /** All hook methods that takes a single {@link AnnotatedFieldHook} as a parameter. */
         List<AtLifecycle> annotatedFieldHooks;
 
-        /** All hook methods that takes a single {@link OldAnnotatedMethodHook} as a parameter. */
+        /** All hook methods that takes a single {@link AnnotatedMethodHook} as a parameter. */
         List<AtLifecycle> annotatedMethodHooks;
     }
 }

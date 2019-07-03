@@ -15,6 +15,8 @@
  */
 package packed.internal.util;
 
+import packed.internal.thirdparty.util.ValueWeakHashMap;
+
 /**
  *
  */

@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.AnnotatedFieldHook;
-import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.inject.InjectorExtension;
 import app.packed.inject.Provide;

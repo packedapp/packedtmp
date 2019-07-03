@@ -34,12 +34,12 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 
 /**

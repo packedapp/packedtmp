@@ -25,6 +25,5 @@ import packed.internal.invokable.InvokableMember;
  *
  */
 public interface InternalMemberDescriptor extends Member, AnnotatedElement {
-
     InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
 }

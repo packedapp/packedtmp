@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,13 +28,11 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.AnnotatedFieldHook;
-import app.packed.container.AnnotatedMethodHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.container.InstantiationContext;
-import app.packed.util.FieldDescriptor;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.container.PackedContainerConfiguration;
@@ -49,10 +46,10 @@ public final class GroupDescriptor {
     @SuppressWarnings("rawtypes")
     private final BiConsumer build;
 
-    final List<MethodConsumer<?>> methodConsumers;
-
     /** The type of extension. */
     private final Class<? extends ContainerExtension<?>> extensionType;
+
+    final List<MethodConsumer<?>> methodConsumers;
 
     private GroupDescriptor(Builder b) {
         this.extensionType = requireNonNull(b.conf.extensionClass);
@@ -89,7 +86,16 @@ public final class GroupDescriptor {
         }
 
         void onAnnotatedField(ComponentLookup lookup, Field field, Annotation annotation) {
-            AnnotatedFieldHook hook = new AnnotatedFieldHook() {
+            conf.invokeHookOnAnnotatedField(b, new PackedAnnotatedFieldHook(lookup.lookup(), field, annotation));
+        }
+
+        void onAnnotatedMethod(ComponentLookup lookup, Method method, Annotation annotation) {
+            AnnotatedMethodHook hook = new AnnotatedMethodHook() {
+
+                @Override
+                public Object annotation() {
+                    return annotation;
+                }
 
                 @Override
                 public Lookup lookup() {
@@ -97,30 +103,9 @@ public final class GroupDescriptor {
                 }
 
                 @Override
-                public FieldDescriptor field() {
-                    return FieldDescriptor.of(field);
+                public MethodDescriptor method() {
+                    return MethodDescriptor.of(method);
                 }
-
-                @Override
-                public VarHandle newVarHandle() {
-                    field.setAccessible(true);
-                    try {
-                        return MethodHandles.lookup().unreflectVarHandle(field);
-                    } catch (IllegalAccessException e) {
-                        throw new IllegalAccessRuntimeException("stuff", e);
-                    }
-                }
-
-                @Override
-                public Object annotation() {
-                    return annotation;
-                }
-            };
-            conf.invokeHookOnAnnotatedField(annotation.annotationType(), b, hook);
-        }
-
-        void onAnnotatedMethod(ComponentLookup lookup, Method method, Annotation annotation) {
-            AnnotatedMethodHook hook = new AnnotatedMethodHook() {
 
                 @Override
                 public MethodHandle newMethodHandle() {
@@ -133,25 +118,12 @@ public final class GroupDescriptor {
                 }
 
                 @Override
-                public MethodDescriptor method() {
-                    return MethodDescriptor.of(method);
-                }
-
-                @Override
                 public void onMethodReady(Class key, BiConsumer consumer) {
                     requireNonNull(key, "key is null");
                     requireNonNull(consumer, "consumer is null");
+                    // This method should definitely not be available. for ever
+                    // Should we have a check configurable???
                     consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
-                }
-
-                @Override
-                public Lookup lookup() {
-                    return lookup.lookup();// Temporary method
-                }
-
-                @Override
-                public Object annotation() {
-                    return annotation;
                 }
             };
             conf.invokeHookOnAnnotatedMethod(annotation.annotationType(), b, hook);
