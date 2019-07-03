@@ -32,6 +32,7 @@ import app.packed.util.Nullable;
  * install methods on, for example, {@link Bundle} or on another component configuration. It it also possible to install
  * components at runtime via {@link Component}.
  */
+// Default methods are the only thing not available in ComponentConfiguration....
 public interface ComponentConfiguration {
 
     // Tror tit man godt selv vil instantiere den...
@@ -41,63 +42,6 @@ public interface ComponentConfiguration {
 
     default <T extends FeatureHolder<?, ?>> T addFeature(T feature) {
         return feature;
-    }
-
-    // TypeAnnotations are ignored for now...
-    /**
-     * 
-     * @param implementation
-     *            the mixin implementation to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
-     *             interfaces)
-     * @see #addMixin(Factory)
-     * @see #addMixin(Object)
-     */
-    default ComponentConfiguration addMixin(Class<?> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds the specified mixin to the list of mixins for the component.
-     *
-     * @param factory
-     *            the mixin (factory) to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
-     *             more interfaces)
-     * @see #addMixin(Class)
-     * @see #addMixin(Object)
-     */
-    default ComponentConfiguration addMixin(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
-     * injected according to same rules as the component instance. Or an instance in which case it will only be injected.
-     *
-     * @param instance
-     *            the mixin instance to add
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
-     *             interfaces)
-     * @see #addMixin(Class)
-     * @see #addMixin(Factory)
-     */
-    default ComponentConfiguration addMixin(Object instance) {
-        throw new UnsupportedOperationException();
-    }
-
-    default ComponentConfiguration addMixinClass(Class<?> mixin) {
-        // Hvordan opfoere de sig med de forskellige typer... f.eks. prototype services...
-        // Prototypeservice er en type!
-
-        // Denne metode instantiere aldrig
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -175,6 +119,65 @@ public interface ComponentConfiguration {
     }
 }
 
+interface CC2 {
+
+    // TypeAnnotations are ignored for now...
+    /**
+     * 
+     * @param implementation
+     *            the mixin implementation to add
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
+     *             interfaces)
+     * @see #addMixin(Factory)
+     * @see #addMixin(Object)
+     */
+    default ComponentConfiguration addMixin(Class<?> implementation) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Adds the specified mixin to the list of mixins for the component.
+     *
+     * @param factory
+     *            the mixin (factory) to add
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
+     *             more interfaces)
+     * @see #addMixin(Class)
+     * @see #addMixin(Object)
+     */
+    default ComponentConfiguration addMixin(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Adds a component mixin to this component. The mixin can either be a class in which case it will be instantiated and
+     * injected according to same rules as the component instance. Or an instance in which case it will only be injected.
+     *
+     * @param instance
+     *            the mixin instance to add
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
+     *             interfaces)
+     * @see #addMixin(Class)
+     * @see #addMixin(Factory)
+     */
+    default ComponentConfiguration addMixin(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
+    default ComponentConfiguration addMixinClass(Class<?> mixin) {
+        // Hvordan opfoere de sig med de forskellige typer... f.eks. prototype services...
+        // Prototypeservice er en type!
+
+        // Denne metode instantiere aldrig
+        throw new UnsupportedOperationException();
+    }
+}
 /**
  * Returns an injector configurator for this component. This configurator can be used to provide service specifically to
  * the underlying component instance or any of its mixins.

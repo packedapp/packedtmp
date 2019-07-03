@@ -23,8 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
-import zets.Extension.ExtensionStubs.TestExtension1;
-import zets.Extension.ExtensionStubs.TestExtension2;
+import app.packed.container.ContainerExtension;
 import zets.name.spi.AbstractBaseTest;
 
 /** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
@@ -57,10 +56,10 @@ public class ContainerConfigurationExtensionTest extends AbstractBaseTest {
     }
 
     /**
-     * Tests what happens if people try to use any of the extension methods outside of bundle configure. We allow invoking
-     * {@link ContainerConfiguration#extensions()} and allow {@link ContainerConfiguration#use(Class)} for extension that
-     * have already been installed. Calling {@link ContainerConfiguration#use(Class)} with an extension that have not
-     * previously been installed will throw an {@link IllegalStateException}.
+     * Tests what happens if people try to use any of the extension methods outside of the configure of the defining bundle.
+     * We allow invoking {@link ContainerConfiguration#extensions()} and allow {@link ContainerConfiguration#use(Class)} for
+     * extension that have already been installed. Calling {@link ContainerConfiguration#use(Class)} with an extension that
+     * have not previously been installed will throw an {@link IllegalStateException}.
      */
     @Test
     public void unconfigurable() {
@@ -81,4 +80,8 @@ public class ContainerConfigurationExtensionTest extends AbstractBaseTest {
         assertThat(r.get().use(TestExtension1.class)).isSameAs(t1.get());
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }
+
+    public static class TestExtension1 extends ContainerExtension<TestExtension1> {}
+
+    public static class TestExtension2 extends ContainerExtension<TestExtension2> {}
 }

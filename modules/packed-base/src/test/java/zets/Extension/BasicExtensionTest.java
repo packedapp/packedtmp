@@ -20,15 +20,13 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.container.ArtifactBuildContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
-import zets.Extension.ExtensionStubs.TestExtension;
-import zets.Extension.ExtensionStubs.TestExtension1;
+import app.packed.container.WireletList;
 import zets.name.spi.AbstractBaseTest;
 
-/**
- *
- */
+/** Tests basic functionality of a {@link ContainerExtension}. */
 public class BasicExtensionTest extends AbstractBaseTest {
 
     /**
@@ -59,6 +57,19 @@ public class BasicExtensionTest extends AbstractBaseTest {
             assertThatIllegalStateException().isThrownBy(() -> checkConfigurable()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.class)).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> wirelets()).withMessage(msg);
+        }
+    }
+
+    public static class TestExtension1 extends ContainerExtension<TestExtension1> {}
+
+    public static class TestExtension extends ContainerExtension<TestExtension> {
+
+        public ArtifactBuildContext publicBuildContext() {
+            return buildContext();
+        }
+
+        public WireletList publicWirelets() {
+            return wirelets();
         }
     }
 }

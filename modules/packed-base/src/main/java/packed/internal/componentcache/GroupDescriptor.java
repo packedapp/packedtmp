@@ -116,7 +116,6 @@ public final class GroupDescriptor {
                     return annotation;
                 }
             };
-
             conf.invokeHookOnAnnotatedField(annotation.annotationType(), b, hook);
         }
 
