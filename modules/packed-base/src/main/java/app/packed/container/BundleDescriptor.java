@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import app.packed.app.Main;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
@@ -366,6 +367,12 @@ public class BundleDescriptor implements Artifact {
     @Override
     public ComponentPath path() {
         return ComponentPath.ROOT;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream stream() {
+        throw new UnsupportedOperationException();
     }
 }
 //

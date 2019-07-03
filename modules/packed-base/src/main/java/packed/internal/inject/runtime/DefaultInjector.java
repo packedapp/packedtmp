@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
@@ -115,5 +116,11 @@ public final class DefaultInjector extends AbstractInjector {
     @Override
     public ComponentPath path() {
         return path;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream stream() {
+        throw new UnsupportedOperationException();
     }
 }

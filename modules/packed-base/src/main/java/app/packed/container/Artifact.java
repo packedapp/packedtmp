@@ -20,6 +20,7 @@ import java.util.Optional;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 
 /**
@@ -72,6 +73,8 @@ public interface Artifact {
      * @see Component#path()
      */
     ComponentPath path();
+
+    ComponentStream stream();
 }
 
 // Kan puttes paa en artifact, og angiver hvilke stages man skal koere...

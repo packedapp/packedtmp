@@ -43,16 +43,6 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     Lookup lookup(); // TODO remove this method
 
     /**
-     * Creates a new {@link VarHandle} for the underlying field.
-     * 
-     * @return a new VarHandle for the underlying field
-     * @throws IllegalAccessRuntimeException
-     *             if a var handle could not be created
-     * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
-     */
-    VarHandle newVarHandle();
-
-    /**
      * Creates a method handle giving read access to the underlying field.
      * 
      * @return a new method handle with read access
@@ -71,4 +61,14 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * @see Lookup#unreflectSetter(java.lang.reflect.Field)
      */
     MethodHandle newMethodHandleSetter();
+
+    /**
+     * Creates a new {@link VarHandle} for the underlying field.
+     * 
+     * @return a new VarHandle for the underlying field
+     * @throws IllegalAccessRuntimeException
+     *             if a var handle could not be created
+     * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
+     */
+    VarHandle newVarHandle();
 }

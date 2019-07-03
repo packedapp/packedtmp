@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.component.ComponentPath;
+import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.ArtifactImage;
 import app.packed.container.ContainerBundle;
@@ -104,5 +105,11 @@ public final class PackedArtifactImage implements ArtifactImage {
 
     interface UserDefinedSpawner {
         // App spawn(Host h, String httpRequest, String httpResponse);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream stream() {
+        return new ComponentConfigurationToComponentAdaptor(containerConfiguration).stream();
     }
 }
