@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
+import app.packed.feature.Feature;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its

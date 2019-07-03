@@ -28,6 +28,7 @@ import app.packed.container.ArtifactType;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.InstantiationContext;
+import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration.NameWirelet;
@@ -68,6 +69,12 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The state of this configuration. */
     State state = State.INITIAL;
+
+    private final FeatureMap features = new FeatureMap();
+
+    public FeatureMap features() {
+        return features;
+    }
 
     /**
      * Creates a new abstract component configuration

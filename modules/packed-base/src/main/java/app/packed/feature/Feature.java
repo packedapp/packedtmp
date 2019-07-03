@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.feature;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import app.packed.component.Component;
 import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.ConstructorDescriptor;

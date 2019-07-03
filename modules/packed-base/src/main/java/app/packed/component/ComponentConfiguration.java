@@ -17,6 +17,7 @@ package app.packed.component;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
+import app.packed.feature.FeatureMap;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
@@ -35,14 +36,16 @@ import app.packed.util.Nullable;
 // Default methods are the only thing not available in ComponentConfiguration....
 public interface ComponentConfiguration {
 
-    // Tror tit man godt selv vil instantiere den...
-    default <T extends FeatureHolder<?, ?>> T addFeature(Class<T> featureType) {
-        throw new UnsupportedOperationException();
-    }
-
-    default <T extends FeatureHolder<?, ?>> T addFeature(T feature) {
-        return feature;
-    }
+    FeatureMap features();
+    //
+    // // Tror tit man godt selv vil instantiere den...
+    // default <T extends FeatureHolder<?, ?>> T addFeature(Class<T> featureType) {
+    // throw new UnsupportedOperationException();
+    // }
+    //
+    // default <T extends FeatureHolder<?, ?>> T addFeature(T feature) {
+    // return feature;
+    // }
 
     /**
      * Returns the configuration site where this configuration was created.

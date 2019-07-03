@@ -31,9 +31,28 @@ import packed.internal.asm.ClassVisitor;
 import packed.internal.asm.Opcodes;
 import packed.internal.asm.Type;
 
+//A ContainerSource that can change.... But you cannot link a dynamic Container Source.
+// Except if you change a container -> The whole artifact needs to be reloaded
+//ReloadableArtifact..
+//// Reloadable standalone... Whatever changes cannot be on classpath...
+
+//Must be 100 % configurable, for example, if I change this configuration file reload X Artifact...
+
+//App.of(bundle, RedeployWirelets.every(1, TimeUnit.MINUTES));
+
+// You cannot specify anything in the actual such as
+//link(DynamicLoadBundle.foo("ddasdasd")); 
+//Because you do not want this at Production time.
+
+//Do we need to abstract Modules???????
+//FixedLayout <- Nothing every changes
+//DynamicLayout <- Module, dependencies can come and go...
 /**
  *
  */
+// DynamicContainerSource
+// It only works as an artificate
+
 // ExternalContainerSource???
 
 // Sikkerhed... MethodHandles.Lookup object?????
@@ -42,11 +61,18 @@ import packed.internal.asm.Type;
 // Hele ideen er vel at vi kan lazy loade?
 // Ellers kunne vi vel ligesaa godt lave en Bundle direkte.
 
+// Do we need a ContainerSource as well????
+
+// @VerifyOnBuild <--- tells the XYZ plugin that the bundle should be verified at build time.
+
+/// Skal vel have hvert module i sin egen classloader???
+/// Saa kan vi reloade et af gangen....
 public final class DynamicContainerSource implements ArtifactSource {
 
     /** Lapp/packed/component/Install; */
     static final String PACKED_MODULE_DESCRIPTOR = Type.getDescriptor(PackedModule.class);
 
+    // Ikke ArtifactSource, BundleSource....
     public static ArtifactSource load(Path... paths) {
         try {
             return load0(paths);

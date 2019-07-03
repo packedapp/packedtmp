@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
+import app.packed.feature.FeatureMap;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
@@ -127,5 +128,11 @@ public final class DefaultProvidedComponentConfiguration<T> implements ProvidedC
     @Override
     public ComponentPath path() {
         return component.path();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public FeatureMap features() {
+        return component.features();
     }
 }

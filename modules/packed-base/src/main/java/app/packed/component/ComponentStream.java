@@ -27,6 +27,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.feature.Feature;
+
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
  * of this class is normally acquired by invoking containerComponents or componentStream.
