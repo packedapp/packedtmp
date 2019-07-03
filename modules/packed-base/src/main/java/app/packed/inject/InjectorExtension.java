@@ -36,6 +36,7 @@ import packed.internal.annotations.AtProvidesGroup;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
+import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
@@ -47,7 +48,6 @@ import packed.internal.inject.buildtime.DefaultServiceConfiguration;
 import packed.internal.inject.buildtime.DependencyGraph;
 import packed.internal.inject.buildtime.ImportAllFromInjector;
 import packed.internal.inject.buildtime.InjectorBuilder;
-import packed.internal.invokable.InternalFunction;
 
 /**
  * This extension provides functionality for injection and service management.
@@ -234,59 +234,6 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     }
 
     /**
-     *
-     * <p>
-     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
-     *
-     * @param <T>
-     *            the type of component to install
-     * @param factory
-     *            the factory used for creating the component instance
-     * @return the configuration of the component that was installed
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        InternalConfigSite configSite = configuration.configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_BIND);
-
-        ComponentConfiguration install = use(ComponentExtension.class).install(factory);
-
-        // Okay det her fra Factory skal caches....Med methodHandle....
-        InternalFunction<T> func = factory.factory.function; // AppPackedInjectSupport.toInternalFunction(factory);
-
-        BuildtimeServiceNodeDefault<T> node = new BuildtimeServiceNodeDefault<>(builder, configSite, InstantiationMode.SINGLETON,
-                configuration.lookup.readable(func), (List) factory.dependencies());
-        if (apg != null) {
-            if (!apg.members.isEmpty()) {
-                node.hasInstanceMembers = apg.hasInstanceMembers;
-                // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-                // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-                // prototypes");
-                // }
-
-                // First check that we do not have existing services with any of the provided keys
-                // for (Key<?> k : provides.members.keySet()) {
-                // // if (builder().box.services().nodes.containsKey(k)) {
-                // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-                // // }
-                // }
-
-                // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-                // the same key, so we can just add them now without any verification
-                for (AtProvides member : apg.members.values()) {
-                    builder.nodes2.add(node.provide(member));// put them directly
-                }
-            }
-            apg = null;
-        }
-
-        node.as(factory.defaultKey());
-        builder.nodes2.add(node);
-        return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) install, node);
-    }
-
-    /**
      * Binds the specified instance as a new service.
      * <p>
      * The default key for the service will be {@code instance.getClass()}. If the type returned by
@@ -306,93 +253,103 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
 
         ComponentConfiguration cc = use(ComponentExtension.class).install(instance);
 
+        // First see if we have installed a node via @Provides annotations.
         BuildtimeServiceNodeDefault<?> sc = cc.features().get(FK);
         if (sc == null) {
             sc = new BuildtimeServiceNodeDefault<T>(builder, (InternalConfigSite) cc.configSite(), instance);
-
-            if (apg != null) {
-                if (!apg.members.isEmpty()) {
-                    sc.hasInstanceMembers = apg.hasInstanceMembers;
-                    // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-                    // the same key, so we can just add them now without any verification
-                    for (AtProvides member : apg.members.values()) {
-                        builder.nodes2.add(sc.provide(member));// put them directly
-                    }
-                }
-                apg = null;
-            }
         }
-        // scanForProvides(instance.getClass(), sc);
+
         sc.as((Key) Key.of(instance.getClass()));
+        builder.nodes2.add(sc);
+        return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) cc, (BuildtimeServiceNodeDefault) sc);
+    }
+
+    /**
+     *
+     * <p>
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param factory
+     *            the factory used for creating the component instance
+     * @return the configuration of the component that was installed
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
+        requireNonNull(factory, "factory is null");
+        checkConfigurable();
+        ComponentConfiguration cc = use(ComponentExtension.class).install(factory);
+        BuildtimeServiceNodeDefault<?> sc = cc.features().get(FK);
+        if (sc == null) {
+            sc = new BuildtimeServiceNodeDefault<>(builder, (InternalConfigSite) cc.configSite(), InstantiationMode.SINGLETON,
+                    configuration.lookup.readable(factory.factory.function), (List) factory.dependencies());
+        }
+        sc.as((Key) factory.defaultKey());
         builder.nodes2.add(sc);
         return new DefaultProvidedComponentConfiguration<>(configuration, (DefaultComponentConfiguration) cc, (BuildtimeServiceNodeDefault) sc);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
-
-        this.apg = apg;
-
+        BuildtimeServiceNodeDefault sc;
         if (cc instanceof InstantiatedComponentConfiguration) {
-            InstantiatedComponentConfiguration icc = (InstantiatedComponentConfiguration) cc;
-            Object instance = icc.getInstance();
-
-            BuildtimeServiceNodeDefault sc = new BuildtimeServiceNodeDefault(builder, (InternalConfigSite) cc.configSite(), instance);
-
-            sc.hasInstanceMembers = apg.hasInstanceMembers;
-            // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-            // the same key, so we can just add them now without any verification
-            for (AtProvides member : apg.members.values()) {
-                builder.nodes2.add(sc.provide(member));// put them directly
-            }
-            cc.features().set(FK, sc);
+            Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
+            sc = new BuildtimeServiceNodeDefault(builder, (InternalConfigSite) cc.configSite(), instance);
+        } else {
+            Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
+            sc = new BuildtimeServiceNodeDefault<>(builder, (InternalConfigSite) cc.configSite(), InstantiationMode.SINGLETON,
+                    configuration.lookup.readable(factory.factory.function), (List) factory.dependencies());
         }
+
+        sc.hasInstanceMembers = apg.hasInstanceMembers;
+        // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
+        // the same key, so we can just add them now without any verification
+        for (AtProvides member : apg.members.values()) {
+            builder.nodes2.add(sc.provide(member));// put them directly
+        }
+        cc.features().set(FK, sc);
+        // this.apg = apg;
     }
 
     static FeatureKey<BuildtimeServiceNodeDefault<?>> FK = new FeatureKey<>() {};
-
-    AtProvidesGroup apg;
-
-    static class SomeNode {
-
-    }
-
-    // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-    // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-    // prototypes");
-    // }
-
-    // First check that we do not have existing services with any of the provided keys
-    // for (Key<?> k : provides.members.keySet()) {
-    // // if (builder().box.services().nodes.containsKey(k)) {
-    // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-    // // }
-    // }
-
-    // private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
-    // AtProvidesGroup provides = configuration.lookup.serviceDescriptorFor(type).provides;
-    // if (!provides.members.isEmpty()) {
-    // owner.hasInstanceMembers = provides.hasInstanceMembers;
-    // // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-    // // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-    // // prototypes");
-    // // }
-    //
-    // // First check that we do not have existing services with any of the provided keys
-    // // for (Key<?> k : provides.members.keySet()) {
-    // // // if (builder().box.services().nodes.containsKey(k)) {
-    // // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-    // // // }
-    // // }
-    //
-    // // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-    // // the same key, so we can just add them now without any verification
-    // for (AtProvides member : provides.members.values()) {
-    // builder.nodes2.add(owner.provide(member));// put them directly
-    // }
-    // }
-    // }
 }
+
+// if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+// throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
+// prototypes");
+// }
+
+// First check that we do not have existing services with any of the provided keys
+// for (Key<?> k : provides.members.keySet()) {
+// // if (builder().box.services().nodes.containsKey(k)) {
+// // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
+// // }
+// }
+
+// private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
+// AtProvidesGroup provides = configuration.lookup.serviceDescriptorFor(type).provides;
+// if (!provides.members.isEmpty()) {
+// owner.hasInstanceMembers = provides.hasInstanceMembers;
+// // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
+// // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
+// // prototypes");
+// // }
+//
+// // First check that we do not have existing services with any of the provided keys
+// // for (Key<?> k : provides.members.keySet()) {
+// // // if (builder().box.services().nodes.containsKey(k)) {
+// // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
+// // // }
+// // }
+//
+// // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
+// // the same key, so we can just add them now without any verification
+// for (AtProvides member : provides.members.values()) {
+// builder.nodes2.add(owner.provide(member));// put them directly
+// }
+// }
+// }
 
 //// ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
 //

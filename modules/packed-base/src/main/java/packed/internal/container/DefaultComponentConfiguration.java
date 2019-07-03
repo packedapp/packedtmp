@@ -23,7 +23,7 @@ import packed.internal.config.site.InternalConfigSite;
 /**
  *
  */
-public class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
+public abstract class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
 
     final ComponentClassDescriptor ccd;
 

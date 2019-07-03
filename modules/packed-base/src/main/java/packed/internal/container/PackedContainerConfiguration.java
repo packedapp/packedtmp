@@ -189,8 +189,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new DefaultComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
-                descriptor);
+        DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
+                descriptor, factory);
         descriptor.initialize(this, dcc);
         return dcc;
 

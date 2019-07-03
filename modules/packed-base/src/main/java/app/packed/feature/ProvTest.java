@@ -31,7 +31,6 @@ public class ProvTest extends Bundle {
 
     public static void main(String[] args) {
         Injector ii = Injector.of(new ProvTest());
-
         ii.services().forEach(e -> System.out.println(e.key()));
 
         System.out.println("----");

@@ -26,6 +26,7 @@ public class ProvTest extends Bundle {
     @Override
     protected void configure() {
         provide(new Foo());
+        // provide(new Foo());
     }
 
     public static void main(String[] args) {
