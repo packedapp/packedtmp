@@ -23,16 +23,16 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
-import zets.name.spi.AbstractBaseTest;
+import zets.name.spi.AbstractArtifactTest;
 import zets.name.spi.ContainerConfigurationTester;
 
 /** Tests that a proper name is generated if the name of a container is not explicitly set. */
-public class NameDefaultsTest extends AbstractBaseTest {
+public class NameDefaultsTest extends AbstractArtifactTest {
 
     /** Tests the */
     @Test
     public void bundles() {
-        check(f -> new AbstractTesterBundle(f) {}, "Container"); // Anonymous class
+        check(f -> new AbstractConsumableBundle(f) {}, "Container"); // Anonymous class
         check(f -> new S(f), "S");
         check(f -> new Bundle(f), "Bundle");
         check(f -> new HelloWorld(f), "HelloWorld");
@@ -55,14 +55,14 @@ public class NameDefaultsTest extends AbstractBaseTest {
         imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.name("Boo")).newApp().nameIs("Boo");
 
         // As a child
-        appOf(new AbstractTesterBundle(c -> {
+        appOf(new AbstractConsumableBundle(c -> {
             c.link((ContainerBundle) cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
         }) {}).nameIs("Container");
 
         // As multiple children
-        appOf(new AbstractTesterBundle(c -> {
+        appOf(new AbstractConsumableBundle(c -> {
             c.link((ContainerBundle) cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
@@ -72,7 +72,7 @@ public class NameDefaultsTest extends AbstractBaseTest {
         }) {}).nameIs("Container");
 
         // As two level nested
-        appOf(new AbstractTesterBundle(c -> {
+        appOf(new AbstractConsumableBundle(c -> {
             c.link((ContainerBundle) cs.apply(cc -> {
                 cc.link((ContainerBundle) cs.apply(ccc -> {
                     ccc.pathIs("/" + defaultName + "/" + defaultName);
@@ -81,7 +81,7 @@ public class NameDefaultsTest extends AbstractBaseTest {
         }) {}).nameIs("Container");
 
         // As 3 level nested
-        appOf(new AbstractTesterBundle(c -> {
+        appOf(new AbstractConsumableBundle(c -> {
             c.link((ContainerBundle) cs.apply(cc -> {
                 cc.link((ContainerBundle) cs.apply(ccc -> {
                     ccc.link((ContainerBundle) cs.apply(cccc -> {
@@ -93,25 +93,25 @@ public class NameDefaultsTest extends AbstractBaseTest {
     }
 
     /** We normally remove the suffix 'Bundle', so make sure Bundle works */
-    private class Bundle extends AbstractTesterBundle {
+    private class Bundle extends AbstractConsumableBundle {
         Bundle(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class HelloWorld extends AbstractTesterBundle {
+    private class HelloWorld extends AbstractConsumableBundle {
         HelloWorld(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class HelloWorldBundle extends AbstractTesterBundle {
+    private class HelloWorldBundle extends AbstractConsumableBundle {
         HelloWorldBundle(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class S extends AbstractTesterBundle {
+    private class S extends AbstractConsumableBundle {
         S(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.ContainerConfiguration;
-import zets.name.spi.AbstractBaseTest;
+import zets.name.spi.AbstractArtifactTest;
 import zets.name.spi.ContainerConfigurationTester;
 
 /**
@@ -35,7 +35,7 @@ import zets.name.spi.ContainerConfigurationTester;
  * configuring it. And then later on, we change the name of the container in which it is configured, in such a way that
  * the path of the child changes. We want to avoid this.
  */
-public class NameFreezeTest extends AbstractBaseTest {
+public class NameFreezeTest extends AbstractArtifactTest {
 
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {

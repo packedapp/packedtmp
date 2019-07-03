@@ -19,33 +19,32 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.container.ContainerBundle;
 import app.packed.container.ArtifactSource;
+import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 
-/**
- *
- */
-public abstract class AbstractBaseTest {
+/** An abstract test for testing artifacts. */
+public abstract class AbstractArtifactTest {
 
+    /** A bundle with no operations. */
     public static final ContainerBundle EMPTY_BUNDLE = new ContainerBundle() {};
-
-    public static AppTester appOf(Consumer<? super ContainerConfigurationTester> source, Wirelet... wirelets) {
-        return new AppTester(new AbstractTesterBundle(source) {}, wirelets);
-    }
 
     public static AppTester appOf(ArtifactSource source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
+    }
+
+    public static AppTester appOf(Consumer<? super ContainerConfigurationTester> source, Wirelet... wirelets) {
+        return new AppTester(new AbstractConsumableBundle(source) {}, wirelets);
     }
 
     public static ContainerImageTester imageOf(ArtifactSource source, Wirelet... wirelets) {
         return new ContainerImageTester(source, wirelets);
     }
 
-    protected static abstract class AbstractTesterBundle extends ContainerBundle {
+    protected static abstract class AbstractConsumableBundle extends ContainerBundle {
         final Consumer<? super ContainerConfigurationTester> ca;
 
-        protected AbstractTesterBundle(Consumer<? super ContainerConfigurationTester> ca) {
+        protected AbstractConsumableBundle(Consumer<? super ContainerConfigurationTester> ca) {
             this.ca = requireNonNull(ca);
         }
 

@@ -47,7 +47,6 @@ public class InjectorBindBundleTest {
 
     /** Tests that we can import no services. */
     @Test
-    @Disabled
     public void cannotImportNonExposed() {
         Bundle b = new Bundle() {
             @Override
@@ -64,7 +63,7 @@ public class InjectorBindBundleTest {
 
     /** Tests that we can import no services. */
     @Test
-    @Disabled // because of refactoring
+    @Disabled // Link
     public void OneImport() {
         Bundle b = new Bundle() {
             @Override

@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
@@ -93,7 +92,6 @@ public class InternalParameterDescriptorTest {
 
     /** {@link #test1()} and {@link #test2()} should both */
     @Test
-    @Disabled // Problemer iforbindelse med factory->function refactorting
     public void test2() {
         class X {}
 

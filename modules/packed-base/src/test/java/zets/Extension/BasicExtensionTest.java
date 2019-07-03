@@ -24,10 +24,10 @@ import app.packed.container.ArtifactBuildContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.WireletList;
-import zets.name.spi.AbstractBaseTest;
+import zets.name.spi.AbstractArtifactTest;
 
 /** Tests basic functionality of a {@link ContainerExtension}. */
-public class BasicExtensionTest extends AbstractBaseTest {
+public class BasicExtensionTest extends AbstractArtifactTest {
 
     /**
      * Checks that {@link ContainerExtension#buildContext()} is identical to {@link ContainerConfiguration#buildContext()}.

@@ -75,6 +75,9 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
             if (instance != null) {
                 mh = methodHandle.bindTo(instance);
             }
+            if (executable.isVarArgs()) {
+                mh = mh.asFixedArity();
+            }
             return (T) mh.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);

@@ -18,13 +18,13 @@ package zets.name;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Wirelet;
-import zets.name.spi.AbstractBaseTest;
+import zets.name.spi.AbstractArtifactTest;
 
 /**
  * Various basic test for naming of components.
  */
 // These are basically container names, and not component names
-public class NameBasicsTest extends AbstractBaseTest {
+public class NameBasicsTest extends AbstractArtifactTest {
 
     @Test
     public void basics() {

@@ -15,6 +15,8 @@
  */
 package tck.bundle.descriptor;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.Bundle;
 import app.packed.container.BundleContract;
 import app.packed.container.BundleDescriptor;
-import app.packed.inject.ServiceDescriptor;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.C;
@@ -45,8 +46,6 @@ public class ServicesTest {
                 provide(C.class);
             }
         });
-        for (ServiceDescriptor s : d.services()) {
-            System.out.println(s);
-        }
+        assertThat(d).isNotNull();
     }
 }

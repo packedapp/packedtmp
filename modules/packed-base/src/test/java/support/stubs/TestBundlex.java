@@ -15,6 +15,8 @@
  */
 package support.stubs;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
@@ -32,10 +34,10 @@ public class TestBundlex extends Bundle {
     public void main() {
         BundleDescriptor bd = BundleDescriptor.of(new TestBundlex());
 
-        System.out.println(bd);
-
         Injector i = Injector.of(new TestBundlex());
-        i.services().forEach(e -> System.out.println(e));
+
+        assertThat(bd).isNotNull();
+        assertThat(i).isNotNull();
     }
 
     /** {@inheritDoc} */

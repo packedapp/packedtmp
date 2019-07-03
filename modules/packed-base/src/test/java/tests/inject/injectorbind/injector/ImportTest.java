@@ -41,8 +41,7 @@ public class ImportTest {
             // c.link(new London(), OldServiceWirelets.rebindImport(Key.of(ZonedDateTime.class), new Key<@ZoneAnno("Berlin")
             // ZonedDateTime>() {}));
         });
-
-        i.services().forEach(e -> System.out.println(e.key().toStringSimple()));
+        System.out.println(i);
     }
 
     public static final class I extends Bundle {

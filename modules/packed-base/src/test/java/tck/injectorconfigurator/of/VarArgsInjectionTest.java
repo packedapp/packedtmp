@@ -19,9 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
@@ -30,19 +28,7 @@ import app.packed.inject.Injector;
 public class VarArgsInjectionTest {
     static String[] array = new String[] { "A", "B" };
 
-    public static void maind(String[] args) {
-        for (Constructor<?> m : VarArgsConstructor.class.getDeclaredConstructors()) {
-            System.out.println(m);
-            System.out.println((m.isVarArgs()));
-        }
-    }
-
-    public static void foo(String... args) {
-
-    }
-
     @Test
-    @Disabled
     // Fix this test
     public void varargs() {
         Injector i = Injector.configure(c -> {

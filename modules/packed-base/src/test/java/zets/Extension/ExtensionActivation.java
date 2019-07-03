@@ -35,10 +35,10 @@ import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerExtensionActivator;
 import app.packed.container.ContainerExtensionHookProcessor;
 import app.packed.hook.OnHook;
-import zets.name.spi.AbstractBaseTest;
+import zets.name.spi.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
-public class ExtensionActivation extends AbstractBaseTest {
+public class ExtensionActivation extends AbstractArtifactTest {
 
     @Test
     public void instanceMethod() {

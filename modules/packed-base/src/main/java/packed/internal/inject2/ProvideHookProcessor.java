@@ -40,7 +40,6 @@ public final class ProvideHookProcessor extends ContainerExtensionHookProcessor<
 
     @OnHook
     public void onProvidedMethod(AnnotatedMethodHook<Provide2> h) {
-        System.out.println("DD");
         // If Static
         // h.create()
     }

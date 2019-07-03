@@ -53,22 +53,11 @@ public final class InjectorImporter {
         this.configSite = containerConfiguration.configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
-    /**
-     * Returns the configuration site of this configuration.
-     * 
-     * @return the configuration site of this configuration
-     */
-    public final InternalConfigSite configSite() {
-        return configSite;
-    }
-
-    public void process() {
-        List<ServiceNode<?>> nodes;
-        if (injector instanceof AbstractInjector) {
-            nodes = ((AbstractInjector) injector).copyNodes();
-        } else {
+    public void importAll() {
+        if (!(injector instanceof AbstractInjector)) {
             throw new IllegalArgumentException("Currently only Injectors created by Packed are supported");
         }
+        List<ServiceNode<?>> nodes = ((AbstractInjector) injector).copyNodes();
         processImport(nodes);
     }
 
@@ -87,12 +76,10 @@ public final class InjectorImporter {
             }
         }
 
-        // Process each wiring operation
+        // Process each wirelet
         for (Wirelet operation : wirelets.toList()) {
             if (operation instanceof Wirelet) {
-                // AppPackedBundleSupport.invoke().startWireOperation(operation);
-                nodes = processImportStage(operation, nodes);
-                // AppPackedBundleSupport.invoke().finishWireOperation(operation);
+                nodes = processWirelet(operation, nodes);
                 throw new Error();
             }
         }
@@ -105,7 +92,7 @@ public final class InjectorImporter {
         }
     }
 
-    private HashMap<Key<?>, BuildServiceNode<?>> processImportStage(Wirelet stage, HashMap<Key<?>, BuildServiceNode<?>> nodes) {
+    private HashMap<Key<?>, BuildServiceNode<?>> processWirelet(Wirelet wirelet, HashMap<Key<?>, BuildServiceNode<?>> nodes) {
         // if (true) {
         // throw new Error();
         // }

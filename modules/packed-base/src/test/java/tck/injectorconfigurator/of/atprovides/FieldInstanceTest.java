@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import org.assertj.core.api.AbstractThrowableAssert;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Factory;
@@ -58,8 +57,7 @@ public class FieldInstanceTest {
      * An extra test for lazy {@link Provide#instantionMode()} on instance fields. Which makes sure that the lazy parent is
      * not created before it is needed by the provided fields.
      */
-    @Test
-    @Disabled
+    // TODO decide if we want lazy test
     public void provideLazy2() {
         // Singleton
         Injector i = of(c -> {

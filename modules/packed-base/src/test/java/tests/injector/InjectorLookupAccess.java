@@ -42,6 +42,5 @@ public class InjectorLookupAccess {
         // ModuleFinder.Controller con = ModuleLayer.defineModulesWithOneLoader(configuration, List.of(),
         // InjectorLookupAccess.class.getClassLoader());
 
-        // System.out.println(con.layer().modules());
     }
 }

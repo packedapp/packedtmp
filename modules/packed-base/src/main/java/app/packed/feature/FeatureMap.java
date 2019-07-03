@@ -18,6 +18,7 @@ package app.packed.feature;
 import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
+import java.util.Set;
 
 /**
  *
@@ -32,5 +33,9 @@ public final class FeatureMap {
 
     public <T> void set(FeatureKey<T> key, T value) {
         features.put(key, requireNonNull(value));
+    }
+
+    public Set<FeatureKey<?>> keys() {
+        return features.keySet();
     }
 }

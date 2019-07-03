@@ -179,7 +179,7 @@ public final class InjectorExtension extends ContainerExtension<InjectorExtensio
     public void importAll(Injector injector, Wirelet... wirelets) {
         InjectorImporter pfi = new InjectorImporter(configuration, builder, injector, WireletList.of(wirelets)); // Validates arguments
         checkConfigurable();
-        pfi.process(); // Will create the necessary nodes.
+        pfi.importAll(); // Will create the necessary nodes.
     }
 
     /**

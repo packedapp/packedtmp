@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -28,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.feature.Feature;
+import app.packed.feature.FeatureKey;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
@@ -82,14 +82,18 @@ public interface ComponentStream extends Stream<Component> {
         return collect(Collectors.toList());
     }
 
-    default <A> void forEachFeature(Feature<A, ?> feature, BiConsumer<Component, ? super A> action) {
+    @SuppressWarnings("unchecked")
+    default <A> void forEachFeature(FeatureKey<A> feature, BiConsumer<Component, ? super A> action) {
         requireNonNull(feature, "feature is null");
         requireNonNull(action, "action is null");
         forEach(c -> {
-            Optional<A> o = c.get(feature);
-            if (o.isPresent()) {
-                action.accept(c, o.get());
+            Object o = c.features().get(feature);
+            if (o != null) {
+                action.accept(c, (A) o);
             }
+            // if (o.isPresent()) {
+            // action.accept(c, o.get());
+            // }
         });
     }
 

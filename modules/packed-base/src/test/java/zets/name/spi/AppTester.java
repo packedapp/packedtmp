@@ -59,5 +59,4 @@ public class AppTester {
     public static AppTester of(ArtifactSource source, Wirelet... wirelets) {
         return new AppTester(App.of(source, wirelets));
     }
-
 }

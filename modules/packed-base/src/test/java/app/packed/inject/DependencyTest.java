@@ -29,7 +29,6 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -49,9 +48,9 @@ public class DependencyTest {
     public class OptionalsOf {
 
         @Test
-        @Disabled
         public void fromTypeAttribute() {
-            InternalDependencyDescriptor opString = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
+            InternalDependencyDescriptor opString = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(),
+                    TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -60,14 +59,14 @@ public class DependencyTest {
     public class OptionalsOfInts {
 
         @Test
-        @Disabled
         public void fromTypeParameter() {
             assertThat(InternalDependencyDescriptor.of(OptionalInt.class)).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            InternalDependencyDescriptor opInt = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
+            InternalDependencyDescriptor opInt = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class,
+                    0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated

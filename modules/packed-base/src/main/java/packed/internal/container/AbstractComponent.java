@@ -30,6 +30,7 @@ import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.InstantiationContext;
+import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
 
 /** An abstract base implementation of {@link Component}. */
@@ -62,6 +63,8 @@ abstract class AbstractComponent implements Component {
     @Nullable
     final AbstractComponent parent;
 
+    final FeatureMap features = new FeatureMap();;
+
     /**
      * Creates a new abstract component.
      * 
@@ -77,6 +80,14 @@ abstract class AbstractComponent implements Component {
         this.name = requireNonNull(configuration.name);
         this.depth = configuration.depth();
         this.children = configuration.initializeChildren(this, ic);
+        // for (FeatureKey<?> fk : configuration.features().keys()) {
+        // Object o = configuration.features().get(fk);
+        // }
+    }
+
+    @Override
+    public FeatureMap features() {
+        return features;
     }
 
     /** {@inheritDoc} */

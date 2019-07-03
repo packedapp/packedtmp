@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package support.stubs;
+package app.packed.inject;
 
-import app.packed.container.Bundle;
-import app.packed.inject.Injector;
+import java.util.Collection;
+
+import app.packed.config.ConfigSite;
 
 /**
  *
  */
-public class TestBundle extends Bundle {
+// Det er ikke meningen folk selv skal lave descriptor imodsaetning til contracts.
+// De skal heller ikke extendes....
 
-    public static void main(String[] args) {
-        System.out.println(Injector.of(new TestBundle()).use(String.class));
-    }
+// De er primaert taenkt til at vaere taet knyttet til f.eks. en Injector
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        provide("fooo");
-        provide(this);
-        // expose(String.class);
-    }
+// injector.descriptor();
+public interface ServiceComponenent {
+
+    ConfigSite configSite();
+
+    Collection<ServiceDescriptor> services();
+
+    // Map<Key, ServiceDescriptor>
+
+    // InjectorContract contract();
+
 }

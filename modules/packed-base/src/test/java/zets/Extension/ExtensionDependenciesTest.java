@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerExtension;
-import zets.name.spi.AbstractBaseTest;
+import zets.name.spi.AbstractArtifactTest;
 
 /**
  *
  */
-public class ExtensionDependenciesTest extends AbstractBaseTest {
+public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     /** Test that we can depend on an uninstalled extension via {@link ContainerExtension#onAdd}. */
     @Test
@@ -34,8 +34,6 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
             c.use(Ex1.class);
             assertThat(c.extensions()).containsExactly(Ex1.class, Ex2.class, Ex3.class);
         });
-
-        System.out.println("Bye");
     }
 
     /** While we do not advertise it. We do allow cyclic dependencies between extensions. */
@@ -45,8 +43,6 @@ public class ExtensionDependenciesTest extends AbstractBaseTest {
             c.use(ExRecursive1.class);
             assertThat(c.extensions()).containsExactly(ExRecursive1.class, ExRecursive2.class);
         });
-
-        System.out.println("Bye");
     }
 
     static class Ex1 extends ContainerExtension<Ex1> {

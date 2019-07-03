@@ -28,29 +28,29 @@ import app.packed.container.ContainerConfiguration;
 /** Tests {@link App#of(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)} */
 public class AppOfTest {
 
-    /** Tests the empty app with no components. */
+    /** Tests an empty app. */
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App empty = App.of(new Bundle() {
+        App app = App.of(new Bundle() {
             @Override
             public void configure() {
                 ar.set(configuration());
             }
         });
 
-        assertThat(empty).isNotNull();
-        assertThat(empty.description()).isEmpty();
-        assertThat(empty.name()).isNotNull();
-        assertThat(empty.configSite()).isNotNull();
-        assertThat(empty.stream()).size().isEqualTo(1);
+        assertThat(app).isNotNull();
+        assertThat(app.description()).isEmpty();
+        assertThat(app.name()).isNotNull();
+        assertThat(app.configSite()).isNotNull();
+        assertThat(app.stream()).size().isEqualTo(1);
 
         ContainerConfiguration cc = requireNonNull(ar.get());
 
         // Checks that no extensions are installed by default
         assertThat(cc.extensions()).isEmpty();
 
-        // Check that configuration site
-        assertThat(empty.configSite()).isSameAs(cc.configSite());
+        // Checks the config site of the app is the same as the config site of the configuration
+        assertThat(app.configSite()).isSameAs(cc.configSite());
     }
 }

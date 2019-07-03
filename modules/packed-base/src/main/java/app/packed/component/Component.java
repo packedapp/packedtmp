@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import app.packed.config.ConfigSite;
 import app.packed.feature.Feature;
+import app.packed.feature.FeatureMap;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
@@ -59,27 +60,25 @@ public interface Component {
      */
     Optional<String> description();
 
-    default Collection<?> features() {
-        // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
-        // F.eks. All dependencies for a component... Is this really a feature??
-        // Dependencies for a component is the once only the component uses. For a container it is all
-        // required dependencies for the module
-        // Features vs en selvstaendig komponent....
-        //// Altsaa det ser jo dumt ud hvis vi har
-        //// /Foo
-        //// /Foo/Service<String>
-        //// /Foo/AnotherComponent
+    FeatureMap features();
 
-        ///// Dvs ogsaa scheduled jobs bliver lagt paa som meta data, som en feature
+    // {
+    // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
+    // F.eks. All dependencies for a component... Is this really a feature??
+    // Dependencies for a component is the once only the component uses. For a container it is all
+    // required dependencies for the module
+    // Features vs en selvstaendig komponent....
+    //// Altsaa det ser jo dumt ud hvis vi har
+    //// /Foo
+    //// /Foo/Service<String>
+    //// /Foo/AnotherComponent
 
-        // Ideen er f.eks. at kunne returnere alle services en component exposer, men ikke give adgang til det...
-        // How does it relate to AttributeMap?
-        throw new UnsupportedOperationException();
-    }
+    ///// Dvs ogsaa scheduled jobs bliver lagt paa som meta data, som en feature
 
-    default <T> Optional<T> get(Feature<T, ?> feature) {
-        throw new UnsupportedOperationException();
-    }
+    // Ideen er f.eks. at kunne returnere alle services en component exposer, men ikke give adgang til det...
+    // How does it relate to AttributeMap?
+    // throw new UnsupportedOperationException();
+    // }
 
     /**
      * Returns the name of this component.
