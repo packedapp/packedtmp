@@ -25,71 +25,32 @@ import app.packed.util.Nullable;
 
 /** The default implementation of {@link ComponentPath}. */
 public final class PackedComponentPath implements ComponentPath {
+    /** A component path representing the root of a hierarchy. */
+    //
+    public static final ComponentPath ROOT = new PackedComponentPath();
 
     private final String[] elements;
 
-    /** A component path representing the root of a hierarchy. */
-    //
-    public static final ComponentPath ROOT = new ComponentPath() {
+    /** The hash of this path, lazily calculated. */
+    private int hash;
 
-        /** {@inheritDoc} */
-        @Override
-        public char charAt(int index) {
-            return toString().charAt(index);
-        }
+    /** String representation, created lazily */
+    private volatile String string;
 
-        /** {@inheritDoc} */
-        @Override
-        public int compareTo(ComponentPath other) {
-            return other.isRoot() ? 0 : 1;
-        }
-
-        @Override
-        public int depth() {
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof ComponentPath && ((ComponentPath) other).isRoot();
-        }
-
-        @Override
-        public int hashCode() {
-            return toString().hashCode();
-        }
-
-        @Override
-        public boolean isRoot() {
-            return true;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int length() {
-            return 1;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentPath parent() {
-            return null;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public CharSequence subSequence(int start, int end) {
-            return toString().subSequence(start, end);
-        }
-
-        @Override
-        public String toString() {
-            return "/";
-        }
-    };
-
-    private PackedComponentPath(String... elements) {
+    PackedComponentPath(String... elements) {
         this.elements = requireNonNull(elements);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public char charAt(int index) {
+        return toString().charAt(index);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int compareTo(ComponentPath o) {
+        return toString().compareTo(o.toString());
     }
 
     /** {@inheritDoc} */
@@ -128,13 +89,28 @@ public final class PackedComponentPath implements ComponentPath {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return toString().hashCode();
+        int h = hash;
+        if (h == 0) {
+            for (String e : elements) {
+                for (int i = 0; i < e.length(); i++) {
+                    h = 31 * h + (e.charAt(i) & 0xff); // Do this work for UTF16?? or only Latin1
+                }
+            }
+            hash = h;
+        }
+        return h;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isRoot() {
         return elements.length == 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int length() {
+        return toString().length();
     }
 
     /** {@inheritDoc} */
@@ -148,12 +124,24 @@ public final class PackedComponentPath implements ComponentPath {
 
     /** {@inheritDoc} */
     @Override
+    public CharSequence subSequence(int start, int end) {
+        return toString().subSequence(start, end);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public String toString() {
-        StringJoiner sj = new StringJoiner("/", "/", "");
-        for (String s : elements) {
-            sj.add(s);
+        String s = string;
+        if (s == null) {
+            StringJoiner sj = new StringJoiner("/", "/", "");
+            for (String ss : elements) {
+                sj.add(ss);
+            }
+
+            s = string = sj.toString();
         }
-        return sj.toString();
+        return s;
+
     }
 
     static ComponentPath of(AbstractComponent component) {

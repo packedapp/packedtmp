@@ -16,7 +16,6 @@
 package app.packed.component;
 
 import java.nio.file.Paths;
-import java.util.stream.IntStream;
 
 import app.packed.util.Nullable;
 import packed.internal.container.PackedComponentPath;
@@ -35,42 +34,6 @@ import packed.internal.container.PackedComponentPath;
 // Iteralble Path??? Hmm, er det fulde paths eller del paths??? Den er lidt forvirrende
 public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<Path>, */ CharSequence {
 
-    /** {@inheritDoc} */
-    @Override
-    default int compareTo(ComponentPath o) {
-        return toString().compareTo(o.toString());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default int length() {
-        return toString().length();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default char charAt(int index) {
-        return toString().charAt(index);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default CharSequence subSequence(int start, int end) {
-        return toString().subSequence(start, end);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default IntStream chars() {
-        return toString().chars();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    default IntStream codePoints() {
-        return toString().codePoints();
-    }
-
     /** A component path representing the root of a hierarchy. */
     static final ComponentPath ROOT = PackedComponentPath.ROOT;
 
@@ -80,10 +43,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
      *
      * @return the number of elements in the path, or {@code 0} if this path represents a root component
      */
-    // Tror vi encoder depth i f.eks. en long/int state paa komponenten. 8 bit (256) burde vaere nok
-    // Saa hedder den ogsaa bare depth
-
-    // Kan maaske ogsaa encode ComponentTypen/capabilities i en int.... saa kan bitfitle den
     int depth();
 
     /**
@@ -126,4 +85,6 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     public static ComponentPath of(String first, String... more) {
         throw new UnsupportedOperationException();
     }
+
+    // TODO hashCode contract
 }

@@ -42,7 +42,6 @@ import packed.internal.util.StringFormatter;
 @Retention(RetentionPolicy.RUNTIME)
 // @InterruptOnStop
 // https://en.wikipedia.org/wiki/Entry_point
-
 // Main kan vel ogsaa bruges paa en injector???? Nahhh, hvordan styre vi det???
 // Maaske bare at alle annoteringer + extensions, udover Provide+Inject fejler???
 
