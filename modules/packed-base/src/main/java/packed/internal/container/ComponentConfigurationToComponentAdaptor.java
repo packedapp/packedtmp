@@ -38,7 +38,7 @@ public class ComponentConfigurationToComponentAdaptor implements Component {
 
     private final AbstractComponentConfiguration componentConfiguration;
 
-    ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration) {
+    public ComponentConfigurationToComponentAdaptor(AbstractComponentConfiguration componentConfiguration) {
         this.componentConfiguration = requireNonNull(componentConfiguration);
     }
 

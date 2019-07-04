@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.ExtensionActivator;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleExtension;
@@ -50,7 +50,7 @@ import packed.internal.util.StringFormatter;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
-@ContainerExtensionActivator(MainProcessor.class)
+@ExtensionActivator(MainProcessor.class)
 public @interface Main {
 
     /**
@@ -69,7 +69,7 @@ public @interface Main {
     boolean undeployOnCompletion() default true;
 }
 
-final class MainProcessor extends ContainerExtensionHookProcessor<LifecycleExtension> {
+final class MainProcessor extends ExtensionHookProcessor<LifecycleExtension> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
 

@@ -27,6 +27,14 @@ import app.packed.component.ComponentConfiguration;
 
 // This should be an interface... However, We need to fix the code that can extract E.
 // Right now it only deals with abstract classes. (TypeVariable, Key, ...) because thats what we needed at the time
-public abstract class ContainerExtensionHookProcessor<E extends ContainerExtension<E>> {
+public abstract class ExtensionHookProcessor<E extends Extension> {
     public abstract BiConsumer<ComponentConfiguration, E> onBuild();
+
+    // protected final void checkNotStatic(FieldDescriptor d) {}
+    //
+    // protected final void checkNotStatic(MethodDescriptor d) {}
+    //
+    // protected final void checkStatic(FieldDescriptor d) {}
+    //
+    // protected final void checkStatic(MethodDescriptor d) {}
 }

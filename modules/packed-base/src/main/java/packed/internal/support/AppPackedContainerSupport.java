@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
@@ -43,9 +43,11 @@ public final class AppPackedContainerSupport {
          * @param configuration
          *            the configuration of the container in which the extension is registered
          */
-        public abstract void initializeExtension(ContainerExtension<?> extension, PackedContainerConfiguration configuration);
+        public abstract void initializeExtension(Extension extension, PackedContainerConfiguration configuration);
 
         public abstract void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration);
+
+        public abstract void onConfigured(Extension extension);
 
         /**
          * Initializes this class.
@@ -62,14 +64,13 @@ public final class AppPackedContainerSupport {
     }
 
     /** Holder of the singleton. */
-    @SuppressWarnings("rawtypes")
     static class SingletonHolder {
 
         /** The singleton instance. */
         static final Helper SINGLETON;
 
         static {
-            new ContainerExtension() {};
+            new Extension() {};
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }

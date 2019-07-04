@@ -25,10 +25,10 @@ import java.util.stream.Stream;
 import app.packed.container.Artifact;
 import app.packed.container.ArtifactSource;
 import app.packed.container.ArtifactType;
+import app.packed.container.ArtifactImage;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -264,8 +264,8 @@ public interface Injector extends Artifact {
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
     static Injector of(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).newInjector(wirelets);
+        if (source instanceof ArtifactImage) {
+            return ((ArtifactImage) source).newInjector(wirelets);
         }
         PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.of(source), wirelets);
         return conf.buildInjector();

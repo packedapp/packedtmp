@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.component.ComponentPath;
-import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
@@ -53,15 +51,12 @@ public final class DefaultInjector extends AbstractInjector {
 
     private final String name;
 
-    private final ComponentPath path;
-
     public DefaultInjector(ContainerConfiguration containerConfiguration, ServiceNodeMap services) {
         this.parent = null;
         this.name = containerConfiguration.getName();
         this.configSite = requireNonNull(containerConfiguration.configSite());
         this.description = containerConfiguration.getDescription();
         this.services = requireNonNull(services);
-        this.path = containerConfiguration.path();
     }
 
     /** {@inheritDoc} */
@@ -110,17 +105,5 @@ public final class DefaultInjector extends AbstractInjector {
     @Override
     public String name() {
         return name;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath path() {
-        return path;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream stream() {
-        throw new UnsupportedOperationException();
     }
 }

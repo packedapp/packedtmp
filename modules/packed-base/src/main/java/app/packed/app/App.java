@@ -22,17 +22,15 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.container.Artifact;
+import app.packed.container.ArtifactDriver;
 import app.packed.container.ArtifactSource;
-import app.packed.container.ArtifactType;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
-import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedApp;
-import packed.internal.container.PackedArtifactImage;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedContainer;
 
 /**
  * An App (application) is a type of artifact is a program.
@@ -48,6 +46,16 @@ import packed.internal.container.PackedContainerConfiguration;
  */
 // Do we expose the attachments????
 public interface App extends Artifact, AutoCloseable {
+
+    /**
+     * Returns the component path of this app.
+     * <p>
+     * The returned path is always identical to the path of the app's root container.
+     *
+     * @return the component path of this app
+     * @see Component#path()
+     */
+    ComponentPath path();
 
     /**
      * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
@@ -163,8 +171,6 @@ public interface App extends Artifact, AutoCloseable {
     // TODO throw UnknownPathException();;
     Component useComponent(CharSequence path);
 
-    // If you can stop an app via shutdown. You should also be able to introspec it
-
     /**
      * Creates a new application from the specified source. The state of the returned application is
      * {@link RunState#INITIALIZED}.
@@ -178,11 +184,7 @@ public interface App extends Artifact, AutoCloseable {
      *             if the application could not be constructed properly
      */
     static App of(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof PackedArtifactImage) {
-            return ((PackedArtifactImage) source).newApp(wirelets);
-        }
-        PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactType.APP, ContainerSource.forApp(source), wirelets);
-        return new PackedApp(pcc.doBuild().doInstantiate());
+        return AppArtifactDriver.INSTANCE.create(source, wirelets);
     }
 
     /**
@@ -203,7 +205,9 @@ public interface App extends Artifact, AutoCloseable {
         // If has @Main will run Main and then exit
         // Otherwise will run until application is shutdown
 
-        try (PackedApp app = (PackedApp) of(source, wirelets)) {
+        // If you can stop an app via shutdown. You should also be able to introspec it
+
+        try (PackedApp app = AppArtifactDriver.INSTANCE.create(source, wirelets)) {
             app.start();
             app.runMainSync();
             // try {
@@ -217,4 +221,19 @@ public interface App extends Artifact, AutoCloseable {
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
     // Basalt set har vi vel bare en Wiring property der angiver det
     // Basically we unwrap exceptions accordingly to some scheme in some way
+}
+
+class AppArtifactDriver extends ArtifactDriver<PackedApp> {
+
+    /** The single instance. */
+    static final AppArtifactDriver INSTANCE = new AppArtifactDriver();
+
+    /** Singleton */
+    private AppArtifactDriver() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedApp create(PackedContainer container) {
+        return new PackedApp(container);
+    }
 }

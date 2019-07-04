@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package packed.internal.container;
 
-import app.packed.container.ArtifactImageInterface;
-import app.packed.container.Bundle;
-import app.packed.container.ArtifactSource;
-import app.packed.container.Wirelet;
+import java.util.IdentityHashMap;
+
+import app.packed.container.Extension;
 
 /**
  *
  */
-public abstract class AppBundle extends Bundle {
+public class DefCon {
+    static final Module m = DefCon.class.getModule();
+    IdentityHashMap<Class<?>, Extension> baseExtensions;
 
-    protected static ArtifactImageInterface newImage(ArtifactSource source, Wirelet... wirelets) {
-        return ArtifactImageInterface.of(source, wirelets);
+    IdentityHashMap<Class<?>, Extension> externalExtensions;
+
+    public <T> T use(Class<T> t) {
+        if (t.getModule() == m) {
+            // get From baseExtensions
+        } else {
+            // getFrom External Dependencies..
+        }
+        // We can actually remove all modules that do not implement #configure()
+
+        return null;
+        // ideen er selvfolgelig
     }
 }

@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import app.packed.app.Main;
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import packed.internal.support.AppPackedLifecycleSupport;
 
 /**
@@ -29,7 +29,7 @@ import packed.internal.support.AppPackedLifecycleSupport;
 
 // Configuring lifecycle for the container,
 //// Component lifecycle is hmmmmm
-public final class LifecycleExtension extends ContainerExtension<LifecycleExtension> {
+public final class LifecycleExtension extends Extension {
     static {
 
         AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {

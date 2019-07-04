@@ -195,6 +195,20 @@ public abstract class Wirelet {
     public static Wirelet name(String name) {
         return new PackedContainerConfiguration.NameWirelet(name);
     }
+
+    // The tree ways of locality for wirelets....
+    // We also have build time and configuration time...
+    enum Locality {
+
+        /** Only within the same container (default). */
+        PER_CONTAINER,
+
+        /** In the container, and all children within the same artifact */
+        INHERITED_ARTIFACT,
+
+        /** In the container, and all children even if different artifacts. */
+        INHERITED_ALL;
+    }
 }
 //
 /// **

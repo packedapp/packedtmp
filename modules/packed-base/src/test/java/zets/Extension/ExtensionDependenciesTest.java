@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import zets.name.spi.AbstractArtifactTest;
 
 /**
@@ -27,7 +27,7 @@ import zets.name.spi.AbstractArtifactTest;
  */
 public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
-    /** Test that we can depend on an uninstalled extension via {@link ContainerExtension#onAdd}. */
+    /** Test that we can depend on an uninstalled extension via {@link Extension#onAdded}. */
     @Test
     public void testCanCallUseFromOnExtensionAdded() {
         appOf(c -> {
@@ -45,43 +45,43 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    static class Ex1 extends ContainerExtension<Ex1> {
+    static class Ex1 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected void onAdd() {
+        protected void onAdded() {
             use(Ex2.class);
         }
 
     }
 
-    static class Ex2 extends ContainerExtension<Ex2> {
+    static class Ex2 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected void onAdd() {
+        protected void onAdded() {
             use(Ex3.class);
         }
     }
 
-    static class Ex3 extends ContainerExtension<Ex3> {
+    static class Ex3 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected void onAdd() {
+        protected void onAdded() {
             // use(Ex2.class);
         }
     }
 
-    static class ExRecursive1 extends ContainerExtension<ExRecursive1> {
+    static class ExRecursive1 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected void onAdd() {
+        protected void onAdded() {
             use(ExRecursive2.class);
         }
     }
 
-    static class ExRecursive2 extends ContainerExtension<ExRecursive2> {
+    static class ExRecursive2 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected void onAdd() {
+        protected void onAdded() {
             use(ExRecursive1.class);
         }
     }

@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 import app.packed.component.Component;
 
 /**
- * A source of an artifact. This is typically a subclass of {@link ContainerBundle} or pregenerated {@link ArtifactImage
+ * A source of an artifact. This is typically a subclass of {@link ContainerBundle} or pregenerated {@link ArtifactImageInterface
  * container image}.
  * <p>
  * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
@@ -54,6 +54,8 @@ public interface ArtifactSource {
 class LiveReload /* implements ContainerSource */ {
     // Bliver redeployet hver gang en fil aendrer sig....
     // Det bliver loaded i sit eget module layer...
+
+    // LiveReload af en single App, men ikke hosten..
 }
 
 abstract class SoftLink implements Component {

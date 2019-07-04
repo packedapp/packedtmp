@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ArtifactBuildContext;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 
@@ -58,7 +58,7 @@ public class ContainerConfigurationTester {
         return cc;
     }
 
-    public Set<Class<? extends ContainerExtension<?>>> extensions() {
+    public Set<Class<? extends Extension>> extensions() {
         return cc.extensions();
     }
 
@@ -111,11 +111,11 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public <T extends ContainerExtension<T>> T use(Class<T> extensionType) {
+    public <T extends Extension> T use(Class<T> extensionType) {
         return cc.use(extensionType);
     }
 
-    public <T extends ContainerExtension<T>> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
+    public <T extends Extension> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
         consumer.accept(cc.use(extensionType));
         return this;
     }

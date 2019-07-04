@@ -34,11 +34,11 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ArtifactImage;
+import app.packed.container.ArtifactImageInterface;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionActivator;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 
@@ -53,21 +53,21 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {});
+    static final ArtifactImageInterface EMPTY = ArtifactImageInterface.of(new Bundle() {});
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
+    static final ArtifactImageInterface USE_EXTENSION = ArtifactImageInterface.of(new Bundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
+    static final ArtifactImageInterface INSTALL = ArtifactImageInterface.of(new Bundle() {
         @Override
         public void configure() {
             install("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
+    static final ArtifactImageInterface INSTALL_AUTO_ACTIVATE = ArtifactImageInterface.of(new Bundle() {
         @Override
         public void configure() {
             install(new MyStuff());
@@ -102,18 +102,18 @@ public class FromImage {
         }
     }
 
-    public static class MyExtension extends ContainerExtension<MyExtension> {
+    public static class MyExtension extends Extension {
         protected void set(ComponentConfiguration a) {}
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    @ContainerExtensionActivator(Builder.class)
+    @ExtensionActivator(Builder.class)
     public @interface ActivateMyExtension {
 
     }
 
-    static class Builder extends ContainerExtensionHookProcessor<MyExtension> {
+    static class Builder extends ExtensionHookProcessor<MyExtension> {
 
         @OnHook
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {

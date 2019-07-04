@@ -33,11 +33,11 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ArtifactImage;
+import app.packed.container.ArtifactImageInterface;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionActivator;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 
@@ -53,35 +53,35 @@ import app.packed.hook.OnHook;
 public class ExtensionActivation {
 
     @Benchmark
-    public ArtifactImage empty() {
+    public ArtifactImageInterface empty() {
         Bundle b = new Bundle() {};
-        return ArtifactImage.of(b);
+        return ArtifactImageInterface.of(b);
     }
 
     @Benchmark
-    public ArtifactImage useExtension() {
+    public ArtifactImageInterface useExtension() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImageInterface.of(b);
     }
 
     @Benchmark
-    public ArtifactImage install() {
+    public ArtifactImageInterface install() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
                 install("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImageInterface.of(b);
     }
 
     @Benchmark
-    public ArtifactImage newExtensionUseInstall() {
+    public ArtifactImageInterface newExtensionUseInstall() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
@@ -89,18 +89,18 @@ public class ExtensionActivation {
                 install("foo");
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImageInterface.of(b);
     }
 
     @Benchmark
-    public ArtifactImage newExtensionAutoActivate() {
+    public ArtifactImageInterface newExtensionAutoActivate() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
                 install(new MyStuff());
             }
         };
-        return ArtifactImage.of(b);
+        return ArtifactImageInterface.of(b);
     }
 
     static class MyStuff {
@@ -111,18 +111,18 @@ public class ExtensionActivation {
         }
     }
 
-    public static class MyExtension extends ContainerExtension<MyExtension> {
+    public static class MyExtension extends Extension {
         protected void set(ComponentConfiguration a) {}
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    @ContainerExtensionActivator(Builder.class)
+    @ExtensionActivator(Builder.class)
     public @interface ActivateMyExtension {
 
     }
 
-    static class Builder extends ContainerExtensionHookProcessor<MyExtension> {
+    static class Builder extends ExtensionHookProcessor<MyExtension> {
 
         @OnHook
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {

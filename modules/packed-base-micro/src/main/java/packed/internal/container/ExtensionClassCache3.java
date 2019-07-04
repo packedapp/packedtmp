@@ -17,10 +17,10 @@ package packed.internal.container;
 
 import java.util.function.Supplier;
 
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 
 /**
- * A cache of {@link ContainerExtension} implementations. Is mainly used for instantiating new instances of extensions.
+ * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
  */
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
@@ -47,7 +47,7 @@ final class ExtensionClassCache3<T> {
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends ContainerExtension<T>> T newInstance(Class<T> extensionType) {
+    static <T extends Extension> T newInstance(Class<T> extensionType) {
         // Time goes from around 1000 ns to 10 ns when we cache
         return (T) CACHE.get(extensionType).get();
     }

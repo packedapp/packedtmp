@@ -18,6 +18,9 @@ package app.packed.container;
 /**
  *
  */
+// invokeAsync()
 public interface Invoker {
+    Object invoke() throws Throwable;
 
+    Object invokeWithErrorHandling();
 }

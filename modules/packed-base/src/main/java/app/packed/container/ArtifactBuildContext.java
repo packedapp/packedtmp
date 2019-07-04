@@ -19,7 +19,7 @@ import app.packed.config.ConfigSite;
 
 /**
  * An artifact build context is created every time an build context is create . The context is shared among all
- * extension of every container configuration for the artifact via {@link ContainerExtension#buildContext()}.
+ * extension of every container configuration for the artifact via {@link Extension#buildContext()}.
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
@@ -30,6 +30,7 @@ public interface ArtifactBuildContext {
      * 
      * @return the type of artifact the build process produces
      */
+    // Maybe we have the driver here instead...
     ArtifactType artifactType();
 
     /**
@@ -56,6 +57,9 @@ public interface ArtifactBuildContext {
      */
     WireletList wirelets();
 }
+// We could add ComponentPath path();
+//// But it will freeze the name of the top level. Which we don't want.
+
 // Specials -> IsFromImage, isNativeImageGenerate, isNativeImageBuild
 // source instanceof ContainerImage
 // APP

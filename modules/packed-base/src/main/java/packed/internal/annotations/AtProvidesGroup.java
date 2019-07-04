@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -70,7 +70,7 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
     }
 
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class Builder extends ContainerExtensionHookProcessor<InjectorExtension> {
+    public final static class Builder extends ExtensionHookProcessor<InjectorExtension> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;

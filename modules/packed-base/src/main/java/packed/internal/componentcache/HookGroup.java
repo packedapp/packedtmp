@@ -28,9 +28,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
 
-import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionActivator;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.container.NativeImage;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -50,7 +50,7 @@ final class HookGroup {
         @SuppressWarnings("unchecked")
         @Override
         protected HookGroup computeValue(Class<?> type) {
-            return new HookGroup.Builder((Class<? extends ContainerExtensionHookProcessor<?>>) type).build();
+            return new HookGroup.Builder((Class<? extends ExtensionHookProcessor<?>>) type).build();
         }
     };
 
@@ -58,7 +58,7 @@ final class HookGroup {
 
     private final IdentityHashMap<Class<? extends Annotation>, HookMethod> annotatedMethods;
 
-    final Class<? extends ContainerExtension<?>> extensionClass;
+    final Class<? extends Extension> extensionClass;
 
     final MethodHandle mh;
 
@@ -69,15 +69,15 @@ final class HookGroup {
         this.annotatedFields = builder.annotatedFields;
     }
 
-    ContainerExtensionHookProcessor<?> instantiate() {
+    ExtensionHookProcessor<?> instantiate() {
         try {
-            return (ContainerExtensionHookProcessor<?>) mh.invoke();
+            return (ExtensionHookProcessor<?>) mh.invoke();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
 
-    void invokeHookOnAnnotatedField(ContainerExtensionHookProcessor<?> p, AnnotatedFieldHook<?> hook) {
+    void invokeHookOnAnnotatedField(ExtensionHookProcessor<?> p, AnnotatedFieldHook<?> hook) {
         requireNonNull(p);
         Class<? extends Annotation> an = hook.annotation().annotationType();
         HookMethod om = annotatedFields.get(an);
@@ -95,7 +95,7 @@ final class HookGroup {
         }
     }
 
-    void invokeHookOnAnnotatedMethod(Class<? extends Annotation> an, ContainerExtensionHookProcessor<?> p, AnnotatedMethodHook<?> hook) {
+    void invokeHookOnAnnotatedMethod(Class<? extends Annotation> an, ExtensionHookProcessor<?> p, AnnotatedMethodHook<?> hook) {
         requireNonNull(p);
         HookMethod om = annotatedMethods.get(an);
         if (om == null) {
@@ -117,22 +117,22 @@ final class HookGroup {
 
         final IdentityHashMap<Class<? extends Annotation>, HookMethod> annotatedMethods = new IdentityHashMap<>();
 
-        final Class<? extends ContainerExtension<?>> extensionClass;
+        final Class<? extends Extension> extensionClass;
 
         MethodHandle mh;
 
-        private final Class<? extends ContainerExtensionHookProcessor<?>> type;
+        private final Class<? extends ExtensionHookProcessor<?>> type;
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
-        Builder(Class<? extends ContainerExtensionHookProcessor<?>> type) {
+        Builder(Class<? extends ExtensionHookProcessor<?>> type) {
             this.type = requireNonNull(type);
-            extensionClass = (Class) TypeVariableExtractorUtil.findTypeParameterFromSuperClass(type, ContainerExtensionHookProcessor.class, 0);
+            extensionClass = (Class) TypeVariableExtractorUtil.findTypeParameterFromSuperClass(type, ExtensionHookProcessor.class, 0);
         }
 
         private HookMethod addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
             if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
                 throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
-                        + ContainerExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+                        + ExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
             }
             MethodHandle mh;
             try {
@@ -170,7 +170,7 @@ final class HookGroup {
 
         @SuppressWarnings("rawtypes")
         HookGroup build() {
-            if ((Class) type == ContainerExtensionHookProcessor.class) {
+            if ((Class) type == ExtensionHookProcessor.class) {
                 throw new IllegalArgumentException();
             }
             // TODO check not abstract...

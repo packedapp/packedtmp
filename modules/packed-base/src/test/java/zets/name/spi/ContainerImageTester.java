@@ -18,7 +18,7 @@ package zets.name.spi;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.container.ArtifactImage;
+import app.packed.container.ArtifactImageInterface;
 import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
@@ -27,17 +27,17 @@ import app.packed.container.Wirelet;
  */
 public class ContainerImageTester {
 
-    private final ArtifactImage image;
+    private final ArtifactImageInterface image;
 
     public ContainerImageTester(ArtifactSource source, Wirelet... wirelets) {
-        this(ArtifactImage.of(source, wirelets));
+        this(ArtifactImageInterface.of(source, wirelets));
     }
 
     public AppTester newApp(Wirelet... wirelets) {
         return new AppTester(image, wirelets);
     }
 
-    public ContainerImageTester(ArtifactImage image) {
+    public ContainerImageTester(ArtifactImageInterface image) {
         this.image = requireNonNull(image);
     }
 

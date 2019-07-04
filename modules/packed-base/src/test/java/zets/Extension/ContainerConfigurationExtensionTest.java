@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import zets.name.spi.AbstractArtifactTest;
 
 /** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
@@ -81,7 +81,7 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }
 
-    public static class TestExtension1 extends ContainerExtension<TestExtension1> {}
+    public static class TestExtension1 extends Extension {}
 
-    public static class TestExtension2 extends ContainerExtension<TestExtension2> {}
+    public static class TestExtension2 extends Extension {}
 }

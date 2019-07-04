@@ -21,6 +21,10 @@ import app.packed.inject.Injector;
 /// Kan vi bruge dem for example med @UseExtension(onlyAllow=OutputType.INJECTOR) @OnStart
 // Class<? extends Artifact???> instead, then we could maybe in some way allow user to build they own
 //artifact type. Maybe do like maven, and have goals you can attach.
+
+//My only problem with this is that users should be more interessed in the "capabilities" of the artifact.
+// F.eks. om vi skal instantiere ting...
+// F.eks. lad os sige vi laver et ActorSystem, hvor den eneste forskel for App er selve interfaces...
 /** The type of artifact the build process creates. */
 public enum ArtifactType {
 
@@ -39,7 +43,7 @@ public enum ArtifactType {
 
     /**
      * The output type of the build process is a {@link ArtifactImage}. This is typically via
-     * {@link ArtifactImage#of(ArtifactSource, Wirelet...)}.
+     * {@link ArtifactImageInterface#of(ArtifactSource, Wirelet...)}.
      */
     ARTIFACT_IMAGE,
 

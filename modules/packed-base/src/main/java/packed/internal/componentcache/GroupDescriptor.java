@@ -29,8 +29,8 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.container.InstantiationContext;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.IllegalAccessRuntimeException;
@@ -47,7 +47,7 @@ public final class GroupDescriptor {
     private final BiConsumer build;
 
     /** The type of extension. */
-    private final Class<? extends ContainerExtension<?>> extensionType;
+    private final Class<? extends Extension> extensionType;
 
     final List<MethodConsumer<?>> methodConsumers;
 
@@ -59,14 +59,14 @@ public final class GroupDescriptor {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     void add(PackedContainerConfiguration container, ComponentConfiguration component) {
-        ContainerExtension extension = container.use((Class) extensionType);
+        Extension extension = container.use((Class) extensionType);
         build.accept(component, extension);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static class Builder {
 
-        final ContainerExtensionHookProcessor<?> b;
+        final ExtensionHookProcessor<?> b;
 
         /** The component type */
         final Class<?> componentType;
@@ -75,7 +75,7 @@ public final class GroupDescriptor {
 
         private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
 
-        Builder(Class<?> componentType, Class<? extends ContainerExtensionHookProcessor<?>> cc) {
+        Builder(Class<?> componentType, Class<? extends ExtensionHookProcessor<?>> cc) {
             this.componentType = requireNonNull(componentType);
             this.conf = HookGroup.FOR_CLASS.get(cc);
             this.b = conf.instantiate();

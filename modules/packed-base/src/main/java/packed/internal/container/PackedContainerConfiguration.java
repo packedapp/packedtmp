@@ -30,8 +30,8 @@ import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerLayer;
+import app.packed.container.Extension;
 import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -57,7 +57,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final ContainerConfiguratorCache configuratorCache;
 
     /** All registered extensions, in order of registration. */
-    private final LinkedHashMap<Class<? extends ContainerExtension<?>>, ContainerExtension<?>> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension>, Extension> extensions = new LinkedHashMap<>();
 
     private HashMap<String, DefaultLayer> layers;
 
@@ -101,7 +101,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         doBuild();
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
-        for (ContainerExtension<?> e : extensions.values()) {
+        for (Extension e : extensions.values()) {
             e.buildBundle(builder);
         }
     }
@@ -151,14 +151,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends ContainerExtension<?>>> extensions() {
+    public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
     final void extensionsContainerConfigured() {
         prepareNewComponent(State.GET_NAME_INVOKED);
-        for (ContainerExtension<?> e : extensions.values()) {
-            e.onConfigured(); // State final????
+        for (Extension e : extensions.values()) {
+            AppPackedContainerSupport.invoke().onConfigured(e);
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -172,7 +172,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     @Override
     void extensionsPrepareInstantiation(InstantiationContext ic) {
-        for (ContainerExtension<?> e : extensions.values()) {
+        for (Extension e : extensions.values()) {
             e.onPrepareContainerInstantiate(ic);
         }
         super.extensionsPrepareInstantiation(ic);
@@ -318,9 +318,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends ContainerExtension<T>> T use(Class<T> extensionType) {
+    public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        ContainerExtension<?> ce = extensions.get(extensionType);
+        Extension ce = extensions.get(extensionType);
         if (ce == null) {
             // We do not use computeIfAbsent because extensions might install other extensions.
             // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
@@ -367,6 +367,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 // */
 // @SuppressWarnings("unchecked")
 // @Nullable
-// public <T extends Extension<T>> T getExtension(Class<T> extensionType) {
+// public <T extends Extension> T getExtension(Class<T> extensionType) {
 // return (T) extensions.get(extensionType);
 // }

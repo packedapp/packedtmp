@@ -102,7 +102,7 @@ public abstract class ContainerBundle implements ArtifactSource {
         }
     }
 
-    protected final Set<Class<? extends ContainerExtension<?>>> extensions() {
+    protected final Set<Class<? extends Extension>> extensions() {
         return configuration().extensions();
     }
 
@@ -201,7 +201,7 @@ public abstract class ContainerBundle implements ArtifactSource {
      * @return an extension of the specified type
      * @see ContainerConfiguration#use(Class)
      */
-    protected final <T extends ContainerExtension<T>> T use(Class<T> extensionType) {
+    protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
 

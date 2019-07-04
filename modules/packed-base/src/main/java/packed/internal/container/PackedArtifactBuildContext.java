@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ArtifactBuildContext;
-import app.packed.container.ArtifactType;
 import app.packed.container.ArtifactSource;
+import app.packed.container.ArtifactType;
 import app.packed.container.WireletList;
 
 /** The default implementation of {@link ArtifactBuildContext} */

@@ -17,14 +17,14 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An extension that provides basic functionality for installing components.
  */
-public final class ComponentExtension extends ContainerExtension<ComponentExtension> {
+public final class ComponentExtension extends Extension {
 
     private final PackedContainerConfiguration configuration;
 

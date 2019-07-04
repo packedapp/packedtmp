@@ -19,14 +19,14 @@ import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import app.packed.contract.Contract;
 
 /**
  *
  */
 // Naming of capture... Is kind of an export....
-public final class AllHooksExtension extends ContainerExtension<AllHooksExtension> {
+public final class AllHooksExtension extends Extension {
 
     public AllHooksExtension capture(Contract contract) {
         // Should be able to just use 1 export();

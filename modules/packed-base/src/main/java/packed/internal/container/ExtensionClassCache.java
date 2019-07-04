@@ -23,14 +23,14 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InaccessibleObjectException;
 
-import app.packed.container.ContainerExtension;
+import app.packed.container.Extension;
 import app.packed.container.NativeImage;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * A cache of {@link ContainerExtension} implementations. Is mainly used for instantiating new instances of extensions.
+ * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
  */
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
@@ -52,7 +52,7 @@ final class ExtensionClassCache<T> {
     private final MethodHandle mh;
 
     /** The type of extension. */
-    private final Class<? extends ContainerExtension<?>> type;
+    private final Class<? extends Extension> type;
 
     /** Whether or not the constructor needs an instanceof {@link PackedContainerConfiguration}. */
     private final boolean needsPackedContainerConfiguration;
@@ -63,7 +63,7 @@ final class ExtensionClassCache<T> {
      * @param type
      *            the extension type
      */
-    private ExtensionClassCache(Class<? extends ContainerExtension<?>> type) {
+    private ExtensionClassCache(Class<? extends Extension> type) {
         this.type = requireNonNull(type);
         boolean needsPackedContainerConfiguration = false;
 
@@ -102,10 +102,10 @@ final class ExtensionClassCache<T> {
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends ContainerExtension<T>> T newInstance(PackedContainerConfiguration pcc, Class<T> extensionType) {
+    static <T extends Extension> T newInstance(PackedContainerConfiguration pcc, Class<T> extensionType) {
         // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get to 6 ns
         ExtensionClassCache<T> ei = (ExtensionClassCache<T>) CACHE.get(extensionType);
-        ContainerExtension<T> e;
+        Extension e;
         try {
             if (ei.needsPackedContainerConfiguration) {
                 e = (T) ei.mh.invoke(pcc);

@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
-
-import app.packed.container.ArtifactImageInterface;
-import app.packed.container.Bundle;
-import app.packed.container.ArtifactSource;
-import app.packed.container.Wirelet;
+package app.packed.container;
 
 /**
  *
  */
-public abstract class AppBundle extends Bundle {
+public class ExtensionGraph<E extends Extension> {
 
-    protected static ArtifactImageInterface newImage(ArtifactSource source, Wirelet... wirelets) {
-        return ArtifactImageInterface.of(source, wirelets);
-    }
+    // Alle extension fra en
 }

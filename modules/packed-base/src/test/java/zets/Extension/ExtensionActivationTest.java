@@ -29,9 +29,9 @@ import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Bundle;
-import app.packed.container.ContainerExtension;
-import app.packed.container.ContainerExtensionActivator;
-import app.packed.container.ContainerExtensionHookProcessor;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionActivator;
+import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -94,12 +94,12 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @ContainerExtensionActivator(Builder.class)
+    @ExtensionActivator(Builder.class)
     public @interface ActivateMyExtension {
         String value();
     }
 
-    static class Builder extends ContainerExtensionHookProcessor<MyExtension> {
+    static class Builder extends ExtensionHookProcessor<MyExtension> {
 
         /** {@inheritDoc} */
         @Override
@@ -138,7 +138,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         }
     }
 
-    public static class MyExtension extends ContainerExtension<MyExtension> {
+    public static class MyExtension extends Extension {
         protected void set(ComponentConfiguration a) {}
     }
 
