@@ -23,7 +23,7 @@ import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.InjectorExtension;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
@@ -143,8 +143,8 @@ public abstract class Bundle extends ContainerBundle {
      * 
      * @return an instance of the injector extension
      */
-    protected final InjectorExtension injector() {
-        return use(InjectorExtension.class);
+    protected final InjectionExtension injector() {
+        return use(InjectionExtension.class);
     }
 
     protected final ComponentExtension component() {

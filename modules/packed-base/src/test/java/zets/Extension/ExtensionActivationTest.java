@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.container.Activate;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -94,7 +94,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @ExtensionActivator(Builder.class)
+    @Activate(extensionHook = Builder.class)
     public @interface ActivateMyExtension {
         String value();
     }

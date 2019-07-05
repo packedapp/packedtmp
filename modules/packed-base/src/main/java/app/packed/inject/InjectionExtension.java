@@ -56,7 +56,7 @@ import packed.internal.inject.buildtime.PackedServiceConfiguration;
 // Registered registererUnqualifiedAnnotation <---
 // Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
 // Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
-public final class InjectorExtension extends Extension {
+public final class InjectionExtension extends Extension {
 
     static FeatureKey<BuildServiceNodeDefault<?>> FK = new FeatureKey<>() {};
 
@@ -67,7 +67,7 @@ public final class InjectorExtension extends Extension {
     private final PackedContainerConfiguration configuration;
 
     /** Creates a new injector extension. */
-    InjectorExtension(PackedContainerConfiguration configuration) {
+    InjectionExtension(PackedContainerConfiguration configuration) {
         this.configuration = requireNonNull(configuration);
     }
 

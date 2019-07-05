@@ -24,7 +24,7 @@ package app.packed.container;
 // Løser også voews problem med interne services vs externe services...
 
 // Saa injector/container er altid externe services.....
-public interface ContainerContext {
+interface ContainerContext {
 
     /**
      * Returns the name of the container.
@@ -35,6 +35,7 @@ public interface ContainerContext {
      */
     String name();
 
+    // Hmm
     void shutdownApp();
 
     void shutdownApp(Throwable cause);

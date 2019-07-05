@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -34,6 +35,8 @@ import java.util.Optional;
 
 // TODO tror vi kan droppe extens Extension nu...
 // ExtensionTree
+
+// Ligesom Extension bliver der ogsaa noedt til at vaere en opdeling her... i build time, instantiation time, og runtime
 public abstract class ExtensionArtifactController<E extends Extension, S extends ArtifactSidecar> {
 
     /**
@@ -52,9 +55,19 @@ public abstract class ExtensionArtifactController<E extends Extension, S extends
         // Because it wants to call stuff....
     }
 
+    protected Collection<E> roots() {
+        // Den er lidt for hvis vi har forskellige roots...
+        /// F.eks. ind der bruger port(40) og en der bruger port 80
+        // all the root containers the extension is used in
+        throw new UnsupportedOperationException();
+    }
+
     protected void onExtensionAdded(E extension) {
 
     }
+
+    // Okay to extensions der saetter hver sin port....HMMMM. Saa skal vi vel have to forskellige sidecards????
+    // Saa man kan indsaette sidecards for
 
     protected void onExtensionConfigured(E extension) {
         // We never expose the controller to the actual artifact.

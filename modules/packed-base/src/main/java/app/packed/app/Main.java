@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionActivator;
+import app.packed.container.Activate;
 import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -50,7 +50,7 @@ import packed.internal.util.StringFormatter;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
-@ExtensionActivator(MainProcessor.class)
+@Activate(extensionHook = MainProcessor.class)
 public @interface Main {
 
     /**

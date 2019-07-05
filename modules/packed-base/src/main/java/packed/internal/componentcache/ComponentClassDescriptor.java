@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ExtensionActivator;
+import app.packed.container.Activate;
 import app.packed.container.ExtensionHookProcessor;
 import app.packed.container.InstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
@@ -100,12 +100,12 @@ public final class ComponentClassDescriptor {
     /** A builder object for a component class descriptor. */
     static class Builder {
 
-        static final ClassValue<Class<? extends ExtensionHookProcessor<?>>> METHOD_ANNOTATION_ACTIVATOR = new ClassValue<>() {
+        static final ClassValue<Class<? extends ExtensionHookProcessor<?>>[]> METHOD_ANNOTATION_ACTIVATOR = new ClassValue<>() {
 
             @Override
-            protected Class<? extends ExtensionHookProcessor<?>> computeValue(Class<?> type) {
-                ExtensionActivator ae = type.getAnnotation(ExtensionActivator.class);
-                return ae == null ? null : ae.value();
+            protected Class<? extends ExtensionHookProcessor<?>>[] computeValue(Class<?> type) {
+                Activate ae = type.getAnnotation(Activate.class);
+                return ae == null ? null : ae.extensionHook();
             }
         };
 
@@ -135,18 +135,22 @@ public final class ComponentClassDescriptor {
                 for (Field field : c.getDeclaredFields()) {
                     Annotation[] annotations = field.getAnnotations();
                     for (Annotation a : annotations) {
-                        Class<? extends ExtensionHookProcessor<?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
+                        Class<? extends ExtensionHookProcessor<?>>[] cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
                         if (cc != null) {
-                            builders.computeIfAbsent(cc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedField(cl, field, a);
+                            for (Class<? extends ExtensionHookProcessor<?>> ccc : cc) {
+                                builders.computeIfAbsent(ccc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedField(cl, field, a);
+                            }
                         }
                     }
                 }
                 for (Method method : c.getDeclaredMethods()) {
                     Annotation[] annotations = method.getAnnotations();
                     for (Annotation a : annotations) {
-                        Class<? extends ExtensionHookProcessor<?>> cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
+                        Class<? extends ExtensionHookProcessor<?>> cc[] = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
                         if (cc != null) {
-                            builders.computeIfAbsent(cc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedMethod(cl, method, a);
+                            for (Class<? extends ExtensionHookProcessor<?>> ccc : cc) {
+                                builders.computeIfAbsent(ccc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedMethod(cl, method, a);
+                            }
                         }
                     }
                 }

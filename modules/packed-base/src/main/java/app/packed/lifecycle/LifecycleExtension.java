@@ -30,8 +30,8 @@ import packed.internal.support.AppPackedLifecycleSupport;
 // Configuring lifecycle for the container,
 //// Component lifecycle is hmmmmm
 public final class LifecycleExtension extends Extension {
-    static {
 
+    static {
         AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {
 
             @Override
@@ -41,6 +41,7 @@ public final class LifecycleExtension extends Extension {
         });
     }
 
+    // set
     // @Override
     // protected void onWireChild(@Nullable LifecycleExtension child, O link) {
     //
@@ -73,4 +74,5 @@ public final class LifecycleExtension extends Extension {
         System.out.println(mh);
         s.add(mh);
     }
+
 }

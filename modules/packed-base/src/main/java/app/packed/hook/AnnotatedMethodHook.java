@@ -54,6 +54,7 @@ public interface AnnotatedMethodHook<T> {
     <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 }
 // Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
+/// Vi kan vel bare wrappe MethodHandles....
 
 // Problemet er her den callback vi skal smide tilbage paa
 //// Vi kan require en Service...

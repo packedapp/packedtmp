@@ -36,7 +36,7 @@ import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectorExtension;
+import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.componentcache.ComponentLookup;
@@ -109,8 +109,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public DefaultInjector buildInjector() {
         doBuild();
         new PackedContainer(null, this, new PackedInstantiationContext());
-        if (extensions.containsKey(InjectorExtension.class)) {
-            return use(InjectorExtension.class).builder.publicInjector;
+        if (extensions.containsKey(InjectionExtension.class)) {
+            return use(InjectionExtension.class).builder.publicInjector;
         } else {
             return new DefaultInjector(this, new ServiceNodeMap());
         }

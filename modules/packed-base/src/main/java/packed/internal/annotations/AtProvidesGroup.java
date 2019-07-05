@@ -26,7 +26,7 @@ import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.inject.InjectorExtension;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -41,7 +41,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  * Information about fields and methods annotated with {@link Provide}, typically on a single class. Used for both
  * services, components, import and export stages.
  */
-public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration, InjectorExtension> {
+public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration, InjectionExtension> {
 
     /** An empty provides group. */
     private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
@@ -65,12 +65,12 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
 
     /** {@inheritDoc} */
     @Override
-    public void accept(ComponentConfiguration cc, InjectorExtension e) {
+    public void accept(ComponentConfiguration cc, InjectionExtension e) {
         e.set(cc, this);
     }
 
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class Builder extends ExtensionHookProcessor<InjectorExtension> {
+    public final static class Builder extends ExtensionHookProcessor<InjectionExtension> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;

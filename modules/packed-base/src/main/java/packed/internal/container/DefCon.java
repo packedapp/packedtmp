@@ -23,6 +23,8 @@ import app.packed.container.Extension;
  *
  */
 public class DefCon {
+    // Det her med at finde ud af hvordan extensions er relateret....
+
     static final Module m = DefCon.class.getModule();
     IdentityHashMap<Class<?>, Extension> baseExtensions;
 

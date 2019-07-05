@@ -18,6 +18,8 @@ package app.packed.container;
 /**
  *
  */
+// Well you could also just return an object if you do not the callback methods
+// on this class
 public abstract class ArtifactSidecar {
 
     // Could also control replace artifact??? idk

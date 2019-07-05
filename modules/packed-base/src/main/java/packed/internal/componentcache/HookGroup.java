@@ -29,7 +29,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionActivator;
 import app.packed.container.ExtensionHookProcessor;
 import app.packed.container.NativeImage;
 import app.packed.hook.AnnotatedFieldHook;
@@ -130,10 +129,10 @@ final class HookGroup {
         }
 
         private HookMethod addAnnotatedMethodHook(MethodHandles.Lookup lookup, Method method, Class<? extends Annotation> annotationType) {
-            if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
-                throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
-                        + ExtensionActivator.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
-            }
+            // if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
+            // throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
+            // + Activate.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
+            // }
             MethodHandle mh;
             try {
                 method.setAccessible(true);

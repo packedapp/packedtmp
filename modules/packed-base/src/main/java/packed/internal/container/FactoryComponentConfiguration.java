@@ -42,5 +42,4 @@ public class FactoryComponentConfiguration extends DefaultComponentConfiguration
     public Factory<?> getFactory() {
         return factory;
     }
-
 }

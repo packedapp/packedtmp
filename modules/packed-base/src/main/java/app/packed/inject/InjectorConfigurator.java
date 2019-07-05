@@ -122,8 +122,8 @@ public class InjectorConfigurator /* implements Taggable */ {
      * 
      * @return an instance of the injector extension
      */
-    private InjectorExtension injector() {
-        return configuration.use(InjectorExtension.class);
+    private InjectionExtension injector() {
+        return configuration.use(InjectionExtension.class);
     }
 
     /**

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 /**
  * A meta-annotation that can be placed on annotations...
  */
-@Target(ElementType.ANNOTATION_TYPE)
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.MODULE })
 @Retention(RetentionPolicy.RUNTIME)
 // FeatureAnnotation
 
@@ -39,12 +39,14 @@ import java.lang.annotation.Target;
 // Online-Component
 // Hook
 // Online-Hook
-public @interface ExtensionActivator {
+public @interface Activate {
+
+    Class<? extends Extension>[] extension() default {};
 
     /**
      * Returns the extension hook group that knows how do handle the types, fields or methods that are annotated...
      * 
      * @return the extension hook group that knows how do handle
      */
-    Class<? extends ExtensionHookProcessor<?>> value();
+    Class<? extends ExtensionHookProcessor<?>>[] extensionHook() default {};
 }

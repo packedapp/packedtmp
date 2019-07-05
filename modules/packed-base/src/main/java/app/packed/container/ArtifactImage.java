@@ -68,8 +68,8 @@ public final class ArtifactImage implements ArtifactImageInterface {
         return new PackedApp(containerConfiguration.doInstantiate());
     }
 
-    public <T extends Artifact> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        return driver.create(containerConfiguration.doInstantiate());
+    public <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
+        return driver.newArtifact(containerConfiguration.doInstantiate());
     }
 
     public ArtifactImageInterface newImage(Wirelet... wirelets) {

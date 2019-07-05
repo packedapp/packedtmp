@@ -233,7 +233,7 @@ class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedApp create(PackedContainer container) {
+    public PackedApp newArtifact(PackedContainer container) {
         return new PackedApp(container);
     }
 }

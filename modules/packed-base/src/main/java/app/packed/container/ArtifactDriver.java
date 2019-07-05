@@ -15,26 +15,36 @@
  */
 package app.packed.container;
 
-import app.packed.app.App;
+import java.lang.reflect.Type;
+
 import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedApp;
 import packed.internal.container.PackedContainer;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
  * Ideen er at man implementere en driver. Som tager sig af at laver en artifact instance.... Dvs. kalder image hvis det
  * er et image
  */
-// AbstractArtifact skal vi naesten ogsaa have saa.
-// Skal artifact implementere Artifact.... Hvad hvis jeg ikke
-// gider expose det.... F.eks. ud mod mine brugere....
-// Don't poke in stream()..
-public abstract class ArtifactDriver<T extends Artifact> {
 
+// Ditch interface + ArtifactType
+
+// Men kun hvis vi ikke skal bruge den til
+public abstract class ArtifactDriver<T> {
+
+    // private final Class<T> type;
+
+    // private final
+
+    @SuppressWarnings("unchecked")
     public final Class<T> type() {
-        // We cache this when we create the driver...
-        throw new UnsupportedOperationException();
+        Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
+        return (Class<T>) type;
     }
+
+    // Either a configure() class
+    // For example, supports lifecycle... if not-> Lifecycle cycle methods on
+    // PackedContainer (Artifact?) throws Unsupported
 
     // Needs Lifecycle
     public final T create(ArtifactSource source, Wirelet... wirelets) {
@@ -42,18 +52,10 @@ public abstract class ArtifactDriver<T extends Artifact> {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactType.APP, ContainerSource.forApp(source), wirelets);
-        return create(pcc.doBuild().doInstantiate());
+        return newArtifact(pcc.doBuild().doInstantiate());
     }
 
-    @SuppressWarnings("exports")
-    public abstract T create(PackedContainer container);
-}
+    // protected abstract T newDescriptor(PackedConfiguration container);
 
-class AppArtifactDriver extends ArtifactDriver<App> {
-
-    /** {@inheritDoc} */
-    @Override
-    public App create(PackedContainer container) {
-        return new PackedApp(container);
-    }
+    protected abstract T newArtifact(PackedContainer container);
 }

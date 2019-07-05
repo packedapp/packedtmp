@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import java.util.concurrent.CompletableFuture;
+
 import app.packed.container.InstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
@@ -52,5 +54,11 @@ public final class PackedContainer extends AbstractComponent {
 
     public <T> T use(Class<T> key) {
         return injector.use(key);
+    }
+
+    public <T> CompletableFuture<T> asyncStart(T result) {
+        // Taenkt saa man kan kalde
+        // CompletableFuture<App> cf = artifact.asyncStart(this);
+        throw new UnsupportedOperationException();
     }
 }
