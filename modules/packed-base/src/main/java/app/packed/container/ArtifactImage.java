@@ -24,12 +24,28 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
+import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedApp;
 import packed.internal.container.PackedContainerConfiguration;
 
-/** The default implementation of {@link ArtifactImageInterface}. */
-// TODO Drop the interface, we only want the class
-public final class ArtifactImage implements ArtifactImageInterface {
+/**
+ * Artifact images are immutable ahead-of-time configured {@link Artifact artifacts}. Creating artifacts in Packed is
+ * already really fast, and you can easily create one 10 or hundres of microseconds. But by using artificat images you
+ * can into hundres or thousounds of nanoseconds.
+ * <p>
+ * Use cases:
+ * 
+ * 
+ * <p>
+ * Limitations:
+ * 
+ * No structural changes... Only whole artifacts
+ * 
+ * <p>
+ * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
+ * artifact images. It can not be used with {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
+ */
+public final class ArtifactImage implements Artifact, ArtifactSource {
 
     /** The configuration of the future artifact's root container. */
     private final PackedContainerConfiguration containerConfiguration;
@@ -72,7 +88,7 @@ public final class ArtifactImage implements ArtifactImageInterface {
         return driver.newArtifact(containerConfiguration.doInstantiate());
     }
 
-    public ArtifactImageInterface newImage(Wirelet... wirelets) {
+    public ArtifactImage newImage(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -80,17 +96,33 @@ public final class ArtifactImage implements ArtifactImageInterface {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the type of bundle that was used to create this image.
+     * <p>
+     * If this image was created from an existing image, the new image image will retain the original image source bundle
+     * type.
+     * 
+     * @return the original source type of this image
+     */
+    // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
     public Class<? extends ContainerBundle> sourceType() {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ArtifactImageInterface with(Wirelet... wirelets) {
+    public ArtifactImage with(Wirelet... wirelets) {
         // We need to check that they can be used at image instantion time.
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a new container image original functionality but re
+     * 
+     * @param name
+     *            the name
+     * @return the new container image
+     */
+    public final ArtifactImage withName(String name) {
+        return with(Wirelet.name(name));
     }
 
     interface InjectorFactory {
@@ -101,13 +133,32 @@ public final class ArtifactImage implements ArtifactImageInterface {
         Injector spawn(String httpRequest, String httpResponse);
     }
 
+    /**
+     * Creates a new image from the specified source.
+     *
+     * @param source
+     *            the source of the image
+     * @param wirelets
+     *            any wirelets to use in the construction of the image
+     * @return a new image
+     * @throws RuntimeException
+     *             if the image could not be constructed properly
+     */
+    public static ArtifactImage of(ArtifactSource source, Wirelet... wirelets) {
+        if (source instanceof ArtifactImage) {
+            return ((ArtifactImage) source).newImage(wirelets);
+        }
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerSource.forImage(source), wirelets);
+        return new ArtifactImage(c.doBuild());
+    }
+
     interface UserDefinedSpawner {
         // App spawn(Host h, String httpRequest, String httpResponse);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentStream stream() {
         return new ComponentConfigurationToComponentAdaptor(containerConfiguration).stream();
     }
 }
+// ofRepeatable();
+// wirelet.checkNotFrom();

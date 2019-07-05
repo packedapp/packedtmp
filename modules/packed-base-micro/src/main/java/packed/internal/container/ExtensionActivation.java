@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Activate;
-import app.packed.container.ArtifactImageInterface;
+import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
@@ -53,35 +53,35 @@ import app.packed.hook.OnHook;
 public class ExtensionActivation {
 
     @Benchmark
-    public ArtifactImageInterface empty() {
+    public ArtifactImage empty() {
         Bundle b = new Bundle() {};
-        return ArtifactImageInterface.of(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImageInterface useExtension() {
+    public ArtifactImage useExtension() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
             }
         };
-        return ArtifactImageInterface.of(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImageInterface install() {
+    public ArtifactImage install() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
                 install("foo");
             }
         };
-        return ArtifactImageInterface.of(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImageInterface newExtensionUseInstall() {
+    public ArtifactImage newExtensionUseInstall() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
@@ -89,18 +89,18 @@ public class ExtensionActivation {
                 install("foo");
             }
         };
-        return ArtifactImageInterface.of(b);
+        return ArtifactImage.of(b);
     }
 
     @Benchmark
-    public ArtifactImageInterface newExtensionAutoActivate() {
+    public ArtifactImage newExtensionAutoActivate() {
         Bundle b = new Bundle() {
             @Override
             public void configure() {
                 install(new MyStuff());
             }
         };
-        return ArtifactImageInterface.of(b);
+        return ArtifactImage.of(b);
     }
 
     static class MyStuff {

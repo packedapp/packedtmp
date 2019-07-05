@@ -43,7 +43,7 @@ public enum ArtifactType {
 
     /**
      * The output type of the build process is a {@link ArtifactImage}. This is typically via
-     * {@link ArtifactImageInterface#of(ArtifactSource, Wirelet...)}.
+     * {@link ArtifactImage#of(ArtifactSource, Wirelet...)}.
      */
     ARTIFACT_IMAGE,
 

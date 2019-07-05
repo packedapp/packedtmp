@@ -15,19 +15,19 @@
  */
 package micro.app;
 
-import app.packed.container.ContainerBundle;
+import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
-import app.packed.container.ArtifactImageInterface;
+import app.packed.container.ContainerBundle;
 
 /**
  *
  */
 public class VariousBundles {
 
-    public static final ArtifactImageInterface EMPTY_IMAGE = ArtifactImageInterface.of(empty());
-    public static final ArtifactImageInterface ONE_COMPONENT_IMAGE = ArtifactImageInterface.of(oneComponent());
-    public static final ArtifactImageInterface FIVE_CONTAINER_IMAGE = ArtifactImageInterface.of(fiveComponents());
-    public static final ArtifactImageInterface ONE_CONTAINER_IMAGE = ArtifactImageInterface.of(oneContainer());
+    public static final ArtifactImage EMPTY_IMAGE = ArtifactImage.of(empty());
+    public static final ArtifactImage ONE_COMPONENT_IMAGE = ArtifactImage.of(oneComponent());
+    public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.of(fiveComponents());
+    public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
 
     public static ContainerBundle empty() {
         return new Bundle() {};

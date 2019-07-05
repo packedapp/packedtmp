@@ -254,7 +254,7 @@ public class BundleDescriptor implements Artifact {
     }
 
     // Or just have a descriptor() on ContainerImage();
-    public static BundleDescriptor of(ArtifactImageInterface image) {
+    public static BundleDescriptor of(ArtifactImage image) {
         return of((ArtifactSource) image);
     }
 

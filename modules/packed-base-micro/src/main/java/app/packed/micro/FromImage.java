@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Activate;
-import app.packed.container.ArtifactImageInterface;
+import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
@@ -53,21 +53,21 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImageInterface EMPTY = ArtifactImageInterface.of(new Bundle() {});
+    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {});
 
-    static final ArtifactImageInterface USE_EXTENSION = ArtifactImageInterface.of(new Bundle() {
+    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImageInterface INSTALL = ArtifactImageInterface.of(new Bundle() {
+    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
         @Override
         public void configure() {
             install("foo");
         }
     });
-    static final ArtifactImageInterface INSTALL_AUTO_ACTIVATE = ArtifactImageInterface.of(new Bundle() {
+    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
         @Override
         public void configure() {
             install(new MyStuff());
