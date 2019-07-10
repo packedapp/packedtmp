@@ -24,7 +24,11 @@ import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 
 /** The default implementation of Container. */
-public final class PackedContainer extends AbstractComponent {
+// implements ContainerContext...
+/// Which is available to every component in the container.....
+/// Maybe via ComponentContext
+/// Just worried
+public final class PackedContainerContext extends AbstractComponent {
 
     private final Injector injector;
 
@@ -38,7 +42,7 @@ public final class PackedContainer extends AbstractComponent {
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedContainer(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration, InstantiationContext instantiationContext) {
+    PackedContainerContext(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration, InstantiationContext instantiationContext) {
         super(parent, configuration, instantiationContext);
         Injector i = instantiationContext.get(configuration, DefaultInjector.class);
         if (i == null) {

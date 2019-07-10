@@ -15,12 +15,28 @@
  */
 package app.packed.container;
 
+import java.util.Optional;
+
 /**
  *
  */
 
-/// Ved ikke omm vi behoever den her
-public class ExtensionGraph<E extends Extension> {
+// Component extends AnnotatedElement
+//// How will this work with container???
+//// Annotations on bundle???
 
-    // Alle extension fra en
+interface Sidecar {
+    Optional<Class<? extends Extension>> extension();
+    // Kan vaere knyttet til en EXtension
+
+    // Kan bruge nøjagtig
 }
+// Vil gerne have fat i sidecars when.
+// -- Laver en ny artifact der har den som foraeldre...
+//// Men der kan vi lave en API paa extension hook processoren.
+
+// Saa
+
+// Kan en extension have mare end en sidecar???
+//// Nah, det syntes jeg ikke.... Saa kan vi smide den i et map....
+////

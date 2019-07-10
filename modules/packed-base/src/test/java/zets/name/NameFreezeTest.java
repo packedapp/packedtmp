@@ -28,9 +28,9 @@ import zets.name.spi.AbstractArtifactTest;
 import zets.name.spi.ContainerConfigurationTester;
 
 /**
- * Tests the various ways the name of a container can be frozen.
+ * Tests the various ways the name of a component can be frozen.
  * <p>
- * Certain operations requires us to freeze the name of a container when configuring it. This is done in order to avoid
+ * Certain operations requires us to freeze the name of a component when configuring it. This is done in order to avoid
  * nasty surprises later on. For example, if storing the @link ContainerConfiguration#path() of a component when
  * configuring it. And then later on, we change the name of the container in which it is configured, in such a way that
  * the path of the child changes. We want to avoid this.
@@ -121,7 +121,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
 
     /**
      * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having linked another container via
-     * {@link ContainerConfiguration#link(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)}.
+     * {@link ComponentExtension#link(app.packed.container.ContainerBundle, app.packed.container.Wirelet...)}.
      * <p>
      * We could actually allow this as long as the bundle we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to

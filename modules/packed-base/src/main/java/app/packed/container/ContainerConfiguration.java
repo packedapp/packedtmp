@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.app.App;
+import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
@@ -53,7 +54,7 @@ public interface ContainerConfiguration {
 
     /**
      * Returns the build context. A single build context object is shared among all containers that are connected using
-     * {@link #link(ContainerBundle, Wirelet...)}.
+     * {@link ComponentExtension#link(ContainerBundle, Wirelet...)}.
      * 
      * @return the build context
      */
@@ -95,18 +96,6 @@ public interface ContainerConfiguration {
      * @see #setName(String)
      */
     String getName();
-
-    /**
-     * Creates a link to another container represented by a bundle.
-     * <p>
-     * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
-     * 
-     * @param child
-     *            a bundle representing the child
-     * @param wirelets
-     *            optional wirelets
-     */
-    void link(ContainerBundle child, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
@@ -202,7 +191,7 @@ public interface ContainerConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ArtifactSource, Wirelet...)} or {@link #link(ContainerBundle, Wirelet...)}.
+     * {@link App#of(ArtifactSource, Wirelet...)} or {@link ComponentExtension#link(ContainerBundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

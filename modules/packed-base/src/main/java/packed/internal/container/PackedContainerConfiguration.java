@@ -108,7 +108,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     public DefaultInjector buildInjector() {
         doBuild();
-        new PackedContainer(null, this, new PackedInstantiationContext());
+        new PackedContainerContext(null, this, new PackedInstantiationContext());
         if (extensions.containsKey(InjectionExtension.class)) {
             return use(InjectionExtension.class).builder.publicInjector;
         } else {
@@ -138,13 +138,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    public PackedContainer doInstantiate() {
+    public PackedContainerContext doInstantiate() {
         // TODO support instantiation wirelets for images
         PackedInstantiationContext pic = new PackedInstantiationContext();
         extensionsPrepareInstantiation(pic);
 
         // Will instantiate the whole container hierachy
-        PackedContainer pc = new PackedContainer(null, this, pic);
+        PackedContainerContext pc = new PackedContainerContext(null, this, pic);
         methodHandlePassing0(pc, pic);
         return pc;
     }
@@ -230,12 +230,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    PackedContainer instantiate(AbstractComponent parent, InstantiationContext ic) {
-        return new PackedContainer(parent, this, ic);
+    PackedContainerContext instantiate(AbstractComponent parent, InstantiationContext ic) {
+        return new PackedContainerContext(parent, this, ic);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void link(ContainerBundle bundle, Wirelet... wirelets) {
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return

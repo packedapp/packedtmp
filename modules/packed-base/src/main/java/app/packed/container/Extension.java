@@ -192,4 +192,16 @@ public abstract class Extension {
     protected final WireletList wirelets() {
         return configuration().wirelets();
     }
+
+    // Sidecards per extension???
+    // Det betyder jo ogsaa "endnu" mere magt til extensions..
+    protected final void installSidecar(Object instance) {
+        // These should work with images as well..
+
+        // I virkeligheden er det jo paa ContainerConfiguration vi installere den....
+        class SidecarConfiguration {
+
+        }
+        System.out.println(new SidecarConfiguration());
+    }
 }

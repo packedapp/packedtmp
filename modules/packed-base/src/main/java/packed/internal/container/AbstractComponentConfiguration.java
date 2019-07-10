@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.container.ArtifactType;
 import app.packed.container.ContainerBundle;
@@ -293,7 +294,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ContainerConfiguration#link(ContainerBundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ComponentExtension#link(ContainerBundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

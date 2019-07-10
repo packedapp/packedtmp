@@ -93,7 +93,7 @@ public class ContainerConfigurationTester {
     }
 
     public ContainerConfigurationTester link(ContainerBundle child, Wirelet... wirelets) {
-        cc.link(child, wirelets);
+        cc.use(ComponentExtension.class).link(child, wirelets);
         return this;
     }
 

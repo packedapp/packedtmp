@@ -32,7 +32,7 @@ import app.packed.lifecycle.LifecycleOperations;
 public final class PackedApp implements App {
 
     /** The container we are wrapping. */
-    final PackedContainer container;
+    final PackedContainerContext container;
 
     /**
      * Creates a new app.
@@ -40,7 +40,7 @@ public final class PackedApp implements App {
      * @param container
      *            the container to wrap
      */
-    public PackedApp(PackedContainer container) {
+    public PackedApp(PackedContainerContext container) {
         this.container = requireNonNull(container);
     }
 

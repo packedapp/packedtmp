@@ -30,7 +30,7 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.container.PackedContainer;
+import packed.internal.container.PackedContainerContext;
 import packed.internal.support.AppPackedLifecycleSupport;
 import packed.internal.util.StringFormatter;
 
@@ -89,7 +89,7 @@ final class MainProcessor extends ExtensionHookProcessor<LifecycleExtension> {
         }
         AnnotatedMethodHook<Main> h = hooks.get(0);
         MethodHandle mh = h.newMethodHandle();
-        h.onMethodReady(PackedContainer.class, (a, b) -> b.run());
+        h.onMethodReady(PackedContainerContext.class, (a, b) -> b.run());
 
         // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
         return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);

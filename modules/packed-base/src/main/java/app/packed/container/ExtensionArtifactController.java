@@ -18,6 +18,11 @@ package app.packed.container;
 import java.util.Collection;
 import java.util.Optional;
 
+//Extensions
+//Sidecars...
+
+//Kan vi risikere at en parent baade som Extension, og som sidecar???
+//Eller er parent'en altid initialiseret.
 /**
  *
  */

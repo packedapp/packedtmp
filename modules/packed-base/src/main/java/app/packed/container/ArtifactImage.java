@@ -56,7 +56,7 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
      * @param containerConfiguration
      *            the configuration of the container we wrap
      */
-    ArtifactImage(PackedContainerConfiguration containerConfiguration) {
+    private ArtifactImage(PackedContainerConfiguration containerConfiguration) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
     }
 
@@ -88,10 +88,6 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
         return driver.newArtifact(containerConfiguration.doInstantiate());
     }
 
-    public ArtifactImage newImage(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
     public Injector newInjector(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
@@ -107,6 +103,10 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
     // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
     public Class<? extends ContainerBundle> sourceType() {
         throw new UnsupportedOperationException();
+    }
+
+    public ComponentStream stream() {
+        return new ComponentConfigurationToComponentAdaptor(containerConfiguration).stream();
     }
 
     public ArtifactImage with(Wirelet... wirelets) {
@@ -125,6 +125,26 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
         return with(Wirelet.name(name));
     }
 
+    /**
+     * Creates a new image from the specified source.
+     *
+     * @param source
+     *            the source of the image
+     * @param wirelets
+     *            any wirelets to use in the consWtruction of the image
+     * @return a new image
+     * @throws RuntimeException
+     *             if the image could not be constructed properly
+     */
+    public static ArtifactImage of(ArtifactSource source, Wirelet... wirelets) {
+        if (source instanceof ArtifactImage) {
+            throw new UnsupportedOperationException();
+            // return ((ArtifactImage) source).newImage(wirelets);
+        }
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerSource.forImage(source), wirelets);
+        return new ArtifactImage(c.doBuild());
+    }
+
     interface InjectorFactory {
         // Tager disse to objekter, laver en injector fra bundlen.
         // Og outputter String
@@ -133,31 +153,8 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
         Injector spawn(String httpRequest, String httpResponse);
     }
 
-    /**
-     * Creates a new image from the specified source.
-     *
-     * @param source
-     *            the source of the image
-     * @param wirelets
-     *            any wirelets to use in the construction of the image
-     * @return a new image
-     * @throws RuntimeException
-     *             if the image could not be constructed properly
-     */
-    public static ArtifactImage of(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).newImage(wirelets);
-        }
-        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerSource.forImage(source), wirelets);
-        return new ArtifactImage(c.doBuild());
-    }
-
     interface UserDefinedSpawner {
         // App spawn(Host h, String httpRequest, String httpResponse);
-    }
-
-    public ComponentStream stream() {
-        return new ComponentConfigurationToComponentAdaptor(containerConfiguration).stream();
     }
 }
 // ofRepeatable();

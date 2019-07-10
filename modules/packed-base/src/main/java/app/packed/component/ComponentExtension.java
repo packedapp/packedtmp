@@ -17,7 +17,9 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -51,6 +53,20 @@ public final class ComponentExtension extends Extension {
 
     // Why export
     // Need to export
+
+    /**
+     * Creates a link to another container represented by a bundle.
+     * <p>
+     * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
+     * 
+     * @param child
+     *            a bundle representing the child
+     * @param wirelets
+     *            optional wirelets
+     */
+    public void link(ContainerBundle child, Wirelet... wirelets) {
+        configuration.link(child, wirelets);
+    }
 
     public ComponentConfiguration install(Factory<?> factory) {
         return configuration.install(factory);

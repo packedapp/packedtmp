@@ -30,7 +30,7 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.PackedApp;
-import packed.internal.container.PackedContainer;
+import packed.internal.container.PackedContainerContext;
 
 /**
  * An App (application) is a type of artifact is a program.
@@ -233,7 +233,7 @@ class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedApp newArtifact(PackedContainer container) {
+    public PackedApp newArtifact(PackedContainerContext container) {
         return new PackedApp(container);
     }
 }

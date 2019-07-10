@@ -18,7 +18,7 @@ package app.packed.container;
 import java.lang.reflect.Type;
 
 import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedContainer;
+import packed.internal.container.PackedContainerContext;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -30,6 +30,9 @@ import packed.internal.util.TypeVariableExtractorUtil;
 // Ditch interface + ArtifactType
 
 // Men kun hvis vi ikke skal bruge den til
+
+// Hmm maaske maaske ikke
+// ArtifactBuilder???
 public abstract class ArtifactDriver<T> {
 
     // private final Class<T> type;
@@ -57,5 +60,5 @@ public abstract class ArtifactDriver<T> {
 
     // protected abstract T newDescriptor(PackedConfiguration container);
 
-    protected abstract T newArtifact(PackedContainer container);
+    protected abstract T newArtifact(PackedContainerContext container);
 }

@@ -21,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
+import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
@@ -132,10 +133,10 @@ public abstract class ContainerBundle implements ArtifactSource {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ContainerConfiguration#link(ContainerBundle, Wirelet...)
+     * @see ComponentExtension#link(ContainerBundle, Wirelet...)
      */
     protected final void link(ContainerBundle bundle, Wirelet... wirelets) {
-        configuration().link(bundle, wirelets);
+        use(ComponentExtension.class).link(bundle, wirelets);
     }
 
     /**
