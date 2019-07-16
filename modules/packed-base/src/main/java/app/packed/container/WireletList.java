@@ -167,7 +167,7 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         for (int i = 0; i < wirelets.length; i++) {
             Wirelet w = wirelets[i];
             if (wireletType.isAssignableFrom(w.getClass())) {
-                for (int j = i; i < wirelets.length; j++) {
+                for (int j = i; j < wirelets.length; j++) {
                     System.out.println(j);
                 }
                 // only found one...

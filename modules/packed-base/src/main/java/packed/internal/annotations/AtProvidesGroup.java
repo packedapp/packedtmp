@@ -44,7 +44,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
 public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration, InjectionExtension> {
 
     /** An empty provides group. */
-    private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
+    // private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
 
     /** Whether or not there are any non-static providing fields or methods. */
     public final boolean hasInstanceMembers;
@@ -89,7 +89,7 @@ public final class AtProvidesGroup implements BiConsumer<ComponentConfiguration,
             if (members == null) {
                 throw new Error();
             }
-            return members == null ? EMPTY : new AtProvidesGroup(this);
+            return /* members == null ? EMPTY : */ new AtProvidesGroup(this);
         }
 
         @OnHook

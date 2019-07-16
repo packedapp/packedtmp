@@ -18,6 +18,7 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,7 +131,7 @@ public abstract class AbstractInjector implements Injector {
         if (!descriptor.inject.methods.isEmpty()) {
             for (AtDependable method : descriptor.inject.methods) {
                 Object[] arguments = new Object[method.dependencies.size()];
-                System.out.println(arguments);
+                System.out.println(Arrays.toString(arguments));
                 for (InternalDependencyDescriptor dependency : method.dependencies) {
                     ServiceNode<?> node = findNode(dependency.key());
                     System.out.println(node);

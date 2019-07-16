@@ -73,6 +73,7 @@ public final class LifecycleExtension extends Extension {
         // TODO check that we do not have multiple @Main methods
         System.out.println(mh);
         s.add(mh);
+        System.out.println(s);
     }
 
 }
