@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
+import app.packed.container.ArtifactInstantiationContext;
 import app.packed.container.ArtifactType;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.InstantiationContext;
 import app.packed.container.WireletList;
 import app.packed.util.Nullable;
 
@@ -31,10 +31,16 @@ import app.packed.util.Nullable;
  * <strong>Note that this implementation is not synchronized.</strong>
  */
 // ArtifactInstantiationContext
-final class PackedInstantiationContext implements InstantiationContext {
+final class PackedArtifactInstantiationContext implements ArtifactInstantiationContext {
 
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
+
+    private final WireletList wirelets;
+
+    PackedArtifactInstantiationContext(WireletList wirelets) {
+        this.wirelets = requireNonNull(wirelets);
+    }
 
     /**
      * Returns the type of artifact the build process produces. Is either {@link ArtifactType#APP} or
@@ -82,9 +88,7 @@ final class PackedInstantiationContext implements InstantiationContext {
 
     @Override
     public WireletList wirelets() {
-        // Unless we are creating an image...
-        // This method returns the same as BuildContext.wirelets()
-        throw new UnsupportedOperationException();
+        return wirelets;
     }
 
     // link(SomeBundle.class, LifecycleWirelets.startBeforeAnythingElse());

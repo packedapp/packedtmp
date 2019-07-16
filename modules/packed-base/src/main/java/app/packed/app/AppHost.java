@@ -22,6 +22,9 @@ import app.packed.container.ArtifactSource;
  */
 // IDeen er at lave noget der baade er App og Host...
 // Men den kan jo ogsaa misforstaa en Host der holder apps.
+
+// Ideet kan en host hold alle slags named containers....
+
 interface AppHost extends App, Host {
 
     static AppHost of(ArtifactSource source) {

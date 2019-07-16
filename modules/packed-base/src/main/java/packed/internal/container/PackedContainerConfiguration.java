@@ -26,13 +26,13 @@ import java.util.Set;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.ArtifactBuildContext;
+import app.packed.container.ArtifactInstantiationContext;
 import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
-import app.packed.container.InstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Factory;
@@ -108,7 +108,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     public DefaultInjector buildInjector() {
         doBuild();
-        new PackedContainerContext(null, this, new PackedInstantiationContext());
+        new PackedArtifactContext(null, this, new PackedArtifactInstantiationContext(wirelets));
         if (extensions.containsKey(InjectionExtension.class)) {
             return use(InjectionExtension.class).builder.publicInjector;
         } else {
@@ -138,13 +138,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    public PackedContainerContext doInstantiate() {
+    public PackedArtifactContext doInstantiate(WireletList additionalWirelets) {
         // TODO support instantiation wirelets for images
-        PackedInstantiationContext pic = new PackedInstantiationContext();
+        PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets.plus(additionalWirelets));
         extensionsPrepareInstantiation(pic);
 
         // Will instantiate the whole container hierachy
-        PackedContainerContext pc = new PackedContainerContext(null, this, pic);
+        PackedArtifactContext pc = new PackedArtifactContext(null, this, pic);
         methodHandlePassing0(pc, pic);
         return pc;
     }
@@ -152,6 +152,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
+        // TODO should we contract wise say that we return them in order of usage???
+        // Topologically sorted??? If we keep track of this at runtime I think we should
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
@@ -171,7 +173,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @Override
-    void extensionsPrepareInstantiation(InstantiationContext ic) {
+    void extensionsPrepareInstantiation(ArtifactInstantiationContext ic) {
         for (Extension e : extensions.values()) {
             e.onPrepareContainerInstantiate(ic);
         }
@@ -230,8 +232,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    PackedContainerContext instantiate(AbstractComponent parent, InstantiationContext ic) {
-        return new PackedContainerContext(parent, this, ic);
+    PackedArtifactContext instantiate(AbstractComponent parent, ArtifactInstantiationContext ic) {
+        return new PackedArtifactContext(parent, this, ic);
     }
 
     public void link(ContainerBundle bundle, Wirelet... wirelets) {
@@ -260,7 +262,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.lookup = lookup == null ? configuratorCache : configuratorCache.withLookup(lookup);
     }
 
-    private void methodHandlePassing0(AbstractComponent ac, InstantiationContext ic) {
+    private void methodHandlePassing0(AbstractComponent ac, ArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration a : children.values()) {
                 AbstractComponent child = ac.children.get(a.name);
@@ -334,23 +336,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public WireletList wirelets() {
         return wirelets;
-    }
-
-    /** A wiring option that overrides any existing container name. */
-    public static class NameWirelet extends Wirelet {
-
-        /** The (checked) name to override with. */
-        final String name;
-
-        /**
-         * Creates a new option
-         * 
-         * @param name
-         *            the name to override any existing container name with
-         */
-        public NameWirelet(String name) {
-            this.name = checkName(name);
-        }
     }
 }
 //

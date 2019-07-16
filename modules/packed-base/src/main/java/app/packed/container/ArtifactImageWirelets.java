@@ -18,6 +18,7 @@ package app.packed.container;
 /**
  *
  */
+// De kunne jo strength taget vaere metoder paa imaged
 final class ArtifactImageWirelets {
 
     // retainStackTracesForEachInstantiation...

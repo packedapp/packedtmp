@@ -22,10 +22,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.container.Artifact;
+import app.packed.component.ComponentConfiguration;
+import app.packed.config.ConfigSite;
+import app.packed.container.ArtifactImage;
 import app.packed.container.ArtifactSource;
 import app.packed.container.ArtifactType;
-import app.packed.container.ArtifactImage;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import packed.internal.container.ContainerSource;
@@ -99,7 +100,25 @@ import packed.internal.container.PackedContainerConfiguration;
 // Description... hmm its just super helpful...
 // Injector does not have a name. In many cases there are a container behind an Injector.
 // But if, for example, a component has its own injector. That injector does not have a container behind it.
-public interface Injector extends Artifact {
+public interface Injector {
+
+    /**
+     * Returns the configuration site of this injector.
+     * 
+     * @return the configuration site of this injector
+     */
+    ConfigSite configSite();
+
+    /**
+     * Returns the description of this injector. Or an empty optional if no description has been set
+     * <p>
+     * The returned description is always identical to the description of the injector's root container.
+     *
+     * @return the description of this injector. Or an empty optional if no description has been set
+     *
+     * @see ComponentConfiguration#setDescription(String)
+     */
+    Optional<String> description();
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
@@ -253,25 +272,6 @@ public interface Injector extends Artifact {
     }
 
     /**
-     * Creates a new injector from the specified bundle.
-     *
-     * @param source
-     *            a bundle to create an injector from
-     * @param wirelets
-     *            various operations
-     * @return the new injector
-     * @throws IllegalArgumentException
-     *             if the bundle defines any components, or anything else that requires a lifecycle
-     */
-    static Injector of(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).newInjector(wirelets);
-        }
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.of(source), wirelets);
-        return conf.buildInjector();
-    }
-
-    /**
      * Creates a new injector using a configurator object.
      *
      * @param configurator
@@ -288,6 +288,25 @@ public interface Injector extends Artifact {
                 wirelets);
         configurator.accept(new InjectorConfigurator(configuration));
         return configuration.buildInjector();
+    }
+
+    /**
+     * Creates a new injector from the specified bundle.
+     *
+     * @param source
+     *            a bundle to create an injector from
+     * @param wirelets
+     *            various operations
+     * @return the new injector
+     * @throws IllegalArgumentException
+     *             if the bundle defines any components, or anything else that requires a lifecycle
+     */
+    static Injector of(ArtifactSource source, Wirelet... wirelets) {
+        if (source instanceof ArtifactImage) {
+            return ((ArtifactImage) source).newInjector(wirelets);
+        }
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.of(source), wirelets);
+        return conf.buildInjector();
     }
 }
 

@@ -15,6 +15,7 @@
  */
 package app.packed.feature;
 
+import app.packed.app.App;
 import app.packed.container.Bundle;
 import app.packed.inject.Injector;
 import app.packed.inject.Provide;
@@ -35,6 +36,10 @@ public class ProvTest extends Bundle {
 
         System.out.println("----");
         // run(new ProvTest());
+    }
+
+    public void foo(App a) {
+        a.stream().feature(ProvideFeature.class).forEach(e -> System.out.println(e.key() + ": " + e.configSite()));
     }
 
     public static class Foo {

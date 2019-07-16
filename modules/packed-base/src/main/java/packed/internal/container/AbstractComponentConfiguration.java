@@ -25,25 +25,25 @@ import java.util.Optional;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
+import app.packed.container.ArtifactInstantiationContext;
 import app.packed.container.ArtifactType;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.InstantiationContext;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.container.PackedContainerConfiguration.NameWirelet;
 
 /** An abstract base class for a component configuration object. */
 abstract class AbstractComponentConfiguration implements ComponentHolder {
 
-    /** The build context of the artifact this component configuration belongs to. */
+    /** The build context of the artifact this configuration belongs to. */
     final PackedArtifactBuildContext buildContext;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
     LinkedHashMap<String, AbstractComponentConfiguration> children;
 
+    /** The component that last installed. */
     @Nullable
     DefaultComponentConfiguration currentComponent;
 
@@ -53,6 +53,8 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     /** The description of the component. */
     @Nullable
     private String description;
+
+    private final FeatureMap features = new FeatureMap();
 
     /** Whether or not the name can be postfix'able. Useful for images only. */
     boolean isNamePostfixable = false;
@@ -70,12 +72,6 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The state of this configuration. */
     State state = State.INITIAL;
-
-    private final FeatureMap features = new FeatureMap();
-
-    public FeatureMap features() {
-        return features;
-    }
 
     /**
      * Creates a new abstract component configuration
@@ -131,7 +127,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         return depth;
     }
 
-    void extensionsPrepareInstantiation(InstantiationContext ic) {
+    void extensionsPrepareInstantiation(ArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (buildContext == acc.buildContext) {
@@ -139,6 +135,10 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
                 }
             }
         }
+    }
+
+    public final FeatureMap features() {
+        return features;
     }
 
     @Nullable
@@ -150,7 +150,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         return initializeName(State.GET_NAME_INVOKED, null);
     }
 
-    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, InstantiationContext ic) {
+    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, ArtifactInstantiationContext ic) {
         if (children == null) {
             return null;
         }
@@ -169,7 +169,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         }
         n = setName;
         if (this instanceof PackedContainerConfiguration) {
-            Optional<NameWirelet> o = ((PackedContainerConfiguration) this).wirelets().last(NameWirelet.class);
+            Optional<ComponentNameWirelet> o = ((PackedContainerConfiguration) this).wirelets().last(ComponentNameWirelet.class);
             if (o.isPresent()) {
                 n = o.get().name;
             }
@@ -200,6 +200,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     private String initializeNameDefaultName() {
         if (this instanceof PackedContainerConfiguration) {
+            // I think try and move some of this to ComponentNameWirelet
             @Nullable
             ContainerBundle bundle = (@Nullable ContainerBundle) ((PackedContainerConfiguration) this).configurator.source;
             if (bundle != null) {
@@ -223,7 +224,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     }
 
-    abstract AbstractComponent instantiate(AbstractComponent parent, InstantiationContext ic);
+    abstract AbstractComponent instantiate(AbstractComponent parent, ArtifactInstantiationContext ic);
 
     /**
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
@@ -236,15 +237,15 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         return PackedComponentPath.of(this);
     }
 
-    public AbstractComponentConfiguration setDescription(String description) {
+    AbstractComponentConfiguration setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
         return this;
     }
 
-    public AbstractComponentConfiguration setName(String name) {
-        checkName(name);
+    AbstractComponentConfiguration setName(String name) {
+        ComponentNameWirelet.checkName(name);
         switch (state) {
         case INITIAL:
             initializeName(State.SET_NAME_INVOKED, name);
@@ -263,21 +264,6 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
             throw new IllegalStateException("#setName(String) can only be called once");
         }
         throw new InternalError();
-    }
-
-    /**
-     * Checks the name of the component.
-     * 
-     * @param name
-     *            the name to check
-     * @return the name if valid
-     */
-    static String checkName(String name) {
-        requireNonNull(name, "name is null");
-        if (name != null) {
-
-        }
-        return name;
     }
 
     enum State {

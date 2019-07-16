@@ -17,6 +17,9 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles.Lookup;
+
+import app.packed.config.ConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.support.AppPackedContainerSupport;
 
@@ -78,6 +81,21 @@ public abstract class Extension {
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
+    /**
+     * Captures the configuration site by finding the first stack frame that is not located on a subclass of
+     * {@link Extension}.
+     * <p>
+     * Invoking this method typically takes in the order of 1-2 microseconds.
+     * <p>
+     * If stack frame based config has been disable via, for example, fooo. This method returns {@link ConfigSite#UNKNOWN}.
+     * 
+     * @return a configuration site
+     * @see StackWalker
+     */
+    protected final ConfigSite configSiteCapture() {
+        throw new UnsupportedOperationException();
+    }
+
     public void buildBundle(BundleDescriptor.Builder builder) {}
 
     /**
@@ -86,7 +104,7 @@ public abstract class Extension {
      * Im thinking about throwing ISE on instantiation....
      * 
      * @throws IllegalStateException
-     *             if invoked from constructor or {@link #onPrepareContainerInstantiate(InstantiationContext)}.
+     *             if invoked from constructor or {@link #onPrepareContainerInstantiate(ArtifactInstantiationContext)}.
      * @return the build context
      */
     protected final ArtifactBuildContext buildContext() {
@@ -103,13 +121,12 @@ public abstract class Extension {
     }
 
     /**
-     * Checks that the container that this extension belongs to is configurable. Throwing an {@link IllegalStateException}
-     * if it is not.
+     * Checks that the extension is still configurable or throws an {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer configurable after the extensions {@link #onConfigured()} method has returned.
      * 
      * @throws IllegalStateException
-     *             if the extension's container is no longer configurable.
+     *             if the extension is no longer configurable.
      */
     protected final void checkConfigurable() {
         configuration();// First check that we are not invoking this from the constructor of the extension
@@ -129,9 +146,26 @@ public abstract class Extension {
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
-                    "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden to perform initialization as an alternative");
+                    "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization");
         }
         return c;
+    }
+
+    protected final void installInParentIfSameArtifact() {
+        // Alternativeet
+        // useInParent????
+    }
+
+    // Sidecards per extension???
+    // Det betyder jo ogsaa "endnu" mere magt til extensions..
+    protected final void installSidecar(Object instance) {
+        // These should work with images as well..
+
+        // I virkeligheden er det jo paa ContainerConfiguration vi installere den....
+        class SidecarConfiguration {
+
+        }
+        System.out.println(new SidecarConfiguration());
     }
 
     /**
@@ -160,13 +194,26 @@ public abstract class Extension {
      * @param context
      *            an instantiation context object
      */
-    public void onPrepareContainerInstantiate(InstantiationContext context) {}
+    public void onPrepareContainerInstantiate(ArtifactInstantiationContext context) {}
+
+    final void runWithLookup(Lookup lookup, Runnable runnable) {
+        // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....
+        // D.v.s. vi laver en push, pop af et evt. eksisterende lookup object
+        // En install fra en extension skal jo naesten bruge denne..
+        // Faktisk, er der lidt sikkerhedshullumhej her.... Hvordan sikre vi os at extensions.
+        // Ikke goer noget sjovt her. Hmm, altsaa indvitere man en extension indenfor...
+
+        // Men vi vel helst have at de giver adgang via module-info...
+
+    }
 
     /**
-     * Returns an extension of the specified type. Invoking this method is equivalent to calling
+     * Returns an extension of the specified type. Invoking this method is similar to calling
      * {@link ContainerConfiguration#use(Class)}.
      * <p>
-     * Usage of extensions are not allowed to form circles
+     * 
+     * The runtime keeps track of extensions usage of other extensions via this method. And forming any kind of circle in
+     * the dependency graph will fail with a runtime exception.
      * 
      * @param <E>
      *            the type of extension to return
@@ -174,8 +221,8 @@ public abstract class Extension {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the underlying container configuration is no longer modifiable and an extension of the specified type
-     *             has not already been installed
+     *             if the underlying container is no longer configurable and an extension of the specified type has not
+     *             already been installed
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return configuration().use(extensionType);
@@ -191,17 +238,5 @@ public abstract class Extension {
      */
     protected final WireletList wirelets() {
         return configuration().wirelets();
-    }
-
-    // Sidecards per extension???
-    // Det betyder jo ogsaa "endnu" mere magt til extensions..
-    protected final void installSidecar(Object instance) {
-        // These should work with images as well..
-
-        // I virkeligheden er det jo paa ContainerConfiguration vi installere den....
-        class SidecarConfiguration {
-
-        }
-        System.out.println(new SidecarConfiguration());
     }
 }

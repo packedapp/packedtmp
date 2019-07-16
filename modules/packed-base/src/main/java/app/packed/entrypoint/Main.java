@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.entrypoint;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,7 +30,7 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.container.PackedContainerContext;
+import packed.internal.container.PackedArtifactContext;
 import packed.internal.support.AppPackedLifecycleSupport;
 import packed.internal.util.StringFormatter;
 
@@ -66,6 +66,8 @@ public @interface Main {
 
     //// Nice performance measurement. Keep installing noop
     // ContainerImages, with undeploy
+    // Maaske hellere en option i EntryPoint??? Eller begge dele...
+    /// Problemet er at vi gerne ville knytte det til Main
     boolean undeployOnCompletion() default true;
 }
 
@@ -89,7 +91,7 @@ final class MainProcessor extends ExtensionHookProcessor<LifecycleExtension> {
         }
         AnnotatedMethodHook<Main> h = hooks.get(0);
         MethodHandle mh = h.newMethodHandle();
-        h.onMethodReady(PackedContainerContext.class, (a, b) -> b.run());
+        h.onMethodReady(PackedArtifactContext.class, (a, b) -> b.run());
 
         // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
         return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);

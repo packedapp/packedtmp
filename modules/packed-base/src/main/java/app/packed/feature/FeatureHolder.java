@@ -27,7 +27,7 @@ import app.packed.inject.ServiceDescriptor;
 // run time via ComponentContext... for example add
 public abstract class FeatureHolder<A, B> {
 
-    FeatureHolder(Feature<A, B> feature) {
+    FeatureHolder(AFeature<A, B> feature) {
 
     }
 

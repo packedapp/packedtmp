@@ -4,6 +4,7 @@ module app.packed.base {
     exports app.packed.container;
     exports app.packed.config;
     exports app.packed.contract;
+    exports app.packed.entrypoint;
     exports app.packed.feature;
     exports app.packed.hook;
     exports app.packed.inject;

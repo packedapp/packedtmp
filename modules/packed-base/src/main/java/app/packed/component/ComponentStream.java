@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.feature.Feature;
+import app.packed.feature.AFeature;
 import app.packed.feature.FeatureKey;
 
 /**
@@ -63,6 +63,14 @@ import app.packed.feature.FeatureKey;
 
 public interface ComponentStream extends Stream<Component> {
 
+    default ComponentStream inTopContainer() {
+        return this;
+    }
+
+    default ComponentStream inTopArtifact() {
+        // Maybe
+        return this;
+    }
     // Component source();
     // int sourceDepth(); <- so we for example, can get all children....
     // alternative is filterOnDepth(Path relativeTo, int depth)
@@ -71,8 +79,8 @@ public interface ComponentStream extends Stream<Component> {
     // stream.filterOnRelativeDepth(4);
 
     /**
-     * Returns a new list containing all of the components in this stream in the order they where encountered. Is identical
-     * to invoking {@code stream.collect(Collectors.toList())}.
+     * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
+     * method is identical to invoking {@code stream.collect(Collectors.toList())}.
      * <p>
      * This is a <em>terminal operation</em>.
      *
@@ -84,6 +92,7 @@ public interface ComponentStream extends Stream<Component> {
 
     @SuppressWarnings("unchecked")
     default <A> void forEachFeature(FeatureKey<A> feature, BiConsumer<Component, ? super A> action) {
+        // Dropper det <A, B, C> for streams er det jo info der giver mening
         requireNonNull(feature, "feature is null");
         requireNonNull(action, "action is null");
         forEach(c -> {
@@ -97,7 +106,15 @@ public interface ComponentStream extends Stream<Component> {
         });
     }
 
-    default <T extends Feature<?, ?>> Stream<T> feature(T feature) {
+    default <A> Stream<A> feature(Class<A> faetures) {
+        throw new UnsupportedOperationException();
+    }
+
+    default ComponentStream withFeatures(Class<?>... faetures) {
+        throw new UnsupportedOperationException();
+    }
+
+    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
         throw new UnsupportedOperationException();
     }
 

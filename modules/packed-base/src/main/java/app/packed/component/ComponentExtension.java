@@ -28,6 +28,7 @@ import packed.internal.container.PackedContainerConfiguration;
  */
 public final class ComponentExtension extends Extension {
 
+    /** The configuration of the container. */
     private final PackedContainerConfiguration configuration;
 
     /** Creates a new component extension. */

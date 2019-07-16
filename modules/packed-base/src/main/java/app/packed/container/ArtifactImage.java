@@ -24,14 +24,17 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Injector;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
+import packed.internal.container.ComponentNameWirelet;
 import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedApp;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
- * Artifact images are immutable ahead-of-time configured {@link Artifact artifacts}. Creating artifacts in Packed is
- * already really fast, and you can easily create one 10 or hundres of microseconds. But by using artificat images you
- * can into hundres or thousounds of nanoseconds.
+ * Artifact images are immutable ahead-of-time configured {@link Artifact artifacts}. By configuring an artifact ahead
+ * of time, the actual time to instantiation an artifact can be severely decreased.
+ * 
+ * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
+ * by using artificat images you can into hundres or thousounds of nanoseconds.
  * <p>
  * Use cases:
  * 
@@ -45,47 +48,59 @@ import packed.internal.container.PackedContainerConfiguration;
  * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
  * artifact images. It can not be used with {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
  */
-public final class ArtifactImage implements Artifact, ArtifactSource {
+public final class ArtifactImage implements ArtifactSource {
 
     /** The configuration of the future artifact's root container. */
     private final PackedContainerConfiguration containerConfiguration;
 
+    /** Additional wirelets */
+    private final WireletList wirelets;
+
     /**
-     * Creates a new image.
+     * Creates a new image from the specified configuration.
      * 
      * @param containerConfiguration
-     *            the configuration of the container we wrap
+     *            the configuration this image will wrap
      */
     private ArtifactImage(PackedContainerConfiguration containerConfiguration) {
-        this.containerConfiguration = requireNonNull(containerConfiguration);
+        this(containerConfiguration, WireletList.of());
     }
 
-    /** {@inheritDoc} */
-    @Override
+    private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletList wirelets) {
+        this.containerConfiguration = requireNonNull(containerConfiguration);
+        this.wirelets = requireNonNull(wirelets);
+    }
+
+    /**
+     * Returns the configuration site of this image.
+     * 
+     * @return the configuration site of this image
+     */
     public ConfigSite configSite() {
         return containerConfiguration.configSite();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Optional<String> description() {
         return Optional.ofNullable(containerConfiguration.getDescription());
     }
 
-    /** {@inheritDoc} */
-    @Override
     public String name() {
-        // If we set naming wirelets we need to run through them
-        return containerConfiguration.getName();
+        Optional<ComponentNameWirelet> nw = wirelets.last(ComponentNameWirelet.class);
+        return nw.map(e -> e.name).orElse(containerConfiguration.getName());
     }
 
-    public App newApp(Wirelet... wirelets) {
+    public String name2() {
+        ComponentNameWirelet nw = wirelets.lastOrNull(ComponentNameWirelet.class);
+        return nw == null ? containerConfiguration.getName() : nw.name;
+    }
+
+    App newApp(Wirelet... wirelets) {
         WireletList.of(wirelets);
-        return new PackedApp(containerConfiguration.doInstantiate());
+        return new PackedApp(containerConfiguration.doInstantiate(this.wirelets));
     }
 
-    public <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        return driver.newArtifact(containerConfiguration.doInstantiate());
+    <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
+        return driver.newArtifact(containerConfiguration.doInstantiate(this.wirelets.plus(wirelets)));
     }
 
     public Injector newInjector(Wirelet... wirelets) {
@@ -110,8 +125,7 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
     }
 
     public ArtifactImage with(Wirelet... wirelets) {
-        // We need to check that they can be used at image instantion time.
-        throw new UnsupportedOperationException();
+        return new ArtifactImage(containerConfiguration, this.wirelets.plus(wirelets));
     }
 
     /**
@@ -138,9 +152,9 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
      */
     public static ArtifactImage of(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
-            throw new UnsupportedOperationException();
-            // return ((ArtifactImage) source).newImage(wirelets);
+            return ((ArtifactImage) source).with(wirelets);
         }
+        // Wirelet are added to the container configuration, and not the imge
         PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerSource.forImage(source), wirelets);
         return new ArtifactImage(c.doBuild());
     }
@@ -159,3 +173,33 @@ public final class ArtifactImage implements Artifact, ArtifactSource {
 }
 // ofRepeatable();
 // wirelet.checkNotFrom();
+//
+/// **
+// * Returns the configuration site of this artifact.
+// *
+// * @return the configuration site of this artifact
+// */
+// ConfigSite configSite();
+//
+/// **
+// * Returns the description of this artifact. Or an empty optional if no description has been set
+// * <p>
+// * The returned description is always identical to the description of the artifact's root container.
+// *
+// * @return the description of this artifact. Or an empty optional if no description has been set
+// *
+// * @see ComponentConfiguration#setDescription(String)
+// */
+// Optional<String> description();
+//
+/// **
+// * Returns the name of this artifact.
+// * <p>
+// * The returned name is always identical to the name of the artifact's root container.
+// * <p>
+// * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
+// * unique among any of the artifact's siblings.
+// *
+// * @return the name of this artifact
+// */
+// String name();

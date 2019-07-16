@@ -49,11 +49,8 @@ public final class DefaultInjector extends AbstractInjector {
     /** All services that this injector provides. */
     private final ServiceNodeMap services;
 
-    private final String name;
-
     public DefaultInjector(ContainerConfiguration containerConfiguration, ServiceNodeMap services) {
         this.parent = null;
-        this.name = containerConfiguration.getName();
         this.configSite = requireNonNull(containerConfiguration.configSite());
         this.description = containerConfiguration.getDescription();
         this.services = requireNonNull(services);
@@ -99,11 +96,5 @@ public final class DefaultInjector extends AbstractInjector {
     @Override
     public Stream<ServiceDescriptor> services() {
         return (Stream) services.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String name() {
-        return name;
     }
 }

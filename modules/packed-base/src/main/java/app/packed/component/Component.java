@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
-import app.packed.feature.Feature;
+import app.packed.feature.AFeature;
 import app.packed.feature.FeatureMap;
 
 /**
@@ -27,6 +27,16 @@ import app.packed.feature.FeatureMap;
  * derivatives. In packed everything is a component.
  */
 public interface Component {
+
+    default ComponentPath artifactPath() {
+        // also on
+        throw new UnsupportedOperationException();
+    }
+
+    default ComponentPath containerPath() {
+        // also on ComponentConfiguration
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns an immutable view of all of this component's children.
@@ -108,7 +118,7 @@ public interface Component {
     // So we renamed it to stream();
     ComponentStream stream();
 
-    default <T> T use(Feature<T, ?> feature) {
+    default <T> T use(AFeature<T, ?> feature) {
         throw new UnsupportedOperationException();
     }
 }

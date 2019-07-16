@@ -18,7 +18,7 @@ package app.packed.container;
 import java.lang.reflect.Type;
 
 import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedContainerContext;
+import packed.internal.container.PackedArtifactContext;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -39,6 +39,15 @@ public abstract class ArtifactDriver<T> {
 
     // private final
 
+    protected void configure() {
+        // Hvordan sikre vi os at configure er koert?????
+        // Bruger instantitere den jo selv...
+    }
+
+    protected final void disableExtensions(Class<?>... extensions) {
+
+    }
+
     @SuppressWarnings("unchecked")
     public final Class<T> type() {
         Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
@@ -55,10 +64,10 @@ public abstract class ArtifactDriver<T> {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactType.APP, ContainerSource.forApp(source), wirelets);
-        return newArtifact(pcc.doBuild().doInstantiate());
+        return newArtifact(pcc.doBuild().doInstantiate(WireletList.of()));
     }
 
     // protected abstract T newDescriptor(PackedConfiguration container);
 
-    protected abstract T newArtifact(PackedContainerContext container);
+    protected abstract T newArtifact(PackedArtifactContext container);
 }

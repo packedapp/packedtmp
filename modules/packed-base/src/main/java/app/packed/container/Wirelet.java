@@ -24,7 +24,7 @@ import java.util.List;
 
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.ComponentNameWirelet;
 
 // Wire vs link....
 
@@ -108,14 +108,21 @@ public abstract class Wirelet {
      *         operation
      */
     public final Wirelet andThen(Wirelet after) {
-        // Maaske bare compose...
-        return WireletList.of(this, requireNonNull(after, "after is null"));
+        return andThen(new Wirelet[] { after });
     }
 
-    public final Wirelet andThen(Wirelet... wirelets) {
+    public final WireletList andThen(Wirelet... wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
-        l.add(this);
+        if (this instanceof WireletList) {
+            l.addAll(List.of(((WireletList) this).wirelets));
+        } else {
+            l.add(this);
+        }
         l.addAll(List.of(wirelets));
+        // System.err.println();
+        // System.err.println(this + " " + List.of(wirelets));
+        // System.err.println(l);
         return WireletList.of(l.toArray(i -> new Wirelet[i]));
     }
 
@@ -193,11 +200,15 @@ public abstract class Wirelet {
      */
     // setName
     public static Wirelet name(String name) {
-        return new PackedContainerConfiguration.NameWirelet(name);
+        return new ComponentNameWirelet(name);
     }
 
     // The tree ways of locality for wirelets....
     // We also have build time and configuration time...
+    // The various dimensions
+    //// For example instantiations wirelets...
+    //// Skal de hele vejen ned... de skal de vel...
+    // Lifecycle Phases, Virality
     enum Locality {
 
         /** Only within the same container (default). */

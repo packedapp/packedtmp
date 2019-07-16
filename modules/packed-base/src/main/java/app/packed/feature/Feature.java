@@ -15,82 +15,62 @@
  */
 package app.packed.feature;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
-import app.packed.component.Component;
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.util.ConstructorDescriptor;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.MethodDescriptor;
+import app.packed.component.ComponentPath;
+import app.packed.config.ConfigSite;
+import app.packed.lifecycle.RunState;
+import app.packed.util.Key;
 
-// RuntimeEnviroment != BuildEnvironment
 /**
  *
  */
-// A= fra component, B = fra ComponentContext
+public interface Feature {
 
-// Do we want to use it as a key... Or a class
-//// I think it depends
-/// Can
-// Maybe we can opti
-// <ContainerConfiguration, Component, ComponentContext>
-public abstract class Feature<A, B> {
+    // ConfigSite+FeatureType+ComponentPath?????
+    String featureId();
 
-    protected A fromComponent(Component c) {
-        // return from AttributeMap....
-        // Det hjaelper os dog ikke med at iterere...
-        throw new UnsupportedOperationException();
-    }
+    ConfigSite configSite();
 
-    protected abstract A empty();
+    ComponentPath path();
 }
 
-class Inj {
+interface ProvideFeature extends Feature {
+    Key<?> key();
 
-    // component.get(ComponentDependencyFeature.class)
-
-    static final Feature<Set<ServiceDescriptor>, Set<ServiceDescriptor>> SERVICES = new Feature<>() {
-
-        @Override
-        protected Set<ServiceDescriptor> empty() {
-            return Set.of();
-        }
-    };
+    // Provide could also be a transformed service....
+    Optional<Key<?>> exportedAs();
 }
 
-// En BundleDependencyDescriptor er jo bare Map<Component, ComponentDependencyDescriptor>
-/// Dependency kan jo altsaa vaere andre ting en Services......
-interface ComponentDependencyDescriptor {
+interface MainFeature extends Feature {}
 
-    // Fungere ikke rigtig
+interface CliFeature extends Feature {}
 
-    // Vi vil gerne have en list over alle mandatory dependencies
-    // Alle optional dependencies...
+interface LifecycleFeature extends Feature {
+    RunState state();
+    // Interference with other lifecycle features
+}
+//// Component vs Container vs Artifact???
 
-    //// Her traekker vi jo automatisk Context objekter
+// Bundle...
 
-    Map<FieldDescriptor, ServiceDependency> fields();
+// Would also like to have an overview of resolved items...
+// How everything fits together???
+interface DependantFeature extends /* ConfiguritonTimeFeature */ Feature {
+    // Map<Key, List<ConfigSite>> <--- dependency = Parameter....
 
-    Map<ConstructorDescriptor<?>, List<ServiceDependency>> constructor();
-
-    Map<MethodDescriptor, List<ServiceDependency>> methods();
-    // Field -> Dependency
-
-    // Method -> *Dependency
+    //// Throws ISE exception... if wrong time??
+    // Map<Key, ProvideFeature> resolved();
+    // Set<Key> unresolved();
 }
 
-// Start all Fully
-// Start all Lazy
-// Start These Fully, and these lazy
-// Lazy start All NOW, dont await on any
+// Features vs Contract....
+/// Contract listeer alt hvad en container skal bruge...
+// Og dens ene Main eller CliPoint...
 
-// Each Service
-// Lazy Start
-// Start Async/prestart (app.start() does not await on these....)
-// Start Blocking
+/// Man kan ikke faa contrakten for en component...
 
-//// Lazy could also just be first line of methods, startIfNotStarted();
-//// Obviously this will only work with Project Loom. Because
+/// Contracts -> From A Bundle....
+/// Features -> From a Component/ComponentConfiguration/....
+
+/// Ville dog stadig godt have API Status med i vores kontrakter.....

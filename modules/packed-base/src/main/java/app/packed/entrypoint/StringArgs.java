@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.entrypoint;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,11 +28,11 @@ import java.util.stream.Stream;
  */
 // Rename to StringArgs and put it in utils...
 // AppWiringOptions.main(String... args)
-public final class MainArgs implements Iterable<String> /* WiringOperation */ {
+public final class StringArgs implements Iterable<String> /* WiringOperation */ {
 
     private final List<String> args;
 
-    MainArgs(String[] args) {
+    StringArgs(String[] args) {
         this.args = List.of(args);
     }
 
@@ -77,15 +77,15 @@ public final class MainArgs implements Iterable<String> /* WiringOperation */ {
     }
 
     public static void main(String[] args) {
-        MainArgs ma = MainArgs.of(args);
+        StringArgs ma = StringArgs.of(args);
         ma.onOption("-f", () -> System.out.println("ff"));
 
         // ma.onOption("-f", () -> new );
     }
 
-    public static MainArgs of(String... args) {
+    public static StringArgs of(String... args) {
         requireNonNull(args, "args is null");
-        return new MainArgs(args);// check null
+        return new StringArgs(args);// check null
     }
 
     /// Main ArgsBuidler

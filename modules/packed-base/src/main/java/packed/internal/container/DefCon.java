@@ -26,6 +26,11 @@ public class DefCon {
     // Det her med at finde ud af hvordan extensions er relateret....
 
     static final Module m = DefCon.class.getModule();
+
+    // Eneste problem med Base Extensions er at vi skal predetermind en order
+    // Og denne order skal maaske ogsaa vise sig i cc.extension()
+    // Eftersom det er et view. Kraever det en lille smule extra kode...
+
     IdentityHashMap<Class<?>, Extension> baseExtensions;
 
     IdentityHashMap<Class<?>, Extension> externalExtensions;

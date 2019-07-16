@@ -21,9 +21,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.contract.Contract;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.InjectionExtension;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
@@ -231,6 +231,9 @@ public abstract class Bundle extends ContainerBundle {
     // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
     // executeMain
     static protected void run(ArtifactSource source, String[] args, Wirelet... wirelets) {
+
+        // CTRL-C ?? Obvious a wirelet, but default on or default off.
+        // Paa Bundle syntes jeg den er paa, ikke paa App which is clean
         run(source, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
     }
 

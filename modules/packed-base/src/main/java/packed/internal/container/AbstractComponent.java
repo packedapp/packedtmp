@@ -29,7 +29,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.InstantiationContext;
+import app.packed.container.ArtifactInstantiationContext;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
 
@@ -50,6 +50,8 @@ abstract class AbstractComponent implements Component {
     @Nullable
     private final String description;
 
+    final FeatureMap features = new FeatureMap();
+
     /** The name of the component. The name is guaranteed to be unique between siblings. */
     // TODO I think we need to remove final. Problem is with Host. Where we putIfAbsent.
     // There is a small window where it might have been overridden....
@@ -61,9 +63,7 @@ abstract class AbstractComponent implements Component {
 
     /** The parent component, iff this component has a parent. */
     @Nullable
-    final AbstractComponent parent;
-
-    final FeatureMap features = new FeatureMap();;
+    final AbstractComponent parent;;
 
     /**
      * Creates a new abstract component.
@@ -73,21 +73,28 @@ abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, InstantiationContext ic) {
+    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, ArtifactInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();
-        this.name = requireNonNull(configuration.name);
         this.depth = configuration.depth();
         this.children = configuration.initializeChildren(this, ic);
+        if (parent == null) {
+            String n = configuration.name;
+            ComponentNameWirelet ol = ic.wirelets().lastOrNull(ComponentNameWirelet.class);
+            if (ol != null) {
+                n = ol.name;
+                if (n.endsWith("?")) {
+                    n = n.substring(0, n.length() - 1);
+                }
+            }
+            this.name = n;
+        } else {
+            this.name = requireNonNull(configuration.name);
+        }
         // for (FeatureKey<?> fk : configuration.features().keys()) {
         // Object o = configuration.features().get(fk);
         // }
-    }
-
-    @Override
-    public FeatureMap features() {
-        return features;
     }
 
     /** {@inheritDoc} */
@@ -118,9 +125,14 @@ abstract class AbstractComponent implements Component {
         return Optional.ofNullable(description);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public FeatureMap features() {
+        return features;
+    }
+
     public final Component findComponent(CharSequence path) {
         return findComponent(path.toString());
-
     }
 
     private Component findComponent(String path) {

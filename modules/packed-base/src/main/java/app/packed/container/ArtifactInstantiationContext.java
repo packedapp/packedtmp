@@ -24,7 +24,7 @@ import app.packed.util.Nullable;
  */
 // ArtifactInstantiationContext or ContainerInstantionationContext
 // Per Artifact or PerContainer???
-public interface InstantiationContext {
+public interface ArtifactInstantiationContext {
 
     /**
      * Returns the type of artifact that is being instantiated. Is either {@link ArtifactType#APP} or
@@ -42,7 +42,8 @@ public interface InstantiationContext {
     <T> T use(ContainerConfiguration configuration, Class<T> type);
 
     /**
-     * Returns a list of wirelets that used to instantiate.
+     * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
+     * using an image.
      * 
      * @return a list of wirelets that used to instantiate
      */

@@ -32,7 +32,7 @@ import app.packed.lifecycle.LifecycleOperations;
 public final class PackedApp implements App {
 
     /** The container we are wrapping. */
-    final PackedContainerContext container;
+    final PackedArtifactContext container;
 
     /**
      * Creates a new app.
@@ -40,7 +40,7 @@ public final class PackedApp implements App {
      * @param container
      *            the container to wrap
      */
-    public PackedApp(PackedContainerContext container) {
+    public PackedApp(PackedArtifactContext container) {
         this.container = requireNonNull(container);
     }
 
@@ -48,6 +48,17 @@ public final class PackedApp implements App {
     @Override
     public ConfigSite configSite() {
         return container.configSite();
+    }
+
+    public void execute() {
+        start();
+        runMainSync();
+        // try {
+        // app.state().await(RunState.TERMINATED);
+        // } catch (InterruptedException e) {
+        // throw new RuntimeException(e);
+        // }
+
     }
 
     /** {@inheritDoc} */

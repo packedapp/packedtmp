@@ -23,7 +23,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
-import app.packed.container.InstantiationContext;
+import app.packed.container.ArtifactInstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.contract.Contract;
@@ -219,7 +219,7 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    public void onPrepareContainerInstantiate(InstantiationContext context) {
+    public void onPrepareContainerInstantiate(ArtifactInstantiationContext context) {
         context.put(configuration, builder.publicInjector); // Taken by PackedContainer
     }
 

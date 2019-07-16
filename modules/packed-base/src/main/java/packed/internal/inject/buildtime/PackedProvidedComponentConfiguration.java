@@ -128,4 +128,10 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
     public FeatureMap features() {
         return component.features();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void checkConfigurable() {
+        component.checkConfigurable();
+    }
 }

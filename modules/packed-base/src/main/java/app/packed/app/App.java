@@ -15,13 +15,15 @@
  */
 package app.packed.app;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
-import app.packed.container.Artifact;
+import app.packed.config.ConfigSite;
 import app.packed.container.ArtifactDriver;
 import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
@@ -30,7 +32,7 @@ import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
 import packed.internal.container.PackedApp;
-import packed.internal.container.PackedContainerContext;
+import packed.internal.container.PackedArtifactContext;
 
 /**
  * An App (application) is a type of artifact is a program.
@@ -45,7 +47,36 @@ import packed.internal.container.PackedContainerContext;
  * 
  */
 // Do we expose the attachments????
-public interface App extends Artifact, AutoCloseable {
+public interface App extends AutoCloseable {
+    /**
+     * Returns the configuration site of this app.
+     * 
+     * @return the configuration site of this app
+     */
+    ConfigSite configSite();
+
+    /**
+     * Returns the description of this app. Or an empty optional if no description has been set
+     * <p>
+     * The returned description is always identical to the description of the app's top container.
+     *
+     * @return the description of this app. Or an empty optional if no description has been set
+     *
+     * @see ComponentConfiguration#setDescription(String)
+     */
+    Optional<String> description();
+
+    /**
+     * Returns the name of this app.
+     * <p>
+     * The returned name is always identical to the name of the app's top container.
+     * <p>
+     * If no name is explicitly set when creating the app, the runtime will generate a name that guaranteed to be unique
+     * among any of the app's siblings.
+     * 
+     * @return the name of this artifact
+     */
+    String name();
 
     /**
      * Returns the component path of this app.
@@ -190,6 +221,8 @@ public interface App extends Artifact, AutoCloseable {
     /**
      * This method will create and start an {@link App application} from the specified container source. Blocking until the
      * run state of the application is {@link RunState#TERMINATED}.
+     * <p>
+     * Entry point or run to termination
      * 
      * @param source
      *            the source of the application
@@ -199,23 +232,7 @@ public interface App extends Artifact, AutoCloseable {
      *             if the application did not execute properly
      */
     static void run(ArtifactSource source, Wirelet... wirelets) {
-        // CTRL-C ?? Obvious a wirelet, but default on or default off.
-        // Paa Bundle syntes jeg den er paa, men ikke her...
-
-        // If has @Main will run Main and then exit
-        // Otherwise will run until application is shutdown
-
-        // If you can stop an app via shutdown. You should also be able to introspec it
-
-        try (PackedApp app = AppArtifactDriver.INSTANCE.create(source, wirelets)) {
-            app.start();
-            app.runMainSync();
-            // try {
-            // app.state().await(RunState.TERMINATED);
-            // } catch (InterruptedException e) {
-            // throw new RuntimeException(e);
-            // }
-        }
+        AppArtifactDriver.INSTANCE.create(source, wirelets).execute();
     }
 
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
@@ -223,7 +240,7 @@ public interface App extends Artifact, AutoCloseable {
     // Basically we unwrap exceptions accordingly to some scheme in some way
 }
 
-class AppArtifactDriver extends ArtifactDriver<PackedApp> {
+final class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** The single instance. */
     static final AppArtifactDriver INSTANCE = new AppArtifactDriver();
@@ -233,7 +250,7 @@ class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedApp newArtifact(PackedContainerContext container) {
+    public PackedApp newArtifact(PackedArtifactContext container) {
         return new PackedApp(container);
     }
 }

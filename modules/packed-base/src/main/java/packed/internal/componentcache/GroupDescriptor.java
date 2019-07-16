@@ -31,7 +31,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
-import app.packed.container.InstantiationContext;
+import app.packed.container.ArtifactInstantiationContext;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
@@ -147,7 +147,7 @@ class MethodConsumer<S> {
 
     }
 
-    void prepare(ContainerConfiguration cc, InstantiationContext ic) {
+    void prepare(ContainerConfiguration cc, ArtifactInstantiationContext ic) {
         S s = ic.use(cc, key);
         Runnable r = new Runnable() {
 

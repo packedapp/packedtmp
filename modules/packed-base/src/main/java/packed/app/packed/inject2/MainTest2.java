@@ -16,8 +16,8 @@
 package packed.app.packed.inject2;
 
 import app.packed.app.App;
-import app.packed.app.Main;
 import app.packed.container.Bundle;
+import app.packed.entrypoint.Main;
 
 /**
  *

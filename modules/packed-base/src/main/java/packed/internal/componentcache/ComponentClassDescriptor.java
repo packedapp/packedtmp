@@ -25,7 +25,7 @@ import java.util.IdentityHashMap;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Activate;
 import app.packed.container.ExtensionHookProcessor;
-import app.packed.container.InstantiationContext;
+import app.packed.container.ArtifactInstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -80,7 +80,7 @@ public final class ComponentClassDescriptor {
     }
 
     @SuppressWarnings("rawtypes")
-    public void process(PackedContainerConfiguration cc, InstantiationContext ic) {
+    public void process(PackedContainerConfiguration cc, ArtifactInstantiationContext ic) {
         for (GroupDescriptor d : groups) {
             for (MethodConsumer mc : d.methodConsumers) {
                 mc.prepare(cc, ic);

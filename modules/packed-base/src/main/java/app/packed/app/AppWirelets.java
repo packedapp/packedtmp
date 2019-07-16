@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
+import app.packed.entrypoint.StringArgs;
 import app.packed.inject.ServiceWirelets;
 
 /**
@@ -31,13 +32,15 @@ import app.packed.inject.ServiceWirelets;
 
 // Do we allow them in Image????
 // I don't see why not... So
+//// Taenker ikke det er App. maaske Lifecycle wirelets....
+// Isaer hvis App er en wrapper over en masse ting...
 public final class AppWirelets {
 
     /** No instantiation. */
     private AppWirelets() {}
 
     /**
-     * Creates a {@link MainArgs} from the specified arguments and returns a wirelet that provides it, via
+     * Creates a {@link StringArgs} from the specified arguments and returns a wirelet that provides it, via
      * {@link ServiceWirelets#provide(Object)}, to the wired container.
      * 
      * @param args
@@ -45,7 +48,7 @@ public final class AppWirelets {
      * @return a wirelet that provides the specified arguments to the linked container
      */
     public static Wirelet args(String... args) {
-        return ServiceWirelets.provide(MainArgs.of(args));
+        return ServiceWirelets.provide(StringArgs.of(args));
     }
 
     /**

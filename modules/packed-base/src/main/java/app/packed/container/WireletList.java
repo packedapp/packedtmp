@@ -27,18 +27,38 @@ import java.util.function.Consumer;
 public final class WireletList extends Wirelet implements Iterable<Wirelet> {
 
     /** An empty wirelet list. */
-    private static final WireletList EMPTY = new WireletList();
+    static final WireletList EMPTY = new WireletList();
 
-    /** The wirelest we are wrapping. */
-    private final Wirelet[] wirelets;
+    /** The wirelets we are wrapping. */
+    final Wirelet[] wirelets;
 
     private WireletList(Wirelet... wirelets) {
-        Wirelet[] tmp = new Wirelet[wirelets.length];
+        int size = wirelets.length;
         for (int i = 0; i < wirelets.length; i++) {
-            tmp[i] = Objects.requireNonNull(wirelets[i]);
+            Wirelet w = Objects.requireNonNull(wirelets[i]);
+            if (w instanceof WireletList) {
+                size += ((WireletList) w).wirelets.length - 1;
+            }
+        }
+        Wirelet[] tmp = new Wirelet[size];
+        int c = 0;
+        for (int i = 0; i < wirelets.length; i++) {
+            Wirelet w = wirelets[i];
+            if (w instanceof WireletList) {
+                WireletList wl = (WireletList) w;
+                for (int j = 0; j < wl.wirelets.length; j++) {
+                    tmp[c++] = wl.wirelets[j];
+                }
+            } else {
+                tmp[c++] = w;
+            }
         }
         // If wirelet instanceof WireletList -> Extract
         this.wirelets = tmp;
+    }
+
+    public WireletList plus(Wirelet... wirelets) {
+        return andThen(wirelets);
     }
 
     /**
@@ -101,6 +121,7 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
 
     @SuppressWarnings("unchecked")
     public <T extends Wirelet> Optional<T> last(Class<T> wireletType) {
+        requireNonNull(wireletType, "wireletType is null");
         for (int i = wirelets.length - 1; i >= 0; i--) {
             Wirelet w = wirelets[i];
             if (wireletType.isAssignableFrom(w.getClass())) {
@@ -108,6 +129,18 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
             }
         }
         return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Wirelet> T lastOrNull(Class<T> wireletType) {
+        requireNonNull(wireletType, "wireletType is null");
+        for (int i = wirelets.length - 1; i >= 0; i--) {
+            Wirelet w = wirelets[i];
+            if (wireletType.isAssignableFrom(w.getClass())) {
+                return (T) w;
+            }
+        }
+        return null;
     }
 
     /**

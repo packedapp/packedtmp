@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.app.Main;
 import app.packed.container.Extension;
+import app.packed.entrypoint.Main;
 import packed.internal.support.AppPackedLifecycleSupport;
 
 /**
