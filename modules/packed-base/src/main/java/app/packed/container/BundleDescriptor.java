@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import app.packed.entrypoint.Main;
 import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.lifecycle.Main;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerSource;

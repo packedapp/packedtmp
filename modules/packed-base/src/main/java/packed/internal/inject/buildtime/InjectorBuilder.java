@@ -158,7 +158,7 @@ public final class InjectorBuilder {
                                 if (j == dependency.parameterIndex().getAsInt()) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {
-                                    sj.add(dependencies.get(j).key().typeLiteral().getRawType().getSimpleName());
+                                    sj.add(dependencies.get(j).key().typeLiteral().rawType().getSimpleName());
                                 }
                             }
                             sb.append(sj.toString());

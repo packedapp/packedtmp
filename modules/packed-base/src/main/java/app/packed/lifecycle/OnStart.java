@@ -38,8 +38,8 @@ import app.packed.inject.Injector;
  * }
  * </pre>
  *
- * Methods annotated with OnStart can have any service that is also available from {@link App#use(Class)} injected. For
- * example, the following method will print out the name and the state of the container when it starts.
+ * Methods annotated with OnStart can have any service that is also available from the component. For example, the
+ * following method will print out the name and the state of the container when it starts.
  *
  * <pre>
  * &#064;OnStart()

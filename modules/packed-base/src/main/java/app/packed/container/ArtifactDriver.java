@@ -18,7 +18,6 @@ package app.packed.container;
 import java.lang.reflect.Type;
 
 import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedArtifactContext;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -69,5 +68,5 @@ public abstract class ArtifactDriver<T> {
 
     // protected abstract T newDescriptor(PackedConfiguration container);
 
-    protected abstract T newArtifact(PackedArtifactContext container);
+    protected abstract T newArtifact(ArtifactContext container);
 }

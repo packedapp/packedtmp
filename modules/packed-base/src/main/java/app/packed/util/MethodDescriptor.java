@@ -27,6 +27,8 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is
  * immutable, and can be be freely shared.
  */
+// Refac using
+// https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/ExecutableElement.html
 public interface MethodDescriptor extends ExecutableDescriptor {
 
     /**

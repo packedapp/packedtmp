@@ -15,28 +15,20 @@
  */
 package app.packed.app;
 
-import app.packed.component.ComponentConfiguration;
-import app.packed.util.Key;
-
 /**
  *
  */
-interface HostConfiguration extends ComponentConfiguration {
+// IDeen er egentlig at vi kan have tusindvis af apps.
+// Der er connected paa maa og faa...
 
-    HostConfiguration as(Key<? extends Host> key);
+// Maaske via proxy interfaces....
+
+// Transactional updates.... With Rollback... Installing an app. Failing and the rollback...
+
+// Maaske de ikke behoever vaere lokale....????
+//// Maaske vi kan lave noget der kan vaere distribueret...
+//// Ahh sikkert en anden klasse
+// app.packed.base, app.packed.web, app.packed.cluster, app.packed.json
+public interface AppMesh {
+
 }
-// Component
-// -> Container
-// -> Noneton
-// -> Singleton
-// -> Manyton
-// -> Host
-// -> Placeholder <- A component that just organizes other components
-
-// Ville vaere fint hvis de havde hver deres forbogstav... kunne vaere let at vise dem
-// grafisk saa. Maaske 2 bogstaver AS-> ActorSystem, AC -> Actor, AS -> AgentSystem??
-
-// Singleton -> Listener, Service, 1 instance component
-
-// ComponentInstanceMultiplicity
-/// NONE, SINGLE, MANY

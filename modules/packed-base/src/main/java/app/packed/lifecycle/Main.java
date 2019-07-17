@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.entrypoint;
+package app.packed.lifecycle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -28,7 +28,6 @@ import app.packed.container.Activate;
 import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.lifecycle.LifecycleExtension;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.container.PackedArtifactContext;
 import packed.internal.support.AppPackedLifecycleSupport;

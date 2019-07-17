@@ -320,7 +320,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
         // Illegal
         // Optional<Optional*>
         Class<?> optionalType = null;
-        Class<?> rawType = tl.getRawType();
+        Class<?> rawType = tl.rawType();
 
         if (rawType.isPrimitive()) {
             tl = tl.box();
@@ -328,7 +328,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
             optionalType = Optional.class;
             Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
             tl = AppPackedUtilSupport.invoke().toTypeLiteral(cl);
-            if (TypeUtil.isOptionalType(tl.getRawType())) {
+            if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
             }
         } else if (rawType == OptionalLong.class) {

@@ -25,7 +25,7 @@ import app.packed.container.ArtifactSource;
 
 // Ideet kan en host hold alle slags named containers....
 
-interface AppHost extends App, Host {
+interface AppHost extends App {
 
     static AppHost of(ArtifactSource source) {
         throw new UnsupportedOperationException();

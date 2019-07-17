@@ -16,13 +16,14 @@
 package packed.app.packed.inject2;
 
 import app.packed.app.App;
+import app.packed.app.AppBundle;
 import app.packed.container.Bundle;
-import app.packed.entrypoint.Main;
+import app.packed.lifecycle.Main;
 
 /**
  *
  */
-public class MainTest2 extends Bundle {
+public class MainTest2 extends AppBundle {
 
     @Override
     protected void configure() {

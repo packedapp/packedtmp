@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import java.util.concurrent.CompletableFuture;
 
+import app.packed.container.ArtifactContext;
 import app.packed.container.ArtifactInstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;

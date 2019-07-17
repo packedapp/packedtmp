@@ -19,6 +19,8 @@ import app.packed.container.ArtifactImage;
 import app.packed.container.ArtifactSource;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
+import app.packed.inject.ServiceWirelets;
+import app.packed.lifecycle.StringArgs;
 
 /**
  *
@@ -27,5 +29,33 @@ public abstract class AppBundle extends Bundle {
 
     protected static ArtifactImage newImage(ArtifactSource source, Wirelet... wirelets) {
         return ArtifactImage.of(source, wirelets);
+    }
+
+    // runMain????.. maybe still so similar. Do we want to throw Exception???
+    // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
+    // executeMain
+    static protected void run(ArtifactSource source, String[] args, Wirelet... wirelets) {
+
+        // CTRL-C ?? Obvious a wirelet, but default on or default off.
+        // Paa Bundle syntes jeg den er paa, ikke paa App which is clean
+        run(source, ServiceWirelets.provide(StringArgs.of(args)).andThen(wirelets)); // + CTRL-C
+    }
+
+    static protected void run(ArtifactSource source, Wirelet... wirelets) {
+        App.run(source, wirelets);
+    }
+}
+
+class MyBundle extends AppBundle {
+
+    private static final ArtifactImage IMAGE = newImage(new MyBundle());
+
+    public static void main(String[] args) {
+        run(IMAGE);
+    }
+
+    @Override
+    protected void configure() {
+        entryPoint().main(() -> System.out.println("HelloWorld"));
     }
 }

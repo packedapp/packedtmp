@@ -71,7 +71,7 @@ public class ProvideTest {
         assertThat(i.use(key)).isSameAs(instance);
         if (!key.hasQualifier()) {
             @SuppressWarnings("unchecked")
-            Class<T> rawType = (Class<T>) key.typeLiteral().getRawType();
+            Class<T> rawType = (Class<T>) key.typeLiteral().rawType();
             assertThat(i.get(rawType)).containsSame(instance);
             assertThat(i.use(rawType)).isSameAs(instance);
         }

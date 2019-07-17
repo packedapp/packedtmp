@@ -108,7 +108,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         this.qualifier = key.qualifier;
         this.typeLiteral = (CanonicalizedTypeLiteral<T>) key.typeLiteral;
         this.hash = key.hash;
-        assert (!typeLiteral.getRawType().isPrimitive());
+        assert (!typeLiteral.rawType().isPrimitive());
     }
 
     /**
@@ -123,7 +123,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         this.typeLiteral = typeLiteral;
         this.qualifier = qualifier;
         this.hash = typeLiteral.hashCode() ^ Objects.hashCode(qualifier);
-        assert (!typeLiteral.getRawType().isPrimitive());
+        assert (!typeLiteral.rawType().isPrimitive());
     }
 
     /**
@@ -344,12 +344,12 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
                 || source instanceof MethodDescriptor || source instanceof TypeLiteral || source instanceof Class);
 
         typeLiteral = typeLiteral.box();
-        if (TypeUtil.isOptionalType(typeLiteral.getRawType())) {
+        if (TypeUtil.isOptionalType(typeLiteral.rawType())) {
             throw new InvalidDeclarationException(
                     "Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
-        } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.getType())) {
+        } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
             throw new InvalidDeclarationException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
-                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(typeLiteral.getType()));
+                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(typeLiteral.type()));
         }
         return new CanonicalizedKey<T>(typeLiteral.canonicalize(), qualifier);
     }

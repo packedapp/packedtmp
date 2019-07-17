@@ -68,13 +68,13 @@ public abstract class InternalFunction<T> {
     public final TypeLiteral<T> typeLiteral;
 
     public InternalFunction(TypeLiteral<T> typeLiteralOrKey) {
-        this(typeLiteralOrKey, typeLiteralOrKey.getRawType());
+        this(typeLiteralOrKey, typeLiteralOrKey.rawType());
     }
 
     public InternalFunction(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
-        this.type = typeLiteral.getRawType();
+        this.type = typeLiteral.rawType();
         this.actualType = requireNonNull(actualType);
     }
 

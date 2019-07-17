@@ -233,7 +233,7 @@ public class Factory<T> {
      * @return the raw type of those objects that this factory creates
      */
     public final Class<? super T> rawType() {
-        return typeLiteral().getRawType();
+        return typeLiteral().rawType();
     }
 
     /**
@@ -358,7 +358,7 @@ public class Factory<T> {
             // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
-        Type t = implementation.getType();
+        Type t = implementation.type();
         if (t instanceof Class) {
             return (Factory<T>) FIND_INJECTABLE_CACHE.get((Class<?>) t);
         } else {
@@ -424,7 +424,7 @@ final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        InternalExecutableDescriptor executable = findExecutable(implementation.getRawType());
+        InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
         return new FactorySupport<>(new ExecutableInvoker<>(implementation, executable, null, null), InternalDependencyDescriptor.fromExecutable(executable));
     }
 

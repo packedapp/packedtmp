@@ -57,6 +57,8 @@ public interface ConfigSiteVisitor {
     // for example, @ComponentScan -> @Install
     default void visitAnnotatedType(ConfigSite configSite, Class<?> type, Annotation annotation) {}
 
+    default void visitFunction(ConfigSite configSite, Class<?> functionType, Class<?> type) {}
+
     /**
      * This method is visited whenever.
      * 

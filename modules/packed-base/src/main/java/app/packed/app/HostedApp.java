@@ -19,12 +19,12 @@ import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**
- * A deployed app is a special type of application that is deploy on a {@link Host}.
+ * A deployed app is a special type of application that is deploy on a {@link AppHost}.
  */
 // A Deployed App can have dependencies to other apps on the same host or other hosts as well????
 // Maaske vi kan have noget HostLayer
 // Both From and to
-interface DeployedApp extends App {
+interface HostedApp extends App {
 
     void undeploy();
 

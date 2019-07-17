@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import app.packed.app.App;
 import app.packed.container.ArtifactInstantiationContext;
 
 /**
@@ -24,7 +25,7 @@ import app.packed.container.ArtifactInstantiationContext;
  */
 public class DefaultHost extends AbstractComponent implements ComponentHolder {
 
-    final ConcurrentHashMap<String, PackedApp> apps = new ConcurrentHashMap<>();
+    final ConcurrentHashMap<String, App> apps = new ConcurrentHashMap<>();
 
     /**
      * @param configuration

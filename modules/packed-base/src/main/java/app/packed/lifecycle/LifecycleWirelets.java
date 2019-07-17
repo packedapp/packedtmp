@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.lifecycle;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import app.packed.app.App;
 import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
-import app.packed.entrypoint.StringArgs;
 import app.packed.inject.ServiceWirelets;
 
 /**
@@ -34,10 +34,10 @@ import app.packed.inject.ServiceWirelets;
 // I don't see why not... So
 //// Taenker ikke det er App. maaske Lifecycle wirelets....
 // Isaer hvis App er en wrapper over en masse ting...
-public final class AppWirelets {
+public final class LifecycleWirelets {
 
     /** No instantiation. */
-    private AppWirelets() {}
+    private LifecycleWirelets() {}
 
     /**
      * Creates a {@link StringArgs} from the specified arguments and returns a wirelet that provides it, via
@@ -47,7 +47,7 @@ public final class AppWirelets {
      *            the arguments to inject
      * @return a wirelet that provides the specified arguments to the linked container
      */
-    public static Wirelet args(String... args) {
+    static Wirelet args(String... args) {
         return ServiceWirelets.provide(StringArgs.of(args));
     }
 

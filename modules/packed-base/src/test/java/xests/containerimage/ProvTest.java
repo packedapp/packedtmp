@@ -15,13 +15,13 @@
  */
 package xests.containerimage;
 
-import app.packed.container.Bundle;
+import app.packed.app.AppBundle;
 import app.packed.inject.Provide;
 
 /**
  *
  */
-public class ProvTest extends Bundle {
+public class ProvTest extends AppBundle {
 
     @Override
     protected void configure() {

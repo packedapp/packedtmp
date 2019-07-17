@@ -69,7 +69,7 @@ public class TypeLiteralTest {
 
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromField(f));
 
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(Tmpx.class.getDeclaredField("fq")).getType());
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromField(Tmpx.class.getDeclaredField("fq")).type());
     }
 
     /** Tests {@link TypeLiteral#fromMethodReturnType(Method)}. */
@@ -83,7 +83,7 @@ public class TypeLiteralTest {
         }
         Method m = Tmpx.class.getMethod("foo");
         npe(TypeLiteral::fromMethodReturnType, m, "method");
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromMethodReturnType(m).getType());
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromMethodReturnType(m).type());
     }
 
     /** Tests {@link TypeLiteral#fromParameter(Parameter)}. */
@@ -98,7 +98,7 @@ public class TypeLiteralTest {
 
         npe(TypeLiteral::fromParameter, p, "parameter");
         assertThat(TypeLiteral.of(Integer.class)).isEqualTo(TypeLiteral.fromParameter(p));
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[2]).getType());
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[2]).type());
     }
 
     /** Tests that we can make a custom type literal to check that T is passed down to super classes. */
@@ -110,10 +110,10 @@ public class TypeLiteralTest {
 
         MyTypeLiteral<Integer> integerNew = new MyTypeLiteral<Integer>() {};
 
-        assertThat(integerNew.box().getType()).isSameAs(Integer.class);
+        assertThat(integerNew.box().type()).isSameAs(Integer.class);
 
-        assertThat(integerNew.getRawType()).isSameAs(Integer.class);
-        assertThat(integerNew.getType()).isSameAs(Integer.class);
+        assertThat(integerNew.rawType()).isSameAs(Integer.class);
+        assertThat(integerNew.type()).isSameAs(Integer.class);
 
         assertThat(integerNew).hasSameHashCodeAs(Integer.class);
         assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.of(Integer.class).hashCode());
@@ -136,10 +136,10 @@ public class TypeLiteralTest {
     public void tl_int() {
         TypeLiteral<Integer> intOf = TypeLiteral.of(int.class);
 
-        assertThat(intOf.box().getType()).isSameAs(Integer.class);
+        assertThat(intOf.box().type()).isSameAs(Integer.class);
 
-        assertThat(intOf.getRawType()).isSameAs(int.class);
-        assertThat(intOf.getType()).isSameAs(int.class);
+        assertThat(intOf.rawType()).isSameAs(int.class);
+        assertThat(intOf.type()).isSameAs(int.class);
 
         assertThat(intOf).hasSameHashCodeAs(int.class);
         assertThat(intOf).hasSameHashCodeAs(TypeLiteral.of(int.class).hashCode());
@@ -159,10 +159,10 @@ public class TypeLiteralTest {
     public void tl_intArray() {
         TypeLiteral<int[]> intArrayOf = TypeLiteral.of(int[].class);
 
-        assertThat(intArrayOf.box().getType()).isSameAs(int[].class);
+        assertThat(intArrayOf.box().type()).isSameAs(int[].class);
 
-        assertThat(intArrayOf.getRawType()).isSameAs(int[].class);
-        assertThat(intArrayOf.getType()).isSameAs(int[].class);
+        assertThat(intArrayOf.rawType()).isSameAs(int[].class);
+        assertThat(intArrayOf.type()).isSameAs(int[].class);
 
         assertThat(intArrayOf).hasSameHashCodeAs(int[].class);
         assertThat(intArrayOf).hasSameHashCodeAs(TypeLiteral.of(int[].class).hashCode());
@@ -180,10 +180,10 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_Integer() {
-        assertThat(TL_INTEGER.box().getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.box().type()).isSameAs(Integer.class);
 
-        assertThat(TL_INTEGER.getRawType()).isSameAs(Integer.class);
-        assertThat(TL_INTEGER.getType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.rawType()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.type()).isSameAs(Integer.class);
 
         assertThat(TL_INTEGER).hasSameHashCodeAs(Integer.class);
         assertThat(TL_INTEGER).hasSameHashCodeAs(TypeLiteral.of(Integer.class).hashCode());
@@ -205,10 +205,10 @@ public class TypeLiteralTest {
     public void tl_IntegerArray() {
         TypeLiteral<Integer[]> integerNew = new TypeLiteral<Integer[]>() {};
 
-        assertThat(integerNew.box().getType()).isSameAs(Integer[].class);
+        assertThat(integerNew.box().type()).isSameAs(Integer[].class);
 
-        assertThat(integerNew.getRawType()).isSameAs(Integer[].class);
-        assertThat(integerNew.getType()).isSameAs(Integer[].class);
+        assertThat(integerNew.rawType()).isSameAs(Integer[].class);
+        assertThat(integerNew.type()).isSameAs(Integer[].class);
 
         assertThat(integerNew).hasSameHashCodeAs(Integer[].class);
         assertThat(integerNew).hasSameHashCodeAs(TypeLiteral.of(Integer[].class).hashCode());
@@ -230,10 +230,10 @@ public class TypeLiteralTest {
     public void tl_IntegerArrayArray() {
         TypeLiteral<Integer[][]> integerArrayArrayNew = new TypeLiteral<Integer[][]>() {};
 
-        assertThat(integerArrayArrayNew.box().getType()).isSameAs(Integer[][].class);
+        assertThat(integerArrayArrayNew.box().type()).isSameAs(Integer[][].class);
 
-        assertThat(integerArrayArrayNew.getRawType()).isSameAs(Integer[][].class);
-        assertThat(integerArrayArrayNew.getType()).isSameAs(Integer[][].class);
+        assertThat(integerArrayArrayNew.rawType()).isSameAs(Integer[][].class);
+        assertThat(integerArrayArrayNew.type()).isSameAs(Integer[][].class);
 
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(Integer[][].class);
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(TypeLiteral.of(Integer[][].class).hashCode());
@@ -254,11 +254,11 @@ public class TypeLiteralTest {
     public void tl_ListString() throws Exception {
         TypeLiteral<List<String>> listStringNew = new TypeLiteral<List<String>>() {};
 
-        assertThat(listStringNew.box().getType()).isEqualTo(LIST_STRING);
+        assertThat(listStringNew.box().type()).isEqualTo(LIST_STRING);
 
-        assertThat(listStringNew.getRawType()).isSameAs(List.class);
+        assertThat(listStringNew.rawType()).isSameAs(List.class);
 
-        assertThat(listStringNew.getType()).isEqualTo(LIST_STRING);
+        assertThat(listStringNew.type()).isEqualTo(LIST_STRING);
 
         assertThat(listStringNew).hasSameHashCodeAs(LIST_STRING);
         assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(LIST_STRING).hashCode());
@@ -274,11 +274,11 @@ public class TypeLiteralTest {
     /** Tests {@code List<?>}. */
     @Test
     public void tl_ListWildcard() throws Exception {
-        assertThat(TL_LIST_WILDCARD.box().getType()).isEqualTo(LIST_WILDCARD);
+        assertThat(TL_LIST_WILDCARD.box().type()).isEqualTo(LIST_WILDCARD);
 
-        assertThat(TL_LIST_WILDCARD.getRawType()).isSameAs(List.class);
+        assertThat(TL_LIST_WILDCARD.rawType()).isSameAs(List.class);
 
-        assertThat(TL_LIST_WILDCARD.getType()).isEqualTo(LIST_WILDCARD);
+        assertThat(TL_LIST_WILDCARD.type()).isEqualTo(LIST_WILDCARD);
 
         assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(LIST_WILDCARD);
         assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(LIST_WILDCARD).hashCode());
@@ -302,11 +302,11 @@ public class TypeLiteralTest {
         }
         Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
 
-        assertThat(listStringNew.box().getType()).isEqualTo(fGenericType);
+        assertThat(listStringNew.box().type()).isEqualTo(fGenericType);
 
-        assertThat(listStringNew.getRawType()).isSameAs(Map.class);
+        assertThat(listStringNew.rawType()).isSameAs(Map.class);
 
-        assertThat(listStringNew.getType()).isEqualTo(fGenericType);
+        assertThat(listStringNew.type()).isEqualTo(fGenericType);
 
         assertThat(listStringNew).hasSameHashCodeAs(fGenericType);
         assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(fGenericType).hashCode());
@@ -324,10 +324,10 @@ public class TypeLiteralTest {
     public void tl_String() {
         TypeLiteral<String> stringNew = new TypeLiteral<String>() {};
 
-        assertThat(stringNew.box().getType()).isSameAs(String.class);
+        assertThat(stringNew.box().type()).isSameAs(String.class);
 
-        assertThat(stringNew.getRawType()).isSameAs(String.class);
-        assertThat(stringNew.getType()).isSameAs(String.class);
+        assertThat(stringNew.rawType()).isSameAs(String.class);
+        assertThat(stringNew.type()).isSameAs(String.class);
 
         assertThat(stringNew).hasSameHashCodeAs(String.class);
         assertThat(stringNew).hasSameHashCodeAs(TypeLiteral.of(String.class).hashCode());
@@ -348,10 +348,10 @@ public class TypeLiteralTest {
     public void tl_void() {
         TypeLiteral<Void> voidOf = TypeLiteral.of(void.class);
 
-        assertThat(voidOf.box().getType()).isSameAs(Void.class);
+        assertThat(voidOf.box().type()).isSameAs(Void.class);
 
-        assertThat(voidOf.getRawType()).isSameAs(void.class);
-        assertThat(voidOf.getType()).isSameAs(void.class);
+        assertThat(voidOf.rawType()).isSameAs(void.class);
+        assertThat(voidOf.type()).isSameAs(void.class);
 
         assertThat(voidOf).hasSameHashCodeAs(void.class);
         assertThat(voidOf).hasSameHashCodeAs(TypeLiteral.of(void.class).hashCode());
@@ -377,11 +377,11 @@ public class TypeLiteralTest {
         Type fGenericType = Tmpx.class.getDeclaredField("f").getGenericType();
         TypeLiteral<?> typeVariable = new CanonicalizedTypeLiteral<>(fGenericType);
 
-        assertThat(typeVariable.box().getType()).isEqualTo(fGenericType);
+        assertThat(typeVariable.box().type()).isEqualTo(fGenericType);
 
-        assertThat(typeVariable.getRawType()).isSameAs(Map.class);
+        assertThat(typeVariable.rawType()).isSameAs(Map.class);
 
-        assertThat(typeVariable.getType()).isEqualTo(fGenericType);
+        assertThat(typeVariable.type()).isEqualTo(fGenericType);
 
         assertThat(typeVariable).hasSameHashCodeAs(fGenericType);
 

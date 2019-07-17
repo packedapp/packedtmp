@@ -21,7 +21,7 @@ import app.packed.inject.Injector;
  * A component context can be injected into what every I call it...
  */
 // Husk at der teoretisk set ogsaa er en ComponentContext
-public interface ComponentContext {
+public interface ComponentContext extends Component {
     // PrototypeContext
 
     // install(); <- installs child
@@ -94,7 +94,8 @@ public interface ComponentContext {
      */
     // Privatesss?????Syntes skal hedde det samme, Bliver maaske lazy initialiseret efter startup
     // Maaske skal vi bare extende Injector.....
-    Injector injector();
+
+    Injector injector();// sidecar???
 
     // Container
 }

@@ -30,11 +30,11 @@ import java.util.IdentityHashMap;
 
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
-import app.packed.container.NativeImage;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeVariableExtractorUtil;

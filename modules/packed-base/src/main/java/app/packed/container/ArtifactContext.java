@@ -13,17 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package app.packed.container;
 
+import app.packed.app.App;
 import app.packed.component.Component;
+import app.packed.component.ComponentContext;
+import app.packed.inject.Injector;
 
 /**
- *
+ * An artifact context provides.
+ * <p>
+ * Artifact context are usually not exposed to end users. But is instead wrapped in a thin facade object, such as
+ * {@link App} or {@link Injector}. Which delegates any call to the artifact context.
+ * <p>
+ * An instance of this interface is normally acquired from a {@link ArtifactDriver#newArtifact(ArtifactContext)}.
  */
 // Hvis vi skal have noget some helst kontrol...
 // Boer vi ikke extende component, da vi risikiere
 // At returnere en instand i ComponentStream.
-public interface ArtifactContext extends Component {
+public interface ArtifactContext extends ComponentContext {
 
     /**
      * 
@@ -48,4 +56,11 @@ public interface ArtifactContext extends Component {
         //// En anden slags entry point annotering...
         return void.class;
     }
+
+    <T> T use(Class<T> key);
+
+    @Override
+    Injector injector();
+
+    Component useComponent(CharSequence path);
 }

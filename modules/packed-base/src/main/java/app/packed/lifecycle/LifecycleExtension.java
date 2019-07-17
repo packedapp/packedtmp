@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import app.packed.container.Extension;
-import app.packed.entrypoint.Main;
 import packed.internal.support.AppPackedLifecycleSupport;
 
 /**

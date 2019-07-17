@@ -127,8 +127,8 @@ public abstract class TypeLiteral<T> {
      */
     @SuppressWarnings("unchecked")
     public final TypeLiteral<T> box() {
-        if (getRawType().isPrimitive()) {
-            return (TypeLiteral<T>) of(TypeUtil.boxClass(getRawType()));
+        if (rawType().isPrimitive()) {
+            return (TypeLiteral<T>) of(TypeUtil.boxClass(rawType()));
         }
         return this;
     }
@@ -157,7 +157,7 @@ public abstract class TypeLiteral<T> {
      *
      * @return the raw (non-generic) type
      */
-    public final Class<? super T> getRawType() {
+    public final Class<? super T> rawType() {
         return rawType;
     }
 
@@ -166,7 +166,7 @@ public abstract class TypeLiteral<T> {
      *
      * @return the underlying type instance
      */
-    public final Type getType() {
+    public final Type type() {
         return type;
     }
 

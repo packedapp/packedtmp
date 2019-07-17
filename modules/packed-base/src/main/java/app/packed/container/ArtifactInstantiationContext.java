@@ -18,9 +18,13 @@ package app.packed.container;
 import app.packed.util.Nullable;
 
 /**
- * An instantiation context is created for every delimited tree hierachy.
+ * An artifact instantiation context is created every time an artifact is being instantiated.
  * <p>
- * <strong>Note that this implementation is not synchronized.</strong>
+ * Describes which phases it is available from
+ * <p>
+ * The main difference from {@link ArtifactBuildContext} is when using an artifact image
+ * <p>
+ * <strong>Note that this implementation is not synchronized.</strong> Hmmm what about if use them at startup???
  */
 // ArtifactInstantiationContext or ContainerInstantionationContext
 // Per Artifact or PerContainer???

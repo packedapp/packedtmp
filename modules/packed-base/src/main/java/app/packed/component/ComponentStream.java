@@ -64,6 +64,11 @@ import app.packed.feature.FeatureKey;
 public interface ComponentStream extends Stream<Component> {
 
     default ComponentStream inTopContainer() {
+        // Hvad hvis vi er filtreret?????
+        return this;
+    }
+
+    default ComponentStream onPath(String regexp) {
         return this;
     }
 

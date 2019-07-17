@@ -15,6 +15,8 @@
  */
 package app.packed.app;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.ArtifactContext;
 import app.packed.container.ArtifactDriver;
 import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
@@ -31,8 +34,6 @@ import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
-import packed.internal.container.PackedApp;
-import packed.internal.container.PackedArtifactContext;
 
 /**
  * An App (application) is a type of artifact is a program.
@@ -48,6 +49,7 @@ import packed.internal.container.PackedArtifactContext;
  */
 // Do we expose the attachments????
 public interface App extends AutoCloseable {
+
     /**
      * Returns the configuration site of this app.
      * 
@@ -250,7 +252,134 @@ final class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedApp newArtifact(PackedArtifactContext container) {
+    public PackedApp newArtifact(ArtifactContext container) {
         return new PackedApp(container);
+    }
+}
+
+/** The default implementation of {@link App application}. Basically just wrapping an internal container. */
+final class PackedApp implements App {
+
+    /** The artifact context we are wrapping. */
+    private final ArtifactContext context;
+
+    /**
+     * Creates a new app.
+     * 
+     * @param context
+     *            the artifact context we are wrapping
+     */
+    PackedApp(ArtifactContext context) {
+        this.context = requireNonNull(context);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite configSite() {
+        return context.configSite();
+    }
+
+    public void execute() {
+        start();
+        runMainSync();
+        // try {
+        // app.state().await(RunState.TERMINATED);
+        // } catch (InterruptedException e) {
+        // throw new RuntimeException(e);
+        // }
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> description() {
+        return context.description();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Injector injector() {
+        return context.injector();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return context.name();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath path() {
+        return context.path();
+    }
+
+    /**
+     * 
+     */
+    public void runMainSync() {
+        // TODO Auto-generated method stub
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public App shutdown() {
+        // throw new UnsupportedOperationException();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public App shutdown(Throwable cause) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> shutdownAsync() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> shutdownAsync(Throwable cause) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public App start() {
+        // throw new UnsupportedOperationException();
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CompletableFuture<App> startAsync() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public LifecycleOperations<? extends App> state() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream stream() {
+        return context.stream();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> T use(Class<T> key) {
+        return context.use(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component useComponent(CharSequence path) {
+        return context.useComponent(path);
     }
 }

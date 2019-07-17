@@ -87,7 +87,7 @@ public class InternalParameterDescriptorTest {
             Tmpx(List<?> l) {}
         }
         // Tmpx is a non-static class so first parameter is TypeLiteralTest
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).getType());
+        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).type());
     }
 
     /** {@link #test1()} and {@link #test2()} should both */

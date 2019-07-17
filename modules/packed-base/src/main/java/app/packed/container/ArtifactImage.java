@@ -26,19 +26,18 @@ import app.packed.inject.Injector;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.ComponentNameWirelet;
 import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedApp;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
- * Artifact images are immutable ahead-of-time configured {@link Artifact artifacts}. By configuring an artifact ahead
- * of time, the actual time to instantiation an artifact can be severely decreased.
+ * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
+ * actual time to instantiation an artifact can be severely decreased.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
- * by using artificat images you can into hundres or thousounds of nanoseconds.
+ * by using artifact images you can into hundres or thousounds of nanoseconds.
  * <p>
- * Use cases:
+ * Use cases: Extremely fast startup.. graal
  * 
- * 
+ * Instantiate the same container many times
  * <p>
  * Limitations:
  * 
@@ -85,18 +84,12 @@ public final class ArtifactImage implements ArtifactSource {
     }
 
     public String name() {
-        Optional<ComponentNameWirelet> nw = wirelets.last(ComponentNameWirelet.class);
-        return nw.map(e -> e.name).orElse(containerConfiguration.getName());
+        return wirelets.last(ComponentNameWirelet.class).map(e -> e.name).orElse(containerConfiguration.getName());
     }
 
     public String name2() {
         ComponentNameWirelet nw = wirelets.lastOrNull(ComponentNameWirelet.class);
         return nw == null ? containerConfiguration.getName() : nw.name;
-    }
-
-    App newApp(Wirelet... wirelets) {
-        WireletList.of(wirelets);
-        return new PackedApp(containerConfiguration.doInstantiate(this.wirelets));
     }
 
     <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {

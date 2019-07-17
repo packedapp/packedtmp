@@ -13,32 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
-
-import app.packed.util.TypeLiteral;
+package app.packed.util;
 
 /**
  *
  */
-public interface Invokable<T> {
+// invokeAsync()
+public interface Invoker {
+    Object invoke() throws Throwable;
 
-    TypeLiteral<T> getType();
-
-    @SuppressWarnings("unchecked")
-    default Class<T> getRawType() {
-        return (Class<T>) getType().rawType();
-    }
-
-    boolean isNullable();
-
-    boolean isFailable();
-
-    T invoke(Object[] arguments);
-
-    enum Type {
-        UNSAFE_NULLABLE, /**/
-        SUPER_SAFE_NULLABLE, /**/
-        FIXED;
-    }
+    Object invokeWithErrorHandling();
 }
-// should invoke

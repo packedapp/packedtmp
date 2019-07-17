@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import app.packed.app.App;
-import app.packed.app.AppWirelets;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.contract.Contract;
@@ -27,6 +25,7 @@ import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.lifecycle.EntryPointExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -147,6 +146,10 @@ public abstract class Bundle extends ContainerBundle {
         return use(InjectionExtension.class);
     }
 
+    protected final EntryPointExtension entryPoint() {
+        return use(EntryPointExtension.class);
+    }
+
     protected final ComponentExtension component() {
         return use(ComponentExtension.class);
     }
@@ -227,19 +230,6 @@ public abstract class Bundle extends ContainerBundle {
         BundleDescriptor.of(bundle).print();
     }
 
-    // runMain????.. maybe still so similar. Do we want to throw Exception???
-    // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
-    // executeMain
-    static protected void run(ArtifactSource source, String[] args, Wirelet... wirelets) {
-
-        // CTRL-C ?? Obvious a wirelet, but default on or default off.
-        // Paa Bundle syntes jeg den er paa, ikke paa App which is clean
-        run(source, AppWirelets.args(args).andThen(wirelets)); // + CTRL-C
-    }
-
-    static protected void run(ArtifactSource source, Wirelet... wirelets) {
-        App.run(source, wirelets);
-    }
 }
 
 // /**

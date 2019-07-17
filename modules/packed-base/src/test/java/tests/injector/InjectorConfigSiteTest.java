@@ -90,14 +90,14 @@ public class InjectorConfigSiteTest {
     /** A helper method for {@link #binding()}. */
     private void binding0(ProvidedComponentConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
-        int index = sc.getKey().typeLiteral().getRawType().getSimpleName().toString().charAt(0) - 'A';
+        int index = sc.getKey().typeLiteral().rawType().getSimpleName().toString().charAt(0) - 'A';
         ConfigSite cs = sc.configSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
         assertThat(cs.operation()).isEqualTo(ConfigSiteType.COMPONENT_INSTALL.operation());
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
-        sites.put(sc.getKey().typeLiteral().getRawType(), cs);
+        sites.put(sc.getKey().typeLiteral().rawType(), cs);
     }
 
     /**

@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.host;
 
 /**
  *
  */
-// invokeAsync()
-public interface Invoker {
-    Object invoke() throws Throwable;
+// Taenker den er equivalent til ArtifactContext....
+// Hvor AppHost saa wrapper en HostContext.....
+public interface HostContext {
 
-    Object invokeWithErrorHandling();
 }

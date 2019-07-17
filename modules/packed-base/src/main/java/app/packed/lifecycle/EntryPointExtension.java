@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.entrypoint;
+package app.packed.lifecycle;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -45,10 +45,16 @@ import app.packed.util.Key;
 // Other Stuff
 //// Handling of Main exceptions??? Naah ErrorHandlingExtension
 //// What if result?????? have some of Container methods return Object???
+
+// Smide denne ind under LifecycleExtension
 public final class EntryPointExtension extends Extension {
 
     /** Creates a new entry point extension. */
     EntryPointExtension() {}
+
+    public void main(Runnable r) {
+
+    }
 
     public <T> void main(Key<T> serviceKey, Consumer<? super T> consumer) {
         // invocation multiple times??? Error?

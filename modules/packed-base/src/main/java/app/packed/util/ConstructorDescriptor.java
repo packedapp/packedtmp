@@ -92,6 +92,6 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
     @SuppressWarnings("unchecked")
     static <T> ConstructorDescriptor<T> of(TypeLiteral<T> declaringClass, Class<?>... parameterTypes) {
         requireNonNull(declaringClass, "declaringClass is null");
-        return (ConstructorDescriptor<T>) of(declaringClass.getRawType(), parameterTypes);
+        return (ConstructorDescriptor<T>) of(declaringClass.rawType(), parameterTypes);
     }
 }

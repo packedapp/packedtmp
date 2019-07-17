@@ -21,7 +21,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import app.packed.container.Bundle;
+import app.packed.app.AppBundle;
 import app.packed.container.Wirelet;
 
 @Retention(CLASS)
@@ -127,7 +127,7 @@ public @interface ComponentScan {
 // */
 // boolean forceModulepathScan() default false;
 @ComponentScan(modules = { "*" })
-class SomeBundle extends Bundle {
+class SomeBundle extends AppBundle {
 
     public static void main(String[] args) {
         run(new SomeBundle());
