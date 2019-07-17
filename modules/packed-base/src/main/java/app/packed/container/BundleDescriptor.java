@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.ArtifactType;
 import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.lifecycle.Main;

@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ArtifactSource;
 import packed.internal.componentcache.ContainerConfiguratorCache;
 
 /**

@@ -21,14 +21,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.ArtifactContext;
-import app.packed.container.ArtifactDriver;
-import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
@@ -83,7 +83,7 @@ public interface App extends AutoCloseable {
     /**
      * Returns the component path of this app.
      * <p>
-     * The returned path is always identical to the path of the app's root container.
+     * The returned path is always identical to the path of the app's top container.
      *
      * @return the component path of this app
      * @see Component#path()

@@ -22,7 +22,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.container.ArtifactType;
+import app.packed.artifact.ArtifactType;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;

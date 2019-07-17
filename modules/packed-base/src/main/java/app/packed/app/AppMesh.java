@@ -29,6 +29,6 @@ package app.packed.app;
 //// Maaske vi kan lave noget der kan vaere distribueret...
 //// Ahh sikkert en anden klasse
 // app.packed.base, app.packed.web, app.packed.cluster, app.packed.json
-public interface AppMesh {
+interface AppMesh {
 
 }

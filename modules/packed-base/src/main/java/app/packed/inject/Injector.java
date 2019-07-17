@@ -22,11 +22,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
+import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.ArtifactImage;
-import app.packed.container.ArtifactSource;
-import app.packed.container.ArtifactType;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 import packed.internal.container.ContainerSource;

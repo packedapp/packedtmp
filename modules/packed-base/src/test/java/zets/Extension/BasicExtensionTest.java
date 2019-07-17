@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.ArtifactBuildContext;
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.WireletList;

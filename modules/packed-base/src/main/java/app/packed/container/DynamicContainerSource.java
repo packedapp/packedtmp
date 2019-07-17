@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.artifact.ArtifactSource;
 import packed.internal.thirdparty.asm.AnnotationVisitor;
 import packed.internal.thirdparty.asm.Attribute;
 import packed.internal.thirdparty.asm.ClassReader;

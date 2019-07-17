@@ -22,10 +22,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Activate;
 import app.packed.container.ExtensionHookProcessor;
-import app.packed.container.ArtifactInstantiationContext;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**

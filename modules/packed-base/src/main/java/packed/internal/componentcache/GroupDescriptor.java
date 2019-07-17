@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
-import app.packed.container.ArtifactInstantiationContext;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;

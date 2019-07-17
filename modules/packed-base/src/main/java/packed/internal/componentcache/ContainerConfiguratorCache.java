@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ArtifactSource;
 import packed.internal.util.LookupValue;
 
 /** A cache for a bundle implementation. */

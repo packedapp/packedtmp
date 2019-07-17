@@ -15,9 +15,9 @@
  */
 package app.packed.host;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**

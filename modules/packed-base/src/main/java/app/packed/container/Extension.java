@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.support.AppPackedContainerSupport;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.artifact;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +22,10 @@ import java.util.Optional;
 import app.packed.app.App;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundle;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletList;
 import app.packed.inject.Injector;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.ComponentNameWirelet;

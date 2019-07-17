@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ArtifactInstantiationContext;
 import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigSite;
 

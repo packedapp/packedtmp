@@ -20,8 +20,8 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.ContainerBundle;
-import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 import zets.name.spi.AbstractArtifactTest;
 import zets.name.spi.ContainerConfigurationTester;

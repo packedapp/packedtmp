@@ -22,11 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactInstantiationContext;
+import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
-import app.packed.container.ArtifactInstantiationContext;
-import app.packed.container.ArtifactType;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.feature.FeatureMap;

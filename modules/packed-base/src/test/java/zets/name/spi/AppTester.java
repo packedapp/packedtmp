@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.app.App;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
-import app.packed.container.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**

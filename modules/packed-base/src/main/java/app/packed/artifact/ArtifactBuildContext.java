@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerBundle;
+import app.packed.container.Extension;
+import app.packed.container.WireletList;
 
 /**
  * An artifact build context is created every time an build context is create . The context is shared among all

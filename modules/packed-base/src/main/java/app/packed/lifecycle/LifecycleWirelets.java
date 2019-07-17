@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.app.App;
-import app.packed.container.ArtifactSource;
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.ServiceWirelets;
 

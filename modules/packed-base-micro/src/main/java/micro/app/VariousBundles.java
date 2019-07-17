@@ -15,7 +15,7 @@
  */
 package micro.app;
 
-import app.packed.container.ArtifactImage;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerBundle;
 

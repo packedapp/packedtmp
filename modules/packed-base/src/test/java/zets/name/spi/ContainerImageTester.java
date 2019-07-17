@@ -18,8 +18,8 @@ package zets.name.spi;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.container.ArtifactImage;
-import app.packed.container.ArtifactSource;
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.Wirelet;
 
 /**

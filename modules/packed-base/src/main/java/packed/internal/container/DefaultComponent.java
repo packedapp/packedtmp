@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.Component;
-import app.packed.container.ArtifactInstantiationContext;
 
 /**
  *

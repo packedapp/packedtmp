@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.container.ArtifactBuildContext;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;

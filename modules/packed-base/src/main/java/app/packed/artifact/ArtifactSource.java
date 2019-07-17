@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.artifact;
 
 import java.util.function.Supplier;
 
 import app.packed.component.Component;
+import app.packed.container.ContainerBundle;
 
 /**
  * A source of an artifact. This is typically a subclass of {@link ContainerBundle} or pregenerated {@link ArtifactImage
  * container image}.
  * <p>
- * This interface is not intended to be implemented outside of this package. Future versions of this class may make use
+ * This interface is not intended to be implemented outside of this module. Future versions of this class may make use
  * of sealed types if they become available.
  */
 // ContainerFactory?? But this maybe implies that you can invoke it multiple times

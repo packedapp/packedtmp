@@ -18,7 +18,7 @@ package packed.internal.container;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.app.App;
-import app.packed.container.ArtifactInstantiationContext;
+import app.packed.artifact.ArtifactInstantiationContext;
 
 /**
  *

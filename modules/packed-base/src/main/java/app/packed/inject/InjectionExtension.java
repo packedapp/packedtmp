@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
-import app.packed.container.ArtifactInstantiationContext;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.contract.Contract;

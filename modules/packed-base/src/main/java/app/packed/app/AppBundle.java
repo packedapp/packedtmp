@@ -15,8 +15,8 @@
  */
 package app.packed.app;
 
-import app.packed.container.ArtifactImage;
-import app.packed.container.ArtifactSource;
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactSource;
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.inject.ServiceWirelets;

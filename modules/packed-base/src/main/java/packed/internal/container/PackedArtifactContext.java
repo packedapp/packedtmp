@@ -17,8 +17,8 @@ package packed.internal.container;
 
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.container.ArtifactContext;
-import app.packed.container.ArtifactInstantiationContext;
+import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNodeMap;

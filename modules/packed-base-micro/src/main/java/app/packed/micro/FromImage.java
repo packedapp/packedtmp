@@ -33,9 +33,9 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.app.App;
+import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Activate;
-import app.packed.container.ArtifactImage;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;

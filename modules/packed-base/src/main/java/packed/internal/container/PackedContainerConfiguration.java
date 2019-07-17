@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactInstantiationContext;
+import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
-import app.packed.container.ArtifactBuildContext;
-import app.packed.container.ArtifactInstantiationContext;
-import app.packed.container.ArtifactType;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;

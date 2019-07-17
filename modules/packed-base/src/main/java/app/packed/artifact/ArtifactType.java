@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.artifact;
 
 import app.packed.app.App;
+import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerBundle;
+import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 
 /// Kan vi bruge dem for example med @UseExtension(onlyAllow=OutputType.INJECTOR) @OnStart

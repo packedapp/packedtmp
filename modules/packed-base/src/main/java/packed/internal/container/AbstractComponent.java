@@ -25,11 +25,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.ArtifactInstantiationContext;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
 

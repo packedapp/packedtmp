@@ -21,6 +21,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
+import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
