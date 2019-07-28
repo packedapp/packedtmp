@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.container.Bundle;
-import app.packed.container.ContainerBundle;
+import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
@@ -132,7 +132,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void link(ContainerBundle bundle, Wirelet... stages) {
+    public final void link(AnyBundle bundle, Wirelet... stages) {
         ((PackedContainerConfiguration) configuration).link(bundle, stages);
     }
 

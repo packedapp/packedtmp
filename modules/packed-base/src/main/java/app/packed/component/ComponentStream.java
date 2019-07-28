@@ -16,18 +16,14 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.feature.AFeature;
-import app.packed.feature.FeatureKey;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
@@ -95,21 +91,21 @@ public interface ComponentStream extends Stream<Component> {
         return collect(Collectors.toList());
     }
 
-    @SuppressWarnings("unchecked")
-    default <A> void forEachFeature(FeatureKey<A> feature, BiConsumer<Component, ? super A> action) {
-        // Dropper det <A, B, C> for streams er det jo info der giver mening
-        requireNonNull(feature, "feature is null");
-        requireNonNull(action, "action is null");
-        forEach(c -> {
-            Object o = c.features().get(feature);
-            if (o != null) {
-                action.accept(c, (A) o);
-            }
-            // if (o.isPresent()) {
-            // action.accept(c, o.get());
-            // }
-        });
-    }
+    // @SuppressWarnings("unchecked")
+    // default <A> void forEachFeature(FeatureKey<A> feature, BiConsumer<Component, ? super A> action) {
+    // // Dropper det <A, B, C> for streams er det jo info der giver mening
+    // requireNonNull(feature, "feature is null");
+    // requireNonNull(action, "action is null");
+    // forEach(c -> {
+    // Object o = c.features().get(feature);
+    // if (o != null) {
+    // action.accept(c, (A) o);
+    // }
+    // // if (o.isPresent()) {
+    // // action.accept(c, o.get());
+    // // }
+    // });
+    // }
 
     default <A> Stream<A> feature(Class<A> faetures) {
         throw new UnsupportedOperationException();

@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import app.packed.container.Extension;
-import app.packed.contract.Contract;
 
 /**
  *
@@ -28,10 +27,10 @@ import app.packed.contract.Contract;
 // Naming of capture... Is kind of an export....
 public final class AllHooksExtension extends Extension {
 
-    public AllHooksExtension capture(Contract contract) {
-        // Should be able to just use 1 export();
-        return this;
-    }
+    // public AllHooksExtension capture(Contract contract) {
+    // // Should be able to just use 1 export();
+    // return this;
+    // }
 
     public AllHooksExtension captureAnnotatedField(Class<? extends Annotation> hookType) {
         return this;
@@ -49,11 +48,11 @@ public final class AllHooksExtension extends Extension {
         return this;
     }
 
-    public AllHooksExtension export(Contract contract) {
-        // Multiple calls to this method will be cummulative
-        // We would like to able to override previous contracts, for example via annotated methods....
-        return this;
-    }
+    // public AllHooksExtension export(Contract contract) {
+    // // Multiple calls to this method will be cummulative
+    // // We would like to able to override previous contracts, for example via annotated methods....
+    // return this;
+    // }
 
     public AllHooksExtension exportAnnotatedField(Class<? extends Annotation> hookType) {
         return this;

@@ -27,7 +27,7 @@ import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
-import app.packed.container.ContainerBundle;
+import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
@@ -169,7 +169,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         }
         n = setName;
         if (this instanceof PackedContainerConfiguration) {
-            Optional<ComponentNameWirelet> o = ((PackedContainerConfiguration) this).wirelets().last(ComponentNameWirelet.class);
+            Optional<ComponentNameWirelet> o = ((PackedContainerConfiguration) this).wirelets().findLast(ComponentNameWirelet.class);
             if (o.isPresent()) {
                 n = o.get().name;
             }
@@ -202,7 +202,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         if (this instanceof PackedContainerConfiguration) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            ContainerBundle bundle = (@Nullable ContainerBundle) ((PackedContainerConfiguration) this).configurator.source;
+            AnyBundle bundle = (@Nullable AnyBundle) ((PackedContainerConfiguration) this).configurator.source;
             if (bundle != null) {
                 String nnn = bundle.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
@@ -280,7 +280,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ComponentExtension#link(ContainerBundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ComponentExtension#link(AnyBundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

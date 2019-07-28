@@ -21,17 +21,17 @@ import app.packed.component.ComponentContext;
 import app.packed.inject.Injector;
 
 /**
- * An artifact context provides.
+ * An artifact runtime context provides.
  * <p>
  * Artifact context are usually not exposed to end users. But is instead wrapped in a thin facade object, such as
  * {@link App} or {@link Injector}. Which delegates any call to the artifact context.
  * <p>
- * An instance of this interface is normally acquired from a {@link ArtifactDriver#newArtifact(ArtifactContext)}.
+ * An instance of this interface is normally acquired from a {@link ArtifactDriver#instantiate(ArtifactRuntimeContext)}.
  */
 // Hvis vi skal have noget some helst kontrol...
 // Boer vi ikke extende component, da vi risikiere
 // At returnere en instand i ComponentStream.
-public interface ArtifactContext extends ComponentContext {
+public interface ArtifactRuntimeContext extends ComponentContext {
 
     /**
      * 

@@ -25,7 +25,9 @@ import java.util.IdentityHashMap;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Activate;
+import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
+import app.packed.hook2.ActivateExtension;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -106,6 +108,14 @@ public final class ComponentClassDescriptor {
             protected Class<? extends ExtensionHookProcessor<?>>[] computeValue(Class<?> type) {
                 Activate ae = type.getAnnotation(Activate.class);
                 return ae == null ? null : ae.extensionHook();
+            }
+        };
+        static final ClassValue<Class<? extends Extension>[]> METHOD_ANNOTATION_ACTIVATOR2 = new ClassValue<>() {
+
+            @Override
+            protected Class<? extends Extension>[] computeValue(Class<?> type) {
+                ActivateExtension ae = type.getAnnotation(ActivateExtension.class);
+                return ae == null ? null : ae.value();
             }
         };
 

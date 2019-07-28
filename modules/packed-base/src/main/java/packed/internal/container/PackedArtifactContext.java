@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import java.util.concurrent.CompletableFuture;
 
-import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactRuntimeContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
@@ -29,7 +29,7 @@ import packed.internal.inject.runtime.DefaultInjector;
 /// Which is available to every component in the container.....
 /// Maybe via ComponentContext
 /// Just worried
-public final class PackedArtifactContext extends AbstractComponent implements ArtifactContext {
+public final class PackedArtifactContext extends AbstractComponent implements ArtifactRuntimeContext {
 
     private final Injector injector;
 

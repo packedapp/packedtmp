@@ -36,6 +36,10 @@ import packed.internal.util.StringFormatter;
 /**
  * A application can have a single main entry point which is the first instructions in a program that is executed, Must
  * be placed on a method on a bundle. Why not individual components??
+ * <p>
+ * The annotated method will be executed once the artifact in which it is registered has transtioned to the
+ * {@link RunState#RUNNING} state. When the method has finished executing (either succesfully or because of a failure)
+ * the artifact will be shutdown.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -67,6 +71,7 @@ public @interface Main {
     // ContainerImages, with undeploy
     // Maaske hellere en option i EntryPoint??? Eller begge dele...
     /// Problemet er at vi gerne ville knytte det til Main
+    // Deployment option????
     boolean undeployOnCompletion() default true;
 }
 

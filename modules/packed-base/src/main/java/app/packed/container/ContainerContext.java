@@ -20,9 +20,7 @@ package app.packed.container;
  */
 
 // Always one per container, not exposed per default....
-
 // Løser også voews problem med interne services vs externe services...
-
 // Saa injector/container er altid externe services.....
 interface ContainerContext {
 

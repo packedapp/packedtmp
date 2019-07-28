@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.contract;
+package app.packed.hook2;
+
+import app.packed.component.ComponentConfiguration;
+import app.packed.container.Extension;
+import app.packed.hook.AnnotatedMethodHook;
 
 /**
  *
  */
-public abstract class AnyContract {
+public class XHExtension extends Extension {
 
+    @OnHook2
+    public void doo(ComponentConfiguration cc, AnnotatedMethodHook<XH> hook) {
+        System.out.println(hook);
+    }
 }

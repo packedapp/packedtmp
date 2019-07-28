@@ -17,7 +17,7 @@ package app.packed.util;
 
 /** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
 
-// UncheckedIllegalRuntimeException...
+// UncheckedIllegalAccessException...
 // AccessRestrictedException <- General one, could sound really securish, maybe have a name
 // which makes it clear it is relevant to reflection/method handlers
 public class IllegalAccessRuntimeException extends RuntimeException {

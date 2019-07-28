@@ -57,7 +57,7 @@ public abstract class Extension {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
             @Override
-            public void doConfigure(ContainerBundle bundle, ContainerConfiguration configuration) {
+            public void doConfigure(AnyBundle bundle, ContainerConfiguration configuration) {
                 bundle.doConfigure(configuration);
             }
 
@@ -125,7 +125,7 @@ public abstract class Extension {
     /**
      * Checks that the extension is still configurable or throws an {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after the extensions {@link #onConfigured()} method has returned.
+     * An extension is no longer configurable after the extensions {@link #onConfigured()} has been invoked by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable.
@@ -139,7 +139,7 @@ public abstract class Extension {
 
     /**
      * Returns the configuration of the container. Or fails with {@link IllegalStateException} if invoked from the
-     * constructor of an extension.
+     * constructor of the extension.
      * 
      * @return the configuration of the container
      */
@@ -182,8 +182,8 @@ public abstract class Extension {
     protected void onAdded() {} // afterAdd
 
     /**
-     * Invoked immediately after a container has been successfully configured. Typically after
-     * {@link ContainerBundle#configure()} has returned.
+     * Invoked immediately after a container has been successfully configured. Typically after {@link AnyBundle#configure()}
+     * has returned.
      * <p>
      * The default implementation does nothing.
      */
@@ -213,7 +213,6 @@ public abstract class Extension {
      * Returns an extension of the specified type. Invoking this method is similar to calling
      * {@link ContainerConfiguration#use(Class)}.
      * <p>
-     * 
      * The runtime keeps track of extensions usage of other extensions via this method. And forming any kind of circle in
      * the dependency graph will fail with a runtime exception.
      * 
@@ -236,7 +235,6 @@ public abstract class Extension {
      * Invoking this method is equivalent to invoking {@code configuration().wirelets()}.
      * 
      * @return a list of any wirelets that was used to configure the container
-     * 
      */
     protected final WireletList wirelets() {
         return configuration().wirelets();

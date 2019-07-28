@@ -16,7 +16,7 @@
 package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
+import app.packed.container.AnyBundle;
 import app.packed.container.Extension;
 import app.packed.container.WireletList;
 
@@ -26,6 +26,8 @@ import app.packed.container.WireletList;
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
+// Skal vi overhoved have wirelets med her????
+
 public interface ArtifactBuildContext {
 
     /**
@@ -44,7 +46,7 @@ public interface ArtifactBuildContext {
     ConfigSite configSite();
 
     /**
-     * Returns the container source of the build, for example a {@link ContainerBundle bundle}.
+     * Returns the container source of the build, for example a {@link AnyBundle bundle}.
      * 
      * @return the container source of the build, for example a bundle or a container image
      */

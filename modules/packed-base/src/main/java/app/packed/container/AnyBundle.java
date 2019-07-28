@@ -23,12 +23,17 @@ import java.util.Set;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactSource;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 
 /**
+ * Bundles are the main source of configuration for artifacts. It is basically just a thin wrapper around
+ * {@link ContainerConfiguration}.
+ * 
+ * 
  * A generic bundle. Normally you would extend {@link Bundle}
  */
 // A bundle can be used by one thread at a time...
@@ -40,11 +45,17 @@ import app.packed.util.Nullable;
 
 // Kan vi genbruge et bundle???
 // rename to ContainerBundle????
-public abstract class ContainerBundle implements ArtifactSource {
+public abstract class AnyBundle implements ArtifactSource {
 
     /** The configuration. */
     private ContainerConfiguration configuration;
 
+    /**
+     * Returns the build context. A single build context object is shared among all containers for the same artifact.
+     * 
+     * @return the build context
+     * @see ContainerConfiguration#buildContext()
+     */
     protected final ArtifactBuildContext buildContext() {
         return configuration.buildContext();
     }
@@ -70,6 +81,16 @@ public abstract class ContainerBundle implements ArtifactSource {
     }
 
     /**
+     * Returns the configuration site that created this bundle.
+     * 
+     * @return the configuration site that created this bundle
+     * @see ContainerConfiguration#configSite()
+     */
+    protected final ConfigSite configSite() {
+        return configuration.configSite();
+    }
+
+    /**
      * Returns the container configuration that this bundle wraps.
      * 
      * @return the container configuration that this bundle wraps
@@ -85,13 +106,19 @@ public abstract class ContainerBundle implements ArtifactSource {
         return c;
     }
 
-    protected final ConfigSite configSite() {
-        return configuration.configSite();
-    }
-
-    /** Configures the bundle using the various inherited methods that are available. */
+    /**
+     * Configures the bundle using the various inherited methods that are available.
+     * <p>
+     * Users should <b>never</b> invoke this method directly. Instead letting the runtime invoke it.
+     */
     protected void configure() {}
 
+    /**
+     * Invoked by the runtime to start the configuration process.
+     * 
+     * @param configuration
+     *            the configuration to wrap
+     */
     final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;
         // Im not sure we want to null it out...
@@ -105,6 +132,13 @@ public abstract class ContainerBundle implements ArtifactSource {
         }
     }
 
+    /**
+     * Returns an immutable view of all of the extension types that are used by this bundle.
+     * 
+     * @return an immutable view of all of the extension types that are used by this bundle
+     * 
+     * @see ContainerConfiguration#extensions()
+     */
     protected final Set<Class<? extends Extension>> extensions() {
         return configuration().extensions();
     }
@@ -123,9 +157,20 @@ public abstract class ContainerBundle implements ArtifactSource {
      * 
      * @return the name of the container
      * @see #setName(String)
+     * @see ComponentConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
+    }
+
+    /**
+     * Returns whether or not this bundle will configure the top container in an artifact.
+     * 
+     * @return whether or not this bundle will configure the top container in an artifact
+     * @see ContainerConfiguration#isTopContainer()
+     */
+    protected final boolean isTopContainer() {
+        return configuration.isTopContainer();
     }
 
     /**
@@ -135,9 +180,9 @@ public abstract class ContainerBundle implements ArtifactSource {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ComponentExtension#link(ContainerBundle, Wirelet...)
+     * @see ComponentExtension#link(AnyBundle, Wirelet...)
      */
-    protected final void link(ContainerBundle bundle, Wirelet... wirelets) {
+    protected final void link(AnyBundle bundle, Wirelet... wirelets) {
         use(ComponentExtension.class).link(bundle, wirelets);
     }
 
@@ -162,6 +207,12 @@ public abstract class ContainerBundle implements ArtifactSource {
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
     }
 
+    /**
+     * Returns the full path of the container that this bundle creates.
+     * 
+     * @return the full path of the container that this bundle creates
+     * @see ContainerConfiguration#path()
+     */
     protected final ComponentPath path() {
         return configuration().path();
     }
@@ -195,7 +246,8 @@ public abstract class ContainerBundle implements ArtifactSource {
     }
 
     /**
-     * Returns a extension of the specified type. Instantiating and registering one, if one has not already been registered.
+     * Returns an extension of the specified type. Instantiating and registering one for subsequent calls, if one has not
+     * already been registered.
      * 
      * @param <T>
      *            the type of extension to return

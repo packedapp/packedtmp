@@ -17,7 +17,6 @@ package app.packed.container;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.contract.Contract;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
@@ -25,7 +24,7 @@ import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.lifecycle.EntryPointExtension;
+import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -63,7 +62,7 @@ import app.packed.util.Qualifier;
 // // Insta
 // // NativeImageWriter
 // }
-public abstract class Bundle extends ContainerBundle {
+public abstract class Bundle extends AnyBundle {
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -133,9 +132,9 @@ public abstract class Bundle extends ContainerBundle {
         throw new UnsupportedOperationException();
     }
 
-    protected final void exportHooks(Contract contract) {
-        throw new UnsupportedOperationException();
-    }
+    // protected final void exportHooks(Contract contract) {
+    // throw new UnsupportedOperationException();
+    // }
 
     /**
      * Returns an instance of the injector extension, installing it if it has not already been installed.
@@ -146,8 +145,8 @@ public abstract class Bundle extends ContainerBundle {
         return use(InjectionExtension.class);
     }
 
-    protected final EntryPointExtension entryPoint() {
-        return use(EntryPointExtension.class);
+    protected final LifecycleExtension lifecycle() {
+        return use(LifecycleExtension.class);
     }
 
     protected final ComponentExtension component() {

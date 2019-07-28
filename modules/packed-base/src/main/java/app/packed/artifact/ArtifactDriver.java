@@ -15,25 +15,29 @@
  */
 package app.packed.artifact;
 
-import java.lang.reflect.Type;
-
+import app.packed.app.App;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
+import app.packed.inject.Injector;
 import packed.internal.container.ContainerSource;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
- * Ideen er at man implementere en driver. Som tager sig af at laver en artifact instance.... Dvs. kalder image hvis det
- * er et image
+ * This class can extended to create custom artifact types if the built-in types such as {@link App} or {@link Injector}
+ * are not sufficient. In fact {@link App} and {@link Injector} are both just a thin facade that delegates all calls to
+ * {@link ArtifactRuntimeContext}.
+ * 
+ * 
+ * An artifact driver is used to create artifact instances such as {@link App} and {@link Injector}. Taking care of
+ * initializing internal classes and handling artifact images.
+ * 
+ * <p>
+ * Normally, you should never instantiate more then a single instance of a particular subclass.
+ * 
+ * @param <T>
+ *            The type of artifact this driver produces.
  */
-
-// Ditch interface + ArtifactType
-
-// Men kun hvis vi ikke skal bruge den til
-
-// Hmm maaske maaske ikke
-// ArtifactBuilder???
 
 // configuration
 //// forbidden extensions (lifecycle primarily)
@@ -41,11 +45,15 @@ import packed.internal.util.TypeVariableExtractorUtil;
 //// In which case it will be injectable into any component...
 public abstract class ArtifactDriver<T> {
 
-    // private final Class<T> type;
+    /** The type of artifact this driver produces. */
+    private final Class<T> type;
 
     // private final
     /** Creates a new driver. */
+    @SuppressWarnings("unchecked")
     protected ArtifactDriver() {
+        this.type = (Class<T>) TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
+
         // Set tmp
         configure();
         // convert tmp to perm
@@ -68,41 +76,50 @@ public abstract class ArtifactDriver<T> {
         // Needs Lifecycle
     }
 
-    protected final void disableExtensions(Class<?>... extensions) {
-
-    }
-
-    @SuppressWarnings("unchecked")
-    public final Class<T> type() {
-        Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
-        return (Class<T>) type;
-    }
-
     /**
-     * Creates a new artifact.
+     * Creates a new artifact using the specified source.
+     * <p>
+     * This method will invoke {@link #instantiate(ArtifactRuntimeContext)}.
      * 
      * @param source
      *            the source of the artifact
      * @param wirelets
      *            any wirelets used to create the artifact
      * @return the new artifact
+     * @throws RuntimeException
+     *             if the artifact could not be created for some reason
      */
     public final T create(ArtifactSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactType.APP, ContainerSource.forApp(source), wirelets);
-        return newArtifact(pcc.doBuild().doInstantiate(WireletList.of()));
+        return instantiate(pcc.doBuild().doInstantiate(WireletList.of()));
     }
 
+    protected final void disableExtensions(Class<?>... extensions) {
+        // Alternativ skal vi bruge funktionalitet for at lave arkitektur...
+        // Det her med at man som et firma kan specificere ting som
+    }
+
+    /**
+     * Creates a new artifact, that can use the specified runtime context to control the artifact.
+     * 
+     * @param context
+     *            the runtime context to wrap
+     * @return the new artifact
+     */
+    protected abstract T instantiate(ArtifactRuntimeContext context);
+
+    // Descriptors... Er bedoevende ligeglade
     // protected abstract T newDescriptor(PackedConfiguration container);
 
     /**
-     * Creates a new artifact using the specified context.
+     * Returns the type of the artifact this driver produces.
      * 
-     * @param context
-     *            the context to wrap
-     * @return the new artifact
+     * @return the type of the artifact this driver produces
      */
-    protected abstract T newArtifact(ArtifactContext context);
+    public final Class<T> type() {
+        return type;
+    }
 }

@@ -68,6 +68,8 @@ import packed.internal.thirdparty.asm.Type;
 
 /// Skal vel have hvert module i sin egen classloader???
 /// Saa kan vi reloade et af gangen....
+
+// https://docs.microsoft.com/en-us/azure/devops/pipelines/release/artifacts?view=azure-devops
 public final class DynamicContainerSource implements ArtifactSource {
 
     /** Lapp/packed/component/Install; */
@@ -110,7 +112,7 @@ public final class DynamicContainerSource implements ArtifactSource {
             Class<?> c = layer.findLoader(moduleName).loadClass(initializeMe);
             Constructor<?> cc = c.getConstructor();
             cc.setAccessible(true);
-            ContainerBundle b = (ContainerBundle) cc.newInstance();
+            AnyBundle b = (AnyBundle) cc.newInstance();
             // System.out.println(System.currentTimeMillis() - now);
             return b;
             // App aa = App.of(b);

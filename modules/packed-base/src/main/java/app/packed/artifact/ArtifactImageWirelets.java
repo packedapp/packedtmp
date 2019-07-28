@@ -20,7 +20,9 @@ import app.packed.container.Wirelet;
 /**
  *
  */
-// De kunne jo strength taget vaere metoder paa imaged
+// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
+// Vi kan jo sagtens internt lave det om til wirelets...
+// Der er bare ingen grund til at lave det public...
 final class ArtifactImageWirelets {
 
     // retainStackTracesForEachInstantiation...

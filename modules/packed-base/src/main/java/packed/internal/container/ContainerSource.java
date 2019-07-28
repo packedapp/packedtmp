@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.container.ContainerBundle;
+import app.packed.container.AnyBundle;
 import packed.internal.componentcache.ContainerConfiguratorCache;
 
 /**
@@ -56,18 +56,18 @@ public class ContainerSource {
 
     public static ContainerSource forImage(ArtifactSource source) {
         requireNonNull(source, "source is null");
-        ContainerBundle b = (ContainerBundle) source;
+        AnyBundle b = (AnyBundle) source;
         return new ContainerSource(b, source.getClass());
     }
 
     public static ContainerSource of(ArtifactSource source) {
-        ContainerBundle b = (ContainerBundle) source;
+        AnyBundle b = (AnyBundle) source;
         return new ContainerSource(b, source.getClass());
     }
 
     public static ContainerSource forApp(ArtifactSource source) {
         requireNonNull(source, "source is null");
-        ContainerBundle b = (ContainerBundle) source;
+        AnyBundle b = (AnyBundle) source;
         return new ContainerSource(b, source.getClass());
     }
 
@@ -75,7 +75,7 @@ public class ContainerSource {
         return new ContainerSource(null, consumer.getClass());
     }
 
-    public ContainerSource link(ContainerBundle bundle) {
+    public ContainerSource link(AnyBundle bundle) {
         throw new UnsupportedOperationException();
     }
 }

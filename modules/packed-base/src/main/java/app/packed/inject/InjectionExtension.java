@@ -26,7 +26,6 @@ import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.contract.Contract;
 import app.packed.feature.FeatureKey;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
@@ -184,7 +183,7 @@ public final class InjectionExtension extends Extension {
 
     /**
      * Requires that all requirements are explicitly added via either {@link #addOptional(Key)}, {@link #addRequired(Key)}
-     * or via implementing a {@link Contract}.
+     * or via implementing a contract.
      */
     // Kan vi lave denne generisk paa tvaers af extensions...
     // disableAutomaticRequirements()

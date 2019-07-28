@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.util.Nullable;
+
 /** An immutable list of wirelets. */
 public final class WireletList extends Wirelet implements Iterable<Wirelet> {
 
@@ -57,10 +59,6 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         this.wirelets = tmp;
     }
 
-    public WireletList plus(Wirelet... wirelets) {
-        return andThen(wirelets);
-    }
-
     /**
      * Consumes the last wirelet of a certain type.
      * 
@@ -80,6 +78,39 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
                 return;
             }
         }
+    }
+
+    /**
+     * Returns an {@link Optional} describing the last wirelet of the specified type in this list, or an empty
+     * {@code Optional} if this list does not contain any wirelets of the specified type.
+     * 
+     * @param <T>
+     * @param wireletType
+     * @return the last
+     */
+    @SuppressWarnings("unchecked")
+    public <T extends Wirelet> Optional<T> findLast(Class<T> wireletType) {
+        requireNonNull(wireletType, "wireletType is null");
+        for (int i = wirelets.length - 1; i >= 0; i--) {
+            Wirelet w = wirelets[i];
+            if (wireletType.isAssignableFrom(w.getClass())) {
+                return (Optional<T>) Optional.of(w);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T extends Wirelet> T findLastOrNull(Class<T> wireletType) {
+        requireNonNull(wireletType, "wireletType is null");
+        for (int i = wirelets.length - 1; i >= 0; i--) {
+            Wirelet w = wirelets[i];
+            if (wireletType.isAssignableFrom(w.getClass())) {
+                return (T) w;
+            }
+        }
+        return null;
     }
 
     /**
@@ -119,28 +150,8 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         return List.of(wirelets).iterator();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends Wirelet> Optional<T> last(Class<T> wireletType) {
-        requireNonNull(wireletType, "wireletType is null");
-        for (int i = wirelets.length - 1; i >= 0; i--) {
-            Wirelet w = wirelets[i];
-            if (wireletType.isAssignableFrom(w.getClass())) {
-                return (Optional<T>) Optional.of(w);
-            }
-        }
-        return Optional.empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Wirelet> T lastOrNull(Class<T> wireletType) {
-        requireNonNull(wireletType, "wireletType is null");
-        for (int i = wirelets.length - 1; i >= 0; i--) {
-            Wirelet w = wirelets[i];
-            if (wireletType.isAssignableFrom(w.getClass())) {
-                return (T) w;
-            }
-        }
-        return null;
+    public WireletList plus(Wirelet... wirelets) {
+        return andThen(wirelets);
     }
 
     /**
@@ -193,7 +204,7 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
     }
 
     /**
-     * Returns a ampty wirelet list.
+     * Returns a empty wirelet list.
      *
      * @return an empty {@code WireletList}
      */
@@ -202,9 +213,9 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
     }
 
     /**
-     * Returns a wirelet list containing one element.
+     * Returns a wirelet list containing the specified element.
      * <p>
-     * If the specified wirelet is a WireletList this method will cast and return it as a {@code WireletList}.
+     * If the specified wirelet is a WireletList this method will cast it and return it.
      * 
      * @param wirelet
      *            the single wirelet

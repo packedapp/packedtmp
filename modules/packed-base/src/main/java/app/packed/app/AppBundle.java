@@ -50,12 +50,12 @@ class MyBundle extends AppBundle {
 
     private static final ArtifactImage IMAGE = newImage(new MyBundle());
 
-    public static void main(String[] args) {
-        run(IMAGE);
-    }
-
     @Override
     protected void configure() {
-        entryPoint().main(() -> System.out.println("HelloWorld"));
+        lifecycle().main(() -> System.out.println("HelloWorld"));
+    }
+
+    public static void main(String[] args) {
+        run(IMAGE);
     }
 }

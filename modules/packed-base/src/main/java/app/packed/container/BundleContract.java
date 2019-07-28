@@ -27,7 +27,6 @@ import app.packed.lifecycle.LifecycleBundleContractPoints;
  * 
  * Lists all Components also?????
  */
-
 public class BundleContract {
 
     /** A service contract object. */

@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.hook2;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import app.packed.container.Extension;
+
+@Retention(CLASS)
+@Target(TYPE)
 /**
  *
  */
-// Well you could also just return an object if you do not the callback methods
-// on this class
-
-// Er der forskel paa de forskellige sidecars???
-// Det var vel taenkt saa man kunne kontrollere den.
-public abstract class ArtifactSidecar {
-
-    // Could also control replace artifact??? idk
+public @interface ActivateExtension {
+    Class<? extends Extension>[] value();
 }

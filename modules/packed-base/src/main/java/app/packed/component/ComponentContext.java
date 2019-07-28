@@ -20,7 +20,8 @@ import app.packed.inject.Injector;
 /**
  * A component context can be injected into what every I call it...
  */
-// Husk at der teoretisk set ogsaa er en ComponentContext
+// Skal vi droppe at extende component???
+//// Igen er bange for at man kommer til at implementere begge dele.
 public interface ComponentContext extends Component {
     // PrototypeContext
 

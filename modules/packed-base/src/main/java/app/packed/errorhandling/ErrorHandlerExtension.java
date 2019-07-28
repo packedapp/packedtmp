@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.errorhandling;
+
+import app.packed.container.Extension;
 
 /**
  *
  */
-// Well you could also just return an object if you do not the callback methods
-// on this class
+// Build time errors, Construction errors, Initialization errors
+// Start errors, Runtime errors, Shutdown errors.
+public class ErrorHandlerExtension extends Extension {
 
-// Er der forskel paa de forskellige sidecars???
-// Det var vel taenkt saa man kunne kontrollere den.
-public abstract class ArtifactSidecar {
-
-    // Could also control replace artifact??? idk
 }

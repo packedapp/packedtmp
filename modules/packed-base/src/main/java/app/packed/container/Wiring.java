@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.container;
 
 /**
  *
  */
-// Well you could also just return an object if you do not the callback methods
-// on this class
+// Component.java
+// Optional<Wiring> <- is removed, for example, when undeployed...
 
-// Er der forskel paa de forskellige sidecars???
-// Det var vel taenkt saa man kunne kontrollere den.
-public abstract class ArtifactSidecar {
+interface Wiring {
 
-    // Could also control replace artifact??? idk
+    boolean isRemoveable();
 }

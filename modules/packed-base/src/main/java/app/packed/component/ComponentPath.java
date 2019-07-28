@@ -32,7 +32,7 @@ import packed.internal.container.PackedComponentPath;
  * This interface will be extended in the future with additional methods.
  */
 // Iteralble Path??? Hmm, er det fulde paths eller del paths??? Den er lidt forvirrende
-public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<Path>, */ CharSequence {
+public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<ComponentPath>, */ CharSequence {
 
     /** A component path representing the root of a hierarchy. */
     static final ComponentPath ROOT = PackedComponentPath.ROOT;

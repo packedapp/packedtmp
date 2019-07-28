@@ -17,14 +17,14 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.ContainerBundle;
+import app.packed.container.AnyBundle;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
- * An extension that provides basic functionality for installing components.
+ * An extension that provides basic functionality for installing components in a container.
  */
 public final class ComponentExtension extends Extension {
 
@@ -49,6 +49,8 @@ public final class ComponentExtension extends Extension {
         return configuration.install(implementation);
     }
 
+    // AllowRuntimeInstallationOfComponents();
+
     // @Scoped
     // @Install()
 
@@ -60,13 +62,13 @@ public final class ComponentExtension extends Extension {
      * <p>
      * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
      * 
-     * @param child
+     * @param bundle
      *            a bundle representing the child
      * @param wirelets
      *            optional wirelets
      */
-    public void link(ContainerBundle child, Wirelet... wirelets) {
-        configuration.link(child, wirelets);
+    public void link(AnyBundle bundle, Wirelet... wirelets) {
+        configuration.link(bundle, wirelets);
     }
 
     public ComponentConfiguration install(Factory<?> factory) {

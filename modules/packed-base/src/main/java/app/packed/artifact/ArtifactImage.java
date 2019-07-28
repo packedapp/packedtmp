@@ -22,8 +22,8 @@ import java.util.Optional;
 import app.packed.app.App;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.AnyBundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.ContainerBundle;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Injector;
@@ -49,7 +49,7 @@ import packed.internal.container.PackedContainerConfiguration;
  * 
  * <p>
  * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
- * artifact images. It can not be used with {@link ContainerBundle#link(ContainerBundle, Wirelet...)}.
+ * artifact images. It can not be used with {@link AnyBundle#link(AnyBundle, Wirelet...)}.
  */
 public final class ArtifactImage implements ArtifactSource {
 
@@ -88,16 +88,16 @@ public final class ArtifactImage implements ArtifactSource {
     }
 
     public String name() {
-        return wirelets.last(ComponentNameWirelet.class).map(e -> e.name).orElse(containerConfiguration.getName());
+        return wirelets.findLast(ComponentNameWirelet.class).map(e -> e.name).orElse(containerConfiguration.getName());
     }
 
     public String name2() {
-        ComponentNameWirelet nw = wirelets.lastOrNull(ComponentNameWirelet.class);
+        ComponentNameWirelet nw = wirelets.findLastOrNull(ComponentNameWirelet.class);
         return nw == null ? containerConfiguration.getName() : nw.name;
     }
 
     <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        return driver.newArtifact(containerConfiguration.doInstantiate(this.wirelets.plus(wirelets)));
+        return driver.instantiate(containerConfiguration.doInstantiate(this.wirelets.plus(wirelets)));
     }
 
     public Injector newInjector(Wirelet... wirelets) {
@@ -113,7 +113,7 @@ public final class ArtifactImage implements ArtifactSource {
      * @return the original source type of this image
      */
     // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
-    public Class<? extends ContainerBundle> sourceType() {
+    public Class<? extends AnyBundle> sourceType() {
         throw new UnsupportedOperationException();
     }
 
@@ -132,7 +132,7 @@ public final class ArtifactImage implements ArtifactSource {
      *            the name
      * @return the new container image
      */
-    public final ArtifactImage withName(String name) {
+    public ArtifactImage withName(String name) {
         return with(Wirelet.name(name));
     }
 

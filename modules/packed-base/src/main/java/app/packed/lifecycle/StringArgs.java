@@ -26,7 +26,7 @@ import java.util.stream.Stream;
  * A simple wrapper around an array of strings. Is typically used to wrap the string array argument to a
  * public-static-main method.
  */
-// Rename to StringArgs and put it in utils...
+// move to app.packed.util?
 // AppWiringOptions.main(String... args)
 public final class StringArgs implements Iterable<String> /* WiringOperation */ {
 

@@ -21,7 +21,6 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,6 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.artifact.ArtifactType;
 import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.lifecycle.Main;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerSource;
@@ -92,7 +90,7 @@ import packed.internal.container.PackedContainerConfiguration;
 public class BundleDescriptor {
 
     /** The type of the bundle. */
-    private final Class<? extends ContainerBundle> bundleType;
+    private final Class<? extends AnyBundle> bundleType;
 
     /** A Services object. */
     private final BundleContract contract;
@@ -106,10 +104,6 @@ public class BundleDescriptor {
 
     private final String name;
 
-    /** A descriptor for each registered service in the bundle. */
-    // hmm exported vs
-    private final Collection<ServiceDescriptor> services;
-
     /**
      * Creates a new descriptor from the specified builder.
      * 
@@ -121,7 +115,6 @@ public class BundleDescriptor {
         this.contract = builder.contract().build();
         this.bundleType = builder.bundleType();
         this.description = builder.getBundleDescription();
-        this.services = builder.services == null ? List.of() : List.copyOf(builder.services.values());
         this.name = builder.name == null ? "?" : builder.name;
     }
 
@@ -143,7 +136,7 @@ public class BundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public final Class<? extends ContainerBundle> bundleType() {
+    public final Class<? extends AnyBundle> bundleType() {
         return bundleType;
     }
 
@@ -183,17 +176,6 @@ public class BundleDescriptor {
     }
 
     /**
-     * Returns (optional) the main entry point. A bundle defines at maximum one such entry point using the {@link Main}
-     * annotation.
-     * 
-     * @return any main entry point that the bundle defines
-     */
-    // Maybe just main()?
-    public Optional<String> mainEntryPoint() {
-        return Optional.ofNullable(mainEntryPoint);
-    }
-
-    /**
      * Returns the name of the bundle.
      * 
      * @return the name of the bundle
@@ -205,10 +187,6 @@ public class BundleDescriptor {
     /** Prints this descriptor to {@code system.out}. */
     public final void print() {
         System.out.println(toString());
-    }
-
-    public Collection<ServiceDescriptor> services() {
-        return services;
     }
 
     /** {@inheritDoc} */
@@ -249,8 +227,14 @@ public class BundleDescriptor {
      */
     // ContainerSource????
     // For example, we should be able to take an image...
-    public static BundleDescriptor of(ContainerBundle bundle) {
+    public static BundleDescriptor of(AnyBundle bundle) {
         return of((ArtifactSource) bundle);
+    }
+
+    public String toJSON() {
+        // Kan maaske have noget funktionality til at lave diffs....
+        // Er nok mere vigtig paa contracts...
+        throw new UnsupportedOperationException();
     }
 
     // Or just have a descriptor() on ContainerImage();
@@ -260,7 +244,7 @@ public class BundleDescriptor {
 
     private static BundleDescriptor of(ArtifactSource source) {
         requireNonNull(source, "source is null");
-        ContainerBundle bundle = (ContainerBundle) source;
+        AnyBundle bundle = (AnyBundle) source;
         PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, ContainerSource.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
@@ -300,7 +284,7 @@ public class BundleDescriptor {
         private String bundleDescription;
 
         /** The bundleType */
-        private final Class<? extends ContainerBundle> bundleType;
+        private final Class<? extends AnyBundle> bundleType;
 
         private BundleContract.Builder contract = new BundleContract.Builder();
 
@@ -308,7 +292,7 @@ public class BundleDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Builder(Class<? extends ContainerBundle> bundleType) {
+        public Builder(Class<? extends AnyBundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
@@ -329,7 +313,7 @@ public class BundleDescriptor {
         /**
          * @return the bundleType
          */
-        public final Class<? extends ContainerBundle> bundleType() {
+        public final Class<? extends AnyBundle> bundleType() {
             return bundleType;
         }
 

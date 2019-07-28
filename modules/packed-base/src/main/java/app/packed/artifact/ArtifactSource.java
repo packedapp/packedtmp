@@ -18,11 +18,15 @@ package app.packed.artifact;
 import java.util.function.Supplier;
 
 import app.packed.component.Component;
-import app.packed.container.ContainerBundle;
+import app.packed.container.AnyBundle;
 
 /**
- * A source of an artifact. This is typically a subclass of {@link ContainerBundle} or pregenerated {@link ArtifactImage
- * container image}.
+ * A source of an artifact. Currently the following types of artifact sources are supported:
+ * 
+ * 
+ * This is typically either a subclass of {@link AnyBundle} or a pregenerated {@link ArtifactImage container image}.
+ * <p>
+ * TODO maybe list all the s
  * <p>
  * This interface is not intended to be implemented outside of this module. Future versions of this class may make use
  * of sealed types if they become available.
@@ -38,7 +42,7 @@ import app.packed.container.ContainerBundle;
 // Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
 public interface ArtifactSource {
 
-    static ArtifactSource ofRepeatableBundle(Supplier<? extends ContainerBundle> supplier) {
+    static ArtifactSource ofRepeatableBundle(Supplier<? extends AnyBundle> supplier) {
         throw new UnsupportedOperationException();
     }
 
@@ -60,6 +64,8 @@ class LiveReload /* implements ContainerSource */ {
 }
 
 abstract class SoftLink implements Component {
+
+    // I sidste ende er alt jo en bundle....
 
     // Ideen er egentlig at man kan live replace alle componenter....
     //// Det skal maaske ikke vaere en softlink....

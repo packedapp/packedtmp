@@ -28,8 +28,8 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
+import app.packed.container.AnyBundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.ContainerBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
@@ -120,8 +120,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * Configures the configuration.
      */
     private void configure() {
-        if (configurator.source instanceof ContainerBundle) {
-            ContainerBundle bundle = (ContainerBundle) configurator.source;
+        if (configurator.source instanceof AnyBundle) {
+            AnyBundle bundle = (AnyBundle) configurator.source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
@@ -157,7 +157,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    final void extensionsContainerConfigured() {
+    void extensionsContainerConfigured() {
         prepareNewComponent(State.GET_NAME_INVOKED);
         for (Extension e : extensions.values()) {
             AppPackedContainerSupport.invoke().onConfigured(e);
@@ -236,7 +236,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedArtifactContext(parent, this, ic);
     }
 
-    public void link(ContainerBundle bundle, Wirelet... wirelets) {
+    public void link(AnyBundle bundle, Wirelet... wirelets) {
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.
@@ -336,6 +336,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public WireletList wirelets() {
         return wirelets;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isTopContainer() {
+        // TODO change when we have hosts.
+        return parent == null;
     }
 }
 //

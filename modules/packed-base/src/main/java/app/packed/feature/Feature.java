@@ -28,7 +28,7 @@ import app.packed.util.Key;
 public interface Feature {
 
     // ConfigSite+FeatureType+ComponentPath?????
-    String featureId();
+    // String featureId();
 
     ConfigSite configSite();
 

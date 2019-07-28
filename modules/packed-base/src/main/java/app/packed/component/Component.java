@@ -33,6 +33,10 @@ public interface Component {
         throw new UnsupportedOperationException();
     }
 
+    // Alternative have en Container extends Component....
+    // Maaske ikke extends Component.... Saa vi kan have
+    // container aggregates
+    // container().path()
     default ComponentPath containerPath() {
         // also on ComponentConfiguration
         throw new UnsupportedOperationException();
@@ -118,6 +122,20 @@ public interface Component {
     // So we renamed it to stream();
     ComponentStream stream();
 
+    // Naah feature er vel readonly...
+    // use kan komme paa ComponentContext og maaske ComponentConfiguration?
+
+    // To maader,
+    /// Et service object der tager en ComponentContext...
+    ///// Det betyder jo ogsaa at vi ikke kan have attributemap paa Component
+    ///// Fordi man ikke skal kunne f.eks. schedulere uden component context'en
+
+    //// En ComponentContext.use(XXXX class)
+    /// Er det
+
+    //// Hmm, hvis vi nu skal bruge container side car'en... eller artifact side'caren.
+    /// Maaske det med at soege op i attribute map traet. Indtil man finder en venlig
+    /// instance
     default <T> T use(AFeature<T, ?> feature) {
         throw new UnsupportedOperationException();
     }

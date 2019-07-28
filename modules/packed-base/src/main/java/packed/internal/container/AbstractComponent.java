@@ -81,7 +81,7 @@ abstract class AbstractComponent implements Component {
         this.children = configuration.initializeChildren(this, ic);
         if (parent == null) {
             String n = configuration.name;
-            ComponentNameWirelet ol = ic.wirelets().lastOrNull(ComponentNameWirelet.class);
+            ComponentNameWirelet ol = ic.wirelets().findLastOrNull(ComponentNameWirelet.class);
             if (ol != null) {
                 n = ol.name;
                 if (n.endsWith("?")) {

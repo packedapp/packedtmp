@@ -15,13 +15,7 @@
  */
 package app.packed.lifecycle;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-
-import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.inject.InjectionExtension;
-import app.packed.util.Key;
 
 /**
  * 
@@ -32,58 +26,10 @@ import app.packed.util.Key;
  * <p>
  * This extension or {@link Main} is not supported at runtime.
  */
-// Possibilities
-// No Main/Cli -> Daemon, will run until shutdown/terminated
-// Main -> Will run until main method exists in some way...
-// Cli -> Will run one of the cli endpoints, which can either be daemons, or run til end.
 
-// Do we require lifecycle extension???? Nahhh
-
-// Implementation.. look and see if EntryPointExtension exists... and run it...
-// Otherwise you are a daemon
-
-// Other Stuff
-//// Handling of Main exceptions??? Naah ErrorHandlingExtension
-//// What if result?????? have some of Container methods return Object???
-
-// Smide denne ind under LifecycleExtension
-public final class EntryPointExtension extends Extension {
+final class EntryPointExtension extends Extension {
 
     /** Creates a new entry point extension. */
     EntryPointExtension() {}
 
-    public void main(Runnable r) {
-
-    }
-
-    public <T> void main(Key<T> serviceKey, Consumer<? super T> consumer) {
-        // invocation multiple times??? Error?
-        // What if we have a @Main method? override. What about the dependencies
-        // from the @Main method???
-        use(InjectionExtension.class).addRequired(serviceKey);
-        // How does this work implementation wise??
-        // We call InjectionExtension.require(serviceKey) (Which backtraces stackwalker)
-    }
-
-    public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
-        main(Key.of(serviceKey), consumer);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onConfigured() {
-        installInParentIfSameArtifact();
-    }
 }
-
-class X extends Bundle {
-
-    @Override
-    public void configure() {
-        use(EntryPointExtension.class).main(ConcurrentHashMap.class, c -> System.out.println("size = " + c.size()));
-    }
-}
-
-// @Map(PicoClicc. EntryPointExtension)
-// ....
-@interface UsesPicoCli {}

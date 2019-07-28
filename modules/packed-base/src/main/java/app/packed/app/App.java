@@ -21,8 +21,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.ArtifactRuntimeContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -42,53 +43,10 @@ import app.packed.lifecycle.RunState;
  * <p>
  * You can have apps running apps runnings app.
  * 
- * 
- * 
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
  * 
  */
-// Do we expose the attachments????
 public interface App extends AutoCloseable {
-
-    /**
-     * Returns the configuration site of this app.
-     * 
-     * @return the configuration site of this app
-     */
-    ConfigSite configSite();
-
-    /**
-     * Returns the description of this app. Or an empty optional if no description has been set
-     * <p>
-     * The returned description is always identical to the description of the app's top container.
-     *
-     * @return the description of this app. Or an empty optional if no description has been set
-     *
-     * @see ComponentConfiguration#setDescription(String)
-     */
-    Optional<String> description();
-
-    /**
-     * Returns the name of this app.
-     * <p>
-     * The returned name is always identical to the name of the app's top container.
-     * <p>
-     * If no name is explicitly set when creating the app, the runtime will generate a name that guaranteed to be unique
-     * among any of the app's siblings.
-     * 
-     * @return the name of this artifact
-     */
-    String name();
-
-    /**
-     * Returns the component path of this app.
-     * <p>
-     * The returned path is always identical to the path of the app's top container.
-     *
-     * @return the component path of this app
-     * @see Component#path()
-     */
-    ComponentPath path();
 
     /**
      * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
@@ -99,8 +57,51 @@ public interface App extends AutoCloseable {
         shutdown();
     }
 
+    /**
+     * Returns the configuration site of this app.
+     * <p>
+     * If this application was created from an {@link ArtifactImage image} this method will return the site where the image
+     * was created. Unless XXXXXXXX.
+     * 
+     * @return the configuration site of this app
+     */
+    ConfigSite configSite();
+
+    /**
+     * Returns the description of this application. Or an empty optional if no description has been set
+     * <p>
+     * The returned description is always identical to the description of the application's top container.
+     *
+     * @return the description of this application. Or an empty optional if no description has been set
+     *
+     * @see ComponentConfiguration#setDescription(String)
+     */
+    Optional<String> description();
+
     // TODO dont know about this method... could use use(Injector.class) <- Injector.class is always the exported injector
     Injector injector();
+
+    /**
+     * Returns the name of this application.
+     * <p>
+     * The returned name is always identical to the name of the application's top container.
+     * <p>
+     * If no name is explicitly set when creating the application, the runtime will generate a name that guaranteed to be
+     * unique among any of the application's siblings.
+     * 
+     * @return the name of this artifact
+     */
+    String name();
+
+    /**
+     * Returns the component path of this application.
+     * <p>
+     * The returned path is always identical to the path of the application's top container.
+     *
+     * @return the component path of this application
+     * @see Component#path()
+     */
+    ComponentPath path();
 
     App shutdown();// syntes sgu hellere man skal have shutdown().await(Terminated.class)
 
@@ -252,7 +253,7 @@ final class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedApp newArtifact(ArtifactContext container) {
+    public PackedApp instantiate(ArtifactRuntimeContext container) {
         return new PackedApp(container);
     }
 }
@@ -261,7 +262,7 @@ final class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 final class PackedApp implements App {
 
     /** The artifact context we are wrapping. */
-    private final ArtifactContext context;
+    private final ArtifactRuntimeContext context;
 
     /**
      * Creates a new app.
@@ -269,7 +270,7 @@ final class PackedApp implements App {
      * @param context
      *            the artifact context we are wrapping
      */
-    PackedApp(ArtifactContext context) {
+    PackedApp(ArtifactRuntimeContext context) {
         this.context = requireNonNull(context);
     }
 
@@ -277,6 +278,12 @@ final class PackedApp implements App {
     @Override
     public ConfigSite configSite() {
         return context.configSite();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> description() {
+        return context.description();
     }
 
     public void execute() {
@@ -288,12 +295,6 @@ final class PackedApp implements App {
         // throw new RuntimeException(e);
         // }
 
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<String> description() {
-        return context.description();
     }
 
     /** {@inheritDoc} */
