@@ -85,7 +85,9 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
      * {@code Optional} if this list does not contain any wirelets of the specified type.
      * 
      * @param <T>
+     *            the type of wirelets
      * @param wireletType
+     *            the type of wirelet
      * @return the last
      */
     @SuppressWarnings("unchecked")
