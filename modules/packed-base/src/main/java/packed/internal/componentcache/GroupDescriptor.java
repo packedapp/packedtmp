@@ -19,8 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,9 +30,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionHookProcessor;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.util.IllegalAccessRuntimeException;
-import app.packed.util.MethodDescriptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.ThrowableUtil;
 
@@ -90,43 +85,7 @@ public final class GroupDescriptor {
         }
 
         void onAnnotatedMethod(ComponentLookup lookup, Method method, Annotation annotation) {
-            AnnotatedMethodHook hook = new AnnotatedMethodHook() {
-
-                @Override
-                public Object annotation() {
-                    return annotation;
-                }
-
-                @Override
-                public Lookup lookup() {
-                    return lookup.lookup();// Temporary method
-                }
-
-                @Override
-                public MethodDescriptor method() {
-                    return MethodDescriptor.of(method);
-                }
-
-                @Override
-                public MethodHandle newMethodHandle() {
-                    method.setAccessible(true);
-                    try {
-                        return MethodHandles.lookup().unreflect(method);
-                    } catch (IllegalAccessException e) {
-                        throw new IllegalAccessRuntimeException("stuff", e);
-                    }
-                }
-
-                @Override
-                public void onMethodReady(Class key, BiConsumer consumer) {
-                    requireNonNull(key, "key is null");
-                    requireNonNull(consumer, "consumer is null");
-                    // This method should definitely not be available. for ever
-                    // Should we have a check configurable???
-                    consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
-                }
-            };
-            conf.invokeHookOnAnnotatedMethod(annotation.annotationType(), b, hook);
+            conf.invokeHookOnAnnotatedMethod(annotation.annotationType(), b, new PackedAnnotatedMethodHook(lookup.lookup(), method, annotation, consumers));
         }
     }
 }

@@ -24,7 +24,7 @@ import app.packed.hook.OnHook;
 /**
  * Information about methods annotated with {@link OnHook}, typically on a single class. Used mainly for components.
  */
-public class AtHookGroup {
+public class AtLifecycle2Group {
 
     // Allow List<AnnotatedFieldHook<Get>>
 
@@ -40,12 +40,12 @@ public class AtHookGroup {
      * @param builder
      *            the builder to create the group for
      */
-    private AtHookGroup(Builder builder) {
+    private AtLifecycle2Group(Builder builder) {
         this.annotatedFieldHooks = builder.annotatedFieldHooks == null ? List.of() : List.copyOf(builder.annotatedFieldHooks);
         this.annotatedMethodHooks = builder.annotatedMethodHooks == null ? List.of() : List.copyOf(builder.annotatedMethodHooks);
     }
 
-    /** A builder for an {@link AtHookGroup}. */
+    /** A builder for an {@link AtLifecycle2Group}. */
     public final static class Builder {
 
         /** All hook methods that takes a single {@link AnnotatedFieldHook} as a parameter. */

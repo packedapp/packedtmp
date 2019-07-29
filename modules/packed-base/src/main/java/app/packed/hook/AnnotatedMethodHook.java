@@ -25,14 +25,14 @@ import app.packed.util.MethodDescriptor;
 /** A hook representing a method annotated with a specific type. */
 public interface AnnotatedMethodHook<T> {
 
-    Lookup lookup(); // TODO remove this method when possible...
-
     /**
      * Returns the annotation value.
      *
      * @return the annotation value
      */
     T annotation();
+
+    Lookup lookup(); // TODO remove this method when possible...
 
     /**
      * Returns the annotated method.
@@ -42,7 +42,8 @@ public interface AnnotatedMethodHook<T> {
     MethodDescriptor method();
 
     /**
-     * Creates a new {@link MethodHandle} for the underlying method.
+     * Creates a new {@link MethodHandle} to the underlying method.
+     * <p>
      * 
      * @return a new MethodHandle for the underlying method
      * @throws IllegalAccessRuntimeException

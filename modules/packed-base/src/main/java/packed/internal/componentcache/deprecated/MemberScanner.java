@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache;
+package packed.internal.componentcache.deprecated;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,12 +31,14 @@ import packed.internal.annotations.AtInjectGroup;
  */
 // Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
 // https://github.com/classgraph/classgraph
+
+// Bliver stadig brugt til @Inject annoteringer
 public class MemberScanner {
 
     final Class<?> clazz;
 
     /** A builder for members annotated with {@link Inject}. */
-    AtInjectGroup.Builder inject = new AtInjectGroup.Builder();
+    public AtInjectGroup.Builder inject = new AtInjectGroup.Builder();
 
     /** The lookup object. */
     final Lookup lookup;
@@ -100,7 +102,7 @@ public class MemberScanner {
         }
     }
 
-    static MemberScanner forService(Class<?> clazz, Lookup lookup) {
+    public static MemberScanner forService(Class<?> clazz, Lookup lookup) {
         MemberScanner ms = new MemberScanner(lookup, clazz);
         ms.scanFields();
         ms.scanMethods();

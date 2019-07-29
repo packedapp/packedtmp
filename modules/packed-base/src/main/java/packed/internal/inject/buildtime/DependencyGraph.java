@@ -26,7 +26,7 @@ import app.packed.artifact.ArtifactType;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
-import packed.internal.componentcache.ServiceClassDescriptor;
+import packed.internal.componentcache.deprecated.ServiceClassDescriptor;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;

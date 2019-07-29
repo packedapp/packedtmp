@@ -22,6 +22,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import packed.internal.componentcache.deprecated.MemberScanner;
+import packed.internal.componentcache.deprecated.ServiceClassDescriptor;
 import packed.internal.invokable.ExecutableInvoker;
 import packed.internal.invokable.InternalFunction;
 

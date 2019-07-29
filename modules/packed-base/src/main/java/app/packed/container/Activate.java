@@ -41,8 +41,6 @@ import java.lang.annotation.Target;
 // Online-Hook
 public @interface Activate {
 
-    Class<? extends Extension>[] extension() default {};
-
     /**
      * Returns the extension hook group that knows how do handle the types, fields or methods that are annotated...
      * 

@@ -23,13 +23,13 @@ import packed.internal.invokable.InvokableMember;
 /**
  *
  */
-public class AtHook extends AtDependable {
+public class AtLifecycle2 extends AtDependable {
 
     /**
      * @param invokable
      * @param dependencies
      */
-    AtHook(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
+    AtLifecycle2(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
         super(invokable, dependencies);
     }
 
