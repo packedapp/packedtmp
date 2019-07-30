@@ -39,12 +39,17 @@ import java.lang.annotation.Target;
 // Online-Component
 // Hook
 // Online-Hook
-public @interface Activate {
+
+// Can be used on
+// Hook Annotations
+// Other Extensions... Or just use Extension#use
+// Hook Class/Interface, for example, @ActivateExtension(LoggingExtension.class) Logger
+public @interface ActivateExtension {
 
     /**
      * Returns the extension hook group that knows how do handle the types, fields or methods that are annotated...
      * 
      * @return the extension hook group that knows how do handle
      */
-    Class<? extends ExtensionHookProcessor<?>>[] extensionHook() default {};
+    Class<? extends Extension>[] value();
 }

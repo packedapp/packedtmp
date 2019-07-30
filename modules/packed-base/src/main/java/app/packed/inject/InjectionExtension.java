@@ -27,11 +27,13 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
+import app.packed.hook.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
+import packed.internal.annotations.AtProvidesGroup.ProvidesHookAggregator;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
@@ -292,7 +294,8 @@ public final class InjectionExtension extends Extension {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void set(ComponentConfiguration cc, @SuppressWarnings("exports") AtProvidesGroup apg) {
+    @OnHook(aggreateWith = ProvidesHookAggregator.class)
+    void set(ComponentConfiguration cc, AtProvidesGroup apg) {
         BuildServiceNodeDefault sc;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();

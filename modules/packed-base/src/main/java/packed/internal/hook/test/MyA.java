@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook.test;
 
-import app.packed.component.Component;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** The base interface for all hooks. */
-// Strictly we should have descriptors for non-mutable stuff..
-public interface Hook {
+import app.packed.container.ActivateExtension;
 
-    /**
-     * Returns the component.
-     * 
-     * @return the component
-     */
-    Component component();
-
-    // Config Site???
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD, ElementType.FIELD })
+/**
+ *
+ */
+@ActivateExtension(MyExtension.class)
+public @interface MyA {
+    int value();
 }

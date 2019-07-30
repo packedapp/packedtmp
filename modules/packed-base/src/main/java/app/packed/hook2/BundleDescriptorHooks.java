@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook2;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import app.packed.hook.AnnotatedFieldHook;
 
 /**
  *

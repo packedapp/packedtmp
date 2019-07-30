@@ -17,32 +17,35 @@ package app.packed.hook2;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Supplier;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.OnHook;
 
 /**
  *
  */
 public class YHExtension2 extends Extension {
 
-    @OnHook2(CacheBuilder.class)
+    @OnHook(aggreateWith = CacheBuilder.class)
     void doo(ComponentConfiguration cc, CachedObject co) {
         System.out.println(co);
     }
 }
 
-class CacheBuilder implements HookCacheBuilder<CachedObject> {
+class CacheBuilder implements Supplier<CachedObject> {
 
     private String val;
 
     /** {@inheritDoc} */
     @Override
-    public CachedObject build() {
+    public CachedObject get() {
         return new CachedObject(val);
     }
 
-    @OnHook2
+    @OnHook
     public void doo(AnnotatedMethodHook<YH> hook) {
         val = hook.annotation().value();
     }

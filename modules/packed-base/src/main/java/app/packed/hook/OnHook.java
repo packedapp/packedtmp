@@ -21,6 +21,10 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
+
+import app.packed.hook2.InstanceOfHook;
+import packed.internal.hook.OnHookAggregator;
 
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
@@ -48,57 +52,8 @@ public @interface OnHook {
      */
     // InternalOnly, ExternalOnly, Both
     boolean exported() default false;// export or exported?? align with @Provides
-}
 
-@interface OHWithMethod {
-
-    // Multiplicity, 0-1, 1, 0-N, 1-N, int AppMinimum, int AppMaximum.. Maaske Noget med en Context...
-    // Is it per app, per bundle, ect???? ZERO_OR_ONE, ONE, ONE_OR_MORE, ANY
-
-    // Only component with these tags
-    String[] includeComponentTags() default {};
-
-    // never components with these tags
-    String[] excludeComponentTags() default {};
-
-    String pathMatcher() default "";// "Doo.*/*"
-
-    /**
-     * @return stuff
-     */
-    boolean ignoreOwnContainer() default false;
-
-    // Use cases.....
-
-    // maybe more allowRuntimeRegistration, I think in most situations you are not going to support it????
-    // failOnRuntimeRegistration, will fail if encountering an annotation for a component installed at runtime
-
-    // Class<? extends Annotation>[] methodsAnnotatedWith() default {};
-
-    /**
-     * Will attempt to compile the resulting very aggressively. For example, via lambda factory.
-     * 
-     * @return stuff
-     */
-    // Or Class<? extends SomeOptimizer>
-    boolean attemptCompilation() default false;
-
-    //
-    // Man kan registere en eller flere MethodHandleTransformation for et Hook. Maaske via annoterering
-    //
-
-    // If true AnnotatedMethodHook.methodHandle returns non-null;
-    // if false AnnotatedMethodHook.methodHandle throws UnsupportedOperationException
-    // boolean needsHandle default false();
-
-    /**
-     * Her er taenkt paa at vi paa en eller anden maade beskriver method transformationen. Bytekode haandteringen... Et
-     * eller andet der goer at vi kan lave en generics transformation vi kan kompilere. Dette er mere eller mindre umuligt
-     * 
-     * 
-     * @return
-     */
-    // Class<? extends AOPRewriter> rewriter() default AOPRewriter.class;
+    Class<? extends Supplier<?>> aggreateWith() default OnHookAggregator.NoAggregator.class;
 }
 
 // boolean disableForOwnContainer

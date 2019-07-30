@@ -51,11 +51,11 @@ final class ExtensionClassCache<T> {
     /** The method handle used to create a new instance of the extension. */
     private final MethodHandle mh;
 
-    /** The type of extension. */
-    private final Class<? extends Extension> type;
-
     /** Whether or not the constructor needs an instanceof {@link PackedContainerConfiguration}. */
     private final boolean needsPackedContainerConfiguration;
+
+    /** The type of extension. */
+    private final Class<? extends Extension> type;
 
     /**
      * Creates a new extension class cache.
@@ -117,5 +117,9 @@ final class ExtensionClassCache<T> {
             throw new RuntimeException("Could not instantiate extension '" + StringFormatter.format(ei.type) + "'", t);
         }
         return (T) e;
+    }
+
+    public static class Builder {
+
     }
 }

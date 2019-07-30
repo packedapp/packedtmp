@@ -19,10 +19,11 @@ import java.util.List;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
+import app.packed.lifecycle.OnStart;
 
 /**
- * Information about methods annotated with {@link OnHook}, typically on a single class. Used mainly for components.
+ * Information about methods annotated with {@link OnStart} or friends, typically on a single class. Used mainly for
+ * components.
  */
 public class AtLifecycle2Group {
 

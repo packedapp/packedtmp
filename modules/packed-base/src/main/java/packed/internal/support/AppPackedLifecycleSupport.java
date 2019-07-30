@@ -17,10 +17,7 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.container.Extension;
-import app.packed.lifecycle.LifecycleExtension;
 
 /** A support class for calling package private methods in the app.packed.lifecycle package. */
 public final class AppPackedLifecycleSupport {
@@ -35,7 +32,7 @@ public final class AppPackedLifecycleSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        public abstract void doConfigure(LifecycleExtension extension, MethodHandle mh);
+        // public abstract void doConfigure(LifecycleExtension extension, MethodHandle mh);
 
         /**
          * Initializes this class.

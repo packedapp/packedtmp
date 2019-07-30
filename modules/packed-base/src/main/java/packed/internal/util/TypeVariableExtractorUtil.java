@@ -82,6 +82,25 @@ public class TypeVariableExtractorUtil {
         return pp;
     }
 
+    public static <T> Type findTypeParameterFromInterface(Class<? extends T> childClass, Class<T> interfaceClass, int typeVariableIndexOnBaseClass) {
+        // This method works by first recursively calling all the way down to the first class that extends baseClass.
+        // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
+
+        if (!interfaceClass.isAssignableFrom(childClass)) {
+            throw new IllegalArgumentException(StringFormatter.format(childClass) + " does not implement " + StringFormatter.format(interfaceClass));
+        }
+        for (Type t : childClass.getGenericInterfaces()) {
+            if (t instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) t;
+                if (pt.getRawType() == interfaceClass) {
+                    Type[] typeArguments = pt.getActualTypeArguments();
+                    return typeArguments[typeVariableIndexOnBaseClass];
+                }
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * A helper method for {@link #findTypeParameterFromSuperClass(Class, Class, int)}.
      * 

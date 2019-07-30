@@ -21,13 +21,6 @@ import java.lang.annotation.Annotation;
 public interface AnnotatedTypeHook<T extends Annotation> {
 
     /**
-     * Returns the actual type that is annotated.
-     * 
-     * @return the actual type that is annotated
-     */
-    Class<?> actualType(); // What if AOP?
-
-    /**
      * Returns the annotation value.
      *
      * @return the annotation value
@@ -35,34 +28,9 @@ public interface AnnotatedTypeHook<T extends Annotation> {
     T annotation();
 
     /**
-     * Returns the instance.
+     * Returns the type that is annotated.
      * 
-     * @return the instance
-     * @throws IllegalStateException
-     *             if not yet instantiated
+     * @return the type that is annotated
      */
-    // component.instance();
-    Object instance();
+    Class<?> type();
 }
-/// **
-// * Returns a collection of fields annotated with the specified hook annotation. The hooks are returned in any order.
-// *
-// * @param <S>
-// * the type of stuff
-// * @param annotationType
-// * the type of annotation
-// * @return stuff
-// */
-///// nahhhh....Hvad hvis de ikke er eksporteret... Og vi har vel svaert ved at filtrer dem....
-// <S extends Annotation> Collection<AnnotatedFieldHook<S>> annotatedFieldHooks(Class<S> annotationType);
-//
-// <S extends Annotation> Collection<AnnotatedMethodHook<S>> annotatedMethodHooks(Class<S> annotationType);
-
-// TODO skal vi ogsaa have dem paa InstanceOfHook??? Ja det syntes jeg
-
-// Eneste problem er hvis vi smider exceptions...
-// <S extends Annotation> void forEachAnnotatedFieldHook(Class<S> annotationType, Consumer<? super
-// AnnotatedFieldHook<S>> consumer);
-
-// <S extends Annotation> void forEachAnnotatedMethodHook(Class<S> annotationType, Consumer<? super
-// AnnotatedMethodHook<S>> consumer);

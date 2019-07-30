@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,10 +28,9 @@ import java.util.function.BiConsumer;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
+import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
 
-/**
- *
- */
+/** The default implementation of {@link AnnotatedMethodHook}. */
 final class PackedAnnotatedMethodHook<T extends Annotation> implements AnnotatedMethodHook<T> {
 
     /** The annotation value */

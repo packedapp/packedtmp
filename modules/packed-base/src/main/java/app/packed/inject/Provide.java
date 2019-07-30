@@ -22,9 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Optional;
 
-import app.packed.container.Activate;
+import app.packed.container.ActivateExtension;
 import app.packed.util.Key;
-import packed.internal.annotations.AtProvidesGroup;
 
 /**
  * An annotation indicating that the annotated type, method or field provides a service of some kind. A field
@@ -85,7 +84,7 @@ import packed.internal.annotations.AtProvidesGroup;
 
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
-@Activate(extensionHook = AtProvidesGroup.Builder.class)
+@ActivateExtension(InjectionExtension.class /* extensionHook = AtProvidesGroup.Builder.class */)
 public @interface Provide {
 
     boolean prototype() default false;

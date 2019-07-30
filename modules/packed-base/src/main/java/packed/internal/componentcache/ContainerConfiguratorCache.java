@@ -22,8 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.artifact.ArtifactSource;
-import app.packed.container.AnyBundle;
 import packed.internal.util.LookupValue;
 
 /** A cache for a bundle implementation. */
@@ -119,15 +117,6 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
 
     public ComponentLookup withLookup(Lookup lookup) {
         return lookup == null ? this : LOOKUP_CACHE.get(lookup);
-    }
-
-    public static ContainerConfiguratorCache get(ArtifactSource source) {
-        if (source instanceof AnyBundle) {
-            return CACHE.get(source.getClass());
-        } else {
-            throw new UnsupportedOperationException();
-            // return CACHE.get(((InjectorConfiguratorContainerSource) source).getType());
-        }
     }
 
     /**

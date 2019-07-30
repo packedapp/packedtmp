@@ -21,17 +21,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.container.Activate;
+import app.packed.container.ActivateExtension;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -94,19 +93,17 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @Activate(extensionHook = Builder.class)
+    @ActivateExtension(MyExtension.class /* = Builder.class */)
     public @interface ActivateMyExtension {
         String value();
     }
 
-    static class Builder extends ExtensionHookProcessor<MyExtension> {
+    static class Builder implements Supplier<String> {
 
         /** {@inheritDoc} */
         @Override
-        public BiConsumer<ComponentConfiguration, MyExtension> onBuild() {
-            return (a, b) -> {
-                b.set(a);
-            };
+        public String get() {
+            return "ffooo";
         }
 
         @OnHook
@@ -139,7 +136,9 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     }
 
     public static class MyExtension extends Extension {
-        protected void set(ComponentConfiguration a) {}
+
+        @OnHook(aggreateWith = Builder.class)
+        protected void set(ComponentConfiguration a, String s) {}
     }
 
     public static class WithFieldInstance {

@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook;
 
-import java.lang.annotation.Annotation;
-import java.util.Set;
+import java.lang.invoke.MethodHandle;
 
 /**
  *
  */
-public final class AllHooksContract {
-
-    Set<Class<? extends Annotation>> capturingFieldHooks;
+class Callback {
+    final MethodHandle mh;
+    final Object o;
 
     /**
-     * Returns an immutable set of all annotated field hooks.
-     * 
-     * @return an immutable set of all annotated field hooks
+     * @param mh
+     * @param o
      */
-    public Set<Class<? extends Annotation>> annotatedFieldHooks() {
-        throw new UnsupportedOperationException();
+    public Callback(MethodHandle mh, Object o) {
+        this.mh = mh;
+        this.o = o;
     }
-
-    public Set<Class<? extends Annotation>> capturingFieldHooks() {
-        return capturingFieldHooks;
-    }
-
-    public final class Builder {}
 }

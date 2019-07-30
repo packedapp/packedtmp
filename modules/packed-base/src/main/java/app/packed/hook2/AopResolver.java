@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.annotations;
-
-import java.util.List;
-
-import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.InvokableMember;
+package app.packed.hook2;
 
 /**
  *
  */
-public class AtLifecycle2 extends AtDependable {
-
-    /**
-     * @param invokable
-     * @param dependencies
-     */
-    AtLifecycle2(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
-        super(invokable, dependencies);
-    }
+// Ideen er lidt at alle der har behov for at dekorere metoder, bliver registereret.
+// En bruger kan saa vaelge at registerer en AopResolver eller Consumer<AopResolver>
+// Hvor man kan saette den exact raekkefoelger.
+// Maybe just AOPInvocationManager, AOPInvoker
+// Smid den .aop
+class AopResolver {
 
 }

@@ -24,9 +24,11 @@ import java.util.IdentityHashMap;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.Activate;
-import app.packed.container.ExtensionHookProcessor;
+import app.packed.container.ActivateExtension;
+import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.hook.ExtensionHookPerComponentGroup;
+import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
 
 /**
  *
@@ -43,7 +45,7 @@ public final class ComponentClassDescriptor {
     /** The component type. */
     private final Class<?> componentType;
 
-    private final GroupDescriptor[] groups;
+    private final ExtensionHookPerComponentGroup[] extensionGroups;
 
     /** The simple name of the component type. */
     private volatile String simpleName;
@@ -56,7 +58,7 @@ public final class ComponentClassDescriptor {
      */
     private ComponentClassDescriptor(ComponentClassDescriptor.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.groups = builder.builders.values().stream().map(e -> e.build()).toArray(i -> new GroupDescriptor[i]);
+        this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ExtensionHookPerComponentGroup[i]);
     }
 
     /**
@@ -72,16 +74,16 @@ public final class ComponentClassDescriptor {
         return s;
     }
 
-    public ComponentConfiguration initialize(PackedContainerConfiguration container, ComponentConfiguration component) {
-        for (GroupDescriptor c : groups) {
-            c.add(container, component);
+    public ComponentConfiguration initialize(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
+        for (ExtensionHookPerComponentGroup c : extensionGroups) {
+            c.add(containerConfiguration, componentConfiguration);
         }
-        return component;
+        return componentConfiguration;
     }
 
     @SuppressWarnings("rawtypes")
     public void process(PackedContainerConfiguration cc, ArtifactInstantiationContext ic) {
-        for (GroupDescriptor d : groups) {
+        for (ExtensionHookPerComponentGroup d : extensionGroups) {
             for (MethodConsumer mc : d.methodConsumers) {
                 mc.prepare(cc, ic);
             }
@@ -100,28 +102,30 @@ public final class ComponentClassDescriptor {
     /** A builder object for a component class descriptor. */
     static class Builder {
 
-        static final ClassValue<Class<? extends ExtensionHookProcessor<?>>[]> METHOD_ANNOTATION_ACTIVATOR = new ClassValue<>() {
+        /** A cache of any extensions a particular annotation activates. */
+        private static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
 
             @Override
-            protected Class<? extends ExtensionHookProcessor<?>>[] computeValue(Class<?> type) {
-                Activate ae = type.getAnnotation(Activate.class);
-                return ae == null ? null : ae.extensionHook();
+            protected Class<? extends Extension>[] computeValue(Class<?> type) {
+                ActivateExtension ae = type.getAnnotation(ActivateExtension.class);
+                return ae == null ? null : ae.value();
             }
         };
 
-        private final IdentityHashMap<Class<? extends ExtensionHookProcessor<?>>, GroupDescriptor.Builder> builders = new IdentityHashMap<>();
+        /** A map of builders for every activated extension type. */
+        private final IdentityHashMap<Class<? extends Extension>, ExtensionHookPerComponentGroup.Builder> extensionBuilders = new IdentityHashMap<>();
 
-        private final ComponentLookup cl;
+        private final ComponentLookup lookup;
 
         /** The component type. */
         private final Class<?> componentType;
 
         /**
-         * @param cl
+         * @param lookup
          * @param componentType
          */
-        Builder(ComponentLookup cl, Class<?> componentType) {
-            this.cl = requireNonNull(cl);
+        Builder(ComponentLookup lookup, Class<?> componentType) {
+            this.lookup = requireNonNull(lookup);
             this.componentType = requireNonNull(componentType);
         }
 
@@ -133,27 +137,30 @@ public final class ComponentClassDescriptor {
         ComponentClassDescriptor build() {
             for (Class<?> c = componentType; c != Object.class; c = c.getSuperclass()) {
                 for (Field field : c.getDeclaredFields()) {
-                    Annotation[] annotations = field.getAnnotations();
-                    for (Annotation a : annotations) {
-                        Class<? extends ExtensionHookProcessor<?>>[] cc = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
+                    for (Annotation a : field.getAnnotations()) {
+                        Class<? extends Extension>[] cc = EXTENSION_ACTIVATORS.get(a.annotationType());
                         if (cc != null) {
-                            for (Class<? extends ExtensionHookProcessor<?>> ccc : cc) {
-                                builders.computeIfAbsent(ccc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedField(cl, field, a);
+                            for (Class<? extends Extension> ccc : cc) {
+                                extensionBuilders
+                                        .computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(componentType, extensionType, lookup))
+                                        .onAnnotatedField(field, a);
                             }
                         }
                     }
                 }
                 for (Method method : c.getDeclaredMethods()) {
-                    Annotation[] annotations = method.getAnnotations();
-                    for (Annotation a : annotations) {
-                        Class<? extends ExtensionHookProcessor<?>> cc[] = METHOD_ANNOTATION_ACTIVATOR.get(a.annotationType());
+                    for (Annotation a : method.getAnnotations()) {
+                        Class<? extends Extension> cc[] = EXTENSION_ACTIVATORS.get(a.annotationType());
                         if (cc != null) {
-                            for (Class<? extends ExtensionHookProcessor<?>> ccc : cc) {
-                                builders.computeIfAbsent(ccc, m -> new GroupDescriptor.Builder(componentType, m)).onAnnotatedMethod(cl, method, a);
+                            for (Class<? extends Extension> ccc : cc) {
+                                extensionBuilders
+                                        .computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(componentType, extensionType, lookup))
+                                        .onAnnotatedMethod(method, a);
                             }
                         }
                     }
                 }
+                // TODO default methods
             }
             return new ComponentClassDescriptor(this);
         }

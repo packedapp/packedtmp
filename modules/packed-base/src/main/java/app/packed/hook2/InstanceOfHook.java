@@ -15,18 +15,31 @@
  */
 package app.packed.hook2;
 
-import app.packed.component.ComponentConfiguration;
-import app.packed.container.Extension;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
-
 /**
- *
+ * Represent an annotated field on a component instance.
  */
-public class XHExtension extends Extension {
+public interface InstanceOfHook<T> {
 
-    @OnHook
-    public void doo(ComponentConfiguration cc, AnnotatedMethodHook<XH> hook) {
-        System.out.println(hook);
-    }
+    /**
+     * Returns the
+     * 
+     * @return the type we are hooked on
+     */
+    Class<T> hookType();
+
+    /**
+     * Returns the instance.
+     *
+     * @return the instance
+     */
+    T instance();
+
+    /**
+     * Returns the actual type (assignable to T).
+     * 
+     * @return the actual type
+     */
+    // Syntes det er rimeligt at klassen er til raadighed,
+    // Den er det jo paa runtime
+    Class<? extends T> type();
 }

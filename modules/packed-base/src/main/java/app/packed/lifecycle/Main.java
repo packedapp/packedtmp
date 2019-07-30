@@ -19,19 +19,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.invoke.MethodHandle;
-import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
-import app.packed.component.ComponentConfiguration;
-import app.packed.container.Activate;
-import app.packed.container.ExtensionHookProcessor;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
-import app.packed.util.InvalidDeclarationException;
-import packed.internal.container.PackedArtifactContext;
-import packed.internal.support.AppPackedLifecycleSupport;
-import packed.internal.util.StringFormatter;
+import app.packed.container.ActivateExtension;
 
 /**
  * A application can have a single main entry point which is the first instructions in a program that is executed, Must
@@ -53,7 +42,7 @@ import packed.internal.util.StringFormatter;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
-@Activate(extensionHook = MainProcessor.class)
+@ActivateExtension(LifecycleExtension.class)
 public @interface Main {
 
     /**
@@ -73,31 +62,4 @@ public @interface Main {
     /// Problemet er at vi gerne ville knytte det til Main
     // Deployment option????
     boolean undeployOnCompletion() default true;
-}
-
-final class MainProcessor extends ExtensionHookProcessor<LifecycleExtension> {
-
-    private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
-
-    @OnHook
-    void add(AnnotatedMethodHook<Main> hook) {
-        hooks.add(hook);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BiConsumer<ComponentConfiguration, LifecycleExtension> onBuild() {
-        if (hooks.size() > 1) {
-            throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hooks.get(0).method().getDeclaringClass())
-                    + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
-                    + StringFormatter.formatShortWithParameters(hooks.get(0).method()) + ", "
-                    + StringFormatter.formatShortWithParameters(hooks.get(1).method()));
-        }
-        AnnotatedMethodHook<Main> h = hooks.get(0);
-        MethodHandle mh = h.newMethodHandle();
-        h.onMethodReady(PackedArtifactContext.class, (a, b) -> b.run());
-
-        // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
-        return (c, e) -> AppPackedLifecycleSupport.invoke().doConfigure(e, mh);
-    }
 }

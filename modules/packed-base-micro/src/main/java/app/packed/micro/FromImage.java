@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -35,10 +35,9 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.app.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.Activate;
+import app.packed.container.ActivateExtension;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionHookProcessor;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
 
@@ -96,36 +95,35 @@ public class FromImage {
 
     static class MyStuff {
 
-        @ActivateMyExtension
-        public void foo() {
-
-        }
+        @ActivateMyExtension("X")
+        public void foo() {}
     }
 
     public static class MyExtension extends Extension {
-        protected void set(ComponentConfiguration a) {}
+
+        @OnHook(aggreateWith = MyExtensionHookAggregator.class)
+        public void foo(ComponentConfiguration cc, String s) {}
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    @Activate(extensionHook = Builder.class)
+    @ActivateExtension(MyExtension.class)
     public @interface ActivateMyExtension {
-
+        String value();
     }
 
-    static class Builder extends ExtensionHookProcessor<MyExtension> {
+    static class MyExtensionHookAggregator implements Supplier<String> {
+        ActivateMyExtension e;
 
         @OnHook
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
-
+            e = h.annotation();
         }
 
         /** {@inheritDoc} */
         @Override
-        public BiConsumer<ComponentConfiguration, MyExtension> onBuild() {
-            return (a, b) -> {
-                b.set(a);
-            };
+        public String get() {
+            return e.toString();
         }
     }
 }

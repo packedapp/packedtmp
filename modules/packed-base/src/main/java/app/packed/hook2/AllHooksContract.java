@@ -15,10 +15,28 @@
  */
 package app.packed.hook2;
 
+import java.lang.annotation.Annotation;
+import java.util.Set;
+
 /**
  *
  */
-// Maybe just a supplier....
-public interface HookCacheBuilder<T> {
-    T build();
+public final class AllHooksContract {
+
+    Set<Class<? extends Annotation>> capturingFieldHooks;
+
+    /**
+     * Returns an immutable set of all annotated field hooks.
+     * 
+     * @return an immutable set of all annotated field hooks
+     */
+    public Set<Class<? extends Annotation>> annotatedFieldHooks() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Set<Class<? extends Annotation>> capturingFieldHooks() {
+        return capturingFieldHooks;
+    }
+
+    public final class Builder {}
 }

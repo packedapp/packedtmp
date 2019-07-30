@@ -17,13 +17,16 @@ package packed.internal.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 import static support.assertj.Assertions.npe;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +38,33 @@ import org.junit.jupiter.api.Test;
 
 /** Tests {@link TypeUtil}. */
 public class TypeUtilTest {
+
+    @Test
+    public void checkClassIsInstantiable() {
+        try {
+            TypeUtil.checkClassIsInstantiable(Test.class);
+            fail("oops");
+        } catch (IllegalArgumentException ok) {}
+        try {
+            TypeUtil.checkClassIsInstantiable(Map.class);
+            fail("oops");
+        } catch (IllegalArgumentException ok) {}
+        try {
+            TypeUtil.checkClassIsInstantiable(Object[].class);
+            fail("oops");
+        } catch (IllegalArgumentException ok) {}
+        try {
+            TypeUtil.checkClassIsInstantiable(AbstractMap.class);
+            fail("oops");
+        } catch (IllegalArgumentException ok) {}
+
+        try {
+            TypeUtil.checkClassIsInstantiable(Integer.TYPE);
+            fail("oops");
+        } catch (IllegalArgumentException ok) {}
+
+        assertThat(TypeUtil.checkClassIsInstantiable(HashMap.class)).isSameAs(HashMap.class);
+    }
 
     /** Tests {@link TypeUtil#boxClass(Class)}. */
     @Test

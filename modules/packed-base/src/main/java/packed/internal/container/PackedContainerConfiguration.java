@@ -193,9 +193,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
                 descriptor, factory);
-        descriptor.initialize(this, dcc);
-        return dcc;
-
+        return descriptor.initialize(this, dcc);
     }
 
     public ComponentConfiguration install(Object instance) {
@@ -216,8 +214,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL),
                 this, descriptor, instance);
 
-        descriptor.initialize(this, dcc);
-        return dcc;
+        return descriptor.initialize(this, dcc);
     }
 
     public ComponentConfiguration installHelper(Class<?> implementation) {

@@ -29,7 +29,6 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
 import app.packed.artifact.ArtifactType;
-import app.packed.hook.BundleDescriptorHooks;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -169,10 +168,6 @@ public class BundleDescriptor {
      */
     public final Optional<String> description() {
         return Optional.ofNullable(description);
-    }
-
-    public final BundleDescriptorHooks hooks() {
-        return new BundleDescriptorHooks();
     }
 
     /**

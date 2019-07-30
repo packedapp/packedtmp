@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook.test;
+
+import app.packed.app.AppBundle;
 
 /**
  *
  */
-// Ideen er lidt at alle der har behov for at dekorere metoder, bliver registereret.
-// En bruger kan saa vaelge at registerer en AopResolver eller Consumer<AopResolver>
-// Hvor man kan saette den exact raekkefoelger.
-// Maybe just AOPInvocationManager, AOPInvoker
-// Smid den .aop
-class AopResolver {
+public class Ddd extends AppBundle {
 
+    @Override
+    public void configure() {
+        installHelper(MyComp.class);
+    }
+
+    public static void main(String[] args) {
+        newImage(new Ddd());
+    }
 }

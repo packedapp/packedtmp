@@ -16,6 +16,7 @@
 package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
@@ -243,5 +244,37 @@ public final class TypeUtil {
             return (Class<T>) void.class;
         }
         return type;
+    }
+
+    /**
+     * Checks that the specified class can be instantiated. That is, a public non-abstract class with at least one public
+     * constructor.
+     *
+     * @param clazz
+     *            the class to check
+     */
+    public static <T> Class<T> checkClassIsInstantiable(Class<T> clazz) {
+        if (clazz.isAnnotation()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an annotation and cannot be instantiated");
+        } else if (clazz.isInterface()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an interface and cannot be instantiated");
+        } else if (clazz.isArray()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an array and cannot be instantiated");
+        }
+        int modifiers = clazz.getModifiers();
+        if (Modifier.isAbstract(modifiers)) {
+            // Yes a primitive class is abstract
+            if (clazz.isPrimitive()) {
+                throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
+            }
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an abstract class and cannot be instantiated");
+        }
+        /*
+         * else if (!Modifier.isPublic(modifiers)) { throw new IllegalArgumentException("The specified class (" + format(clazz)
+         * + ") is not a public class and cannot be instantiated"); } if (clazz.getConstructors().length == 0) { throw new
+         * IllegalArgumentException("The specified class (" + format(clazz) +
+         * ") does not have any public constructors and cannot be instantiated"); }
+         */
+        return clazz;
     }
 }

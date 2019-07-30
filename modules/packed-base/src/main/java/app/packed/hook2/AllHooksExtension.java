@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook2;
 
 import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import app.packed.container.Extension;
+import app.packed.hook.AnnotatedFieldHook;
 
 /**
  *

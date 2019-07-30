@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook2;
-
-import app.packed.component.ComponentConfiguration;
-import app.packed.container.Extension;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
+package packed.internal.hook.test;
 
 /**
  *
  */
-public class XHExtension extends Extension {
+public class MyComp {
 
-    @OnHook
-    public void doo(ComponentConfiguration cc, AnnotatedMethodHook<XH> hook) {
-        System.out.println(hook);
-    }
+    @MyA(123)
+    static String s = "ddddd";
+
+    @MyA(1254)
+    public void foo() {}
 }

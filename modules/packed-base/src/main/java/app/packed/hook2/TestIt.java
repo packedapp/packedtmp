@@ -15,19 +15,29 @@
  */
 package app.packed.hook2;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.CLASS;
+import java.util.function.Consumer;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import app.packed.component.ComponentConfiguration;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.OnHook;
+import app.packed.lifecycle.Main;
 
-import app.packed.container.Extension;
-
-@Retention(CLASS)
-@Target(TYPE)
 /**
  *
  */
-public @interface ActivateExtension {
-    Class<? extends Extension>[] value();
+public class TestIt {
+
+    @OnHook
+    public void foo(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
+        Consumer<? super Number> a = h.newSetAccessor(cc, Number.class);
+
+        a.accept(23);
+    }
+
+    @OnHook
+    public void foo(Consumer<Number> c2, Consumer<? super Number> c3) {
+        Integer s = 123;
+        c2.accept(s);
+        c3.accept(s);
+    }
 }

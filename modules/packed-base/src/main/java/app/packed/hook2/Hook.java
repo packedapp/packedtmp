@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook2;
 
-/**
- *
- */
-// Like
-public class AllHooksDescriptor {
+import app.packed.component.Component;
 
+/** The base interface for all hooks. */
+// Strictly we should have descriptors for non-mutable stuff..
+public interface Hook {
+
+    /**
+     * Returns the component.
+     * 
+     * @return the component
+     */
+    Component component();
+
+    // Config Site???
 }

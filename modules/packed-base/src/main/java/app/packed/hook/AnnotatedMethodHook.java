@@ -15,6 +15,7 @@
  */
 package app.packed.hook;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.BiConsumer;
@@ -23,7 +24,7 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 
 /** A hook representing a method annotated with a specific type. */
-public interface AnnotatedMethodHook<T> {
+public interface AnnotatedMethodHook<T extends Annotation> {
 
     /**
      * Returns the annotation value.

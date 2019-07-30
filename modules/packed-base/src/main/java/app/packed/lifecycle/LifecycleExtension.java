@@ -16,16 +16,24 @@
 package app.packed.lifecycle;
 
 import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.Bundle;
 import app.packed.container.Extension;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.OnHook;
 import app.packed.inject.InjectionExtension;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
+import packed.internal.container.PackedArtifactContext;
 import packed.internal.support.AppPackedLifecycleSupport;
+import packed.internal.util.StringFormatter;
 
 /**
  * An extension that enables lifecycle management of components via annotations such as {@link OnStart} and
@@ -54,8 +62,27 @@ import packed.internal.support.AppPackedLifecycleSupport;
 
 public final class LifecycleExtension extends Extension {
 
-    public void main(Runnable r) {
+    static {
+        AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {});
+    }
 
+    private Set<MethodHandle> s = new HashSet<>();
+
+    /**
+     * This method once for each component method that is annotated with {@link Main}.
+     * 
+     * @param mh
+     */
+    @OnHook(aggreateWith = LifecycleHookAggregator.class)
+    void addMain(ComponentConfiguration cc, MethodHandle mh) {
+        // TODO check that we do not have multiple @Main methods
+        System.out.println(mh);
+        s.add(mh);
+        System.out.println(s);
+    }
+
+    public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
+        main(Key.of(serviceKey), consumer);
     }
 
     public <T> void main(Key<T> serviceKey, Consumer<? super T> consumer) {
@@ -65,26 +92,6 @@ public final class LifecycleExtension extends Extension {
         use(InjectionExtension.class).addRequired(serviceKey);
         // How does this work implementation wise??
         // We call InjectionExtension.require(serviceKey) (Which backtraces stackwalker)
-    }
-
-    public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
-        main(Key.of(serviceKey), consumer);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onConfigured() {
-        installInParentIfSameArtifact();
-    }
-
-    static {
-        AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {
-
-            @Override
-            public void doConfigure(LifecycleExtension extension, MethodHandle mh) {
-                extension.addMain(mh);
-            }
-        });
     }
 
     // set
@@ -108,21 +115,48 @@ public final class LifecycleExtension extends Extension {
 
     // ClassValue<Feature> -> IdentityHashMap<Feature, CachedConfiguration>>
 
-    private Set<MethodHandle> s = new HashSet<>();
+    public void main(Runnable r) {
 
-    /**
-     * This method once for each component method that is annotated with {@link Main}.
-     * 
-     * @param mh
-     */
-    private void addMain(MethodHandle mh) {
-        // TODO check that we do not have multiple @Main methods
-        System.out.println(mh);
-        s.add(mh);
-        System.out.println(s);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onConfigured() {
+        installInParentIfSameArtifact();
     }
 
 }
+
+final class LifecycleHookAggregator implements Supplier<MethodHandle> {
+
+    private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
+
+    @OnHook
+    void add(AnnotatedMethodHook<Main> hook) {
+        hooks.add(hook);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle get() {
+        if (hooks.size() > 1) {
+            throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hooks.get(0).method().getDeclaringClass())
+                    + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
+                    + StringFormatter.formatShortWithParameters(hooks.get(0).method()) + ", "
+                    + StringFormatter.formatShortWithParameters(hooks.get(1).method()));
+        }
+        AnnotatedMethodHook<Main> h = hooks.get(0);
+        MethodHandle mh = h.newMethodHandle();
+        h.onMethodReady(PackedArtifactContext.class, (a, b) -> b.run());
+
+        // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
+        return mh;
+    }
+}
+
+// @Map(PicoClicc. EntryPointExtension)
+// ....
+@interface UsesPicoCli {}
 
 class X extends Bundle {
 
@@ -131,7 +165,3 @@ class X extends Bundle {
         use(LifecycleExtension.class).main(ConcurrentHashMap.class, c -> System.out.println("size = " + c.size()));
     }
 }
-
-// @Map(PicoClicc. EntryPointExtension)
-// ....
-@interface UsesPicoCli {}
