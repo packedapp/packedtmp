@@ -67,18 +67,4 @@ class Checks {
         return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
                 + ", to resolve remove one of the annotations.";
     }
-
-    /**
-     * Creates an error message for using an annotation on a final field.
-     *
-     * @param field
-     *            the field
-     * @param annotationType
-     *            the annotation
-     * @return the error message
-     */
-    static String fieldWithAnnotationCannotBeFinal(FieldDescriptor field, Class<? extends Annotation> annotationType) {
-        return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
-                + " or make the field non-final";
-    }
 }

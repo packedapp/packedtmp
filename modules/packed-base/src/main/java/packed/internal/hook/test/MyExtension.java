@@ -28,13 +28,24 @@ import app.packed.hook.OnHook;
  */
 public class MyExtension extends Extension {
 
-    @OnHook(aggreateWith = Agg.class)
+    // @OnHook(aggreateWith = Agg.class)
     public void foo(ComponentConfiguration cc, Integer val) {
         System.out.println(cc.path());
         System.out.println(val);
     }
 
+    @OnHook
+    public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyA> h) {
+        // ignore
+    }
+
+    @OnHook
     public void foo(ComponentConfiguration cc, AnnotatedFieldHook<MyA> h) throws Throwable {
+        Supplier<?> ss = h.newGetAccessor(cc);
+        System.out.println(ss.get());
+    }
+
+    public void fodddo(ComponentConfiguration cc, AnnotatedFieldHook<MyA> h) throws Throwable {
         h.checkStatic();
         System.out.println(cc.path());
         System.out.println(h.field());

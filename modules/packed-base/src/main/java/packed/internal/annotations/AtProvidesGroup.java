@@ -40,9 +40,6 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  */
 public final class AtProvidesGroup {
 
-    /** An empty provides group. */
-    // private static final AtProvidesGroup EMPTY = new AtProvidesGroup(new Builder());
-
     /** Whether or not there are any non-static providing fields or methods. */
     public final boolean hasInstanceMembers;
 
@@ -77,19 +74,16 @@ public final class AtProvidesGroup {
          */
         @Override
         public AtProvidesGroup get() {
-            if (members == null) {
-                throw new Error();
-            }
-            return /* members == null ? EMPTY : */ new AtProvidesGroup(this);
+            return new AtProvidesGroup(this);
         }
 
         @OnHook
-        public void onFieldProvide(AnnotatedFieldHook<Provide> amh) {
+        void onFieldProvide(AnnotatedFieldHook<Provide> amh) {
             tryAdd0(amh.lookup(), InternalFieldDescriptor.of(amh.field()), Key.fromField(amh.field().newField()), amh.annotation(), List.of());
         }
 
         @OnHook
-        public void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
+        void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
             InternalMethodDescriptor descriptor = (InternalMethodDescriptor) amh.method();
             tryAdd0(amh.lookup(), descriptor, Key.fromMethodReturnType(descriptor.newMethod()), amh.annotation(),
                     InternalDependencyDescriptor.fromExecutable(descriptor));

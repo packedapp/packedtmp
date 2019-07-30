@@ -24,6 +24,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -34,7 +35,10 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.TypeLiteral;
+import packed.internal.container.DefaultComponentConfiguration;
+import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 
 /** The default implementation of {@link AnnotatedFieldHook}. */
 public final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedFieldHook<T> {
@@ -111,6 +115,7 @@ public final class PackedAnnotatedFieldHook<T extends Annotation> implements Ann
         return this;
     }
 
+    /** {@inheritDoc} */
     @Override
     public FieldDescriptor field() {
         FieldDescriptor d = descriptor;
@@ -120,6 +125,7 @@ public final class PackedAnnotatedFieldHook<T extends Annotation> implements Ann
         return d;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Lookup lookup() {
         return lookup;// Temporary method
@@ -170,8 +176,38 @@ public final class PackedAnnotatedFieldHook<T extends Annotation> implements Ann
     /** {@inheritDoc} */
     @Override
     public Supplier<?> newGetAccessor(ComponentConfiguration cc) {
-        // Wrap a MethodHandle + instance
-        throw new UnsupportedOperationException();
+        MethodHandle mh = newMethodHandleGetter();
+        if (field().isStatic()) {
+            return new Supplier<Object>() {
+
+                @Override
+                public Object get() {
+                    try {
+                        return mh.invoke();
+                    } catch (Throwable e) {
+                        ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                        throw new UndeclaredThrowableException(e);
+                    }
+                }
+            };
+        } else {
+            DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) cc;
+            if (dcc instanceof InstantiatedComponentConfiguration) {
+                Object instance = ((InstantiatedComponentConfiguration) dcc).getInstance();
+                return new Supplier<Object>() {
+
+                    @Override
+                    public Object get() {
+                        try {
+                            return mh.invoke(instance);
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+            }
+            throw new UnsupportedOperationException();
+        }
     }
 
     /** {@inheritDoc} */
@@ -204,6 +240,7 @@ public final class PackedAnnotatedFieldHook<T extends Annotation> implements Ann
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodHandle newMethodHandleGetter() {
         field.setAccessible(true);
@@ -242,6 +279,7 @@ public final class PackedAnnotatedFieldHook<T extends Annotation> implements Ann
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public VarHandle newVarHandle() {
         field.setAccessible(true);

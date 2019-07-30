@@ -51,6 +51,7 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         this.consumers = requireNonNull(consumers);
     }
 
+    /** {@inheritDoc} */
     @Override
     public T annotation() {
         return annotation;

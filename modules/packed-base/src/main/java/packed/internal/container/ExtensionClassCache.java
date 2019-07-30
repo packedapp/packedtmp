@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InaccessibleObjectException;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.Extension;
 import app.packed.util.IllegalAccessRuntimeException;
@@ -49,13 +50,13 @@ final class ExtensionClassCache<T> {
     };
 
     /** The method handle used to create a new instance of the extension. */
-    private final MethodHandle mh;
+    private final MethodHandle constructor;
 
     /** Whether or not the constructor needs an instanceof {@link PackedContainerConfiguration}. */
     private final boolean needsPackedContainerConfiguration;
 
     /** The type of extension. */
-    private final Class<? extends Extension> type;
+    private final Class<? extends Extension> extensionType;
 
     /**
      * Creates a new extension class cache.
@@ -64,7 +65,7 @@ final class ExtensionClassCache<T> {
      *            the extension type
      */
     private ExtensionClassCache(Class<? extends Extension> type) {
-        this.type = requireNonNull(type);
+        this.extensionType = requireNonNull(type);
         boolean needsPackedContainerConfiguration = false;
 
         Constructor<?> constructor;
@@ -83,7 +84,7 @@ final class ExtensionClassCache<T> {
         Lookup lookup = MethodHandles.lookup();
         try {
             constructor.setAccessible(true);
-            mh = lookup.unreflectConstructor(constructor);
+            this.constructor = lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException | InaccessibleObjectException e) {
             throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
                     + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
@@ -104,22 +105,16 @@ final class ExtensionClassCache<T> {
     @SuppressWarnings("unchecked")
     static <T extends Extension> T newInstance(PackedContainerConfiguration pcc, Class<T> extensionType) {
         // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get to 6 ns
-        ExtensionClassCache<T> ei = (ExtensionClassCache<T>) CACHE.get(extensionType);
-        Extension e;
+        ExtensionClassCache<T> ecc = (ExtensionClassCache<T>) CACHE.get(extensionType);
         try {
-            if (ei.needsPackedContainerConfiguration) {
-                e = (T) ei.mh.invoke(pcc);
+            if (ecc.needsPackedContainerConfiguration) {
+                return (T) ecc.constructor.invoke(pcc);
             } else {
-                e = (T) ei.mh.invoke();
+                return (T) ecc.constructor.invoke();
             }
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
-            throw new RuntimeException("Could not instantiate extension '" + StringFormatter.format(ei.type) + "'", t);
+            throw new UndeclaredThrowableException(t, "Could not instantiate extension '" + StringFormatter.format(ecc.extensionType) + "'");
         }
-        return (T) e;
-    }
-
-    public static class Builder {
-
     }
 }

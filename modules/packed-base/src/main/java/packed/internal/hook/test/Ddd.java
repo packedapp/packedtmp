@@ -24,10 +24,17 @@ public class Ddd extends AppBundle {
 
     @Override
     public void configure() {
+        install(new Ssss());
         installHelper(MyComp.class);
     }
 
     public static void main(String[] args) {
         newImage(new Ddd());
+    }
+
+    public static class Ssss {
+
+        @MyA(2132)
+        public String ss = "ffdddf";
     }
 }

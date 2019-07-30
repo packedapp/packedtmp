@@ -21,7 +21,7 @@ package packed.internal.hook.test;
 public class MyComp {
 
     @MyA(123)
-    static String s = "ddddd";
+    public static String s = "ddddd";
 
     @MyA(1254)
     public void foo() {}
