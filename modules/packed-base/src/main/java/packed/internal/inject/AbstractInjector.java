@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
 import packed.internal.componentcache.deprecated.ServiceClassDescriptor;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.FieldAccessor;
+import packed.internal.invoke.FieldFunctionHandle;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
@@ -99,7 +99,7 @@ public abstract class AbstractInjector implements Injector {
         if (!descriptor.inject.fields.isEmpty()) {
             for (AtDependable atInject : descriptor.inject.fields) {
                 InternalDependencyDescriptor dependency = atInject.dependencies.get(0);
-                FieldAccessor<?> field = (FieldAccessor<?>) atInject.invokable;
+                FieldFunctionHandle<?> field = (FieldFunctionHandle<?>) atInject.invokable;
                 ServiceNode<?> node = findNode(dependency.key());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);

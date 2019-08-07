@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.operations;
+package packed.internal.invoke.sandbox;
 
-import java.lang.invoke.MethodHandle;
+/**
+ *
+ */
 
-/** An operation that invokes a method via a {@link MethodHandle}. */
-public final class FieldOperation {
+// Ideen er vi kan visit en pipeline...
+// Field Dsdsd#ewee .mapVia(.getclass()).
+public interface PFunctionVisitor {
 
 }

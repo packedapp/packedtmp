@@ -211,7 +211,7 @@ public final class InjectionExtension extends Extension {
         }
         DependencyGraph dg = new DependencyGraph(configuration, builder);
 
-        if (buildContext().artifactType().isInstantiating()) {
+        if (buildContext().isInstantiating()) {
             dg.instantiate();
         } else {
             dg.analyze();
@@ -257,7 +257,7 @@ public final class InjectionExtension extends Extension {
             sc = new BuildServiceNodeDefault<>(builder, cc, InstantiationMode.SINGLETON, configuration.lookup.readable(factory.factory.function),
                     (List) factory.dependencies());
         }
-        sc.as((Key) factory.defaultKey());
+        sc.as((Key) factory.key());
         builder.nodes2.add(sc);
         return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
     }

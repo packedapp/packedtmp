@@ -16,8 +16,8 @@
 package app.packed.component;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.AnyBundle;
 import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.feature.FeatureMap;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
- * calling one of the install methods on, for example, {@link Bundle} or {@link ComponentExtension}..
+ * calling one of the install methods on, for example, {@link BaseBundle} or {@link ComponentExtension}..
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
@@ -40,7 +40,7 @@ public interface ComponentConfiguration {
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>
-     * A component is typically only configurable inside of {@link AnyBundle#configure()}.
+     * A component is typically only configurable inside of {@link Bundle#configure()}.
      * 
      * @throws IllegalStateException
      *             if the component is no long configurable.

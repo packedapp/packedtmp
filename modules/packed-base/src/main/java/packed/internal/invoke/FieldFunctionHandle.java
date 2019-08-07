@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,7 +29,7 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /** An invoker that can read and write fields. */
-public final class FieldAccessor<T> extends InvokableMember<T> {
+public final class FieldFunctionHandle<T> extends InvokableMember<T> {
 
     /** The field we invoke. */
     public final FieldDescriptor field;
@@ -45,7 +45,7 @@ public final class FieldAccessor<T> extends InvokableMember<T> {
     private final VarHandle varHandle;
 
     @SuppressWarnings("unchecked")
-    public FieldAccessor(FieldDescriptor field) {
+    public FieldFunctionHandle(FieldDescriptor field) {
         super((TypeLiteral<T>) field.getTypeLiteral(), null);
         this.field = field;
         this.varHandle = null;
@@ -53,7 +53,7 @@ public final class FieldAccessor<T> extends InvokableMember<T> {
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    private FieldAccessor(FieldAccessor<T> other, Object instance) {
+    private FieldFunctionHandle(FieldFunctionHandle<T> other, Object instance) {
         super(other.getReturnType(), requireNonNull(instance));
         this.field = other.field;
         this.varHandle = other.varHandle;
@@ -61,7 +61,7 @@ public final class FieldAccessor<T> extends InvokableMember<T> {
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    public FieldAccessor(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
+    public FieldFunctionHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
         super(typeLiteralOrKey, instance);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
@@ -128,14 +128,14 @@ public final class FieldAccessor<T> extends InvokableMember<T> {
     }
 
     @Override
-    public FieldAccessor<T> withInstance(Object instance) {
+    public FieldFunctionHandle<T> withInstance(Object instance) {
         requireNonNull(instance, "instance is null");
         if (this.instance != null) {
             throw new IllegalStateException("An instance has already been set");
         } else if (isStatic) {
             throw new IllegalStateException("The field is static");
         }
-        return new FieldAccessor<>(this, instance);
+        return new FieldFunctionHandle<>(this, instance);
     }
 
     /**
@@ -146,7 +146,7 @@ public final class FieldAccessor<T> extends InvokableMember<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public FieldAccessor<T> withLookup(Lookup lookup) {
+    public FieldFunctionHandle<T> withLookup(Lookup lookup) {
         VarHandle handle;
         try {
             if (Modifier.isPrivate(field.getModifiers())) {
@@ -156,7 +156,7 @@ public final class FieldAccessor<T> extends InvokableMember<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldAccessor<>(getReturnType(), field, handle, instance);
+        return new FieldFunctionHandle<>(getReturnType(), field, handle, instance);
     }
 }
 /**

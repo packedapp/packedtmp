@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashSet;
 import java.util.Set;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.util.Key;
 
 /**
@@ -126,7 +126,7 @@ public final class ProvisionContract {
      *            the bundle to create a contract from
      * @return this contract
      */
-    public static ProvisionContract of(AnyBundle bundle) {
+    public static ProvisionContract of(Bundle bundle) {
         return EMPTY;
     }
 

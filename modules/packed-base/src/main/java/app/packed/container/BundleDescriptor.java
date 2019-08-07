@@ -28,11 +28,11 @@ import java.util.Optional;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
-import app.packed.artifact.ArtifactType;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerSource;
+import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -89,7 +89,7 @@ import packed.internal.container.PackedContainerConfiguration;
 public class BundleDescriptor {
 
     /** The type of the bundle. */
-    private final Class<? extends AnyBundle> bundleType;
+    private final Class<? extends Bundle> bundleType;
 
     /** A Services object. */
     private final BundleContract contract;
@@ -135,7 +135,7 @@ public class BundleDescriptor {
      *
      * @return the type of the bundle
      */
-    public final Class<? extends AnyBundle> bundleType() {
+    public final Class<? extends Bundle> bundleType() {
         return bundleType;
     }
 
@@ -160,11 +160,11 @@ public class BundleDescriptor {
     }
 
     /**
-     * Returns any description that has been set for the bundle via {@link Bundle#setDescription(String)}.
+     * Returns any description that has been set for the bundle via {@link BaseBundle#setDescription(String)}.
      * 
      * @return a optional description of the bundle
      * 
-     * @see Bundle#setDescription(String)
+     * @see BaseBundle#setDescription(String)
      */
     public final Optional<String> description() {
         return Optional.ofNullable(description);
@@ -222,7 +222,7 @@ public class BundleDescriptor {
      */
     // ContainerSource????
     // For example, we should be able to take an image...
-    public static BundleDescriptor of(AnyBundle bundle) {
+    public static BundleDescriptor of(Bundle bundle) {
         return of((ArtifactSource) bundle);
     }
 
@@ -239,8 +239,8 @@ public class BundleDescriptor {
 
     private static BundleDescriptor of(ArtifactSource source) {
         requireNonNull(source, "source is null");
-        AnyBundle bundle = (AnyBundle) source;
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.ANALYZE, ContainerSource.of(source));
+        Bundle bundle = (Bundle) source;
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, ContainerSource.of(source));
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
@@ -279,7 +279,7 @@ public class BundleDescriptor {
         private String bundleDescription;
 
         /** The bundleType */
-        private final Class<? extends AnyBundle> bundleType;
+        private final Class<? extends Bundle> bundleType;
 
         private BundleContract.Builder contract = new BundleContract.Builder();
 
@@ -287,7 +287,7 @@ public class BundleDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Builder(Class<? extends AnyBundle> bundleType) {
+        public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
         }
 
@@ -308,7 +308,7 @@ public class BundleDescriptor {
         /**
          * @return the bundleType
          */
-        public final Class<? extends AnyBundle> bundleType() {
+        public final Class<? extends Bundle> bundleType() {
             return bundleType;
         }
 
@@ -331,8 +331,18 @@ public class BundleDescriptor {
             return this;
         }
     }
-
 }
+
+/** An dummy artifact driver for creating artifact images. */
+final class BundleDescriptorArtifactDriver extends NonInstantiatingArtifactDriver<ArtifactImage> {
+
+    /** The single instance. */
+    static final BundleDescriptorArtifactDriver INSTANCE = new BundleDescriptorArtifactDriver();
+
+    /** Singleton */
+    private BundleDescriptorArtifactDriver() {}
+}
+
 //
 /// **
 // * Returns the runtime type of the bundle. Is currently one of {@link Container} or {@link Injector}.

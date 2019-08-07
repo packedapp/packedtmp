@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.inject.Factory1;
 import app.packed.inject.Injector;
 import app.packed.util.Qualifier;
@@ -44,7 +44,7 @@ public class ImportTest {
         System.out.println(i);
     }
 
-    public static final class I extends Bundle {
+    public static final class I extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override
@@ -54,7 +54,7 @@ public class ImportTest {
         }
     }
 
-    public static final class London extends Bundle {
+    public static final class London extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override
@@ -64,7 +64,7 @@ public class ImportTest {
         }
     }
 
-    public static final class Berlin extends Bundle {
+    public static final class Berlin extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override

@@ -37,10 +37,10 @@ import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.ExecutableInvoker;
-import packed.internal.invokable.InstanceInvoker;
-import packed.internal.invokable.InternalFunction;
-import packed.internal.invokable.InternalMapperFunction;
+import packed.internal.invoke.ExecutableFunctionHandle;
+import packed.internal.invoke.FunctionHandle;
+import packed.internal.invoke.InstanceFunctionHandle;
+import packed.internal.invoke.lambda.MappingFunctionHandle;
 import packed.internal.support.AppPackedInjectSupport;
 import packed.internal.support.AppPackedUtilSupport;
 import packed.internal.util.TypeUtil;
@@ -110,7 +110,7 @@ public class Factory<T> {
         AppPackedInjectSupport.Helper.init(new AppPackedInjectSupport.Helper() {
 
             @Override
-            protected <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
+            protected <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
                 return factory.factory.function;
             }
         });
@@ -132,6 +132,16 @@ public class Factory<T> {
     }
 
     /**
+     * Creates a new factory by wrapping an internal factory.
+     *
+     * @param factory
+     *            the internal factory to wrap.
+     */
+    Factory(FactorySupport<T> factory) {
+        this.factory = requireNonNull(factory, "factory is null");
+    }
+
+    /**
      * Used by {@link Factory1#Factory1(Function)} because we cannot call {@link Object#getClass()} before calling a
      * constructor in this class (super).
      *
@@ -141,16 +151,6 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     Factory(Function<?, ? extends T> function) {
         this.factory = (FactorySupport<T>) Factory1.create(getClass(), function);
-    }
-
-    /**
-     * Creates a new factory by wrapping an internal factory.
-     *
-     * @param factory
-     *            the internal factory to wrap.
-     */
-    Factory(FactorySupport<T> factory) {
-        this.factory = requireNonNull(factory, "factory is null");
     }
 
     /**
@@ -166,18 +166,18 @@ public class Factory<T> {
     }
 
     /**
-     * If this factory is registered as a service with an {@link Injector}. This method returns the (default) key that will
-     * be used, for example, when regist Returns the (default) key to which this factory will bound to if using as If this
-     * factory is used to register a service, for example, via {@link InjectorConfigurator#provide(Factory)}. This method
-     * returns the key for which the factory
+     * The key under which If this factory is registered as a service with an {@link Injector}. This method returns the
+     * (default) key that will be used, for example, when regist Returns the (default) key to which this factory will bound
+     * to if using as If this factory is used to register a service, for example, via
+     * {@link InjectorConfigurator#provide(Factory)}. This method returns the key for which the factory
      * 
      * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
      * {@link ProvidedComponentConfiguration#as(Key)}.
      *
-     * @return the key under which this factory will be registered
+     * @return the key under which this factory will be registered unless
      * @see #withKey(Key)
      */
-    public final Key<T> defaultKey() {
+    public final Key<T> key() {
         return factory.defaultKey;
     }
 
@@ -223,7 +223,7 @@ public class Factory<T> {
      * @return a new mapped factory
      */
     public final <R> Factory<R> mapTo(Function<? super T, R> mapper, TypeLiteral<R> type) {
-        InternalMapperFunction<T, R> f = new InternalMapperFunction<>(type, factory.function, mapper);
+        MappingFunctionHandle<T, R> f = new MappingFunctionHandle<>(type, factory.function, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));
     }
 
@@ -259,14 +259,14 @@ public class Factory<T> {
 
     /**
      * Returns a new factory retaining all of the existing properties of this factory. Except that the key returned by
-     * {@link #defaultKey()} will be changed to the specified key.
+     * {@link #key()} will be changed to the specified key.
      * 
      * @param key
      *            the key under which to bind the factory
      * @return the new factory
      * @throws ClassCastException
      *             if the type of the key does not match the type of instances this factory provides
-     * @see #defaultKey()
+     * @see #key()
      */
     public final Factory<T> withKey(Key<? super T> key) {
         throw new UnsupportedOperationException();
@@ -307,7 +307,8 @@ public class Factory<T> {
         return new Factory<>(new FactorySupport<T>(factory.function.withLookup(lookup), factory.dependencies));
     }
 
-    public Factory<T> withType(Class<? extends T> type) {
+    public Factory<T> useExactType(Class<? extends T> type) {
+
         // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
         // fulde info om implementation
         // @Inject
@@ -380,36 +381,7 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(new FactorySupport<>(InstanceInvoker.of(instance), List.of()));
-    }
-}
-
-/** An factory support class. */
-final class FactorySupport<T> {
-
-    /** A list of all of this factory's dependencies. */
-    final List<InternalDependencyDescriptor> dependencies;
-
-    /** The function used to create a new instance. */
-    final InternalFunction<T> function;
-
-    /** The key that this factory will be registered under by default with an injector. */
-    final Key<T> defaultKey;
-
-    FactorySupport(InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
-        this.dependencies = requireNonNull(dependencies, "dependencies is null");
-        this.function = requireNonNull(function);
-        this.defaultKey = function.typeLiteral.toKey();
-    }
-
-    /**
-     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
-     * {@link OnStart} and {@link Provide}.
-     *
-     * @return the scannable type of this factory
-     */
-    Class<? super T> getScannableType() {
-        return function.getReturnTypeRaw();
+        return new Factory<>(new FactorySupport<>(InstanceFunctionHandle.of(instance), List.of()));
     }
 }
 
@@ -418,14 +390,14 @@ final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableInvoker<>(TypeLiteral.of(implementation), executable, null, null),
+        return new FactorySupport<>(new ExecutableFunctionHandle<>(TypeLiteral.of(implementation), executable, null, null),
                 InternalDependencyDescriptor.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableInvoker<>(implementation, executable, null, null), InternalDependencyDescriptor.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFunctionHandle<>(implementation, executable, null, null), InternalDependencyDescriptor.fromExecutable(executable));
     }
 
     private static InternalExecutableDescriptor findExecutable(Class<?> type) {
@@ -494,6 +466,35 @@ final class FactoryFindInjectableExecutable {
             }
         }
         return InternalConstructorDescriptor.of(constructor);
+    }
+}
+
+/** An factory support class. */
+final class FactorySupport<T> {
+
+    /** The key that this factory will be registered under by default with an injector. */
+    final Key<T> defaultKey;
+
+    /** A list of all of this factory's dependencies. */
+    final List<InternalDependencyDescriptor> dependencies;
+
+    /** The function used to create a new instance. */
+    final FunctionHandle<T> function;
+
+    FactorySupport(FunctionHandle<T> function, List<InternalDependencyDescriptor> dependencies) {
+        this.dependencies = requireNonNull(dependencies, "dependencies is null");
+        this.function = requireNonNull(function);
+        this.defaultKey = function.typeLiteral.toKey();
+    }
+
+    /**
+     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
+     * {@link OnStart} and {@link Provide}.
+     *
+     * @return the scannable type of this factory
+     */
+    Class<? super T> getScannableType() {
+        return function.getReturnTypeRaw();
     }
 }
 

@@ -38,24 +38,21 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableUtil;
 
-/**
- *
- */
-// Something
-public class OnHookExtensionContainer {
+/** This class contains information about {@link OnHook} methods for an extension type. */
+final class ExtensionOnHookDescriptor {
 
-    /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<OnHookExtensionContainer> CACHE = new ClassValue<>() {
+    /** A cache of descriptors for a particular extension type. */
+    private static final ClassValue<ExtensionOnHookDescriptor> CACHE = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected OnHookExtensionContainer computeValue(Class<?> type) {
+        protected ExtensionOnHookDescriptor computeValue(Class<?> type) {
             return new Builder((Class<? extends Extension>) type).build();
         }
     };
 
+    /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
     final IdentityHashMap<Class<?>, MethodHandle> aggregators;
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
@@ -67,9 +64,16 @@ public class OnHookExtensionContainer {
     /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
     final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes;
 
+    /** The extension type we manage information for. */
     private final Class<? extends Extension> extensionType;
 
-    private OnHookExtensionContainer(Builder builder) {
+    /**
+     * Creates a new manager from the specified builder.
+     * 
+     * @param builder
+     *            the builder to create the manager from
+     */
+    private ExtensionOnHookDescriptor(Builder builder) {
         this.extensionType = builder.extensionType;
         this.aggregators = builder.aggregators;
         this.annotatedFields = builder.annotatedFields;
@@ -77,60 +81,37 @@ public class OnHookExtensionContainer {
         this.annotatedTypes = builder.annotatedTypes;
     };
 
-    @SuppressWarnings("unchecked")
-    MethodHandle forAnnotatedField(ExtensionHookPerComponentGroup.Builder builder, PackedAnnotatedFieldHook<?> paf) {
+    MethodHandle findMethodHandleForAnnotatedField(PackedAnnotatedFieldHook<?> paf) {
         MethodHandle mh = annotatedFields.get(paf.annotation().annotationType());
         if (mh == null) {
             throw new UnsupportedOperationException("" + paf.annotation().annotationType() + " for extension " + extensionType);
         }
-
-        Class<?> owner = mh.type().parameterType(0);
-        if (owner == extensionType) {
-            builder.callbacks.add(new Callback(mh, paf));
-        } else {
-            OnHookAggregator a = OnHookAggregator.get((Class<? extends Supplier<?>>) owner);
-            Supplier<?> sup = builder.mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
-            try {
-                mh.invoke(sup, paf);
-            } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                throw new RuntimeException(e);
-            }
-        }
         return mh;
     }
 
-    @SuppressWarnings("unchecked")
-    MethodHandle forAnnotatedMethod(ExtensionHookPerComponentGroup.Builder builder, PackedAnnotatedMethodHook<?> paf) {
+    MethodHandle findMethodHandleForAnnotatedMethod(PackedAnnotatedMethodHook<?> paf) {
         MethodHandle mh = annotatedMethods.get(paf.annotation().annotationType());
         if (mh == null) {
             throw new UnsupportedOperationException();
         }
-
-        Class<?> owner = mh.type().parameterType(0);
-        if (owner == extensionType) {
-            builder.callbacks.add(new Callback(mh, paf));
-        } else {
-            OnHookAggregator a = OnHookAggregator.get((Class<? extends Supplier<?>>) owner);
-            Supplier<?> sup = builder.mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
-            try {
-                mh.invoke(sup, paf);
-            } catch (Throwable e) {
-                ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                throw new RuntimeException(e);
-            }
-        }
         return mh;
     }
 
-    static OnHookExtensionContainer get(Class<? extends Extension> cl) {
-        return CACHE.get(cl);
+    /**
+     * Returns a descriptor for the specified extensionType
+     * 
+     * @param extensionType
+     *            the extension type to return a descriptor for
+     * @return the descriptor
+     * @throws InvalidDeclarationException
+     *             if the usage of {@link OnHook} on the extension does not adhere to contract
+     */
+    static ExtensionOnHookDescriptor get(Class<? extends Extension> extensionType) {
+        return CACHE.get(extensionType);
     }
 
-    static class Builder {
-
-        /** The type of extension that will be activated. */
-        private final Class<? extends Extension> extensionType;
+    /** A builder for {@link ExtensionOnHookDescriptor}. */
+    private static class Builder {
 
         final IdentityHashMap<Class<?>, MethodHandle> aggregators = new IdentityHashMap<>();
 
@@ -142,6 +123,9 @@ public class OnHookExtensionContainer {
 
         /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
         private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
+
+        /** The type of extension that will be activated. */
+        private final Class<? extends Extension> extensionType;
 
         private Builder(Class<? extends Extension> extensionType) {
             this.extensionType = requireNonNull(extensionType);
@@ -166,7 +150,7 @@ public class OnHookExtensionContainer {
 
             Class<? extends Supplier<?>> aggregateType = oh.aggreateWith();
 
-            if (aggregateType != OnHookAggregator.NoAggregator.class) {
+            if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;
                 try {
                     method.setAccessible(true);
@@ -179,7 +163,7 @@ public class OnHookExtensionContainer {
                 NativeImage.registerMethod(method);
 
                 aggregators.put(aggregateType, mh);
-                OnHookAggregator oha = OnHookAggregator.get(aggregateType);
+                OnHookAggregatorDescriptor oha = OnHookAggregatorDescriptor.get(aggregateType);
                 annotatedFields.putAll(oha.annotatedFields);
                 annotatedMethods.putAll(oha.annotatedMethods);
                 annotatedTypes.putAll(oha.annotatedTypes);
@@ -197,9 +181,6 @@ public class OnHookExtensionContainer {
                         + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
                         + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
             }
-
-            // TODO Auto-generated method stub
-
         }
 
         private void addHookMethod0(Lookup lookup, Method method, Parameter p, IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
@@ -225,10 +206,9 @@ public class OnHookExtensionContainer {
             NativeImage.registerMethod(method);
 
             annotations.put(annotationType, mh);
-
         }
 
-        private OnHookExtensionContainer build() {
+        private ExtensionOnHookDescriptor build() {
             for (Class<?> c = extensionType; c != Extension.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
                     OnHook oh = method.getAnnotation(OnHook.class);
@@ -238,17 +218,7 @@ public class OnHookExtensionContainer {
                 }
             }
 
-            return new OnHookExtensionContainer(this);
+            return new ExtensionOnHookDescriptor(this);
         }
-
     }
 }
-
-// Invocation
-
-// @OnHook
-
-// AnnotationTarget
-//// Extension - @OnHook
-
-// Future - Sidecars, @OnHook

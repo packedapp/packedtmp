@@ -13,27 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.container;
 
-import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
+import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ArtifactRuntimeContext;
 
 /**
  *
  */
-// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class InternalFunctionBindable<T> extends InternalFunction<T> {
+public class NonInstantiatingArtifactDriver<T> extends ArtifactDriver<T> {
 
-    InternalFunction<T> wrapping;
-
-    public InternalFunctionBindable(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral);
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isInstantiating() {
+        return false;
     }
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public T invoke(Object[] params) {
-        return null;
+    protected void configure() {
+        // TODO Auto-generated method stub
+        super.configure();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected final T instantiate(ArtifactRuntimeContext context) {
+        throw new UnsupportedOperationException();
     }
 }

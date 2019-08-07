@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.Factory;
 import app.packed.util.TypeLiteral;
 
-/** A factory that returns the same instance on every invocation. */
-public final class InstanceInvoker<T> extends InternalFunction<T> {
+/** A function handle that takes no arguments and returns the same instance every time. */
+public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
 
     /** The instance that is returned every time. */
     private final T instance;
 
-    private InstanceInvoker(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
+    private InstanceFunctionHandle(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
         super(typeLiteralOrKey, actualType);
         this.instance = instance;
     }
@@ -48,9 +48,9 @@ public final class InstanceInvoker<T> extends InternalFunction<T> {
      * @see Factory#ofInstance(Object)
      */
     @SuppressWarnings("unchecked")
-    public static <T> InternalFunction<T> of(T instance) {
+    public static <T> FunctionHandle<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
-        return new InstanceInvoker<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
+        return new InstanceFunctionHandle<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
     }
 }

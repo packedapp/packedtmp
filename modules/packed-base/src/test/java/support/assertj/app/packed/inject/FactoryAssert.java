@@ -47,7 +47,7 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
 
     public FactoryAssert<T> is(Key<?> type) {
         isNotNull();
-        Key<?> key = actual.defaultKey();
+        Key<?> key = actual.key();
         if (!key.equals(type)) {
             failWithMessage("\nExpecting key of type '%s' but was '%s'", key, type);
         }

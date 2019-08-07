@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -34,7 +34,7 @@ import app.packed.util.TypeLiteral;
 
 // checker aldrig for null.
 // Men checker den korrekte type???
-public abstract class InternalFunction<T> {
+public abstract class FunctionHandle<T> extends Object {
 
     //////// TYPES (Raw)
     // ExactType... -> Instance, Constructor
@@ -67,11 +67,11 @@ public abstract class InternalFunction<T> {
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    public InternalFunction(TypeLiteral<T> typeLiteralOrKey) {
+    public FunctionHandle(TypeLiteral<T> typeLiteralOrKey) {
         this(typeLiteralOrKey, typeLiteralOrKey.rawType());
     }
 
-    public InternalFunction(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
+    public FunctionHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.type = typeLiteral.rawType();
@@ -113,7 +113,7 @@ public abstract class InternalFunction<T> {
     @Nullable
     public abstract T invoke(Object[] params);
 
-    public InternalFunction<T> withLookup(Lookup lookup) {
+    public FunctionHandle<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
     }
 }

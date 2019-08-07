@@ -13,14 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.pfunction;
+package packed.internal.invoke;
+
+import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
 /**
- *
+ * An internal factory
  */
+public abstract class InvokableMember<T> extends FunctionHandle<T> {
 
-// Ideen er vi kan visit en pipeline...
-// Field Dsdsd#ewee .mapVia(.getclass()).
-public interface PFunctionVisitor {
+    @Nullable
+    final Object instance;
 
+    public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
+        super(typeLiteralOrKey);
+        this.instance = instance;
+    }
+
+    public abstract InvokableMember<T> withInstance(Object instance);
+
+    public abstract boolean isMissingInstance();
 }

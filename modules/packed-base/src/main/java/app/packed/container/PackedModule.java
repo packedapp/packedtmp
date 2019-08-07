@@ -35,5 +35,5 @@ public @interface PackedModule {
     // Okay I think we need to allow link to take any container source....
     // And just throw an IllegalArgumentException if using an image.
 
-    Class<? extends AnyBundle> bundle();
+    Class<? extends Bundle> bundle();
 }

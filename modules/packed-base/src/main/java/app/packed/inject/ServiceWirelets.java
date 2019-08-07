@@ -37,6 +37,11 @@ public final class ServiceWirelets {
     // restrict optional services going in (some contract????) Bare besvaereligt at lave negative contracter.
     // Med mindre vi arbejder med commotative, associative osv. kontrakter...
 
+    /**
+     * @param <T>
+     * @param factory
+     * @return a wirelet that provides
+     */
     public static <T> Wirelet provide(Factory0<T> factory) {
         throw new UnsupportedOperationException();
     }

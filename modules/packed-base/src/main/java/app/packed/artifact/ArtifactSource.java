@@ -18,13 +18,14 @@ package app.packed.artifact;
 import java.util.function.Supplier;
 
 import app.packed.component.Component;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 
 /**
- * A source of an artifact. Currently the following types of artifact sources are supported:
+ * An artifact source can be used to create an artifact. Currently the following types of artifact sources are
+ * supported:
  * 
  * 
- * This is typically either a subclass of {@link AnyBundle} or a pregenerated {@link ArtifactImage container image}.
+ * This is typically either a subclass of {@link Bundle} or a pregenerated {@link ArtifactImage container image}.
  * <p>
  * TODO maybe list all the s
  * <p>
@@ -40,9 +41,10 @@ import app.packed.container.AnyBundle;
 // before we make
 
 // Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
+// ArtifactSource type....
 public interface ArtifactSource {
 
-    static ArtifactSource ofRepeatableBundle(Supplier<? extends AnyBundle> supplier) {
+    static ArtifactSource ofRepeatableBundle(Supplier<? extends Bundle> supplier) {
         throw new UnsupportedOperationException();
     }
 

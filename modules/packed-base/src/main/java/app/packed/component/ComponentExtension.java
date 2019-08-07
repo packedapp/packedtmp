@@ -17,7 +17,7 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
@@ -67,7 +67,7 @@ public final class ComponentExtension extends Extension {
      * @param wirelets
      *            optional wirelets
      */
-    public void link(AnyBundle bundle, Wirelet... wirelets) {
+    public void link(Bundle bundle, Wirelet... wirelets) {
         configuration.link(bundle, wirelets);
     }
 

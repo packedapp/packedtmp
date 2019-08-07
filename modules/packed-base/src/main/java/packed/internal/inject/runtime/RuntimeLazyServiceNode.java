@@ -24,7 +24,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.inject.Provider;
 import packed.internal.inject.buildtime.BuildServiceNode;
-import packed.internal.invokable.InternalFunction;
+import packed.internal.invoke.FunctionHandle;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
@@ -46,7 +46,7 @@ public final class RuntimeLazyServiceNode<T> extends AbstractRuntimeServiceNode<
      * @param factory
      *            the factory that will create the instance
      */
-    public RuntimeLazyServiceNode(BuildServiceNode<T> node, InternalFunction<T> factory, @Nullable AbstractRuntimeServiceNode<T> parent) {
+    public RuntimeLazyServiceNode(BuildServiceNode<T> node, FunctionHandle<T> factory, @Nullable AbstractRuntimeServiceNode<T> parent) {
         super(node);
         this.lazy = new Sync(new RuntimePrototypeServiceNode<>(node, factory), parent);
     }

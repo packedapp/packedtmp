@@ -22,12 +22,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.artifact.ArtifactType;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
@@ -93,14 +94,14 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
      * 
      * @param site
      *            the configuration site of the artifact
-     * @param artifactType
-     *            the type of artifact we are building.
+     * @param artifactDriver
+     *            the artifact driver used to create the artifact.
      */
-    AbstractComponentConfiguration(InternalConfigSite site, ArtifactType artifactType) {
+    AbstractComponentConfiguration(InternalConfigSite site, ArtifactDriver<?> artifactDriver) {
         this.site = requireNonNull(site);
         this.parent = null;
         this.depth = 0;
-        this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactType);
+        this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
     }
 
     void addChild(AbstractComponentConfiguration configuration) {
@@ -202,9 +203,9 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         if (this instanceof PackedContainerConfiguration) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            AnyBundle bundle = (@Nullable AnyBundle) ((PackedContainerConfiguration) this).configurator.source;
-            if (bundle != null) {
-                String nnn = bundle.getClass().getSimpleName();
+            ArtifactSource source = ((PackedContainerConfiguration) this).configurator.source;
+            if (source instanceof Bundle) {
+                String nnn = source.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
                     nnn = nnn.substring(0, nnn.length() - 6);
                 }
@@ -217,6 +218,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
                     return "Container";
                 }
             }
+            // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
         } else {
             return ((DefaultComponentConfiguration) this).ccd.defaultPrefix();
@@ -280,7 +282,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ComponentExtension#link(AnyBundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ComponentExtension#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

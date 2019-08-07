@@ -16,7 +16,7 @@
 package app.packed.host;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 
@@ -39,13 +39,13 @@ import app.packed.container.Wirelet;
 // Taenker maaske det bliver
 interface Host {
 
-    public static void main(AnyBundle b) {}
+    public static void main(Bundle b) {}
 
     public static Host of(ArtifactSource source) {
         throw new UnsupportedOperationException();
     }
 
-    public static void addHost(ContainerConfiguration cc, AnyBundle bundle, Wirelet... wirelets) {
+    public static void addHost(ContainerConfiguration cc, Bundle bundle, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

@@ -24,11 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
@@ -70,15 +70,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /**
      * Creates a new container configuration.
      * 
-     * @param artifactType
-     *            the type of artifact we are building
+     * @param artifactDriver
+     *            the type of artifact driver used for creating the artifact
      * @param configurator
      *            the source source
      * @param wirelets
      *            any wirelets that was given by the user
      */
-    public PackedContainerConfiguration(ArtifactType artifactType, ContainerSource configurator, Wirelet... wirelets) {
-        super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactType);
+    public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource configurator, Wirelet... wirelets) {
+        super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactDriver);
         this.configurator = requireNonNull(configurator);
         this.lookup = this.configuratorCache = configurator.cache();
         this.wirelets = WireletList.of(wirelets);
@@ -120,8 +120,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * Configures the configuration.
      */
     private void configure() {
-        if (configurator.source instanceof AnyBundle) {
-            AnyBundle bundle = (AnyBundle) configurator.source;
+        if (configurator.source instanceof Bundle) {
+            Bundle bundle = (Bundle) configurator.source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
@@ -233,7 +233,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedArtifactContext(parent, this, ic);
     }
 
-    public void link(AnyBundle bundle, Wirelet... wirelets) {
+    public void link(Bundle bundle, Wirelet... wirelets) {
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.

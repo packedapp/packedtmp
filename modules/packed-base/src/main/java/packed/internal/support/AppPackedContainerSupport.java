@@ -17,7 +17,7 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
@@ -45,7 +45,7 @@ public final class AppPackedContainerSupport {
          */
         public abstract void initializeExtension(Extension extension, PackedContainerConfiguration configuration);
 
-        public abstract void doConfigure(AnyBundle bundle, ContainerConfiguration configuration);
+        public abstract void doConfigure(Bundle bundle, ContainerConfiguration configuration);
 
         public abstract void onConfigured(Extension extension);
 

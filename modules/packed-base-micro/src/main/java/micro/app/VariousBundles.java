@@ -16,8 +16,8 @@
 package micro.app;
 
 import app.packed.artifact.ArtifactImage;
+import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.container.AnyBundle;
 
 /**
  *
@@ -29,12 +29,12 @@ public class VariousBundles {
     public static final ArtifactImage FIVE_CONTAINER_IMAGE = ArtifactImage.of(fiveComponents());
     public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
 
-    public static AnyBundle empty() {
-        return new Bundle() {};
+    public static Bundle empty() {
+        return new BaseBundle() {};
     }
 
-    public static AnyBundle oneComponent() {
-        return new Bundle() {
+    public static Bundle oneComponent() {
+        return new BaseBundle() {
 
             @Override
             public void configure() {
@@ -43,8 +43,8 @@ public class VariousBundles {
         };
     }
 
-    public static AnyBundle fiveComponents() {
-        return new Bundle() {
+    public static Bundle fiveComponents() {
+        return new BaseBundle() {
 
             @Override
             public void configure() {
@@ -57,12 +57,12 @@ public class VariousBundles {
         };
     }
 
-    public static AnyBundle oneContainer() {
-        return new Bundle() {
+    public static Bundle oneContainer() {
+        return new BaseBundle() {
 
             @Override
             public void configure() {
-                link(new Bundle() {});
+                link(new BaseBundle() {});
             }
         };
     }

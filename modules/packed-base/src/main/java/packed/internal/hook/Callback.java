@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 /**
  *
  */
-class Callback {
+final class Callback {
     final MethodHandle mh;
     final Object o;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.invoke.lambda;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,17 +21,18 @@ import java.util.function.Function;
 
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.invoke.FunctionHandle;
 
 /** A function that maps the result of another function. */
-public class InternalMapperFunction<T, R> extends InternalFunction<R> {
+public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
 
     /** The function we map the result from. */
-    private final InternalFunction<T> mapFrom;
+    private final FunctionHandle<T> mapFrom;
 
     /** The function used to map the result. */
     private final Function<? super T, ? extends R> mapper;
 
-    public InternalMapperFunction(TypeLiteral<R> typeLiteral, InternalFunction<T> mapFrom, Function<? super T, ? extends R> mapper) {
+    public MappingFunctionHandle(TypeLiteral<R> typeLiteral, FunctionHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
         super(typeLiteral);
         this.mapFrom = requireNonNull(mapFrom, "mapFrom is null");
         this.mapper = requireNonNull(mapper, "mapper is null");

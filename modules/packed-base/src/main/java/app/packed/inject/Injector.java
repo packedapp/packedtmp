@@ -19,18 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.artifact.ArtifactImage;
+import app.packed.app.App;
+import app.packed.artifact.ArtifactConfigurator;
+import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.ArtifactRuntimeContext;
 import app.packed.artifact.ArtifactSource;
-import app.packed.artifact.ArtifactType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.container.ContainerSource;
-import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.
@@ -282,12 +281,17 @@ public interface Injector {
      */
     // TODO I think move this to InjectorCongurator, InjectorConfigurator.spawn...
     // or maybe Injector.configure() instead
-    static Injector configure(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-        requireNonNull(configurator, "configurator is null");
-        PackedContainerConfiguration configuration = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.ofConsumer(configurator),
-                wirelets);
-        configurator.accept(new InjectorConfigurator(configuration));
-        return configuration.buildInjector();
+    // interface ArtifactConfigurator() {}
+    // configure()
+    static Injector configure(ArtifactConfigurator<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
+        return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorConfigurator(c), configurator, wirelets);
+        //
+        // requireNonNull(configurator, "configurator is null");
+        // PackedContainerConfiguration configuration = new PackedContainerConfiguration(InjectorArtifactDriver.INSTANCE,
+        // ContainerSource.ofConsumer(configurator),
+        // wirelets);
+        // configurator.accept(new InjectorConfigurator(configuration));
+        // return configuration.buildInjector();
     }
 
     /**
@@ -302,12 +306,36 @@ public interface Injector {
      *             if the bundle defines any components, or anything else that requires a lifecycle
      */
     static Injector of(ArtifactSource source, Wirelet... wirelets) {
-        if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).newInjector(wirelets);
-        }
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(ArtifactType.INJECTOR, ContainerSource.of(source), wirelets);
-        return conf.buildInjector();
+        return InjectorArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
+}
+
+/** An artifact driver for creating {@link App} instances. */
+final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
+
+    /** The single instance. */
+    static final InjectorArtifactDriver INSTANCE = new InjectorArtifactDriver();
+
+    /** Singleton */
+    private InjectorArtifactDriver() {}
+
+    /** {@inheritDoc} */
+    @Override
+    public Injector instantiate(ArtifactRuntimeContext container) {
+        return container.injector();
+    }
+}
+
+interface InjectorFactory {
+    // Tager disse to objekter, laver en injector fra bundlen.
+    // Og outputter String
+    String spawn(long str1, int str2);
+
+    Injector spawn(String httpRequest, String httpResponse);
+}
+
+interface UserDefinedSpawner {
+    // App spawn(Host h, String httpRequest, String httpResponse);
 }
 
 // We do not put service contract on a running object, because it does not work very good.

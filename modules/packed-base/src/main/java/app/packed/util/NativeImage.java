@@ -28,6 +28,12 @@ import java.lang.reflect.Method;
 // NativeImageHelper, NativeImageSupport
 public final class NativeImage {
 
+    protected static void checkNotNative(String message) {
+        // for example
+        // checkNotNative("Cannot change the JDBC driver, when running in native mode, was " + driver);
+        // check grall
+    }
+
     public void saveMethod(Method m) {}
 
     public static Mode mode() {

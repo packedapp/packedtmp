@@ -19,13 +19,22 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.PreparedLambda;
 import app.packed.lifecycle.Main;
 
 /**
  *
  */
 public class TestIt {
+
+    @OnHook
+    public void foo(AnnotatedMethodHook<Main> h) {
+        // Vi kan jo toptune den aggregator....
+        PreparedLambda<Runnable> main = h.newRunnable();
+        System.out.println(main);
+    }
 
     @OnHook
     public void foo(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
@@ -39,5 +48,36 @@ public class TestIt {
         Integer s = 123;
         c2.accept(s);
         c3.accept(s);
+    }
+
+    @OnHook
+    public void foo(ComponentConfiguration cc, MainAggregate ma) {
+        if (ma.main != null) {
+            // install LifecycleSidecar
+
+            // Problem hvad med Component
+            // cc.prep(ma.main, LifecycleSidecar.class, (s, r) -> s.setRunnable(r))
+            // Vi kan jo ikke bare lave en @OnHook... jo
+
+            // Hvordan skal det here fungere med runtime componenter.
+            // der kan vi jo ikke faa hjaelp af extensionen...
+        }
+        // Yes der er en main....
+    }
+
+    static class MainAggregate {
+        PreparedLambda<Runnable> main;
+    }
+
+    public class LifecycleSidecar {
+
+        void setRunnable(Runnable r) {
+
+        }
+
+        @OnHook
+        public void foo(ComponentConfiguration cc, MainAggregate ma) {
+
+        }
     }
 }

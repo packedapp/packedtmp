@@ -77,7 +77,7 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      */
     MethodHandle unreflectSpecial(MethodHandles.Lookup lookup, Class<?> specialCaller) throws IllegalAccessException;
 
-    public static MethodDescriptor of(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
+    static MethodDescriptor of(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
         throw new UnsupportedOperationException();
     }
 
@@ -88,7 +88,7 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      *            the method to return a descriptor from
      * @return the new method descriptor
      */
-    public static MethodDescriptor of(Method method) {
+    static MethodDescriptor of(Method method) {
         return InternalMethodDescriptor.of(method);
     }
 }

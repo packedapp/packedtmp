@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.operations;
+package app.packed.hook;
 
 import java.lang.invoke.MethodHandle;
 
-/** An operation that calls a constructor via a {@link MethodHandle}. */
-public final class ConstructorOperation {
+/**
+ *
+ */
+// HookCollector
+// Tror godt vi vil have en specific alligevel....
+// Bliver hurtig lidt rodet nu med en
+public interface HookAggregator<T> {
+
+    public static void foo(MethodHandle mh) {
+        mh.bindTo("ddd");
+    }
 
 }
+
+// Vi kan godt supportere consumation af nogle instantiated method handles....

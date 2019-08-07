@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 
-import packed.internal.invokable.InvokableMember;
+import packed.internal.invoke.InvokableMember;
 
 /**
  *

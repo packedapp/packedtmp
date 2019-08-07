@@ -57,7 +57,7 @@ public abstract class Extension {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
             @Override
-            public void doConfigure(AnyBundle bundle, ContainerConfiguration configuration) {
+            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
                 bundle.doConfigure(configuration);
             }
 
@@ -182,7 +182,7 @@ public abstract class Extension {
     protected void onAdded() {} // afterAdd
 
     /**
-     * Invoked immediately after a container has been successfully configured. Typically after {@link AnyBundle#configure()}
+     * Invoked immediately after a container has been successfully configured. Typically after {@link Bundle#configure()}
      * has returned.
      * <p>
      * The default implementation does nothing.
@@ -206,15 +206,14 @@ public abstract class Extension {
         // Ikke goer noget sjovt her. Hmm, altsaa indvitere man en extension indenfor...
 
         // Men vi vel helst have at de giver adgang via module-info...
-
     }
 
     /**
-     * Returns an extension of the specified type. Invoking this method is similar to calling
-     * {@link ContainerConfiguration#use(Class)}.
+     * Returns an extension of the specified type.
      * <p>
-     * The runtime keeps track of extensions usage of other extensions via this method. And forming any kind of circle in
-     * the dependency graph will fail with a runtime exception.
+     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, unlike the method on
+     * {@link ContainerConfiguration}. This method keeps track of which extensions uses other extensions. And forming any
+     * kind of circle in the dependency graph will fail with a runtime exception.
      * 
      * @param <E>
      *            the type of extension to return

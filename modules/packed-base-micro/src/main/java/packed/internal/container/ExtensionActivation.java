@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ActivateExtension;
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -53,13 +53,13 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage empty() {
-        Bundle b = new Bundle() {};
+        BaseBundle b = new BaseBundle() {};
         return ArtifactImage.of(b);
     }
 
     @Benchmark
     public ArtifactImage useExtension() {
-        Bundle b = new Bundle() {
+        BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
@@ -70,7 +70,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage install() {
-        Bundle b = new Bundle() {
+        BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 install("foo");
@@ -81,7 +81,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage newExtensionUseInstall() {
-        Bundle b = new Bundle() {
+        BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
@@ -93,7 +93,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage newExtensionAutoActivate() {
-        Bundle b = new Bundle() {
+        BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
                 install(new MyStuff());

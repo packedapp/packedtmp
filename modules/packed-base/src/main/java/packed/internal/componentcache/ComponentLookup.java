@@ -24,8 +24,8 @@ import java.lang.reflect.Method;
 
 import packed.internal.componentcache.deprecated.MemberScanner;
 import packed.internal.componentcache.deprecated.ServiceClassDescriptor;
-import packed.internal.invokable.ExecutableInvoker;
-import packed.internal.invokable.InternalFunction;
+import packed.internal.invoke.ExecutableFunctionHandle;
+import packed.internal.invoke.FunctionHandle;
 
 /**
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and
@@ -51,12 +51,12 @@ public interface ComponentLookup {
 
     Lookup lookup();
 
-    default <T> InternalFunction<T> readable(InternalFunction<T> factory) {
+    default <T> FunctionHandle<T> readable(FunctionHandle<T> factory) {
         // TODO needs to cached
 
         // TODO add field...
-        if (factory instanceof ExecutableInvoker) {
-            ExecutableInvoker<T> e = (ExecutableInvoker<T>) factory;
+        if (factory instanceof ExecutableFunctionHandle) {
+            ExecutableFunctionHandle<T> e = (ExecutableFunctionHandle<T>) factory;
             if (!e.hasMethodHandle()) {
                 return e.withLookup(lookup());
             }

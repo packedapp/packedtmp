@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -158,7 +158,7 @@ final class LifecycleHookAggregator implements Supplier<MethodHandle> {
 // ....
 @interface UsesPicoCli {}
 
-class X extends Bundle {
+class X extends BaseBundle {
 
     @Override
     public void configure() {

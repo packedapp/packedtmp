@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Consumer;
 
+import app.packed.artifact.ArtifactConfigurator;
+import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.container.AnyBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
@@ -31,14 +31,14 @@ import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link Bundle}. Unlike
- * bundles all services are automatically exported once defined. For example useful in tests.
+ * {@link Injector#configure(ArtifactConfigurator, Wirelet...)}. This is thought of a alternative to using a
+ * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public class InjectorConfigurator /* implements Taggable */ {
+public final class InjectorConfigurator /* implements Taggable */ {
 
     /** The configuration we delegate all calls to. */
     private final ContainerConfiguration configuration;
@@ -132,7 +132,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void link(AnyBundle bundle, Wirelet... stages) {
+    public final void link(Bundle bundle, Wirelet... stages) {
         ((PackedContainerConfiguration) configuration).link(bundle, stages);
     }
 
@@ -186,7 +186,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @param implementation
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
-     * @see Bundle#provide(Class)
+     * @see BaseBundle#provide(Class)
      */
     public final <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
         return injector().provide(implementation);
@@ -196,7 +196,7 @@ public class InjectorConfigurator /* implements Taggable */ {
      * Binds the specified factory to a new service. When the injector is created the factory will be invoked <b>once</b> to
      * instantiate the service instance.
      * <p>
-     * The default key for the service is determined by {@link Factory#defaultKey()}.
+     * The default key for the service is determined by {@link Factory#key()}.
      * 
      * @param <T>
      *            the type of service to bind
@@ -235,16 +235,10 @@ public class InjectorConfigurator /* implements Taggable */ {
      * @see #getDescription()
      * @see Injector#description()
      */
-    public final InjectorConfigurator setDescription(@Nullable String description) {
+    public final InjectorConfigurator setDescription(String description) {
         configuration.setDescription(description);
         return this;
     }
-    //
-    // /** {@inheritDoc} */
-    // @Override
-    // public final Set<String> tags() {
-    // return configuration.tags();
-    // }
 }
 // addStatics(); useStatics()
 // @OnHook

@@ -22,6 +22,7 @@ import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.packed.artifact.ArtifactImage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import packed.internal.container.ComponentNameWirelet;
@@ -49,8 +50,9 @@ import packed.internal.container.ComponentNameWirelet;
  * 
  * Operations is order Example with rebind
  * 
- * 
- * Pipeline
+ * <p>
+ * In order to work properly with {@link ArtifactImage artifact images}, wirelets must be safe to access by multiple
+ * concurrent threads.
  */
 // https://martinfowler.com/articles/collection-pipeline/
 // A bundling always has a bundle (source) and a target???
@@ -192,7 +194,7 @@ public abstract class Wirelet {
 
     /**
      * Returns a wirelet that will set the name of a container once wired, overriding any name that has previously been set,
-     * for example, via {@link AnyBundle#setName(String)}.
+     * for example, via {@link Bundle#setName(String)}.
      * 
      * @param name
      *            the name of the container
@@ -211,14 +213,14 @@ public abstract class Wirelet {
     // Lifecycle Phases, Virality
     enum Locality {
 
-        /** Only within the same container (default). */
-        PER_CONTAINER,
+        /** In the container, and all children even if different artifacts. */
+        INHERITED_ALL,
 
         /** In the container, and all children within the same artifact */
         INHERITED_ARTIFACT,
 
-        /** In the container, and all children even if different artifacts. */
-        INHERITED_ALL;
+        /** Only within the same container (default). */
+        PER_CONTAINER;
     }
 }
 //

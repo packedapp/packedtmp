@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
+import java.util.stream.Stream;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
@@ -33,13 +34,6 @@ import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
 /**
  *
  */
-// Includere den lookup??? Ja det taenker jeg...
-
-// Ved den alt?????? Alle metoder???
-// Man kan ikke installere en component senere vel??
-// Som paa magisk vis faar componenten
-
-// Der eksistere end ComponentClassDescriptor per Class+ComponentLookup
 public final class ComponentClassDescriptor {
 
     /** The component type. */
@@ -90,6 +84,10 @@ public final class ComponentClassDescriptor {
         }
     }
 
+    public void print() {
+        System.out.println("ComponentType = " + componentType + ", callbacks = " + Stream.of(extensionGroups).mapToInt(e -> e.getNumberOfCallbacks()).sum());
+    }
+
     /**
      * Returns the type of component.
      * 
@@ -112,13 +110,14 @@ public final class ComponentClassDescriptor {
             }
         };
 
-        /** A map of builders for every activated extension type. */
-        private final IdentityHashMap<Class<? extends Extension>, ExtensionHookPerComponentGroup.Builder> extensionBuilders = new IdentityHashMap<>();
-
-        private final ComponentLookup lookup;
-
         /** The component type. */
         private final Class<?> componentType;
+
+        /** A map of builders for every activated extension. */
+        private final IdentityHashMap<Class<? extends Extension>, ExtensionHookPerComponentGroup.Builder> extensionBuilders = new IdentityHashMap<>();
+
+        /** A lookup object for the component. */
+        private final ComponentLookup lookup;
 
         /**
          * @param lookup
@@ -136,6 +135,7 @@ public final class ComponentClassDescriptor {
          */
         ComponentClassDescriptor build() {
             for (Class<?> c = componentType; c != Object.class; c = c.getSuperclass()) {
+
                 for (Field field : c.getDeclaredFields()) {
                     for (Annotation a : field.getAnnotations()) {
                         Class<? extends Extension>[] cc = EXTENSION_ACTIVATORS.get(a.annotationType());

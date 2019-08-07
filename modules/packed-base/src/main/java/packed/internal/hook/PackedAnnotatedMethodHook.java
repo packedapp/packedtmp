@@ -36,8 +36,11 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     /** The annotation value */
     private final T annotation;
 
-    /** The annotated field. */
+    /** The annotated method. */
     private final Method method;
+
+    /** A cached method descriptor, is lazily created via {@link #method()}. */
+    private volatile MethodDescriptor descriptor;
 
     /** A lookup object used to create various handlers. */
     private final Lookup lookup;
@@ -62,9 +65,14 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         return lookup;// Temporary method
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodDescriptor method() {
-        return MethodDescriptor.of(method);
+        MethodDescriptor d = descriptor;
+        if (d == null) {
+            descriptor = d = MethodDescriptor.of(method);
+        }
+        return d;
     }
 
     @Override

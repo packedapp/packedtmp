@@ -21,16 +21,12 @@ import app.packed.component.ComponentContext;
 import app.packed.inject.Injector;
 
 /**
- * An artifact runtime context provides.
- * <p>
- * Artifact context are usually not exposed to end users. But is instead wrapped in a thin facade object, such as
- * {@link App} or {@link Injector}. Which delegates any call to the artifact context.
+ * An artifact runtime context provides precise control over a single (top level) container. Instances of this interface
+ * is normally neither exposed or used by end users. Instead it is wrapped in a thin facade object, such as {@link App}
+ * or {@link Injector}. Which delegates all call to this context.
  * <p>
  * An instance of this interface is normally acquired from a {@link ArtifactDriver#instantiate(ArtifactRuntimeContext)}.
  */
-// Hvis vi skal have noget some helst kontrol...
-// Boer vi ikke extende component, da vi risikiere
-// At returnere en instand i ComponentStream.
 public interface ArtifactRuntimeContext extends ComponentContext {
 
     /**
@@ -51,6 +47,9 @@ public interface ArtifactRuntimeContext extends ComponentContext {
 
     // Noget med entrypoint?? Nej tror ikke vi har behov for at expose dett..
 
+    @Override
+    Injector injector();
+
     default Class<?> resultType() {
         // Ideen er her taenkt at vi kan bruge den samme med Job...
         //// En anden slags entry point annotering...
@@ -58,9 +57,6 @@ public interface ArtifactRuntimeContext extends ComponentContext {
     }
 
     <T> T use(Class<T> key);
-
-    @Override
-    Injector injector();
 
     Component useComponent(CharSequence path);
 }

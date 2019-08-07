@@ -24,6 +24,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -283,6 +284,13 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box();
         Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
+    }
+
+    public static Key<?> fromParameter(Parameter parameter) {
+        requireNonNull(parameter, "parameter is null");
+        TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
+        Annotation annotation = JavaXInjectSupport.findQualifier(parameter, parameter.getAnnotations());
+        return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
 
     /**

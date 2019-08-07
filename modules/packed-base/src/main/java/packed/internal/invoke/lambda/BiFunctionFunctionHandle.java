@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.invoke.lambda;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -24,14 +24,15 @@ import app.packed.inject.Factory2;
 import app.packed.inject.InjectionException;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.invoke.FunctionHandle;
 
 /** An internal factory for {@link Factory2}. */
-public class Function2Invokable<T, U, R> extends InternalFunction<R> {
+public class BiFunctionFunctionHandle<T, U, R> extends FunctionHandle<R> {
 
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    public Function2Invokable(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
+    public BiFunctionFunctionHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
         super(typeLiteral);
         this.function = requireNonNull(function);
     }

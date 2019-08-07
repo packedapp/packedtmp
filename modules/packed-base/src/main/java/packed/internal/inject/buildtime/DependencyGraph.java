@@ -22,8 +22,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.artifact.ArtifactType;
 import app.packed.inject.InjectionException;
+import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
 import packed.internal.componentcache.deprecated.ServiceClassDescriptor;
@@ -66,7 +66,7 @@ public final class DependencyGraph {
         ib.nodes.put(d);
         // TODO replace with something a.la.
         // dcc.source.isInjectorConfigurator
-        if (root.buildContext().artifactType() == ArtifactType.INJECTOR) {
+        if (root.buildContext().artifactType() == Injector.class) {
             ib.publicInjector = ib.privateInjector;
         } else {
             ib.publicInjector = new DefaultInjector(root, ib.exports);

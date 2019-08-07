@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,7 +31,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
-public class ExecutableInvoker<T> extends InvokableMember<T> {
+public class ExecutableFunctionHandle<T> extends InvokableMember<T> {
 
     /**
      * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for
@@ -47,14 +47,14 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
     final MethodHandle methodHandle;
 
     @SuppressWarnings("unchecked")
-    public ExecutableInvoker(MethodDescriptor methodDescriptor) {
+    public ExecutableFunctionHandle(MethodDescriptor methodDescriptor) {
         super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), null);
         this.executable = methodDescriptor;
         this.methodHandle = null;
         this.checkLowerBound = false;
     }
 
-    public ExecutableInvoker(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, @Nullable Object instance) {
+    public ExecutableFunctionHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, @Nullable Object instance) {
         super(key, instance);
         this.executable = executable;
         this.methodHandle = methodHandle;
@@ -97,8 +97,8 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
 
     /** {@inheritDoc} */
     @Override
-    public ExecutableInvoker<T> withInstance(Object instance) {
-        return new ExecutableInvoker<>(getReturnType(), executable, methodHandle, instance);
+    public ExecutableFunctionHandle<T> withInstance(Object instance) {
+        return new ExecutableFunctionHandle<>(getReturnType(), executable, methodHandle, instance);
     }
 
     /**
@@ -109,7 +109,7 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public ExecutableInvoker<T> withLookup(Lookup lookup) {
+    public ExecutableFunctionHandle<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
             if (Modifier.isPrivate(executable.getModifiers())) {
@@ -120,6 +120,6 @@ public class ExecutableInvoker<T> extends InvokableMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableInvoker<>(getReturnType(), executable, handle, instance);
+        return new ExecutableFunctionHandle<>(getReturnType(), executable, handle, instance);
     }
 }

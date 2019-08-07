@@ -54,6 +54,15 @@ public interface AnnotatedMethodHook<T extends Annotation> {
     MethodHandle newMethodHandle();
 
     <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
+
+    default PreparedLambda<Runnable> newRunnable() {
+        throw new UnsupportedOperationException();
+    }
+
+    // checkNotOptional()
+    // Er taenkt til en optional componenter.... f.eks. kan man ikke registere @Provide metoder, men gerne @Inject metoder
+    // paa en optional component...
+
 }
 // Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
 /// Vi kan vel bare wrappe MethodHandles....

@@ -13,32 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
-
-import app.packed.util.TypeLiteral;
+package app.packed.artifact;
 
 /**
  *
  */
-public interface Invokable<T> {
+// Ideen er egentlig at de her configurators ogsaa er artifact sources....
 
-    TypeLiteral<T> getType();
+// Saa kan vi nemlig have <? extends ArtifactSource>
 
-    @SuppressWarnings("unchecked")
-    default Class<T> getRawType() {
-        return (Class<T>) getType().rawType();
-    }
-
-    boolean isNullable();
-
-    boolean isFailable();
-
-    T invoke(Object[] arguments);
-
-    enum Type {
-        UNSAFE_NULLABLE, /**/
-        SUPER_SAFE_NULLABLE, /**/
-        FIXED;
-    }
+// Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
+@FunctionalInterface
+public interface ArtifactConfigurator<T> extends ArtifactSource {
+    void configure(T configurator);
 }
-// should invoke

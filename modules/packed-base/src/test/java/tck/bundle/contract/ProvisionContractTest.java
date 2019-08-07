@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.BundleContract;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
@@ -38,7 +38,7 @@ public class ProvisionContractTest {
 
     @Test
     public void empty() {
-        BundleContract c = BundleContract.of(new Bundle() {
+        BundleContract c = BundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {}
@@ -52,7 +52,7 @@ public class ProvisionContractTest {
 
     @Test
     public void provides() {
-        BundleContract d = BundleContract.of(new Bundle() {
+        BundleContract d = BundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -69,7 +69,7 @@ public class ProvisionContractTest {
 
     @Test
     public void requires() {
-        BundleContract d = BundleContract.of(new Bundle() {
+        BundleContract d = BundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -85,7 +85,7 @@ public class ProvisionContractTest {
 
     @Test
     public void optional() {
-        BundleContract d = BundleContract.of(new Bundle() {
+        BundleContract d = BundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -102,7 +102,7 @@ public class ProvisionContractTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        BundleContract d = BundleContract.of(new Bundle() {
+        BundleContract d = BundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -119,7 +119,7 @@ public class ProvisionContractTest {
 
     @Test
     public void all() {
-        BundleContract d = BundleContract.of(new Bundle() {
+        BundleContract d = BundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {

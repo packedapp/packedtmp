@@ -121,7 +121,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ArtifactSource, Wirelet...)} or {@link ComponentExtension#link(AnyBundle, Wirelet...)}.
+     * {@link App#of(ArtifactSource, Wirelet...)} or {@link ComponentExtension#link(Bundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

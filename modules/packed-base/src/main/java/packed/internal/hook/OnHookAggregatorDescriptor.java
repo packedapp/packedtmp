@@ -42,19 +42,22 @@ import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
- * An {@link OnHookAggregator} wraps
+ * An {@link OnHookAggregatorDescriptor} wraps
  */
-public final class OnHookAggregator {
+final class OnHookAggregatorDescriptor {
 
     /** A cache of information for aggregator types. */
-    private static final ClassValue<OnHookAggregator> CACHE = new ClassValue<>() {
+    private static final ClassValue<OnHookAggregatorDescriptor> CACHE = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected OnHookAggregator computeValue(Class<?> type) {
-            return new OnHookAggregator.Builder((Class<? extends Supplier<?>>) type).build();
+        protected OnHookAggregatorDescriptor computeValue(Class<?> type) {
+            return new OnHookAggregatorDescriptor.Builder((Class<? extends Supplier<?>>) type).build();
         }
     };
+
+    /** The type of aggregator. */
+    private final Class<?> aggregatorType;
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
     final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields;
@@ -65,14 +68,11 @@ public final class OnHookAggregator {
     /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
     final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes;
 
-    /** A constructor for creating a hook aggregator instance. */
+    /** A constructor for creating new aggregator instance. */
     private final MethodHandle constructor;
 
     /** The type of result the aggregator produces. */
     private final Class<?> resultType;
-
-    /** The type of aggregator. */
-    private final Class<?> aggregatorType;
 
     /**
      * Creates a new aggregator from the specified builder.
@@ -80,7 +80,7 @@ public final class OnHookAggregator {
      * @param builder
      *            the builder to create an aggregator from
      */
-    private OnHookAggregator(Builder builder) {
+    private OnHookAggregatorDescriptor(Builder builder) {
         this.constructor = requireNonNull(builder.constructor);
         this.aggregatorType = builder.aggregatorType;
         this.resultType = builder.resultType;
@@ -89,7 +89,7 @@ public final class OnHookAggregator {
         this.annotatedTypes = builder.annotatedTypes;
     }
 
-    public void invokeOnHook(Supplier<?> aggregator, AnnotatedFieldHook<?> hook) {
+    void invokeOnHook(Supplier<?> aggregator, AnnotatedFieldHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -111,7 +111,7 @@ public final class OnHookAggregator {
         }
     }
 
-    public void invokeOnHook(Supplier<?> aggregator, AnnotatedMethodHook<?> hook) {
+    void invokeOnHook(Supplier<?> aggregator, AnnotatedMethodHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -132,7 +132,7 @@ public final class OnHookAggregator {
         }
     }
 
-    public void invokeOnHook(Supplier<?> aggregator, AnnotatedTypeHook<?> hook) {
+    void invokeOnHook(Supplier<?> aggregator, AnnotatedTypeHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -146,7 +146,7 @@ public final class OnHookAggregator {
      * 
      * @return a new aggregator object
      */
-    public Supplier<?> newAggregatorInstance() {
+    Supplier<?> newAggregatorInstance() {
         try {
             return (Supplier<?>) constructor.invoke();
         } catch (Throwable e) {
@@ -159,15 +159,17 @@ public final class OnHookAggregator {
      * 
      * @return the type of result the aggregator produces
      */
-    public final Class<?> resultType() {
+    final Class<?> resultType() {
         return resultType;
     }
 
-    public static OnHookAggregator get(Class<? extends Supplier<?>> clazz) {
+    public static OnHookAggregatorDescriptor get(Class<? extends Supplier<?>> clazz) {
         return CACHE.get(clazz);
     }
 
     private static class Builder {
+
+        private final Class<? extends Supplier<?>> aggregatorType;
 
         final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
@@ -179,8 +181,6 @@ public final class OnHookAggregator {
 
         final Class<?> resultType;
 
-        private final Class<? extends Supplier<?>> aggregatorType;
-
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends Supplier<?>> aggregatorType) {
             this.aggregatorType = requireNonNull(aggregatorType);
@@ -188,7 +188,7 @@ public final class OnHookAggregator {
         }
 
         private void addHookMethod(Lookup lookup, Method method, OnHook onHook) {
-            if (onHook.aggreateWith() != NoAggregator.class) {
+            if (onHook.aggreateWith() != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 throw new InvalidDeclarationException("Cannot specify a aggregate class '" + onHook.aggreateWith().getCanonicalName()
                         + "' for a method on aggregator class, method = " + StringFormatter.format(method));
             }
@@ -243,7 +243,7 @@ public final class OnHookAggregator {
             annotations.put(annotationType, mh);
         }
 
-        OnHookAggregator build() {
+        OnHookAggregatorDescriptor build() {
             TypeUtil.checkClassIsInstantiable(aggregatorType);
 
             Constructor<?> constructor;
@@ -280,10 +280,7 @@ public final class OnHookAggregator {
             // Register the constructor if we are generating a native image
             NativeImage.registerConstructor(constructor);
 
-            return new OnHookAggregator(this);
+            return new OnHookAggregatorDescriptor(this);
         }
     }
-
-    /** A dummy type indicating that no aggregator should be used. */
-    public static abstract class NoAggregator implements Supplier<Void> {}
 }

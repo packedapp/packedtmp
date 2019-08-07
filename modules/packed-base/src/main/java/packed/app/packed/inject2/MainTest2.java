@@ -17,7 +17,7 @@ package packed.app.packed.inject2;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.lifecycle.Main;
 
 /**
@@ -34,7 +34,7 @@ public class MainTest2 extends AppBundle {
         App.of(new MainTest2());
     }
 
-    static class MyMainX extends Bundle {
+    static class MyMainX extends BaseBundle {
 
         @Override
         protected void configure() {

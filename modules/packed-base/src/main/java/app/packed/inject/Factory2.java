@@ -23,7 +23,7 @@ import java.util.function.BiFunction;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.Function2Invokable;
+import packed.internal.invoke.lambda.BiFunctionFunctionHandle;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
@@ -71,7 +71,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
     @SuppressWarnings("unchecked")
     static <T, U, R> FactorySupport<R> create(Class<?> implementation, BiFunction<?, ?, ? extends T> function) {
         Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(new Function2Invokable<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function),
+        return new FactorySupport<>(new BiFunctionFunctionHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function),
                 fs.getValue());
     }
 }

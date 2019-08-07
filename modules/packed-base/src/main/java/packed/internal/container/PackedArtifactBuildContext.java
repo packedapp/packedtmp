@@ -18,16 +18,16 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
-import app.packed.artifact.ArtifactType;
 import app.packed.config.ConfigSite;
 import app.packed.container.WireletList;
 
 /** The default implementation of {@link ArtifactBuildContext} */
 final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
-    /** The artifact type. */
-    private final ArtifactType artifactType;
+    /** The artifact driver. */
+    private final ArtifactDriver<?> driver;
 
     /** The configuration of the artifacts root container. */
     private final PackedContainerConfiguration rootContainerConfiguration;
@@ -37,18 +37,18 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
      * 
      * @param rootContainerConfiguration
      *            the configuration of the artifacts root container
-     * @param artifactType
-     *            the type of artifact we are building
+     * @param driver
+     *            the artifact driver
      */
-    PackedArtifactBuildContext(PackedContainerConfiguration rootContainerConfiguration, ArtifactType artifactType) {
+    PackedArtifactBuildContext(PackedContainerConfiguration rootContainerConfiguration, ArtifactDriver<?> driver) {
         this.rootContainerConfiguration = requireNonNull(rootContainerConfiguration);
-        this.artifactType = requireNonNull(artifactType);
+        this.driver = requireNonNull(driver);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactType artifactType() {
-        return artifactType;
+    public Class<?> artifactType() {
+        return driver.artifactType();
     }
 
     /** {@inheritDoc} */
@@ -67,5 +67,11 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     @Override
     public WireletList wirelets() {
         return rootContainerConfiguration.wirelets();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isInstantiating() {
+        return driver.isInstantiating();
     }
 }

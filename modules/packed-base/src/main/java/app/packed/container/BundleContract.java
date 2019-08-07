@@ -67,7 +67,7 @@ public class BundleContract {
      *            the bundle to return a descriptor for
      * @return a descriptor for the specified bundle
      */
-    public static BundleContract of(Bundle bundle) {
+    public static BundleContract of(BaseBundle bundle) {
         return BundleDescriptor.of(bundle).contract();
     }
 

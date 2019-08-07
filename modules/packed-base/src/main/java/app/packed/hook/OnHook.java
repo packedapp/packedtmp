@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import java.util.function.Supplier;
 
 import app.packed.hook2.InstanceOfHook;
-import packed.internal.hook.OnHookAggregator;
+import packed.internal.hook.ExtensionHookPerComponentGroup;
 
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
@@ -53,7 +53,7 @@ public @interface OnHook {
     // InternalOnly, ExternalOnly, Both
     boolean exported() default false;// export or exported?? align with @Provides
 
-    Class<? extends Supplier<?>> aggreateWith() default OnHookAggregator.NoAggregator.class;
+    Class<? extends Supplier<?>> aggreateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
 }
 
 // boolean disableForOwnContainer

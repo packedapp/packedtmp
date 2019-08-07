@@ -18,7 +18,7 @@ package packed.internal.support;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.Factory;
-import packed.internal.invokable.InternalFunction;
+import packed.internal.invoke.FunctionHandle;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public final class AppPackedInjectSupport {
@@ -32,7 +32,7 @@ public final class AppPackedInjectSupport {
      *            the factory to extract from
      * @return the internal factory
      */
-    public static <T> InternalFunction<T> toInternalFunction(Factory<T> factory) {
+    public static <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
         return SingletonHolder.SINGLETON.toInternalFunction(factory);
     }
 
@@ -63,7 +63,7 @@ public final class AppPackedInjectSupport {
          *            the factory to extract from
          * @return the internal factory
          */
-        protected abstract <T> InternalFunction<T> toInternalFunction(Factory<T> factory);
+        protected abstract <T> FunctionHandle<T> toInternalFunction(Factory<T> factory);
 
         /**
          * Initializes this class.

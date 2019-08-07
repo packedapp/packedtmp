@@ -29,7 +29,7 @@ import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.ActivateExtension;
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
@@ -41,7 +41,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceMethod() {
-        App.of(new Bundle() {
+        App.of(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -55,7 +55,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticField() {
-        App.of(new Bundle() {
+        App.of(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -67,7 +67,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceField() {
-        App.of(new Bundle() {
+        App.of(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
@@ -79,7 +79,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticMethod() {
-        App.of(new Bundle() {
+        App.of(new BaseBundle() {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();

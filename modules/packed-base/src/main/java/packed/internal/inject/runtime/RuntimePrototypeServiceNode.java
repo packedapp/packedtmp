@@ -22,7 +22,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.Provider;
 import packed.internal.inject.buildtime.BuildServiceNode;
-import packed.internal.invokable.InternalFunction;
+import packed.internal.invoke.FunctionHandle;
 
 /** A runtime service node for prototypes. */
 // 3 typer?? Saa kan de foerste to implementere Provider
@@ -35,14 +35,14 @@ public final class RuntimePrototypeServiceNode<T> extends AbstractRuntimeService
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     /** The factory used for creating new instances. */
-    private final InternalFunction<T> invoker;
+    private final FunctionHandle<T> invoker;
 
     Provider<?>[] providers;
 
     /**
      * @param node
      */
-    public RuntimePrototypeServiceNode(BuildServiceNode<T> node, InternalFunction<T> function) {
+    public RuntimePrototypeServiceNode(BuildServiceNode<T> node, FunctionHandle<T> function) {
         super(node);
         this.invoker = requireNonNull(function);
         this.providers = new Provider[node.dependencies.size()];

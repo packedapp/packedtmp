@@ -27,7 +27,6 @@ import app.packed.hook.OnHook;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -64,8 +63,7 @@ public final class AtProvidesGroup {
         private boolean hasInstanceMembers;
 
         /** A set of all keys for every provided service. */
-        @Nullable
-        private HashMap<Key<?>, AtProvides> members;
+        private final HashMap<Key<?>, AtProvides> members = new HashMap<>();
 
         /**
          * Creates a new group from this builder.
@@ -98,10 +96,6 @@ public final class AtProvidesGroup {
             // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
             // }
-
-            if (members == null) {
-                members = new HashMap<>();
-            }
             if (members.putIfAbsent(key, ap) != null) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(descriptor.getDeclaringClass())
                         .cannot("have multiple members providing services with the same key (" + key.toStringSimple() + ").")

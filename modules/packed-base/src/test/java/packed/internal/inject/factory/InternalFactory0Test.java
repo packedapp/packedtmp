@@ -15,9 +15,9 @@
  */
 package packed.internal.inject.factory;
 
-import packed.internal.invokable.Function0Invokable;
+import packed.internal.invoke.lambda.SupplierFunctionHandle;
 
-/** Tests {@link Function0Invokable}. */
+/** Tests {@link SupplierFunctionHandle}. */
 public class InternalFactory0Test {
 
 

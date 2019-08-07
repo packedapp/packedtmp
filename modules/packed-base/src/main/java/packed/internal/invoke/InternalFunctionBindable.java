@@ -13,11 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.operations;
+package packed.internal.invoke;
 
-import java.lang.invoke.VarHandle;
+import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
 
-/** An operation that can read and write a field via a {@link VarHandle}. */
-public final class MethodOperation {
+/**
+ *
+ */
+// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
+public class InternalFunctionBindable<T> extends FunctionHandle<T> {
 
+    FunctionHandle<T> wrapping;
+
+    public InternalFunctionBindable(TypeLiteral<T> typeLiteral) {
+        super(typeLiteral);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public T invoke(Object[] params) {
+        return null;
+    }
 }

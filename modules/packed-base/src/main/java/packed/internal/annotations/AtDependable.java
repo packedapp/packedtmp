@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.InvokableMember;
+import packed.internal.invoke.InvokableMember;
 
 /** A descriptor of an annotated member that has 0 or more service dependencies. */
 public class AtDependable {

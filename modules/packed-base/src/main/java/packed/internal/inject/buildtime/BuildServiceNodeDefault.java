@@ -35,8 +35,8 @@ import packed.internal.inject.runtime.RuntimeLazyServiceNode;
 import packed.internal.inject.runtime.RuntimePrototypeServiceNode;
 import packed.internal.inject.runtime.RuntimeSingletonServiceNode;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invokable.InternalFunction;
-import packed.internal.invokable.InvokableMember;
+import packed.internal.invoke.FunctionHandle;
+import packed.internal.invoke.InvokableMember;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
@@ -49,7 +49,7 @@ public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
 
     /** An internal factory, null for nodes created from an instance. */
     @Nullable
-    private InternalFunction<T> function;
+    private FunctionHandle<T> function;
 
     public boolean hasInstanceMembers;
 
@@ -64,7 +64,7 @@ public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
     private final BuildServiceNodeDefault<?> parent;
 
     public BuildServiceNodeDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode,
-            InternalFunction<T> function, List<InternalDependencyDescriptor> dependencies) {
+            FunctionHandle<T> function, List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, (InternalConfigSite) cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
@@ -97,7 +97,7 @@ public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
         this.function = null;
     }
 
-    BuildServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, InternalFunction<T> factory, BuildServiceNodeDefault<?> parent) {
+    BuildServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BuildServiceNodeDefault<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -110,7 +110,7 @@ public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
         return parent;
     }
 
-    private InternalFunction<T> fac() {
+    private FunctionHandle<T> fac() {
         if (parent != null) {
             InvokableMember<T> ff = (InvokableMember<T>) function;
             if (ff.isMissingInstance()) {

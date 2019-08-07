@@ -22,6 +22,9 @@ import app.packed.inject.Injector;
  */
 // Skal vi droppe at extende component???
 //// Igen er bange for at man kommer til at implementere begge dele.
+// Hvis vi skal have noget some helst kontrol...
+// Boer vi ikke extende component, da vi risikiere
+// At returnere en instand i ComponentStream.
 public interface ComponentContext extends Component {
     // PrototypeContext
 

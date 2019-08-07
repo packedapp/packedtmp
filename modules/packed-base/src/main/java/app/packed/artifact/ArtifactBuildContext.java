@@ -16,7 +16,7 @@
 package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Extension;
 import app.packed.container.WireletList;
 
@@ -35,8 +35,7 @@ public interface ArtifactBuildContext {
      * 
      * @return the type of artifact the build process produces
      */
-    // Maybe we have the driver here instead...
-    ArtifactType artifactType();
+    Class<?> artifactType();
 
     /**
      * Returns the configuration site that initialized the build process.
@@ -46,7 +45,14 @@ public interface ArtifactBuildContext {
     ConfigSite configSite();
 
     /**
-     * Returns the container source of the build, for example a {@link AnyBundle bundle}.
+     * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
+     * 
+     * @return whether or not we are instantiating an actual artifact
+     */
+    boolean isInstantiating();
+
+    /**
+     * Returns the container source of the build, for example a {@link Bundle bundle}.
      * 
      * @return the container source of the build, for example a bundle or a container image
      */

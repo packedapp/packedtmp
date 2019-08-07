@@ -20,15 +20,15 @@ import static support.assertj.Assertions.checkThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.util.Key;
-import packed.internal.invokable.InstanceInvoker;
-import packed.internal.invokable.InternalFunction;
+import packed.internal.invoke.FunctionHandle;
+import packed.internal.invoke.InstanceFunctionHandle;
 
-/** Tests {@link InstanceInvoker} */
+/** Tests {@link InstanceFunctionHandle} */
 public class InternalFunctionInstanceTest {
 
     @Test
     public void ofInstance() {
-        InternalFunction<String> f = InstanceInvoker.of("foo");
+        FunctionHandle<String> f = InstanceFunctionHandle.of("foo");
         checkThat(f).is(new Key<String>() {});
         checkThat(f).hasBound(String.class, String.class);
         
@@ -36,7 +36,7 @@ public class InternalFunctionInstanceTest {
     
     @Test
     public void ofInstanceClass() {
-        InternalFunction<String> f = InstanceInvoker.of("foo");
+        FunctionHandle<String> f = InstanceFunctionHandle.of("foo");
         checkThat(f).hasBound(String.class, String.class);
     }
 }

@@ -29,8 +29,8 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invokable.ExecutableInvoker;
-import packed.internal.invokable.InvokableMember;
+import packed.internal.invoke.ExecutableFunctionHandle;
+import packed.internal.invoke.InvokableMember;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.StringFormatter;
 
@@ -104,7 +104,7 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
     /** {@inheritDoc} */
     @Override
     public InvokableMember<?> newInvoker(Lookup lookup) {
-        return new ExecutableInvoker<>(this).withLookup(lookup);
+        return new ExecutableFunctionHandle<>(this).withLookup(lookup);
     }
 
     /** {@inheritDoc} */

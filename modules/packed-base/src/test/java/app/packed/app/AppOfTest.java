@@ -22,17 +22,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 
-/** Tests {@link App#of(app.packed.container.AnyBundle, app.packed.container.Wirelet...)} */
+/** Tests {@link App#of(app.packed.container.Bundle, app.packed.container.Wirelet...)} */
 public class AppOfTest {
 
     /** Tests an empty app. */
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App app = App.of(new Bundle() {
+        App app = App.of(new BaseBundle() {
             @Override
             public void configure() {
                 ar.set(configuration());

@@ -18,7 +18,7 @@ package app.packed.inject;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 
@@ -30,7 +30,7 @@ import app.packed.util.Nullable;
  * All the methods in this interface is solely added to allow
  * 
  * A component configuration instance is usually obtained by calling one of the install methods on
- * {@link ProvidedComponentConfiguration} or {@link Bundle} at configuration time. Or one of the install methods on
+ * {@link ProvidedComponentConfiguration} or {@link BaseBundle} at configuration time. Or one of the install methods on
  * {@link Component} at runtime.
  */
 public interface ProvidedComponentConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {

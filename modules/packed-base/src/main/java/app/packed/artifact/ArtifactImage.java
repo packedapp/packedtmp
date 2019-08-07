@@ -19,22 +19,23 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
-import app.packed.app.App;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.inject.Injector;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.ComponentNameWirelet;
 import packed.internal.container.ContainerSource;
+import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
- * actual time to instantiation an artifact can be severely decreased.
+ * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. Images are
+ * reusable, so you can create multiple artifacts from a single image.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.
@@ -48,15 +49,15 @@ import packed.internal.container.PackedContainerConfiguration;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link App}, {@link Injector}, {@link BundleDescriptor} or other
- * artifact images. It can not be used with {@link AnyBundle#link(AnyBundle, Wirelet...)}.
+ * An image can be used to create new instances of {@link app.packed.app.App}, {@link app.packed.inject.Injector},
+ * {@link BundleDescriptor} or other artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  */
 public final class ArtifactImage implements ArtifactSource {
 
-    /** The configuration of the future artifact's root container. */
+    /** The configuration of the root container of the artifact. */
     private final PackedContainerConfiguration containerConfiguration;
 
-    /** Additional wirelets */
+    /** Additional wirelets. */
     private final WireletList wirelets;
 
     /**
@@ -69,6 +70,14 @@ public final class ArtifactImage implements ArtifactSource {
         this(containerConfiguration, WireletList.of());
     }
 
+    /**
+     * Creates a new image from the specified configuration and wirelets.
+     * 
+     * @param containerConfiguration
+     *            the configuration this image will wrap
+     * @param wirelets
+     *            any wirelets for the image configuration or artifact instantionation
+     */
     private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletList wirelets) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.wirelets = requireNonNull(wirelets);
@@ -83,10 +92,26 @@ public final class ArtifactImage implements ArtifactSource {
         return containerConfiguration.configSite();
     }
 
+    /**
+     * Returns any description that has been set for the image. *
+     * <p>
+     * The returned description is always identical to the description of the artifact's root container.
+     * 
+     * @return any description that has been set for the image
+     * @see ContainerConfiguration#setDescription(String)
+     */
     public Optional<String> description() {
         return Optional.ofNullable(containerConfiguration.getDescription());
     }
 
+    /**
+     * Returns the name of this artifact.
+     * <p>
+     * The returned name is always identical to the name of the artifact's root container.
+     * <p>
+     * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
+     * unique among any of the artifact'ssiblings.**@return the name of this artifact
+     */
     public String name() {
         return wirelets.findLast(ComponentNameWirelet.class).map(e -> e.name).orElse(containerConfiguration.getName());
     }
@@ -100,10 +125,6 @@ public final class ArtifactImage implements ArtifactSource {
         return driver.instantiate(containerConfiguration.doInstantiate(this.wirelets.plus(wirelets)));
     }
 
-    public Injector newInjector(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns the type of bundle that was used to create this image.
      * <p>
@@ -113,7 +134,7 @@ public final class ArtifactImage implements ArtifactSource {
      * @return the original source type of this image
      */
     // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
-    public Class<? extends AnyBundle> sourceType() {
+    public Class<? extends Bundle> sourceType() {
         throw new UnsupportedOperationException();
     }
 
@@ -122,7 +143,8 @@ public final class ArtifactImage implements ArtifactSource {
     }
 
     public ArtifactImage with(Wirelet... wirelets) {
-        return new ArtifactImage(containerConfiguration, this.wirelets.plus(wirelets));
+        WireletList wl = this.wirelets.plus(wirelets);
+        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl);
     }
 
     /**
@@ -137,13 +159,14 @@ public final class ArtifactImage implements ArtifactSource {
     }
 
     /**
-     * Creates a new image from the specified source.
+     * Creates a new image from the specified artifact source.
      *
      * @param source
      *            the source of the image
      * @param wirelets
-     *            any wirelets to use in the consWtruction of the image
-     * @return a new image
+     *            any wirelets to use when construction the image. The wirelets will also be available when instantiating an
+     *            actual artifact
+     * @return the new image
      * @throws RuntimeException
      *             if the image could not be constructed properly
      */
@@ -151,52 +174,36 @@ public final class ArtifactImage implements ArtifactSource {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).with(wirelets);
         }
-        // Wirelet are added to the container configuration, and not the imge
-        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactType.ARTIFACT_IMAGE, ContainerSource.forImage(source), wirelets);
+        // Wirelet are added to the container configuration, and not the image
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, ContainerSource.forImage(source), wirelets);
         return new ArtifactImage(c.doBuild());
     }
+}
 
-    interface InjectorFactory {
-        // Tager disse to objekter, laver en injector fra bundlen.
-        // Og outputter String
-        String spawn(long str1, int str2);
+/** An dummy artifact driver for creating artifact images. */
+final class ArtifactImageArtifactDriver extends NonInstantiatingArtifactDriver<ArtifactImage> {
 
-        Injector spawn(String httpRequest, String httpResponse);
-    }
+    /** The single instance. */
+    static final ArtifactImageArtifactDriver INSTANCE = new ArtifactImageArtifactDriver();
 
-    interface UserDefinedSpawner {
-        // App spawn(Host h, String httpRequest, String httpResponse);
+    /** Singleton */
+    private ArtifactImageArtifactDriver() {}
+}
+
+// De kunne jo strength taget vaere metoder paa imaged og ikke wirelets.
+// Vi kan jo sagtens internt lave det om til wirelets...
+// Der er bare ingen grund til at lave det public...
+final class ArtifactImageWirelets {
+
+    // retainStackTracesForEachInstantiation...
+    /// Her ligger vi jo lige 1000 ns oveni hvis vi vil se hvor den er instantieret.
+
+    // Maximum number of instantiations times...
+    // Could, for example, be one for native.
+    // The only think we want to instantiate the application once... And then forget everything
+
+    // Ideen er at vi kun skal lave en container en gang. F.eks. NativeBoot
+    static Wirelet oneShot() {
+        throw new UnsupportedOperationException();
     }
 }
-// ofRepeatable();
-// wirelet.checkNotFrom();
-//
-/// **
-// * Returns the configuration site of this artifact.
-// *
-// * @return the configuration site of this artifact
-// */
-// ConfigSite configSite();
-//
-/// **
-// * Returns the description of this artifact. Or an empty optional if no description has been set
-// * <p>
-// * The returned description is always identical to the description of the artifact's root container.
-// *
-// * @return the description of this artifact. Or an empty optional if no description has been set
-// *
-// * @see ComponentConfiguration#setDescription(String)
-// */
-// Optional<String> description();
-//
-/// **
-// * Returns the name of this artifact.
-// * <p>
-// * The returned name is always identical to the name of the artifact's root container.
-// * <p>
-// * If no name is explicitly set when creating the artifact, the runtime will generate a name that guaranteed to be
-// * unique among any of the artifact's siblings.
-// *
-// * @return the name of this artifact
-// */
-// String name();

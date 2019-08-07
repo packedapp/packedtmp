@@ -218,7 +218,7 @@ public interface App extends AutoCloseable {
      *             if the application could not be constructed properly
      */
     static App of(ArtifactSource source, Wirelet... wirelets) {
-        return AppArtifactDriver.INSTANCE.create(source, wirelets);
+        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 
     /**
@@ -235,7 +235,7 @@ public interface App extends AutoCloseable {
      *             if the application did not execute properly
      */
     static void run(ArtifactSource source, Wirelet... wirelets) {
-        AppArtifactDriver.INSTANCE.create(source, wirelets).execute();
+        ((PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets)).execute();
     }
 
     // static void runThrowing(AnyBundle bundle, Wirelet... wirelets) throws Throwable
@@ -243,7 +243,8 @@ public interface App extends AutoCloseable {
     // Basically we unwrap exceptions accordingly to some scheme in some way
 }
 
-final class AppArtifactDriver extends ArtifactDriver<PackedApp> {
+/** An artifact driver for creating {@link App} instances. */
+final class AppArtifactDriver extends ArtifactDriver<App> {
 
     /** The single instance. */
     static final AppArtifactDriver INSTANCE = new AppArtifactDriver();
@@ -253,12 +254,12 @@ final class AppArtifactDriver extends ArtifactDriver<PackedApp> {
 
     /** {@inheritDoc} */
     @Override
-    public PackedApp instantiate(ArtifactRuntimeContext container) {
+    public App instantiate(ArtifactRuntimeContext container) {
         return new PackedApp(container);
     }
 }
 
-/** The default implementation of {@link App application}. Basically just wrapping an internal container. */
+/** The default implementation of {@link App}. Basically just wrapping an a runtime context. */
 final class PackedApp implements App {
 
     /** The artifact context we are wrapping. */
@@ -268,7 +269,7 @@ final class PackedApp implements App {
      * Creates a new app.
      * 
      * @param context
-     *            the artifact context we are wrapping
+     *            the artifact runtime context we are wrapping
      */
     PackedApp(ArtifactRuntimeContext context) {
         this.context = requireNonNull(context);

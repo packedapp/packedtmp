@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.pfunction;
+package packed.internal.invoke.sandbox;
 
 import app.packed.util.Nullable;
 
@@ -36,3 +36,33 @@ public abstract class PFunction<T> {
     // For eksempel om vi skal smide en exception
     public enum WhatAreYouDoing {}
 }
+// Input/Output
+
+/// Input OutPout
+
+// return type -> void type.... void is valid
+// Parameters... might be dependencies if used for this, but does not have to
+
+// expected
+
+// Parameter count
+
+// isExactType
+// isAnyType();
+// boolean isNullable
+
+// Type
+// IsNullable
+// HasExactType
+
+// Bundle ting,
+// registrering required optionally, exposed... -> exposes the following features
+// Nogle runtimeklasser...
+
+// requires, exposes, ... -> Key-> Service
+
+// Et eller andet slags registrerings object
+/// Baade scanning af klasserne.... (Med annotering...)
+/// Og reject af prototype...
+
+// Supportere ogsaa manuel registrering af objekter

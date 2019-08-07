@@ -13,17 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package packed.internal.invoke;
+
+import app.packed.util.TypeLiteral;
 
 /**
  *
  */
-interface MethodOperator {
+public interface Invokable<T> {
 
-    /**
-     * Returns the fields descriptor.
-     * 
-     * @return the fields descriptor
-     */
-    MethodDescriptor descriptor();
+    TypeLiteral<T> getType();
+
+    @SuppressWarnings("unchecked")
+    default Class<T> getRawType() {
+        return (Class<T>) getType().rawType();
+    }
+
+    boolean isNullable();
+
+    boolean isFailable();
+
+    T invoke(Object[] arguments);
+
+    enum Type {
+        UNSAFE_NULLABLE, /**/
+        SUPER_SAFE_NULLABLE, /**/
+        FIXED;
+    }
 }
+// should invoke

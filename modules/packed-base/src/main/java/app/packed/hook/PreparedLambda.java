@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invokable;
-
-import app.packed.util.Nullable;
-import app.packed.util.TypeLiteral;
+package app.packed.hook;
 
 /**
- * An internal factory
+ *
  */
-public abstract class InvokableMember<T> extends InternalFunction<T> {
+public interface PreparedLambda<T> {
 
-    @Nullable
-    final Object instance;
-
-    public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
-        super(typeLiteralOrKey);
-        this.instance = instance;
-    }
-
-    public abstract InvokableMember<T> withInstance(Object instance);
-
-    public abstract boolean isMissingInstance();
 }

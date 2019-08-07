@@ -54,6 +54,17 @@ public interface FieldOperator {
 
     void setAndGet(Object value);
 }
+
+interface MethodOperator {
+
+    /**
+     * Returns the fields descriptor.
+     * 
+     * @return the fields descriptor
+     */
+    MethodDescriptor descriptor();
+}
+
 // VarHandle varHandle(); // <-....Nope...., bliver sindsygt svaert at styre native generering, med mindre vi har en
 // support metode
 

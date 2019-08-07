@@ -112,7 +112,7 @@ public final class DynamicContainerSource implements ArtifactSource {
             Class<?> c = layer.findLoader(moduleName).loadClass(initializeMe);
             Constructor<?> cc = c.getConstructor();
             cc.setAccessible(true);
-            AnyBundle b = (AnyBundle) cc.newInstance();
+            Bundle b = (Bundle) cc.newInstance();
             // System.out.println(System.currentTimeMillis() - now);
             return b;
             // App aa = App.of(b);

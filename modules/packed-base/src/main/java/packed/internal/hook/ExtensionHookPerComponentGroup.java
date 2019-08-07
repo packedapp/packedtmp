@@ -55,6 +55,10 @@ public final class ExtensionHookPerComponentGroup {
         this.callbacks = b.callbacks;
     }
 
+    public int getNumberOfCallbacks() {
+        return callbacks.size();
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void add(PackedContainerConfiguration container, ComponentConfiguration cc) {
         Extension extension = container.use((Class) extensionType);
@@ -85,11 +89,11 @@ public final class ExtensionHookPerComponentGroup {
 
         private final ComponentLookup lookup;
 
-        final OnHookExtensionContainer con;
+        final ExtensionOnHookDescriptor con;
 
         public Builder(Class<?> componentType, Class<? extends Extension> extensionType, ComponentLookup lookup) {
             this.componentType = requireNonNull(componentType);
-            this.con = OnHookExtensionContainer.get(extensionType);
+            this.con = ExtensionOnHookDescriptor.get(extensionType);
             this.extensionType = requireNonNull(extensionType);
             this.lookup = requireNonNull(lookup);
         }
@@ -104,11 +108,30 @@ public final class ExtensionHookPerComponentGroup {
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
-            con.forAnnotatedField(this, new PackedAnnotatedFieldHook(lookup.lookup(), field, annotation));
+            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(lookup.lookup(), field, annotation);
+            process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
-            con.forAnnotatedMethod(this, new PackedAnnotatedMethodHook(lookup.lookup(), method, annotation, consumers));
+            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(lookup.lookup(), method, annotation, consumers);
+            process(con.findMethodHandleForAnnotatedMethod(hook), hook);
+        }
+
+        private void process(MethodHandle mh, Object hook) {
+            Class<?> owner = mh.type().parameterType(0);
+            if (owner == extensionType) {
+                callbacks.add(new Callback(mh, hook));
+            } else {
+                // The method handle refers to an aggregator object.
+                OnHookAggregatorDescriptor a = OnHookAggregatorDescriptor.get((Class<? extends Supplier<?>>) owner);
+                Supplier<?> sup = mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
+                try {
+                    mh.invoke(sup, hook);
+                } catch (Throwable e) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -145,4 +168,7 @@ public final class ExtensionHookPerComponentGroup {
             consumer.accept(s, r);
         }
     }
+
+    /** A dummy type indicating that no aggregator should be used. */
+    public static abstract class NoAggregator implements Supplier<Void> {}
 }

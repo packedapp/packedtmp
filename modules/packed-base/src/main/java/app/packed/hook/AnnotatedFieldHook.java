@@ -41,6 +41,13 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     T annotation();
 
+    // boolean isStatic() <---- Saa meget lettere hvis feltet er statisk....
+
+    // Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
+    default AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Checks that the underlying field is final.
      * 
@@ -90,6 +97,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
 
     Lookup lookup(); // TODO remove this method
 
+    // Drop TypeLiteral taenker jeg...
     <A> A newAccessor(ComponentConfiguration cc, Class<A> accessorType);
 
     <A> A newAccessor(ComponentConfiguration cc, Class<A> accessorType, VarHandle.AccessMode accessMode);

@@ -20,14 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactSource;
-import app.packed.container.AnyBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 
 /** An abstract test for testing artifacts. */
 public abstract class AbstractArtifactTest {
 
     /** A bundle with no operations. */
-    public static final AnyBundle EMPTY_BUNDLE = new AnyBundle() {};
+    public static final Bundle EMPTY_BUNDLE = new Bundle() {};
 
     public static AppTester appOf(ArtifactSource source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);
@@ -41,7 +41,7 @@ public abstract class AbstractArtifactTest {
         return new ContainerImageTester(source, wirelets);
     }
 
-    protected static abstract class AbstractConsumableBundle extends AnyBundle {
+    protected static abstract class AbstractConsumableBundle extends Bundle {
         final Consumer<? super ContainerConfigurationTester> ca;
 
         protected AbstractConsumableBundle(Consumer<? super ContainerConfigurationTester> ca) {

@@ -21,14 +21,14 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.inject.Injector;
 
 /**
  *
  */
-public class TestBundlex extends Bundle {
+public class TestBundlex extends BaseBundle {
 
     @Test
     public void main() {

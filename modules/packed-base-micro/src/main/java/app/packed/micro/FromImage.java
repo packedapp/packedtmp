@@ -36,7 +36,7 @@ import app.packed.app.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ActivateExtension;
-import app.packed.container.Bundle;
+import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
@@ -52,21 +52,21 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {});
+    static final ArtifactImage EMPTY = ArtifactImage.of(new BaseBundle() {});
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage INSTALL = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
             install("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
+    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
             install(new MyStuff());
