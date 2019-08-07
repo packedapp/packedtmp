@@ -38,7 +38,7 @@ import packed.internal.container.PackedContainerConfiguration;
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public final class InjectorConfigurator /* implements Taggable */ {
+public final class InjectorConfigurator {
 
     /** The configuration we delegate all calls to. */
     private final ContainerConfiguration configuration;
@@ -58,7 +58,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      * 
      * @return the container configuration that was used to create this configurator
      */
-    protected final ContainerConfiguration configuration() {
+    protected ContainerConfiguration configuration() {
         return configuration;
     }
 
@@ -70,7 +70,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      * @see #setDescription(String)
      */
     @Nullable
-    public final String getDescription() {
+    public String getDescription() {
         return configuration.getDescription();
     }
 
@@ -113,7 +113,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
      *             {@link Wirelet#andThen(Wirelet)} thereof
      */
-    public final void importAll(Injector injector, Wirelet... options) {
+    public void importAll(Injector injector, Wirelet... options) {
         injector().importAll(injector, options);
     }
 
@@ -132,7 +132,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      * @param stages
      *            optional import/export stages
      */
-    public final void link(Bundle bundle, Wirelet... stages) {
+    public void link(Bundle bundle, Wirelet... stages) {
         ((PackedContainerConfiguration) configuration).link(bundle, stages);
     }
 
@@ -153,7 +153,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      * @param lookup
      *            the lookup object
      */
-    public final void lookup(Lookup lookup) {
+    public void lookup(Lookup lookup) {
         configuration.lookup(lookup);
     }
 
@@ -188,7 +188,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      * @return a service configuration for the service
      * @see BaseBundle#provide(Class)
      */
-    public final <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
+    public <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
         return injector().provide(implementation);
     }
 
@@ -204,7 +204,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public final <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
+    public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
         return injector().provide(factory);
     }
 
@@ -221,7 +221,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public final <T> ProvidedComponentConfiguration<T> provide(T instance) {
+    public <T> ProvidedComponentConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
 
@@ -235,7 +235,7 @@ public final class InjectorConfigurator /* implements Taggable */ {
      * @see #getDescription()
      * @see Injector#description()
      */
-    public final InjectorConfigurator setDescription(String description) {
+    public InjectorConfigurator setDescription(String description) {
         configuration.setDescription(description);
         return this;
     }

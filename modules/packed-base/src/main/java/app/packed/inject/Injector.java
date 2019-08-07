@@ -285,25 +285,19 @@ public interface Injector {
     // configure()
     static Injector configure(ArtifactConfigurator<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.newArtifact(c -> new InjectorConfigurator(c), configurator, wirelets);
-        //
-        // requireNonNull(configurator, "configurator is null");
-        // PackedContainerConfiguration configuration = new PackedContainerConfiguration(InjectorArtifactDriver.INSTANCE,
-        // ContainerSource.ofConsumer(configurator),
-        // wirelets);
-        // configurator.accept(new InjectorConfigurator(configuration));
-        // return configuration.buildInjector();
     }
 
     /**
-     * Creates a new injector from the specified bundle.
+     * Creates a new injector from the specified artifact source.
      *
      * @param source
-     *            a bundle to create an injector from
+     *            the source to create the artifact from
      * @param wirelets
      *            various operations
      * @return the new injector
-     * @throws IllegalArgumentException
-     *             if the bundle defines any components, or anything else that requires a lifecycle
+     * @throws RuntimeException
+     *             if the injector could not be created for some reason. For example, if the source defines any components
+     *             that requires a lifecycle
      */
     static Injector of(ArtifactSource source, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.newArtifact(source, wirelets);
@@ -328,7 +322,7 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
 
 interface InjectorFactory {
     // Tager disse to objekter, laver en injector fra bundlen.
-    // Og outputter String
+    // Og saa outputter String, hvor str1 og str2 er dependencies....
     String spawn(long str1, int str2);
 
     Injector spawn(String httpRequest, String httpResponse);
@@ -369,6 +363,9 @@ interface UserDefinedSpawner {
 // // Bliver noedt til at have noget special support.
 // // Maa smide dem alle ind i
 //
+
+// spawnFiltered(Predicate<? extends ServiceDescriptor);
+
 // // Would also be nice with a filtered injector, but spawn(c->{}, filter) will do it for now
 // requireNonNull(configurator, "configurator is null");
 // return Injector.of(c -> {

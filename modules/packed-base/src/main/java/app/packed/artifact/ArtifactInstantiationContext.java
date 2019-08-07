@@ -33,12 +33,11 @@ import app.packed.util.Nullable;
 public interface ArtifactInstantiationContext {
 
     /**
-     * Returns the type of artifact that is being instantiated. Is either {@link ArtifactType#APP} or
-     * {@link ArtifactType#INJECTOR}.
+     * Returns the type of artifact that is being instantiated.
      * 
      * @return the type of artifact that is being instantiated
      */
-    ArtifactType artifactType();
+    Class<?> artifactType();
 
     @Nullable
     <T> T get(ContainerConfiguration configuration, Class<T> type);

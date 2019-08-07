@@ -21,8 +21,7 @@ import app.packed.component.Component;
 import app.packed.container.Bundle;
 
 /**
- * An artifact source can be used to create an artifact. Currently the following types of artifact sources are
- * supported:
+ * An artifact source is used to create an artifact. Currently the following types of artifact sources are supported:
  * 
  * 
  * This is typically either a subclass of {@link Bundle} or a pregenerated {@link ArtifactImage container image}.
@@ -54,7 +53,15 @@ public interface ArtifactSource {
     static ArtifactSource ofComponentSelector(String s) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Validates that the source can create a valid. Move it to App, Injector, ...
+     * 
+     * @param source
+     */
+    static void validate(ArtifactSource source) {}
 }
+
 // Not sure we can link to ContainerImages...
 // So ContainerSource is maybe more like an AppSource
 
@@ -66,7 +73,6 @@ class LiveReload /* implements ContainerSource */ {
 }
 
 abstract class SoftLink implements Component {
-
     // I sidste ende er alt jo en bundle....
 
     // Ideen er egentlig at man kan live replace alle componenter....

@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.artifact.ArtifactType;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 import app.packed.util.Nullable;
@@ -43,13 +42,12 @@ final class PackedArtifactInstantiationContext implements ArtifactInstantiationC
     }
 
     /**
-     * Returns the type of artifact the build process produces. Is either {@link ArtifactType#APP} or
-     * {@link ArtifactType#INJECTOR}.
+     * Returns the type of artifact the build process produces.
      * 
      * @return the type of artifact the build process produces
      */
     @Override
-    public ArtifactType artifactType() {
+    public Class<?> artifactType() {
         throw new UnsupportedOperationException();
     }
 

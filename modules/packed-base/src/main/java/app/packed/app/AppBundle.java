@@ -44,6 +44,7 @@ public abstract class AppBundle extends BaseBundle {
     static protected void run(ArtifactSource source, Wirelet... wirelets) {
         App.run(source, wirelets);
     }
+
 }
 
 class MyBundle extends AppBundle {

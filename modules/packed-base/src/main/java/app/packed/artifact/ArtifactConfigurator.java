@@ -25,5 +25,12 @@ package app.packed.artifact;
 // Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
 @FunctionalInterface
 public interface ArtifactConfigurator<T> extends ArtifactSource {
+
+    /**
+     * Configure the artifact
+     * 
+     * @param configurator
+     *            the configurator used to configure the artifact
+     */
     void configure(T configurator);
 }

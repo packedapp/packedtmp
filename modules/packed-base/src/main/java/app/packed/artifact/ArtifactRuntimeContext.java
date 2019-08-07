@@ -35,6 +35,10 @@ public interface ArtifactRuntimeContext extends ComponentContext {
     default void execute() {
         //
     }
+
+    // start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
+    // Naeh syntes bare man returnere oejeblikligt
+
     // Noget med lifecycle
     // Noget med Injector // Hvis vi har sidecars.... Er det maaske bare der...
     // Container tillader sidecar... App goer ikke. Saa kan man hvad man vil...
