@@ -37,7 +37,8 @@ import app.packed.container.Bundle;
 // Repeatable - Non-repeatable..
 // Concurrent - Non-current (Bundles may be Repeatable but they will never be Concurrent)
 // The only reason we want to allow repeatable bundles. Is So we can create a descriptor
-// before we make
+// before we make the actual app.
+/// For example, dump the contents of app in a file that is deployed alongside the app....
 
 // Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
 // ArtifactSource type....
@@ -59,12 +60,13 @@ public interface ArtifactSource {
      * 
      * @param source
      */
+    // Why not just create an App????? Because it instantiates shit...
+    // Just create a image then....
     static void validate(ArtifactSource source) {}
 }
 
 // Not sure we can link to ContainerImages...
 // So ContainerSource is maybe more like an AppSource
-
 class LiveReload /* implements ContainerSource */ {
     // Bliver redeployet hver gang en fil aendrer sig....
     // Det bliver loaded i sit eget module layer...

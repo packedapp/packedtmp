@@ -18,6 +18,7 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -258,6 +259,17 @@ public class Factory<T> {
     }
 
     /**
+     * Returns a new bindable factory.
+     * 
+     * @return a new bindable factory
+     */
+    // What if already bindable?
+    // Create new or return same????
+    public final BindableFactory<T> bindable() {
+        return new BindableFactory<>(this);
+    }
+
+    /**
      * Returns a new factory retaining all of the existing properties of this factory. Except that the key returned by
      * {@link #key()} will be changed to the specified key.
      * 
@@ -308,6 +320,7 @@ public class Factory<T> {
     }
 
     public Factory<T> useExactType(Class<? extends T> type) {
+        // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
 
         // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
         // fulde info om implementation
@@ -323,7 +336,9 @@ public class Factory<T> {
     }
 
     /**
-     * Creates a new factory from the specified class using the following rules:
+     * Tries to find a single injectable constructor or static method on the specified class using the following rules:
+     * 
+     * Finds a Creates a new factory from the specified class using the following rules:
      *
      * //A single static method annotated with @Inject return the same type as the specified class //Look for a single
      * constructor on the class, return it //If multiple constructor, look for one annotated with Inject (if more than 1
@@ -383,6 +398,11 @@ public class Factory<T> {
     public static <T> Factory<T> ofInstance(T instance) {
         return new Factory<>(new FactorySupport<>(InstanceFunctionHandle.of(instance), List.of()));
     }
+
+    static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
+        // Be aware that annotations and generic information is stripped from MethodHandles.
+        throw new UnsupportedOperationException();
+    }
 }
 
 /** This class is responsible for finding an injectable executable. */
@@ -397,7 +417,8 @@ final class FactoryFindInjectableExecutable {
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFunctionHandle<>(implementation, executable, null, null), InternalDependencyDescriptor.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFunctionHandle<>(implementation, executable, null, null),
+                InternalDependencyDescriptor.fromExecutable(executable));
     }
 
     private static InternalExecutableDescriptor findExecutable(Class<?> type) {
@@ -470,6 +491,7 @@ final class FactoryFindInjectableExecutable {
 }
 
 /** An factory support class. */
+// Inline target
 final class FactorySupport<T> {
 
     /** The key that this factory will be registered under by default with an injector. */

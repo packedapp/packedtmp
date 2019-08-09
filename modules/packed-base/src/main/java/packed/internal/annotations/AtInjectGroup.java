@@ -26,6 +26,7 @@ import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -84,7 +85,9 @@ public final class AtInjectGroup {
                 if (fields == null) {
                     fields = new ArrayList<>();
                 }
-                fields.add(result = new AtDependable(descriptor.newInvoker(lookup), List.of(InternalDependencyDescriptor.of(descriptor))));
+
+                fields.add(result = new AtDependable(new FieldFunctionHandle<>(descriptor).withLookup(lookup),
+                        List.of(InternalDependencyDescriptor.of(descriptor))));
             }
             return result;
         }

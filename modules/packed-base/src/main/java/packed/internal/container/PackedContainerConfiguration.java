@@ -185,6 +185,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     public ComponentConfiguration install(Factory<?> factory) {
+        // We actually do not need to create a method handle if we are just creating a descriptor...
+        // On the other hand, validation is nice right???
         requireNonNull(factory, "factory is null");
         ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(factory.rawType());
 

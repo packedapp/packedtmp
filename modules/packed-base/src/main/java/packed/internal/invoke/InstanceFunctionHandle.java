@@ -17,6 +17,9 @@ package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.inject.Factory;
 import app.packed.util.TypeLiteral;
 
@@ -35,6 +38,10 @@ public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
     @Override
     public T invoke(Object[] ignore) {
         return instance;
+    }
+
+    public MethodHandle toMethodHandle() {
+        return MethodHandles.constant(instance.getClass(), instance);
     }
 
     /**

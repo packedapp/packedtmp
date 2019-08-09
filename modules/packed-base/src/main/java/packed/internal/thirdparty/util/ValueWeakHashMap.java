@@ -10,6 +10,7 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.locks.ReentrantLock;
 
+//Hava a look at https://github.com/raphw/weak-lock-free/blob/master/src/main/java/com/blogspot/mydailyjava/weaklockfree/WeakConcurrentMap.java
 public class ValueWeakHashMap<K, V> {
 
     /*

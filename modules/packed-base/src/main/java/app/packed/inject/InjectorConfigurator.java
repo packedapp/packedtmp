@@ -113,6 +113,9 @@ public final class InjectorConfigurator {
      *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
      *             {@link Wirelet#andThen(Wirelet)} thereof
      */
+    // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
+    // Er ikke sikker paa vi skal have wirelets her....
+    // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
     public void importAll(Injector injector, Wirelet... options) {
         injector().importAll(injector, options);
     }

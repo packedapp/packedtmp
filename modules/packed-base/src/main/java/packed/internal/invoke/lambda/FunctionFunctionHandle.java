@@ -27,7 +27,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.invoke.FunctionHandle;
 
 /** An internal factory for {@link Factory1}. */
-public class FunctionFunctionHandle<T, R> extends FunctionHandle<R> {
+public final class FunctionFunctionHandle<T, R> extends FunctionHandle<R> {
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
