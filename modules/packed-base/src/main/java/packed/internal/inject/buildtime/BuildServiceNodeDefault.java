@@ -17,9 +17,11 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvideHelper;
@@ -37,6 +39,7 @@ import packed.internal.inject.runtime.RuntimeSingletonServiceNode;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InvokableMember;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
@@ -63,8 +66,8 @@ public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BuildServiceNodeDefault<?> parent;
 
-    public BuildServiceNodeDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode,
-            FunctionHandle<T> function, List<InternalDependencyDescriptor> dependencies) {
+    public BuildServiceNodeDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
+            List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, (InternalConfigSite) cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.parent = null;
@@ -172,8 +175,17 @@ public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
                 params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
             }
         }
+        Object o;
+        MethodHandle mh = fac().toMethodHandle();
 
-        T t = fac().invoke(params);
+        try {
+            o = mh.invokeWithArguments(params);
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new InjectionException("foo", e);
+        }
+        @SuppressWarnings("unchecked")
+        T t = (T) o;
         requireNonNull(t);
         return t;
     }

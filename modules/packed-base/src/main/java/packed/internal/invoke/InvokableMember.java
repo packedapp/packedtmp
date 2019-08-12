@@ -24,7 +24,7 @@ import app.packed.util.TypeLiteral;
 public abstract class InvokableMember<T> extends FunctionHandle<T> {
 
     @Nullable
-    final Object instance;
+    public final Object instance;
 
     public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
         super(typeLiteralOrKey);

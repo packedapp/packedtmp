@@ -50,6 +50,9 @@ import java.util.Set;
 //// Fordele: Genbrug paa tvaers af bundles
 //// Kan du langt sigt bruge med annoteringer
 // link(AcmeLayers.PRESENTATION, new XBundle());
+
+// Vi kunne ogsaa lave det som en konfigurations klasse.... Hvor vi laver det hele
+// Idielt set har vi en klasse, med public static ContainerLayer DATA = ddddd, SERVICE = dddd
 public interface ContainerLayer {
 
     /**
@@ -96,6 +99,7 @@ public interface ContainerLayer {
 
 // Evt en abstract klasse, hvor vi kan kalde en constructor med alle parametrene
 // Alle lag skal have samme declaring klasse???
+
 enum XXX implements ContainerLayer {
     Ddd {
 

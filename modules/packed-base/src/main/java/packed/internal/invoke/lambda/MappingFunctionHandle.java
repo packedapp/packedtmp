@@ -17,6 +17,7 @@ package packed.internal.invoke.lambda;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.util.Nullable;
@@ -44,5 +45,14 @@ public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
         @Nullable
         T invoke = mapFrom.invoke(params);
         return mapper.apply(invoke);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        // MethodHandle mh = mapFrom.toMethodHandle();
+        // Look for methods in MethodHandles that takes two MethodHandle
+
+        throw new UnsupportedOperationException();
     }
 }

@@ -255,7 +255,7 @@ public class Factory<T> {
      * @return the type of those objects that this factory creates
      */
     public final TypeLiteral<T> typeLiteral() {
-        return factory.function.getReturnType();
+        return factory.function.returnType();
     }
 
     /**
@@ -516,7 +516,7 @@ final class FactorySupport<T> {
      * @return the scannable type of this factory
      */
     Class<? super T> getScannableType() {
-        return function.getReturnTypeRaw();
+        return function.returnTypeRaw();
     }
 }
 

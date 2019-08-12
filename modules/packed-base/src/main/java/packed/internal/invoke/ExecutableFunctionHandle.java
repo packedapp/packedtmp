@@ -31,7 +31,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
-public class ExecutableFunctionHandle<T> extends InvokableMember<T> {
+public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
 
     /**
      * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for
@@ -41,7 +41,7 @@ public class ExecutableFunctionHandle<T> extends InvokableMember<T> {
     final boolean checkLowerBound;
 
     /** A factory with an executable as a target. */
-    private final ExecutableDescriptor executable;
+    public final ExecutableDescriptor executable;
 
     /** A special method handle that should for this factory. */
     final MethodHandle methodHandle;
@@ -71,13 +71,7 @@ public class ExecutableFunctionHandle<T> extends InvokableMember<T> {
     public T invoke(Object[] params) {
         requireNonNull(methodHandle, "internal error");
         try {
-            MethodHandle mh = methodHandle;
-            if (instance != null) {
-                mh = methodHandle.bindTo(instance);
-            }
-            if (executable.isVarArgs()) {
-                mh = mh.asFixedArity();
-            }
+            MethodHandle mh = toMethodHandle();
             return (T) mh.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
@@ -98,7 +92,7 @@ public class ExecutableFunctionHandle<T> extends InvokableMember<T> {
     /** {@inheritDoc} */
     @Override
     public ExecutableFunctionHandle<T> withInstance(Object instance) {
-        return new ExecutableFunctionHandle<>(getReturnType(), executable, methodHandle, instance);
+        return new ExecutableFunctionHandle<>(returnType(), executable, methodHandle, instance);
     }
 
     /**
@@ -120,6 +114,19 @@ public class ExecutableFunctionHandle<T> extends InvokableMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableFunctionHandle<>(getReturnType(), executable, handle, instance);
+        return new ExecutableFunctionHandle<>(returnType(), executable, handle, instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        MethodHandle mh = methodHandle;
+        if (instance != null) {
+            mh = methodHandle.bindTo(instance);
+        }
+        if (executable.isVarArgs()) {
+            mh = mh.asFixedArity();
+        }
+        return mh;
     }
 }

@@ -44,9 +44,16 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     // boolean isStatic() <---- Saa meget lettere hvis feltet er statisk....
 
     // Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
+    // Move these to descriptor????
+    // hook.field().checkFinal().checkAssignableTo()....
+    //// Nah... Tror gerne vi vil have annoteringen med...
+    //// Det kan vi ikke faa hvis vi har den paa descriptoren...
     default AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
         throw new UnsupportedOperationException();
     }
+
+    // Check the type
+    // checkNotNull()???Nah that could get complicated.... Maybe at some point
 
     /**
      * Checks that the underlying field is final.

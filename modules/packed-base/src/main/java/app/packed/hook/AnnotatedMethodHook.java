@@ -51,8 +51,11 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      *             if a method handle could not be created
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */
+    // Raw MethodHandle....
     MethodHandle newMethodHandle();
 
+    // We need to decide upon what should happen before the consumer is executed....
+    // BEcause
     <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 
     default PreparedLambda<Runnable> newRunnable() {

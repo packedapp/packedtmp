@@ -40,18 +40,26 @@ public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
         return instance;
     }
 
+    /** {@inheritDoc} */
+    @Override
     public MethodHandle toMethodHandle() {
         return MethodHandles.constant(instance.getClass(), instance);
     }
 
+    public static void main(String[] args) throws Throwable {
+        FunctionHandle<String> f = InstanceFunctionHandle.of("Foo");
+        System.out.println(f.toMethodHandle().invoke());
+        System.out.println(f.toMethodHandle().type());
+    }
+
     /**
-     * Creates a new instance factory from the specified instance
+     * Creates a new instance function handle from the specified instance
      *
      * @param <T>
      *            the type of instance
      * @param instance
      *            the instance
-     * @return a new instance factory
+     * @return a new instance function handle
      * @see Factory#ofInstance(Object)
      */
     @SuppressWarnings("unchecked")

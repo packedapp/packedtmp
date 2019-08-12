@@ -18,6 +18,9 @@ package packed.internal.invoke.lambda;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.inject.Factory1;
@@ -28,6 +31,18 @@ import packed.internal.invoke.FunctionHandle;
 
 /** An internal factory for {@link Factory1}. */
 public final class FunctionFunctionHandle<T, R> extends FunctionHandle<R> {
+
+    /** A method handle for {@link Function#apply(Object)}. */
+    static final MethodHandle APPLY;
+
+    static {
+        try {
+            MethodHandles.Lookup l = MethodHandles.lookup();
+            APPLY = l.findVirtual(Function.class, "apply", MethodType.methodType(Object.class, Object.class));
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
@@ -43,11 +58,17 @@ public final class FunctionFunctionHandle<T, R> extends FunctionHandle<R> {
     public R invoke(Object[] params) {
         T t = (T) params[0];
         R instance = function.apply(t);
-        if (!getReturnTypeRaw().isInstance(instance)) {
+        if (!returnTypeRaw().isInstance(instance)) {
             throw new InjectionException(
                     "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce instances of '"
-                            + format(getReturnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+                            + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        return APPLY.bindTo(function);
     }
 }

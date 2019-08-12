@@ -32,7 +32,6 @@ import packed.internal.util.TypeVariableExtractorUtil;
  * {@link Injector} are not sufficient. In fact both {@link App} and {@link Injector} are both just a thin facade that
  * delegates all calls to {@link ArtifactRuntimeContext}.
  * 
- * 
  * An artifact driver is used to create artifact instances such as {@link App} and {@link Injector}. Taking care of
  * initializing internal classes and handling artifact images.
  * 

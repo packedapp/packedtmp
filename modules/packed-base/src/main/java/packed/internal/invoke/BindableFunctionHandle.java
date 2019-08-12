@@ -15,6 +15,8 @@
  */
 package packed.internal.invoke;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
@@ -35,5 +37,11 @@ public class BindableFunctionHandle<T> extends FunctionHandle<T> {
     @Nullable
     public T invoke(Object[] params) {
         return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        throw new UnsupportedOperationException();
     }
 }

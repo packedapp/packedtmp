@@ -42,7 +42,7 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
 
     /** A var handle that can be used to read the field. */
     @Nullable
-    private final VarHandle varHandle;
+    public final VarHandle varHandle;
 
     @SuppressWarnings("unchecked")
     public FieldFunctionHandle(FieldDescriptor field) {
@@ -54,7 +54,7 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
     }
 
     private FieldFunctionHandle(FieldFunctionHandle<T> other, Object instance) {
-        super(other.getReturnType(), requireNonNull(instance));
+        super(other.returnType(), requireNonNull(instance));
         this.field = other.field;
         this.varHandle = other.varHandle;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
@@ -74,9 +74,10 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
      * 
      * @return the compiled method handle
      */
-    public MethodHandle compile() {
+    @Override
+    public MethodHandle toMethodHandle() {
         MethodHandle mh = varHandle.toMethodHandle(Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET);
-        if (instance == null) {
+        if (instance != null) {
             mh = mh.bindTo(instance);
         }
         return mh;
@@ -156,7 +157,7 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldFunctionHandle<>(getReturnType(), field, handle, instance);
+        return new FieldFunctionHandle<>(returnType(), field, handle, instance);
     }
 }
 /**

@@ -18,6 +18,7 @@ package packed.internal.invoke;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
@@ -86,24 +87,6 @@ public abstract class FunctionHandle<T> extends Object {
     }
 
     /**
-     * Returns the type of objects this operation returns on invocation.
-     *
-     * @return the type of objects this operation returns on invocation
-     */
-    public final TypeLiteral<T> getReturnType() {
-        return typeLiteral;
-    }
-
-    /**
-     * Returns the raw type of objects this operation returns on invocation.
-     *
-     * @return the raw type of objects this operation returns on invocation
-     */
-    public final Class<? super T> getReturnTypeRaw() {
-        return type;
-    }
-
-    /**
      * Instantiates a new object using the specified parameters
      * 
      * @param params
@@ -112,6 +95,26 @@ public abstract class FunctionHandle<T> extends Object {
      */
     @Nullable
     public abstract T invoke(Object[] params);
+
+    /**
+     * Returns the type of objects this operation returns on invocation.
+     *
+     * @return the type of objects this operation returns on invocation
+     */
+    public final TypeLiteral<T> returnType() {
+        return typeLiteral;
+    }
+
+    /**
+     * Returns the raw type of objects this operation returns on invocation.
+     *
+     * @return the raw type of objects this operation returns on invocation
+     */
+    public final Class<? super T> returnTypeRaw() {
+        return type;
+    }
+
+    public abstract MethodHandle toMethodHandle();
 
     public FunctionHandle<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");

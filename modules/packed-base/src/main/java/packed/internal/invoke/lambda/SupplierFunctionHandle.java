@@ -18,6 +18,9 @@ package packed.internal.invoke.lambda;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
 import app.packed.inject.Factory0;
@@ -33,6 +36,18 @@ import packed.internal.invoke.FunctionHandle;
  *            the type of elements the factory produces
  */
 public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
+
+    /** A method handle for {@link Supplier#get()}. */
+    private static final MethodHandle GET;
+
+    static {
+        try {
+            MethodHandles.Lookup l = MethodHandles.lookup();
+            GET = l.findVirtual(Supplier.class, "get", MethodType.methodType(Object.class));
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;
@@ -55,11 +70,18 @@ public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
     @Nullable
     public T invoke(Object[] ignore) {
         T instance = supplier.get();
-        if (!getReturnTypeRaw().isInstance(instance)) {
+        if (!returnTypeRaw().isInstance(instance)) {
             throw new InjectionException(
                     "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce instances of '"
-                            + format(getReturnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+                            + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
         }
         return instance;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        return GET.bindTo(supplier);
+    }
+
 }
