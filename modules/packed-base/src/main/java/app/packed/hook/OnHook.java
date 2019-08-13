@@ -52,6 +52,13 @@ public @interface OnHook {
     // InternalOnly, ExternalOnly, Both
     boolean exported() default false;// export or exported?? align with @Provides
 
+    // Must be made available available either via module-info
+
+    // Nah
+    // or via Extension lookup(); Basically we have a protected method called Extension.lookup()
+    // That people can override... It is only used to generate initial.
+
+    // But do we have an extension instance?????
     Class<? extends OnHookAggregator<?>> aggreateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
 }
 
