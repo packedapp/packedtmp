@@ -38,6 +38,7 @@ public class AppOfTest {
                 ar.set(configuration());
             }
         });
+        assertThat(app).isInstanceOf(PackedApp.class);
 
         assertThat(app).isNotNull();
         assertThat(app.description()).isEmpty();

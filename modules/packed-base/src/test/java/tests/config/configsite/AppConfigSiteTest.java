@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xests.configsite;
+package tests.config.configsite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.app.App;
 import app.packed.component.Component;
 import app.packed.container.BaseBundle;
-import support.util.ConfigSiteTestHelper;
+import support.testutil.ConfigSiteTestHelper;
 
 /** Tests {@link App#configSite()}. */
 public class AppConfigSiteTest {

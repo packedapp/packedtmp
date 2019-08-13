@@ -21,21 +21,17 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.FieldMapper;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.TypeLiteral;
 import packed.internal.container.DefaultComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.util.ErrorMessageBuilder;
@@ -200,52 +196,8 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         return lookup;// Temporary method
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public <A> A newAccessor(ComponentConfiguration cc, Class<A> accessorType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <A> A newAccessor(ComponentConfiguration cc, Class<A> accessorType, AccessMode accessMode) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <A> A newAccessor(ComponentConfiguration cc, TypeLiteral<A> accessorType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <A> A newAccessor(ComponentConfiguration cc, TypeLiteral<A> accessorType, AccessMode accessMode) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BiPredicate<?, ?> newCompareAndSetAccessor(ComponentConfiguration cc) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> BiPredicate<E, E> newCompareAndSetAccessor(ComponentConfiguration cc, Class<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> BiPredicate<E, E> newCompareAndSetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Supplier<?> newGetAccessor(ComponentConfiguration cc) {
-        MethodHandle mh = newMethodHandleGetter();
+        MethodHandle mh = newGetter();
         if (field().isStatic()) {
             return new Supplier<Object>() {
 
@@ -281,37 +233,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public <E> Supplier<E> newGetAccessor(ComponentConfiguration cc, Class<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> Supplier<E> newGetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Function<?, ?> newGetAndSetAccessor(ComponentConfiguration cc) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> Function<? super E, E> newGetAndSetAccessor(ComponentConfiguration cc, Class<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> Function<? super E, E> newGetAndSetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle newMethodHandleGetter() {
+    public MethodHandle newGetter() {
         field.setAccessible(true);
         try {
             return lookup.unreflectGetter(field);
@@ -321,31 +243,13 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     }
 
     @Override
-    public MethodHandle newMethodHandleSetter() {
+    public MethodHandle newSetter() {
         field.setAccessible(true);
         try {
             return lookup.unreflectSetter(field);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Consumer<?> newSetAccessor(ComponentConfiguration cc) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> Consumer<? super E> newSetAccessor(ComponentConfiguration cc, Class<E> fieldType) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <E> Consumer<? super E> newSetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType) {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -363,5 +267,12 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     @Override
     public AnnotatedFieldHook<T> optimize() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <E> E staticAccessor(FieldMapper<E> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        return mapper.accessStatic(lookup, field);
     }
 }

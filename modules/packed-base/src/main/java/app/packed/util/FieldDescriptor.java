@@ -104,4 +104,12 @@ public interface FieldDescriptor extends VariableDescriptor, Member {
     MethodHandle unreflectGetter(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     MethodHandle unreflectSetter(MethodHandles.Lookup lookup) throws IllegalAccessException;
+
+    default <E> E newStaticAccesessor(MethodHandles.Lookup lookup, FieldMapper<E> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    default <E> E newInstanceAccesessor(MethodHandles.Lookup lookup, FieldMapper<E> mapper, Object instance) {
+        throw new UnsupportedOperationException();
+    }
 }

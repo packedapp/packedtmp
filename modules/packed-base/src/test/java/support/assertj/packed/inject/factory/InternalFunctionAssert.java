@@ -42,14 +42,14 @@ public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAs
         return is(Key.of(type));
     }
 
-    public InternalFunctionAssert<T> instantiateIs(Object expected, Object... args) {
-        isNotNull();
-        T result = actual.invoke(args);
-        if (!expected.equals(result)) {
-            failWithMessage("\nExpecting instantiate to return '%s' but was '%s'", expected, result);
-        }
-        return this;
-    }
+    // public InternalFunctionAssert<T> instantiateIs(Object expected, Object... args) {
+    // isNotNull();
+    // T result = actual.invoke(args);
+    // if (!expected.equals(result)) {
+    // failWithMessage("\nExpecting instantiate to return '%s' but was '%s'", expected, result);
+    // }
+    // return this;
+    // }
 
     public InternalFunctionAssert<T> is(TypeLiteral<?> type) {
         return is(type.toKey());

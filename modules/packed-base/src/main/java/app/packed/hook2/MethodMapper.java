@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook2;
 
 /**
  *
  */
-public interface PreparedLambda<T> {
+// Ideen er at lave noget a.la. FieldMapper
+
+// Tror man skal definere metoderne....
+
+/// MethodHandle -> Raw...
+public class MethodMapper<T> {
 
 }

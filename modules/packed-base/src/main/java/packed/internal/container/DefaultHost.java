@@ -25,6 +25,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
  */
 public class DefaultHost extends AbstractComponent implements ComponentHolder {
 
+    // well cant we use children????
     final ConcurrentHashMap<String, App> apps = new ConcurrentHashMap<>();
 
     /**

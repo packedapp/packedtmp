@@ -13,39 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
-
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import app.packed.app.App;
+package app.packed.hook2;
 
 /**
  *
  */
-interface ThrowingRunnable<T> {
-    void run(T t) throws Throwable;
-}
+public interface PreparedLambda<T> {
 
-class Dx {
-
-    public static void main(Consumer<App> e) {
-
-    }
-
-    public static <T> T mainTask(Function<App, T> e) {
-        throw new UnsupportedOperationException();
-    }
-}
-
-class Ex {
-
-    public static void main(String[] args) {
-        Dx.main(a -> a.use(List.class).clear());
-
-        int size = Dx.mainTask(a -> a.use(List.class).size());
-
-        System.out.println(size);
-    }
 }

@@ -21,15 +21,15 @@ import app.packed.util.Nullable;
 import packed.internal.container.PackedComponentPath;
 
 /**
- * A component path points to a single component in hierarchy of components (component system) expressed in a string of
- * characters in which path parts, separated by the delimiting character "/", represent each unique component.
+ * A component path points to a single component in a hierarchy of components (component system) expressed as a string
+ * of characters in which path parts, separated by the delimiting character "/", represent each unique component.
  * <p>
  * Implementations of this interface are always immutable and safe for use by multiple concurrent threads.
  * <p>
  * Two component paths are equal if their string representation are identical. The hash code of a component path is
  * identical to the hash code of its string representation.
  * <p>
- * This interface will be extended in the future with additional methods.
+ * This interface will be extended with additional methods in the future.
  */
 // Iteralble Path??? Hmm, er det fulde paths eller del paths??? Den er lidt forvirrende
 public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<ComponentPath>, */ CharSequence {

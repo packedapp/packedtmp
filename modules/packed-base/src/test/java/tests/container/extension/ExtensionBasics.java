@@ -13,36 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xests.containerimage;
-
-import app.packed.app.AppBundle;
-import app.packed.inject.Provide;
+package tests.container.extension;
 
 /**
  *
  */
-public class ProvTest extends AppBundle {
+public class ExtensionBasics {
 
-    @Override
-    protected void configure() {
-        provide(new Foo());
-        // provide(new Foo());
-    }
-
-    public static void main(String[] args) {
-        run(new ProvTest());
-    }
-
-    public static class Foo {
-
-        @Provide
-        public String foo() {
-            return "FF";
-        }
-
-        @Provide
-        public Long foos() {
-            return 123L;
-        }
-    }
 }

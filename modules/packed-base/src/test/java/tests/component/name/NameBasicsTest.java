@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.name;
+package tests.component.name;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Wirelet;
-import zets.name.spi.AbstractArtifactTest;
+import support.testutil.AbstractArtifactTest;
 
 /**
  * Various basic test for naming of components.

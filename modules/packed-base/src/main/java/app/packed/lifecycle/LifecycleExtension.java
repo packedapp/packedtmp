@@ -21,13 +21,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -127,7 +127,7 @@ public final class LifecycleExtension extends Extension {
 
 }
 
-final class LifecycleHookAggregator implements Supplier<MethodHandle> {
+final class LifecycleHookAggregator implements OnHookAggregator<MethodHandle> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.Extension;
+package tests.container.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +21,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,8 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import zets.name.spi.AbstractArtifactTest;
+import app.packed.hook.OnHookAggregator;
+import support.testutil.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
 public class ExtensionActivationTest extends AbstractArtifactTest {
@@ -98,7 +98,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         String value();
     }
 
-    static class Builder implements Supplier<String> {
+    static class Builder implements OnHookAggregator<String> {
 
         /** {@inheritDoc} */
         @Override

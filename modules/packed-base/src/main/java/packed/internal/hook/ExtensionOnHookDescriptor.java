@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
@@ -34,6 +33,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -84,7 +84,8 @@ final class ExtensionOnHookDescriptor {
     MethodHandle findMethodHandleForAnnotatedField(PackedAnnotatedFieldHook<?> paf) {
         MethodHandle mh = annotatedFields.get(paf.annotation().annotationType());
         if (mh == null) {
-            throw new UnsupportedOperationException("" + paf.annotation().annotationType() + " for extension " + extensionType);
+            throw new UnsupportedOperationException(
+                    "Extension " + extensionType + " does not know how to process fields annotated with " + paf.annotation().annotationType());
         }
         return mh;
     }
@@ -148,7 +149,7 @@ final class ExtensionOnHookDescriptor {
             Parameter p = method.getParameters()[1];
             Class<?> cl = p.getType();
 
-            Class<? extends Supplier<?>> aggregateType = oh.aggreateWith();
+            Class<? extends OnHookAggregator<?>> aggregateType = oh.aggreateWith();
 
             if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;

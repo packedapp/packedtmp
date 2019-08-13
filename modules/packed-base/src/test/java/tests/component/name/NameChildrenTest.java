@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.name;
+package tests.component.name;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import zets.name.spi.AbstractArtifactTest;
-import zets.name.spi.AppTester;
+import support.testutil.AbstractArtifactTest;
+import support.testutil.AppTester;
 
 /**
  *

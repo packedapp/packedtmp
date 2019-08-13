@@ -37,5 +37,4 @@ public class StaticComponentConfiguration extends DefaultComponentConfiguration 
         super(site, containerConfiguration, ccd);
         this.implementation = requireNonNull(implementation);
     }
-
 }

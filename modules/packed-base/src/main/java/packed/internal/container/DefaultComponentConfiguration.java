@@ -15,6 +15,8 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import packed.internal.componentcache.ComponentClassDescriptor;
@@ -29,7 +31,7 @@ public abstract class DefaultComponentConfiguration extends AbstractComponentCon
 
     public DefaultComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
         super(site, containerConfiguration);
-        this.ccd = ccd;
+        this.ccd = requireNonNull(ccd);
     }
 
     /** {@inheritDoc} */

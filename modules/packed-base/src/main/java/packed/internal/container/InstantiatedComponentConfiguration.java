@@ -23,8 +23,9 @@ import packed.internal.config.site.InternalConfigSite;
 /**
  *
  */
-public class InstantiatedComponentConfiguration extends DefaultComponentConfiguration {
+public final class InstantiatedComponentConfiguration extends DefaultComponentConfiguration {
 
+    /** The instance */
     final Object instance;
 
     /**

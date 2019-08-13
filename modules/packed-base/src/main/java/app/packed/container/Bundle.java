@@ -36,16 +36,16 @@ import app.packed.util.Nullable;
  * 
  * A generic bundle. Normally you would extend {@link BaseBundle}
  */
+
 // A bundle can be used by one thread at a time...
 // However, once configured once. It cannot be changed...
 // Saa dette burde virke
 // Bundle b = new SomeBundle();
 // wire(b, setName("f1"));
 // wire(b, setName("f2"));
-
 public abstract class Bundle implements ArtifactSource {
 
-    /** The configuration. */
+    /** The configuration of the container. */
     private ContainerConfiguration configuration;
 
     /**
@@ -60,14 +60,13 @@ public abstract class Bundle implements ArtifactSource {
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
-     * users of extensions does try to configure the extension after it has been configured.
+     * users of extensions does not try to configure the extension after it has been configured.
      *
      * <pre>
      * {@code
-     * public ManagementBundle setJMXEnabled(boolean enabled) {
+     * public void setJMXEnabled(boolean enabled) {
      *     checkConfigurable(); //will throw IllegalStateException if configure() has already been called
      *     this.jmxEnabled = enabled;
-     *     return this;
      * }}
      * </pre>
      * 
@@ -216,6 +215,8 @@ public abstract class Bundle implements ArtifactSource {
     }
 
     /**
+     * Sets the description of the container.
+     * 
      * @param description
      *            the description to set
      * @see ContainerConfiguration#setDescription(String)

@@ -26,22 +26,22 @@ import app.packed.container.WireletList;
 /** The default implementation of {@link ArtifactBuildContext} */
 final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
-    /** The artifact driver. */
+    /** The artifact's driver. */
     private final ArtifactDriver<?> driver;
 
-    /** The configuration of the artifacts root container. */
-    private final PackedContainerConfiguration rootContainerConfiguration;
+    /** The configuration of the artifacts top container. */
+    private final PackedContainerConfiguration topContainerConfiguration;
 
     /**
      * Creates a new build context object.
      * 
-     * @param rootContainerConfiguration
-     *            the configuration of the artifacts root container
+     * @param topContainerConfiguration
+     *            the configuration of the artifact's top container
      * @param driver
-     *            the artifact driver
+     *            the driver of the artifact
      */
-    PackedArtifactBuildContext(PackedContainerConfiguration rootContainerConfiguration, ArtifactDriver<?> driver) {
-        this.rootContainerConfiguration = requireNonNull(rootContainerConfiguration);
+    PackedArtifactBuildContext(PackedContainerConfiguration topContainerConfiguration, ArtifactDriver<?> driver) {
+        this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.driver = requireNonNull(driver);
     }
 
@@ -54,24 +54,24 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     /** {@inheritDoc} */
     @Override
     public ConfigSite configSite() {
-        return rootContainerConfiguration.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ArtifactSource source() {
-        return rootContainerConfiguration.configurator.source;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public WireletList wirelets() {
-        return rootContainerConfiguration.wirelets();
+        return topContainerConfiguration.configSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isInstantiating() {
         return driver.isInstantiating();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ArtifactSource source() {
+        return topContainerConfiguration.configurator.source;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public WireletList wirelets() {
+        return topContainerConfiguration.wirelets();
     }
 }

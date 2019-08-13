@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.hook2;
+
+import app.packed.util.FieldDescriptor;
+import app.packed.util.MethodDescriptor;
 
 /**
  * A field operator
  */
 // Smid i aop eller hook???
 // Eller maaske en .skrald til descriptor, operators, ect..
-public interface FieldOperator {
+interface FieldOperator {
 
     /**
      * Returns the fields descriptor.

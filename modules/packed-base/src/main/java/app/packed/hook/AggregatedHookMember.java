@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.Extension;
+package app.packed.hook;
+
+import java.util.function.BiConsumer;
+
+import app.packed.container.ContainerConfiguration;
 
 /**
  *
  */
-public class ExtensionBasics {
 
+// Maybe take sidecar when creating this???
+//// Then we can check that the sidecar is available.. well
+
+public interface AggregatedHookMember<T> {
+    <S> void process(ContainerConfiguration cc, Class<S> sidecar, BiConsumer<S, T> consumer);
 }

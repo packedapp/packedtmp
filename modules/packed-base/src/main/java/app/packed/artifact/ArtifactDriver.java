@@ -37,6 +37,7 @@ import packed.internal.util.TypeVariableExtractorUtil;
  * 
  * <p>
  * Normally, you should never instantiate more then a single instance of a particular implementation of this class.
+ * Subclasses of this class should be thread safe.
  * 
  * @param <T>
  *            The type of artifact this driver produces.
@@ -46,7 +47,6 @@ public abstract class ArtifactDriver<T> {
     /** The type of artifact this driver produces. */
     private final Class<T> type;
 
-    // private final
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
     protected ArtifactDriver() {

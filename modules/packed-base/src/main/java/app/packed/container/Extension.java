@@ -56,6 +56,7 @@ public abstract class Extension {
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
 
+            /** {@inheritDoc} */
             @Override
             public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
                 bundle.doConfigure(configuration);
@@ -89,7 +90,8 @@ public abstract class Extension {
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
-     * If stack frame based config has been disable via, for example, fooo. This method returns {@link ConfigSite#UNKNOWN}.
+     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+     * {@link ConfigSite#UNKNOWN}.
      * 
      * @return a configuration site
      * @see StackWalker

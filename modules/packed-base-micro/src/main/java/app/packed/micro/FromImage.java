@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -40,6 +39,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 
 /**
  *
@@ -112,7 +112,7 @@ public class FromImage {
         String value();
     }
 
-    static class MyExtensionHookAggregator implements Supplier<String> {
+    static class MyExtensionHookAggregator implements OnHookAggregator<String> {
         ActivateMyExtension e;
 
         @OnHook

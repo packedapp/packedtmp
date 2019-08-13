@@ -50,7 +50,7 @@ public interface App extends AutoCloseable {
 
     /**
      * An alias for {@link #shutdown()} to support the {@link AutoCloseable} interface. This method has the exact same
-     * semantics as {@link #shutdown()} and can be used interchangeable.
+     * semantics as {@link #shutdown()} and both can be used interchangeable.
      **/
     @Override
     default void close() {
@@ -60,8 +60,8 @@ public interface App extends AutoCloseable {
     /**
      * Returns the configuration site of this app.
      * <p>
-     * If this application was created from an {@link ArtifactImage image} this method will return the site where the image
-     * was created. Unless XXXXXXXX.
+     * If this application was created from an {@link ArtifactImage image}, this method will return the site where the image
+     * was created. Unless the AI.Wiring option is used when construction the application.
      * 
      * @return the configuration site of this app
      */
@@ -94,7 +94,7 @@ public interface App extends AutoCloseable {
     String name();
 
     /**
-     * Returns the component path of this application.
+     * Returns the path of this application.
      * <p>
      * The returned path is always identical to the path of the application's top container.
      *

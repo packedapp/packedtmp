@@ -44,7 +44,7 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
     @Nullable
     LinkedHashMap<String, AbstractComponentConfiguration> children;
 
-    /** The component that last installed. */
+    /** The component that was last installed. */
     @Nullable
     DefaultComponentConfiguration currentComponent;
 

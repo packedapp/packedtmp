@@ -20,16 +20,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.util.FieldDescriptor;
+import app.packed.util.FieldMapper;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.TypeLiteral;
 
 /** A hook representing a field annotated with a specific type. */
 public interface AnnotatedFieldHook<T extends Annotation> {
@@ -105,70 +102,32 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     Lookup lookup(); // TODO remove this method
 
     // Drop TypeLiteral taenker jeg...
-    <A> A newAccessor(ComponentConfiguration cc, Class<A> accessorType);
-
-    <A> A newAccessor(ComponentConfiguration cc, Class<A> accessorType, VarHandle.AccessMode accessMode);
-
-    <A> A newAccessor(ComponentConfiguration cc, TypeLiteral<A> accessorType);
-
-    <A> A newAccessor(ComponentConfiguration cc, TypeLiteral<A> accessorType, VarHandle.AccessMode accessMode);
-
-    BiPredicate<?, ?> newCompareAndSetAccessor(ComponentConfiguration cc);
-
-    <E> BiPredicate<E, E> newCompareAndSetAccessor(ComponentConfiguration cc, Class<E> fieldType);
-
-    <E> BiPredicate<E, E> newCompareAndSetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType);
-
-    // Checks that type matches...
-    // And that AFH.bundle == ComponentConfiguration.bundle()
-    // Return with a fixed if static.
-    // Else we register a callback, that sets the instance. Throwing ISE
-    // until the instance has been set
-    Supplier<?> newGetAccessor(ComponentConfiguration cc);
-
-    <E> Supplier<E> newGetAccessor(ComponentConfiguration cc, Class<E> fieldType);
-
-    <E> Supplier<E> newGetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType);
-
-    Function<?, ?> newGetAndSetAccessor(ComponentConfiguration cc);
-
-    <E> Function<? super E, E> newGetAndSetAccessor(ComponentConfiguration cc, Class<E> fieldType);
-
-    <E> Function<? super E, E> newGetAndSetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType);
 
     /**
      * Creates a method handle giving read access to the underlying field. If the underlying field is an instance field. The
-     * component instance must be explicitly provided by users of this method.
+     * instance must be explicitly provided by users of this method.
      * 
      * @return a new method handle with read access
      * @throws IllegalAccessRuntimeException
      *             if a method handle could not be created
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
-    MethodHandle newMethodHandleGetter();
+    MethodHandle newGetter();
 
     /**
      * Creates a method handle giving read access to the underlying field. If the underlying field is an instance field. The
-     * component instance must be explicitly provided by users of this method.
+     * instance must be explicitly provided by users of this method.
      * 
      * @return a new method handle with read access
      * @throws IllegalAccessRuntimeException
      *             if a method handle could not be created, for example, if the underlying field is final
      * @see Lookup#unreflectSetter(java.lang.reflect.Field)
      */
-    MethodHandle newMethodHandleSetter();
-
-    // ????
-    Consumer<?> newSetAccessor(ComponentConfiguration cc);
-
-    // Are we going to perform type checking? other that what VarHandle does????
-    <E> Consumer<? super E> newSetAccessor(ComponentConfiguration cc, Class<E> fieldType);
-
-    <E> Consumer<? super E> newSetAccessor(ComponentConfiguration cc, TypeLiteral<E> fieldType);
+    MethodHandle newSetter();
 
     /**
-     * Creates a new {@link VarHandle} for the underlying field. If the underlying field is an instance field. The component
-     * instance must be explicitly provided by the user.
+     * Creates a new {@link VarHandle} for the underlying field. If the underlying field is an instance field. The instance
+     * must be explicitly provided by the user.
      * 
      * @return a new VarHandle for the underlying field
      * @throws IllegalAccessRuntimeException
@@ -181,7 +140,19 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     // compile() <- maybe compile, maybe only
     AnnotatedFieldHook<T> optimize();
 
-    default AnnotatedFieldHook<T> runOnReady(Runnable r) {
+    /**
+     * 
+     * @param <E>
+     * @param mapper
+     * @return stuff
+     * @throws UnsupportedOperationException
+     *             if the underlying field is not static
+     */
+    <E> E staticAccessor(FieldMapper<E> mapper);
+
+    default <E, S> void accessor(ComponentConfiguration cc, FieldMapper<E> mapper, Class<S> sideCarType, BiConsumer<S, E> consumer) {}
+
+    default <E> AggregatedHookMember<E> accessor(FieldMapper<E> mapper) {
         throw new UnsupportedOperationException();
     }
 }

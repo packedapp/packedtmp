@@ -28,10 +28,10 @@ import packed.internal.invoke.FunctionHandle;
 public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
 
     /** The function we map the result from. */
-    private final FunctionHandle<T> mapFrom;
+    final FunctionHandle<T> mapFrom;
 
     /** The function used to map the result. */
-    private final Function<? super T, ? extends R> mapper;
+    final Function<? super T, ? extends R> mapper;
 
     public MappingFunctionHandle(TypeLiteral<R> typeLiteral, FunctionHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
         super(typeLiteral);
@@ -42,9 +42,7 @@ public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
     /** {@inheritDoc} */
     @Override
     public @Nullable R invoke(Object[] params) {
-        @Nullable
-        T invoke = mapFrom.invoke(params);
-        return mapper.apply(invoke);
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

@@ -21,7 +21,6 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.function.Supplier;
 
 import app.packed.hook2.InstanceOfHook;
 import packed.internal.hook.ExtensionHookPerComponentGroup;
@@ -53,7 +52,7 @@ public @interface OnHook {
     // InternalOnly, ExternalOnly, Both
     boolean exported() default false;// export or exported?? align with @Provides
 
-    Class<? extends Supplier<?>> aggreateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
+    Class<? extends OnHookAggregator<?>> aggreateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
 }
 
 // boolean disableForOwnContainer

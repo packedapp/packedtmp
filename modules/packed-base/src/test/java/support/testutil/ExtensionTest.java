@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import java.lang.invoke.MethodHandle;
+package support.testutil;
 
 /**
  *
  */
-// HookCollector
-// Tror godt vi vil have en specific alligevel....
-// Bliver hurtig lidt rodet nu med en
-public interface HookAggregator<T> {
-
-    public static void foo(MethodHandle mh) {
-        mh.bindTo("ddd");
-    }
+public class ExtensionTest {
 
 }
-
-// Vi kan godt supportere consumation af nogle instantiated method handles....

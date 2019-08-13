@@ -17,12 +17,16 @@ package packed.internal.inject.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvideHelper;
+import java.lang.invoke.MethodHandle;
+
+import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
 import packed.internal.inject.buildtime.BuildServiceNode;
 import packed.internal.invoke.FunctionHandle;
+import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
 // 3 typer?? Saa kan de foerste to implementere Provider
@@ -85,6 +89,7 @@ public final class RuntimePrototypeServiceNode<T> extends AbstractRuntimeService
      *
      * @return the new service instance
      */
+    @SuppressWarnings("unchecked")
     private T newInstance() {
         Object[] params = EMPTY_OBJECT_ARRAY;
         if (providers.length > 0) {
@@ -93,6 +98,12 @@ public final class RuntimePrototypeServiceNode<T> extends AbstractRuntimeService
                 params[i] = providers[i].get();
             }
         }
-        return invoker.invoke(params);
+        try {
+            MethodHandle mh = invoker.toMethodHandle();
+            return (T) mh.invokeWithArguments(params);
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new InjectionException("Failed to inject " + invoker, e);
+        }
     }
 }

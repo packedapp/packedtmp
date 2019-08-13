@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.name;
+package tests.component.name;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.ContainerConfiguration;
-import zets.name.spi.AbstractArtifactTest;
-import zets.name.spi.ContainerConfigurationTester;
+import support.testutil.AbstractArtifactTest;
+import support.testutil.ContainerConfigurationTester;
 
 /**
  * Tests the various ways the name of a component can be frozen.

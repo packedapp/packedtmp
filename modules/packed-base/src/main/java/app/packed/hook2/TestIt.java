@@ -18,11 +18,13 @@ package app.packed.hook2;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.PreparedLambda;
+import app.packed.hook.AggregatedHookMember;
 import app.packed.lifecycle.Main;
+import app.packed.util.FieldMapper;
 
 /**
  *
@@ -38,9 +40,19 @@ public class TestIt {
 
     @OnHook
     public void foo(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
-        Consumer<? super Number> a = h.newSetAccessor(cc, Number.class);
+        h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
+    }
 
-        a.accept(23);
+    @OnHook
+    public void foox(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
+        h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
+    }
+
+    @OnHook
+    public void foox(ContainerConfiguration cc, AnnotatedFieldHook<Main> h) {
+        AggregatedHookMember<String> f = h.accessor(FieldMapper.get(String.class));
+
+        f.process(cc, LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
     }
 
     @OnHook
@@ -77,6 +89,10 @@ public class TestIt {
 
         @OnHook
         public void foo(ComponentConfiguration cc, MainAggregate ma) {
+
+        }
+
+        public void listenerInstance(ComponentConfiguration cc, Object listenerInstance) {
 
         }
     }

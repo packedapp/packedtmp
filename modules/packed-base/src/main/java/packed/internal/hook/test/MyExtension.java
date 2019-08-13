@@ -22,13 +22,15 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
+import app.packed.util.FieldMapper;
 
 /**
  *
  */
 public class MyExtension extends Extension {
 
-    // @OnHook(aggreateWith = Agg.class)
+    @OnHook(aggreateWith = Agg.class)
     public void foo(ComponentConfiguration cc, Integer val) {
         System.out.println(cc.path());
         System.out.println(val);
@@ -39,9 +41,9 @@ public class MyExtension extends Extension {
         // ignore
     }
 
-    @OnHook
+    // @OnHook
     public void foo(ComponentConfiguration cc, AnnotatedFieldHook<MyA> h) throws Throwable {
-        Supplier<?> ss = h.newGetAccessor(cc);
+        Supplier<?> ss = h.staticAccessor(FieldMapper.supplier());
         System.out.println(ss.get());
     }
 
@@ -50,12 +52,12 @@ public class MyExtension extends Extension {
         System.out.println(cc.path());
         System.out.println(h.field());
         System.out.println();
-        System.out.println("----   " + h.newMethodHandleGetter().invoke());
-        System.out.println("----   " + h.newMethodHandleSetter().invoke("flll"));
-        System.out.println("----   " + h.newMethodHandleGetter().invoke());
+        System.out.println("----   " + h.newGetter().invoke());
+        System.out.println("----   " + h.newSetter().invoke("flll"));
+        System.out.println("----   " + h.newGetter().invoke());
     }
 
-    public static class Agg implements Supplier<Integer> {
+    public static class Agg implements OnHookAggregator<Integer> {
         private int sum;
 
         @OnHook

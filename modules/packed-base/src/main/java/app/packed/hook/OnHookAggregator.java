@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.name.spi;
+package app.packed.hook;
 
 /**
  *
  */
-public class ExtensionTest {
+// HookCollector
+// Tror godt vi vil have en specific alligevel....
+// Bliver hurtig lidt rodet nu med en
 
+// Alternativ kan vi lave en abstract klasse, med hjaelpe metoder...
+public interface OnHookAggregator<T> {
+    T get();
 }
+
+// Vi kan godt supportere consumation af nogle instantiated method handles....

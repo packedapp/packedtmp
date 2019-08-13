@@ -15,14 +15,13 @@
  */
 package micro.hook;
 
-import java.util.function.Supplier;
-
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ActivateExtension;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 
 /**
  *
@@ -38,7 +37,7 @@ public class HookOnAggregatorActivationMicro {
         public void process(ComponentConfiguration cc, String s) {}
     }
 
-    public static class SomeAggegator implements Supplier<String> {
+    public static class SomeAggegator implements OnHookAggregator<String> {
 
         /** {@inheritDoc} */
         @Override

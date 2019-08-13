@@ -30,6 +30,8 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 
 /**
+ * Base bundles contains easy access to common functionality difined by the various extension in this module.
+ * 
  * 
  * With common functionality provide by app.packed.base
  * 
@@ -59,14 +61,10 @@ import app.packed.util.Qualifier;
 // AnyBundle + Bundle <- I think I like this better....
 
 // We never return, for example, Bundle or AnyBundle to allow for method chaining.
-// As this would
+// As this would make it deficult to extend
 
 // protected final Restrictions restrictions = null;
 
-// protected void buildWithBundle() {
-// // Insta
-// // NativeImageWriter
-// }
 public abstract class BaseBundle extends Bundle {
 
     /**
@@ -167,6 +165,7 @@ public abstract class BaseBundle extends Bundle {
     }
 
     protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
+        // Why is this not in Bundle????
         return configuration().newLayer(name, dependencies);
     }
 

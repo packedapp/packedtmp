@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.Extension;
+package tests.container.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -24,7 +24,7 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.WireletList;
-import zets.name.spi.AbstractArtifactTest;
+import support.testutil.AbstractArtifactTest;
 
 /** Tests basic functionality of a {@link Extension}. */
 public class BasicExtensionTest extends AbstractArtifactTest {

@@ -63,7 +63,7 @@ abstract class AbstractComponent implements Component {
 
     /** The parent component, iff this component has a parent. */
     @Nullable
-    final AbstractComponent parent;;
+    final AbstractComponent parent;
 
     /**
      * Creates a new abstract component.

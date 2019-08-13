@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zets.name;
+package tests.component.name;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -22,18 +22,18 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.container.Wirelet;
-import zets.name.spi.AbstractArtifactTest;
-import zets.name.spi.ContainerConfigurationTester;
+import support.testutil.AbstractArtifactTest;
+import support.testutil.ContainerConfigurationTester;
 
 /** Tests that a proper name is generated if the name of a container is not explicitly set. */
-public class NameDefaultsTest extends AbstractArtifactTest {
+public class NameGeneratedTest extends AbstractArtifactTest {
 
     /** Tests the */
     @Test
     public void bundles() {
         check(f -> new AbstractConsumableBundle(f) {}, "Container"); // Anonymous class
         check(f -> new S(f), "S");
-        check(f -> new NameDefaultsTest.Bundle(f), "Bundle");
+        check(f -> new NameGeneratedTest.Bundle(f), "Bundle");
         check(f -> new HelloWorld(f), "HelloWorld");
         check(f -> new HelloWorldBundle(f), "HelloWorld");
     }

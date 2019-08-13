@@ -20,7 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -39,6 +38,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 
 /**
  *
@@ -121,7 +121,7 @@ public class ExtensionActivation {
         String value();
     }
 
-    static class Builder implements Supplier<String> {
+    static class Builder implements OnHookAggregator<String> {
         ActivateMyExtension e;
 
         @OnHook

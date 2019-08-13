@@ -53,6 +53,14 @@ import java.util.Set;
 
 // Vi kunne ogsaa lave det som en konfigurations klasse.... Hvor vi laver det hele
 // Idielt set har vi en klasse, med public static ContainerLayer DATA = ddddd, SERVICE = dddd
+
+// We need to be able to set a severity... Ignore, warn, fail();
+// If layers are defined globally. Severity is per project...
+// useLayer(ContainerLayer cl, LayerOptions...)
+// useLayer(MVC.class, WarnOnIllegal)
+
+// Supportere vi layers in layers????
+// https://github.com/sensiolabs-de/deptrac
 public interface ContainerLayer {
 
     /**

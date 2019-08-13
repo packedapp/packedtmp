@@ -19,11 +19,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -57,7 +57,7 @@ public final class AtProvidesGroup {
     }
 
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class ProvidesHookAggregator implements Supplier<AtProvidesGroup> {
+    public final static class ProvidesHookAggregator implements OnHookAggregator<AtProvidesGroup> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;

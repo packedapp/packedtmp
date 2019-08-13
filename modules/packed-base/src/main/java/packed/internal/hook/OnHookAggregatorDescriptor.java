@@ -27,12 +27,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
-import java.util.function.Supplier;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.OnHook;
+import app.packed.hook.OnHookAggregator;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -52,7 +52,7 @@ final class OnHookAggregatorDescriptor {
         @SuppressWarnings("unchecked")
         @Override
         protected OnHookAggregatorDescriptor computeValue(Class<?> type) {
-            return new OnHookAggregatorDescriptor.Builder((Class<? extends Supplier<?>>) type).build();
+            return new OnHookAggregatorDescriptor.Builder((Class<? extends OnHookAggregator<?>>) type).build();
         }
     };
 
@@ -89,7 +89,7 @@ final class OnHookAggregatorDescriptor {
         this.annotatedTypes = builder.annotatedTypes;
     }
 
-    void invokeOnHook(Supplier<?> aggregator, AnnotatedFieldHook<?> hook) {
+    void invokeOnHook(OnHookAggregator<?> aggregator, AnnotatedFieldHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -111,7 +111,7 @@ final class OnHookAggregatorDescriptor {
         }
     }
 
-    void invokeOnHook(Supplier<?> aggregator, AnnotatedMethodHook<?> hook) {
+    void invokeOnHook(OnHookAggregator<?> aggregator, AnnotatedMethodHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -132,7 +132,7 @@ final class OnHookAggregatorDescriptor {
         }
     }
 
-    void invokeOnHook(Supplier<?> aggregator, AnnotatedTypeHook<?> hook) {
+    void invokeOnHook(OnHookAggregator<?> aggregator, AnnotatedTypeHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -146,9 +146,9 @@ final class OnHookAggregatorDescriptor {
      * 
      * @return a new aggregator object
      */
-    Supplier<?> newAggregatorInstance() {
+    OnHookAggregator<?> newAggregatorInstance() {
         try {
-            return (Supplier<?>) constructor.invoke();
+            return (OnHookAggregator<?>) constructor.invoke();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -163,13 +163,13 @@ final class OnHookAggregatorDescriptor {
         return resultType;
     }
 
-    public static OnHookAggregatorDescriptor get(Class<? extends Supplier<?>> clazz) {
+    public static OnHookAggregatorDescriptor get(Class<? extends OnHookAggregator<?>> clazz) {
         return CACHE.get(clazz);
     }
 
     private static class Builder {
 
-        private final Class<? extends Supplier<?>> aggregatorType;
+        private final Class<? extends OnHookAggregator<?>> aggregatorType;
 
         final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
@@ -182,9 +182,9 @@ final class OnHookAggregatorDescriptor {
         final Class<?> resultType;
 
         @SuppressWarnings({ "rawtypes" })
-        private Builder(Class<? extends Supplier<?>> aggregatorType) {
+        private Builder(Class<? extends OnHookAggregator<?>> aggregatorType) {
             this.aggregatorType = requireNonNull(aggregatorType);
-            resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, Supplier.class, 0);
+            resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, OnHookAggregator.class, 0);
         }
 
         private void addHookMethod(Lookup lookup, Method method, OnHook onHook) {

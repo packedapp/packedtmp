@@ -18,15 +18,37 @@ package app.packed.app;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactSource;
 import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.inject.ServiceWirelets;
 import app.packed.lifecycle.StringArgs;
 
 /**
- *
+ * A specialized version of {@link BaseBundle} that provide various utility methods for instantiating {@link App apps}
+ * from {@link Bundle bundles}. Besides the utility methods, extending this class also clearly signals that a particular
+ * bundle is meant as a source for creating an {@link App}.
+ * <p>
+ * Is typically used like this.
+ * 
+ * 
+ * <p>
+ * Or in case
  */
 public abstract class AppBundle extends BaseBundle {
 
+    /**
+     * Creates a new artifact image from the specified source. Is typically used like this: <pre>
+     * 
+     * </pre>
+     * <p>
+     * Invoking this method is identical to invoking {@link ArtifactImage#of(ArtifactSource, Wirelet...)}.
+     * 
+     * @param source
+     *            the could to create the image from
+     * @param wirelets
+     * @return a new artifact image from the specified source
+     * @see ArtifactImage#of(ArtifactSource, Wirelet...)
+     */
     protected static ArtifactImage newImage(ArtifactSource source, Wirelet... wirelets) {
         return ArtifactImage.of(source, wirelets);
     }
