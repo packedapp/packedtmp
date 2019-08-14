@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.hook.usage;
 
 /**
  *
  */
-// HookCollector
-// Tror godt vi vil have en specific alligevel....
-// Bliver hurtig lidt rodet nu med en
+// SKal vi supportere dette?
+// I saa fald bruger man extension'en paa build time og sidecar'en paa run time
+public class OnBothExtensionAndSidecar {
 
-// Alternativ kan vi lave en abstract klasse, med hjaelpe metoder...
-public interface OnHookAggregator<T> {
-    T get();
 }
-
-// Vi kan godt supportere consumation af nogle instantiated method handles....

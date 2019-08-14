@@ -21,8 +21,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.DelayedAccessor;
 import app.packed.hook.OnHook;
-import app.packed.hook.AggregatedHookMember;
 import app.packed.lifecycle.Main;
 import app.packed.util.FieldMapper;
 
@@ -38,21 +38,21 @@ public class TestIt {
         System.out.println(main);
     }
 
-    @OnHook
-    public void foo(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
-        h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
-    }
-
-    @OnHook
-    public void foox(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
-        h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
-    }
+    // @OnHook
+    // public void foo(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
+    // h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
+    // }
+    //
+    // @OnHook
+    // public void foox(AnnotatedFieldHook<Main> h, ComponentConfiguration cc) {
+    // h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
+    // }
 
     @OnHook
     public void foox(ContainerConfiguration cc, AnnotatedFieldHook<Main> h) {
-        AggregatedHookMember<String> f = h.accessor(FieldMapper.get(String.class));
-
-        f.process(cc, LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
+        DelayedAccessor<String> f = h.accessor(FieldMapper.get(String.class));
+        System.out.println(f);
+        // f.process(cc, LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
     }
 
     @OnHook

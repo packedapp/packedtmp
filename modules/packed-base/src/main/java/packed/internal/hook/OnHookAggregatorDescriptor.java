@@ -32,7 +32,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -52,7 +52,7 @@ final class OnHookAggregatorDescriptor {
         @SuppressWarnings("unchecked")
         @Override
         protected OnHookAggregatorDescriptor computeValue(Class<?> type) {
-            return new OnHookAggregatorDescriptor.Builder((Class<? extends OnHookAggregator<?>>) type).build();
+            return new OnHookAggregatorDescriptor.Builder((Class<? extends OnHookAggregateBuilder<?>>) type).build();
         }
     };
 
@@ -89,7 +89,7 @@ final class OnHookAggregatorDescriptor {
         this.annotatedTypes = builder.annotatedTypes;
     }
 
-    void invokeOnHook(OnHookAggregator<?> aggregator, AnnotatedFieldHook<?> hook) {
+    void invokeOnHook(OnHookAggregateBuilder<?> aggregator, AnnotatedFieldHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -111,7 +111,7 @@ final class OnHookAggregatorDescriptor {
         }
     }
 
-    void invokeOnHook(OnHookAggregator<?> aggregator, AnnotatedMethodHook<?> hook) {
+    void invokeOnHook(OnHookAggregateBuilder<?> aggregator, AnnotatedMethodHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -132,7 +132,7 @@ final class OnHookAggregatorDescriptor {
         }
     }
 
-    void invokeOnHook(OnHookAggregator<?> aggregator, AnnotatedTypeHook<?> hook) {
+    void invokeOnHook(OnHookAggregateBuilder<?> aggregator, AnnotatedTypeHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -146,9 +146,9 @@ final class OnHookAggregatorDescriptor {
      * 
      * @return a new aggregator object
      */
-    OnHookAggregator<?> newAggregatorInstance() {
+    OnHookAggregateBuilder<?> newAggregatorInstance() {
         try {
-            return (OnHookAggregator<?>) constructor.invoke();
+            return (OnHookAggregateBuilder<?>) constructor.invoke();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -163,13 +163,13 @@ final class OnHookAggregatorDescriptor {
         return resultType;
     }
 
-    public static OnHookAggregatorDescriptor get(Class<? extends OnHookAggregator<?>> clazz) {
+    public static OnHookAggregatorDescriptor get(Class<? extends OnHookAggregateBuilder<?>> clazz) {
         return CACHE.get(clazz);
     }
 
     private static class Builder {
 
-        private final Class<? extends OnHookAggregator<?>> aggregatorType;
+        private final Class<? extends OnHookAggregateBuilder<?>> aggregatorType;
 
         final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
@@ -182,22 +182,19 @@ final class OnHookAggregatorDescriptor {
         final Class<?> resultType;
 
         @SuppressWarnings({ "rawtypes" })
-        private Builder(Class<? extends OnHookAggregator<?>> aggregatorType) {
+        private Builder(Class<? extends OnHookAggregateBuilder<?>> aggregatorType) {
             this.aggregatorType = requireNonNull(aggregatorType);
-            resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, OnHookAggregator.class, 0);
+            resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, OnHookAggregateBuilder.class, 0);
         }
 
-        private void addHookMethod(Lookup lookup, Method method, OnHook onHook) {
-            if (onHook.aggreateWith() != ExtensionHookPerComponentGroup.NoAggregator.class) {
-                throw new InvalidDeclarationException("Cannot specify a aggregate class '" + onHook.aggreateWith().getCanonicalName()
-                        + "' for a method on aggregator class, method = " + StringFormatter.format(method));
-            }
-            if (method.getParameterCount() != 1) {
-                throw new InvalidDeclarationException(
-                        "Methods annotated with @OnHook on hook aggregates must have exactly one parameter, method = " + StringFormatter.format(method));
-            }
-
-            Parameter p = method.getParameters()[0];
+        private void addHookMethod(Lookup lookup, Method method, Parameter p) {
+            // if (method.getParameterCount() != 1) {
+            // throw new InvalidDeclarationException(
+            // "Methods annotated with @OnHook on hook aggregates must have exactly one parameter, method = " +
+            // StringFormatter.format(method));
+            // }
+            //
+            // Parameter p = method.getParameters()[0];
             Class<?> cl = p.getType();
 
             if (cl == AnnotatedFieldHook.class) {
@@ -266,9 +263,21 @@ final class OnHookAggregatorDescriptor {
             // Find all methods annotated with @OnHook
             for (Class<?> c = aggregatorType; c != Object.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
-                    OnHook oh = method.getAnnotation(OnHook.class);
-                    if (oh != null) {
-                        addHookMethod(lookup, method, oh);
+                    Parameter hook = null;
+                    if (method.getParameterCount() > 0) {
+                        for (Parameter p : method.getParameters()) {
+                            Class<?> pc = p.getType();
+                            if (pc == AnnotatedFieldHook.class || pc == AnnotatedMethodHook.class || pc == AnnotatedTypeHook.class) {
+                                if (method.getParameterCount() != 1) {
+                                    throw new InvalidDeclarationException("Methods on " + aggregatorType
+                                            + " that takes a hook class must have exactly one parameter, method = " + StringFormatter.format(method));
+                                }
+                                hook = p;
+                            }
+                        }
+                    }
+                    if (hook != null) {
+                        addHookMethod(lookup, method, hook);
                     }
                 }
             }

@@ -83,5 +83,4 @@ public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
     public MethodHandle toMethodHandle() {
         return GET.bindTo(supplier);
     }
-
 }

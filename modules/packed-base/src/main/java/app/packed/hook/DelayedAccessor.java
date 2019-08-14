@@ -15,7 +15,7 @@
  */
 package app.packed.hook;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import app.packed.container.ContainerConfiguration;
 
@@ -26,6 +26,6 @@ import app.packed.container.ContainerConfiguration;
 // Maybe take sidecar when creating this???
 //// Then we can check that the sidecar is available.. well
 
-public interface AggregatedHookMember<T> {
-    <S> void process(ContainerConfiguration cc, Class<S> sidecar, BiConsumer<S, T> consumer);
+public interface DelayedAccessor<T> {
+    void onReady(ContainerConfiguration cc, Consumer<T> consumer);
 }

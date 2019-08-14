@@ -33,7 +33,7 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
@@ -98,11 +98,11 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         String value();
     }
 
-    static class Builder implements OnHookAggregator<String> {
+    static class Builder implements OnHookAggregateBuilder<String> {
 
         /** {@inheritDoc} */
         @Override
-        public String get() {
+        public String build() {
             return "ffooo";
         }
 
@@ -137,7 +137,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(aggreateWith = Builder.class)
+        @OnHook(aggregateWith = Builder.class)
         protected void set(ComponentConfiguration a, String s) {}
     }
 

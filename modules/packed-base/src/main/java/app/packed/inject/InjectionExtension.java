@@ -294,7 +294,7 @@ public final class InjectionExtension extends Extension {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @OnHook(aggreateWith = ProvidesHookAggregator.class)
+    @OnHook(aggregateWith = ProvidesHookAggregator.class)
     void set(ComponentConfiguration cc, AtProvidesGroup apg) {
         BuildServiceNodeDefault sc;
         if (cc instanceof InstantiatedComponentConfiguration) {

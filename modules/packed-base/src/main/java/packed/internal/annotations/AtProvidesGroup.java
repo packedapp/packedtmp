@@ -23,7 +23,7 @@ import java.util.Map;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -57,7 +57,7 @@ public final class AtProvidesGroup {
     }
 
     /** A builder for an {@link AtProvidesGroup}. */
-    public final static class ProvidesHookAggregator implements OnHookAggregator<AtProvidesGroup> {
+    public final static class ProvidesHookAggregator implements OnHookAggregateBuilder<AtProvidesGroup> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;
@@ -71,7 +71,7 @@ public final class AtProvidesGroup {
          * @return the new group
          */
         @Override
-        public AtProvidesGroup get() {
+        public AtProvidesGroup build() {
             return new AtProvidesGroup(this);
         }
 

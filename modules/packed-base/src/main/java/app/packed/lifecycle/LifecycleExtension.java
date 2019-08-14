@@ -27,7 +27,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -73,7 +73,7 @@ public final class LifecycleExtension extends Extension {
      * 
      * @param mh
      */
-    @OnHook(aggreateWith = LifecycleHookAggregator.class)
+    @OnHook(aggregateWith = LifecycleHookAggregator.class)
     void addMain(ComponentConfiguration cc, MethodHandle mh) {
         // TODO check that we do not have multiple @Main methods
         System.out.println(mh);
@@ -127,7 +127,7 @@ public final class LifecycleExtension extends Extension {
 
 }
 
-final class LifecycleHookAggregator implements OnHookAggregator<MethodHandle> {
+final class LifecycleHookAggregator implements OnHookAggregateBuilder<MethodHandle> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
 
@@ -138,7 +138,7 @@ final class LifecycleHookAggregator implements OnHookAggregator<MethodHandle> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle get() {
+    public MethodHandle build() {
         if (hooks.size() > 1) {
             throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hooks.get(0).method().getDeclaringClass())
                     + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "

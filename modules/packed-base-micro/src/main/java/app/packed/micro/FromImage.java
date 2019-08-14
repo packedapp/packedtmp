@@ -39,7 +39,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 
 /**
  *
@@ -101,7 +101,7 @@ public class FromImage {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(aggreateWith = MyExtensionHookAggregator.class)
+        @OnHook(aggregateWith = MyExtensionHookAggregator.class)
         public void foo(ComponentConfiguration cc, String s) {}
     }
 
@@ -112,7 +112,7 @@ public class FromImage {
         String value();
     }
 
-    static class MyExtensionHookAggregator implements OnHookAggregator<String> {
+    static class MyExtensionHookAggregator implements OnHookAggregateBuilder<String> {
         ActivateMyExtension e;
 
         @OnHook
@@ -122,7 +122,7 @@ public class FromImage {
 
         /** {@inheritDoc} */
         @Override
-        public String get() {
+        public String build() {
             return e.toString();
         }
     }

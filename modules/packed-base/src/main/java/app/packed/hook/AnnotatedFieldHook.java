@@ -20,9 +20,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
-import java.util.function.BiConsumer;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.FieldMapper;
 import app.packed.util.IllegalAccessRuntimeException;
@@ -51,6 +49,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
 
     // Check the type
     // checkNotNull()???Nah that could get complicated.... Maybe at some point
+    // because should we check it every time we access the field, or only once
 
     /**
      * Checks that the underlying field is final.
@@ -150,9 +149,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     <E> E staticAccessor(FieldMapper<E> mapper);
 
-    default <E, S> void accessor(ComponentConfiguration cc, FieldMapper<E> mapper, Class<S> sideCarType, BiConsumer<S, E> consumer) {}
-
-    default <E> AggregatedHookMember<E> accessor(FieldMapper<E> mapper) {
+    default <E> DelayedAccessor<E> accessor(FieldMapper<E> mapper) {
         throw new UnsupportedOperationException();
     }
 }

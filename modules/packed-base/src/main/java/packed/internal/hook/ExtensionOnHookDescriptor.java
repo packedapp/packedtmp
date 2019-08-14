@@ -33,7 +33,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -149,7 +149,7 @@ final class ExtensionOnHookDescriptor {
             Parameter p = method.getParameters()[1];
             Class<?> cl = p.getType();
 
-            Class<? extends OnHookAggregator<?>> aggregateType = oh.aggreateWith();
+            Class<? extends OnHookAggregateBuilder<?>> aggregateType = oh.aggregateWith();
 
             if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;

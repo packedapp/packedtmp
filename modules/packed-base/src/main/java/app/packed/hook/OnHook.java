@@ -30,14 +30,6 @@ import packed.internal.hook.ExtensionHookPerComponentGroup;
  * of either {@link AnnotatedFieldHook}, {@link AnnotatedMethodHook}, {@link AnnotatedTypeHook} or
  * {@link InstanceOfHook}.
  */
-// Should also be able to take a Stream/List/Collection/Iterable
-// Hvad hvis hvis vi bare tager en definition....
-// Should we Allow Hook? matching every hook? or AnnontatedFieldHook<?> matching all field annotations
-
-// Could allow mailbox'es for actors. Where we automatically transforms method invocations into
-// We would need to have some way to indicate that some method invocation can be done without requring the result
-// Maybe return Void to indicate sync and void as async?
-// @Extension.ActivatorAnnotation(HooksExtension.class)
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
 @Documented
@@ -50,16 +42,15 @@ public @interface OnHook {
      * @return whether or not the annotated method will capture hooks from outside of the defining bundle
      */
     // InternalOnly, ExternalOnly, Both
+    // Makes no sense for extensions
     boolean exported() default false;// export or exported?? align with @Provides
 
-    // Must be made available available either via module-info
-
-    // Nah
-    // or via Extension lookup(); Basically we have a protected method called Extension.lookup()
-    // That people can override... It is only used to generate initial.
-
-    // But do we have an extension instance?????
-    Class<? extends OnHookAggregator<?>> aggreateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
+    /**
+     * The returned builder must be instantiable to "app.packed.base"
+     * 
+     * @return an aggregate builder
+     */
+    Class<? extends OnHookAggregateBuilder<?>> aggregateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
 }
 
 // boolean disableForOwnContainer
@@ -76,9 +67,18 @@ public @interface OnHook {
 // @OnStop
 // @OnNative.....
 
-class AOPRewriter {
-    // Taenker vi hellere vil have en alternativ klasse til AnnotatedComponentMethod...
-    // Saa det er paa parameteren vi kender forskel og ikke paa @Hook annoteringen
-}
+// class AOPRewriter {
+// Taenker vi hellere vil have en alternativ klasse til AnnotatedComponentMethod...
+// Saa det er paa parameteren vi kender forskel og ikke paa @Hook annoteringen
+// }
 // Kunne jo saadan set godt tillade, metoder der returnerede CompletableFuture....
 // allowFieldWrite..
+// Should also be able to take a Stream/List/Collection/Iterable...
+//// Nah virker ikke paa runtime
+// Hvad hvis hvis vi bare tager en definition....
+// Should we Allow Hook? matching every hook? or AnnontatedFieldHook<?> matching all field annotations
+
+// Could allow mailbox'es for actors. Where we automatically transforms method invocations into
+// We would need to have some way to indicate that some method invocation can be done without requring the result
+// Maybe return Void to indicate sync and void as async?
+// @Extension.ActivatorAnnotation(HooksExtension.class)

@@ -32,7 +32,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import packed.internal.componentcache.ComponentLookup;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.ThrowableUtil;
@@ -84,7 +84,7 @@ public final class ExtensionHookPerComponentGroup {
 
         final ArrayList<Callback> callbacks = new ArrayList<>();
 
-        final IdentityHashMap<Class<?>, OnHookAggregator<?>> mmm = new IdentityHashMap<>();
+        final IdentityHashMap<Class<?>, OnHookAggregateBuilder<?>> mmm = new IdentityHashMap<>();
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
 
@@ -101,9 +101,9 @@ public final class ExtensionHookPerComponentGroup {
 
         public ExtensionHookPerComponentGroup build() {
             // Add all aggregates
-            for (Entry<Class<?>, OnHookAggregator<?>> m : mmm.entrySet()) {
+            for (Entry<Class<?>, OnHookAggregateBuilder<?>> m : mmm.entrySet()) {
                 MethodHandle mh = con.aggregators.get(m.getKey());
-                callbacks.add(new Callback(mh, m.getValue().get()));
+                callbacks.add(new Callback(mh, m.getValue().build()));
             }
             return new ExtensionHookPerComponentGroup(this);
         }
@@ -124,8 +124,8 @@ public final class ExtensionHookPerComponentGroup {
                 callbacks.add(new Callback(mh, hook));
             } else {
                 // The method handle refers to an aggregator object.
-                OnHookAggregatorDescriptor a = OnHookAggregatorDescriptor.get((Class<? extends OnHookAggregator<?>>) owner);
-                OnHookAggregator<?> sup = mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
+                OnHookAggregatorDescriptor a = OnHookAggregatorDescriptor.get((Class<? extends OnHookAggregateBuilder<?>>) owner);
+                OnHookAggregateBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
                 try {
                     mh.invoke(sup, hook);
                 } catch (Throwable e) {
@@ -171,5 +171,5 @@ public final class ExtensionHookPerComponentGroup {
     }
 
     /** A dummy type indicating that no aggregator should be used. */
-    public static abstract class NoAggregator implements Supplier<Void>, OnHookAggregator<Void> {}
+    public static abstract class NoAggregator implements Supplier<Void>, OnHookAggregateBuilder<Void> {}
 }

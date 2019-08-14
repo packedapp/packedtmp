@@ -38,7 +38,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 
 /**
  *
@@ -110,7 +110,7 @@ public class ExtensionActivation {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(aggreateWith = Builder.class)
+        @OnHook(aggregateWith = Builder.class)
         public void foo(ComponentConfiguration cc, String s) {}
     }
 
@@ -121,7 +121,7 @@ public class ExtensionActivation {
         String value();
     }
 
-    static class Builder implements OnHookAggregator<String> {
+    static class Builder implements OnHookAggregateBuilder<String> {
         ActivateMyExtension e;
 
         @OnHook
@@ -131,7 +131,7 @@ public class ExtensionActivation {
 
         /** {@inheritDoc} */
         @Override
-        public String get() {
+        public String build() {
             return e.toString();
         }
     }

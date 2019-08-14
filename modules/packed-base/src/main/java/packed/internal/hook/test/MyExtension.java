@@ -22,7 +22,7 @@ import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregator;
+import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.util.FieldMapper;
 
 /**
@@ -30,7 +30,7 @@ import app.packed.util.FieldMapper;
  */
 public class MyExtension extends Extension {
 
-    @OnHook(aggreateWith = Agg.class)
+    @OnHook(aggregateWith = Agg.class)
     public void foo(ComponentConfiguration cc, Integer val) {
         System.out.println(cc.path());
         System.out.println(val);
@@ -57,7 +57,7 @@ public class MyExtension extends Extension {
         System.out.println("----   " + h.newGetter().invoke());
     }
 
-    public static class Agg implements OnHookAggregator<Integer> {
+    public static class Agg implements OnHookAggregateBuilder<Integer> {
         private int sum;
 
         @OnHook
@@ -72,7 +72,7 @@ public class MyExtension extends Extension {
 
         /** {@inheritDoc} */
         @Override
-        public Integer get() {
+        public Integer build() {
             return sum;
         }
     }
