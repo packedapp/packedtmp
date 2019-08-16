@@ -28,7 +28,6 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.ComponentNameWirelet;
-import packed.internal.container.ContainerSource;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -175,7 +174,7 @@ public final class ArtifactImage implements ArtifactSource {
             return ((ArtifactImage) source).with(wirelets);
         }
         // Wirelet are added to the container configuration, and not the image
-        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, ContainerSource.forImage(source), wirelets);
+        PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
         return new ArtifactImage(c.doBuild());
     }
 }

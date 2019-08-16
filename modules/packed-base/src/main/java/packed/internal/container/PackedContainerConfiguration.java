@@ -29,6 +29,7 @@ import java.util.function.BiConsumer;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactInstantiationContext;
+import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.container.Bundle;
@@ -56,7 +57,7 @@ import packed.internal.support.AppPackedContainerSupport;
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** The source of the container configuration. */
-    final ContainerSource configurator;
+    final ArtifactSource source;
 
     /** A configurator cache object, shared among container sources of the same type. */
     private final ContainerConfiguratorCache configuratorCache;
@@ -77,22 +78,22 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * 
      * @param artifactDriver
      *            the type of artifact driver used for creating the artifact
-     * @param configurator
-     *            the source source
+     * @param source
+     *            the source of the container
      * @param wirelets
      *            any wirelets that was given by the user
      */
-    public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource configurator, Wirelet... wirelets) {
+    public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
         super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactDriver);
-        this.configurator = requireNonNull(configurator);
-        this.lookup = this.configuratorCache = configurator.cache();
+        this.source = requireNonNull(source);
+        this.lookup = this.configuratorCache = ContainerConfiguratorCache.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
-    private PackedContainerConfiguration(PackedContainerConfiguration parent, ContainerSource configurator, Wirelet... wirelets) {
+    private PackedContainerConfiguration(PackedContainerConfiguration parent, ArtifactSource source, Wirelet... wirelets) {
         super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
-        this.configurator = requireNonNull(configurator);
-        this.lookup = this.configuratorCache = configurator.cache();
+        this.source = requireNonNull(source);
+        this.lookup = this.configuratorCache = ContainerConfiguratorCache.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -125,8 +126,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * Configures the configuration.
      */
     private void configure() {
-        if (configurator.source instanceof Bundle) {
-            Bundle bundle = (Bundle) configurator.source;
+        if (source instanceof Bundle) {
+            Bundle bundle = (Bundle) source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
                 install(bundle);
             }
@@ -253,7 +254,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, ContainerSource.of(bundle), wirelets);
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wirelets);
         dcc.configure();
         addChild(dcc);
     }

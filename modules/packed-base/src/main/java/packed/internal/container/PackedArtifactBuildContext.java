@@ -66,7 +66,7 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     /** {@inheritDoc} */
     @Override
     public ArtifactSource source() {
-        return topContainerConfiguration.configurator.source;
+        return topContainerConfiguration.source;
     }
 
     /** {@inheritDoc} */

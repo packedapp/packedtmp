@@ -19,10 +19,12 @@ package app.packed.artifact;
  *
  */
 // Ideen er egentlig at de her configurators ogsaa er artifact sources....
+//
 
 // Saa kan vi nemlig have <? extends ArtifactSource>
 
 // Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
+
 @FunctionalInterface
 public interface ArtifactConfigurator<T> extends ArtifactSource {
 

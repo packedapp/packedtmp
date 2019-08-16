@@ -207,7 +207,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
         if (this instanceof PackedContainerConfiguration) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            ArtifactSource source = ((PackedContainerConfiguration) this).configurator.source;
+            ArtifactSource source = ((PackedContainerConfiguration) this).source;
             if (source instanceof Bundle) {
                 String nnn = source.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {

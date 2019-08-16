@@ -17,8 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.function.Consumer;
-
 import app.packed.artifact.ArtifactSource;
 import app.packed.container.Bundle;
 import packed.internal.componentcache.ContainerConfiguratorCache;
@@ -39,7 +37,7 @@ import packed.internal.componentcache.ContainerConfiguratorCache;
 
 // I virkeligheden er den vel en Configurator...
 // ContainerConfigurator
-public class ContainerSource {
+public final class ContainerSource {
 
     final Class<?> configuratorType;
 
@@ -68,13 +66,5 @@ public class ContainerSource {
     public static ContainerSource forApp(ArtifactSource source) {
         requireNonNull(source, "source is null");
         return new ContainerSource(source, source.getClass());
-    }
-
-    public static ContainerSource ofConsumer(Consumer<?> consumer) {
-        return new ContainerSource(null, consumer.getClass());
-    }
-
-    public ContainerSource link(Bundle bundle) {
-        throw new UnsupportedOperationException();
     }
 }

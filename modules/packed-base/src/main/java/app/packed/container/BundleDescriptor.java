@@ -31,7 +31,6 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.ContainerSource;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -240,7 +239,7 @@ public class BundleDescriptor {
     private static BundleDescriptor of(ArtifactSource source) {
         requireNonNull(source, "source is null");
         Bundle bundle = (Bundle) source;
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, ContainerSource.of(source));
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, source);
         BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
         conf.buildDescriptor(builder);
         return builder.build();
