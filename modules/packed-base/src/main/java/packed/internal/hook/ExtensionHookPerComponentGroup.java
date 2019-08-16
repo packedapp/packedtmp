@@ -33,8 +33,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.OnHookAggregateBuilder;
-import packed.internal.componentcache.ComponentLookup;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.model.ComponentLookup;
 import packed.internal.util.ThrowableUtil;
 
 /**

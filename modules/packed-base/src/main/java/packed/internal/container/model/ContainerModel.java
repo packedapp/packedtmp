@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache;
+package packed.internal.container.model;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,53 +22,56 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
+import app.packed.artifact.ArtifactSource;
+import app.packed.container.Bundle;
 import packed.internal.util.LookupValue;
 
-/** A cache for a bundle implementation. */
-public final class ContainerConfiguratorCache implements ComponentLookup {
+/** A model of a container. */
+public final class ContainerModel implements ComponentLookup {
 
     /** A cache of values. */
-    private static final ClassValue<ContainerConfiguratorCache> CACHE = new ClassValue<>() {
+    private static final ClassValue<ContainerModel> CONTAINER_MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
+        @SuppressWarnings("unchecked")
         @Override
-        protected ContainerConfiguratorCache computeValue(Class<?> type) {
-            return new ContainerConfiguratorCache(type);
+        protected ContainerModel computeValue(Class<?> type) {
+            return new ContainerModel((Class<? extends ArtifactSource>) type);
         }
     };
 
-    /** The type of bundle. */
-    private final Class<?> configuratorType;
+    /** A cache of component models that have been access without a lookup object. */
+    private final ClassValue<ComponentModel> componentsNoLookup = new ClassValue<>() {
 
-    /** The default prefix of the container. */
+        @Override
+        protected ComponentModel computeValue(Class<?> type) {
+            return new ComponentModel.Builder(ContainerModel.this, type).build();
+        }
+    };
+
+    /** The default prefix of the container, used if no name has been specified. */
     private volatile String defaultPrefix;
 
-    /** A cache of component class descriptors. */
-    private final ClassValue<ComponentClassDescriptor> descriptors = new ClassValue<>() {
-
-        @Override
-        protected ComponentClassDescriptor computeValue(Class<?> type) {
-            return new ComponentClassDescriptor.Builder(ContainerConfiguratorCache.this, type).build();
-        }
-    };
-
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
-    private final LookupValue<PerLookup> LOOKUP_CACHE = new LookupValue<>() {
+    private final LookupValue<PerLookup> lookups = new LookupValue<>() {
 
         @Override
         protected PerLookup computeValue(Lookup lookup) {
-            return new PerLookup(ContainerConfiguratorCache.this, lookup);
+            return new PerLookup(ContainerModel.this, lookup);
         }
     };
 
+    /** The type of container source. For example, a subclass of {@link Bundle}. */
+    private final Class<? extends ArtifactSource> sourceType;
+
     /**
-     * Creates a new bundle class cache.
+     * Creates a new container model.
      * 
-     * @param configuratorType
-     *            the configurator type
+     * @param sourceType
+     *            the source type
      */
-    private ContainerConfiguratorCache(Class<?> configuratorType) {
-        this.configuratorType = requireNonNull(configuratorType);
+    private ContainerModel(Class<? extends ArtifactSource> sourceType) {
+        this.sourceType = requireNonNull(sourceType);
     }
 
     /** {@inheritDoc} */
@@ -84,8 +87,8 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentClassDescriptor componentDescriptorOf(Class<?> componentType) {
-        return descriptors.get(componentType);
+    public ComponentModel componentModelOf(Class<?> componentType) {
+        return componentsNoLookup.get(componentType);
     }
 
     /**
@@ -96,16 +99,9 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
     public String defaultPrefix() {
         String d = defaultPrefix;
         if (d == null) {
-            d = defaultPrefix = configuratorType.getSimpleName();
+            d = defaultPrefix = sourceType.getSimpleName();
         }
         return d;
-    }
-
-    /**
-     * @return the configuratorType
-     */
-    public Class<?> getConfiguratorType() {
-        return configuratorType;
     }
 
     /** {@inheritDoc} */
@@ -115,38 +111,45 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
         return MethodHandles.lookup();
     }
 
+    /**
+     * @return the configuratorType
+     */
+    public Class<?> sourceType() {
+        return sourceType;
+    }
+
     public ComponentLookup withLookup(Lookup lookup) {
-        return lookup == null ? this : LOOKUP_CACHE.get(lookup);
+        return lookup == null ? this : lookups.get(lookup);
     }
 
     /**
      * Returns a bundle class cache object for the specified bundle type.
      * 
-     * @param configuratorType
+     * @param sourceType
      *            the bundle type to return a class cache object for
      * @return a bundle class cache object for the specified bundle type
      */
-    public static ContainerConfiguratorCache of(Class<?> configuratorType) {
-        return CACHE.get(configuratorType);
+    public static ContainerModel of(Class<? extends ArtifactSource> sourceType) {
+        return CONTAINER_MODEL_CACHE.get(sourceType);
     }
 
     static final class PerLookup implements ComponentLookup {
 
         /** A cache of component class descriptors. */
-        final ClassValue<ComponentClassDescriptor> descriptors = new ClassValue<>() {
+        final ClassValue<ComponentModel> components = new ClassValue<>() {
 
             @Override
-            protected ComponentClassDescriptor computeValue(Class<?> type) {
-                return new ComponentClassDescriptor.Builder(PerLookup.this, type).build();
+            protected ComponentModel computeValue(Class<?> type) {
+                return new ComponentModel.Builder(PerLookup.this, type).build();
             }
         };
 
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        final ContainerConfiguratorCache parent;
+        final ContainerModel parent;
 
-        public PerLookup(ContainerConfiguratorCache parent, Lookup lookup) {
+        public PerLookup(ContainerModel parent, Lookup lookup) {
             this.parent = requireNonNull(parent);
             this.lookup = requireNonNull(lookup);
         }
@@ -163,8 +166,8 @@ public final class ContainerConfiguratorCache implements ComponentLookup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentClassDescriptor componentDescriptorOf(Class<?> componentType) {
-            return descriptors.get(componentType);
+        public ComponentModel componentModelOf(Class<?> componentType) {
+            return components.get(componentType);
         }
 
         /** {@inheritDoc} */

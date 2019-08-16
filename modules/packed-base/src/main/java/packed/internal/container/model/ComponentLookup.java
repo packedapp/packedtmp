@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache;
+package packed.internal.container.model;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -33,7 +33,7 @@ import packed.internal.invoke.FunctionHandle;
  */
 public interface ComponentLookup {
 
-    ComponentClassDescriptor componentDescriptorOf(Class<?> componentType);
+    ComponentModel componentModelOf(Class<?> componentType);
 
     MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
 

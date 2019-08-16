@@ -17,8 +17,8 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigSite;
+import packed.internal.container.model.ComponentModel;
 
 /**
  *
@@ -33,7 +33,7 @@ public final class InstantiatedComponentConfiguration extends DefaultComponentCo
      * @param containerConfiguration
      * @param ccd
      */
-    public InstantiatedComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd,
+    public InstantiatedComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd,
             Object instance) {
         super(site, containerConfiguration, ccd);
         this.instance = requireNonNull(instance);

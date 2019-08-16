@@ -44,11 +44,11 @@ import app.packed.hook.field.DelayedAccessor.SidecarDelayerAccessor;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
-import packed.internal.componentcache.ComponentClassDescriptor;
-import packed.internal.componentcache.ComponentLookup;
-import packed.internal.componentcache.ContainerConfiguratorCache;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
+import packed.internal.container.model.ComponentLookup;
+import packed.internal.container.model.ComponentModel;
+import packed.internal.container.model.ContainerModel;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
@@ -60,7 +60,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     final ArtifactSource source;
 
     /** A configurator cache object, shared among container sources of the same type. */
-    private final ContainerConfiguratorCache configuratorCache;
+    private final ContainerModel configuratorCache;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, Extension> extensions = new LinkedHashMap<>();
@@ -86,14 +86,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
         super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
-        this.lookup = this.configuratorCache = ContainerConfiguratorCache.of(source.getClass());
+        this.lookup = this.configuratorCache = ContainerModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
     private PackedContainerConfiguration(PackedContainerConfiguration parent, ArtifactSource source, Wirelet... wirelets) {
         super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
         this.source = requireNonNull(source);
-        this.lookup = this.configuratorCache = ContainerConfiguratorCache.of(source.getClass());
+        this.lookup = this.configuratorCache = ContainerModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -194,7 +194,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // We actually do not need to create a method handle if we are just creating a descriptor...
         // On the other hand, validation is nice right???
         requireNonNull(factory, "factory is null");
-        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(factory.rawType());
+        ComponentModel descriptor = lookup.componentModelOf(factory.rawType());
 
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
@@ -214,7 +214,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         //// Nah we don't allow setting the name after we have finished...
 
         requireNonNull(instance, "instance is null");
-        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(instance.getClass());
+        ComponentModel descriptor = lookup.componentModelOf(instance.getClass());
 
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
@@ -229,7 +229,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(implementation, "implementation is null");
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        ComponentClassDescriptor descriptor = lookup.componentDescriptorOf(implementation);
+        ComponentModel descriptor = lookup.componentModelOf(implementation);
         DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
                 descriptor, implementation);
         return descriptor.initialize(this, dcc);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache;
+package packed.internal.container.model;
 
 import static java.util.Objects.requireNonNull;
 
@@ -34,7 +34,7 @@ import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
 /**
  *
  */
-public final class ComponentClassDescriptor {
+public final class ComponentModel {
 
     /** The component type. */
     private final Class<?> componentType;
@@ -50,7 +50,7 @@ public final class ComponentClassDescriptor {
      * @param builder
      *            a builder for this descriptor
      */
-    private ComponentClassDescriptor(ComponentClassDescriptor.Builder builder) {
+    private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
         this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ExtensionHookPerComponentGroup[i]);
     }
@@ -133,7 +133,7 @@ public final class ComponentClassDescriptor {
          * 
          * @return a new descriptor
          */
-        ComponentClassDescriptor build() {
+        ComponentModel build() {
             for (Class<?> c = componentType; c != Object.class; c = c.getSuperclass()) {
 
                 for (Field field : c.getDeclaredFields()) {
@@ -162,7 +162,7 @@ public final class ComponentClassDescriptor {
                 }
                 // TODO default methods
             }
-            return new ComponentClassDescriptor(this);
+            return new ComponentModel(this);
         }
     }
 }

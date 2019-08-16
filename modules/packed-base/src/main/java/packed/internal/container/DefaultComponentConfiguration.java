@@ -19,17 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
-import packed.internal.componentcache.ComponentClassDescriptor;
 import packed.internal.config.site.InternalConfigSite;
+import packed.internal.container.model.ComponentModel;
 
 /**
  *
  */
 public abstract class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
 
-    final ComponentClassDescriptor ccd;
+    final ComponentModel ccd;
 
-    public DefaultComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentClassDescriptor ccd) {
+    public DefaultComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd) {
         super(site, containerConfiguration);
         this.ccd = requireNonNull(ccd);
     }
