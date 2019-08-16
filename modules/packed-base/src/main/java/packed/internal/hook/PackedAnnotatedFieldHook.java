@@ -28,8 +28,11 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.FieldOperator;
+import app.packed.hook.RuntimeAccessor;
+import app.packed.hook.field.InternalFieldOperation;
+import app.packed.hook.field.PackedRuntimeAccessor;
 import app.packed.util.FieldDescriptor;
-import app.packed.util.FieldMapper;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.container.DefaultComponentConfiguration;
@@ -68,62 +71,37 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
+    public <E> RuntimeAccessor<E> accessAtRuntime(FieldOperator<E> mapper) {
+        return new PackedRuntimeAccessor<E>(lookup, field, (InternalFieldOperation<E>) mapper);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <E> E accessStatic(FieldOperator<E> operator) {
+        requireNonNull(operator, "mapper is null");
+        if (!Modifier.isStatic(field.getModifiers())) {
+            throw new IllegalArgumentException("Cannot invoke this method on non-static field " + field);
+        }
+        return operator.accessStatic(lookup, field);
+
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public T annotation() {
         return annotation;
     }
 
-    /**
-     * Checks that an annotated field is not final.
-     * 
-     * @param field
-     *            the field to check
-     * @param annotationType
-     *            the type of annotation that forced the check
-     */
-    protected static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        if ((Modifier.isStatic(field.getModifiers()))) {
-
-        }
+    /** {@inheritDoc} */
+    @Override
+    public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Checks that an annotated field is not static.
-     * 
-     * @param field
-     *            the field to check
-     * @param annotationType
-     *            the type of annotation that forced the check
-     */
-    protected static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        if ((Modifier.isStatic(field.getModifiers()))) {
-            throw new InvalidDeclarationException(
-                    ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
-                            .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
-            //
-            // throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field
-            // + ", to resolve remove @"
-            // + annotationType.getSimpleName() + " or make the field non-static");
-        }
-    }
-
-    protected static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
-            Class<? extends Annotation> annotationType2) {
-        return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
-                + ", to resolve remove one of the annotations.";
-    }
-
-    /**
-     * Creates an error message for using an annotation on a final field.
-     *
-     * @param field
-     *            the field
-     * @param annotationType
-     *            the annotation
-     * @return the error message
-     */
-    protected static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
-                + " or make the field non-final";
+    /** {@inheritDoc} */
+    @Override
+    public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -263,16 +241,57 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public AnnotatedFieldHook<T> optimize() {
-        throw new UnsupportedOperationException();
+    /**
+     * Checks that an annotated field is not final.
+     * 
+     * @param field
+     *            the field to check
+     * @param annotationType
+     *            the type of annotation that forced the check
+     */
+    protected static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+        if ((Modifier.isStatic(field.getModifiers()))) {
+
+        }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public <E> E staticAccessor(FieldMapper<E> mapper) {
-        requireNonNull(mapper, "mapper is null");
-        return mapper.accessStatic(lookup, field);
+    /**
+     * Checks that an annotated field is not static.
+     * 
+     * @param field
+     *            the field to check
+     * @param annotationType
+     *            the type of annotation that forced the check
+     */
+    protected static void checkAnnotatedFieldIsNotStatic(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+        if ((Modifier.isStatic(field.getModifiers()))) {
+            throw new InvalidDeclarationException(
+                    ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
+                            .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
+            //
+            // throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field
+            // + ", to resolve remove @"
+            // + annotationType.getSimpleName() + " or make the field non-static");
+        }
+    }
+
+    protected static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
+            Class<? extends Annotation> annotationType2) {
+        return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
+                + ", to resolve remove one of the annotations.";
+    }
+
+    /**
+     * Creates an error message for using an annotation on a final field.
+     *
+     * @param field
+     *            the field
+     * @param annotationType
+     *            the annotation
+     * @return the error message
+     */
+    protected static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
+        return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
+                + " or make the field non-final";
     }
 }

@@ -59,6 +59,8 @@ public interface AnnotatedMethodHook<T extends Annotation> {
     // BEcause
     <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
 
+    <E> E accessStatic(MethodOperation<E> accessor);
+
     default PreparedLambda<Runnable> newRunnable() {
         throw new UnsupportedOperationException();
     }

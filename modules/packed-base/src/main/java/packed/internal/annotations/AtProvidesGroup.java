@@ -22,7 +22,6 @@ import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
 import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
@@ -51,13 +50,13 @@ public final class AtProvidesGroup {
      * @param builder
      *            the builder to create the group for
      */
-    private AtProvidesGroup(ProvidesHookAggregator builder) {
+    private AtProvidesGroup(Builder builder) {
         this.members = builder.members == null ? Map.of() : Map.copyOf(builder.members);
         this.hasInstanceMembers = builder.hasInstanceMembers;
     }
 
-    /** A builder for an {@link AtProvidesGroup}. */
-    public final static class ProvidesHookAggregator implements OnHookAggregateBuilder<AtProvidesGroup> {
+    /** A builder for {@link AtProvidesGroup}. */
+    public final static class Builder implements OnHookAggregateBuilder<AtProvidesGroup> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;
@@ -75,12 +74,10 @@ public final class AtProvidesGroup {
             return new AtProvidesGroup(this);
         }
 
-        @OnHook
         void onFieldProvide(AnnotatedFieldHook<Provide> amh) {
             tryAdd0(amh.lookup(), InternalFieldDescriptor.of(amh.field()), Key.fromField(amh.field().newField()), amh.annotation(), List.of());
         }
 
-        @OnHook
         void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
             InternalMethodDescriptor descriptor = (InternalMethodDescriptor) amh.method();
             tryAdd0(amh.lookup(), descriptor, Key.fromMethodReturnType(descriptor.newMethod()), amh.annotation(),

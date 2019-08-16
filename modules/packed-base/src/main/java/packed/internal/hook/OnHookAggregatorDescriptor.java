@@ -263,6 +263,7 @@ final class OnHookAggregatorDescriptor {
             // Find all methods annotated with @OnHook
             for (Class<?> c = aggregatorType; c != Object.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
+                    // Problemet er lidt hjaelpe metoder...
                     Parameter hook = null;
                     if (method.getParameterCount() > 0) {
                         for (Parameter p : method.getParameters()) {

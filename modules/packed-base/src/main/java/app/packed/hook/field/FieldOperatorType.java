@@ -13,31 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.test;
-
-import app.packed.app.App;
-import app.packed.app.AppBundle;
-import app.packed.artifact.ArtifactImage;
+package app.packed.hook.field;
 
 /**
  *
  */
-public class Ddd extends AppBundle {
+public enum FieldOperatorType {
 
-    @Override
-    public void configure() {
-        install(new Ssss());
-        installHelper(MyComp.class);
-    }
-
-    public static void main(String[] args) {
-        ArtifactImage ai = newImage(new Ddd());
-        App.of(ai);
-    }
-
-    public static class Ssss {
-
-        @MyA(2132)
-        public String ss = "ffdddf";
-    }
+    /** An operation that makes a single get to a field. */
+    GET_ONCE, METHOD_HANDLE_GET, METHOD_HANDLE_SET, FUNCTIONAL_INTERFACE
 }

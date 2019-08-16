@@ -145,7 +145,7 @@ public abstract class Extension {
      * 
      * @return the configuration of the container
      */
-    private ContainerConfiguration configuration() {
+    protected ContainerConfiguration configuration() {
         // When calling this method remember to add test to BasicExtensionTest
         ContainerConfiguration c = configuration;
         if (c == null) {

@@ -13,31 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.test;
-
-import app.packed.app.App;
-import app.packed.app.AppBundle;
-import app.packed.artifact.ArtifactImage;
+package app.packed.hook;
 
 /**
  *
  */
-public class Ddd extends AppBundle {
 
-    @Override
-    public void configure() {
-        install(new Ssss());
-        installHelper(MyComp.class);
-    }
+// Foerst og fremmest typen... //maaske om den skal vaere async??
 
-    public static void main(String[] args) {
-        ArtifactImage ai = newImage(new Ddd());
-        App.of(ai);
-    }
+// Styring af exceptions????
+public final class MethodOperation<T> {
 
-    public static class Ssss {
-
-        @MyA(2132)
-        public String ss = "ffdddf";
+    public static MethodOperation<Runnable> runnable() {
+        throw new UnsupportedOperationException();
     }
 }

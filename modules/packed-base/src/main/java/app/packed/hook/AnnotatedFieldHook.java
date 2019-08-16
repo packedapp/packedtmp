@@ -22,12 +22,25 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Modifier;
 
 import app.packed.util.FieldDescriptor;
-import app.packed.util.FieldMapper;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 
 /** A hook representing a field annotated with a specific type. */
 public interface AnnotatedFieldHook<T extends Annotation> {
+
+    <E> RuntimeAccessor<E> accessAtRuntime(FieldOperator<E> operator);
+
+    /**
+     * 
+     * @param <E>
+     * @param accessor
+     * @return stuff
+     * @throws UnsupportedOperationException
+     *             if the underlying field is not static
+     * @throws IllegalStateException
+     *             if invoked outside of building an aggregate
+     */
+    <E> E accessStatic(FieldOperator<E> accessor);
 
     /**
      * Returns the annotation value.
@@ -36,20 +49,15 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     T annotation();
 
-    // boolean isStatic() <---- Saa meget lettere hvis feltet er statisk....
-
     // Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
     // Move these to descriptor????
     // hook.field().checkFinal().checkAssignableTo()....
     //// Nah... Tror gerne vi vil have annoteringen med...
     //// Det kan vi ikke faa hvis vi har den paa descriptoren...
-    default AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
-        throw new UnsupportedOperationException();
-    }
+    AnnotatedFieldHook<T> checkAssignableTo(Class<?> type);
 
-    // Check the type
-    // checkNotNull()???Nah that could get complicated.... Maybe at some point
-    // because should we check it every time we access the field, or only once
+    // Move checks to field operator????
+    AnnotatedFieldHook<T> checkExactType(Class<?> type);
 
     /**
      * Checks that the underlying field is final.
@@ -91,6 +99,8 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     AnnotatedFieldHook<T> checkStatic();
 
+    // Drop TypeLiteral taenker jeg...
+
     /**
      * Returns the annotated field.
      * 
@@ -99,8 +109,6 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     FieldDescriptor field();
 
     Lookup lookup(); // TODO remove this method
-
-    // Drop TypeLiteral taenker jeg...
 
     /**
      * Creates a method handle giving read access to the underlying field. If the underlying field is an instance field. The
@@ -134,22 +142,8 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     VarHandle newVarHandle();
-
-    // Ideen er egentlig at vi kompilere
-    // compile() <- maybe compile, maybe only
-    AnnotatedFieldHook<T> optimize();
-
-    /**
-     * 
-     * @param <E>
-     * @param mapper
-     * @return stuff
-     * @throws UnsupportedOperationException
-     *             if the underlying field is not static
-     */
-    <E> E staticAccessor(FieldMapper<E> mapper);
-
-    default <E> DelayedAccessor<E> accessor(FieldMapper<E> mapper) {
-        throw new UnsupportedOperationException();
-    }
 }
+
+// Check the type
+// checkNotNull()???Nah that could get complicated.... Maybe at some point
+// because should we check it every time we access the field, or only once

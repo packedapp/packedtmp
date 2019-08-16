@@ -149,7 +149,7 @@ final class ExtensionOnHookDescriptor {
             Parameter p = method.getParameters()[1];
             Class<?> cl = p.getType();
 
-            Class<? extends OnHookAggregateBuilder<?>> aggregateType = oh.aggregateWith();
+            Class<? extends OnHookAggregateBuilder<?>> aggregateType = oh.value();
 
             if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;

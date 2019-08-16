@@ -13,31 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.test;
+package app.packed.hook.field;
 
 import app.packed.app.App;
-import app.packed.app.AppBundle;
-import app.packed.artifact.ArtifactImage;
+import app.packed.container.BaseBundle;
+import app.packed.container.Extension;
 
 /**
  *
  */
-public class Ddd extends AppBundle {
+public class C2 extends BaseBundle {
 
     @Override
     public void configure() {
-        install(new Ssss());
-        installHelper(MyComp.class);
+        use(Ex.class);
     }
 
     public static void main(String[] args) {
-        ArtifactImage ai = newImage(new Ddd());
-        App.of(ai);
+        try {
+            App.of(new C2());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public static class Ssss {
-
-        @MyA(2132)
-        public String ss = "ffdddf";
+    public static class Ex extends Extension {
+        public Ex() throws Throwable {
+            throw new Exception();
+        }
     }
 }

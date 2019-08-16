@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import java.util.function.Consumer;
-
-import app.packed.container.ContainerConfiguration;
+package app.packed.hook.field;
 
 /**
  *
  */
-
-// Maybe take sidecar when creating this???
-//// Then we can check that the sidecar is available.. well
-
-public interface DelayedAccessor<T> {
-    void onReady(ContainerConfiguration cc, Consumer<T> consumer);
+@SuppressWarnings("serial")
+public class PackedIllegalAccessException extends RuntimeException {
+    PackedIllegalAccessException(IllegalAccessException e) {
+        super(e);
+    }
 }

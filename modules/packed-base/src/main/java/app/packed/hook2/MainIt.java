@@ -17,12 +17,11 @@ package app.packed.hook2;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
 import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.field.AbstractFieldOperator;
 import app.packed.lifecycle.Main;
-import app.packed.util.FieldMapper;
 
 /**
  *
@@ -30,22 +29,22 @@ import app.packed.util.FieldMapper;
 public class MainIt {
 
     public void foo(AnnotatedFieldHook<Main> h) {
-        Supplier<String> s = h.staticAccessor(FieldMapper.supplier(String.class));
-
-        s.get();
-
-        BiPredicate<Object, Object> a = h.staticAccessor(FieldMapper.compareAndSet());
-
-        while (a.test("Foo", Integer.valueOf(23))) {
-
-        }
-
-        BiLongPredicate aa = h.staticAccessor(FieldMapper.custom(BiLongPredicate.class));
-
-        int f = 1;
-        while (aa.test(f, 23)) {
-            f += 1;
-        }
+        // Supplier<String> s = h.accessStatic(AbstractFieldOperator.supplier(String.class));
+        //
+        // s.get();
+        //
+        // BiPredicate<Object, Object> a = h.accessStatic(AbstractFieldOperator.compareAndSet());
+        //
+        // while (a.test("Foo", Integer.valueOf(23))) {
+        //
+        // }
+        //
+        // BiLongPredicate aa = h.accessStatic(AbstractFieldOperator.custom(BiLongPredicate.class));
+        //
+        // int f = 1;
+        // while (aa.test(f, 23)) {
+        // f += 1;
+        // }
     }
 
     interface BiLongPredicate {
@@ -53,7 +52,7 @@ public class MainIt {
     }
 
     void ff(Field f) {
-        Supplier<?> s = FieldMapper.supplier().accessStatic(MethodHandles.lookup(), f);
+        Supplier<?> s = AbstractFieldOperator.supplier().accessStatic(MethodHandles.lookup(), f);
 
         s.get();
     }

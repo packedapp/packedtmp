@@ -101,7 +101,7 @@ public class FromImage {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(aggregateWith = MyExtensionHookAggregator.class)
+        @OnHook(MyExtensionHookAggregator.class)
         public void foo(ComponentConfiguration cc, String s) {}
     }
 
@@ -115,7 +115,6 @@ public class FromImage {
     static class MyExtensionHookAggregator implements OnHookAggregateBuilder<String> {
         ActivateMyExtension e;
 
-        @OnHook
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
             e = h.annotation();
         }

@@ -23,7 +23,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import app.packed.hook2.InstanceOfHook;
-import packed.internal.hook.ExtensionHookPerComponentGroup;
 
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
@@ -50,7 +49,7 @@ public @interface OnHook {
      * 
      * @return an aggregate builder
      */
-    Class<? extends OnHookAggregateBuilder<?>> aggregateWith() default ExtensionHookPerComponentGroup.NoAggregator.class;
+    Class<? extends OnHookAggregateBuilder<?>> value();
 }
 
 // boolean disableForOwnContainer

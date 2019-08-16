@@ -21,17 +21,13 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.DelayedAccessor;
-import app.packed.hook.OnHook;
 import app.packed.lifecycle.Main;
-import app.packed.util.FieldMapper;
 
 /**
  *
  */
 public class TestIt {
 
-    @OnHook
     public void foo(AnnotatedMethodHook<Main> h) {
         // Vi kan jo toptune den aggregator....
         PreparedLambda<Runnable> main = h.newRunnable();
@@ -48,21 +44,18 @@ public class TestIt {
     // h.accessor(cc, FieldMapper.get(String.class), LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
     // }
 
-    @OnHook
     public void foox(ContainerConfiguration cc, AnnotatedFieldHook<Main> h) {
-        DelayedAccessor<String> f = h.accessor(FieldMapper.get(String.class));
-        System.out.println(f);
+        // RuntimeAccessor<String> f = h.accessAtRuntime(FieldOperator.getOnce(String.class));
+        // System.out.println(f);
         // f.process(cc, LifecycleSidecar.class, (s, t) -> s.listenerInstance(cc, t));
     }
 
-    @OnHook
     public void foo(Consumer<Number> c2, Consumer<? super Number> c3) {
         Integer s = 123;
         c2.accept(s);
         c3.accept(s);
     }
 
-    @OnHook
     public void foo(ComponentConfiguration cc, MainAggregate ma) {
         if (ma.main != null) {
             // install LifecycleSidecar
@@ -87,7 +80,6 @@ public class TestIt {
 
         }
 
-        @OnHook
         public void foo(ComponentConfiguration cc, MainAggregate ma) {
 
         }

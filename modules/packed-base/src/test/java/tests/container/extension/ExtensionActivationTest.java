@@ -106,7 +106,6 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             return "ffooo";
         }
 
-        @OnHook
         public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
             assertThat(h.annotation().value()).isEqualTo("Foo");
             assertThat(h.field().getName()).isEqualTo("foo");
@@ -120,7 +119,6 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             }
         }
 
-        @OnHook
         public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
             assertThat(h.annotation().value()).isEqualTo("Foo");
             assertThat(h.method().getName()).isEqualTo("foo");
@@ -137,7 +135,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(aggregateWith = Builder.class)
+        @OnHook(Builder.class)
         protected void set(ComponentConfiguration a, String s) {}
     }
 

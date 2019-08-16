@@ -110,7 +110,7 @@ public class ExtensionActivation {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(aggregateWith = Builder.class)
+        @OnHook(Builder.class)
         public void foo(ComponentConfiguration cc, String s) {}
     }
 
@@ -124,7 +124,6 @@ public class ExtensionActivation {
     static class Builder implements OnHookAggregateBuilder<String> {
         ActivateMyExtension e;
 
-        @OnHook
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
             e = h.annotation();
         }

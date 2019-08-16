@@ -17,34 +17,43 @@ package app.packed.hook.usage;
 
 import app.packed.container.ContainerConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.DelayedAccessor;
+import app.packed.hook.FieldOperator;
 import app.packed.hook.OnHook;
 import app.packed.hook.OnHookAggregateBuilder;
+import app.packed.hook.RuntimeAccessor;
 import app.packed.inject.Provide;
-import app.packed.util.FieldMapper;
 
 /**
  *
  */
 public class OnExtensionAggregate {
 
-    @OnHook(aggregateWith = MyExtensionAggregate.Builder.class)
+    @OnHook(MyExtensionAggregate.Builder.class)
     public void foo(ContainerConfiguration cc, MyExtensionAggregate s) {
         s.fm.onReady(cc, e -> System.out.println("Field ..." + " is instantiated as " + e));
     }
 
+    // Vi slipper bare ikke udenom den sidecar....
+    //// Fordi vi kan ikke i 99% af tilfaeldene ikke kalde ind paa
+
+    // Extension (Virker ikke paa runtime)
+    // Extension + Sidecar
+    // Sidecar
+
     static class MyExtensionAggregate {
-        final DelayedAccessor<String> fm;
+
+        final RuntimeAccessor<String> fm;
 
         MyExtensionAggregate(Builder b) {
             this.fm = b.accessor;
         }
 
         public static class Builder implements OnHookAggregateBuilder<MyExtensionAggregate> {
-            DelayedAccessor<String> accessor;
+
+            RuntimeAccessor<String> accessor;
 
             public void foo(AnnotatedFieldHook<Provide> h) {
-                accessor = h.accessor(FieldMapper.get(String.class));
+                accessor = h.accessAtRuntime(FieldOperator.getOnce(String.class));
             }
 
             /** {@inheritDoc} */

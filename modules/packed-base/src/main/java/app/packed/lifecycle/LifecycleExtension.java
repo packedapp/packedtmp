@@ -73,7 +73,7 @@ public final class LifecycleExtension extends Extension {
      * 
      * @param mh
      */
-    @OnHook(aggregateWith = LifecycleHookAggregator.class)
+    @OnHook(LifecycleHookAggregator.class)
     void addMain(ComponentConfiguration cc, MethodHandle mh) {
         // TODO check that we do not have multiple @Main methods
         System.out.println(mh);
@@ -131,7 +131,6 @@ final class LifecycleHookAggregator implements OnHookAggregateBuilder<MethodHand
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
 
-    @OnHook
     void add(AnnotatedMethodHook<Main> hook) {
         hooks.add(hook);
     }

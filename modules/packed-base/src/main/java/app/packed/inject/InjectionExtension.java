@@ -33,7 +33,6 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.annotations.AtProvides;
 import packed.internal.annotations.AtProvidesGroup;
-import packed.internal.annotations.AtProvidesGroup.ProvidesHookAggregator;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
@@ -294,7 +293,7 @@ public final class InjectionExtension extends Extension {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @OnHook(aggregateWith = ProvidesHookAggregator.class)
+    @OnHook(AtProvidesGroup.Builder.class)
     void set(ComponentConfiguration cc, AtProvidesGroup apg) {
         BuildServiceNodeDefault sc;
         if (cc instanceof InstantiatedComponentConfiguration) {

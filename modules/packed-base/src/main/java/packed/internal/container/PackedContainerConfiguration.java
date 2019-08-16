@@ -17,11 +17,14 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
@@ -35,6 +38,8 @@ import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
+import app.packed.hook.field.DelayedAccessor;
+import app.packed.hook.field.DelayedAccessor.SidecarDelayerAccessor;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
@@ -261,6 +266,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.lookup = lookup == null ? configuratorCache : configuratorCache.withLookup(lookup);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(AbstractComponent ac, ArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration a : children.values()) {
@@ -270,6 +276,19 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 } else {
                     DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) a;
                     dcc.ccd.process(this, ic);
+                }
+                if (!a.del.isEmpty()) {
+                    for (DelayedAccessor da : a.del) {
+                        SidecarDelayerAccessor sda = (SidecarDelayerAccessor) da;
+                        Object sidecar = ic.get(this, sda.sidecarType);
+                        MethodHandle mh = sda.pra.mh;
+                        if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
+                            InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
+                            mh = mh.bindTo(icc.instance);
+                        }
+                        Object ig = sda.pra.afo.invokeGetter(mh);
+                        ((BiConsumer) sda.consumer).accept(sidecar, ig);
+                    }
                 }
             }
         }

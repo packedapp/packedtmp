@@ -33,7 +33,7 @@ public class HookOnAggregatorActivationMicro {
 
     public static class HookActivateExtension extends Extension {
 
-        @OnHook(aggregateWith = SomeAggegator.class)
+        @OnHook(SomeAggegator.class)
         public void process(ComponentConfiguration cc, String s) {}
     }
 
@@ -45,10 +45,8 @@ public class HookOnAggregatorActivationMicro {
             return "ignore";
         }
 
-        @OnHook
         public void process(AnnotatedFieldHook<HookActivateAnnotation> hook) {}
 
-        @OnHook
         public void process(AnnotatedMethodHook<HookActivateAnnotation> hook) {}
     }
 }

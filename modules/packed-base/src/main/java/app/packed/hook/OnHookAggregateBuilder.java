@@ -27,6 +27,11 @@ import java.util.function.BiFunction;
 
 // Alternativ kan vi lave en abstract klasse, med hjaelpe metoder...
 // Group instead.... HookGroup
+
+// Vi skal have vores egen interface for hooks tror jeg.
+// PGA af de der generator funktioner....
+// Med mindre vi laver en generics loesning... Hvor hooks extender et eller andet base interface.
+
 public interface OnHookAggregateBuilder<T> {
 
     /**

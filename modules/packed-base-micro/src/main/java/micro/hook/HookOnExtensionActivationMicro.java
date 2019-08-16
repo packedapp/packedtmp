@@ -36,7 +36,6 @@ import app.packed.container.ActivateExtension;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
 
 /**
  *
@@ -125,10 +124,8 @@ public class HookOnExtensionActivationMicro {
 
     public static class HookActivateExtension extends Extension {
 
-        @OnHook
         public void process(ComponentConfiguration cc, AnnotatedFieldHook<HookActivateAnnotation> hook) {}
 
-        @OnHook
         public void process(ComponentConfiguration cc, AnnotatedMethodHook<HookActivateAnnotation> hook) {}
     }
 

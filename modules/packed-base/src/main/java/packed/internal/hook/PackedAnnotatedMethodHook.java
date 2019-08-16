@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.MethodOperation;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
@@ -93,5 +94,11 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         // This method should definitely not be available. for ever
         // Should we have a check configurable???
         consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <E> E accessStatic(MethodOperation<E> accessor) {
+        throw new UnsupportedOperationException();
     }
 }

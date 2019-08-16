@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,11 +32,12 @@ import app.packed.component.ComponentPath;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.feature.FeatureMap;
+import app.packed.hook.field.DelayedAccessor;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 
 /** An abstract base class for a component configuration object. */
-abstract class AbstractComponentConfiguration implements ComponentHolder {
+public abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The build context of the artifact this configuration belongs to. */
     final PackedArtifactBuildContext buildContext;
@@ -73,6 +75,8 @@ abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The state of this configuration. */
     State state = State.INITIAL;
+
+    public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
     /**
      * Creates a new abstract component configuration

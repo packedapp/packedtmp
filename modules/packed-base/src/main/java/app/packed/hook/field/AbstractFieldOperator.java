@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.hook.field;
+
+import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,6 +26,8 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
+import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.util.TypeLiteral;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -44,7 +48,16 @@ import packed.internal.util.StringFormatter;
 
 // Maaske skal vi kun supportere brugen af dem i forbindelse med hooks...
 // Og saa lave dem per Bundle... Problemet er de gene
-public final class FieldMapper<T> {
+
+// usage static final FieldOperator<IntSupplier> fo = FieldOperator.custom(IntSupplier.class);
+
+public final class AbstractFieldOperator<T> {
+
+    final InternalFieldOperation<T> operation;
+
+    private AbstractFieldOperator(InternalFieldOperation<T> operation) {
+        this.operation = requireNonNull(operation);
+    }
 
     public T accessInstance(MethodHandles.Lookup lookup, Field field, Object instance) {
         try {
@@ -58,21 +71,19 @@ public final class FieldMapper<T> {
         throw new UnsupportedOperationException();
     }
 
-    public T accessStatic(MethodHandles.Lookup lookup, Field field) {
-        try {
-            return accessStatic(lookup.unreflectVarHandle(field));
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Unable to unreflect field " + StringFormatter.format(field), e);
-        }
-    }
-
-    public T accessStatic(VarHandle h) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Optional<AccessMode> explicitAccessMode() {
+    public Optional<AccessMode> accessMode() {
         // Only non-null if we explicitly have specified an access mode.
         throw new UnsupportedOperationException();
+    }
+
+    public T accessStatic(MethodHandles.Lookup lookup, Field field) {
+        try {
+            return operation.accessStatic(lookup, field);
+            // VarHandle varHandle = lookup.unreflectVarHandle(field);
+            // return operation.doItStatic(varHandle, Modifier.isVolatile(field.getModifiers()));
+        } catch (PackedIllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("Unable to unreflect field " + StringFormatter.format(field), e.getCause());
+        }
     }
 
     public boolean isGetter() {
@@ -97,25 +108,59 @@ public final class FieldMapper<T> {
         throw new UnsupportedOperationException();
     }
 
-    public static FieldMapper<BiPredicate<Object, Object>> compareAndSet() {
+    public AbstractFieldOperator<T> withAccessMode(AccessMode accessMode) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static AbstractFieldOperator<BiPredicate<Object, Object>> compareAndSet() {
         // Do we need one with access mode???
         throw new UnsupportedOperationException();
     }
 
-    public static <E> FieldMapper<E> custom(Class<E> type) {
+    // Must be SAM, public interface.
+    public static <E> AbstractFieldOperator<E> custom(Class<E> type) {
         throw new UnsupportedOperationException();
     }
 
-    public static FieldMapper<Object> get() {
+    public static <E> AbstractFieldOperator<E> custom(MethodHandles.Lookup caller, Class<E> type) {
         throw new UnsupportedOperationException();
+    }
+
+    public static <E> AbstractFieldOperator<E> custom(TypeLiteral<E> type) {
+        // Kan aflaese parametererne fra SAM...
+        //// Taenker ikke det er noget vi kan cache....
+        //// TypeLiteral er bare taet paa umulig at cache...
+        throw new UnsupportedOperationException();
+    }
+
+    public static AbstractFieldOperator<Object> getOnce() {
+        return new AbstractFieldOperator<>(new InternalFieldOperation.GetOnceInternalFieldOperation<>());
     }
 
     // A single read of the field... no need to create custom classes...
-    public static <E> FieldMapper<E> get(Class<E> fieldType) {
+    public static <E> AbstractFieldOperator<E> getOnce(Class<E> fieldType) {
         throw new UnsupportedOperationException();
     }
 
-    public static FieldMapper<MethodHandle> getter() {
+    /**
+     * <p>
+     * So this is basically just syntantic sugar.
+     * 
+     * @param <E>
+     * @param fieldType
+     * @return stuff
+     */
+    @SuppressWarnings("unchecked")
+    // We could theoretically check the signature of the field....
+    public static <E> AbstractFieldOperator<E> getOnce(TypeLiteral<E> fieldType) {
+        return (AbstractFieldOperator<E>) getOnce(fieldType.rawType());
+    }
+
+    public static AbstractFieldOperator<MethodHandle> getter() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static AbstractFieldOperator<MethodHandle> setter() {
         throw new UnsupportedOperationException();
     }
 
@@ -124,13 +169,8 @@ public final class FieldMapper<T> {
      * 
      * @return a field mapper that creates suppliers.
      */
-    public static FieldMapper<Supplier<Object>> supplier() {
-        //// Checks that type matches...
-        //// And that AFH.bundle == ComponentConfiguration.bundle()
-        //// Return with a fixed if static.
-        //// Else we register a callback, that sets the instance. Throwing ISE
-        //// until the instance has been set
-        return supplier(Object.class);
+    public static AbstractFieldOperator<Supplier<Object>> supplier() {
+        return new AbstractFieldOperator<>(new InternalFieldOperation.SupplierInternalFieldOperation<>());
     }
 
     /**
@@ -141,12 +181,13 @@ public final class FieldMapper<T> {
      * @throws UnsupportedOperationException
      *             if the underlying field is an instance field and the receiving method does not support instance field
      */
-    public static <E> FieldMapper<Supplier<E>> supplier(Class<E> fieldType) {
+    public static <E> AbstractFieldOperator<Supplier<E>> supplier(Class<E> fieldType) {
+        // ClassValue<FieldType, ClassValue<FunctionalInterface>>
         // Can put them in a ClassValue map...
         throw new UnsupportedOperationException();
     }
 
-    public static <E> FieldMapper<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
+    public static <E> AbstractFieldOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
         throw new UnsupportedOperationException();
     }
 }
