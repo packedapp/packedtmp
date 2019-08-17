@@ -41,7 +41,6 @@ public class PackedFieldRuntimeAccessor<T> implements HookApplicator<T> {
     public PackedFieldRuntimeAccessor(MethodHandle mh, Field field, PackedFieldOperation<T> afo) {
         this.afo = requireNonNull(afo);
         this.mh = requireNonNull(mh);
-
         this.field = field;
     }
 

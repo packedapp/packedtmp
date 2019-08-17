@@ -30,6 +30,9 @@ import app.packed.util.Nullable;
  */
 // ArtifactInstantiationContext or ContainerInstantionationContext
 // Per Artifact or PerContainer???
+
+// Per container, er sgu for besvaergeligt med de der get stuff...
+// Altsaa med mindre vi har behov for at access dem fra andet sted fra
 public interface ArtifactInstantiationContext {
 
     /**

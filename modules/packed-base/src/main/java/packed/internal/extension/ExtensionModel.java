@@ -84,7 +84,7 @@ public final class ExtensionModel<T> {
 
         Lookup lookup = MethodHandles.lookup();
         try {
-            constructor.setAccessible(true);
+            lookup = MethodHandles.privateLookupIn(type, lookup);
             this.constructor = lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException | InaccessibleObjectException e) {
             throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"

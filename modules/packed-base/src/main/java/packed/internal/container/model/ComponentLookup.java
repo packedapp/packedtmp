@@ -40,9 +40,9 @@ public interface ComponentLookup {
     MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
 
     default MethodHandle unreflect(Method method) {
-        method.setAccessible(true); // TODO fix
         try {
-            return MethodHandles.lookup().unreflect(method);
+            Lookup l = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup());
+            return l.unreflect(method);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("stuff", e);
         }

@@ -28,7 +28,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.extension.Extension;
-import packed.internal.extension.ExtensionClassCacheWithCachedSupplier;
+import packed.internal.extension.ExtensionModelWithCachedSupplier;
 import packed.internal.extension.ExtensionModel;
 
 /**
@@ -49,7 +49,7 @@ public class ExtensionMicro {
 
     @Benchmark
     public MyExtension newExtensionCachedLambdaFactory() {
-        return ExtensionClassCacheWithCachedSupplier.newInstance(MyExtension.class);
+        return ExtensionModelWithCachedSupplier.newInstance(MyExtension.class);
     }
 
     @Benchmark

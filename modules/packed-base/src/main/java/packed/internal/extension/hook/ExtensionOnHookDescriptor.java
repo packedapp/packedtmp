@@ -154,7 +154,7 @@ final class ExtensionOnHookDescriptor {
             if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;
                 try {
-                    method.setAccessible(true);
+                    lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
                     mh = lookup.unreflect(method);
                 } catch (IllegalAccessException | InaccessibleObjectException e) {
                     throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
@@ -164,7 +164,7 @@ final class ExtensionOnHookDescriptor {
                 NativeImage.registerMethod(method);
 
                 aggregators.put(aggregateType, mh);
-                OnHookAggregatorDescriptor oha = OnHookAggregatorDescriptor.get(aggregateType);
+                OnHookAggregateBuilderModel oha = OnHookAggregateBuilderModel.get(aggregateType);
                 annotatedFields.putAll(oha.annotatedFields);
                 annotatedMethods.putAll(oha.annotatedMethods);
                 annotatedTypes.putAll(oha.annotatedTypes);
@@ -198,6 +198,7 @@ final class ExtensionOnHookDescriptor {
             MethodHandle mh;
             try {
                 method.setAccessible(true);
+                lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
                 mh = lookup.unreflect(method);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"

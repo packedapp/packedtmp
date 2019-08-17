@@ -26,6 +26,7 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
 import app.packed.extension.AnnotatedFieldHook;
@@ -42,17 +43,17 @@ import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
- * An {@link OnHookAggregatorDescriptor} wraps
+ * An {@link OnHookAggregateBuilderModel} wraps
  */
-final class OnHookAggregatorDescriptor {
+final class OnHookAggregateBuilderModel {
 
     /** A cache of information for aggregator types. */
-    private static final ClassValue<OnHookAggregatorDescriptor> CACHE = new ClassValue<>() {
+    private static final ClassValue<OnHookAggregateBuilderModel> MODEL_CACHE = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected OnHookAggregatorDescriptor computeValue(Class<?> type) {
-            return new OnHookAggregatorDescriptor.Builder((Class<? extends OnHookAggregateBuilder<?>>) type).build();
+        protected OnHookAggregateBuilderModel computeValue(Class<?> type) {
+            return new OnHookAggregateBuilderModel.Builder((Class<? extends OnHookAggregateBuilder<?>>) type).build();
         }
     };
 
@@ -80,7 +81,7 @@ final class OnHookAggregatorDescriptor {
      * @param builder
      *            the builder to create an aggregator from
      */
-    private OnHookAggregatorDescriptor(Builder builder) {
+    private OnHookAggregateBuilderModel(Builder builder) {
         this.constructor = requireNonNull(builder.constructor);
         this.aggregatorType = builder.aggregatorType;
         this.resultType = builder.resultType;
@@ -98,8 +99,6 @@ final class OnHookAggregatorDescriptor {
         MethodHandle om = annotatedFields.get(an);
         if (om == null) {
             // We will normally have checked for this previously
-            System.out.println(an);
-            System.out.println(annotatedFields.keySet());
             throw new IllegalStateException("" + an);
         }
 
@@ -119,8 +118,6 @@ final class OnHookAggregatorDescriptor {
 
         MethodHandle om = annotatedMethods.get(an);
         if (om == null) {
-            System.out.println(an);
-            System.out.println(annotatedMethods.keySet());
             throw new IllegalStateException("" + an);
         }
 
@@ -136,8 +133,6 @@ final class OnHookAggregatorDescriptor {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
-        Class<? extends Annotation> an = hook.annotation().annotationType();
-        System.out.println(an + " " + annotatedTypes);
         throw new UnsupportedOperationException();
     }
 
@@ -150,7 +145,8 @@ final class OnHookAggregatorDescriptor {
         try {
             return (OnHookAggregateBuilder<?>) constructor.invoke();
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 
@@ -163,8 +159,8 @@ final class OnHookAggregatorDescriptor {
         return resultType;
     }
 
-    public static OnHookAggregatorDescriptor get(Class<? extends OnHookAggregateBuilder<?>> clazz) {
-        return CACHE.get(clazz);
+    public static OnHookAggregateBuilderModel get(Class<? extends OnHookAggregateBuilder<?>> clazz) {
+        return MODEL_CACHE.get(clazz);
     }
 
     private static class Builder {
@@ -184,7 +180,7 @@ final class OnHookAggregatorDescriptor {
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends OnHookAggregateBuilder<?>> aggregatorType) {
             this.aggregatorType = requireNonNull(aggregatorType);
-            resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, OnHookAggregateBuilder.class, 0);
+            this.resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, OnHookAggregateBuilder.class, 0);
         }
 
         private void addHookMethod(Lookup lookup, Method method, Parameter p) {
@@ -228,7 +224,7 @@ final class OnHookAggregatorDescriptor {
 
             MethodHandle mh;
             try {
-                method.setAccessible(true);
+                lookup = MethodHandles.privateLookupIn(aggregatorType, lookup);
                 mh = lookup.unreflect(method);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(aggregatorType) + ", the module '"
@@ -240,7 +236,7 @@ final class OnHookAggregatorDescriptor {
             annotations.put(annotationType, mh);
         }
 
-        OnHookAggregatorDescriptor build() {
+        OnHookAggregateBuilderModel build() {
             TypeUtil.checkClassIsInstantiable(aggregatorType);
 
             Constructor<?> constructor;
@@ -253,7 +249,7 @@ final class OnHookAggregatorDescriptor {
 
             Lookup lookup = MethodHandles.lookup();
             try {
-                constructor.setAccessible(true);
+                lookup = MethodHandles.privateLookupIn(aggregatorType, lookup);
                 this.constructor = lookup.unreflectConstructor(constructor);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new IllegalAccessRuntimeException("In order to use the hook aggregate " + StringFormatter.format(aggregatorType) + ", the module '"
@@ -290,7 +286,7 @@ final class OnHookAggregatorDescriptor {
             // Register the constructor if we are generating a native image
             NativeImage.registerConstructor(constructor);
 
-            return new OnHookAggregatorDescriptor(this);
+            return new OnHookAggregateBuilderModel(this);
         }
     }
 }

@@ -38,7 +38,6 @@ import packed.internal.util.StringFormatter;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** The default implementation of {@link AnnotatedFieldHook}. */
-// TODO ISE for apply + applicator
 final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedFieldHook<T> {
 
     /** The annotation value. */
@@ -101,9 +100,9 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     @Override
     public <E> HookApplicator<E> applicator(FieldOperator<E> operator) {
         requireNonNull(operator, "operator is null");
-        builder.checkActive();
+        builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
-        return new PackedFieldRuntimeAccessor<E>(of(o), field, (PackedFieldOperation<E>) operator);
+        return new PackedFieldRuntimeAccessor<E>(of(o), field, o);
     }
 
     /** {@inheritDoc} */
@@ -113,7 +112,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static field " + field);
         }
-        builder.checkActive();
+        builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
         return o.applyStaticHook(this);
     }

@@ -35,7 +35,7 @@ import packed.internal.util.StringFormatter;
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
-final class ExtensionClassCacheWithCachedSupplier<T> {
+final class ExtensionModelWithCachedSupplier<T> {
 
     /** A cache of values. */
     private static final ClassValue<Supplier<?>> CACHE = new ClassValue<>() {
@@ -44,7 +44,7 @@ final class ExtensionClassCacheWithCachedSupplier<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Supplier<?> computeValue(Class<?> type) {
-            return new ExtensionClassCacheWithCachedSupplier(type).s;
+            return new ExtensionModelWithCachedSupplier(type).s;
         }
     };
 
@@ -60,7 +60,7 @@ final class ExtensionClassCacheWithCachedSupplier<T> {
      * @param type
      *            the extension type
      */
-    private ExtensionClassCacheWithCachedSupplier(Class<? extends Extension> type) {
+    private ExtensionModelWithCachedSupplier(Class<? extends Extension> type) {
         this.type = requireNonNull(type);
         /// TODO Check not abstract
         Constructor<?> constructor;
@@ -72,7 +72,7 @@ final class ExtensionClassCacheWithCachedSupplier<T> {
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         try {
-            constructor.setAccessible(true);// Only if needed
+            lookup = MethodHandles.privateLookupIn(type, lookup);
             MethodHandle mh = lookup.unreflectConstructor(constructor);
 
             MethodType methodType = MethodType.methodType(Object.class);
