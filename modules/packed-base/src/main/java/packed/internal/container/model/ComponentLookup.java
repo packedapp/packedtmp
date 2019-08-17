@@ -16,12 +16,14 @@
 package packed.internal.container.model;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.container.model.deprecated.MemberScanner;
 import packed.internal.container.model.deprecated.ServiceClassDescriptor;
 import packed.internal.invoke.ExecutableFunctionHandle;
@@ -36,6 +38,42 @@ public interface ComponentLookup {
     ComponentModel componentModelOf(Class<?> componentType);
 
     MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
+
+    default MethodHandle unreflect(Method method) {
+        method.setAccessible(true); // TODO fix
+        try {
+            return MethodHandles.lookup().unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("stuff", e);
+        }
+    }
+
+    default MethodHandle unreflectGetter(Field field) {
+        try {
+            Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
+            return l.unreflectGetter(field);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
+        }
+    }
+
+    default MethodHandle unreflectSetter(Field field) {
+        try {
+            Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
+            return l.unreflectSetter(field);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
+        }
+    }
+
+    default VarHandle unreflectVarhandle(Field field) {
+        try {
+            Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
+            return l.unreflectVarHandle(field);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("Could not create a VarHandle", e);
+        }
+    }
 
     default ServiceClassDescriptor serviceDescriptorFor(Class<?> type) {
         return new ServiceClassDescriptor(type, lookup(), MemberScanner.forService(type, lookup()));

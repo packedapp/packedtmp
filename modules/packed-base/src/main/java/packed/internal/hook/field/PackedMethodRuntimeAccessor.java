@@ -13,43 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.field;
+package packed.internal.hook.field;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.DelayedHookOperator;
-import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.container.AbstractComponentConfiguration;
 
 /**
  *
  */
-public class PackedFieldRuntimeAccessor<T> implements DelayedHookOperator<T> {
+public class PackedMethodRuntimeAccessor<T> implements DelayedHookOperator<T> {
 
-    public final PackedFieldOperation<T> afo;
+    public final PackedMethodOperation<T> afo;
 
     public final MethodHandle mh;
 
-    public final MethodHandles.Lookup lookup;
+    public final Method method;
 
-    public final Field field;
-
-    public PackedFieldRuntimeAccessor(MethodHandles.Lookup lookup, Field field, PackedFieldOperation<T> afo) {
+    public PackedMethodRuntimeAccessor(MethodHandle mh, Method method, PackedMethodOperation<T> afo) {
         this.afo = requireNonNull(afo);
-        try {
-            mh = lookup.unreflectGetter(field);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("foo", e);
-        }
-        this.lookup = lookup;
-        this.field = field;
+        this.mh = requireNonNull(mh);
+        this.method = method;
     }
 
     /** {@inheritDoc} */
@@ -64,6 +55,6 @@ public class PackedFieldRuntimeAccessor<T> implements DelayedHookOperator<T> {
         // TODO check instance component if instance field...
         AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
         pcc.checkConfigurable();
-        pcc.del.add(new DelayedAccessor.SidecarFieldDelayerAccessor(this, sidecarType, consumer));
+        pcc.del.add(new DelayedAccessor.SidecarMethodDelayerAccessor(this, sidecarType, consumer));
     }
 }

@@ -109,12 +109,12 @@ public final class ExtensionHookPerComponentGroup {
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
-            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(lookup.lookup(), field, annotation);
+            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(lookup, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
-            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(lookup.lookup(), method, annotation, consumers);
+            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(lookup, method, annotation, consumers);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 

@@ -39,10 +39,6 @@ import app.packed.container.ContainerLayer;
 import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.hook.field.DelayedAccessor;
-import app.packed.hook.field.DelayedAccessor.AbstractDelayerAccessor;
-import app.packed.hook.field.DelayedAccessor.SidecarFieldDelayerAccessor;
-import app.packed.hook.field.DelayedAccessor.SidecarMethodDelayerAccessor;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
@@ -51,6 +47,10 @@ import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerModel;
+import packed.internal.hook.field.DelayedAccessor;
+import packed.internal.hook.field.DelayedAccessor.AbstractDelayerAccessor;
+import packed.internal.hook.field.DelayedAccessor.SidecarFieldDelayerAccessor;
+import packed.internal.hook.field.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
@@ -291,7 +291,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                                 InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
                                 mh = mh.bindTo(icc.instance);
                             }
-                            Object ig = sda.pra.afo.invokeGetter(mh);
+                            Object ig = sda.pra.afo.invoke(mh);
                             ((BiConsumer) sda.consumer).accept(sidecar, ig);
                         } else {
                             SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) ada;

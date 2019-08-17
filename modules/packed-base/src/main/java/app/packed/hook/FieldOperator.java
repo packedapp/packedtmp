@@ -15,12 +15,15 @@
  */
 package app.packed.hook;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.hook.field.PackedFieldOperation;
+import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
+import packed.internal.hook.field.PackedFieldOperation;
 
 /**
  *
@@ -32,8 +35,37 @@ public interface FieldOperator<T> {
 
     T apply(MethodHandles.Lookup lookup, Field field, Object instance);
 
+    /**
+     * @param lookup
+     *            a lookup object that must have access to the specified field
+     * @param field
+     *            the field to operate on
+     * @return the ope
+     * @throws IllegalArgumentException
+     *             if the specified field is not static
+     */
     T applyStatic(MethodHandles.Lookup lookup, Field field);
 
+    static FieldOperator<Consumer<Object>> consumer() {
+        throw new UnsupportedOperationException();
+    }
+
+    static <E> FieldOperator<Consumer<E>> consumer(Class<E> fieldType) {
+        throw new UnsupportedOperationException();
+    }
+    //
+    // static FieldOperator<Object> getOnce() {
+    // // throw new XXX("Fields annotated with XXX cannot return null");
+    // // Hmm. Saa burde vi jo ogsaa have suppliers der ikke returnere null....
+    // throw new UnsupportedOperationException();
+    // }
+
+    /**
+     * Returns a field operator that reads a field once.
+     * 
+     * @return a field operator that reads a field once
+     */
+    @Nullable
     static FieldOperator<Object> getOnce() {
         return new PackedFieldOperation.GetOnceInternalFieldOperation<>();
     }
@@ -48,6 +80,7 @@ public interface FieldOperator<T> {
      * @return the new field operator
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     static <E> FieldOperator<E> getOnce(Class<E> fieldType) {
         return (FieldOperator<E>) getOnce();
     }
@@ -62,16 +95,35 @@ public interface FieldOperator<T> {
      */
     @SuppressWarnings("unchecked")
     // We could theoretically check the signature of the field....
+    @Nullable
     static <E> FieldOperator<E> getOnce(TypeLiteral<E> fieldType) {
         return (FieldOperator<E>) getOnce(fieldType.rawType());
     }
 
+    static FieldOperator<MethodHandle> getter() {
+        // Giver mening at kalde denne getter hvis AnnotatedFieldHook ogsaa skal hedde Getter
+        throw new UnsupportedOperationException();
+    }
+
+    static FieldOperator<MethodHandle> setter() {
+        throw new UnsupportedOperationException();
+    }
+    // getAndSetter... is that atomic??????
+
     /**
-     * Returns a field mapper that creates a supplier
+     * Returns a field operator that creates a getter (Supplier).
      * 
-     * @return a field mapper that creates suppliers.
+     * @return a field operator that creates a getter.
      */
     static FieldOperator<Supplier<Object>> supplier() {
+        return new PackedFieldOperation.SupplierInternalFieldOperation<>();
+    }
+
+    static <E> FieldOperator<Supplier<E>> supplier(Class<E> fieldType) {
+        return new PackedFieldOperation.SupplierInternalFieldOperation<>();
+    }
+
+    static <E> FieldOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
         return new PackedFieldOperation.SupplierInternalFieldOperation<>();
     }
 }

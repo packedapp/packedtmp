@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.field;
+package packed.internal.hook.field;
 
 /**
  *
  */
-public enum FieldOperatorType {
-
-    /** An operation that makes a single get to a field. */
-    GET_ONCE, METHOD_HANDLE_GET, METHOD_HANDLE_SET, FUNCTIONAL_INTERFACE
+@SuppressWarnings("serial")
+public class PackedIllegalAccessException extends RuntimeException {
+    PackedIllegalAccessException(IllegalAccessException e) {
+        super(e);
+    }
 }

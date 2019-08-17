@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.field;
+package packed.internal.hook.field;
+
+import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -49,6 +51,60 @@ public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
         public T invoke(MethodHandle mh) {
             try {
                 return (T) mh.invoke();
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+    }
+
+    public static class RunnableInternalMethodOperation extends PackedMethodOperation<Runnable> {
+
+        /** {@inheritDoc} */
+        @Override
+        public Runnable applyStatic(Lookup lookup, Method method) {
+            MethodHandle mh;
+            try {
+                mh = lookup.unreflect(method);
+            } catch (IllegalAccessException e) {
+                throw new PackedIllegalAccessException(e);
+            }
+            return new StaticRunnable(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Runnable invoke(MethodHandle mh) {
+            return new StaticRunnable(mh);
+        }
+
+        public Runnable apply(Lookup lookup, Method method, Object instance) {
+            MethodHandle mh;
+            try {
+                mh = lookup.unreflect(method);
+            } catch (IllegalAccessException e) {
+                throw new PackedIllegalAccessException(e);
+            }
+            mh = mh.bindTo(instance);
+            return new StaticRunnable(mh);
+        }
+    }
+
+    public static class StaticRunnable implements Runnable {
+        private final MethodHandle mh;
+
+        /**
+         * @param mh
+         */
+        public StaticRunnable(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void run() {
+            try {
+                mh.invoke();
             } catch (Throwable e) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(e);
                 throw new UndeclaredThrowableException(e);

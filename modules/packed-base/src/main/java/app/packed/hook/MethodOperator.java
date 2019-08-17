@@ -19,28 +19,26 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.hook.field.PackedMethodOperation;
+import packed.internal.hook.field.PackedMethodOperation;
 
 /**
  *
  */
-
 // Foerst og fremmest typen... //maaske om den skal vaere async??
-
 // Styring af exceptions???? Version 2
 /// Men ja, mener helt at det er noget man goer i operatoren...
 /// Alt hvad der ikke skal tilpasses en runtime...
 public interface MethodOperator<T> {
+
+    T applyStatic(Lookup lookup, Method method);
+
+    T invoke(MethodHandle mh);
 
     static <T> MethodOperator<Object> invokeOnce() {
         return new PackedMethodOperation.InvokeOnce<>();
     }
 
     static MethodOperator<Runnable> runnable() {
-        return new PackedMethodOperation.InvokeOnce<>();
+        return new PackedMethodOperation.RunnableInternalMethodOperation();
     }
-
-    T invoke(MethodHandle mh);
-
-    T applyStatic(Lookup lookup, Method method);
 }

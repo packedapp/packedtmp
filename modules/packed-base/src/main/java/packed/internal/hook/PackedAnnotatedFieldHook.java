@@ -25,13 +25,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.FieldOperator;
 import app.packed.hook.DelayedHookOperator;
-import app.packed.hook.field.PackedFieldOperation;
-import app.packed.hook.field.PackedFieldRuntimeAccessor;
+import app.packed.hook.FieldOperator;
 import app.packed.util.FieldDescriptor;
-import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Nullable;
+import packed.internal.container.model.ComponentLookup;
+import packed.internal.hook.field.PackedFieldOperation;
+import packed.internal.hook.field.PackedFieldRuntimeAccessor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -54,10 +55,17 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     // Owner_Type, Component_Instance_Type, Field, FunctionalType, AccessMode
 
-    /** A lookup object used to create various handlers. */
-    private final Lookup lookup;
+    /** A cached method handle getter for the field. */
+    @Nullable
+    private MethodHandle getter;
 
-    PackedAnnotatedFieldHook(Lookup lookup, Field field, T annotation) {
+    /** A component lookup object used to create the various handlers. */
+    private final ComponentLookup lookup;
+
+    @Nullable
+    private MethodHandle setter;
+
+    PackedAnnotatedFieldHook(ComponentLookup lookup, Field field, T annotation) {
         this.lookup = requireNonNull(lookup);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
@@ -71,8 +79,9 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> mapper) {
-        return new PackedFieldRuntimeAccessor<E>(lookup, field, (PackedFieldOperation<E>) mapper);
+    public <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> operator) {
+        PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
+        return new PackedFieldRuntimeAccessor<E>(of(o), field, (PackedFieldOperation<E>) operator);
     }
 
     /** {@inheritDoc} */
@@ -82,8 +91,8 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static field " + field);
         }
-        return operator.applyStatic(lookup, field);
-
+        PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
+        return o.invoke(of(o));
     }
 
     /** {@inheritDoc} */
@@ -168,39 +177,41 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     /** {@inheritDoc} */
     @Override
     public MethodHandle getter() {
-        field.setAccessible(true);
-        try {
-            return lookup.unreflectGetter(field);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
+        MethodHandle g = getter;
+        if (g == null) {
+            getter = g = lookup.unreflectGetter(field);
         }
+        return g;
     }
 
     /** {@inheritDoc} */
     @Override
     public Lookup lookup() {
-        return lookup;// Temporary method
+        return lookup.lookup();// Temporary method
     }
 
-    @Override
-    public MethodHandle setter() {
-        field.setAccessible(true);
-        try {
-            return lookup.unreflectSetter(field);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
+    private MethodHandle of(PackedFieldOperation<?> o) {
+        if (o.isSimpleGetter()) {
+            return getter();
+        } else {
+            return setter();
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public VarHandle varHandle() {
-        field.setAccessible(true);
-        try {
-            return lookup.unreflectVarHandle(field);
-        } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Could not create a VarHandle", e);
+    public MethodHandle setter() {
+        MethodHandle s = setter;
+        if (s == null) {
+            setter = s = lookup.unreflectSetter(field);
         }
+        return s;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public VarHandle varHandle() {
+        return lookup.unreflectVarhandle(field);
     }
 
     /**

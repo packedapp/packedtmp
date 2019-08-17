@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.field;
+package packed.internal.hook.field;
 
 import static java.util.Objects.requireNonNull;
 
@@ -118,7 +118,7 @@ public final class AbstractFieldOperator<T> {
     }
 
     // Must be SAM, public interface.
-    public static <E> AbstractFieldOperator<E> custom(Class<E> type) {
+    public static <E> AbstractFieldOperator<E> sam(Class<E> type) {
         throw new UnsupportedOperationException();
     }
 

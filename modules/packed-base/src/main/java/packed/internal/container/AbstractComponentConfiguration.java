@@ -32,9 +32,9 @@ import app.packed.component.ComponentPath;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.feature.FeatureMap;
-import app.packed.hook.field.DelayedAccessor;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
+import packed.internal.hook.field.DelayedAccessor;
 
 /** An abstract base class for a component configuration object. */
 public abstract class AbstractComponentConfiguration implements ComponentHolder {
