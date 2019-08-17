@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHookAggregateBuilder;
+import app.packed.extension.AnnotatedFieldHook;
+import app.packed.extension.AnnotatedMethodHook;
+import app.packed.extension.OnHookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;

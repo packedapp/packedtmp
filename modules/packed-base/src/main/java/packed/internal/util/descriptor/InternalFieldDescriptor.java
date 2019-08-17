@@ -25,11 +25,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import app.packed.hook.FieldOperator;
+import app.packed.extension.FieldOperator;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.hook.PackedFieldOperation;
+import packed.internal.extension.hook.PackedFieldOperation;
 import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.util.InternalErrorException;
 

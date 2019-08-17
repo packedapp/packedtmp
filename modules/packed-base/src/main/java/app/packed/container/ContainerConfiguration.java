@@ -23,6 +23,7 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.extension.Extension;
 import app.packed.util.Nullable;
 
 /**

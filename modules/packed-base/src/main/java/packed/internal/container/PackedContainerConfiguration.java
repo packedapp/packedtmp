@@ -36,9 +36,9 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
-import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
@@ -47,13 +47,15 @@ import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerModel;
-import packed.internal.hook.field.DelayedAccessor;
-import packed.internal.hook.field.DelayedAccessor.AbstractDelayerAccessor;
-import packed.internal.hook.field.DelayedAccessor.SidecarFieldDelayerAccessor;
-import packed.internal.hook.field.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.extension.ExtensionModel;
+import packed.internal.extension.hook.field.DelayedAccessor;
+import packed.internal.extension.hook.field.DelayedAccessor.AbstractDelayerAccessor;
+import packed.internal.extension.hook.field.DelayedAccessor.SidecarFieldDelayerAccessor;
+import packed.internal.extension.hook.field.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
+import packed.internal.support.AppPackedExtensionSupport;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -168,7 +170,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     void extensionsContainerConfigured() {
         prepareNewComponent(State.GET_NAME_INVOKED);
         for (Extension e : extensions.values()) {
-            AppPackedContainerSupport.invoke().onConfigured(e);
+            AppPackedExtensionSupport.invoke().onConfigured(e);
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -357,7 +359,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
             ce = ExtensionModel.newInstance(this, extensionType);
             extensions.put(extensionType, ce); // make sure we add it here before calling Extension#ExtensionAdded
-            AppPackedContainerSupport.invoke().initializeExtension(ce, this);
+            AppPackedExtensionSupport.invoke().initializeExtension(ce, this);
         }
         return (T) ce;
     }

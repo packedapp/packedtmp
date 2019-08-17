@@ -17,8 +17,8 @@ package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.Extension;
 import app.packed.container.WireletList;
+import app.packed.extension.Extension;
 
 /**
  * An artifact build context is created every time an build context is create . The context is shared among all

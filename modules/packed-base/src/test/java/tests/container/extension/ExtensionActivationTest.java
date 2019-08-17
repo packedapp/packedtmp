@@ -27,13 +27,13 @@ import org.junit.jupiter.api.Test;
 import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.container.ActivateExtension;
 import app.packed.container.BaseBundle;
-import app.packed.container.Extension;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.OnHook;
-import app.packed.hook.OnHookAggregateBuilder;
+import app.packed.extension.ActivateExtension;
+import app.packed.extension.AnnotatedFieldHook;
+import app.packed.extension.AnnotatedMethodHook;
+import app.packed.extension.Extension;
+import app.packed.extension.OnHook;
+import app.packed.extension.OnHookAggregateBuilder;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */

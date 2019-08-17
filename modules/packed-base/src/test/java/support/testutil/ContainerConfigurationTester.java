@@ -28,9 +28,9 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
+import app.packed.extension.Extension;
 
 /**
  *

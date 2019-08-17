@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.ActivateExtension;
+import app.packed.extension.ActivateExtension;
 
 /**
  * A application can have a single main entry point which is the first instructions in a program that is executed, Must

@@ -27,7 +27,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
+import app.packed.extension.Extension;
 import app.packed.util.Nullable;
+import packed.internal.support.AppPackedContainerSupport;
 
 /**
  * Bundles are the main source of configuration for artifacts. It is basically just a thin wrapper around
@@ -44,6 +46,17 @@ import app.packed.util.Nullable;
 // wire(b, setName("f1"));
 // wire(b, setName("f2"));
 public abstract class Bundle implements ArtifactSource {
+
+    static {
+        AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
+                bundle.doConfigure(configuration);
+            }
+        });
+    }
 
     /** The configuration of the container. */
     private ContainerConfiguration configuration;
@@ -116,7 +129,7 @@ public abstract class Bundle implements ArtifactSource {
      * @param configuration
      *            the configuration to wrap
      */
-    final void doConfigure(ContainerConfiguration configuration) {
+    private final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;
         // Im not sure we want to null it out...
         // We should have some way to mark it failed????

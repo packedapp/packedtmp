@@ -24,10 +24,10 @@ import java.util.IdentityHashMap;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ActivateExtension;
-import app.packed.container.Extension;
+import app.packed.extension.ActivateExtension;
+import app.packed.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.hook.ExtensionHookPerComponentGroup;
+import packed.internal.extension.hook.ExtensionHookPerComponentGroup;
 
 /**
  *
@@ -164,8 +164,9 @@ public final class ComponentModel {
                 }
                 // TODO default methods
             }
+            ComponentModel cm = new ComponentModel(this);
             isBuild = true;
-            return new ComponentModel(this);
+            return cm;
         }
     }
 }

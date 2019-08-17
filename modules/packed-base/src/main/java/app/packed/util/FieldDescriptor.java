@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
-import app.packed.hook.FieldOperator;
+import app.packed.extension.FieldOperator;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**

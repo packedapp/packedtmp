@@ -19,8 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
-import packed.internal.container.PackedContainerConfiguration;
+import app.packed.extension.Extension;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public final class AppPackedContainerSupport {
@@ -35,19 +34,7 @@ public final class AppPackedContainerSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        /**
-         * Initializes the extension with the configuration of the container in which it is registered.
-         * 
-         * @param extension
-         *            the extension to configure
-         * @param configuration
-         *            the configuration of the container in which the extension is registered
-         */
-        public abstract void initializeExtension(Extension extension, PackedContainerConfiguration configuration);
-
         public abstract void doConfigure(Bundle bundle, ContainerConfiguration configuration);
-
-        public abstract void onConfigured(Extension extension);
 
         /**
          * Initializes this class.
