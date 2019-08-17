@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.DelayedHookOperator;
 import packed.internal.container.AbstractComponentConfiguration;
+import packed.internal.hook.PackedFieldOperation;
 
 /**
  *

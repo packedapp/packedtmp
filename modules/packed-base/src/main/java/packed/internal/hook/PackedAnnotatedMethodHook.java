@@ -22,8 +22,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.DelayedHookOperator;
@@ -31,8 +29,6 @@ import app.packed.hook.MethodOperator;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentLookup;
-import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
-import packed.internal.hook.field.PackedMethodOperation;
 import packed.internal.hook.field.PackedMethodRuntimeAccessor;
 
 /** The default implementation of {@link AnnotatedMethodHook}. */
@@ -41,10 +37,8 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     /** The annotation value */
     private final T annotation;
 
-    private final ArrayList<MethodConsumer<?>> consumers;
-
     /** A cached method descriptor, is lazily created via {@link #method()}. */
-    private volatile MethodDescriptor descriptor;
+    private MethodDescriptor descriptor;
 
     /** A lookup object used to create various handlers. */
     private final ComponentLookup lookup;
@@ -56,11 +50,10 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     @Nullable
     private MethodHandle methodHandle;
 
-    PackedAnnotatedMethodHook(ComponentLookup lookup, Method method, T annotation, ArrayList<MethodConsumer<?>> consumers) {
+    PackedAnnotatedMethodHook(ComponentLookup lookup, Method method, T annotation) {
         this.lookup = requireNonNull(lookup);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
-        this.consumers = requireNonNull(consumers);
     }
 
     /** {@inheritDoc} */
@@ -77,12 +70,13 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
 
     /** {@inheritDoc} */
     @Override
-    public <E> E applyStatic(MethodOperator<E> operator) {
+    public <E> E applyOnStaticMethod(MethodOperator<E> operator) {
         requireNonNull(operator, "operator is null");
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static methods " + method);
         }
-        return operator.invoke(methodHandle());
+        PackedMethodOperation<E> o = (PackedMethodOperation<E>) operator;
+        return o.applyStaticHook(this);
     }
 
     @Override
@@ -100,6 +94,7 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         return d;
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
         MethodHandle mh = methodHandle;
@@ -107,15 +102,5 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
             methodHandle = mh = lookup.unreflect(method);
         }
         return mh;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public void onMethodReady(Class key, BiConsumer consumer) {
-        requireNonNull(key, "key is null");
-        requireNonNull(consumer, "consumer is null");
-        // This method should definitely not be available. for ever
-        // Should we have a check configurable???
-        consumers.add(new MethodConsumer<>(key, consumer, methodHandle()));
     }
 }

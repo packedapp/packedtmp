@@ -28,6 +28,8 @@ import java.util.function.Supplier;
 
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.TypeLiteral;
+import packed.internal.hook.PackedFieldOperation;
+import packed.internal.hook.PackedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 
 /**

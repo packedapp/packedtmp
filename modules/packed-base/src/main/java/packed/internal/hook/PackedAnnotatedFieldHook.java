@@ -31,7 +31,6 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentLookup;
-import packed.internal.hook.field.PackedFieldOperation;
 import packed.internal.hook.field.PackedFieldRuntimeAccessor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.StringFormatter;
@@ -44,27 +43,42 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     private final T annotation;
 
     /** A cached field descriptor, is lazily created via {@link #field()}. */
-    private volatile FieldDescriptor descriptor;
+    private FieldDescriptor descriptor;
 
     /** The annotated field. */
     private final Field field;
-
-    // Must have an owner.... And then ComponentConfiguration must have the same owner....
-    // And I guess access mode as well
-    // owner, for example, bundle.getClass();
-
-    // Owner_Type, Component_Instance_Type, Field, FunctionalType, AccessMode
 
     /** A cached method handle getter for the field. */
     @Nullable
     private MethodHandle getter;
 
     /** A component lookup object used to create the various handlers. */
+    // Must have an owner.... And then ComponentConfiguration must have the same owner....
+    // And I guess access mode as well, owner, for example, bundle.getClass();
+    // Maybe check against the same lookup object...
+    // Owner_Type, Component_Instance_Type, Field, FunctionalType, AccessMode
+    /// Maybe we can just check ComponentConfiguration.lookup == this.lookup
+    /// I think we actually need to check this this way
     private final ComponentLookup lookup;
 
+    /** A cached method handle setter for the field. */
     @Nullable
     private MethodHandle setter;
 
+    /** A cached var handle for the field. */
+    @Nullable
+    private VarHandle varHandle;
+
+    /**
+     * Creates a new instance.
+     * 
+     * @param lookup
+     *            the component lookup object
+     * @param field
+     *            the field that is annotated
+     * @param annotation
+     *            the annotation value
+     */
     PackedAnnotatedFieldHook(ComponentLookup lookup, Field field, T annotation) {
         this.lookup = requireNonNull(lookup);
         this.field = requireNonNull(field);
@@ -80,19 +94,20 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     /** {@inheritDoc} */
     @Override
     public <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> operator) {
+        requireNonNull(operator, "operator is null");
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
         return new PackedFieldRuntimeAccessor<E>(of(o), field, (PackedFieldOperation<E>) operator);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <E> E applyStatic(FieldOperator<E> operator) {
+    public <E> E applyOnStaticField(FieldOperator<E> operator) {
         requireNonNull(operator, "operator is null");
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static field " + field);
         }
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
-        return o.invoke(of(o));
+        return o.applyStaticHook(this);
     }
 
     /** {@inheritDoc} */
@@ -211,7 +226,11 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     /** {@inheritDoc} */
     @Override
     public VarHandle varHandle() {
-        return lookup.unreflectVarhandle(field);
+        VarHandle vh = varHandle;
+        if (vh == null) {
+            varHandle = vh = lookup.unreflectVarhandle(field);
+        }
+        return vh;
     }
 
     /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.field;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -61,6 +61,8 @@ public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
 
     public abstract T invoke(MethodHandle mh);
 
+    public abstract T applyStaticHook(PackedAnnotatedFieldHook<?> hook);
+
     // If its a getter we cache the method handle
     public abstract boolean isSimpleGetter();
 
@@ -82,6 +84,12 @@ public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
         @Override
         public boolean isSimpleGetter() {
             return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T applyStaticHook(PackedAnnotatedFieldHook<?> hook) {
+            return invoke(hook.getter());
         }
     }
 
@@ -120,6 +128,12 @@ public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
         @Override
         public boolean isSimpleGetter() {
             return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Supplier<T> applyStaticHook(PackedAnnotatedFieldHook<?> hook) {
+            return new StaticSup<T>(hook.getter());
         }
     }
 }

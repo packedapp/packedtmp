@@ -15,23 +15,22 @@
  */
 package app.packed.lifecycle;
 
-import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.MethodOperator;
 import app.packed.hook.OnHook;
 import app.packed.hook.OnHookAggregateBuilder;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import packed.internal.container.PackedArtifactContext;
 import packed.internal.support.AppPackedLifecycleSupport;
 import packed.internal.util.StringFormatter;
 
@@ -66,19 +65,15 @@ public final class LifecycleExtension extends Extension {
         AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {});
     }
 
-    private Set<MethodHandle> s = new HashSet<>();
-
     /**
      * This method once for each component method that is annotated with {@link Main}.
      * 
      * @param mh
      */
     @OnHook(LifecycleHookAggregator.class)
-    void addMain(ComponentConfiguration cc, MethodHandle mh) {
+    void addMain(ComponentConfiguration cc, LifecycleHookAggregator mh) {
+        mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
         // TODO check that we do not have multiple @Main methods
-        System.out.println(mh);
-        s.add(mh);
-        System.out.println(s);
     }
 
     public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
@@ -121,15 +116,25 @@ public final class LifecycleExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
+    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+        context.put(configuration(), new LifecycleSidecar());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected void onConfigured() {
         installInParentIfSameArtifact();
     }
+}
+
+class LifecycleSidecar {
 
 }
 
-final class LifecycleHookAggregator implements OnHookAggregateBuilder<MethodHandle> {
+final class LifecycleHookAggregator implements OnHookAggregateBuilder<LifecycleHookAggregator> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
+    DelayedHookOperator<Runnable> applyDelayed;
 
     void add(AnnotatedMethodHook<Main> hook) {
         hooks.add(hook);
@@ -137,7 +142,7 @@ final class LifecycleHookAggregator implements OnHookAggregateBuilder<MethodHand
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle build() {
+    public LifecycleHookAggregator build() {
         if (hooks.size() > 1) {
             throw new InvalidDeclarationException("A component of the type '" + StringFormatter.format(hooks.get(0).method().getDeclaringClass())
                     + "' defined more than one method annotated with @" + Main.class.getSimpleName() + ", Methods = "
@@ -145,11 +150,11 @@ final class LifecycleHookAggregator implements OnHookAggregateBuilder<MethodHand
                     + StringFormatter.formatShortWithParameters(hooks.get(1).method()));
         }
         AnnotatedMethodHook<Main> h = hooks.get(0);
-        MethodHandle mh = h.methodHandle();
-        h.onMethodReady(PackedArtifactContext.class, (a, b) -> b.run());
+
+        applyDelayed = h.applyDelayed(MethodOperator.runnable());
 
         // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
-        return mh;
+        return this;
     }
 }
 

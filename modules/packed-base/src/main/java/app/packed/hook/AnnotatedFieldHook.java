@@ -25,7 +25,12 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 
-/** A hook representing a field annotated with a specific type. */
+/**
+ * A hook representing a field annotated with a specific type.
+ * 
+ * <p>
+ * AnnotatedFieldHook are not safe to use by multiple threads
+ **/
 public interface AnnotatedFieldHook<T extends Annotation> {
 
     /**
@@ -42,15 +47,14 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * Applies the specified field operator to the underlying static field.
      * 
      * @param <E>
-     *            the type
+     *            the type of result from applying the operator
      * @param operator
-     * @return the operator finished value
+     *            the operator to apply
+     * @return the result from applying the operator to the static field
      * @throws UnsupportedOperationException
      *             if the underlying field is not a static field
-     * @throws IllegalStateException
-     *             if invoked outside of building an aggregate
      */
-    <E> E applyStatic(FieldOperator<E> operator);
+    <E> E applyOnStaticField(FieldOperator<E> operator);
 
     // Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
     // Move these to descriptor????
@@ -102,18 +106,17 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     AnnotatedFieldHook<T> checkStatic();
 
-    // Drop TypeLiteral taenker jeg...
-
     /**
-     * Returns the annotated field.
+     * Returns a field descriptor for the underlying field.
      * 
-     * @return the annotated field
+     * @return a field descriptor for the underlying field
      */
     FieldDescriptor field();
 
     /**
-     * Returns a method handle giving read access to the underlying field. The method handle is unbound if the underlying
-     * field is an instance field.
+     * Returns a method handle giving read access to the underlying field.
+     * <p>
+     * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
      * @return a method handle for the underlying field with read access
      * @throws IllegalAccessRuntimeException
@@ -125,8 +128,9 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     Lookup lookup(); // TODO remove this method
 
     /**
-     * Returns a method handle giving read access to the underlying field. The method handle is unbound if the underlying
-     * field is an instance field.
+     * Returns a method handle giving read access to the underlying field.
+     * <p>
+     * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
      * @return a method handle for the underlying field with write access
      * @throws IllegalAccessRuntimeException
@@ -145,7 +149,3 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     VarHandle varHandle();
 }
-
-// Check the type
-// checkNotNull()???Nah that could get complicated.... Maybe at some point
-// because should we check it every time we access the field, or only once

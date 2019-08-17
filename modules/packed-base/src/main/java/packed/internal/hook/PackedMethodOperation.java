@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook.field;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +29,7 @@ import packed.internal.util.ThrowableUtil;
  *
  */
 public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
+    abstract T applyStaticHook(PackedAnnotatedMethodHook<?> packedAnnotatedMethodHook);
 
     public static class InvokeOnce<T> extends PackedMethodOperation<T> {
 
@@ -56,9 +57,26 @@ public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
                 throw new UndeclaredThrowableException(e);
             }
         }
+
+        /** {@inheritDoc} */
+        @Override
+        T applyStaticHook(PackedAnnotatedMethodHook<?> hook) {
+            return invoke(hook.methodHandle());
+        }
     }
 
     public static class RunnableInternalMethodOperation extends PackedMethodOperation<Runnable> {
+
+        public Runnable apply(Lookup lookup, Method method, Object instance) {
+            MethodHandle mh;
+            try {
+                mh = lookup.unreflect(method);
+            } catch (IllegalAccessException e) {
+                throw new PackedIllegalAccessException(e);
+            }
+            mh = mh.bindTo(instance);
+            return new StaticRunnable(mh);
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -78,15 +96,10 @@ public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
             return new StaticRunnable(mh);
         }
 
-        public Runnable apply(Lookup lookup, Method method, Object instance) {
-            MethodHandle mh;
-            try {
-                mh = lookup.unreflect(method);
-            } catch (IllegalAccessException e) {
-                throw new PackedIllegalAccessException(e);
-            }
-            mh = mh.bindTo(instance);
-            return new StaticRunnable(mh);
+        /** {@inheritDoc} */
+        @Override
+        Runnable applyStaticHook(PackedAnnotatedMethodHook<?> hook) {
+            return new StaticRunnable(hook.methodHandle());
         }
     }
 

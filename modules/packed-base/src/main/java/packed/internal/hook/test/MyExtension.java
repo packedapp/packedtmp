@@ -77,7 +77,7 @@ public class MyExtension extends Extension {
         public void foo(AnnotatedFieldHook<MyA> h) throws Throwable {
             sum += h.annotation().value();
             if (h.field().isStatic()) {
-                Supplier<Object> val = h.applyStatic(FieldOperator.supplier());
+                Supplier<Object> val = h.applyOnStaticField(FieldOperator.supplier());
                 System.out.println("VAL = " + val.get());
                 System.out.println("VAL = " + val.get());
             }

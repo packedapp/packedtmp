@@ -23,13 +23,11 @@ import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 import java.util.stream.Stream;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.ActivateExtension;
 import app.packed.container.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.hook.ExtensionHookPerComponentGroup;
-import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
 
 /**
  *
@@ -77,15 +75,6 @@ public final class ComponentModel {
 
     public void print() {
         System.out.println("ComponentType = " + componentType + ", callbacks = " + Stream.of(extensionGroups).mapToInt(e -> e.getNumberOfCallbacks()).sum());
-    }
-
-    @SuppressWarnings("rawtypes")
-    public void process(PackedContainerConfiguration cc, ArtifactInstantiationContext ic) {
-        for (ExtensionHookPerComponentGroup d : extensionGroups) {
-            for (MethodConsumer mc : d.methodConsumers) {
-                mc.prepare(cc, ic);
-            }
-        }
     }
 
     /**

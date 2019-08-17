@@ -29,7 +29,7 @@ import app.packed.hook.FieldOperator;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.hook.field.PackedFieldOperation;
+import packed.internal.hook.PackedFieldOperation;
 import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.util.InternalErrorException;
 

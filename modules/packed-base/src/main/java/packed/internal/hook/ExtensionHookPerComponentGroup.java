@@ -48,11 +48,8 @@ public final class ExtensionHookPerComponentGroup {
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
 
-    public final List<MethodConsumer<?>> methodConsumers;
-
     private ExtensionHookPerComponentGroup(Builder b) {
         this.extensionType = requireNonNull(b.extensionType);
-        this.methodConsumers = List.copyOf(b.consumers);
         this.callbacks = b.callbacks;
     }
 
@@ -79,8 +76,6 @@ public final class ExtensionHookPerComponentGroup {
 
         /** The component type */
         final Class<?> componentType;
-
-        private ArrayList<MethodConsumer<?>> consumers = new ArrayList<>();
 
         final ArrayList<Callback> callbacks = new ArrayList<>();
 
@@ -114,7 +109,7 @@ public final class ExtensionHookPerComponentGroup {
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
-            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(lookup, method, annotation, consumers);
+            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(lookup, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 

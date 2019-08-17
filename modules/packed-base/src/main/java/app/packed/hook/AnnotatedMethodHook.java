@@ -18,7 +18,6 @@ package app.packed.hook;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.BiConsumer;
 
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
@@ -33,9 +32,20 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      */
     T annotation();
 
-    <E> E applyStatic(MethodOperator<E> accessor);
-
     <E> DelayedHookOperator<E> applyDelayed(MethodOperator<E> operator);
+
+    /**
+     * Applies the specified method operator to the underlying static method.
+     * 
+     * @param <E>
+     *            the type of result from applying the operator
+     * @param operator
+     *            the operator to apply
+     * @return the result from applying the operator to the static method
+     * @throws UnsupportedOperationException
+     *             if the underlying method is not a static method
+     */
+    <E> E applyOnStaticMethod(MethodOperator<E> operator);
 
     Lookup lookup(); // TODO remove this method when possible...
 
@@ -47,33 +57,23 @@ public interface AnnotatedMethodHook<T extends Annotation> {
     MethodDescriptor method();
 
     /**
-     * Creates a new {@link MethodHandle} to the underlying method.
+     * Returns a {@link MethodHandle} to the underlying method.
      * <p>
+     * The returned method handle is never bound to a receiver, even if the underlying method is an instance method.
      * 
-     * @return a new MethodHandle for the underlying method
+     * @return a MethodHandle to the underlying method
      * @throws IllegalAccessRuntimeException
      *             if a method handle could not be created
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */
     MethodHandle methodHandle();
-
-    // We need to decide upon what should happen before the consumer is executed....
-    // BEcause
-    // Definitely deprecated soon...
-    <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
-
-    // checkNotOptional()
-    // Er taenkt til en optional componenter.... f.eks. kan man ikke registere @Provide metoder, men gerne @Inject metoder
-    // paa en optional component...
-
 }
+
+// checkNotOptional()
+// Er taenkt til en optional componenter.... f.eks. kan man ikke registere @Provide metoder, men gerne @Inject metoder
+// paa en optional component...
 // Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
 /// Vi kan vel bare wrappe MethodHandles....
 
 // disableAOP()
 // enableInjection()
-// foobar
-
-// InternalService -> Class -> T
-// Injector ->
-// LifecycleManager ->

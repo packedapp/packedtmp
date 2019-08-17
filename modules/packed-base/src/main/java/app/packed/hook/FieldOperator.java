@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.hook.field.PackedFieldOperation;
+import packed.internal.hook.PackedFieldOperation;
 
 /**
  *

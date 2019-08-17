@@ -276,9 +276,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 AbstractComponent child = ac.children.get(a.name);
                 if (a instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) a).methodHandlePassing0(child, ic);
-                } else {
-                    DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) a;
-                    dcc.ccd.process(this, ic);
                 }
                 if (!a.del.isEmpty()) {
                     for (DelayedAccessor da : a.del) {
