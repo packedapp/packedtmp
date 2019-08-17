@@ -87,7 +87,7 @@ public final class ComponentModel {
     }
 
     /** A builder object for a component class descriptor. */
-    static class Builder {
+    public static class Builder {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
@@ -108,6 +108,8 @@ public final class ComponentModel {
         /** A lookup object for the component. */
         private final ComponentLookup lookup;
 
+        private boolean isBuild;
+
         /**
          * @param lookup
          * @param componentType
@@ -117,6 +119,20 @@ public final class ComponentModel {
             this.componentType = requireNonNull(componentType);
         }
 
+        public void checkActive() {
+            if (isBuild) {
+                throw new IllegalStateException();
+            }
+        }
+
+        public Class<?> componentType() {
+            return componentType;
+        }
+
+        public ComponentLookup lookup() {
+            return lookup;
+        }
+
         /**
          * Builds and returns a new descriptor.
          * 
@@ -124,14 +140,12 @@ public final class ComponentModel {
          */
         ComponentModel build() {
             for (Class<?> c = componentType; c != Object.class; c = c.getSuperclass()) {
-
                 for (Field field : c.getDeclaredFields()) {
                     for (Annotation a : field.getAnnotations()) {
                         Class<? extends Extension>[] cc = EXTENSION_ACTIVATORS.get(a.annotationType());
                         if (cc != null) {
                             for (Class<? extends Extension> ccc : cc) {
-                                extensionBuilders
-                                        .computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(componentType, extensionType, lookup))
+                                extensionBuilders.computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(this, extensionType))
                                         .onAnnotatedField(field, a);
                             }
                         }
@@ -142,8 +156,7 @@ public final class ComponentModel {
                         Class<? extends Extension> cc[] = EXTENSION_ACTIVATORS.get(a.annotationType());
                         if (cc != null) {
                             for (Class<? extends Extension> ccc : cc) {
-                                extensionBuilders
-                                        .computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(componentType, extensionType, lookup))
+                                extensionBuilders.computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(this, extensionType))
                                         .onAnnotatedMethod(method, a);
                             }
                         }
@@ -151,6 +164,7 @@ public final class ComponentModel {
                 }
                 // TODO default methods
             }
+            isBuild = true;
             return new ComponentModel(this);
         }
     }

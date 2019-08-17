@@ -25,22 +25,27 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.HookApplicator;
 import app.packed.hook.FieldOperator;
+import app.packed.hook.HookApplicator;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentLookup;
+import packed.internal.container.model.ComponentModel;
 import packed.internal.hook.field.PackedFieldRuntimeAccessor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** The default implementation of {@link AnnotatedFieldHook}. */
+// TODO ISE for apply + applicator
 final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedFieldHook<T> {
 
     /** The annotation value. */
     private final T annotation;
+
+    /** The builder for the component type. */
+    private final ComponentModel.Builder builder;
 
     /** A cached field descriptor, is lazily created via {@link #field()}. */
     private FieldDescriptor descriptor;
@@ -72,15 +77,16 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     /**
      * Creates a new instance.
      * 
-     * @param lookup
-     *            the component lookup object
+     * @param builder
+     *            the builder for the component type
      * @param field
      *            the field that is annotated
      * @param annotation
      *            the annotation value
      */
-    PackedAnnotatedFieldHook(ComponentLookup lookup, Field field, T annotation) {
-        this.lookup = requireNonNull(lookup);
+    PackedAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
+        this.builder = builder;
+        this.lookup = builder.lookup();
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
     }
@@ -95,6 +101,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     @Override
     public <E> HookApplicator<E> applicator(FieldOperator<E> operator) {
         requireNonNull(operator, "operator is null");
+        builder.checkActive();
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
         return new PackedFieldRuntimeAccessor<E>(of(o), field, (PackedFieldOperation<E>) operator);
     }
@@ -106,6 +113,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static field " + field);
         }
+        builder.checkActive();
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
         return o.applyStaticHook(this);
     }
@@ -251,11 +259,5 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
             // + ", to resolve remove @"
             // + annotationType.getSimpleName() + " or make the field non-static");
         }
-    }
-
-    protected static String fieldCannotHaveBothAnnotations(InternalFieldDescriptor field, Class<? extends Annotation> annotationType1,
-            Class<? extends Annotation> annotationType2) {
-        return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
-                + ", to resolve remove one of the annotations.";
     }
 }

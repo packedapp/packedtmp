@@ -29,13 +29,17 @@ import app.packed.hook.MethodOperator;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentLookup;
+import packed.internal.container.model.ComponentModel;
 import packed.internal.hook.field.PackedMethodRuntimeAccessor;
 
 /** The default implementation of {@link AnnotatedMethodHook}. */
 final class PackedAnnotatedMethodHook<T extends Annotation> implements AnnotatedMethodHook<T> {
 
-    /** The annotation value */
+    /** The annotation value. */
     private final T annotation;
+
+    /** The builder for the component type. */
+    private final ComponentModel.Builder builder;
 
     /** A cached method descriptor, is lazily created via {@link #method()}. */
     private MethodDescriptor descriptor;
@@ -50,8 +54,19 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     @Nullable
     private MethodHandle methodHandle;
 
-    PackedAnnotatedMethodHook(ComponentLookup lookup, Method method, T annotation) {
-        this.lookup = requireNonNull(lookup);
+    /**
+     * Creates a new instance.
+     * 
+     * @param builder
+     *            the builder for the component type
+     * @param method
+     *            the method that is annotated
+     * @param annotation
+     *            the annotation value
+     */
+    PackedAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation) {
+        this.builder = builder;
+        this.lookup = builder.lookup();
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);
     }
@@ -65,6 +80,8 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     /** {@inheritDoc} */
     @Override
     public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
+        requireNonNull(operator, "operator is null");
+        builder.checkActive();
         return new PackedMethodRuntimeAccessor<E>(methodHandle(), method, (PackedMethodOperation<E>) operator);
     }
 
@@ -75,6 +92,7 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static methods " + method);
         }
+        builder.checkActive();
         PackedMethodOperation<E> o = (PackedMethodOperation<E>) operator;
         return o.applyStaticHook(this);
     }

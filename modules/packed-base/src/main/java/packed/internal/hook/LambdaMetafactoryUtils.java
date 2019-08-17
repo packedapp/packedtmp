@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook2;
+package packed.internal.hook;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaMetafactory;

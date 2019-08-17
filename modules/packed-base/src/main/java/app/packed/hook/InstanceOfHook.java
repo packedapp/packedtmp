@@ -13,20 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook2;
+package app.packed.hook;
 
-import app.packed.component.Component;
-
-/** The base interface for all hooks. */
-// Strictly we should have descriptors for non-mutable stuff..
-public interface Hook {
+/**
+ * Represent an annotated field on a component instance.
+ */
+public interface InstanceOfHook<T> {
 
     /**
-     * Returns the component.
+     * Returns the
      * 
-     * @return the component
+     * @return the type we are hooked on
      */
-    Component component();
+    Class<T> hookType();
 
-    // Config Site???
+    /**
+     * Returns the instance.
+     *
+     * @return the instance
+     */
+    T instance();
+
+    /**
+     * Returns the actual type (assignable to T).
+     * 
+     * @return the actual type
+     */
+    // Syntes det er rimeligt at klassen er til raadighed,
+    // Den er det jo paa runtime
+    Class<? extends T> type();
 }

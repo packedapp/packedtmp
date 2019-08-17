@@ -22,8 +22,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import app.packed.hook2.InstanceOfHook;
-
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance
  * of either {@link AnnotatedFieldHook}, {@link AnnotatedMethodHook}, {@link AnnotatedTypeHook} or

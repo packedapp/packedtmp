@@ -25,16 +25,13 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.OnHookAggregateBuilder;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.model.ComponentLookup;
+import packed.internal.container.model.ComponentModel;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -80,18 +77,19 @@ public final class ExtensionHookPerComponentGroup {
         final ArrayList<Callback> callbacks = new ArrayList<>();
 
         final IdentityHashMap<Class<?>, OnHookAggregateBuilder<?>> mmm = new IdentityHashMap<>();
-        /** The type of extension that will be activated. */
-        private final Class<? extends Extension> extensionType;
 
-        private final ComponentLookup lookup;
+        /** The type of extension that will be activated. */
+        final Class<? extends Extension> extensionType;
 
         final ExtensionOnHookDescriptor con;
 
-        public Builder(Class<?> componentType, Class<? extends Extension> extensionType, ComponentLookup lookup) {
-            this.componentType = requireNonNull(componentType);
+        final ComponentModel.Builder modelBuilder;
+
+        public Builder(ComponentModel.Builder modelBuilder, Class<? extends Extension> extensionType) {
+            this.modelBuilder = requireNonNull(modelBuilder);
+            this.componentType = modelBuilder.componentType();
             this.con = ExtensionOnHookDescriptor.get(extensionType);
             this.extensionType = requireNonNull(extensionType);
-            this.lookup = requireNonNull(lookup);
         }
 
         public ExtensionHookPerComponentGroup build() {
@@ -104,12 +102,12 @@ public final class ExtensionHookPerComponentGroup {
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
-            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(lookup, field, annotation);
+            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(modelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
-            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(lookup, method, annotation);
+            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(modelBuilder, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 
@@ -121,8 +119,6 @@ public final class ExtensionHookPerComponentGroup {
                 // The method handle refers to an aggregator object.
                 OnHookAggregatorDescriptor a = OnHookAggregatorDescriptor.get((Class<? extends OnHookAggregateBuilder<?>>) owner);
                 OnHookAggregateBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
-                requireNonNull(sup);
-                requireNonNull(hook);
                 try {
                     mh.invoke(sup, hook);
                 } catch (Throwable e) {
@@ -130,40 +126,6 @@ public final class ExtensionHookPerComponentGroup {
                     throw new RuntimeException(e);
                 }
             }
-        }
-    }
-
-    public static class MethodConsumer<S> {
-        final BiConsumer<S, Runnable> consumer;
-        final Class<S> key;
-        final MethodHandle mh;
-
-        /**
-         * @param key
-         * @param consumer
-         */
-        public MethodConsumer(Class<S> key, BiConsumer<S, Runnable> consumer, MethodHandle mh) {
-            this.key = requireNonNull(key);
-            this.consumer = requireNonNull(consumer, "consumer is null");
-            this.mh = requireNonNull(mh);
-
-        }
-
-        public void prepare(ContainerConfiguration cc, ArtifactInstantiationContext ic) {
-            S s = ic.use(cc, key);
-            Runnable r = new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        mh.invoke();
-                    } catch (Throwable e) {
-                        ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                        throw new RuntimeException(e);
-                    }
-                }
-            };
-            consumer.accept(s, r);
         }
     }
 

@@ -29,6 +29,7 @@ import packed.internal.util.ThrowableUtil;
  *
  */
 public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
+
     abstract T applyStaticHook(PackedAnnotatedMethodHook<?> packedAnnotatedMethodHook);
 
     public static class InvokeOnce<T> extends PackedMethodOperation<T> {

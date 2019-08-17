@@ -31,8 +31,6 @@ import app.packed.util.InvalidDeclarationException;
  * <p>
  * AnnotatedFieldHook are not safe to use by multiple threads
  **/
-// Grunden til vi faktisk gerne vil smide en IllegalStateException er for at folk ikke gemmer dem
-// Og saa proever at kalde dem senere hvor f.eks. graal ikke kan se dem...
 public interface AnnotatedFieldHook<T extends Annotation> {
 
     /**

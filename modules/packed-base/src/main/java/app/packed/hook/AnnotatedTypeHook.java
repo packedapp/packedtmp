@@ -17,7 +17,7 @@ package app.packed.hook;
 
 import java.lang.annotation.Annotation;
 
-/** A hook representing a instance whose type is annotated with a specific type. */
+/** A hook representing a instance whose type is annotated with a specific annotation type. */
 public interface AnnotatedTypeHook<T extends Annotation> {
 
     /**

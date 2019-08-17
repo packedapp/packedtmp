@@ -37,6 +37,9 @@ public interface HookApplicator<T> {
     // Ideen er egentlig at vi kompilere
     // compile() <- maybe compile, maybe only
     // Hvis den ogsaa skal virke paa statisk saa skal den vaere paa FieldAccessor
+
+    // Optimize???? giver det meningen at lave det per component instance??
+    // Meget fine grained...
     default HookApplicator<T> optimize() {
         throw new UnsupportedOperationException();
     }
