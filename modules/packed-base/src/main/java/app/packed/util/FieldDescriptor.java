@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
+import app.packed.hook.FieldOperator;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
@@ -31,6 +32,8 @@ import packed.internal.util.descriptor.InternalFieldDescriptor;
  * Unlike the {@link Field} class, this interface contains no mutable operations, so it can be freely shared.
  */
 public interface FieldDescriptor extends VariableDescriptor, Member {
+
+    <T> T apply(MethodHandles.Lookup caller, FieldOperator<T> operator, Object instance);
 
     /**
      * Returns whether or not this field is a static field.

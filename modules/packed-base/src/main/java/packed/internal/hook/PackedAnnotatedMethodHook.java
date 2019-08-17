@@ -22,11 +22,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
 
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.MethodOperation;
+import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.MethodOperator;
+import app.packed.hook.field.PackedMethodOperation;
+import app.packed.hook.field.PackedMethodRuntimeAccessor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import packed.internal.hook.ExtensionHookPerComponentGroup.MethodConsumer;
@@ -77,7 +81,7 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     }
 
     @Override
-    public MethodHandle newMethodHandle() {
+    public MethodHandle methodHandle() {
         method.setAccessible(true);
         try {
             return MethodHandles.lookup().unreflect(method);
@@ -93,12 +97,22 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         requireNonNull(consumer, "consumer is null");
         // This method should definitely not be available. for ever
         // Should we have a check configurable???
-        consumers.add(new MethodConsumer<>(key, consumer, newMethodHandle()));
+        consumers.add(new MethodConsumer<>(key, consumer, methodHandle()));
     }
 
     /** {@inheritDoc} */
     @Override
-    public <E> E accessStatic(MethodOperation<E> accessor) {
-        throw new UnsupportedOperationException();
+    public <E> E applyStatic(MethodOperator<E> operator) {
+        requireNonNull(operator, "operator is null");
+        if (!Modifier.isStatic(method.getModifiers())) {
+            throw new IllegalArgumentException("Cannot invoke this method on non-static methods " + method);
+        }
+        return operator.applyStatic(lookup, method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <E> DelayedHookOperator<E> applyDelayed(MethodOperator<E> operator) {
+        return new PackedMethodRuntimeAccessor<E>(lookup, method, (PackedMethodOperation<E>) operator);
     }
 }

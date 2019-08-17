@@ -30,7 +30,7 @@ import packed.internal.util.LookupValue;
 public final class ContainerModel implements ComponentLookup {
 
     /** A cache of values. */
-    private static final ClassValue<ContainerModel> CONTAINER_MODEL_CACHE = new ClassValue<>() {
+    private static final ClassValue<ContainerModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -130,7 +130,7 @@ public final class ContainerModel implements ComponentLookup {
      * @return a bundle class cache object for the specified bundle type
      */
     public static ContainerModel of(Class<? extends ArtifactSource> sourceType) {
-        return CONTAINER_MODEL_CACHE.get(sourceType);
+        return MODEL_CACHE.get(sourceType);
     }
 
     static final class PerLookup implements ComponentLookup {

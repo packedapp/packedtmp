@@ -23,6 +23,20 @@ package app.packed.hook2;
 // Hvor man kan saette den exact raekkefoelger.
 // Maybe just AOPInvocationManager, AOPInvoker
 // Smid den .aop
+
+/// AOP er 100% treebased....
+/// Forstaaet paa den maade at en parent definere strategien...
+/// Og saa kan et child evt. refinere den...
+
+// Maaske kan en extension checke om en given AOP annotering er tilstede.
+// HVis vi altsaa beslutter at den explicit skal vaere tilstede paa en bundle...
+
+// Men det behover den vel ikke....
+
+/// Taenker at alle der vil bruge AOP, maa bruge AopExtension...
+/// Her kan man ogsaa praecist styre raekkefoelgen..
+/// Tilfoeje debugging o.s.v.
+
 class AopResolver {
 
 }

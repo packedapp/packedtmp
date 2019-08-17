@@ -109,26 +109,26 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
             assertThat(h.annotation().value()).isEqualTo("Foo");
             assertThat(h.field().getName()).isEqualTo("foo");
-            assertThat(h.newVarHandle()).isNotNull();
+            assertThat(h.varHandle()).isNotNull();
             if (h.field().isStatic()) {
                 assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldStatic.class);
-                assertThat(h.newVarHandle().get()).isEqualTo("ABC");
+                assertThat(h.varHandle().get()).isEqualTo("ABC");
             } else {
                 assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldInstance.class);
-                assertThat(h.newVarHandle().get(new WithFieldInstance())).isEqualTo("ABC");
+                assertThat(h.varHandle().get(new WithFieldInstance())).isEqualTo("ABC");
             }
         }
 
         public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
             assertThat(h.annotation().value()).isEqualTo("Foo");
             assertThat(h.method().getName()).isEqualTo("foo");
-            assertThat(h.newMethodHandle()).isNotNull();
+            assertThat(h.methodHandle()).isNotNull();
             if (h.method().isStatic()) {
                 assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodStatic.class);
-                assertThat(h.newMethodHandle().invoke()).isEqualTo("ABC");
+                assertThat(h.methodHandle().invoke()).isEqualTo("ABC");
             } else {
                 assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodInstance.class);
-                assertThat(h.newMethodHandle().invoke(new WithMethodInstance())).isEqualTo("ABC");
+                assertThat(h.methodHandle().invoke(new WithMethodInstance())).isEqualTo("ABC");
             }
         }
     }

@@ -23,29 +23,23 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.function.Supplier;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.FieldOperator;
-import app.packed.hook.RuntimeAccessor;
-import app.packed.hook.field.InternalFieldOperation;
-import app.packed.hook.field.PackedRuntimeAccessor;
+import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.field.PackedFieldOperation;
+import app.packed.hook.field.PackedFieldRuntimeAccessor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.container.DefaultComponentConfiguration;
-import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableUtil;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /** The default implementation of {@link AnnotatedFieldHook}. */
 final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedFieldHook<T> {
 
-    /** The annotation value */
+    /** The annotation value. */
     private final T annotation;
 
     /** A cached field descriptor, is lazily created via {@link #field()}. */
@@ -71,25 +65,25 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public <E> RuntimeAccessor<E> accessAtRuntime(FieldOperator<E> mapper) {
-        return new PackedRuntimeAccessor<E>(lookup, field, (InternalFieldOperation<E>) mapper);
+    public T annotation() {
+        return annotation;
     }
 
     /** {@inheritDoc} */
     @Override
-    public <E> E accessStatic(FieldOperator<E> operator) {
-        requireNonNull(operator, "mapper is null");
+    public <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> mapper) {
+        return new PackedFieldRuntimeAccessor<E>(lookup, field, (PackedFieldOperation<E>) mapper);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <E> E applyStatic(FieldOperator<E> operator) {
+        requireNonNull(operator, "operator is null");
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on non-static field " + field);
         }
-        return operator.accessStatic(lookup, field);
+        return operator.applyStatic(lookup, field);
 
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T annotation() {
-        return annotation;
     }
 
     /** {@inheritDoc} */
@@ -131,9 +125,12 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     @Override
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
-
             throw new IllegalStateException(
                     "Fields annotated with @" + annotation.annotationType().getSimpleName() + " must not be final, field = " + StringFormatter.format(field));
+
+            // return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" +
+            // annotationType.getSimpleName()
+            // + " or make the field non-final";
         }
         return this;
     }
@@ -170,48 +167,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public Lookup lookup() {
-        return lookup;// Temporary method
-    }
-
-    public Supplier<?> newGetAccessor(ComponentConfiguration cc) {
-        MethodHandle mh = newGetter();
-        if (field().isStatic()) {
-            return new Supplier<Object>() {
-
-                @Override
-                public Object get() {
-                    try {
-                        return mh.invoke();
-                    } catch (Throwable e) {
-                        ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                        throw new UndeclaredThrowableException(e);
-                    }
-                }
-            };
-        } else {
-            DefaultComponentConfiguration dcc = (DefaultComponentConfiguration) cc;
-            if (dcc instanceof InstantiatedComponentConfiguration) {
-                Object instance = ((InstantiatedComponentConfiguration) dcc).getInstance();
-                return new Supplier<Object>() {
-
-                    @Override
-                    public Object get() {
-                        try {
-                            return mh.invoke(instance);
-                        } catch (Throwable e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                };
-            }
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle newGetter() {
+    public MethodHandle getter() {
         field.setAccessible(true);
         try {
             return lookup.unreflectGetter(field);
@@ -220,8 +176,14 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         }
     }
 
+    /** {@inheritDoc} */
     @Override
-    public MethodHandle newSetter() {
+    public Lookup lookup() {
+        return lookup;// Temporary method
+    }
+
+    @Override
+    public MethodHandle setter() {
         field.setAccessible(true);
         try {
             return lookup.unreflectSetter(field);
@@ -232,26 +194,12 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public VarHandle newVarHandle() {
+    public VarHandle varHandle() {
         field.setAccessible(true);
         try {
             return lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("Could not create a VarHandle", e);
-        }
-    }
-
-    /**
-     * Checks that an annotated field is not final.
-     * 
-     * @param field
-     *            the field to check
-     * @param annotationType
-     *            the type of annotation that forced the check
-     */
-    protected static void checkAnnotatedFieldIsNotFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        if ((Modifier.isStatic(field.getModifiers()))) {
-
         }
     }
 
@@ -279,19 +227,5 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
             Class<? extends Annotation> annotationType2) {
         return "Cannot use both @" + annotationType1.getSimpleName() + " and @" + annotationType1.getSimpleName() + " on field: " + field
                 + ", to resolve remove one of the annotations.";
-    }
-
-    /**
-     * Creates an error message for using an annotation on a final field.
-     *
-     * @param field
-     *            the field
-     * @param annotationType
-     *            the annotation
-     * @return the error message
-     */
-    protected static String fieldWithAnnotationCannotBeFinal(InternalFieldDescriptor field, Class<? extends Annotation> annotationType) {
-        return "Cannot use @" + annotationType.getSimpleName() + " on final field: " + field + ", to resolve remove @" + annotationType.getSimpleName()
-                + " or make the field non-final";
     }
 }

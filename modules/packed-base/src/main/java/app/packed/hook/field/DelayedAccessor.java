@@ -24,15 +24,31 @@ import java.util.function.BiConsumer;
  */
 public abstract class DelayedAccessor {
 
-    public static final class SidecarDelayerAccessor extends DelayedAccessor {
+    public static abstract class AbstractDelayerAccessor extends DelayedAccessor {
         public final Class<?> sidecarType;
         public final BiConsumer<?, ?> consumer;
-        public final PackedRuntimeAccessor<?> pra;
 
-        public SidecarDelayerAccessor(PackedRuntimeAccessor<?> pra, Class<?> sidecarType, BiConsumer<?, ?> consumer) {
-            this.pra = requireNonNull(pra);
+        AbstractDelayerAccessor(Class<?> sidecarType, BiConsumer<?, ?> consumer) {
             this.sidecarType = requireNonNull(sidecarType);
             this.consumer = requireNonNull(consumer);
+        }
+    }
+
+    public static final class SidecarFieldDelayerAccessor extends AbstractDelayerAccessor {
+        public final PackedFieldRuntimeAccessor<?> pra;
+
+        public SidecarFieldDelayerAccessor(PackedFieldRuntimeAccessor<?> pra, Class<?> sidecarType, BiConsumer<?, ?> consumer) {
+            super(sidecarType, consumer);
+            this.pra = requireNonNull(pra);
+        }
+    }
+
+    public static final class SidecarMethodDelayerAccessor extends AbstractDelayerAccessor {
+        public final PackedMethodRuntimeAccessor<?> pra;
+
+        public SidecarMethodDelayerAccessor(PackedMethodRuntimeAccessor<?> pra, Class<?> sidecarType, BiConsumer<?, ?> consumer) {
+            super(sidecarType, consumer);
+            this.pra = requireNonNull(pra);
         }
     }
 }

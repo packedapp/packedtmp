@@ -53,9 +53,9 @@ import packed.internal.util.StringFormatter;
 
 public final class AbstractFieldOperator<T> {
 
-    final InternalFieldOperation<T> operation;
+    final PackedFieldOperation<T> operation;
 
-    private AbstractFieldOperator(InternalFieldOperation<T> operation) {
+    private AbstractFieldOperator(PackedFieldOperation<T> operation) {
         this.operation = requireNonNull(operation);
     }
 
@@ -78,7 +78,7 @@ public final class AbstractFieldOperator<T> {
 
     public T accessStatic(MethodHandles.Lookup lookup, Field field) {
         try {
-            return operation.accessStatic(lookup, field);
+            return operation.applyStatic(lookup, field);
             // VarHandle varHandle = lookup.unreflectVarHandle(field);
             // return operation.doItStatic(varHandle, Modifier.isVolatile(field.getModifiers()));
         } catch (PackedIllegalAccessException e) {
@@ -134,7 +134,7 @@ public final class AbstractFieldOperator<T> {
     }
 
     public static AbstractFieldOperator<Object> getOnce() {
-        return new AbstractFieldOperator<>(new InternalFieldOperation.GetOnceInternalFieldOperation<>());
+        return new AbstractFieldOperator<>(new PackedFieldOperation.GetOnceInternalFieldOperation<>());
     }
 
     // A single read of the field... no need to create custom classes...
@@ -170,7 +170,7 @@ public final class AbstractFieldOperator<T> {
      * @return a field mapper that creates suppliers.
      */
     public static AbstractFieldOperator<Supplier<Object>> supplier() {
-        return new AbstractFieldOperator<>(new InternalFieldOperation.SupplierInternalFieldOperation<>());
+        return new AbstractFieldOperator<>(new PackedFieldOperation.SupplierInternalFieldOperation<>());
     }
 
     /**

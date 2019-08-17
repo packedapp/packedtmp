@@ -25,6 +25,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
+import app.packed.hook.FieldOperator;
+import app.packed.hook.field.PackedFieldOperation;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
@@ -231,5 +233,12 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
      */
     public static InternalFieldDescriptor of(FieldDescriptor descriptor) {
         return descriptor instanceof InternalFieldDescriptor ? (InternalFieldDescriptor) descriptor : of(descriptor.newField());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> T apply(Lookup caller, FieldOperator<T> operator, Object instance) {
+        requireNonNull(operator, "operator is null");
+        return ((PackedFieldOperation<T>) operator).apply(caller, field, instance);
     }
 }

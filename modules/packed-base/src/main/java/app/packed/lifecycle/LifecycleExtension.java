@@ -145,7 +145,7 @@ final class LifecycleHookAggregator implements OnHookAggregateBuilder<MethodHand
                     + StringFormatter.formatShortWithParameters(hooks.get(1).method()));
         }
         AnnotatedMethodHook<Main> h = hooks.get(0);
-        MethodHandle mh = h.newMethodHandle();
+        MethodHandle mh = h.methodHandle();
         h.onMethodReady(PackedArtifactContext.class, (a, b) -> b.run());
 
         // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main

@@ -36,16 +36,16 @@ import packed.internal.util.ThrowableUtil;
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
-final class ExtensionClassCache<T> {
+final class ExtensionModel<T> {
 
     /** A cache of values. */
-    private static final ClassValue<ExtensionClassCache<?>> CACHE = new ClassValue<>() {
+    private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected ExtensionClassCache<?> computeValue(Class<?> type) {
-            return new ExtensionClassCache(type);
+        protected ExtensionModel<?> computeValue(Class<?> type) {
+            return new ExtensionModel(type);
         }
     };
 
@@ -64,7 +64,7 @@ final class ExtensionClassCache<T> {
      * @param type
      *            the extension type
      */
-    private ExtensionClassCache(Class<? extends Extension> type) {
+    private ExtensionModel(Class<? extends Extension> type) {
         this.extensionType = requireNonNull(type);
         boolean needsPackedContainerConfiguration = false;
 
@@ -105,7 +105,7 @@ final class ExtensionClassCache<T> {
     @SuppressWarnings("unchecked")
     static <T extends Extension> T newInstance(PackedContainerConfiguration pcc, Class<T> extensionType) {
         // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get to 6 ns
-        ExtensionClassCache<T> ecc = (ExtensionClassCache<T>) CACHE.get(extensionType);
+        ExtensionModel<T> ecc = (ExtensionModel<T>) CACHE.get(extensionType);
         try {
             if (ecc.needsPackedContainerConfiguration) {
                 return (T) ecc.constructor.invoke(pcc);

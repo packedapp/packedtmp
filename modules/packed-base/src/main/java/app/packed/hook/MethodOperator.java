@@ -15,16 +15,32 @@
  */
 package app.packed.hook;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Method;
+
+import app.packed.hook.field.PackedMethodOperation;
+
 /**
  *
  */
 
 // Foerst og fremmest typen... //maaske om den skal vaere async??
 
-// Styring af exceptions????
-public final class MethodOperation<T> {
+// Styring af exceptions???? Version 2
+/// Men ja, mener helt at det er noget man goer i operatoren...
+/// Alt hvad der ikke skal tilpasses en runtime...
+public interface MethodOperator<T> {
 
-    public static MethodOperation<Runnable> runnable() {
-        throw new UnsupportedOperationException();
+    static <T> MethodOperator<Object> invokeOnce() {
+        return new PackedMethodOperation.InvokeOnce<>();
     }
+
+    static MethodOperator<Runnable> runnable() {
+        return new PackedMethodOperation.InvokeOnce<>();
+    }
+
+    T invoke(MethodHandle mh);
+
+    T applyStatic(Lookup lookup, Method method);
 }

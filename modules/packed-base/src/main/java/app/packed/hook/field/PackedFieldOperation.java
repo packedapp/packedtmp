@@ -32,25 +32,40 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public abstract class InternalFieldOperation<T> implements FieldOperator<T> {
+public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
+
+    @Override
+    public abstract T applyStatic(MethodHandles.Lookup lookup, Field field);
 
     public void checkAccessMode(AccessMode accessMode) {
         // SET does not make sense for GetOnce
     }
 
-    @Override
-    public abstract T accessStatic(MethodHandles.Lookup lookup, Field field);
+    public abstract T doItStatic(VarHandle handle, boolean isVolatile);
 
     public abstract T invokeGetter(MethodHandle mh);
 
-    public abstract T doItStatic(VarHandle handle, boolean isVolatile);
-
-    public static class GetOnceInternalFieldOperation<T> extends InternalFieldOperation<T> {
+    public static class GetOnceInternalFieldOperation<T> extends PackedFieldOperation<T> {
         Class<?> fieldType;
 
         /** {@inheritDoc} */
         @Override
-        public T accessStatic(Lookup lookup, Field field) {
+        public T apply(Lookup lookup, Field field, Object instance) {
+            MethodHandle mh;
+            try {
+                mh = lookup.unreflectGetter(field);
+            } catch (IllegalAccessException e) {
+                throw new PackedIllegalAccessException(e);
+            }
+            mh = mh.bindTo(instance);
+            // Den her method handle burde jo kunne caches...
+
+            return invokeGetter(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T applyStatic(Lookup lookup, Field field) {
             MethodHandle mh;
             try {
                 mh = lookup.unreflectGetter(field);
@@ -106,12 +121,12 @@ public abstract class InternalFieldOperation<T> implements FieldOperator<T> {
         }
     }
 
-    public static class SupplierInternalFieldOperation<T> extends InternalFieldOperation<Supplier<T>> {
+    public static class SupplierInternalFieldOperation<T> extends PackedFieldOperation<Supplier<T>> {
         Class<?> fieldType;
 
         /** {@inheritDoc} */
         @Override
-        public Supplier<T> accessStatic(Lookup lookup, Field field) {
+        public Supplier<T> applyStatic(Lookup lookup, Field field) {
             MethodHandle mh;
             try {
                 mh = lookup.unreflectGetter(field);
@@ -130,6 +145,19 @@ public abstract class InternalFieldOperation<T> implements FieldOperator<T> {
         /** {@inheritDoc} */
         @Override
         public Supplier<T> invokeGetter(MethodHandle mh) {
+            return new StaticSup<T>(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Supplier<T> apply(Lookup lookup, Field field, Object instance) {
+            MethodHandle mh;
+            try {
+                mh = lookup.unreflectGetter(field);
+            } catch (IllegalAccessException e) {
+                throw new PackedIllegalAccessException(e);
+            }
+            mh = mh.bindTo(instance);
             return new StaticSup<T>(mh);
         }
     }

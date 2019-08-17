@@ -19,37 +19,37 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.hook.RuntimeAccessor;
+import app.packed.hook.DelayedHookOperator;
 import app.packed.util.IllegalAccessRuntimeException;
 import packed.internal.container.AbstractComponentConfiguration;
 
 /**
  *
  */
-public class PackedRuntimeAccessor<T> implements RuntimeAccessor<T> {
+public class PackedMethodRuntimeAccessor<T> implements DelayedHookOperator<T> {
 
-    public final InternalFieldOperation<T> afo;
+    public final PackedMethodOperation<T> afo;
 
     public final MethodHandle mh;
 
     public final MethodHandles.Lookup lookup;
 
-    public final Field field;
+    public final Method method;
 
-    public PackedRuntimeAccessor(MethodHandles.Lookup lookup, Field field, InternalFieldOperation<T> afo) {
+    public PackedMethodRuntimeAccessor(MethodHandles.Lookup lookup, Method method, PackedMethodOperation<T> afo) {
         this.afo = requireNonNull(afo);
         try {
-            mh = lookup.unreflectGetter(field);
+            mh = lookup.unreflect(method);
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("foo", e);
         }
         this.lookup = lookup;
-        this.field = field;
+        this.method = method;
     }
 
     /** {@inheritDoc} */
@@ -64,6 +64,6 @@ public class PackedRuntimeAccessor<T> implements RuntimeAccessor<T> {
         // TODO check instance component if instance field...
         AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
         pcc.checkConfigurable();
-        pcc.del.add(new DelayedAccessor.SidecarDelayerAccessor(this, sidecarType, consumer));
+        pcc.del.add(new DelayedAccessor.SidecarMethodDelayerAccessor(this, sidecarType, consumer));
     }
 }

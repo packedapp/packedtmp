@@ -28,26 +28,29 @@ import app.packed.util.InvalidDeclarationException;
 /** A hook representing a field annotated with a specific type. */
 public interface AnnotatedFieldHook<T extends Annotation> {
 
-    <E> RuntimeAccessor<E> accessAtRuntime(FieldOperator<E> operator);
-
-    /**
-     * 
-     * @param <E>
-     * @param accessor
-     * @return stuff
-     * @throws UnsupportedOperationException
-     *             if the underlying field is not static
-     * @throws IllegalStateException
-     *             if invoked outside of building an aggregate
-     */
-    <E> E accessStatic(FieldOperator<E> accessor);
-
     /**
      * Returns the annotation value.
      *
      * @return the annotation value
      */
     T annotation();
+
+    // Well it also works for instances
+    <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> operator);
+
+    /**
+     * Applies the specified field operator to the underlying static field.
+     * 
+     * @param <E>
+     *            the type
+     * @param operator
+     * @return the operator finished value
+     * @throws UnsupportedOperationException
+     *             if the underlying field is not a static field
+     * @throws IllegalStateException
+     *             if invoked outside of building an aggregate
+     */
+    <E> E applyStatic(FieldOperator<E> operator);
 
     // Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
     // Move these to descriptor????
@@ -108,40 +111,39 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     FieldDescriptor field();
 
-    Lookup lookup(); // TODO remove this method
-
     /**
-     * Creates a method handle giving read access to the underlying field. If the underlying field is an instance field. The
-     * instance must be explicitly provided by users of this method.
+     * Returns a method handle giving read access to the underlying field. The method handle is unbound if the underlying
+     * field is an instance field.
      * 
-     * @return a new method handle with read access
+     * @return a method handle for the underlying field with read access
      * @throws IllegalAccessRuntimeException
      *             if a method handle could not be created
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
-    MethodHandle newGetter();
+    MethodHandle getter();
+
+    Lookup lookup(); // TODO remove this method
 
     /**
-     * Creates a method handle giving read access to the underlying field. If the underlying field is an instance field. The
-     * instance must be explicitly provided by users of this method.
+     * Returns a method handle giving read access to the underlying field. The method handle is unbound if the underlying
+     * field is an instance field.
      * 
-     * @return a new method handle with read access
+     * @return a method handle for the underlying field with write access
      * @throws IllegalAccessRuntimeException
      *             if a method handle could not be created, for example, if the underlying field is final
      * @see Lookup#unreflectSetter(java.lang.reflect.Field)
      */
-    MethodHandle newSetter();
+    MethodHandle setter();
 
     /**
-     * Creates a new {@link VarHandle} for the underlying field. If the underlying field is an instance field. The instance
-     * must be explicitly provided by the user.
+     * Returns a {@link VarHandle} for the underlying field.
      * 
-     * @return a new VarHandle for the underlying field
+     * @return a VarHandle for the underlying field
      * @throws IllegalAccessRuntimeException
-     *             if a var handle could not be created
+     *             if the handle could not be created
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
-    VarHandle newVarHandle();
+    VarHandle varHandle();
 }
 
 // Check the type

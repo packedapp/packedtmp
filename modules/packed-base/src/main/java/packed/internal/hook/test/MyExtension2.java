@@ -15,8 +15,6 @@
  */
 package packed.internal.hook.test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 import app.packed.artifact.ArtifactInstantiationContext;
@@ -24,7 +22,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.DelayedHookOperator;
 import app.packed.hook.FieldOperator;
 import app.packed.hook.MethodOperator;
 import app.packed.hook.OnHook;
@@ -33,22 +30,22 @@ import app.packed.hook.OnHookAggregateBuilder;
 /**
  *
  */
-public class MyExtension extends Extension {
+public class MyExtension2 extends Extension {
 
     @OnHook(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
-        for (DelayedHookOperator<Supplier<Object>> ra : val.rars) {
-            ra.onReady(cc, MySidecar.class, (s, o) -> s.foo(o));
-        }
-
-        for (DelayedHookOperator<Object> ra : val.methods) {
-            ra.onReady(cc, MySidecar.class, (s, o) -> s.foom(o));
-        }
+        val.rars.readyAll(cc, MySidecar.class, (s, o) -> s.foo(o));
         System.out.println("Saa godt da");
     }
 
     public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyA> h) {
         // ignore
+    }
+
+    // @OnHook
+    public void foo(ComponentConfiguration cc, AnnotatedFieldHook<MyA> h) throws Throwable {
+        Supplier<?> ss = h.applyStatic(FieldOperator.supplier());
+        System.out.println(ss.get());
     }
 
     /** {@inheritDoc} */
@@ -59,18 +56,14 @@ public class MyExtension extends Extension {
 
     public static class Agg implements OnHookAggregateBuilder<AXA> {
         private int sum;
-        private final ArrayList<DelayedHookOperator<Supplier<Object>>> rar = new ArrayList<>();
 
-        private final ArrayList<DelayedHookOperator<Object>> methods = new ArrayList<>();
+        private final RuntimeAccessorList<Supplier<Object>> ral = new RuntimeAccessorList<>();
 
         public void foo(AnnotatedMethodHook<MyA> h) {
             sum += h.annotation().value();
-            methods.add(h.applyDelayed(MethodOperator.invokeOnce()));
-
             if (h.method().isStatic()) {
-                // System.out.println(h.applyStatic(MethodOperator.invokeOnce()));
-                // Runnable val = h.applyStatic(MethodOperator.runnable());
-                // val.run();
+                Runnable val = h.applyStatic(MethodOperator.runnable());
+                val.run();
             }
         }
 
@@ -79,29 +72,28 @@ public class MyExtension extends Extension {
             if (h.field().isStatic()) {
                 Supplier<Object> val = h.applyStatic(FieldOperator.supplier());
                 System.out.println("VAL = " + val.get());
-                System.out.println("VAL = " + val.get());
             }
-
-            DelayedHookOperator<Supplier<Object>> ra = h.applyDelayed(FieldOperator.supplier());
-            rar.add(ra);
+            ral.add(h, FieldOperator.supplier());
         }
 
         /** {@inheritDoc} */
         @Override
         public AXA build() {
-            return new AXA(this);
+            return new AXA(sum, ral);
         }
     }
 
     static class AXA {
         final int val;
-        final List<DelayedHookOperator<Supplier<Object>>> rars;
-        final List<DelayedHookOperator<Object>> methods;
+        final RuntimeAccessorList<Supplier<Object>> rars;
 
-        public AXA(Agg agg) {
-            this.val = agg.sum;
-            this.rars = agg.rar;
-            this.methods = agg.methods;
+        /**
+         * @param val
+         * @param rars
+         */
+        public AXA(int val, RuntimeAccessorList<Supplier<Object>> rars) {
+            this.val = val;
+            this.rars = rars;
         }
     }
 
@@ -109,10 +101,6 @@ public class MyExtension extends Extension {
         public void foo(Supplier<Object> o) {
             System.out.println("Genius : " + o.get());
             System.out.println("Genius : " + o.get());
-        }
-
-        public void foom(Object o) {
-            System.out.println("Genius : " + o);
         }
     }
 }

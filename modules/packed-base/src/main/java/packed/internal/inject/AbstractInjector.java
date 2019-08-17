@@ -29,7 +29,7 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.annotations.AtDependable;
-import packed.internal.componentcache.deprecated.ServiceClassDescriptor;
+import packed.internal.container.model.deprecated.ServiceClassDescriptor;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FieldFunctionHandle;
 

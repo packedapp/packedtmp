@@ -39,5 +39,10 @@ public class Ddd extends AppBundle {
 
         @MyA(2132)
         public String ss = "ffdddf";
+
+        @MyA(1254)
+        public void foo() {
+            System.out.println("INSTANCE FOO!");
+        }
     }
 }

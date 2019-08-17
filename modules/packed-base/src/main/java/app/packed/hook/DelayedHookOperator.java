@@ -27,12 +27,13 @@ import app.packed.component.ComponentConfiguration;
 // Maybe take sidecar when creating this???
 //// Then we can check that the sidecar is available.. well
 
-public interface RuntimeAccessor<T> {
+// RuntimeMemberOperator
+public interface DelayedHookOperator<T> {
 
     // Ideen er egentlig at vi kompilere
     // compile() <- maybe compile, maybe only
     // Hvis den ogsaa skal virke paa statisk saa skal den vaere paa FieldAccessor
-    default RuntimeAccessor<T> optimize() {
+    default DelayedHookOperator<T> optimize() {
         throw new UnsupportedOperationException();
     }
 

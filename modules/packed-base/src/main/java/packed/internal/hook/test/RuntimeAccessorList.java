@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook.usage;
+package packed.internal.hook.test;
+
+import java.util.function.BiConsumer;
+
+import app.packed.component.ComponentConfiguration;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.FieldOperator;
 
 /**
  *
  */
-// SKal vi supportere dette?
-// I saa fald bruger man extension'en paa build time og sidecar'en paa run time
-public class OnBothExtensionAndSidecar {
+public class RuntimeAccessorList<T> {
 
+    public <S> void readyAll(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
+
+    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, FieldOperator<T> operator) {
+        return this;
+    }
 }

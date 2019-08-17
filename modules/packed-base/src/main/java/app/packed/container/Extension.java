@@ -108,7 +108,7 @@ public abstract class Extension {
      * Im thinking about throwing ISE on instantiation....
      * 
      * @throws IllegalStateException
-     *             if invoked from constructor or {@link #onPrepareContainerInstantiate(ArtifactInstantiationContext)}.
+     *             if invoked from constructor or {@link #onPrepareContainerInstantiation(ArtifactInstantiationContext)}.
      * @return the build context
      */
     protected final ArtifactBuildContext buildContext() {
@@ -198,7 +198,7 @@ public abstract class Extension {
      * @param context
      *            an instantiation context object
      */
-    public void onPrepareContainerInstantiate(ArtifactInstantiationContext context) {}
+    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
 
     final void runWithLookup(Lookup lookup, Runnable runnable) {
         // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....

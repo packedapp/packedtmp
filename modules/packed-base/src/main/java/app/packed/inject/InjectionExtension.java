@@ -219,7 +219,7 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    public void onPrepareContainerInstantiate(ArtifactInstantiationContext context) {
+    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         context.put(configuration, builder.publicInjector); // Taken by PackedContainer
     }
 

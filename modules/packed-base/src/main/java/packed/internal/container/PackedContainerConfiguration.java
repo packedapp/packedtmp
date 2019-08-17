@@ -40,7 +40,9 @@ import app.packed.container.Extension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.hook.field.DelayedAccessor;
-import app.packed.hook.field.DelayedAccessor.SidecarDelayerAccessor;
+import app.packed.hook.field.DelayedAccessor.AbstractDelayerAccessor;
+import app.packed.hook.field.DelayedAccessor.SidecarFieldDelayerAccessor;
+import app.packed.hook.field.DelayedAccessor.SidecarMethodDelayerAccessor;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
@@ -181,7 +183,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     void extensionsPrepareInstantiation(ArtifactInstantiationContext ic) {
         for (Extension e : extensions.values()) {
-            e.onPrepareContainerInstantiate(ic);
+            e.onPrepareContainerInstantiation(ic);
         }
         super.extensionsPrepareInstantiation(ic);
     }
@@ -280,15 +282,27 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 }
                 if (!a.del.isEmpty()) {
                     for (DelayedAccessor da : a.del) {
-                        SidecarDelayerAccessor sda = (SidecarDelayerAccessor) da;
-                        Object sidecar = ic.get(this, sda.sidecarType);
-                        MethodHandle mh = sda.pra.mh;
-                        if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-                            InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
-                            mh = mh.bindTo(icc.instance);
+                        AbstractDelayerAccessor ada = (AbstractDelayerAccessor) da;
+                        Object sidecar = ic.get(this, ada.sidecarType);
+                        if (ada instanceof SidecarFieldDelayerAccessor) {
+                            SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) ada;
+                            MethodHandle mh = sda.pra.mh;
+                            if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
+                                InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
+                                mh = mh.bindTo(icc.instance);
+                            }
+                            Object ig = sda.pra.afo.invokeGetter(mh);
+                            ((BiConsumer) sda.consumer).accept(sidecar, ig);
+                        } else {
+                            SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) ada;
+                            MethodHandle mh = sda.pra.mh;
+                            if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
+                                InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
+                                mh = mh.bindTo(icc.instance);
+                            }
+                            Object ig = sda.pra.afo.invoke(mh);
+                            ((BiConsumer) sda.consumer).accept(sidecar, ig);
                         }
-                        Object ig = sda.pra.afo.invokeGetter(mh);
-                        ((BiConsumer) sda.consumer).accept(sidecar, ig);
                     }
                 }
             }
@@ -344,7 +358,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             // We do not use computeIfAbsent because extensions might install other extensions.
             // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
             checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
-            ce = ExtensionClassCache.newInstance(this, extensionType);
+            ce = ExtensionModel.newInstance(this, extensionType);
             extensions.put(extensionType, ce); // make sure we add it here before calling Extension#ExtensionAdded
             AppPackedContainerSupport.invoke().initializeExtension(ce, this);
         }

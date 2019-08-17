@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.BiConsumer;
 
-import app.packed.hook2.PreparedLambda;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 
@@ -33,6 +32,10 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * @return the annotation value
      */
     T annotation();
+
+    <E> E applyStatic(MethodOperator<E> accessor);
+
+    <E> DelayedHookOperator<E> applyDelayed(MethodOperator<E> operator);
 
     Lookup lookup(); // TODO remove this method when possible...
 
@@ -52,18 +55,12 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      *             if a method handle could not be created
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */
-    // Raw MethodHandle....
-    MethodHandle newMethodHandle();
+    MethodHandle methodHandle();
 
     // We need to decide upon what should happen before the consumer is executed....
     // BEcause
+    // Definitely deprecated soon...
     <S> void onMethodReady(Class<S> key, BiConsumer<S, Runnable> consumer);
-
-    <E> E accessStatic(MethodOperation<E> accessor);
-
-    default PreparedLambda<Runnable> newRunnable() {
-        throw new UnsupportedOperationException();
-    }
 
     // checkNotOptional()
     // Er taenkt til en optional componenter.... f.eks. kan man ikke registere @Provide metoder, men gerne @Inject metoder
@@ -72,9 +69,6 @@ public interface AnnotatedMethodHook<T extends Annotation> {
 }
 // Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
 /// Vi kan vel bare wrappe MethodHandles....
-
-// Problemet er her den callback vi skal smide tilbage paa
-//// Vi kan require en Service...
 
 // disableAOP()
 // enableInjection()

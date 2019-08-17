@@ -26,22 +26,28 @@ import app.packed.hook.FieldOperator;
  */
 public class Fff {
 
+    public String f = "sss";
+
     public static String foo = "DDD";
 
     public static void main(String[] args) throws Throwable {
 
         Field f = Fff.class.getDeclaredField("foo");
+        Field fi = Fff.class.getDeclaredField("f");
 
         FieldOperator<Object> fo = FieldOperator.getOnce();
+        System.out.println(fo.applyStatic(MethodHandles.lookup(), f));
+        System.out.println(fo.apply(MethodHandles.lookup(), fi, new Fff()));
+
         FieldOperator<Supplier<Object>> fos = FieldOperator.supplier();
 
-        System.out.println(fo.accessStatic(MethodHandles.lookup(), f));
-
-        Supplier<Object> s = fos.accessStatic(MethodHandles.lookup(), f);
+        Supplier<Object> s = fos.applyStatic(MethodHandles.lookup(), f);
         System.out.println(s.get());
         foo = "AAA";
         System.out.println(s.get());
+
+        s = fos.apply(MethodHandles.lookup(), fi, new Fff());
         System.out.println(s.get());
-        // fo.accessStatic(h)
+        System.out.println(s.get());
     }
 }

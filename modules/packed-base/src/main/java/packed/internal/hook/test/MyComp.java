@@ -24,5 +24,7 @@ public class MyComp {
     public static String s = "ddddd";
 
     @MyA(1254)
-    public void foo() {}
+    public static void foo() {
+        System.out.println("EXECUTED FOO!");
+    }
 }

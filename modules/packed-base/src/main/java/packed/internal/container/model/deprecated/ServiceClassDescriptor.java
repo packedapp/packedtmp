@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.componentcache.deprecated;
+package packed.internal.container.model.deprecated;
 
 import java.lang.invoke.MethodHandles;
 

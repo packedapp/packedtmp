@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
-import app.packed.hook.field.InternalFieldOperation;
+import app.packed.hook.field.PackedFieldOperation;
 import app.packed.util.TypeLiteral;
 
 /**
@@ -27,14 +27,26 @@ import app.packed.util.TypeLiteral;
  * <p>
  * This interface is not meant to be
  */
+// An operator that when applied ....
 public interface FieldOperator<T> {
 
-    T accessStatic(MethodHandles.Lookup lookup, Field field);
+    T apply(MethodHandles.Lookup lookup, Field field, Object instance);
+
+    T applyStatic(MethodHandles.Lookup lookup, Field field);
 
     static FieldOperator<Object> getOnce() {
-        return new InternalFieldOperation.GetOnceInternalFieldOperation<>();
+        return new PackedFieldOperation.GetOnceInternalFieldOperation<>();
     }
 
+    /**
+     * Returns a field operator that reads a field once.
+     * 
+     * @param <E>
+     *            the type of field (value to get)
+     * @param fieldType
+     *            the type of field
+     * @return the new field operator
+     */
     @SuppressWarnings("unchecked")
     static <E> FieldOperator<E> getOnce(Class<E> fieldType) {
         return (FieldOperator<E>) getOnce();
@@ -60,6 +72,6 @@ public interface FieldOperator<T> {
      * @return a field mapper that creates suppliers.
      */
     static FieldOperator<Supplier<Object>> supplier() {
-        return new InternalFieldOperation.SupplierInternalFieldOperation<>();
+        return new PackedFieldOperation.SupplierInternalFieldOperation<>();
     }
 }

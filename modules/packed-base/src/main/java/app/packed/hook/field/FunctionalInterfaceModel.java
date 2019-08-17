@@ -20,21 +20,21 @@ import java.lang.invoke.MethodHandle;
 /**
  *
  */
-public final class FunctionalInterfaceDescriptor {
+public final class FunctionalInterfaceModel {
 
     /** A cache of functional interface descriptors. */
-    static final ClassValue<FunctionalInterfaceDescriptor> DESCRIPTOR_CACHE = new ClassValue<>() {
+    static final ClassValue<FunctionalInterfaceModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected FunctionalInterfaceDescriptor computeValue(Class<?> functionalInterface) {
-            return new FunctionalInterfaceDescriptor(functionalInterface);
+        protected FunctionalInterfaceModel computeValue(Class<?> functionalInterface) {
+            return new FunctionalInterfaceModel(functionalInterface);
         }
     };
 
-    private FunctionalInterfaceDescriptor(Class<?> clazz) {
+    private FunctionalInterfaceModel(Class<?> clazz) {
         // Ahh.. for helvede...
-        // Vi bliver noedt til at supportere gemme dem per extension....
+        // Vi bliver noedt til at supportere gemme dem per extension model....
         // eftersom en extension maaske har adgang til et hemmeligt interface...
         // Det er ivirkeligheden nok den der laver FieldOperatoren...
 

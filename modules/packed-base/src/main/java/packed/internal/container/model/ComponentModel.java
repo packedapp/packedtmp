@@ -75,6 +75,10 @@ public final class ComponentModel {
         return componentConfiguration;
     }
 
+    public void print() {
+        System.out.println("ComponentType = " + componentType + ", callbacks = " + Stream.of(extensionGroups).mapToInt(e -> e.getNumberOfCallbacks()).sum());
+    }
+
     @SuppressWarnings("rawtypes")
     public void process(PackedContainerConfiguration cc, ArtifactInstantiationContext ic) {
         for (ExtensionHookPerComponentGroup d : extensionGroups) {
@@ -82,10 +86,6 @@ public final class ComponentModel {
                 mc.prepare(cc, ic);
             }
         }
-    }
-
-    public void print() {
-        System.out.println("ComponentType = " + componentType + ", callbacks = " + Stream.of(extensionGroups).mapToInt(e -> e.getNumberOfCallbacks()).sum());
     }
 
     /**

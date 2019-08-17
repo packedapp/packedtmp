@@ -126,6 +126,8 @@ public final class ExtensionHookPerComponentGroup {
                 // The method handle refers to an aggregator object.
                 OnHookAggregatorDescriptor a = OnHookAggregatorDescriptor.get((Class<? extends OnHookAggregateBuilder<?>>) owner);
                 OnHookAggregateBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
+                requireNonNull(sup);
+                requireNonNull(hook);
                 try {
                     mh.invoke(sup, hook);
                 } catch (Throwable e) {
