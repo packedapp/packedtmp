@@ -31,6 +31,8 @@ import app.packed.util.InvalidDeclarationException;
  * <p>
  * AnnotatedFieldHook are not safe to use by multiple threads
  **/
+// Grunden til vi faktisk gerne vil smide en IllegalStateException er for at folk ikke gemmer dem
+// Og saa proever at kalde dem senere hvor f.eks. graal ikke kan se dem...
 public interface AnnotatedFieldHook<T extends Annotation> {
 
     /**
@@ -40,8 +42,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     T annotation();
 
-    // Well it also works for instances
-    <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> operator);
+    <E> HookApplicator<E> applicator(FieldOperator<E> operator);
 
     /**
      * Applies the specified field operator to the underlying static field.

@@ -23,14 +23,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.HookApplicator;
 import packed.internal.container.AbstractComponentConfiguration;
 import packed.internal.hook.PackedFieldOperation;
 
 /**
  *
  */
-public class PackedFieldRuntimeAccessor<T> implements DelayedHookOperator<T> {
+public class PackedFieldRuntimeAccessor<T> implements HookApplicator<T> {
 
     public final PackedFieldOperation<T> afo;
 

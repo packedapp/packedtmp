@@ -28,12 +28,16 @@ import app.packed.component.ComponentConfiguration;
 //// Then we can check that the sidecar is available.. well
 
 // RuntimeMemberOperator
-public interface DelayedHookOperator<T> {
+public interface HookApplicator<T> {
+    // Well it also works for instances
 
+    // Kan maaske have nogle lifecycles here?????
+    // Vi har jo ligesom brug sagt hvad det er vi vil have....
+    // Saa descriptoren er blevet lavet...
     // Ideen er egentlig at vi kompilere
     // compile() <- maybe compile, maybe only
     // Hvis den ogsaa skal virke paa statisk saa skal den vaere paa FieldAccessor
-    default DelayedHookOperator<T> optimize() {
+    default HookApplicator<T> optimize() {
         throw new UnsupportedOperationException();
     }
 
@@ -42,5 +46,6 @@ public interface DelayedHookOperator<T> {
 
     // Sidecar kan ikke vaere i FieldAccessor, fordi den ikke giver mening for statiske felter
     // Vi skal hellere ikke have en version kun til extension
+
     <S> void onReady(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
 }

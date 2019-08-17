@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.HookApplicator;
 import app.packed.hook.MethodOperator;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
@@ -64,7 +64,7 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
 
     /** {@inheritDoc} */
     @Override
-    public <E> DelayedHookOperator<E> applyDelayed(MethodOperator<E> operator) {
+    public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
         return new PackedMethodRuntimeAccessor<E>(methodHandle(), method, (PackedMethodOperation<E>) operator);
     }
 

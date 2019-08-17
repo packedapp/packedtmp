@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.HookApplicator;
 import app.packed.hook.MethodOperator;
 import app.packed.hook.OnHook;
 import app.packed.hook.OnHookAggregateBuilder;
@@ -134,7 +134,7 @@ class LifecycleSidecar {
 final class LifecycleHookAggregator implements OnHookAggregateBuilder<LifecycleHookAggregator> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
-    DelayedHookOperator<Runnable> applyDelayed;
+    HookApplicator<Runnable> applyDelayed;
 
     void add(AnnotatedMethodHook<Main> hook) {
         hooks.add(hook);
@@ -151,7 +151,7 @@ final class LifecycleHookAggregator implements OnHookAggregateBuilder<LifecycleH
         }
         AnnotatedMethodHook<Main> h = hooks.get(0);
 
-        applyDelayed = h.applyDelayed(MethodOperator.runnable());
+        applyDelayed = h.applicator(MethodOperator.runnable());
 
         // Vi skal bruge denne her fordi, vi bliver noedt til at checke at vi ikke har 2 komponenter med @main
         return this;

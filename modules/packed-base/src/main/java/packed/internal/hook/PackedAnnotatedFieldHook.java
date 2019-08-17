@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.HookApplicator;
 import app.packed.hook.FieldOperator;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
@@ -93,7 +93,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public <E> DelayedHookOperator<E> applyDelayed(FieldOperator<E> operator) {
+    public <E> HookApplicator<E> applicator(FieldOperator<E> operator) {
         requireNonNull(operator, "operator is null");
         PackedFieldOperation<E> o = (PackedFieldOperation<E>) operator;
         return new PackedFieldRuntimeAccessor<E>(of(o), field, (PackedFieldOperation<E>) operator);

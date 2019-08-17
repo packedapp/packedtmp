@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.HookApplicator;
 import app.packed.hook.FieldOperator;
 import app.packed.hook.MethodOperator;
 import app.packed.hook.OnHook;
@@ -37,11 +37,11 @@ public class MyExtension extends Extension {
 
     @OnHook(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
-        for (DelayedHookOperator<Supplier<Object>> ra : val.rars) {
+        for (HookApplicator<Supplier<Object>> ra : val.rars) {
             ra.onReady(cc, MySidecar.class, (s, o) -> s.foo(o));
         }
 
-        for (DelayedHookOperator<Object> ra : val.methods) {
+        for (HookApplicator<Object> ra : val.methods) {
             ra.onReady(cc, MySidecar.class, (s, o) -> s.foom(o));
         }
         System.out.println("Saa godt da");
@@ -59,13 +59,13 @@ public class MyExtension extends Extension {
 
     public static class Agg implements OnHookAggregateBuilder<AXA> {
         private int sum;
-        private final ArrayList<DelayedHookOperator<Supplier<Object>>> rar = new ArrayList<>();
+        private final ArrayList<HookApplicator<Supplier<Object>>> rar = new ArrayList<>();
 
-        private final ArrayList<DelayedHookOperator<Object>> methods = new ArrayList<>();
+        private final ArrayList<HookApplicator<Object>> methods = new ArrayList<>();
 
         public void foo(AnnotatedMethodHook<MyA> h) {
             sum += h.annotation().value();
-            methods.add(h.applyDelayed(MethodOperator.invokeOnce()));
+            methods.add(h.applicator(MethodOperator.invokeOnce()));
 
             if (h.method().isStatic()) {
                 // System.out.println(h.applyStatic(MethodOperator.invokeOnce()));
@@ -82,7 +82,7 @@ public class MyExtension extends Extension {
                 System.out.println("VAL = " + val.get());
             }
 
-            DelayedHookOperator<Supplier<Object>> ra = h.applyDelayed(FieldOperator.supplier());
+            HookApplicator<Supplier<Object>> ra = h.applicator(FieldOperator.supplier());
             rar.add(ra);
         }
 
@@ -95,8 +95,8 @@ public class MyExtension extends Extension {
 
     static class AXA {
         final int val;
-        final List<DelayedHookOperator<Supplier<Object>>> rars;
-        final List<DelayedHookOperator<Object>> methods;
+        final List<HookApplicator<Supplier<Object>>> rars;
+        final List<HookApplicator<Object>> methods;
 
         public AXA(Agg agg) {
             this.val = agg.sum;

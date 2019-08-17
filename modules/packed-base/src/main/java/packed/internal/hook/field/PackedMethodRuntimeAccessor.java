@@ -23,14 +23,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.hook.DelayedHookOperator;
+import app.packed.hook.HookApplicator;
 import packed.internal.container.AbstractComponentConfiguration;
 import packed.internal.hook.PackedMethodOperation;
 
 /**
  *
  */
-public class PackedMethodRuntimeAccessor<T> implements DelayedHookOperator<T> {
+public class PackedMethodRuntimeAccessor<T> implements HookApplicator<T> {
 
     public final PackedMethodOperation<T> afo;
 

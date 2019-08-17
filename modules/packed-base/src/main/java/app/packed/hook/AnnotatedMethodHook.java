@@ -32,7 +32,7 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      */
     T annotation();
 
-    <E> DelayedHookOperator<E> applyDelayed(MethodOperator<E> operator);
+    <E> HookApplicator<E> applicator(MethodOperator<E> operator);
 
     /**
      * Applies the specified method operator to the underlying static method.
