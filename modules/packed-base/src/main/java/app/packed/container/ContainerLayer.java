@@ -59,7 +59,7 @@ import java.util.Set;
 // useLayer(ContainerLayer cl, LayerOptions...)
 // useLayer(MVC.class, WarnOnIllegal)
 
-// Supportere vi layers in layers????
+// Supportere vi layers in layers???? Det syntes jeg vi skal
 // https://github.com/sensiolabs-de/deptrac
 public interface ContainerLayer {
 

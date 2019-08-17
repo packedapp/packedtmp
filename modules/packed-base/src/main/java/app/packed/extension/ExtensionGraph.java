@@ -20,7 +20,7 @@ package app.packed.extension;
  */
 
 /// Ved ikke omm vi behoever den her
-public class ExtensionGraph<E extends Extension> {
+class ExtensionGraph<E extends Extension> {
 
     // Alle extension fra en
 }

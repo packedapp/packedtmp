@@ -44,7 +44,7 @@ import app.packed.artifact.ArtifactSidecar;
 // ExtensionTree
 
 // Ligesom Extension bliver der ogsaa noedt til at vaere en opdeling her... i build time, instantiation time, og runtime
-public abstract class ExtensionArtifactController<E extends Extension, S extends ArtifactSidecar> {
+abstract class ExtensionArtifactController<E extends Extension, S extends ArtifactSidecar> {
 
     /**
      * Returns the first sidecar (if any) from the immediately parent artifact

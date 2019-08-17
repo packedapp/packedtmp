@@ -226,6 +226,9 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     public MethodHandle setter() {
         MethodHandle s = setter;
         if (s == null) {
+            if (Modifier.isFinal(field.getModifiers())) {
+                throw new UnsupportedOperationException("Field is final, cannot create a setter for the field, field = " + field);
+            }
             setter = s = lookup.unreflectSetter(field);
         }
         return s;

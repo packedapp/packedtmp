@@ -58,6 +58,7 @@ public interface ComponentLookup {
     }
 
     default MethodHandle unreflectSetter(Field field) {
+
         try {
             Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
             return l.unreflectSetter(field);

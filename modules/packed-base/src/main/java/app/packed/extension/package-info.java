@@ -13,26 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.app.packed.inject2;
-
-import app.packed.inject.Injector;
 
 /**
- *
+ * Provides classes needed to write extensions.
  */
-
-// Why we need it...
-
-// To get all services
-
-// We need a clear separation between the outfacing injector and the internal injector...
-
-// Replace with ContainerContext....
-
-// Containeren har e
-interface InjectorContext extends Injector {
-
-    Injector publicInjector();// Hmm bliver svaer at extende mht til App
-
-    // I don't want to call it services.....
-}
+package app.packed.extension;

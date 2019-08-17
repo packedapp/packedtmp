@@ -52,6 +52,10 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * @return the result from applying the operator to the static field
      * @throws UnsupportedOperationException
      *             if the underlying field is not a static field
+     * @throws IllegalAccessRuntimeException
+     *             if access checking failed while accessing the field
+     * @throws UnsupportedOperationException
+     *             if the underlying field is final, and the operator needs write access
      */
     <E> E applyOnStaticField(FieldOperator<E> operator);
 
@@ -119,7 +123,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * 
      * @return a method handle for the underlying field with read access
      * @throws IllegalAccessRuntimeException
-     *             if a method handle could not be created
+     *             if access checking fails
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
     MethodHandle getter();
@@ -133,7 +137,9 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * 
      * @return a method handle for the underlying field with write access
      * @throws IllegalAccessRuntimeException
-     *             if a method handle could not be created, for example, if the underlying field is final
+     *             if access checking fails
+     * @throws UnsupportedOperationException
+     *             if the field is final
      * @see Lookup#unreflectSetter(java.lang.reflect.Field)
      */
     MethodHandle setter();
@@ -143,7 +149,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * 
      * @return a VarHandle for the underlying field
      * @throws IllegalAccessRuntimeException
-     *             if the handle could not be created
+     *             if access checking fails
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */
     VarHandle varHandle();

@@ -23,7 +23,7 @@ import app.packed.inject.Provide;
 /**
  *
  */
-public class ProvTest extends BaseBundle {
+class ProvTest extends BaseBundle {
 
     @Override
     protected void configure() {

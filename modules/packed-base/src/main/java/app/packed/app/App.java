@@ -44,8 +44,8 @@ import app.packed.lifecycle.RunState;
  * You can have apps running apps runnings app.
  * 
  * You can easily have Hundreds of Thousands of applications running in the same JVM.
- * 
  */
+// Maybe move to artifact.... App is the default artifact type...
 public interface App extends AutoCloseable {
 
     /**

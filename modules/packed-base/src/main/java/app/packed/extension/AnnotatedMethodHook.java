@@ -44,6 +44,8 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * @return the result from applying the operator to the static method
      * @throws UnsupportedOperationException
      *             if the underlying method is not a static method
+     * @throws IllegalAccessRuntimeException
+     *             if access checking failed while applying the operator
      */
     <E> E applyOnStaticMethod(MethodOperator<E> operator);
 
@@ -63,7 +65,7 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * 
      * @return a MethodHandle to the underlying method
      * @throws IllegalAccessRuntimeException
-     *             if a method handle could not be created
+     *             if access checking fails
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */
     MethodHandle methodHandle();
