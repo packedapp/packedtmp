@@ -37,10 +37,6 @@ import packed.internal.inject.buildtime.InjectorBuilder;
 /**
  * This extension provides functionality for injection and service management.
  */
-// manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?
-// Registered registererUnqualifiedAnnotation <---
-// Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
-// Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
 public final class InjectionExtension extends Extension {
 
     /** The injector builder that does the hard work. */
@@ -53,6 +49,20 @@ public final class InjectionExtension extends Extension {
     InjectionExtension(PackedContainerConfiguration configuration) {
         this.configuration = requireNonNull(configuration);
         this.builder = new InjectorBuilder(configuration);
+    }
+
+    /**
+     * Invoked by the runtime for every component that has members (fields or methods) that are annotated with
+     * {@link Provide}.
+     * 
+     * @param cc
+     *            the configuration for the annotated component
+     * @param group
+     *            an aggregate object
+     */
+    @OnHook(AtProvidesGroup.Builder.class)
+    void addAnnotatedComponent(ComponentConfiguration cc, AtProvidesGroup group) {
+        builder.set(cc, group);
     }
 
     /** {@inheritDoc} */
@@ -102,10 +112,11 @@ public final class InjectionExtension extends Extension {
         return builder.exportKey(key, cs);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
-        // Skal skrives lidt om, det her burde virke, f.eks. som export(provide(ddd).asNone).as(String.class)
-        return (ServiceConfiguration<T>) export(configuration.getKey());
+        requireNonNull(configuration, "configuration is null");
+        checkConfigurable();
+        InternalConfigSite cs = this.configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
+        return builder.exportConfiguration(configuration, cs);
     }
 
     /**
@@ -227,9 +238,8 @@ public final class InjectionExtension extends Extension {
         checkConfigurable();
         builder.requireExplicit(key, true);
     }
-
-    @OnHook(AtProvidesGroup.Builder.class)
-    void set(ComponentConfiguration cc, AtProvidesGroup group) {
-        builder.set(cc, group);
-    }
 }
+// manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?
+// Registered registererUnqualifiedAnnotation <---
+// Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
+// Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.

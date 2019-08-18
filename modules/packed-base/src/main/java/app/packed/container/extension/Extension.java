@@ -24,6 +24,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 import packed.internal.container.PackedContainerConfiguration;
@@ -73,6 +74,16 @@ public abstract class Extension {
                 extension.onConfigured();
                 extension.isConfigurable = false;
             }
+
+            @Override
+            public void buildBundle(Extension extension, Builder builder) {
+                extension.buildBundle(builder);
+            }
+
+            @Override
+            public void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context) {
+                extension.onPrepareContainerInstantiation(context);
+            }
         });
     }
 
@@ -98,7 +109,7 @@ public abstract class Extension {
         throw new UnsupportedOperationException();
     }
 
-    public void buildBundle(BundleDescriptor.Builder builder) {}
+    protected void buildBundle(BundleDescriptor.Builder builder) {}
 
     /**
      * Returns the build context for artifact that is being build.
@@ -196,7 +207,7 @@ public abstract class Extension {
      * @param context
      *            an instantiation context object
      */
-    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
+    protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
 
     final void runWithLookup(Lookup lookup, Runnable runnable) {
         // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....

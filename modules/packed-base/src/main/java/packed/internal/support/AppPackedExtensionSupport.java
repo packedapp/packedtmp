@@ -17,6 +17,8 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.artifact.ArtifactInstantiationContext;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -44,6 +46,10 @@ public final class AppPackedExtensionSupport {
         public abstract void initializeExtension(Extension extension, PackedContainerConfiguration configuration);
 
         public abstract void onConfigured(Extension extension);
+
+        public abstract void buildBundle(Extension extension, BundleDescriptor.Builder builder);
+
+        public abstract void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
 
         /**
          * Initializes this class.

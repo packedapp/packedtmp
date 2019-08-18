@@ -109,7 +109,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (Extension e : extensions.values()) {
-            e.buildBundle(builder);
+            AppPackedExtensionSupport.invoke().buildBundle(e, builder);
         }
     }
 
@@ -182,7 +182,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     void extensionsPrepareInstantiation(ArtifactInstantiationContext ic) {
         for (Extension e : extensions.values()) {
-            e.onPrepareContainerInstantiation(ic);
+            AppPackedExtensionSupport.invoke().onPrepareContainerInstantiation(e, ic);
         }
         super.extensionsPrepareInstantiation(ic);
     }

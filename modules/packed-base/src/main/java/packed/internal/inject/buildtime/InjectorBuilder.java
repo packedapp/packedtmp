@@ -93,6 +93,13 @@ public final class InjectorBuilder {
         resolver.buildContract(builder.contract().services());
     }
 
+    public <T> ServiceConfiguration<T> exportConfiguration(ProvidedComponentConfiguration<T> configuration, InternalConfigSite cs) {
+        PackedProvidedComponentConfiguration<T> ppcc = (PackedProvidedComponentConfiguration<T>) configuration;
+        BSNExported<T> bn = new BSNExported<>(this, cs, ppcc);
+        exportedNodes.add(bn);
+        return bn.expose();
+    }
+
     public <T> ServiceConfiguration<T> exportKey(Key<T> key, InternalConfigSite cs) {
         BSNExported<T> bn = new BSNExported<>(this, cs, key);
         exportedNodes.add(bn);

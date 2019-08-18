@@ -50,6 +50,12 @@ final class BSNExported<T> extends BSN<T> {
         as(key);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public BSNExported(InjectorBuilder configuration, InternalConfigSite configSite, PackedProvidedComponentConfiguration<?> existingNode) {
+        super(configuration, configSite, List.of());
+        as((Key) existingNode.getKey());
+    }
+
     @Override
     @Nullable
     BSN<?> declaringNode() {

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
@@ -42,6 +43,22 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 /**
  *
  */
+
+// Nodes [explicit, @Provides, importInjector]
+// No node with the same key can be registered
+
+// Exports [explicit, via annotations]
+///// Cannot export a service more than oce
+
+// Explicit Requirements [explicit, via contract]
+//// Can export many times, but only registered once
+//// Mandatory requirements will always override optional requirements
+
+//// Hvordan virker transitive exports???? Det er jo ikke noget vi kan finde ud af med det samme...
+
+/// -------- Graf
+// Der skal vaere noder imellem, hvor man kan filtrere
+
 final class InjectorResolver {
 
     /** A set of all explicitly registered required service keys. */
@@ -51,6 +68,10 @@ final class InjectorResolver {
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     final ServiceNodeMap exports = new ServiceNodeMap();
+
+    /** A map of multiple exports for the same key. */
+    @Nullable
+    Map<Key<?>, ArrayList<BSNExported<?>>> exportsDuplicates;
 
     /** A map of all dependencies that could not be resolved */
     IdentityHashMap<BSN<?>, List<ServiceDependency>> unresolvedDependencies;
