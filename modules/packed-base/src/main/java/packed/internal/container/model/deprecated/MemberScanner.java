@@ -23,8 +23,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.inject.Inject;
-import packed.internal.annotations.AtDependable;
-import packed.internal.annotations.AtInjectGroup;
+import packed.internal.inject.annotations.AtDependable;
+import packed.internal.inject.annotations.AtInjectGroup;
 
 /**
  *

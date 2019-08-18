@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.annotations;
+package packed.internal.lifecycle;
 
 import java.util.List;
 
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.OnStart;
 import app.packed.lifecycle.OnStop;
+import packed.internal.inject.annotations.AtProvidesGroup;
 
 /**
  * Information about methods annotated with {@link OnInitialize}, {@link OnStart} and {@link OnStop}, typically on a

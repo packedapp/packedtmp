@@ -18,7 +18,7 @@ package packed.internal.container.model.deprecated;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Inject;
-import packed.internal.annotations.AtInjectGroup;
+import packed.internal.inject.annotations.AtInjectGroup;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.

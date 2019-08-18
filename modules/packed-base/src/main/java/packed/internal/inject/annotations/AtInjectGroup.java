@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.annotations;
+package packed.internal.inject.annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Inject;
+import app.packed.util.FieldDescriptor;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FieldFunctionHandle;
+import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -79,8 +83,8 @@ public final class AtInjectGroup {
             AtDependable result = null;
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-                Checks.checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
-                Checks.checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
+                checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
+                checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
 
                 if (fields == null) {
                     fields = new ArrayList<>();
@@ -107,4 +111,40 @@ public final class AtInjectGroup {
             return result;
         }
     }
+
+    /**
+     * Checks that an annotated field is not final.
+     * 
+     * @param field
+     *            the field to check
+     * @param annotationType
+     *            the type of annotation that forced the check
+     */
+    static void checkAnnotatedFieldIsNotFinal(FieldDescriptor field, Class<? extends Annotation> annotationType) {
+        if ((Modifier.isStatic(field.getModifiers()))) {
+            throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field
+                    + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
+        }
+    }
+
+    /**
+     * Checks that an annotated field is not static.
+     * 
+     * @param field
+     *            the field to check
+     * @param annotationType
+     *            the type of annotation that forced the check
+     */
+    static void checkAnnotatedFieldIsNotStatic(FieldDescriptor field, Class<? extends Annotation> annotationType) {
+        if ((Modifier.isStatic(field.getModifiers()))) {
+            throw new InvalidDeclarationException(
+                    ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
+                            .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
+            //
+            // throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field
+            // + ", to resolve remove @"
+            // + annotationType.getSimpleName() + " or make the field non-static");
+        }
+    }
+
 }
