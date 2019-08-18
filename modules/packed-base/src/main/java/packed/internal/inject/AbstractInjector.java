@@ -134,7 +134,6 @@ public abstract class AbstractInjector implements Injector {
                 for (InternalDependencyDescriptor dependency : method.dependencies) {
                     ServiceNode<?> node = findNode(dependency.key());
                     System.out.println(node);
-
                 }
                 System.out.println("Should have injected " + method);
             }

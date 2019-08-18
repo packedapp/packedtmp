@@ -19,20 +19,15 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.Set;
 
-import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.Injector;
 import app.packed.inject.Provide;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 
 /**
  *
  */
 class InjectorFactory {
-
-}
-
-class BundleX {
-
     // Can we create a AppFactory as well???
     // Maaske skal man lave et bundle, som har required services...
 
@@ -86,5 +81,4 @@ class BundleX {
 
     // Maaske kan vi registerere det her med en host ogsaa...
     // F.eks. i henhold til Sessions. Hvor vi registererer dem som apps.
-
 }

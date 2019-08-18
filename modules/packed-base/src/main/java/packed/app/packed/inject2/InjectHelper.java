@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.app.packed.inject2;
 
 /**
  *
  */
 // We should not use injector..
 
-public interface InjectHelper {
+interface InjectHelper {
     // Context, Helpers and other stuff
 
     // A descriptors of all dependencies that are available for injection...

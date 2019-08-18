@@ -39,10 +39,6 @@ import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /** This class records all service related information for a single box. */
-
-// Kan vi have en InjectorBuilder uden en InjectorExtension???
-// Giver ikke saa meget mening....Configurationen skal jo ske gennem InjectorExtension
-// Men ja, InjectorConfigurator behoever vel ikke en extension????
 public final class InjectorBuilder {
 
     public boolean autoRequires = true;

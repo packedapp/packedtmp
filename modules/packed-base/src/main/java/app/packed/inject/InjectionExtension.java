@@ -23,10 +23,10 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BundleDescriptor.Builder;
-import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHook;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.OnHook;
 import app.packed.feature.FeatureKey;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
@@ -314,81 +314,3 @@ public final class InjectionExtension extends Extension {
         cc.features().set(FK, sc);
     }
 }
-
-// if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-// throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-// prototypes");
-// }
-
-// First check that we do not have existing services with any of the provided keys
-// for (Key<?> k : provides.members.keySet()) {
-// // if (builder().box.services().nodes.containsKey(k)) {
-// // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-// // }
-// }
-
-// private void scanForProvides(Class<?> type, BuildtimeServiceNodeDefault<?> owner) {
-// AtProvidesGroup provides = configuration.lookup.serviceDescriptorFor(type).provides;
-// if (!provides.members.isEmpty()) {
-// owner.hasInstanceMembers = provides.hasInstanceMembers;
-// // if (owner.instantiationMode() == InstantiationMode.PROTOTYPE && provides.hasInstanceMembers) {
-// // throw new InvalidDeclarationException("Cannot @Provides instance members form on services that are registered as
-// // prototypes");
-// // }
-//
-// // First check that we do not have existing services with any of the provided keys
-// // for (Key<?> k : provides.members.keySet()) {
-// // // if (builder().box.services().nodes.containsKey(k)) {
-// // // throw new IllegalArgumentException("At service with key " + k + " has already been registered");
-// // // }
-// // }
-//
-// // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-// // the same key, so we can just add them now without any verification
-// for (AtProvides member : provides.members.values()) {
-// builder.nodes2.add(owner.provide(member));// put them directly
-// }
-// }
-// }
-
-//// ServicesDescriptor descriptor (extends Contract????) <- What we got so far....
-//
-//// public void provideAll(Consumer<? super InjectorConfigurator> configurator, Wirelet... wirelets) {
-//// // Hmm, hvor er wirelets'ene til????
-//// // Maaske bare bedst at droppe den????
-////
-//// Injector injector = Injector.of(configurator, wirelets);
-//// }
-//
-//// Services are the default implementation of injection....
-//
-//// Export
-//
-//// Outer.. checker configurable, node. finish den sidste o.s.v.
-//// Saa kalder vi addNode(inner.foo);
-//
-// public <T> ProvidedComponentConfiguration<T> provideMany(Class<T> implementation) {
-// // Installs as a static component.... new instance every time it is requested...
-// throw new UnsupportedOperationException();
-// }
-//
-// public <T> ProvidedComponentConfiguration<T> provideMany(Factory<T> factory) {
-// throw new UnsupportedOperationException();
-// }
-//
-// public <T> void provideOptionalFallback(Class<T> t, T instance) {
-// // Ideen er vi kan lave en default service...
-// }
-
-//
-// <T> ProvidedComponentConfiguration<T> alias(Class<T> key) {
-// // Hvorfor har vi brug for alias????
-// // provide(BigFatClass.class);
-// // provide(BigFatClass.class).as(X.class);
-// // provide(BigFatClass.class).as(Y.class);
-//
-// // Den er ikke super brugbar..
-// // Smid en static provides paa bundlen...
-// // Og saa provide
-// throw new UnsupportedOperationException();
-// }
