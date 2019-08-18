@@ -31,11 +31,7 @@ import app.packed.util.Qualifier;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.AtProvidesGroup;
-import packed.internal.inject.buildtime.BuildServiceNode;
-import packed.internal.inject.buildtime.BuildServiceNodeExported;
-import packed.internal.inject.buildtime.DependencyGraph;
 import packed.internal.inject.buildtime.InjectorBuilder;
 
 /**
@@ -47,16 +43,16 @@ import packed.internal.inject.buildtime.InjectorBuilder;
 // Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
 public final class InjectionExtension extends Extension {
 
-    @SuppressWarnings("exports")
-    public final InjectorBuilder builder;
+    /** The injector builder that does the hard work. */
+    private final InjectorBuilder builder;
 
-    /** The container configuration. */
+    /** The configuration of the container in which this extension is registered. */
     private final PackedContainerConfiguration configuration;
 
     /** Creates a new injector extension. */
     InjectionExtension(PackedContainerConfiguration configuration) {
         this.configuration = requireNonNull(configuration);
-        builder = new InjectorBuilder(configuration);
+        this.builder = new InjectorBuilder(configuration);
     }
 
     /**
@@ -93,19 +89,7 @@ public final class InjectionExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     public void buildBundle(Builder descriptor) {
-        for (ServiceNode<?> n : builder.nodes) {
-            if (n instanceof BuildServiceNode) {
-                descriptor.addServiceDescriptor(((BuildServiceNode<?>) n).toDescriptor());
-            }
-        }
-
-        for (BuildServiceNode<?> n : builder.exportedNodes) {
-            if (n instanceof BuildServiceNodeExported) {
-                descriptor.contract().services().addProvides(n.getKey());
-            }
-        }
-
-        builder.buildContract(descriptor.contract().services());
+        builder.buildBundle(descriptor);
     }
 
     /**
@@ -181,29 +165,10 @@ public final class InjectionExtension extends Extension {
         builder.autoRequires = false;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    /** {@inheritDoc} */
     @Override
     protected void onConfigured() {
-        for (BuildServiceNode<?> e : builder.nodes2) {
-            if (!builder.nodes.putIfAbsent(e)) {
-                System.err.println("OOPS " + e.getKey());
-            }
-        }
-        for (BuildServiceNodeExported<?> e : builder.exportedNodes) {
-            ServiceNode<?> sn = builder.nodes.getRecursive(e.getKey());
-            if (sn == null) {
-                throw new IllegalStateException("Could not find node to export " + e.getKey());
-            }
-            e.exportOf = (ServiceNode) sn;
-            builder.exports.put(e);
-        }
-        DependencyGraph dg = new DependencyGraph(configuration, builder);
-
-        if (buildContext().isInstantiating()) {
-            dg.instantiate();
-        } else {
-            dg.analyze();
-        }
+        builder.build(buildContext());
     }
 
     /** {@inheritDoc} */

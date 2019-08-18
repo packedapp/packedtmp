@@ -40,7 +40,6 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectionExtension;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
@@ -52,8 +51,6 @@ import packed.internal.container.extension.hook.DelayedAccessor.SidecarMethodDel
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerModel;
-import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.support.AppPackedContainerSupport;
 import packed.internal.support.AppPackedExtensionSupport;
 
@@ -116,15 +113,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    public DefaultInjector buildInjector() {
-        doBuild();
-        new PackedArtifactContext(null, this, new PackedArtifactInstantiationContext(wirelets));
-        if (extensions.containsKey(InjectionExtension.class)) {
-            return use(InjectionExtension.class).builder.publicInjector;
-        } else {
-            return new DefaultInjector(this, new ServiceNodeMap());
-        }
-    }
+    // public DefaultInjector buildInjector() {
+    // doBuild();
+    // new PackedArtifactContext(null, this, new PackedArtifactInstantiationContext(wirelets));
+    // if (extensions.containsKey(InjectionExtension.class)) {
+    // return use(InjectionExtension.class).builder.publicInjector;
+    // } else {
+    // return new DefaultInjector(this, new ServiceNodeMap());
+    // }
+    // }
 
     /**
      * Configures the configuration.

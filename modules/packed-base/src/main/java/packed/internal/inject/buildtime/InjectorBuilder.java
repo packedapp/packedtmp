@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
 import app.packed.inject.Factory;
@@ -232,6 +234,22 @@ public final class InjectorBuilder {
 
     }
 
+    public void buildBundle(Builder descriptor) {
+        for (ServiceNode<?> n : nodes) {
+            if (n instanceof BuildServiceNode) {
+                descriptor.addServiceDescriptor(((BuildServiceNode<?>) n).toDescriptor());
+            }
+        }
+
+        for (BuildServiceNode<?> n : exportedNodes) {
+            if (n instanceof BuildServiceNodeExported) {
+                descriptor.contract().services().addProvides(n.getKey());
+            }
+        }
+
+        buildContract(descriptor.contract().services());
+    }
+
     /**
      * Record a dependency that could not be resolved
      * 
@@ -256,6 +274,30 @@ public final class InjectorBuilder {
             } else {
                 required.add(dependency.key());
             }
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void build(ArtifactBuildContext buildContext) {
+        for (BuildServiceNode<?> e : nodes2) {
+            if (!nodes.putIfAbsent(e)) {
+                System.err.println("OOPS " + e.getKey());
+            }
+        }
+        for (BuildServiceNodeExported<?> e : exportedNodes) {
+            ServiceNode<?> sn = nodes.getRecursive(e.getKey());
+            if (sn == null) {
+                throw new IllegalStateException("Could not find node to export " + e.getKey());
+            }
+            e.exportOf = (ServiceNode) sn;
+            exports.put(e);
+        }
+        DependencyGraph dg = new DependencyGraph(containerConfiguration, this);
+
+        if (buildContext.isInstantiating()) {
+            dg.instantiate();
+        } else {
+            dg.analyze();
         }
     }
 
