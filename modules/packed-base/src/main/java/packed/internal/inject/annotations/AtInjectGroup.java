@@ -41,10 +41,10 @@ public final class AtInjectGroup {
     private static final AtInjectGroup EMPTY = new AtInjectGroup(new Builder());
 
     /** All fields annotated with {@link Inject}. */
-    public final List<AtDependable> fields;
+    public final List<AtInject> fields;
 
     /** All non-static methods annotated with {@link Inject}. */
-    public final List<AtDependable> methods;
+    public final List<AtInject> methods;
 
     /**
      * Creates a new group from a builder.
@@ -61,10 +61,10 @@ public final class AtInjectGroup {
     public static final class Builder {
 
         /** All fields annotated with {@link Inject}. */
-        private ArrayList<AtDependable> fields;
+        private ArrayList<AtInject> fields;
 
         /** All non-static methods annotated with {@link Inject}. */
-        private ArrayList<AtDependable> methods;
+        private ArrayList<AtInject> methods;
 
         /**
          * Creates a new group from this builder.
@@ -79,8 +79,8 @@ public final class AtInjectGroup {
         }
 
         @Nullable
-        public AtDependable createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
-            AtDependable result = null;
+        public AtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
+            AtInject result = null;
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
                 checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
@@ -90,15 +90,15 @@ public final class AtInjectGroup {
                     fields = new ArrayList<>();
                 }
 
-                fields.add(result = new AtDependable(new FieldFunctionHandle<>(descriptor).withLookup(lookup),
+                fields.add(result = new AtInject(new FieldFunctionHandle<>(descriptor).withLookup(lookup),
                         List.of(InternalDependencyDescriptor.of(descriptor))));
             }
             return result;
         }
 
         @Nullable
-        public AtDependable createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
-            AtDependable result = null;
+        public AtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
+            AtInject result = null;
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
                 // static @Inject methods are treated like factory methods, and captured elsewhere
@@ -106,7 +106,7 @@ public final class AtInjectGroup {
                 if (methods == null) {
                     methods = new ArrayList<>();
                 }
-                methods.add(result = new AtDependable(descriptor.newInvoker(lookup), InternalDependencyDescriptor.fromExecutable(descriptor)));
+                methods.add(result = new AtInject(descriptor.newInvoker(lookup), InternalDependencyDescriptor.fromExecutable(descriptor)));
             }
             return result;
         }

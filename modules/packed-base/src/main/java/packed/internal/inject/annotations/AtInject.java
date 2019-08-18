@@ -23,7 +23,7 @@ import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.InvokableMember;
 
 /** A descriptor of an annotated member that has 0 or more service dependencies. */
-public class AtDependable {
+public class AtInject {
 
     /** The dependencies (parameters) of the member. */
     public final List<InternalDependencyDescriptor> dependencies;
@@ -39,7 +39,7 @@ public class AtDependable {
      * @param dependencies
      *            a list of dependencies
      */
-    AtDependable(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
+    AtInject(InvokableMember<?> invokable, List<InternalDependencyDescriptor> dependencies) {
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);
     }

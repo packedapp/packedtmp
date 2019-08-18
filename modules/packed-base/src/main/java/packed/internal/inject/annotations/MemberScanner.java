@@ -27,7 +27,6 @@ import app.packed.inject.Inject;
 /**
  *
  */
-// Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
 // https://github.com/classgraph/classgraph
 // Bliver stadig brugt til @Inject annoteringer
 public class MemberScanner {
@@ -66,14 +65,8 @@ public class MemberScanner {
                     // Og saa koeret noget or val && INJECT_MASK > INJECT (alle annoteringen som
                     // vi ikke vil kombinere
                     // Multiple annotations
-                    AtDependable fInject = inject.createIfInjectable(lookup, method, annotations);
+                    inject.createIfInjectable(lookup, method, annotations);
 
-                    // We need to to some checks when we have multiple annotations...
-                    if (annotations.length > 1) {
-                        if (fInject != null) {
-                            System.out.println("OOPS");
-                        }
-                    }
                 }
             }
         }
@@ -86,14 +79,8 @@ public class MemberScanner {
                 Annotation[] annotations = field.getAnnotations();
                 if (annotations.length > 0) {
                     // Multiple annotations
-                    AtDependable fInject = inject.createIfInjectable(lookup, field, annotations);
+                    inject.createIfInjectable(lookup, field, annotations);
 
-                    // We need to to some checks when we have multiple annotations...
-                    if (annotations.length > 1) {
-                        if (fInject != null) {
-                            System.out.println("OOPS");
-                        }
-                    }
                 }
             }
         }
