@@ -120,6 +120,10 @@ public class Factory<T> {
     /** The internal factory that all calls delegate to. */
     final FactorySupport<T> factory;
 
+    public final FunctionHandle<T> function() {
+        return factory.function;
+    }
+
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot call {@link Object#getClass()} before calling a
      * constructor in this class (super).

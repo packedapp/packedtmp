@@ -17,8 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
@@ -27,27 +25,18 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHook;
-import app.packed.feature.FeatureKey;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.container.DefaultComponentConfiguration;
-import packed.internal.container.FactoryComponentConfiguration;
-import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.buildtime.AtProvides;
 import packed.internal.inject.buildtime.AtProvidesGroup;
 import packed.internal.inject.buildtime.BuildServiceNode;
-import packed.internal.inject.buildtime.BuildServiceNodeDefault;
 import packed.internal.inject.buildtime.BuildServiceNodeExported;
 import packed.internal.inject.buildtime.DependencyGraph;
 import packed.internal.inject.buildtime.InjectorBuilder;
-import packed.internal.inject.buildtime.InjectorImporter;
-import packed.internal.inject.buildtime.PackedProvidedComponentConfiguration;
-import packed.internal.inject.buildtime.PackedServiceConfiguration;
 
 /**
  * This extension provides functionality for injection and service management.
@@ -58,10 +47,8 @@ import packed.internal.inject.buildtime.PackedServiceConfiguration;
 // Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.
 public final class InjectionExtension extends Extension {
 
-    static FeatureKey<BuildServiceNodeDefault<?>> FK = new FeatureKey<>() {};
-
     @SuppressWarnings("exports")
-    public final InjectorBuilder builder = new InjectorBuilder();
+    public final InjectorBuilder builder;
 
     /** The container configuration. */
     private final PackedContainerConfiguration configuration;
@@ -69,6 +56,7 @@ public final class InjectionExtension extends Extension {
     /** Creates a new injector extension. */
     InjectionExtension(PackedContainerConfiguration configuration) {
         this.configuration = requireNonNull(configuration);
+        builder = new InjectorBuilder(configuration);
     }
 
     /**
@@ -120,6 +108,12 @@ public final class InjectionExtension extends Extension {
         builder.buildContract(descriptor.contract().services());
     }
 
+    /**
+     * @param <T>
+     * @param key
+     *            the key to export
+     * @return a configuration for the exported service
+     */
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
     }
@@ -151,12 +145,8 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-
         InternalConfigSite cs = configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        BuildServiceNodeExported<T> bn = new BuildServiceNodeExported<>(builder, cs);
-        bn.as(key);
-        builder.exportedNodes.add(bn);
-        return new PackedServiceConfiguration<>(configuration, bn);
+        return builder.exportKey(key, cs);
     }
 
     @SuppressWarnings("unchecked")
@@ -176,9 +166,9 @@ public final class InjectionExtension extends Extension {
      *            any wirelets used to filter and transform the provided services
      */
     public void importAll(Injector injector, Wirelet... wirelets) {
-        InjectorImporter pfi = new InjectorImporter(configuration, builder, injector, WireletList.of(wirelets)); // Validates arguments
+        requireNonNull(injector, "injector is null");
         checkConfigurable();
-        pfi.importAll(); // Will create the necessary nodes.
+        builder.importAll(injector, WireletList.of(wirelets));
     }
 
     /**
@@ -245,19 +235,11 @@ public final class InjectionExtension extends Extension {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         checkConfigurable();
         ComponentConfiguration cc = use(ComponentExtension.class).install(factory);
-        BuildServiceNodeDefault<?> sc = cc.features().get(FK);
-        if (sc == null) {
-            sc = new BuildServiceNodeDefault<>(builder, cc, InstantiationMode.SINGLETON, configuration.lookup.readable(factory.factory.function),
-                    (List) factory.dependencies());
-        }
-        sc.as((Key) factory.key());
-        builder.nodes2.add(sc);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
+        return builder.provideFactory(cc, factory, factory.factory.function);
     }
 
     /**
@@ -273,43 +255,15 @@ public final class InjectionExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
         requireNonNull(instance, "instance is null");
-        // checkConfigurable();// install should do this for us??
-
+        checkConfigurable();
         ComponentConfiguration cc = use(ComponentExtension.class).install(instance);
-
-        // First see if we have installed a node via @Provides annotations.
-        BuildServiceNodeDefault<?> sc = cc.features().get(FK);
-        if (sc == null) {
-            sc = new BuildServiceNodeDefault<T>(builder, (InternalConfigSite) cc.configSite(), instance);
-        }
-
-        sc.as((Key) Key.of(instance.getClass()));
-        builder.nodes2.add(sc);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
+        return builder.provideInstance(cc, instance);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @OnHook(AtProvidesGroup.Builder.class)
-    void set(ComponentConfiguration cc, AtProvidesGroup apg) {
-        BuildServiceNodeDefault sc;
-        if (cc instanceof InstantiatedComponentConfiguration) {
-            Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
-            sc = new BuildServiceNodeDefault(builder, (InternalConfigSite) cc.configSite(), instance);
-        } else {
-            Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
-            sc = new BuildServiceNodeDefault<>(builder, cc, InstantiationMode.SINGLETON, configuration.lookup.readable(factory.factory.function),
-                    (List) factory.dependencies());
-        }
-
-        sc.hasInstanceMembers = apg.hasInstanceMembers;
-        // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-        // the same key, so we can just add them now without any verification
-        for (AtProvides member : apg.members.values()) {
-            builder.nodes2.add(sc.provide(member));// put them directly
-        }
-        cc.features().set(FK, sc);
+    void set(ComponentConfiguration cc, AtProvidesGroup group) {
+        builder.set(cc, group);
     }
 }

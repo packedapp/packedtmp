@@ -25,21 +25,37 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
+import app.packed.component.ComponentConfiguration;
+import app.packed.container.WireletList;
+import app.packed.feature.FeatureKey;
+import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
+import app.packed.inject.Injector;
 import app.packed.inject.InjectorContract;
+import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.config.site.InternalConfigSite;
+import packed.internal.container.DefaultComponentConfiguration;
+import packed.internal.container.FactoryComponentConfiguration;
+import packed.internal.container.InstantiatedComponentConfiguration;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
 import packed.internal.inject.ServiceNodeMap;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.invoke.FunctionHandle;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /** This class records all service related information for a single box. */
 public final class InjectorBuilder {
+
+    public static FeatureKey<BuildServiceNodeDefault<?>> FK = new FeatureKey<>() {};
 
     public boolean autoRequires = true;
 
@@ -69,7 +85,10 @@ public final class InjectorBuilder {
 
     public ArrayList<BuildServiceNode<?>> nodes2 = new ArrayList<>();
 
-    public InjectorBuilder() {
+    final PackedContainerConfiguration containerConfiguration;
+
+    public InjectorBuilder(PackedContainerConfiguration containerConfiguration) {
+        this.containerConfiguration = requireNonNull(containerConfiguration);
         boolean exportNodes = true;
         // System.out.println(exportNodes);
         if (exportNodes) {
@@ -101,6 +120,42 @@ public final class InjectorBuilder {
     public void addRequired(Key<?> key) {
         requireNonNull(key, "key is null");
         required.add(key);
+    }
+
+    public <T> ServiceConfiguration<T> exportKey(Key<T> key, InternalConfigSite cs) {
+        BuildServiceNodeExported<T> bn = new BuildServiceNodeExported<>(this, cs);
+        bn.as(key);
+        exportedNodes.add(bn);
+        return new PackedServiceConfiguration<>(containerConfiguration, bn);
+    }
+
+    public void importAll(Injector injector, WireletList wirelets) {
+        new InjectorImporter(containerConfiguration, this, injector, wirelets).importAll();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FunctionHandle<T> function) {
+        BuildServiceNodeDefault<?> sc = cc.features().get(FK);
+        if (sc == null) {
+            sc = new BuildServiceNodeDefault<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(function),
+                    (List) factory.dependencies());
+        }
+        sc.as((Key) factory.key());
+        nodes2.add(sc);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> ProvidedComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
+        // First see if we have installed a node via @Provides annotations.
+        BuildServiceNodeDefault<?> sc = cc.features().get(InjectorBuilder.FK);
+        if (sc == null) {
+            sc = new BuildServiceNodeDefault<T>(this, (InternalConfigSite) cc.configSite(), instance);
+        }
+
+        sc.as((Key) Key.of(instance.getClass()));
+        nodes2.add(sc);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BuildServiceNodeDefault) sc);
     }
 
     public void buildContract(InjectorContract.Builder builder) {
@@ -202,5 +257,26 @@ public final class InjectorBuilder {
                 required.add(dependency.key());
             }
         }
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void set(ComponentConfiguration cc, AtProvidesGroup apg) {
+        BuildServiceNodeDefault sc;
+        if (cc instanceof InstantiatedComponentConfiguration) {
+            Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
+            sc = new BuildServiceNodeDefault(this, (InternalConfigSite) cc.configSite(), instance);
+        } else {
+            Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
+            sc = new BuildServiceNodeDefault<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(factory.function()),
+                    (List) factory.dependencies());
+        }
+
+        sc.hasInstanceMembers = apg.hasInstanceMembers;
+        // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
+        // the same key, so we can just add them now without any verification
+        for (AtProvides member : apg.members.values()) {
+            nodes2.add(sc.provide(member));// put them directly
+        }
+        cc.features().set(InjectorBuilder.FK, sc);
     }
 }
