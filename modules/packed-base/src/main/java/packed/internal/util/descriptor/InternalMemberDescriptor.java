@@ -15,15 +15,10 @@
  */
 package packed.internal.util.descriptor;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
-
-import packed.internal.invoke.InvokableMember;
 
 /**
  *
  */
-public interface InternalMemberDescriptor extends Member, AnnotatedElement {
-    InvokableMember<?> newInvoker(MethodHandles.Lookup lookup);
-}
+public interface InternalMemberDescriptor extends Member, AnnotatedElement {}

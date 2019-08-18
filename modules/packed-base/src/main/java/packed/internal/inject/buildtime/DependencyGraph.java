@@ -17,7 +17,6 @@ package packed.internal.inject.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,15 +27,12 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.annotations.ServiceClassDescriptor;
 import packed.internal.inject.buildtime.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.KeyBuilder;
 
 public final class DependencyGraph {
-
-    static final ServiceClassDescriptor INJ = ServiceClassDescriptor.from(MethodHandles.lookup(), DefaultInjector.class);
 
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildServiceNode<?>> detectCyclesFor;

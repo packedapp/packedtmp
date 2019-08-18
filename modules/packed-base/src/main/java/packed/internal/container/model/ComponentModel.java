@@ -139,6 +139,8 @@ public final class ComponentModel {
          * @return a new descriptor
          */
         ComponentModel build() {
+            // TODO add default methods, check for overrides, ...
+
             for (Class<?> c = componentType; c != Object.class; c = c.getSuperclass()) {
                 for (Field field : c.getDeclaredFields()) {
                     for (Annotation a : field.getAnnotations()) {

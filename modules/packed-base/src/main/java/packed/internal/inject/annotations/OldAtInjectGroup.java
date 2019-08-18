@@ -19,32 +19,29 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Inject;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.JavaXInjectSupport;
 import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FieldFunctionHandle;
-import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** A group of injectable fields and methods. */
-public final class AtInjectGroup {
+public final class OldAtInjectGroup {
 
     /** An empty inject group. */
-    private static final AtInjectGroup EMPTY = new AtInjectGroup(new Builder());
+    private static final OldAtInjectGroup EMPTY = new OldAtInjectGroup(new Builder());
 
     /** All fields annotated with {@link Inject}. */
-    public final List<AtInject> fields;
+    public final List<OldAtInject> fields;
 
     /** All non-static methods annotated with {@link Inject}. */
-    public final List<AtInject> methods;
+    public final List<OldAtInject> methods;
 
     /**
      * Creates a new group from a builder.
@@ -52,53 +49,51 @@ public final class AtInjectGroup {
      * @param builder
      *            the builder used to create the group
      */
-    private AtInjectGroup(Builder builder) {
+    private OldAtInjectGroup(Builder builder) {
         this.methods = builder.methods == null ? List.of() : List.copyOf(builder.methods);
         this.fields = builder.fields == null ? List.of() : List.copyOf(builder.fields);
     }
 
-    /** A builder object for {@link AtInjectGroup}. */
+    /** A builder object for {@link OldAtInjectGroup}. */
     public static final class Builder {
 
         /** All fields annotated with {@link Inject}. */
-        private ArrayList<AtInject> fields;
+        private ArrayList<OldAtInject> fields;
 
         /** All non-static methods annotated with {@link Inject}. */
-        private ArrayList<AtInject> methods;
+        private ArrayList<OldAtInject> methods;
 
         /**
          * Creates a new group from this builder.
          * 
          * @return the new group
          */
-        public AtInjectGroup build() {
+        public OldAtInjectGroup build() {
             if (fields == null && methods == null) {
                 return EMPTY;
             }
-            return new AtInjectGroup(this);
+            return new OldAtInjectGroup(this);
         }
 
         @Nullable
-        public AtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
-            AtInject result = null;
+        public OldAtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
+            OldAtInject result = null;
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
-                checkAnnotatedFieldIsNotStatic(descriptor, Inject.class);
-                checkAnnotatedFieldIsNotFinal(descriptor, Inject.class);
 
                 if (fields == null) {
                     fields = new ArrayList<>();
                 }
 
-                fields.add(result = new AtInject(new FieldFunctionHandle<>(descriptor).withLookup(lookup),
+                fields.add(result = new OldAtInject(new FieldFunctionHandle<>(descriptor).withLookup(lookup),
                         List.of(InternalDependencyDescriptor.of(descriptor))));
             }
             return result;
         }
 
         @Nullable
-        public AtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
-            AtInject result = null;
+        public OldAtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
+            OldAtInject result = null;
             if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
                 // static @Inject methods are treated like factory methods, and captured elsewhere
@@ -106,44 +101,10 @@ public final class AtInjectGroup {
                 if (methods == null) {
                     methods = new ArrayList<>();
                 }
-                methods.add(result = new AtInject(descriptor.newInvoker(lookup), InternalDependencyDescriptor.fromExecutable(descriptor)));
+                methods.add(result = new OldAtInject(new ExecutableFunctionHandle<>(descriptor).withLookup(lookup),
+                        InternalDependencyDescriptor.fromExecutable(descriptor)));
             }
             return result;
-        }
-    }
-
-    /**
-     * Checks that an annotated field is not final.
-     * 
-     * @param field
-     *            the field to check
-     * @param annotationType
-     *            the type of annotation that forced the check
-     */
-    static void checkAnnotatedFieldIsNotFinal(FieldDescriptor field, Class<? extends Annotation> annotationType) {
-        if ((Modifier.isStatic(field.getModifiers()))) {
-            throw new InvalidDeclarationException("Fields annotated with @" + annotationType.getSimpleName() + " must be final, field = " + field
-                    + ", to resolve remove @" + annotationType.getSimpleName() + " or make the field final");
-        }
-    }
-
-    /**
-     * Checks that an annotated field is not static.
-     * 
-     * @param field
-     *            the field to check
-     * @param annotationType
-     *            the type of annotation that forced the check
-     */
-    static void checkAnnotatedFieldIsNotStatic(FieldDescriptor field, Class<? extends Annotation> annotationType) {
-        if ((Modifier.isStatic(field.getModifiers()))) {
-            throw new InvalidDeclarationException(
-                    ErrorMessageBuilder.of(field).cannot("be static when using the @" + annotationType.getSimpleName() + " annotation")
-                            .toResolve("remove @" + annotationType.getSimpleName() + " or make the field non-static"));
-            //
-            // throw new InvalidDeclarationException("Cannot use @" + annotationType.getSimpleName() + " on static field: " + field
-            // + ", to resolve remove @"
-            // + annotationType.getSimpleName() + " or make the field non-static");
         }
     }
 

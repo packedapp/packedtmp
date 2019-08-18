@@ -30,7 +30,6 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.container.extension.hook.PackedFieldOperation;
-import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -159,12 +158,6 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
         } catch (NoSuchFieldException e) {
             throw new InternalErrorException("field", field, e);// We should never get to here
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public FieldFunctionHandle<?> newInvoker(Lookup lookup) {
-        return new FieldFunctionHandle<>(this).withLookup(lookup);
     }
 
     /** {@inheritDoc} */

@@ -17,7 +17,6 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,8 +27,8 @@ import app.packed.inject.Injector;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.annotations.AtInject;
-import packed.internal.inject.annotations.ServiceClassDescriptor;
+import packed.internal.inject.annotations.OldAtInject;
+import packed.internal.inject.annotations.OldAtInjectGroup;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FieldFunctionHandle;
 
@@ -94,10 +93,10 @@ public abstract class AbstractInjector implements Injector {
         return findNode(key) != null;
     }
 
-    protected final void injectMembers(ServiceClassDescriptor descriptor, Object instance, @Nullable Component component) {
+    protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
         // Inject fields
-        if (!descriptor.inject.fields.isEmpty()) {
-            for (AtInject atInject : descriptor.inject.fields) {
+        if (!descriptor.fields.isEmpty()) {
+            for (OldAtInject atInject : descriptor.fields) {
                 InternalDependencyDescriptor dependency = atInject.dependencies.get(0);
                 FieldFunctionHandle<?> field = (FieldFunctionHandle<?>) atInject.invokable;
                 ServiceNode<?> node = findNode(dependency.key());
@@ -128,8 +127,8 @@ public abstract class AbstractInjector implements Injector {
         }
 
         // Inject methods
-        if (!descriptor.inject.methods.isEmpty()) {
-            for (AtInject method : descriptor.inject.methods) {
+        if (!descriptor.methods.isEmpty()) {
+            for (OldAtInject method : descriptor.methods) {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(Arrays.toString(arguments));
                 for (InternalDependencyDescriptor dependency : method.dependencies) {
@@ -140,16 +139,6 @@ public abstract class AbstractInjector implements Injector {
                 System.out.println("Should have injected " + method);
             }
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> T injectMembers(T instance, MethodHandles.Lookup lookup) {
-        requireNonNull(instance, "instance is null");
-        requireNonNull(lookup, "lookup is null");
-        ServiceClassDescriptor scd = ServiceClassDescriptor.from(lookup, instance.getClass());
-        injectMembers(scd, instance, null);
-        return instance;
     }
 
     /** {@inheritDoc} */
@@ -173,6 +162,15 @@ public abstract class AbstractInjector implements Injector {
         return t;
     }
 }
+/// ** {@inheritDoc} */
+// @Override
+// public final <T> T injectMembers(T instance, MethodHandles.Lookup lookup) {
+// requireNonNull(instance, "instance is null");
+// requireNonNull(lookup, "lookup is null");
+// AtInjectGroup scd = MemberScanner.forService(instance.getClass(), lookup).inject.build();
+// injectMembers(scd, instance, null);
+// return instance;
+// }
 // Better help
 //
 // public static String getInstanceNotFound(Key<?> key) {

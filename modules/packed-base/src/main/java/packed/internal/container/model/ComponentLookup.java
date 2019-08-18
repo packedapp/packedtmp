@@ -24,8 +24,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.util.IllegalAccessRuntimeException;
-import packed.internal.inject.annotations.MemberScanner;
-import packed.internal.inject.annotations.ServiceClassDescriptor;
 import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FunctionHandle;
 
@@ -74,10 +72,6 @@ public interface ComponentLookup {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("Could not create a VarHandle", e);
         }
-    }
-
-    default ServiceClassDescriptor serviceDescriptorFor(Class<?> type) {
-        return new ServiceClassDescriptor(type, lookup(), MemberScanner.forService(type, lookup()));
     }
 
     default MethodHandle acquireMethodHandle(Class<?> componentType, Constructor<?> constructor) {

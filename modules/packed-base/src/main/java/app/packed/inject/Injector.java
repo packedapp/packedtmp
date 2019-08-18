@@ -17,7 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -179,22 +178,22 @@ public interface Injector {
      */
     boolean hasService(Key<?> key); // We do not call get here, as it might create a value
 
-    /**
-     * Injects services into the fields and methods of the specified instance.
-     * <p>
-     * This method is typically only needed if you need to construct objects yourself.
-     *
-     * @param <T>
-     *            the type of object to inject into
-     * @param instance
-     *            the instance to inject members (fields and methods) into
-     * @param lookup
-     *            A lookup object used to access the various members on the specified instance
-     * @return the specified instance
-     * @throws InjectionException
-     *             if any of the injectable members of the specified instance could not be injected
-     */
-    <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
+    // /**
+    // * Injects services into the fields and methods of the specified instance.
+    // * <p>
+    // * This method is typically only needed if you need to construct objects yourself.
+    // *
+    // * @param <T>
+    // * the type of object to inject into
+    // * @param instance
+    // * the instance to inject members (fields and methods) into
+    // * @param lookup
+    // * A lookup object used to access the various members on the specified instance
+    // * @return the specified instance
+    // * @throws InjectionException
+    // * if any of the injectable members of the specified instance could not be injected
+    // */
+    // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
     /**
      * Returns a unordered {@code Stream} of all services that this injector provides.

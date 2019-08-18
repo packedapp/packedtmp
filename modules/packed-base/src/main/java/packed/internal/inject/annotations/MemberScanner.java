@@ -24,17 +24,13 @@ import java.lang.reflect.Method;
 
 import app.packed.inject.Inject;
 
-/**
- *
- */
-// https://github.com/classgraph/classgraph
 // Bliver stadig brugt til @Inject annoteringer
 public class MemberScanner {
 
     final Class<?> clazz;
 
     /** A builder for members annotated with {@link Inject}. */
-    public AtInjectGroup.Builder inject = new AtInjectGroup.Builder();
+    public OldAtInjectGroup.Builder inject = new OldAtInjectGroup.Builder();
 
     /** The lookup object. */
     final Lookup lookup;
