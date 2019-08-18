@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.model.deprecated;
+package packed.internal.inject.annotations;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,15 +23,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.inject.Inject;
-import packed.internal.inject.annotations.AtDependable;
-import packed.internal.inject.annotations.AtInjectGroup;
 
 /**
  *
  */
 // Taenker vi slaar Method + Fields sammen paa lang sigt, fint nok nu her at have 2
 // https://github.com/classgraph/classgraph
-
 // Bliver stadig brugt til @Inject annoteringer
 public class MemberScanner {
 

@@ -31,7 +31,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.inject.annotations.AtProvides;
 import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeLazyServiceNode;
 import packed.internal.inject.runtime.RuntimePrototypeServiceNode;

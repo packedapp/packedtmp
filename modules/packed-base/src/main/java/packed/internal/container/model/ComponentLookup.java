@@ -24,8 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.util.IllegalAccessRuntimeException;
-import packed.internal.container.model.deprecated.MemberScanner;
-import packed.internal.container.model.deprecated.ServiceClassDescriptor;
+import packed.internal.inject.annotations.MemberScanner;
+import packed.internal.inject.annotations.ServiceClassDescriptor;
 import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FunctionHandle;
 

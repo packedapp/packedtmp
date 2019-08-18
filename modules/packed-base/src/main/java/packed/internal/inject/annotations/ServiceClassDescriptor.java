@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.model.deprecated;
+package packed.internal.inject.annotations;
 
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.Inject;
-import packed.internal.inject.annotations.AtInjectGroup;
 
 /**
  * A service class descriptor contains information about injectable fields and methods.
