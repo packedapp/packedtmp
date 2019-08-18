@@ -20,7 +20,6 @@ import packed.internal.thirdparty.util.ValueWeakHashMap;
 /**
  *
  */
-// We could have a special ClassModuleValue
 public abstract class ModuleValue<T> {
 
     /** The cache of values. */

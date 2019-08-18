@@ -120,3 +120,49 @@ public abstract class FunctionHandle<T> extends Object {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
     }
 }
+// public abstract class PFunction<T> {
+//
+// /**
+// * Instantiates a new object using the specified parameters
+// *
+// * @param params
+// * the parameters to use
+// * @return the new instance
+// */
+// @Nullable
+// public abstract T invoke(WhatAreYouDoing spec, Object[] params);
+//
+// // Ideen er at vi kan tage den med som parameter...
+// // For eksempel om vi skal smide en exception
+// public enum WhatAreYouDoing {}
+// }
+// Input/Output
+
+/// Input OutPout
+
+// return type -> void type.... void is valid
+// Parameters... might be dependencies if used for this, but does not have to
+
+// expected
+
+// Parameter count
+
+// isExactType
+// isAnyType();
+// boolean isNullable
+
+// Type
+// IsNullable
+// HasExactType
+
+// Bundle ting,
+// registrering required optionally, exposed... -> exposes the following features
+// Nogle runtimeklasser...
+
+// requires, exposes, ... -> Key-> Service
+
+// Et eller andet slags registrerings object
+/// Baade scanning af klasserne.... (Med annotering...)
+/// Og reject af prototype...
+
+// Supportere ogsaa manuel registrering af objekter

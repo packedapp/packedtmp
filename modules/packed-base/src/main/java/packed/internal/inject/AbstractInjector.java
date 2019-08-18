@@ -15,8 +15,6 @@
  */
 package packed.internal.inject;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +45,6 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     protected <T> ServiceNode<T> findNode(Class<T> key) {
-        requireNonNull(key, "key is null");
         return findNode(Key.of(key));
     }
 
@@ -68,7 +65,6 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     private <T> T getInstanceOrNull(Class<T> key) {
-        requireNonNull(key, "key is null");
         return getInstanceOrNull(Key.of(key));
     }
 

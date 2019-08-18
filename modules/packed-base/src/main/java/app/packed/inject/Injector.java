@@ -130,7 +130,7 @@ public interface Injector {
      * @see #use(Class)
      */
     default <T> Optional<T> get(Class<T> key) {
-        return get(Key.of(requireNonNull(key, "key is null")));
+        return get(Key.of(key));
     }
 
     /**
@@ -146,8 +146,8 @@ public interface Injector {
      */
     <T> Optional<T> get(Key<T> key);
 
-    default <T> Optional<ServiceDescriptor> getDescriptor(Class<T> serviceType) {
-        return getDescriptor(Key.of(serviceType));
+    default <T> Optional<ServiceDescriptor> getDescriptor(Class<T> key) {
+        return getDescriptor(Key.of(key));
     }
 
     default <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
@@ -164,7 +164,6 @@ public interface Injector {
      * @see #hasService(Key)
      */
     default boolean hasService(Class<?> key) {
-        requireNonNull(key, "key is null");
         return hasService(Key.of(key));
     }
 

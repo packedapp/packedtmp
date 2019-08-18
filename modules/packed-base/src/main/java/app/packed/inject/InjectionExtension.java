@@ -121,7 +121,6 @@ public final class InjectionExtension extends Extension {
     }
 
     public <T> ServiceConfiguration<T> export(Class<T> key) {
-        requireNonNull(key, "key is null");
         return export(Key.of(key));
     }
 
@@ -194,7 +193,7 @@ public final class InjectionExtension extends Extension {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void onConfigured() {
+    protected void onConfigured() {
         for (BuildServiceNode<?> e : builder.nodes2) {
             if (!builder.nodes.putIfAbsent(e)) {
                 System.err.println("OOPS " + e.getKey());

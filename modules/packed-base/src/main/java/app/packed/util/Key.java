@@ -373,19 +373,18 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
     }
 
     /**
-     * Returns a key matching the specified type with no qualifiers.
+     * Returns a key with no qualifiers matching the specified class key.
      *
      * @param <T>
      *            the type to construct a key of
-     * @param type
-     *            the type to construct a key of
+     * @param key
+     *            the class key to return a key from
      * @return a key matching the specified type with no qualifiers
      */
     @SuppressWarnings("unchecked")
-    // TODO rename type to key???
-    public static <T> Key<T> of(Class<T> type) {
-        requireNonNull(type, "type is null");
-        return (Key<T>) CLASS_CACHE.get(type);
+    public static <T> Key<T> of(Class<T> key) {
+        requireNonNull(key, "key is null");
+        return (Key<T>) CLASS_CACHE.get(key);
     }
 
     /**
