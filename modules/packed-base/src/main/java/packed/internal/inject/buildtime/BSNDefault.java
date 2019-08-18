@@ -44,7 +44,7 @@ import packed.internal.util.ThrowableUtil;
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
  * makes extending it with {@link ProvidedComponentConfiguration} much easier.
  */
-class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
+class BSNDefault<T> extends BSN<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -63,9 +63,9 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
     private InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final BuildServiceNodeDefault<?> parent;
+    private final BSNDefault<?> parent;
 
-    public BuildServiceNodeDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
+    public BSNDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
             List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, (InternalConfigSite) cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
@@ -91,7 +91,7 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
      * @param instance
      *            the instance
      */
-    public BuildServiceNodeDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
+    public BSNDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
@@ -99,7 +99,7 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
         this.function = null;
     }
 
-    BuildServiceNodeDefault(InternalConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BuildServiceNodeDefault<?> parent) {
+    BSNDefault(InternalConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSNDefault<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.parent = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -108,7 +108,7 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
     }
 
     @Override
-    BuildServiceNode<?> declaringNode() {
+    BSN<?> declaringNode() {
         return parent;
     }
 
@@ -136,7 +136,7 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
         return i;
     }
 
-    public BuildServiceNodeDefault<T> instantiateAs(InstantiationMode mode) {
+    public BSNDefault<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -171,7 +171,8 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.resolver.publicInjector, dependencies.get(i),
+                        null);
             }
         }
         Object o;
@@ -222,7 +223,7 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public BuildServiceNode<?> provide(AtProvides atProvides) {
+    public BSN<?> provide(AtProvides atProvides) {
         InternalConfigSite icss = configSite().thenAnnotatedMember(ConfigSiteType.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
@@ -231,7 +232,7 @@ class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
             // fi = fi.withInstance(this.instance);
         }
 
-        BuildServiceNodeDefault<?> node = new BuildServiceNodeDefault<>(icss, atProvides, fi, this);
+        BSNDefault<?> node = new BSNDefault<>(icss, atProvides, fi, this);
         node.as((Key) atProvides.key);
         return node;
     }

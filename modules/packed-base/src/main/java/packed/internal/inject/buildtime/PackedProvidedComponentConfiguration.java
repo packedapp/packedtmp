@@ -35,12 +35,12 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     private final DefaultComponentConfiguration component;
 
     /** The service we are exposing. */
-    private final BuildServiceNode<T> buildNode;
+    private final BSN<T> buildNode;
 
     /**
      * @param buildNode
      */
-    public PackedProvidedComponentConfiguration(DefaultComponentConfiguration component, BuildServiceNode<T> buildNode) {
+    public PackedProvidedComponentConfiguration(DefaultComponentConfiguration component, BSN<T> buildNode) {
         this.buildNode = requireNonNull(buildNode);
         this.component = component;
     }
@@ -90,7 +90,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     @Override
     public ProvidedComponentConfiguration<T> lazy() {
         component.checkConfigurable();
-        ((BuildServiceNodeDefault<T>) buildNode).lazy();
+        ((BSNDefault<T>) buildNode).lazy();
         return this;
     }
 
@@ -98,7 +98,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     @Override
     public ProvidedComponentConfiguration<T> prototype() {
         component.checkConfigurable();
-        ((BuildServiceNodeDefault<T>) buildNode).prototype();
+        ((BSNDefault<T>) buildNode).prototype();
         return this;
     }
 

@@ -36,7 +36,7 @@ import packed.internal.util.KeyBuilder;
  * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
  * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
  */
-public abstract class BuildServiceNode<T> implements ServiceNode<T> {
+public abstract class BSN<T> implements ServiceNode<T> {
 
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
@@ -75,7 +75,7 @@ public abstract class BuildServiceNode<T> implements ServiceNode<T> {
     @Nullable
     private AbstractRuntimeServiceNode<T> runtimeNode;
 
-    BuildServiceNode(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
+    BSN(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
@@ -128,7 +128,7 @@ public abstract class BuildServiceNode<T> implements ServiceNode<T> {
      * @return stuff
      */
     @Nullable
-    BuildServiceNode<?> declaringNode() {
+    BSN<?> declaringNode() {
         return null;
     }
 

@@ -35,12 +35,14 @@ import packed.internal.util.KeyBuilder;
 final class DependencyGraph {
 
     /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<BuildServiceNode<?>> detectCyclesFor;
+    ArrayList<BSN<?>> detectCyclesFor;
 
     /** The root injector builder. */
     final PackedContainerConfiguration root;
 
     final InjectorBuilder ib;
+
+    final InjectorResolver ir;
 
     /**
      * Creates a new dependency graph.
@@ -51,21 +53,22 @@ final class DependencyGraph {
     public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib) {
         this.root = requireNonNull(root);
         this.ib = requireNonNull(ib);
+        ir = ib.resolver;
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void analyze() {
-        ib.privateInjector = new DefaultInjector(root, ib.nodes);
-        BuildServiceNodeDefault d = new BuildServiceNodeDefault<>(ib, root.configSite(), ib.privateInjector);
+        ir.privateInjector = new DefaultInjector(root, ir.nodes);
+        BSNDefault d = new BSNDefault<>(ib, root.configSite(), ir.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
-        ib.nodes.put(d);
+        ir.nodes.put(d);
         // TODO replace with something a.la.
         // dcc.source.isInjectorConfigurator
         if (root.buildContext().artifactType() == Injector.class) {
-            ib.publicInjector = ib.privateInjector;
+            ir.publicInjector = ir.privateInjector;
         } else {
-            ib.publicInjector = new DefaultInjector(root, ib.exports);
+            ir.publicInjector = new DefaultInjector(root, ib.resolver.exports);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, configSite.UNKNOWN, c.publicInjector);
@@ -103,9 +106,9 @@ final class DependencyGraph {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<BuildServiceNode<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BuildServiceNode<?>> dependencies = new ArrayDeque<>();
-        for (BuildServiceNode<?> node : detectCyclesFor) {
+        ArrayDeque<BSN<?>> stack = new ArrayDeque<>();
+        ArrayDeque<BSN<?>> dependencies = new ArrayDeque<>();
+        for (BSN<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
@@ -122,9 +125,9 @@ final class DependencyGraph {
         // Instantiate all singletons
         // System.out.println(root.box.services().exports);
 
-        for (ServiceNode<?> node : ib.nodes) {
-            if (node instanceof BuildServiceNodeDefault) {
-                BuildServiceNodeDefault<?> s = (BuildServiceNodeDefault<?>) node;
+        for (ServiceNode<?> node : ir.nodes) {
+            if (node instanceof BSNDefault) {
+                BSNDefault<?> s = (BSNDefault<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }
@@ -132,9 +135,9 @@ final class DependencyGraph {
         }
 
         // Okay we are finished, convert all nodes to runtime nodes.
-        ib.nodes.toRuntimeNodes();
-        if (ib.nodes != ib.exports) {
-            ib.exports.toRuntimeNodes();
+        ir.nodes.toRuntimeNodes();
+        if (ir.nodes != ib.resolver.exports) {
+            ib.resolver.exports.toRuntimeNodes();
         }
     }
 
@@ -145,21 +148,21 @@ final class DependencyGraph {
 
         InjectorBuilder services = graph.ib;
 
-        for (ServiceNode<?> nn : services.nodes) {
-            BuildServiceNode<?> node = (BuildServiceNode<?>) nn;
+        for (ServiceNode<?> nn : services.resolver.nodes) {
+            BSN<?> node = (BSN<?>) nn;
 
             if (node.needsResolving()) {
                 graph.detectCyclesFor.add(node);
                 List<InternalDependencyDescriptor> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceNode<?> resolveTo = services.nodes.getNode(dependency);
-                    services.recordResolvedDependency(node, dependency, resolveTo, false);
+                    ServiceNode<?> resolveTo = services.resolver.nodes.getNode(dependency);
+                    services.resolver.recordResolvedDependency(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;
                 }
             }
         }
-        services.checkForMissingDependencies();
+        services.resolver.checkForMissingDependencies();
         // b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
     }
 }

@@ -29,16 +29,16 @@ import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 
 /** A build node that imports a service from another injector. */
-class BuildServiceNodeImported<T> extends BuildServiceNode<T> {
+class BSNImported<T> extends BSN<T> {
 
     /** The node to import. */
     final ServiceNode<T> importFrom;
 
     /** The bind injector source. */
-    final InjectorImporter injectorImporter;
+    final ImportedInjector injectorImporter;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BuildServiceNodeImported(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, InjectorImporter injectorToImportFrom,
+    BSNImported(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ImportedInjector injectorToImportFrom,
             ServiceNode<T> importFrom) {
         super(injectorConfiguration, configSite, List.of());
         this.importFrom = requireNonNull(importFrom);
@@ -49,8 +49,8 @@ class BuildServiceNodeImported<T> extends BuildServiceNode<T> {
 
     @Override
     @Nullable
-    BuildServiceNode<?> declaringNode() {
-        return (importFrom instanceof BuildServiceNode) ? ((BuildServiceNode<?>) importFrom).declaringNode() : null;
+    BSN<?> declaringNode() {
+        return (importFrom instanceof BSN) ? ((BSN<?>) importFrom).declaringNode() : null;
     }
 
     /** {@inheritDoc} */

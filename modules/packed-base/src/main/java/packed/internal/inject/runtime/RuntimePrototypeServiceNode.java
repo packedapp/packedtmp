@@ -24,7 +24,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
-import packed.internal.inject.buildtime.BuildServiceNode;
+import packed.internal.inject.buildtime.BSN;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.util.ThrowableUtil;
 
@@ -46,7 +46,7 @@ public final class RuntimePrototypeServiceNode<T> extends AbstractRuntimeService
     /**
      * @param node
      */
-    public RuntimePrototypeServiceNode(BuildServiceNode<T> node, FunctionHandle<T> function) {
+    public RuntimePrototypeServiceNode(BSN<T> node, FunctionHandle<T> function) {
         super(node);
         this.invoker = requireNonNull(function);
         this.providers = new Provider[node.dependencies.size()];

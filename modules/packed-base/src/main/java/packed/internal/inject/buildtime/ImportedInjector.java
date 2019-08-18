@@ -33,32 +33,32 @@ import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
 
 /** Provides services from an existing Injector. */
-final class InjectorImporter {
+final class ImportedInjector {
 
-    /** The injector we are providing services from. */
-    private final Injector injector;
+    /** The injector to import services from. */
+    private final AbstractInjector injector;
 
-    /** The wiring options used when creating this configuration. */
+    /** Any wirelets used when importing the injector. */
     final WireletList wirelets;
 
-    /** The configuration site of this object. */
+    /** The configuration site of the import statement. */
     private final InternalConfigSite configSite;
 
-    private final InjectorBuilder ib;
+    /** The injector builder into which the injector is imported. */
+    private final InjectorBuilder builder;
 
-    public InjectorImporter(PackedContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
-        this.ib = requireNonNull(ib);
-        this.injector = requireNonNull(injector, "injector is null");
+    ImportedInjector(PackedContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
+        this.builder = requireNonNull(ib);
+        if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
+            throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
+        }
+        this.injector = (AbstractInjector) injector;
         this.wirelets = WireletList.of(wirelets);
         this.configSite = containerConfiguration.configSite().thenStack(ConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
-    public void importAll() {
-        if (!(injector instanceof AbstractInjector)) {
-            throw new IllegalArgumentException("Currently only Injectors created by Packed are supported");
-        }
-        List<ServiceNode<?>> nodes = ((AbstractInjector) injector).copyNodes();
-        processImport(nodes);
+    void importAll() {
+        processImport(injector.copyNodes());
     }
 
     /**
@@ -68,10 +68,10 @@ final class InjectorImporter {
     private void processImport(List<? extends ServiceNode<?>> externalNodes) {
 
         // First create service build nodes for every existing node
-        HashMap<Key<?>, BuildServiceNode<?>> nodes = new HashMap<>();
+        HashMap<Key<?>, BSN<?>> nodes = new HashMap<>();
         for (ServiceNode<?> node : externalNodes) {
             if (!node.isPrivate()) {
-                BuildServiceNodeImported<?> n = new BuildServiceNodeImported<>(ib, configSite.replaceParent(node.configSite()), this, node);
+                BSNImported<?> n = new BSNImported<>(builder, configSite.replaceParent(node.configSite()), this, node);
                 nodes.put(node.key(), n);
             }
         }
@@ -85,14 +85,14 @@ final class InjectorImporter {
         }
 
         // Add all to the private node map
-        for (BuildServiceNode<?> node : nodes.values()) {
-            if (!ib.nodes.putIfAbsent(node)) {
+        for (BSN<?> node : nodes.values()) {
+            if (!builder.resolver.nodes.putIfAbsent(node)) {
                 throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
             }
         }
     }
 
-    private HashMap<Key<?>, BuildServiceNode<?>> processWirelet(Wirelet wirelet, HashMap<Key<?>, BuildServiceNode<?>> nodes) {
+    private HashMap<Key<?>, BSN<?>> processWirelet(Wirelet wirelet, HashMap<Key<?>, BSN<?>> nodes) {
         // if (true) {
         // throw new Error();
         // }
@@ -109,10 +109,10 @@ final class InjectorImporter {
 
         // Make runtime nodes....
 
-        HashMap<Key<?>, BuildServiceNode<?>> newNodes = new HashMap<>();
+        HashMap<Key<?>, BSN<?>> newNodes = new HashMap<>();
 
-        for (Iterator<BuildServiceNode<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
-            BuildServiceNode<?> node = iterator.next();
+        for (Iterator<BSN<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
+            BSN<?> node = iterator.next();
             Key<?> existing = node.key();
 
             // invoke the import function on the stage

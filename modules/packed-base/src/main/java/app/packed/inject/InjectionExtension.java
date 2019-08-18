@@ -143,7 +143,7 @@ public final class InjectionExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(configuration, builder.publicInjector); // Taken by PackedContainer
+        builder.onPrepareContainerInstantiation(context);
     }
 
     /**
@@ -214,8 +214,8 @@ public final class InjectionExtension extends Extension {
      * Adds the specified key to the list of optional services.
      * <p>
      * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
-     * via # {@link #require(Key)} or implicitly via, for example, a constructor dependency. The key will be removed
-     * from the list of optional services and only be listed as a required key.
+     * via # {@link #require(Key)} or implicitly via, for example, a constructor dependency. The key will be removed from
+     * the list of optional services and only be listed as a required key.
      * 
      * @param key
      *            the key to add

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.ProvideHelper;
 import app.packed.inject.InstantiationMode;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.buildtime.BuildServiceNode;
+import packed.internal.inject.buildtime.BSN;
 
 /**
  * The runtime representation of an aliased service which delegates the getInstance() to the aliased node. This type is
@@ -37,7 +37,7 @@ public final class RuntimeDelegateServiceNode<T> extends AbstractRuntimeServiceN
      * @param aliasOf
      *            the build time alias node to create a runtime node from
      */
-    public RuntimeDelegateServiceNode(BuildServiceNode<T> buildNode, ServiceNode<T> aliasOf) {
+    public RuntimeDelegateServiceNode(BSN<T> buildNode, ServiceNode<T> aliasOf) {
         super(buildNode);
         this.aliasOf = requireNonNull(aliasOf.toRuntimeNode());
     }
