@@ -15,7 +15,8 @@
  */
 package packed.internal.inject.annotations;
 
-import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,9 @@ import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.invoke.ExecutableFunctionHandle;
+import packed.internal.invoke.FieldFunctionHandle;
+import packed.internal.invoke.InvokableMember;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
@@ -75,18 +79,23 @@ public final class AtProvidesGroup {
         }
 
         void onFieldProvide(AnnotatedFieldHook<Provide> amh) {
-            tryAdd0(amh.lookup(), InternalFieldDescriptor.of(amh.field()), Key.fromField(amh.field().newField()), amh.annotation(), List.of());
+            InternalFieldDescriptor fd = InternalFieldDescriptor.of(amh.field());
+            FieldFunctionHandle<?> ffh = new FieldFunctionHandle<>(fd.getTypeLiteral(), fd, amh.varHandle(), null);
+            Field field = amh.field().newField();
+            tryAdd0(amh.getter(), ffh, fd, Key.fromField(field), amh.annotation(), List.of());
         }
 
         void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
             InternalMethodDescriptor descriptor = (InternalMethodDescriptor) amh.method();
-            tryAdd0(amh.lookup(), descriptor, Key.fromMethodReturnType(descriptor.newMethod()), amh.annotation(),
+
+            ExecutableFunctionHandle<?> efh = new ExecutableFunctionHandle<>(descriptor.returnTypeLiteral(), descriptor, amh.methodHandle(), null);
+            tryAdd0(amh.methodHandle(), efh, descriptor, Key.fromMethodReturnType(descriptor.newMethod()), amh.annotation(),
                     InternalDependencyDescriptor.fromExecutable(descriptor));
         }
 
-        private AtProvides tryAdd0(Lookup lookup, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,
+        private AtProvides tryAdd0(MethodHandle mh, InvokableMember<?> im, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,
                 List<InternalDependencyDescriptor> dependencies) {
-            AtProvides ap = new AtProvides(lookup, descriptor, key, provides, dependencies);
+            AtProvides ap = new AtProvides(mh, descriptor, im, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
 
             // Check this

@@ -17,7 +17,7 @@ package packed.internal.inject.annotations;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -29,10 +29,11 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.invoke.InvokableMember;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /** A descriptor for a member annotated with {@link Provide}. */
-public final class AtProvides extends AtDependable {
+public final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */
     @Nullable
@@ -52,8 +53,16 @@ public final class AtProvides extends AtDependable {
 
     public final Provide provides;
 
-    AtProvides(Lookup lookup, InternalMemberDescriptor member, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
-        super(member.newInvoker(lookup), dependencies);
+    /** The dependencies (parameters) of the member. */
+    public final List<InternalDependencyDescriptor> dependencies;
+
+    /** The invokable member. */
+    public final InvokableMember<?> invokable;
+
+    AtProvides(MethodHandle mh, InternalMemberDescriptor member, InvokableMember<?> invokable, Key<?> key, Provide provides,
+            List<InternalDependencyDescriptor> dependencies) {
+        this.invokable = requireNonNull(invokable);
+        this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);
         this.description = provides.description().length() > 0 ? provides.description() : null;
         this.member = requireNonNull(member);

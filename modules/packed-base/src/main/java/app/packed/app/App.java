@@ -221,6 +221,20 @@ public interface App extends AutoCloseable {
         return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 
+    static App initialized(ArtifactSource source, Wirelet... wirelets) {
+        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+    }
+
+    static App starting(ArtifactSource source, Wirelet... wirelets) {
+        App app = AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
+        app.startAsync();
+        return app;
+    }
+
+    static App started(ArtifactSource source, Wirelet... wirelets) {
+        return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets).start();
+    }
+
     /**
      * This method will create and start an {@link App application} from the specified container source. Blocking until the
      * run state of the application is {@link RunState#TERMINATED}.

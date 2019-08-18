@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -196,12 +195,6 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
             getter = g = builder.lookup().unreflectGetter(field);
         }
         return g;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Lookup lookup() {
-        return builder.lookup().lookup();// Temporary method
     }
 
     /** {@inheritDoc} */

@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -89,11 +88,6 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
         }
         builder.checkActive();
         return o.applyStaticHook(this);
-    }
-
-    @Override
-    public Lookup lookup() {
-        return builder.lookup().lookup();// Temporary method
     }
 
     /** {@inheritDoc} */

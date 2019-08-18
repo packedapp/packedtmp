@@ -128,8 +128,6 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      */
     MethodHandle getter();
 
-    Lookup lookup(); // TODO remove this method
-
     /**
      * Returns a method handle giving read access to the underlying field.
      * <p>

@@ -49,8 +49,6 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      */
     <E> E applyOnStaticMethod(MethodOperator<E> operator);
 
-    Lookup lookup(); // TODO remove this method when possible...
-
     /**
      * Returns the annotated method.
      * 
