@@ -84,7 +84,7 @@ public final class LifecycleExtension extends Extension {
         // invocation multiple times??? Error?
         // What if we have a @Main method? override. What about the dependencies
         // from the @Main method???
-        use(InjectionExtension.class).addRequired(serviceKey);
+        use(InjectionExtension.class).require(serviceKey);
         // How does this work implementation wise??
         // We call InjectionExtension.require(serviceKey) (Which backtraces stackwalker)
     }

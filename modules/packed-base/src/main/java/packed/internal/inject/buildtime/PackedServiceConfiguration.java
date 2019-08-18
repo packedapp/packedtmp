@@ -27,7 +27,7 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
-public class PackedServiceConfiguration<T> implements ServiceConfiguration<T> {
+class PackedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     private final PackedContainerConfiguration containerConfiguration;
 

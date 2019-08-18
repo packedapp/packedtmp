@@ -29,7 +29,7 @@ import packed.internal.container.DefaultComponentConfiguration;
 /**
  *
  */
-public final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
+final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
 
     /** The component we are exposing. */
     private final DefaultComponentConfiguration component;

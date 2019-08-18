@@ -33,7 +33,7 @@ import packed.internal.inject.AbstractInjector;
 import packed.internal.inject.ServiceNode;
 
 /** Provides services from an existing Injector. */
-public final class InjectorImporter {
+final class InjectorImporter {
 
     /** The injector we are providing services from. */
     private final Injector injector;

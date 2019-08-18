@@ -32,7 +32,7 @@ import packed.internal.inject.runtime.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.KeyBuilder;
 
-public final class DependencyGraph {
+final class DependencyGraph {
 
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildServiceNode<?>> detectCyclesFor;

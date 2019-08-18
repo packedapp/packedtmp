@@ -28,7 +28,7 @@ import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 /**
  * A build node representing an exported service.
  */
-public final class BuildServiceNodeExported<T> extends BuildServiceNode<T> {
+final class BuildServiceNodeExported<T> extends BuildServiceNode<T> {
 
     /** The node that is exposed. */
     public ServiceNode<T> exportOf;

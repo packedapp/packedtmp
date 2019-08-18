@@ -29,7 +29,7 @@ import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
 import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
 
 /** A build node that imports a service from another injector. */
-public class BuildServiceNodeImported<T> extends BuildServiceNode<T> {
+class BuildServiceNodeImported<T> extends BuildServiceNode<T> {
 
     /** The node to import. */
     final ServiceNode<T> importFrom;

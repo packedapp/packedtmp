@@ -44,7 +44,7 @@ import packed.internal.util.ThrowableUtil;
  * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
  * makes extending it with {@link ProvidedComponentConfiguration} much easier.
  */
-public class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
+class BuildServiceNodeDefault<T> extends BuildServiceNode<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];

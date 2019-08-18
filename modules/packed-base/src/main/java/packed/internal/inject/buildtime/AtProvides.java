@@ -33,7 +33,7 @@ import packed.internal.invoke.InvokableMember;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /** A descriptor for a member annotated with {@link Provide}. */
-public final class AtProvides {
+final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */
     @Nullable

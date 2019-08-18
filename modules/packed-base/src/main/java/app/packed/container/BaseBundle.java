@@ -208,11 +208,11 @@ public abstract class BaseBundle extends Bundle {
     }
 
     protected final void requireService(Class<?> key) {
-        injector().addRequired(Key.of(key));
+        injector().require(Key.of(key));
     }
 
     protected final void requireService(Key<?> key) {
-        injector().addRequired(key);
+        injector().require(key);
     }
 
     protected final void serviceManualRequirements() {

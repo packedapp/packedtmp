@@ -55,37 +55,6 @@ public final class InjectionExtension extends Extension {
         this.builder = new InjectorBuilder(configuration);
     }
 
-    /**
-     * Adds the specified key to the list of optional services.
-     * <p>
-     * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
-     * via # {@link #addRequired(Key)} or implicitly via, for example, a constructor dependency. The key will be removed
-     * from the list of optional services and only be listed as a required key.
-     * 
-     * @param key
-     *            the key to add
-     */
-    // Should be have varargs???, or as a minimum support method chaining
-    public void addOptional(Key<?> key) {
-        requireNonNull(key, "key is null");
-        checkConfigurable();
-        builder.addOptional(key);
-    }
-
-    /**
-     * Explicitly adds the specified key to the list of required services for the underlying container.
-     * 
-     * @param key
-     *            the key to add
-     */
-    // Contracts as well??? Would be nice to get out of the way..On the other hand its two methods...
-    // And I don't know if you publically want to display the contracts you implement????
-    public void addRequired(Key<?> key) {
-        requireNonNull(key, "key is null");
-        checkConfigurable();
-        builder.addRequired(key);
-    }
-
     /** {@inheritDoc} */
     @Override
     public void buildBundle(Builder descriptor) {
@@ -156,7 +125,7 @@ public final class InjectionExtension extends Extension {
     }
 
     /**
-     * Requires that all requirements are explicitly added via either {@link #addOptional(Key)}, {@link #addRequired(Key)}
+     * Requires that all requirements are explicitly added via either {@link #requireOptionally(Key)}, {@link #require(Key)}
      * or via implementing a contract.
      */
     // Kan vi lave denne generisk paa tvaers af extensions...
@@ -225,6 +194,37 @@ public final class InjectionExtension extends Extension {
         checkConfigurable();
         ComponentConfiguration cc = use(ComponentExtension.class).install(instance);
         return builder.provideInstance(cc, instance);
+    }
+
+    /**
+     * Explicitly adds the specified key to the list of required services for the underlying container.
+     * 
+     * @param key
+     *            the key to add
+     */
+    // Contracts as well??? Would be nice to get out of the way..On the other hand its two methods...
+    // And I don't know if you publically want to display the contracts you implement????
+    public void require(Key<?> key) {
+        requireNonNull(key, "key is null");
+        checkConfigurable();
+        builder.addRequired(key);
+    }
+
+    /**
+     * Adds the specified key to the list of optional services.
+     * <p>
+     * If a key is added optionally and the same key is later added as a normal (mandatory) requirement either explicitly
+     * via # {@link #require(Key)} or implicitly via, for example, a constructor dependency. The key will be removed
+     * from the list of optional services and only be listed as a required key.
+     * 
+     * @param key
+     *            the key to add
+     */
+    // Should be have varargs???, or as a minimum support method chaining
+    public void requireOptionally(Key<?> key) {
+        requireNonNull(key, "key is null");
+        checkConfigurable();
+        builder.addOptional(key);
     }
 
     @OnHook(AtProvidesGroup.Builder.class)
