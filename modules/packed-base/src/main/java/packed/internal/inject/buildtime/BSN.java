@@ -41,8 +41,6 @@ public abstract class BSN<T> implements ServiceNode<T> {
     /** An empty array of nodes */
     private static final ServiceNode<?>[] EMPTY_ARRAY = new ServiceNode<?>[0];
 
-    public boolean autoRequires;
-
     /** The configuration site of this object. */
     private final InternalConfigSite configSite;
 
@@ -80,7 +78,6 @@ public abstract class BSN<T> implements ServiceNode<T> {
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceNode<?>[dependencies.size()];
-        this.autoRequires = injectorBuilder.autoRequires;
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
             for (InternalDependencyDescriptor e : dependencies) {

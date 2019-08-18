@@ -130,8 +130,11 @@ public final class InjectionExtension extends Extension {
      */
     // Kan vi lave denne generisk paa tvaers af extensions...
     // disableAutomaticRequirements()
+    // Jeg taenker lidt det er enten eller. Vi kan ikke goere det per component.
+    // Problemet er dem der f.eks. har metoder
     public void manualRequirementsManagement() {
-        builder.autoRequires = false;
+        checkConfigurable();
+        builder.manualRequirementsManagement();
     }
 
     /** {@inheritDoc} */
@@ -205,9 +208,8 @@ public final class InjectionExtension extends Extension {
     // Contracts as well??? Would be nice to get out of the way..On the other hand its two methods...
     // And I don't know if you publically want to display the contracts you implement????
     public void require(Key<?> key) {
-        requireNonNull(key, "key is null");
         checkConfigurable();
-        builder.addRequired(key);
+        builder.requireExplicit(key, false);
     }
 
     /**
@@ -222,9 +224,8 @@ public final class InjectionExtension extends Extension {
      */
     // Should be have varargs???, or as a minimum support method chaining
     public void requireOptionally(Key<?> key) {
-        requireNonNull(key, "key is null");
         checkConfigurable();
-        builder.addOptional(key);
+        builder.requireExplicit(key, true);
     }
 
     @OnHook(AtProvidesGroup.Builder.class)

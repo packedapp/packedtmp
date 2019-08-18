@@ -19,13 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.inject.InjectionException;
+import app.packed.inject.InjectorContract;
 import app.packed.inject.ServiceDependency;
+import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceNode;
@@ -38,7 +42,13 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 /**
  *
  */
-class InjectorResolver {
+final class InjectorResolver {
+
+    /** A set of all explicitly registered required service keys. */
+    final HashSet<Key<?>> required = new HashSet<>();
+
+    /** A set of all explicitly registered optional service keys. */
+    final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     final ServiceNodeMap exports = new ServiceNodeMap();
 
@@ -65,7 +75,7 @@ class InjectorResolver {
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (Entry<BSN<?>, ServiceDependency> e : missingDependencies) {
-                if (!e.getValue().isOptional() && !e.getKey().autoRequires) {
+                if (!e.getValue().isOptional() && ib.manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
@@ -111,8 +121,46 @@ class InjectorResolver {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    void build(ArtifactBuildContext buildContext) {
+        for (BSN<?> e : ib.nodes) {
+            if (!nodes.putIfAbsent(e)) {
+                System.err.println("OOPS " + e.getKey());
+            }
+        }
+        for (BSNExported<?> e : ib.exportedNodes) {
+            ServiceNode<?> sn = nodes.getRecursive(e.getKey());
+            if (sn == null) {
+                throw new IllegalStateException("Could not find node to export " + e.getKey());
+            }
+            e.exportOf = (ServiceNode) sn;
+            exports.put(e);
+        }
+        DependencyGraph dg = new DependencyGraph(ib.container, ib);
+
+        if (buildContext.isInstantiating()) {
+            dg.instantiate();
+        } else {
+            dg.analyze();
+        }
+    }
+
     public void recordMissingDependency(BSN<?> node, ServiceDependency dependency, boolean fromParent) {
 
+    }
+
+    public void buildContract(InjectorContract.Builder builder) {
+        if (requiredOptionally != null) {
+            requiredOptionally.forEach(k -> {
+                // We remove all optional dependencies that are also mandatory.
+                if (required == null || !required.contains(k)) {
+                    builder.addOptional(k);
+                }
+            });
+        }
+        if (required != null) {
+            required.forEach(k -> builder.addRequires(k));
+        }
     }
 
     /**
@@ -133,11 +181,11 @@ class InjectorResolver {
         }
         m.add(new SimpleImmutableEntry<>(node, dependency));
 
-        if (node.autoRequires) {
+        if (!ib.manualRequirementsManagement) {
             if (dependency.isOptional()) {
-                ib.requiredOptionally.add(dependency.key());
+                requiredOptionally.add(dependency.key());
             } else {
-                ib.required.add(dependency.key());
+                required.add(dependency.key());
             }
         }
     }

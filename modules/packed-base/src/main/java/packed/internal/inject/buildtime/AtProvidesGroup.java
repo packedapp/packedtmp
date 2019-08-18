@@ -46,6 +46,7 @@ public final class AtProvidesGroup {
     public final boolean hasInstanceMembers;
 
     /** An immutable map of all providing members. */
+    // Not sure we need a map, A list should be fine
     public final Map<Key<?>, AtProvides> members;
 
     /**

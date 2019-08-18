@@ -18,18 +18,17 @@ package packed.internal.inject.buildtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.BundleDescriptor.Builder;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorContract;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
@@ -45,23 +44,28 @@ import packed.internal.invoke.FunctionHandle;
 /** This class records all service related information for a single box. */
 public final class InjectorBuilder {
 
-    static FeatureKey<BSNDefault<?>> FK = new FeatureKey<>() {};
-
-    public boolean autoRequires = true;
+    /** A that is used to store parent nodes */
+    private static FeatureKey<BSNDefault<?>> FK = new FeatureKey<>() {};
 
     /** The configuration of the container that is being build. */
     final PackedContainerConfiguration container;
 
-    /** All explicitly exported nodes in order of registration. */
+    final ArrayList<ExplicitRequirement> explicitRequirements = new ArrayList<>();
+
+    /** All explicitly exported nodes in order of export. */
     final ArrayList<BSNExported<?>> exportedNodes = new ArrayList<>();
 
-    ArrayList<BSN<?>> nodes = new ArrayList<>();
+    /**
+     * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
+     * {@link InjectionExtension#requireOptionally(Key)} and add contract.
+     * <p>
+     * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
+     * hook methods that make use of injection. Because they may not be processed until the bitter end.
+     */
+    boolean manualRequirementsManagement;
 
-    /** A set of all explicitly registered required service keys. */
-    final HashSet<Key<?>> required = new HashSet<>();
-
-    /** A set of all explicitly registered optional service keys. */
-    final HashSet<Key<?>> requiredOptionally = new HashSet<>();
+    /** All nodes. */
+    final ArrayList<BSN<?>> nodes = new ArrayList<>();
 
     final InjectorResolver resolver = new InjectorResolver(this);
 
@@ -69,90 +73,24 @@ public final class InjectorBuilder {
         this.container = requireNonNull(container);
     }
 
-    /**
-     * Adds the specified key to the list of optional services.
-     * 
-     * @param key
-     *            the key to add
-     */
-    public void addOptional(Key<?> key) {
-        // Hvis vi gemmer en required, saa burde vi faktisk have et multiset???
-        // Maaske gem den i liste, og saa alt efter om vi skal vide requires eller
-        // bare noegler
-        // ExplicityRequiredKeys(Key, isOptional, ConfigSite)
-        requireNonNull(key, "key is null");
-        requiredOptionally.add(key);
-    }
-
-    /**
-     * Adds the specified key to the list of required services.
-     * 
-     * @param key
-     *            the key to add
-     */
-    public void addRequired(Key<?> key) {
-        requireNonNull(key, "key is null");
-        required.add(key);
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void build(ArtifactBuildContext buildContext) {
-        for (BSN<?> e : nodes) {
-            if (!resolver.nodes.putIfAbsent(e)) {
-                System.err.println("OOPS " + e.getKey());
-            }
-        }
-        for (BSNExported<?> e : exportedNodes) {
-            ServiceNode<?> sn = resolver.nodes.getRecursive(e.getKey());
-            if (sn == null) {
-                throw new IllegalStateException("Could not find node to export " + e.getKey());
-            }
-            e.exportOf = (ServiceNode) sn;
-            resolver.exports.put(e);
-        }
-        DependencyGraph dg = new DependencyGraph(container, this);
-
-        if (buildContext.isInstantiating()) {
-            dg.instantiate();
-        } else {
-            dg.analyze();
-        }
+        resolver.build(buildContext);
     }
 
-    public void buildBundle(Builder descriptor) {
+    public void buildBundle(BundleDescriptor.Builder builder) {
+        // need to have resolved successfully
         for (ServiceNode<?> n : resolver.nodes) {
             if (n instanceof BSN) {
-                descriptor.addServiceDescriptor(((BSN<?>) n).toDescriptor());
+                builder.addServiceDescriptor(((BSN<?>) n).toDescriptor());
             }
         }
 
         for (BSN<?> n : exportedNodes) {
             if (n instanceof BSNExported) {
-                descriptor.contract().services().addProvides(n.getKey());
+                builder.contract().services().addProvides(n.getKey());
             }
         }
-
-        buildContract(descriptor.contract().services());
-    }
-
-    public void buildContract(InjectorContract.Builder builder) {
-        // Why do we need that list
-        // for (ServiceBuildNode<?> n : exportedNodes) {
-        // if (n instanceof ServiceBuildNodeExposed) {
-        // builder.addProvides(n.getKey());
-        // }
-        // }
-        if (requiredOptionally != null) {
-            requiredOptionally.forEach(k -> {
-                // We remove all optional dependencies that are also mandatory.
-                if (required == null || !required.contains(k)) {
-                    builder.addOptional(k);
-                }
-            });
-        }
-        if (required != null) {
-            required.forEach(k -> builder.addRequires(k));
-        }
+        resolver.buildContract(builder.contract().services());
     }
 
     public <T> ServiceConfiguration<T> exportKey(Key<T> key, InternalConfigSite cs) {
@@ -165,8 +103,13 @@ public final class InjectorBuilder {
         new ImportedInjector(container, this, injector, wirelets).importAll();
     }
 
+    /** Enables manual requirements management. */
+    public void manualRequirementsManagement() {
+        manualRequirementsManagement = true;
+    }
+
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(container, resolver.publicInjector); // Taken by PackedContainer
+        context.put(container, resolver.publicInjector); // Used by PackedContainer
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -182,34 +125,46 @@ public final class InjectorBuilder {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
-        // First see if we have installed a node via @Provides annotations.
-        BSNDefault<?> sc = cc.features().get(InjectorBuilder.FK);
-        if (sc == null) {
-            sc = new BSNDefault<T>(this, (InternalConfigSite) cc.configSite(), instance);
+        // First see if we have already installed the node. This happens in #set if the component container any members
+        // annotated with @Provides
+        BSNDefault<?> node = cc.features().get(InjectorBuilder.FK);
+
+        if (node == null) {
+            // No node found, components has no @Provides method, create a new node
+            node = new BSNDefault<T>(this, (InternalConfigSite) cc.configSite(), instance);
         }
 
-        sc.as((Key) Key.of(instance.getClass()));
-        nodes.add(sc);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSNDefault) sc);
+        node.as((Key) Key.of(instance.getClass()));
+        nodes.add(node);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSNDefault) node);
+    }
+
+    public void requireExplicit(Key<?> key, boolean isOptional) {
+        explicitRequirements.add(new ExplicitRequirement(key, isOptional));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void set(ComponentConfiguration cc, AtProvidesGroup apg) {
-        BSNDefault sc;
+        // This is a bit complicated, to define
+        BSNDefault parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
-            sc = new BSNDefault(this, (InternalConfigSite) cc.configSite(), instance);
+            parentNode = new BSNDefault(this, (InternalConfigSite) cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
-            sc = new BSNDefault<>(this, cc, InstantiationMode.SINGLETON, container.lookup.readable(factory.function()), (List) factory.dependencies());
+            parentNode = new BSNDefault<>(this, cc, InstantiationMode.SINGLETON, container.lookup.readable(factory.function()), (List) factory.dependencies());
         }
 
-        sc.hasInstanceMembers = apg.hasInstanceMembers;
-        // AtProvidesGroup has already validated that the specified type does not have any members that provide services with
-        // the same key, so we can just add them now without any verification
-        for (AtProvides member : apg.members.values()) {
-            nodes.add(sc.provide(member));// put them directly
+        // If any of the @Provide methods are instance members the parent node needs special treatment.
+        // As it needs to be constructed, before the field or method can provide services.
+        parentNode.hasInstanceMembers = apg.hasInstanceMembers;
+
+        // Add each @Provide as children of the parent node
+        for (AtProvides provides : apg.members.values()) {
+            nodes.add(parentNode.provide(provides));
         }
-        cc.features().set(InjectorBuilder.FK, sc);
+
+        // Set the parent node, so it can be found from provideFactory or provideInstance
+        cc.features().set(InjectorBuilder.FK, parentNode);
     }
 }
