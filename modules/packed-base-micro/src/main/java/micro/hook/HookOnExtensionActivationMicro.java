@@ -32,10 +32,10 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.extension.ActivateExtension;
-import app.packed.extension.AnnotatedFieldHook;
-import app.packed.extension.AnnotatedMethodHook;
-import app.packed.extension.Extension;
+import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.AnnotatedFieldHook;
+import app.packed.container.extension.AnnotatedMethodHook;
+import app.packed.container.extension.Extension;
 
 /**
  *

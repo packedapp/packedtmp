@@ -24,10 +24,10 @@ import java.util.IdentityHashMap;
 import java.util.stream.Stream;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.extension.ActivateExtension;
-import app.packed.extension.Extension;
+import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.extension.hook.ExtensionHookPerComponentGroup;
+import packed.internal.container.extension.hook.ExtensionHookPerComponentGroup;
 
 /**
  *

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerConfiguration;
 

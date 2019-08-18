@@ -15,7 +15,7 @@
  */
 package app.packed.errorhandling;
 
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 
 /**
  *

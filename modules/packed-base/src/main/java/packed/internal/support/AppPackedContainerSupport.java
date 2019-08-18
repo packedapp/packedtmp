@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public final class AppPackedContainerSupport {

@@ -27,7 +27,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
 import packed.internal.support.AppPackedContainerSupport;
 

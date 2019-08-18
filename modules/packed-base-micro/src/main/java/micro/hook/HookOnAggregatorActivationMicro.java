@@ -16,12 +16,12 @@
 package micro.hook;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.extension.ActivateExtension;
-import app.packed.extension.AnnotatedFieldHook;
-import app.packed.extension.AnnotatedMethodHook;
-import app.packed.extension.Extension;
-import app.packed.extension.OnHook;
-import app.packed.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.AnnotatedFieldHook;
+import app.packed.container.extension.AnnotatedMethodHook;
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.OnHook;
+import app.packed.container.extension.OnHookAggregateBuilder;
 
 /**
  *

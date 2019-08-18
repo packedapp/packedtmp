@@ -17,7 +17,7 @@ package packed.internal.container;
 
 import java.util.IdentityHashMap;
 
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 
 /**
  *

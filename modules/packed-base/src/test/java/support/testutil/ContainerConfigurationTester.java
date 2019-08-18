@@ -30,7 +30,7 @@ import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 
 /**
  *

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests basic functionality of a {@link Extension}. */

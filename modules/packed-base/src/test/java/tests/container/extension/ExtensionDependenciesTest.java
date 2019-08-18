@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 import support.testutil.AbstractArtifactTest;
 
 /**

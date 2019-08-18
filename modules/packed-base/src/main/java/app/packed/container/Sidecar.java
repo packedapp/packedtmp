@@ -17,7 +17,7 @@ package app.packed.container;
 
 import java.util.Optional;
 
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 
 /**
  *

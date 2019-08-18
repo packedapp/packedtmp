@@ -17,7 +17,7 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.extension.Extension;
+import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
