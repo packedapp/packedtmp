@@ -90,11 +90,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.wirelets = WireletList.of(wirelets);
     }
 
-    private PackedContainerConfiguration(PackedContainerConfiguration parent, ArtifactSource source, Wirelet... wirelets) {
+    private PackedContainerConfiguration(PackedContainerConfiguration parent, ArtifactSource source, WireletList wirelets) {
         super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
         this.source = requireNonNull(source);
         this.lookup = this.configuratorCache = ContainerModel.of(source.getClass());
-        this.wirelets = WireletList.of(wirelets);
+        this.wirelets = requireNonNull(wirelets);
     }
 
     /** {@inheritDoc} */
@@ -242,11 +242,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     public void link(Bundle bundle, Wirelet... wirelets) {
-        // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
-        // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-        // type.
-
         requireNonNull(bundle, "bundle is null");
+        WireletList wl = WireletList.of(wirelets);
+
         initializeName(State.LINK_INVOKED, null);
         prepareNewComponent(State.LINK_INVOKED);
 
@@ -254,9 +252,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
         // loop situations, for example, if a bundle recursively links itself which fails by throwing
         // java.lang.StackOverflowError instead of an infinite loop.
-        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wirelets);
+        PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wl);
         dcc.configure();
         addChild(dcc);
+
+        // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
+        // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
+        // type.
     }
 
     /** {@inheritDoc} */

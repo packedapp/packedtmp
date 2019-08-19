@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.buildtime;
+package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.util.Key;
+import java.util.Optional;
 
 /**
  *
  */
-// Could just wrap a contract with
-final class ExplicitRequirement {
+// ContainerFuture???
 
-    final boolean isOptional;
+// Det er ihvertfald Bundle/ContainerConfiguration der returnere den fra link();
+// Den skulle bruges fra Injector til et eller andet....
+interface LinkedBundle {
+    // Path??? Still don't know the rules. Are we safe???-
 
-    final Key<?> key;
+    String name();
 
-    public ExplicitRequirement(Key<?> key, boolean isOptional) {
-        this.key = requireNonNull(key, "key is null");
-        this.isOptional = isOptional;
-    }
+    Optional<String> description();
+
 }

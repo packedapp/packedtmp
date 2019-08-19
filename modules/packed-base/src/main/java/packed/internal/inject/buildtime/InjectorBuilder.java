@@ -50,9 +50,16 @@ public final class InjectorBuilder {
     /** The configuration of the container to which this builder belongs to. */
     final PackedContainerConfiguration container;
 
+    /**
+     * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
+     * {@link InjectionExtension#requireOptionally(Key)}.
+     */
     final ArrayList<ExplicitRequirement> explicitRequirements = new ArrayList<>();
 
-    /** All explicitly exported nodes in order of export. */
+    /**
+     * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
+     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ProvidedComponentConfiguration)}.
+     */
     final ArrayList<BSNExported<?>> exportedNodes = new ArrayList<>();
 
     /**
@@ -60,11 +67,12 @@ public final class InjectorBuilder {
      * {@link InjectionExtension#requireOptionally(Key)} and add contract.
      * <p>
      * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
-     * hook methods that make use of injection. Because they may not be processed until the bitter end.
+     * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
+     * really services registered via the provide methods that could make use of them.
      */
     boolean manualRequirementsManagement;
 
-    /** All nodes. */
+    /** All provided nodes. */
     final ArrayList<BSN<?>> nodes = new ArrayList<>();
 
     final InjectorResolver resolver = new InjectorResolver(this);
@@ -93,17 +101,16 @@ public final class InjectorBuilder {
         resolver.buildContract(builder.contract().services());
     }
 
-    public <T> ServiceConfiguration<T> exportConfiguration(ProvidedComponentConfiguration<T> configuration, InternalConfigSite cs) {
-        PackedProvidedComponentConfiguration<T> ppcc = (PackedProvidedComponentConfiguration<T>) configuration;
-        BSNExported<T> bn = new BSNExported<>(this, cs, ppcc);
-        exportedNodes.add(bn);
-        return bn.expose();
+    public <T> ServiceConfiguration<T> export(InternalConfigSite cs, Key<T> key) {
+        BSNExported<T> node = new BSNExported<>(this, cs, key);
+        exportedNodes.add(node);
+        return node.toServiceConfiguration();
     }
 
-    public <T> ServiceConfiguration<T> exportKey(Key<T> key, InternalConfigSite cs) {
-        BSNExported<T> bn = new BSNExported<>(this, cs, key);
-        exportedNodes.add(bn);
-        return bn.expose();
+    public <T> ServiceConfiguration<T> export(InternalConfigSite cs, ProvidedComponentConfiguration<T> configuration) {
+        BSNExported<T> node = new BSNExported<>(this, cs, (PackedProvidedComponentConfiguration<T>) configuration);
+        exportedNodes.add(node);
+        return node.toServiceConfiguration();
     }
 
     public void importAll(Injector injector, WireletList wirelets) {
@@ -117,6 +124,31 @@ public final class InjectorBuilder {
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         context.put(container, resolver.publicInjector); // Used by PackedContainer
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup apg) {
+        // This is a bit complicated, to define
+        BSNDefault parentNode;
+        if (cc instanceof InstantiatedComponentConfiguration) {
+            Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
+            parentNode = new BSNDefault(this, (InternalConfigSite) cc.configSite(), instance);
+        } else {
+            Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
+            parentNode = new BSNDefault<>(this, cc, InstantiationMode.SINGLETON, container.lookup.readable(factory.function()), (List) factory.dependencies());
+        }
+
+        // If any of the @Provide methods are instance members the parent node needs special treatment.
+        // As it needs to be constructed, before the field or method can provide services.
+        parentNode.hasInstanceMembers = apg.hasInstanceMembers;
+
+        // Add each @Provide as children of the parent node
+        for (AtProvides provides : apg.members.values()) {
+            nodes.add(parentNode.provide(provides));
+        }
+
+        // Set the parent node, so it can be found from provideFactory or provideInstance
+        cc.features().set(InjectorBuilder.FK, parentNode);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -148,30 +180,5 @@ public final class InjectorBuilder {
 
     public void requireExplicit(Key<?> key, boolean isOptional) {
         explicitRequirements.add(new ExplicitRequirement(key, isOptional));
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void set(ComponentConfiguration cc, AtProvidesGroup apg) {
-        // This is a bit complicated, to define
-        BSNDefault parentNode;
-        if (cc instanceof InstantiatedComponentConfiguration) {
-            Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
-            parentNode = new BSNDefault(this, (InternalConfigSite) cc.configSite(), instance);
-        } else {
-            Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
-            parentNode = new BSNDefault<>(this, cc, InstantiationMode.SINGLETON, container.lookup.readable(factory.function()), (List) factory.dependencies());
-        }
-
-        // If any of the @Provide methods are instance members the parent node needs special treatment.
-        // As it needs to be constructed, before the field or method can provide services.
-        parentNode.hasInstanceMembers = apg.hasInstanceMembers;
-
-        // Add each @Provide as children of the parent node
-        for (AtProvides provides : apg.members.values()) {
-            nodes.add(parentNode.provide(provides));
-        }
-
-        // Set the parent node, so it can be found from provideFactory or provideInstance
-        cc.features().set(InjectorBuilder.FK, parentNode);
     }
 }

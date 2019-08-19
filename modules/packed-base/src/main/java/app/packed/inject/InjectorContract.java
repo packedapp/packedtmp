@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import app.packed.util.Key;
 
@@ -158,6 +159,13 @@ public final class InjectorContract {
         return new InjectorContract.Builder();
     }
 
+    public static InjectorContract builder(Consumer<? super InjectorContract.Builder> action) {
+        requireNonNull(action, "action is null");
+        InjectorContract.Builder b = new InjectorContract.Builder();
+        action.accept(b);
+        return b.build();
+    }
+
     static InjectorContract ofInjector(Injector injector) {
         throw new UnsupportedOperationException();
     }
@@ -171,6 +179,14 @@ public final class InjectorContract {
         Builder b = builder();
         List.of(keys).forEach(k -> b.addProvides(k));
         return b.build();
+    }
+
+    public static InjectorContract ofRequired(Class<?>... keys) {
+        return builder(b -> List.of(keys).forEach(k -> b.addRequires(k)));
+    }
+
+    public static InjectorContract ofRequired(Key<?>... keys) {
+        throw new UnsupportedOperationException();
     }
 
     /**

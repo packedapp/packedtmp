@@ -145,7 +145,8 @@ final class InjectorResolver {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     void build(ArtifactBuildContext buildContext) {
-        // First process all nodes, making sure we have no overlap
+
+        // First process all our build nodes, making sure we have no overlap
         HashMap<Key<?>, BSN<?>> uniqueNodes = new HashMap<>();
         HashMap<Key<?>, HashSet<BSN<?>>> dublicateNodes = new HashMap<>();
         for (BSN<?> node : ib.nodes) {
@@ -161,16 +162,25 @@ final class InjectorResolver {
             throw new IllegalStateException("OOPS");
         }
         nodes.addAll(uniqueNodes.values());
-        for (BSNExported<?> node : ib.exportedNodes) {
-            ServiceNode<?> sn = nodes.getRecursive(node.getKey());
-            if (sn == null) {
-                throw new IllegalStateException("Could not find node to export " + node.getKey());
-            }
-            node.exportOf = (ServiceNode) sn;
-            exports.put(node);
-        }
-        DependencyGraph dg = new DependencyGraph(ib.container, ib);
 
+        // Go through all exported nodes, and make sure they can all be fullfilled
+
+        HashMap<Key<?>, HashSet<BSN<?>>> unresolvedExports = new HashMap<>();
+        for (BSNExported<?> node : ib.exportedNodes) {
+            if (node.exportOf == null) {
+                ServiceNode<?> sn = nodes.getRecursive(node.getKey());
+                if (sn == null) {
+                    unresolvedExports.computeIfAbsent(node.key, m -> new HashSet<>()).add(node);
+                }
+                node.exportOf = (ServiceNode) sn;
+                exports.put(node);
+            }
+        }
+        if (!unresolvedExports.isEmpty()) {
+            throw new IllegalStateException("Could not find nodes to export for: " + unresolvedExports.keySet());
+        }
+
+        DependencyGraph dg = new DependencyGraph(ib.container, ib);
         if (buildContext.isInstantiating()) {
             dg.instantiate();
         } else {

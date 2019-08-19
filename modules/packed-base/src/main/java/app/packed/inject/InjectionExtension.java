@@ -37,6 +37,27 @@ import packed.internal.inject.buildtime.InjectorBuilder;
 /**
  * This extension provides functionality for injection and service management.
  */
+
+// Functionality for
+// * Explicitly requiring services: require, requiOpt
+// * Exporting services: export
+// * Importing injectors : importEx
+// * Providing components
+// * Manual Requirements Management
+
+// Future functionality
+/// Contracts
+/// Security for public injector.... Maaske skal man explicit lave en public injector???
+/// Transient requirements Management (automatic require unresolved services from children)
+
+// MHT til Manuel Requirements Management
+// (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseBundle og vaelge det..
+// Hmm saa auto instantiere vi jo injector extensionen
+//// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
+// altid bruge Manual Requirements
+// Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
+// Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
+// Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 public final class InjectionExtension extends Extension {
 
     /** The injector builder that does the hard work. */
@@ -49,20 +70,6 @@ public final class InjectionExtension extends Extension {
     InjectionExtension(PackedContainerConfiguration configuration) {
         this.configuration = requireNonNull(configuration);
         this.builder = new InjectorBuilder(configuration);
-    }
-
-    /**
-     * Invoked by the runtime for every component that has members (fields or methods) that are annotated with
-     * {@link Provide}.
-     * 
-     * @param cc
-     *            the configuration for the annotated component
-     * @param group
-     *            an aggregate object
-     */
-    @OnHook(AtProvidesGroup.Builder.class)
-    void addAnnotatedComponent(ComponentConfiguration cc, AtProvidesGroup group) {
-        builder.set(cc, group);
     }
 
     /** {@inheritDoc} */
@@ -109,14 +116,14 @@ public final class InjectionExtension extends Extension {
         requireNonNull(key, "key is null");
         checkConfigurable();
         InternalConfigSite cs = configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        return builder.exportKey(key, cs);
+        return builder.export(cs, key);
     }
 
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
         InternalConfigSite cs = this.configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        return builder.exportConfiguration(configuration, cs);
+        return builder.export(cs, configuration);
     }
 
     /**
@@ -158,6 +165,19 @@ public final class InjectionExtension extends Extension {
     @Override
     protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         builder.onPrepareContainerInstantiation(context);
+    }
+
+    /**
+     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
+     * 
+     * @param cc
+     *            the configuration of the annotated component
+     * @param group
+     *            a provides aggregate object
+     */
+    @OnHook(AtProvidesGroup.Builder.class)
+    void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup group) {
+        builder.onProvidedMembers(cc, group);
     }
 
     /**
@@ -211,13 +231,22 @@ public final class InjectionExtension extends Extension {
     }
 
     /**
-     * Explicitly adds the specified key to the list of required services for the underlying container.
+     * Explicitly adds the specified key to the list of required services. There are typically two situations in where
+     * explicitly adding required services can be useful:
+     * <p>
+     * First, services that are cannot be specified at build time. But is needed later... Is mainly useful when we the
+     * services to. For example, importAll() that injector might not a service itself. But other that make use of the
+     * injector might.
+     * 
+     * 
+     * <p>
+     * Second, for manual service requirement, although it is often preferable to use contracts here
+     * <p>
+     * In any but the simplest of cases, contracts are useful
      * 
      * @param key
      *            the key to add
      */
-    // Contracts as well??? Would be nice to get out of the way..On the other hand its two methods...
-    // And I don't know if you publically want to display the contracts you implement????
     public void require(Key<?> key) {
         checkConfigurable();
         builder.requireExplicit(key, false);

@@ -94,7 +94,7 @@ final class BSNExported<T> extends BSN<T> {
         return new RSNDelegate<>(this, exportOf);
     }
 
-    ServiceConfiguration<T> expose() {
+    ServiceConfiguration<T> toServiceConfiguration() {
         return new ExportedServiceConfiguration<>(injectorBuilder.container, this);
     }
 
