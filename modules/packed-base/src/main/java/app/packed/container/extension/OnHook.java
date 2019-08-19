@@ -33,22 +33,23 @@ import java.lang.annotation.Target;
 public @interface OnHook {
 
     /**
-     * Whether or not the annotated method will capture hooks from outside of the defining bundle. The default value is
-     * false.
-     * 
-     * @return whether or not the annotated method will capture hooks from outside of the defining bundle
-     */
-    // InternalOnly, ExternalOnly, Both
-    // Makes no sense for extensions
-    boolean exported() default false;// export or exported?? align with @Provides
-
-    /**
      * The returned builder must be instantiable to "app.packed.base"
      * 
      * @return an aggregate builder
      */
-    Class<? extends OnHookAggregateBuilder<?>> value();
+    Class<? extends HookAggregateBuilder<?>> value();
 }
+
+/// **
+// * Whether or not the annotated method will capture hooks from outside of the defining bundle. The default value is
+// * false.
+// *
+// * @return whether or not the annotated method will capture hooks from outside of the defining bundle
+// */
+//// InternalOnly, ExternalOnly, Both
+//// Makes no sense for extensions which is what we use hooks for now, because the exports und so weiter.
+//// Is controlled on a per extension basis
+// boolean exported() default false;// export or exported?? align with @Provides
 
 // boolean disableForOwnContainer
 // transient?? Containers of Containers...Or Apps of Apps... meaning it will hook down the food chain...

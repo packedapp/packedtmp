@@ -77,6 +77,12 @@ public final class InjectorBuilder {
 
     final InjectorResolver resolver = new InjectorResolver(this);
 
+    /**
+     * Creates a new builder.
+     * 
+     * @param container
+     *            the configuration of the container
+     */
     public InjectorBuilder(PackedContainerConfiguration container) {
         this.container = requireNonNull(container);
     }

@@ -21,7 +21,7 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.HookAggregateBuilder;
 
 /**
  *
@@ -37,7 +37,7 @@ public class HookOnAggregatorActivationMicro {
         public void process(ComponentConfiguration cc, String s) {}
     }
 
-    public static class SomeAggegator implements OnHookAggregateBuilder<String> {
+    public static class SomeAggegator implements HookAggregateBuilder<String> {
 
         /** {@inheritDoc} */
         @Override

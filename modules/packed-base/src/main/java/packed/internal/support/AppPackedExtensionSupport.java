@@ -43,7 +43,7 @@ public final class AppPackedExtensionSupport {
          * @param configuration
          *            the configuration of the container in which the extension is registered
          */
-        public abstract void initializeExtension(Extension extension, PackedContainerConfiguration configuration);
+        public abstract void onAdded(Extension extension, PackedContainerConfiguration configuration);
 
         public abstract void onConfigured(Extension extension);
 

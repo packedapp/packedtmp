@@ -20,7 +20,6 @@ import java.util.List;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.OnStart;
 import app.packed.lifecycle.OnStop;
-import packed.internal.inject.buildtime.AtProvidesGroup;
 
 /**
  * Information about methods annotated with {@link OnInitialize}, {@link OnStart} and {@link OnStop}, typically on a
@@ -49,7 +48,7 @@ public class AtLifecycleGroup {
         this.onStop = builder.onStop == null ? List.of() : List.copyOf(builder.onStop);
     }
 
-    /** A builder for an {@link AtProvidesGroup}. */
+    /** A builder for an {@link AtLifecycleGroup}. */
     public final static class Builder {
 
         /** All non-static methods annotated with {@link OnInitialize}. */

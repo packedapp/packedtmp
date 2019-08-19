@@ -25,6 +25,7 @@ import java.util.function.BiConsumer;
 public abstract class DelayedAccessor {
 
     public final Class<?> sidecarType;
+
     public final BiConsumer<?, ?> consumer;
 
     DelayedAccessor(Class<?> sidecarType, BiConsumer<?, ?> consumer) {

@@ -30,10 +30,12 @@ import packed.internal.container.AbstractHookApplicator;
  */
 public final class PackedMethodHookApplicator<T> extends AbstractHookApplicator<T> {
 
+    /** The method we want to apply the operator on. */
     public final Method method;
 
     public final MethodHandle mh;
 
+    /** The operator to apply. */
     public final PackedMethodOperator<T> operator;
 
     PackedMethodHookApplicator(PackedAnnotatedMethodHook<?> hook, PackedMethodOperator<T> operator) {

@@ -33,7 +33,7 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -53,7 +53,7 @@ final class OnHookAggregateBuilderModel {
         @SuppressWarnings("unchecked")
         @Override
         protected OnHookAggregateBuilderModel computeValue(Class<?> type) {
-            return new OnHookAggregateBuilderModel.Builder((Class<? extends OnHookAggregateBuilder<?>>) type).build();
+            return new OnHookAggregateBuilderModel.Builder((Class<? extends HookAggregateBuilder<?>>) type).build();
         }
     };
 
@@ -90,7 +90,7 @@ final class OnHookAggregateBuilderModel {
         this.annotatedTypes = builder.annotatedTypes;
     }
 
-    void invokeOnHook(OnHookAggregateBuilder<?> aggregator, AnnotatedFieldHook<?> hook) {
+    void invokeOnHook(HookAggregateBuilder<?> aggregator, AnnotatedFieldHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -110,7 +110,7 @@ final class OnHookAggregateBuilderModel {
         }
     }
 
-    void invokeOnHook(OnHookAggregateBuilder<?> aggregator, AnnotatedMethodHook<?> hook) {
+    void invokeOnHook(HookAggregateBuilder<?> aggregator, AnnotatedMethodHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -129,7 +129,7 @@ final class OnHookAggregateBuilderModel {
         }
     }
 
-    void invokeOnHook(OnHookAggregateBuilder<?> aggregator, AnnotatedTypeHook<?> hook) {
+    void invokeOnHook(HookAggregateBuilder<?> aggregator, AnnotatedTypeHook<?> hook) {
         if (aggregator.getClass() != aggregatorType) {
             throw new IllegalArgumentException("Must be specify an aggregator of type " + aggregatorType + ", but was " + aggregator.getClass());
         }
@@ -141,9 +141,9 @@ final class OnHookAggregateBuilderModel {
      * 
      * @return a new aggregator object
      */
-    OnHookAggregateBuilder<?> newAggregatorInstance() {
+    HookAggregateBuilder<?> newAggregatorInstance() {
         try {
-            return (OnHookAggregateBuilder<?>) constructor.invoke();
+            return (HookAggregateBuilder<?>) constructor.invoke();
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
@@ -159,13 +159,13 @@ final class OnHookAggregateBuilderModel {
         return resultType;
     }
 
-    public static OnHookAggregateBuilderModel get(Class<? extends OnHookAggregateBuilder<?>> clazz) {
+    public static OnHookAggregateBuilderModel get(Class<? extends HookAggregateBuilder<?>> clazz) {
         return MODEL_CACHE.get(clazz);
     }
 
     private static class Builder {
 
-        private final Class<? extends OnHookAggregateBuilder<?>> aggregatorType;
+        private final Class<? extends HookAggregateBuilder<?>> aggregatorType;
 
         final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
@@ -178,9 +178,9 @@ final class OnHookAggregateBuilderModel {
         final Class<?> resultType;
 
         @SuppressWarnings({ "rawtypes" })
-        private Builder(Class<? extends OnHookAggregateBuilder<?>> aggregatorType) {
+        private Builder(Class<? extends HookAggregateBuilder<?>> aggregatorType) {
             this.aggregatorType = requireNonNull(aggregatorType);
-            this.resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, OnHookAggregateBuilder.class, 0);
+            this.resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, HookAggregateBuilder.class, 0);
         }
 
         private void addHookMethod(Lookup lookup, Method method, Parameter p) {

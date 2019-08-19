@@ -56,19 +56,19 @@ import packed.internal.support.AppPackedExtensionSupport;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    /** The source of the container configuration. */
-    final ArtifactSource source;
-
     /** A configurator cache object, shared among container sources of the same type. */
-    private final ContainerModel configuratorCache;
+    private final ContainerModel model;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, Extension> extensions = new LinkedHashMap<>();
 
     private HashMap<String, DefaultLayer> layers;
 
-    /** A lookup object. shared among friendly people. */
-    public ComponentLookup lookup;
+    /** The current lookup object, updated via {@link #lookup(Lookup)} */
+    public ComponentLookup lookup; // Should be more private
+
+    /** The source of the container configuration. */
+    final ArtifactSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     private final WireletList wirelets;
@@ -81,19 +81,29 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param source
      *            the source of the container
      * @param wirelets
-     *            any wirelets that was given by the user
+     *            any wirelets specified by the user
      */
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
         super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
-        this.lookup = this.configuratorCache = ContainerModel.of(source.getClass());
+        this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
-    private PackedContainerConfiguration(PackedContainerConfiguration parent, ArtifactSource source, WireletList wirelets) {
+    /**
+     * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
+     * 
+     * @param parent
+     *            the parent container configuration
+     * @param bundle
+     *            the bundle that was linked
+     * @param wirelets
+     *            any wirelets specified by the userß
+     */
+    private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
         super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
-        this.source = requireNonNull(source);
-        this.lookup = this.configuratorCache = ContainerModel.of(source.getClass());
+        this.source = requireNonNull(bundle);
+        this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
     }
 
@@ -241,6 +251,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return new PackedArtifactContext(parent, this, ic);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isTopContainer() {
+        // TODO change when we have hosts.
+        return parent == null;
+    }
+
     public void link(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
         WireletList wl = WireletList.of(wirelets);
@@ -264,28 +281,29 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public void lookup(@Nullable Lookup lookup) {
+        // If user specifies null, we use whatever
         // Actually I think null might be okay, then its standard module-info.java
         // Component X has access to G, but Packed does not have access
-        this.lookup = lookup == null ? configuratorCache : configuratorCache.withLookup(lookup);
+        this.lookup = lookup == null ? model : model.withLookup(lookup);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(AbstractComponent ac, ArtifactInstantiationContext ic) {
         if (children != null) {
-            for (AbstractComponentConfiguration a : children.values()) {
-                AbstractComponent child = ac.children.get(a.name);
-                if (a instanceof PackedContainerConfiguration) {
-                    ((PackedContainerConfiguration) a).methodHandlePassing0(child, ic);
+            for (AbstractComponentConfiguration cc : children.values()) {
+                AbstractComponent child = ac.children.get(cc.name);
+                if (cc instanceof PackedContainerConfiguration) {
+                    ((PackedContainerConfiguration) cc).methodHandlePassing0(child, ic);
                 }
-                if (!a.del.isEmpty()) {
-                    for (DelayedAccessor da : a.del) {
+                if (!cc.del.isEmpty()) {
+                    for (DelayedAccessor da : cc.del) {
                         Object sidecar = ic.get(this, da.sidecarType);
                         Object ig;
                         if (da instanceof SidecarFieldDelayerAccessor) {
                             SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
                             MethodHandle mh = sda.pra.mh;
                             if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
-                                InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
+                                InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) cc);
                                 mh = mh.bindTo(icc.instance);
                             }
                             ig = sda.pra.operator.invoke(mh);
@@ -293,7 +311,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                             SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
                             MethodHandle mh = sda.pra.mh;
                             if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
-                                InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
+                                InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) cc);
                                 mh = mh.bindTo(icc.instance);
                             }
                             ig = sda.pra.operator.invoke(mh);
@@ -349,29 +367,23 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings("unchecked")
     public <T extends Extension> T use(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        Extension ce = extensions.get(extensionType);
-        if (ce == null) {
-            // We do not use computeIfAbsent because extensions might install other extensions.
-            // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
-            checkConfigurable(); // we can use extensions that have already been installed, but not add new ones
-            ce = ExtensionModel.newInstance(this, extensionType);
-            extensions.put(extensionType, ce); // make sure we add it here before calling Extension#ExtensionAdded
-            AppPackedExtensionSupport.invoke().initializeExtension(ce, this);
+
+        // We do not use the computeIfAbsent, because extensions might install other extensions.
+        // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
+        Extension e = extensions.get(extensionType);
+        if (e == null) {
+            checkConfigurable(); // installing new extensions after configuration is done is not allowed
+            e = ExtensionModel.newInstance(this, extensionType);
+            extensions.put(extensionType, e); // make sure it is installed before we call into user code
+            AppPackedExtensionSupport.invoke().onAdded(e, this);
         }
-        return (T) ce;
+        return (T) e;
     }
 
     /** {@inheritDoc} */
     @Override
     public WireletList wirelets() {
         return wirelets;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isTopContainer() {
-        // TODO change when we have hosts.
-        return parent == null;
     }
 }
 //

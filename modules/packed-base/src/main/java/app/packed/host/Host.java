@@ -17,6 +17,7 @@ package app.packed.host;
 
 import app.packed.artifact.ArtifactSource;
 import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 
@@ -65,6 +66,14 @@ interface Host {
     //// Eller ogsaa skal vi eksplicit sige hvilke vi tillader....
 
     public static HostConfiguration installHost(ContainerConfiguration cc) {
+        throw new UnsupportedOperationException();
+    }
+
+    default BundleDescriptor of(Bundle bundle) {
+        // Need to be able to create a descriptor from a Bundle via Host.
+        // To see, for example, how AOP is applied to the bundle...
+
+        // Hmm don't know the exact semantics
         throw new UnsupportedOperationException();
     }
 

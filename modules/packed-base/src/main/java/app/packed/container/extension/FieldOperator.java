@@ -26,7 +26,8 @@ import app.packed.util.TypeLiteral;
 import packed.internal.container.extension.hook.PackedFieldOperator;
 
 /**
- *
+ * <p>
+ * Operators are typically created once and stored in a static field.
  * <p>
  * This interface is not meant to be
  */
@@ -61,7 +62,7 @@ public interface FieldOperator<T> {
     // }
 
     /**
-     * Returns a field operator that reads a field once.
+     * Returns a field operator that reads a field once, and returns the value (possible null).
      * 
      * @return a field operator that reads a field once
      */
@@ -81,6 +82,7 @@ public interface FieldOperator<T> {
      */
     @SuppressWarnings("unchecked")
     @Nullable
+    // TODO do we do exact check...
     static <E> FieldOperator<E> getOnce(Class<E> fieldType) {
         return (FieldOperator<E>) getOnce();
     }

@@ -164,11 +164,6 @@ public abstract class BaseBundle extends Bundle {
         return component().installHelper(implementation);
     }
 
-    protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
-        // Why is this not in Bundle????
-        return configuration().newLayer(name, dependencies);
-    }
-
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#findInjectable(Class)} to
      * find a valid constructor or method to instantiate the service instance once the injector is created.

@@ -39,7 +39,7 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.HookAggregateBuilder;
 
 /**
  *
@@ -112,7 +112,7 @@ public class FromImage {
         String value();
     }
 
-    static class MyExtensionHookAggregator implements OnHookAggregateBuilder<String> {
+    static class MyExtensionHookAggregator implements HookAggregateBuilder<String> {
         ActivateMyExtension e;
 
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {

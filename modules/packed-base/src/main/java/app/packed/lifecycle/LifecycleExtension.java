@@ -27,7 +27,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.MethodOperator;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -131,7 +131,7 @@ class LifecycleSidecar {
 
 }
 
-final class LifecycleHookAggregator implements OnHookAggregateBuilder<LifecycleHookAggregator> {
+final class LifecycleHookAggregator implements HookAggregateBuilder<LifecycleHookAggregator> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
     HookApplicator<Runnable> applyDelayed;

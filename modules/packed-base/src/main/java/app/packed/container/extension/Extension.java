@@ -63,7 +63,7 @@ public abstract class Extension {
 
             /** {@inheritDoc} */
             @Override
-            public void initializeExtension(Extension extension, PackedContainerConfiguration configuration) {
+            public void onAdded(Extension extension, PackedContainerConfiguration configuration) {
                 extension.configuration = requireNonNull(configuration);
                 extension.onAdded();
             }

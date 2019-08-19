@@ -36,7 +36,7 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.extension.hook.DelayedAccessor;
 
-/** An abstract base class for a component configuration object. */
+/** A common superclass for all component configuration classes. */
 public abstract class AbstractComponentConfiguration implements ComponentHolder {
 
     /** The build context of the artifact this configuration belongs to. */
@@ -49,6 +49,8 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
     /** The component that was last installed. */
     @Nullable
     DefaultComponentConfiguration currentComponent;
+
+    public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
     /** The depth of the component in the hierarchy (including any parent artifacts). */
     private final int depth;
@@ -76,28 +78,26 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
     /** The state of this configuration. */
     State state = State.INITIAL;
 
-    public ArrayList<DelayedAccessor> del = new ArrayList<>();
-
     /**
      * Creates a new abstract component configuration
      * 
      * @param site
      *            the configuration site of the component
      * @param parent
-     *            the parent of the component, or null if the component is a root component
+     *            the parent of the component
      */
     AbstractComponentConfiguration(InternalConfigSite site, AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);
-        this.parent = parent;
+        this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
         this.buildContext = parent.buildContext;
     }
 
     /**
-     * A special constructor for a root container configuration
+     * A special constructor for configuration of the root container
      * 
      * @param site
-     *            the configuration site of the artifact
+     *            the configuration site of the component
      * @param artifactDriver
      *            the artifact driver used to create the artifact.
      */
@@ -272,6 +272,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
         throw new InternalError();
     }
 
+    /** The state of the component configuration */
     enum State {
 
         /** */

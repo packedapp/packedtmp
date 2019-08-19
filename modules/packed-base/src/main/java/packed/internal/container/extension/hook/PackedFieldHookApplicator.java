@@ -15,6 +15,8 @@
  */
 package packed.internal.container.extension.hook;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
@@ -41,7 +43,7 @@ public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T
             mh = hook.setter();
         }
         this.field = hook.field;
-        this.operator = operator;
+        this.operator = requireNonNull(operator);
     }
 
     /** {@inheritDoc} */

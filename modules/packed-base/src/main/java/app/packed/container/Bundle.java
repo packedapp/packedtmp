@@ -32,8 +32,8 @@ import app.packed.util.Nullable;
 import packed.internal.support.AppPackedContainerSupport;
 
 /**
- * Bundles are the main source of configuration for artifacts. It is basically just a thin wrapper around
- * {@link ContainerConfiguration}.
+ * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
+ * around {@link ContainerConfiguration}. Delegating all calls to container configurations.
  * 
  * 
  * A generic bundle. Normally you would extend {@link BaseBundle}
@@ -108,6 +108,8 @@ public abstract class Bundle implements ArtifactSource {
      *             if called outside {@link #configure()}
      */
     protected final ContainerConfiguration configuration() {
+        // This method is protected for now, but should be private
+        // Det er primaert extensions vi ikke vil have der skal have fat i den
         ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException(
@@ -215,6 +217,11 @@ public abstract class Bundle implements ArtifactSource {
         // For module email, if you are paranoid.
         // You can specify a LookupAccessManager where every lookup access.
         // With both the source and the target. For example, service of type XX from Module YY in Bundle BB needs access to FFF
+    }
+
+    protected final ContainerLayer newLayer(String name, ContainerLayer... dependencies) {
+        // Why is this not in Bundle????
+        return configuration().newLayer(name, dependencies);
     }
 
     /**

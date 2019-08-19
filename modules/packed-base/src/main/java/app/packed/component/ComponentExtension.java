@@ -54,8 +54,7 @@ public final class ComponentExtension extends Extension {
     // @Scoped
     // @Install()
 
-    // Why export
-    // Need to export
+    // Why export, Need to export
 
     /**
      * Creates a link to another container represented by a bundle.
@@ -68,6 +67,7 @@ public final class ComponentExtension extends Extension {
      *            optional wirelets
      */
     public void link(Bundle bundle, Wirelet... wirelets) {
+        // I think I want to move this back to ContainerConfiguration
         configuration.link(bundle, wirelets);
     }
 

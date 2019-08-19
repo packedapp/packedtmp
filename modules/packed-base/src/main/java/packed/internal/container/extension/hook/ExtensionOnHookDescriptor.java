@@ -33,7 +33,7 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -149,7 +149,7 @@ final class ExtensionOnHookDescriptor {
             Parameter p = method.getParameters()[1];
             Class<?> cl = p.getType();
 
-            Class<? extends OnHookAggregateBuilder<?>> aggregateType = oh.value();
+            Class<? extends HookAggregateBuilder<?>> aggregateType = oh.value();
 
             if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;

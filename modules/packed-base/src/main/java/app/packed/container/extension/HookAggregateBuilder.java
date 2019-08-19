@@ -29,7 +29,9 @@ import java.util.function.BiFunction;
 // Group instead.... HookGroup
 
 // Take all methods that starts with "on"
-public interface OnHookAggregateBuilder<T> {
+
+// HookGroupBuilder istedet for???
+public interface HookAggregateBuilder<T> {
 
     /** Builds and returns the aggregate object. */
     T build();
@@ -43,12 +45,12 @@ public interface OnHookAggregateBuilder<T> {
      * @param target
      * @return a new aggregate
      */
-    static <A extends OnHookAggregateBuilder<T>, T> T generate(Lookup lookupBuilder, Class<A> t, Lookup lookupTarget, Class<?> target) {
+    static <A extends HookAggregateBuilder<T>, T> T generate(Lookup lookupBuilder, Class<A> t, Lookup lookupTarget, Class<?> target) {
         // Ideen er at folk kan proeve at lave deres egen aggregate...
         throw new UnsupportedOperationException();
     }
 
-    static <A extends OnHookAggregateBuilder<T>, T> BiFunction<Lookup, Class<?>, T> generateGenerator(Lookup lookup, Class<A> t) {
+    static <A extends HookAggregateBuilder<T>, T> BiFunction<Lookup, Class<?>, T> generateGenerator(Lookup lookup, Class<A> t) {
         // Virker ikke med cross-module class hierachies. Maaske skal vi bare droppe det til andet end tests....
         throw new UnsupportedOperationException();
     }

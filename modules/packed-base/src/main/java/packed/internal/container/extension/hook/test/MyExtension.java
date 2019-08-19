@@ -28,7 +28,7 @@ import app.packed.container.extension.FieldOperator;
 import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.MethodOperator;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookAggregateBuilder;
+import app.packed.container.extension.HookAggregateBuilder;
 
 /**
  *
@@ -57,7 +57,7 @@ public class MyExtension extends Extension {
         context.put(configuration(), new MySidecar());
     }
 
-    public static class Agg implements OnHookAggregateBuilder<AXA> {
+    public static class Agg implements HookAggregateBuilder<AXA> {
         private int sum;
         private final ArrayList<HookApplicator<Supplier<Object>>> rar = new ArrayList<>();
 
