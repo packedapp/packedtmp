@@ -26,10 +26,10 @@ import packed.internal.inject.buildtime.BSN;
  * The runtime representation of an aliased service which delegates the getInstance() to the aliased node. This type is
  * used for exported nodes as well as nodes that are imported from other containers.
  */
-public final class RuntimeDelegateServiceNode<T> extends AbstractRuntimeServiceNode<T> {
+public final class RSNDelegate<T> extends RSN<T> {
 
     /** The runtime node to delegate to. */
-    private final AbstractRuntimeServiceNode<T> aliasOf;
+    private final RSN<T> aliasOf;
 
     /**
      * Creates a new runtime alias node.
@@ -37,7 +37,7 @@ public final class RuntimeDelegateServiceNode<T> extends AbstractRuntimeServiceN
      * @param aliasOf
      *            the build time alias node to create a runtime node from
      */
-    public RuntimeDelegateServiceNode(BSN<T> buildNode, ServiceNode<T> aliasOf) {
+    public RSNDelegate(BSN<T> buildNode, ServiceNode<T> aliasOf) {
         super(buildNode);
         this.aliasOf = requireNonNull(aliasOf.toRuntimeNode());
     }

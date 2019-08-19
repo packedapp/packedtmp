@@ -29,7 +29,7 @@ import app.packed.container.extension.FieldOperator;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.container.extension.hook.PackedFieldOperation;
+import packed.internal.container.extension.hook.PackedFieldOperator;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -232,6 +232,6 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
     @Override
     public <T> T apply(Lookup caller, FieldOperator<T> operator, Object instance) {
         requireNonNull(operator, "operator is null");
-        return ((PackedFieldOperation<T>) operator).apply(caller, field, instance);
+        return ((PackedFieldOperator<T>) operator).apply(caller, field, instance);
     }
 }

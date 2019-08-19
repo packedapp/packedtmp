@@ -23,38 +23,34 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.HookApplicator;
-import packed.internal.container.AbstractComponentConfiguration;
+import packed.internal.container.AbstractHookApplicator;
 
 /**
  *
  */
-public class PackedMethodRuntimeAccessor<T> implements HookApplicator<T> {
-
-    public final PackedMethodOperation<T> afo;
-
-    public final MethodHandle mh;
+public final class PackedMethodHookApplicator<T> extends AbstractHookApplicator<T> {
 
     public final Method method;
 
-    PackedMethodRuntimeAccessor(PackedAnnotatedMethodHook<?> hook, PackedMethodOperation<T> o) {
-        this.afo = requireNonNull(o);
+    public final MethodHandle mh;
+
+    public final PackedMethodOperator<T> operator;
+
+    PackedMethodHookApplicator(PackedAnnotatedMethodHook<?> hook, PackedMethodOperator<T> operator) {
+        this.operator = requireNonNull(operator);
         this.mh = hook.methodHandle();
         this.method = hook.method;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void onReady(ComponentConfiguration cc, Consumer<T> consumer) {
-        throw new UnsupportedOperationException();
+    protected <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer) {
+        return new DelayedAccessor.SidecarMethodDelayerAccessor(this, sidecarType, consumer);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <S> void onReady(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
-        // TODO check instance component if instance field...
-        AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
-        pcc.checkConfigurable();
-        pcc.del.add(new DelayedAccessor.SidecarMethodDelayerAccessor(this, sidecarType, consumer));
+    public void onReady(ComponentConfiguration cc, Consumer<T> consumer) {
+        throw new UnsupportedOperationException();
     }
 }

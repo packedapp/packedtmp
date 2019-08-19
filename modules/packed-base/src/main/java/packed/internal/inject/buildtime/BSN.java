@@ -27,7 +27,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
+import packed.internal.inject.runtime.RSN;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.InternalServiceDescriptor;
 import packed.internal.util.KeyBuilder;
@@ -71,7 +71,7 @@ public abstract class BSN<T> implements ServiceNode<T> {
 
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
-    private AbstractRuntimeServiceNode<T> runtimeNode;
+    private RSN<T> runtimeNode;
 
     BSN(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
@@ -161,7 +161,7 @@ public abstract class BSN<T> implements ServiceNode<T> {
      *
      * @return the new runtime node
      */
-    abstract AbstractRuntimeServiceNode<T> newRuntimeNode();
+    abstract RSN<T> newRuntimeNode();
     //
     // protected void onFreeze() {
     // if (key != null) {
@@ -181,8 +181,8 @@ public abstract class BSN<T> implements ServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final AbstractRuntimeServiceNode<T> toRuntimeNode() {
-        AbstractRuntimeServiceNode<T> runtime = this.runtimeNode;
+    public final RSN<T> toRuntimeNode() {
+        RSN<T> runtime = this.runtimeNode;
         return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
 }

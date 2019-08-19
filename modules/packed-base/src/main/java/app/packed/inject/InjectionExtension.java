@@ -67,7 +67,7 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    public void buildBundle(Builder descriptor) {
+    protected void buildBundle(Builder descriptor) {
         builder.buildBundle(descriptor);
     }
 
@@ -156,7 +156,7 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+    protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         builder.onPrepareContainerInstantiation(context);
     }
 

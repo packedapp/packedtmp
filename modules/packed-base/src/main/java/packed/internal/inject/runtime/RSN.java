@@ -27,7 +27,7 @@ import packed.internal.inject.ServiceNode;
 import packed.internal.inject.buildtime.BSN;
 
 /** A node that represents a service at runtime. */
-public abstract class AbstractRuntimeServiceNode<T> implements ServiceNode<T> {
+public abstract class RSN<T> implements ServiceNode<T> {
 
     /** The point where this node was registered. */
     private final ConfigSite configSite;
@@ -45,7 +45,7 @@ public abstract class AbstractRuntimeServiceNode<T> implements ServiceNode<T> {
      * @param node
      *            the build node to create the runtime node from
      */
-    AbstractRuntimeServiceNode(BSN<T> node) {
+    RSN(BSN<T> node) {
         this.configSite = requireNonNull(node.configSite());
         this.description = node.getDescription();
         this.key = requireNonNull(node.key());
@@ -86,7 +86,7 @@ public abstract class AbstractRuntimeServiceNode<T> implements ServiceNode<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final AbstractRuntimeServiceNode<T> toRuntimeNode() {
+    public final RSN<T> toRuntimeNode() {
         return this;
     }
 

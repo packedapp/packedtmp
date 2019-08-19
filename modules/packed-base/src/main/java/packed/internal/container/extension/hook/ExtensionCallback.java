@@ -20,7 +20,8 @@ import java.lang.invoke.MethodHandle;
 /**
  *
  */
-final class Callback {
+// Bruges til at kalde tilbage paa extensions
+final class ExtensionCallback {
     final MethodHandle mh;
     final Object o;
 
@@ -28,7 +29,7 @@ final class Callback {
      * @param mh
      * @param o
      */
-    public Callback(MethodHandle mh, Object o) {
+    public ExtensionCallback(MethodHandle mh, Object o) {
         this.mh = mh;
         this.o = o;
     }

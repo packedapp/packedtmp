@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -92,7 +93,7 @@ final class InjectorResolver {
         this.ib = requireNonNull(ib);
     }
 
-    public void checkForMissingDependencies() {
+    void checkForMissingDependencies() {
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (Entry<BSN<?>, ServiceDependency> e : missingDependencies) {
@@ -144,18 +145,29 @@ final class InjectorResolver {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     void build(ArtifactBuildContext buildContext) {
-        for (BSN<?> e : ib.nodes) {
-            if (!nodes.putIfAbsent(e)) {
-                System.err.println("OOPS " + e.getKey());
+        // First process all nodes, making sure we have no overlap
+        HashMap<Key<?>, BSN<?>> uniqueNodes = new HashMap<>();
+        HashMap<Key<?>, HashSet<BSN<?>>> dublicateNodes = new HashMap<>();
+        for (BSN<?> node : ib.nodes) {
+            requireNonNull(node.key);
+            BSN<?> existing = uniqueNodes.putIfAbsent(node.key, node);
+            if (existing != null) {
+                HashSet<BSN<?>> hs = dublicateNodes.computeIfAbsent(node.key, m -> new HashSet<>());
+                hs.add(existing); // might be added multiple times, hence we use a Set
+                hs.add(node);
             }
         }
-        for (BSNExported<?> e : ib.exportedNodes) {
-            ServiceNode<?> sn = nodes.getRecursive(e.getKey());
+        if (!dublicateNodes.isEmpty()) {
+            throw new IllegalStateException("OOPS");
+        }
+        nodes.addAll(uniqueNodes.values());
+        for (BSNExported<?> node : ib.exportedNodes) {
+            ServiceNode<?> sn = nodes.getRecursive(node.getKey());
             if (sn == null) {
-                throw new IllegalStateException("Could not find node to export " + e.getKey());
+                throw new IllegalStateException("Could not find node to export " + node.getKey());
             }
-            e.exportOf = (ServiceNode) sn;
-            exports.put(e);
+            node.exportOf = (ServiceNode) sn;
+            exports.put(node);
         }
         DependencyGraph dg = new DependencyGraph(ib.container, ib);
 

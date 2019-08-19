@@ -40,7 +40,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ExtensionHookPerComponentGroup {
 
     /** A list of callbacks for the particular extension. */
-    private final List<Callback> callbacks;
+    private final List<ExtensionCallback> callbacks;
 
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
@@ -59,7 +59,7 @@ public final class ExtensionHookPerComponentGroup {
         Extension extension = container.use((Class) extensionType);
 
         try {
-            for (Callback c : callbacks) {
+            for (ExtensionCallback c : callbacks) {
                 c.mh.invoke(extension, cc, c.o);
             }
         } catch (Throwable e) {
@@ -74,7 +74,7 @@ public final class ExtensionHookPerComponentGroup {
         /** The component type */
         final Class<?> componentType;
 
-        final ArrayList<Callback> callbacks = new ArrayList<>();
+        final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
 
         final IdentityHashMap<Class<?>, OnHookAggregateBuilder<?>> mmm = new IdentityHashMap<>();
 
@@ -96,7 +96,7 @@ public final class ExtensionHookPerComponentGroup {
             // Add all aggregates
             for (Entry<Class<?>, OnHookAggregateBuilder<?>> m : mmm.entrySet()) {
                 MethodHandle mh = con.aggregators.get(m.getKey());
-                callbacks.add(new Callback(mh, m.getValue().build()));
+                callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
             return new ExtensionHookPerComponentGroup(this);
         }
@@ -114,7 +114,7 @@ public final class ExtensionHookPerComponentGroup {
         private void process(MethodHandle mh, Object hook) {
             Class<?> owner = mh.type().parameterType(0);
             if (owner == extensionType) {
-                callbacks.add(new Callback(mh, hook));
+                callbacks.add(new ExtensionCallback(mh, hook));
             } else {
                 // The method handle refers to an aggregator object.
                 OnHookAggregateBuilderModel a = OnHookAggregateBuilderModel.get((Class<? extends OnHookAggregateBuilder<?>>) owner);

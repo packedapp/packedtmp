@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.TypeLiteral;
-import packed.internal.container.extension.hook.PackedFieldOperation;
+import packed.internal.container.extension.hook.PackedFieldOperator;
 import packed.internal.container.extension.hook.PackedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 
@@ -55,9 +55,9 @@ import packed.internal.util.StringFormatter;
 
 public final class AbstractFieldOperator<T> {
 
-    final PackedFieldOperation<T> operation;
+    final PackedFieldOperator<T> operation;
 
-    private AbstractFieldOperator(PackedFieldOperation<T> operation) {
+    private AbstractFieldOperator(PackedFieldOperator<T> operation) {
         this.operation = requireNonNull(operation);
     }
 
@@ -136,7 +136,7 @@ public final class AbstractFieldOperator<T> {
     }
 
     public static AbstractFieldOperator<Object> getOnce() {
-        return new AbstractFieldOperator<>(new PackedFieldOperation.GetOnceInternalFieldOperation<>());
+        return new AbstractFieldOperator<>(new PackedFieldOperator.GetOnceInternalFieldOperation<>());
     }
 
     // A single read of the field... no need to create custom classes...
@@ -172,7 +172,7 @@ public final class AbstractFieldOperator<T> {
      * @return a field mapper that creates suppliers.
      */
     public static AbstractFieldOperator<Supplier<Object>> supplier() {
-        return new AbstractFieldOperator<>(new PackedFieldOperation.SupplierInternalFieldOperation<>());
+        return new AbstractFieldOperator<>(new PackedFieldOperator.SupplierInternalFieldOperation<>());
     }
 
     /**

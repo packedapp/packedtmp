@@ -13,43 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package packed.internal.container;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.HookApplicator;
-import packed.internal.container.AbstractComponentConfiguration;
+import packed.internal.container.extension.hook.DelayedAccessor;
 
 /**
  *
  */
-public class PackedFieldRuntimeAccessor<T> implements HookApplicator<T> {
-
-    public final PackedFieldOperation<T> afo;
-
-    public final MethodHandle mh;
-
-    public final Field field;
-
-    PackedFieldRuntimeAccessor(PackedAnnotatedFieldHook<?> hook, PackedFieldOperation<T> o) {
-        this.mh = of(hook, o);
-        this.field = hook.field;
-        this.afo = o;
-    }
+public abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
 
     /** {@inheritDoc} */
     @Override
-    public void onReady(ComponentConfiguration cc, Consumer<T> consumer) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <S> void onReady(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
+    public final <S> void onReady(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
         // Must have an owner.... And then ComponentConfiguration must have the same owner....
         // And I guess access mode as well, owner, for example, bundle.getClass();
         // Maybe check against the same lookup object...
@@ -60,15 +39,8 @@ public class PackedFieldRuntimeAccessor<T> implements HookApplicator<T> {
         // TODO check instance component if instance field...
         AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
         pcc.checkConfigurable();
-        pcc.del.add(new DelayedAccessor.SidecarFieldDelayerAccessor(this, sidecarType, consumer));
+        pcc.del.add(newAccessor(sidecarType, consumer));
     }
 
-    private static MethodHandle of(PackedAnnotatedFieldHook<?> hook, PackedFieldOperation<?> o) {
-        if (o.isSimpleGetter()) {
-            return hook.getter();
-        } else {
-            return hook.setter();
-        }
-    }
-
+    protected abstract <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer);
 }

@@ -48,5 +48,6 @@ public class MainTest2 extends AppBundle {
         public static void say() {
             System.out.println("HelloWorld!!");
         }
+
     }
 }

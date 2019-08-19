@@ -18,6 +18,7 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,10 @@ public class ServiceNodeMap implements Iterable<ServiceNode<?>> {
 
     public List<ServiceNode<?>> copyNodes() {
         return new ArrayList<>(nodes.values());
+    }
+
+    public void addAll(Collection<? extends ServiceNode<?>> col) {
+        col.forEach(c -> put(c));
     }
 
     @Override

@@ -30,15 +30,15 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
+public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
 
-    public static <T> PackedFieldOperation<T> cast(FieldOperator<T> operator) {
+    public static <T> PackedFieldOperator<T> cast(FieldOperator<T> operator) {
         requireNonNull(operator, "operator is null");
-        if (!(operator instanceof PackedFieldOperation)) {
+        if (!(operator instanceof PackedFieldOperator)) {
             throw new IllegalArgumentException("Custom implementations of " + FieldOperator.class.getSimpleName() + " are not supported, type = "
                     + StringFormatter.format(operator.getClass()));
         }
-        return (PackedFieldOperation<T>) operator;
+        return (PackedFieldOperator<T>) operator;
     }
 
     /** {@inheritDoc} */
@@ -76,7 +76,7 @@ public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
     // If its a getter we cache the method handle
     public abstract boolean isSimpleGetter();
 
-    public static class GetOnceInternalFieldOperation<T> extends PackedFieldOperation<T> {
+    public static class GetOnceInternalFieldOperation<T> extends PackedFieldOperator<T> {
         Class<?> fieldType;
 
         /** {@inheritDoc} */
@@ -125,7 +125,7 @@ public abstract class PackedFieldOperation<T> implements FieldOperator<T> {
         }
     }
 
-    public static class SupplierInternalFieldOperation<T> extends PackedFieldOperation<Supplier<T>> {
+    public static class SupplierInternalFieldOperation<T> extends PackedFieldOperator<Supplier<T>> {
         Class<?> fieldType;
 
         /** {@inheritDoc} */

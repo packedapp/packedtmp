@@ -31,10 +31,10 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeLazyServiceNode;
-import packed.internal.inject.runtime.RuntimePrototypeServiceNode;
-import packed.internal.inject.runtime.RuntimeSingletonServiceNode;
+import packed.internal.inject.runtime.RSN;
+import packed.internal.inject.runtime.RSNLazy;
+import packed.internal.inject.runtime.RSNPrototype;
+import packed.internal.inject.runtime.RSNSingleton;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InvokableMember;
@@ -192,23 +192,23 @@ class BSNDefault<T> extends BSN<T> {
 
     /** {@inheritDoc} */
     @Override
-    final AbstractRuntimeServiceNode<T> newRuntimeNode() {
+    final RSN<T> newRuntimeNode() {
         T i = instance;
         if (i != null) {
-            return new RuntimeSingletonServiceNode<>(this, i);
+            return new RSNSingleton<>(this, i);
         }
 
         if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
                 || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
             if (instantionMode == InstantiationMode.PROTOTYPE) {
-                return new RuntimePrototypeServiceNode<>(this, fac());
+                return new RSNPrototype<>(this, fac());
             } else {
-                return new RuntimeLazyServiceNode<>(this, fac(), null);
+                return new RSNLazy<>(this, fac(), null);
             }
         }
         // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
 
-        return new RuntimeLazyServiceNode<>(this, fac(), null);
+        return new RSNLazy<>(this, fac(), null);
 
     }
 

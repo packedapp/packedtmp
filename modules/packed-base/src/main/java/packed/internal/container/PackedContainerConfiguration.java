@@ -45,7 +45,6 @@ import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.hook.DelayedAccessor;
-import packed.internal.container.extension.hook.DelayedAccessor.AbstractDelayerAccessor;
 import packed.internal.container.extension.hook.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.container.extension.hook.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.container.model.ComponentLookup;
@@ -278,27 +277,26 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 }
                 if (!a.del.isEmpty()) {
                     for (DelayedAccessor da : a.del) {
-                        AbstractDelayerAccessor ada = (AbstractDelayerAccessor) da;
-                        Object sidecar = ic.get(this, ada.sidecarType);
-                        if (ada instanceof SidecarFieldDelayerAccessor) {
-                            SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) ada;
+                        Object sidecar = ic.get(this, da.sidecarType);
+                        Object ig;
+                        if (da instanceof SidecarFieldDelayerAccessor) {
+                            SidecarFieldDelayerAccessor sda = (SidecarFieldDelayerAccessor) da;
                             MethodHandle mh = sda.pra.mh;
                             if (!Modifier.isStatic(sda.pra.field.getModifiers())) {
                                 InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
                                 mh = mh.bindTo(icc.instance);
                             }
-                            Object ig = sda.pra.afo.invoke(mh);
-                            ((BiConsumer) sda.consumer).accept(sidecar, ig);
+                            ig = sda.pra.operator.invoke(mh);
                         } else {
-                            SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) ada;
+                            SidecarMethodDelayerAccessor sda = (SidecarMethodDelayerAccessor) da;
                             MethodHandle mh = sda.pra.mh;
                             if (!Modifier.isStatic(sda.pra.method.getModifiers())) {
                                 InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) a);
                                 mh = mh.bindTo(icc.instance);
                             }
-                            Object ig = sda.pra.afo.invoke(mh);
-                            ((BiConsumer) sda.consumer).accept(sidecar, ig);
+                            ig = sda.pra.operator.invoke(mh);
                         }
+                        ((BiConsumer) da.consumer).accept(sidecar, ig);
                     }
                 }
             }

@@ -35,7 +35,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     private final DefaultComponentConfiguration component;
 
     /** The service we are exposing. */
-    private final BSN<T> buildNode;
+    final BSN<T> buildNode;
 
     /**
      * @param buildNode

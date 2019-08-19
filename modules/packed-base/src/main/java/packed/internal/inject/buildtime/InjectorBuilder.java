@@ -47,7 +47,7 @@ public final class InjectorBuilder {
     /** A that is used to store parent nodes */
     private static FeatureKey<BSNDefault<?>> FK = new FeatureKey<>() {};
 
-    /** The configuration of the container that is being build. */
+    /** The configuration of the container to which this builder belongs to. */
     final PackedContainerConfiguration container;
 
     final ArrayList<ExplicitRequirement> explicitRequirements = new ArrayList<>();

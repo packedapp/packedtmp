@@ -25,8 +25,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
+import packed.internal.inject.runtime.RSN;
+import packed.internal.inject.runtime.RSNDelegate;
 
 /** A build node that imports a service from another injector. */
 class BSNImported<T> extends BSN<T> {
@@ -79,7 +79,7 @@ class BSNImported<T> extends BSN<T> {
 
     /** {@inheritDoc} */
     @Override
-    AbstractRuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeDelegateServiceNode<T>(this, importFrom);
+    RSN<T> newRuntimeNode() {
+        return new RSNDelegate<T>(this, importFrom);
     }
 }

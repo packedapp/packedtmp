@@ -74,15 +74,15 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
     /** {@inheritDoc} */
     @Override
     public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
-        PackedMethodOperation<E> o = PackedMethodOperation.cast(operator);
+        PackedMethodOperator<E> o = PackedMethodOperator.cast(operator);
         builder.checkActive();
-        return new PackedMethodRuntimeAccessor<E>(this, o);
+        return new PackedMethodHookApplicator<E>(this, o);
     }
 
     /** {@inheritDoc} */
     @Override
     public <E> E applyOnStaticMethod(MethodOperator<E> operator) {
-        PackedMethodOperation<E> o = PackedMethodOperation.cast(operator);
+        PackedMethodOperator<E> o = PackedMethodOperator.cast(operator);
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
         }

@@ -28,8 +28,8 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceNode;
-import packed.internal.inject.runtime.AbstractRuntimeServiceNode;
-import packed.internal.inject.runtime.RuntimeDelegateServiceNode;
+import packed.internal.inject.runtime.RSN;
+import packed.internal.inject.runtime.RSNDelegate;
 
 /**
  * A build node representing an exported service.
@@ -53,6 +53,7 @@ final class BSNExported<T> extends BSN<T> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BSNExported(InjectorBuilder configuration, InternalConfigSite configSite, PackedProvidedComponentConfiguration<?> existingNode) {
         super(configuration, configSite, List.of());
+        this.exportOf = (ServiceNode<T>) existingNode.buildNode;
         as((Key) existingNode.getKey());
     }
 
@@ -89,8 +90,8 @@ final class BSNExported<T> extends BSN<T> {
 
     /** {@inheritDoc} */
     @Override
-    AbstractRuntimeServiceNode<T> newRuntimeNode() {
-        return new RuntimeDelegateServiceNode<>(this, exportOf);
+    RSN<T> newRuntimeNode() {
+        return new RSNDelegate<>(this, exportOf);
     }
 
     ServiceConfiguration<T> expose() {

@@ -29,20 +29,20 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
+public abstract class PackedMethodOperator<T> implements MethodOperator<T> {
 
     abstract T applyStaticHook(PackedAnnotatedMethodHook<?> packedAnnotatedMethodHook);
 
-    public static <T> PackedMethodOperation<T> cast(MethodOperator<T> operator) {
+    public static <T> PackedMethodOperator<T> cast(MethodOperator<T> operator) {
         requireNonNull(operator, "operator is null");
-        if (!(operator instanceof PackedMethodOperation)) {
+        if (!(operator instanceof PackedMethodOperator)) {
             throw new IllegalArgumentException("Custom implementations of " + MethodOperator.class.getSimpleName() + " are not supported, type = "
                     + StringFormatter.format(operator.getClass()));
         }
-        return (PackedMethodOperation<T>) operator;
+        return (PackedMethodOperator<T>) operator;
     }
 
-    public static class InvokeOnce<T> extends PackedMethodOperation<T> {
+    public static class InvokeOnce<T> extends PackedMethodOperator<T> {
 
         /** {@inheritDoc} */
         @Override
@@ -76,7 +76,7 @@ public abstract class PackedMethodOperation<T> implements MethodOperator<T> {
         }
     }
 
-    public static class RunnableInternalMethodOperation extends PackedMethodOperation<Runnable> {
+    public static class RunnableInternalMethodOperation extends PackedMethodOperator<Runnable> {
 
         public Runnable apply(Lookup lookup, Method method, Object instance) {
             MethodHandle mh;

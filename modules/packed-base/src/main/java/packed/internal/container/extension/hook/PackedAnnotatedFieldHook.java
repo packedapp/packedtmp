@@ -84,15 +84,15 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
     /** {@inheritDoc} */
     @Override
     public <E> HookApplicator<E> applicator(FieldOperator<E> operator) {
-        PackedFieldOperation<E> o = PackedFieldOperation.cast(operator);
+        PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
-        return new PackedFieldRuntimeAccessor<E>(this, o);
+        return new PackedFieldHookApplicator<E>(this, o);
     }
 
     /** {@inheritDoc} */
     @Override
     public <E> E applyOnStaticField(FieldOperator<E> operator) {
-        PackedFieldOperation<E> o = PackedFieldOperation.cast(operator);
+        PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);
         }

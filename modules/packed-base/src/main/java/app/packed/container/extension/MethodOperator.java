@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import packed.internal.container.extension.hook.PackedMethodOperation;
+import packed.internal.container.extension.hook.PackedMethodOperator;
 
 /**
  *
@@ -30,15 +30,16 @@ import packed.internal.container.extension.hook.PackedMethodOperation;
 /// Alt hvad der ikke skal tilpasses en runtime...
 public interface MethodOperator<T> {
 
+    // Hmm vil vi give et lookup object til et interface?
     T applyStatic(Lookup lookup, Method method);
 
     T invoke(MethodHandle mh);
 
     static <T> MethodOperator<Object> invokeOnce() {
-        return new PackedMethodOperation.InvokeOnce<>();
+        return new PackedMethodOperator.InvokeOnce<>();
     }
 
     static MethodOperator<Runnable> runnable() {
-        return new PackedMethodOperation.RunnableInternalMethodOperation();
+        return new PackedMethodOperator.RunnableInternalMethodOperation();
     }
 }

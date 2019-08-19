@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.container.extension.hook.PackedFieldOperation;
+import packed.internal.container.extension.hook.PackedFieldOperator;
 
 /**
  *
@@ -67,7 +67,7 @@ public interface FieldOperator<T> {
      */
     @Nullable
     static FieldOperator<Object> getOnce() {
-        return new PackedFieldOperation.GetOnceInternalFieldOperation<>();
+        return new PackedFieldOperator.GetOnceInternalFieldOperation<>();
     }
 
     /**
@@ -116,14 +116,14 @@ public interface FieldOperator<T> {
      * @return a field operator that creates a getter.
      */
     static FieldOperator<Supplier<Object>> supplier() {
-        return new PackedFieldOperation.SupplierInternalFieldOperation<>();
+        return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 
     static <E> FieldOperator<Supplier<E>> supplier(Class<E> fieldType) {
-        return new PackedFieldOperation.SupplierInternalFieldOperation<>();
+        return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 
     static <E> FieldOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
-        return new PackedFieldOperation.SupplierInternalFieldOperation<>();
+        return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 }

@@ -51,6 +51,7 @@ final class AtProvides {
     /** The annotated member, either an {@link FieldDescriptor} or an {@link MethodDescriptor}. */
     public final Member member;
 
+    /** The annotated value, is used for creating config sites. */
     public final Provide provides;
 
     /** The dependencies (parameters) of the member. */
