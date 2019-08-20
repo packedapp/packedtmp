@@ -31,8 +31,8 @@ import app.packed.util.Qualifier;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.buildtime.AtProvidesGroup;
-import packed.internal.inject.buildtime.InjectorBuilder;
+import packed.internal.inject.build.AtProvidesGroup;
+import packed.internal.inject.build.InjectorBuilder;
 
 /**
  * This extension provides functionality for injection and service management.

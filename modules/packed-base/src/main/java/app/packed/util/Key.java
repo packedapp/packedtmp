@@ -32,7 +32,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
-import packed.internal.inject.JavaXInjectSupport;
+import packed.internal.inject.util.JavaXInjectSupport;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 

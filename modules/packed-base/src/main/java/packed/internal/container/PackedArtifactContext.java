@@ -21,8 +21,8 @@ import app.packed.artifact.ArtifactRuntimeContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
-import packed.internal.inject.ServiceNodeMap;
-import packed.internal.inject.runtime.DefaultInjector;
+import packed.internal.inject.run.DefaultInjector;
+import packed.internal.inject.util.ServiceNodeMap;
 
 /** The default implementation of Container. */
 // implements ContainerContext...

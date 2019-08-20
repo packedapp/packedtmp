@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.runtime;
-
-import static org.assertj.core.api.Assertions.assertThat;
+package a;
 
 import java.lang.invoke.MethodHandles;
 
-import org.junit.jupiter.api.Test;
-
 import app.packed.inject.Injector;
-import packed.internal.inject.run.RSN;
-import support.stubs.Letters.A;
 
 /**
- * Tests various things that do not have their own test class.
+ *
  */
-public class InjectorGetServiceTest {
-
-    @Test
-    public void isRuntimeServices() {
-        Injector i = Injector.configure(c -> {
+public class ITest {
+    public static void main(String[] args) {
+        Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provide(A.class);
+            c.provide(new Stuff());
+            c.provide(new Stuff());
         });
-
-        assertThat(i.getDescriptor(A.class).get()).isInstanceOf(RSN.class);
     }
+
+    public static class Stuff {}
 }

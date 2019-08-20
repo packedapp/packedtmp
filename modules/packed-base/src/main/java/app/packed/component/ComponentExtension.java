@@ -83,6 +83,9 @@ public final class ComponentExtension extends Extension {
         return configuration.installHelper(implementation);
     }
 
+    // Scans this package...
+    public void scan() {}
+
     public void scan(String... packages) {}
 
     // Alternative to ComponentScan

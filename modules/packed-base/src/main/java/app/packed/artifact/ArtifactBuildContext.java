@@ -19,6 +19,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.errorhandling.ErrorMessage;
 
 /**
  * An artifact build context is created every time an build context is create . The context is shared among all
@@ -50,6 +51,8 @@ public interface ArtifactBuildContext {
      * @return whether or not we are instantiating an actual artifact
      */
     boolean isInstantiating();
+
+    void addError(ErrorMessage message);
 
     /**
      * Returns the container source of the build, for example a {@link Bundle bundle}.

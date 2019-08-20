@@ -22,6 +22,7 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactSource;
 import app.packed.config.ConfigSite;
 import app.packed.container.WireletList;
+import app.packed.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link ArtifactBuildContext} */
 final class PackedArtifactBuildContext implements ArtifactBuildContext {
@@ -73,5 +74,12 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     @Override
     public WireletList wirelets() {
         return topContainerConfiguration.wirelets();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addError(ErrorMessage message) {
+        // TODO Auto-generated method stub
+
     }
 }

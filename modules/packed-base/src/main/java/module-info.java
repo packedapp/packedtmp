@@ -5,6 +5,7 @@ module app.packed.base {
     exports app.packed.config;
     exports app.packed.container;
     exports app.packed.container.extension;
+    exports app.packed.errorhandling;
     exports app.packed.feature;
     exports app.packed.host;
     exports app.packed.inject;
