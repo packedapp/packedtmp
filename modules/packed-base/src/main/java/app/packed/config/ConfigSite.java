@@ -30,6 +30,7 @@ import packed.internal.config.site.AbstractConfigSite;
 import packed.internal.config.site.AnnotatedFieldConfigSite;
 import packed.internal.config.site.AnnotatedMethodConfigSite;
 import packed.internal.config.site.CapturedStackFrameConfigSite;
+import packed.internal.config.site.UnknownConfigSite;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a
@@ -51,37 +52,13 @@ import packed.internal.config.site.CapturedStackFrameConfigSite;
 
 // ConfigSite chain
 // https://api.flutter.dev/flutter/package-stack_trace_stack_trace/Chain-class.html
+
+// Interface vs class...
+// People are not going to implement their own... Because of visitors.. So might as well be a class
 public interface ConfigSite {
-    static final boolean DISABLED = false;
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
-    ConfigSite UNKNOWN = new ConfigSite() {
-
-        @Override
-        public String operation() {
-            return "Unknown";
-        }
-
-        @Override
-        public Optional<ConfigSite> parent() {
-            return Optional.empty();
-        }
-
-        @Override
-        public ConfigSite replaceParent(ConfigSite newParent) {
-            return UNKNOWN;
-        }
-
-        @Override
-        public String toString() {
-            return "Unknown";
-        }
-
-        @Override
-        public void visit(ConfigSiteVisitor visitor) {
-            visitor.visitUnknown(this);
-        }
-    };
+    ConfigSite UNKNOWN = UnknownConfigSite.INSTANCE;
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.
@@ -131,7 +108,7 @@ public interface ConfigSite {
     ConfigSite replaceParent(ConfigSite newParent);
 
     default ConfigSite thenAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
-        if (DISABLED) {
+        if (AbstractConfigSite.DISABLED) {
             return UNKNOWN;
         }
         return new AnnotatedFieldConfigSite(this, cst, field, annotation);
@@ -146,7 +123,7 @@ public interface ConfigSite {
     }
 
     default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
-        if (DISABLED) {
+        if (AbstractConfigSite.DISABLED) {
             return UNKNOWN;
         }
         return new AnnotatedMethodConfigSite(this, cst, method, annotation);
@@ -154,7 +131,7 @@ public interface ConfigSite {
 
     default ConfigSite thenCaptureStackFrame(String cst) {
         // LinkFromCaptureStack
-        if (DISABLED) {
+        if (AbstractConfigSite.DISABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());
@@ -175,7 +152,7 @@ public interface ConfigSite {
     }
 
     static ConfigSite captureStack(String cst) {
-        if (DISABLED) {
+        if (AbstractConfigSite.DISABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());

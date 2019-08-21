@@ -33,6 +33,8 @@ public abstract class AbstractConfigSite implements ConfigSite {
     public static final Predicate<StackFrame> FILTER = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
+    public static final boolean DISABLED = false;
+
     AbstractConfigSite(ConfigSite parent, String operation) {
         this.parent = parent;
         this.operation = requireNonNull(operation);
@@ -40,12 +42,12 @@ public abstract class AbstractConfigSite implements ConfigSite {
 
     /** {@inheritDoc} */
     @Override
-    public String operation() {
+    public final String operation() {
         return operation;
     }
 
     @Override
-    public Optional<ConfigSite> parent() {
+    public final Optional<ConfigSite> parent() {
         return Optional.ofNullable(parent);
     }
 
