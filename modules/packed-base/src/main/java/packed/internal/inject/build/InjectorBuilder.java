@@ -112,7 +112,7 @@ public final class InjectorBuilder {
         return export0(new BSEExported<>(this, configSite, key));
     }
 
-    public <T> ServiceConfiguration<T> export(InternalConfigSite configSite, ProvidedComponentConfiguration<T> configuration) {
+    public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration, InternalConfigSite configSite) {
         PackedProvidedComponentConfiguration<T> ppcc = (PackedProvidedComponentConfiguration<T>) configuration;
         if (ppcc.buildEntry.injectorBuilder != this) {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
@@ -121,7 +121,7 @@ public final class InjectorBuilder {
     }
 
     /**
-     * Converts the internal exported entry to a service configuration.
+     * Converts the internal exported entry to a service configuration object.
      * 
      * @param <T>
      *            the type of service the entry wraps

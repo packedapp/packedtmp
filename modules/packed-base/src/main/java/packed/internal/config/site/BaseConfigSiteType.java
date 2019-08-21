@@ -20,7 +20,7 @@ package packed.internal.config.site;
  */
 
 // Separate for bundle/configuration?????
-public final class ConfigSiteType {
+public final class BaseConfigSiteType {
 
     /** */
     public static final String BUNDLE_DESCRIPTOR_OF = "Descriptor.of";

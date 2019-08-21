@@ -93,25 +93,25 @@ public interface InternalConfigSite extends ConfigSite {
         return new AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
-    default InternalConfigSite thenStack(String cst) {
+    default InternalConfigSite thenCaptureStackFrame(String cst) {
         // LinkFromCaptureStack
         if (DISABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
-        return sf.isPresent() ? new StackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
     }
 
-    static InternalConfigSite ofStack(String cst) {
+    static InternalConfigSite captureStackFrame(String cst) {
         if (DISABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
-        return sf.isPresent() ? new StackFrameConfigSite(null, cst, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(null, cst, sf.get()) : UNKNOWN;
     }
 
     /** A programmatic configuration site from a {@link StackFrame}. */
-    static class StackFrameConfigSite extends AbstractConfigSite {
+    static class CapturedStackFrameConfigSite extends AbstractConfigSite {
 
         /** The stack frame. */
         private final StackFrame stackFrame;
@@ -120,7 +120,7 @@ public interface InternalConfigSite extends ConfigSite {
          * @param parent
          * @param operation
          */
-        StackFrameConfigSite(ConfigSite parent, String operation, StackFrame caller) {
+        CapturedStackFrameConfigSite(ConfigSite parent, String operation, StackFrame caller) {
             super(parent, operation);
             this.stackFrame = requireNonNull(caller);
         }
@@ -134,7 +134,7 @@ public interface InternalConfigSite extends ConfigSite {
         /** {@inheritDoc} */
         @Override
         public InternalConfigSite replaceParent(ConfigSite newParent) {
-            return new StackFrameConfigSite(newParent, super.operation, stackFrame);
+            return new CapturedStackFrameConfigSite(newParent, super.operation, stackFrame);
         }
 
         /** {@inheritDoc} */

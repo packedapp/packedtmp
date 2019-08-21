@@ -41,7 +41,7 @@ import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
-import packed.internal.config.site.ConfigSiteType;
+import packed.internal.config.site.BaseConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.hook.DelayedAccessor;
@@ -84,7 +84,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
-        super(InternalConfigSite.ofStack(ConfigSiteType.INJECTOR_OF), artifactDriver);
+        super(InternalConfigSite.captureStackFrame(BaseConfigSiteType.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
@@ -101,7 +101,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the userß
      */
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
-        super(parent.configSite().thenStack(ConfigSiteType.INJECTOR_OF), parent);
+        super(parent.configSite().thenCaptureStackFrame(BaseConfigSiteType.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
@@ -209,7 +209,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
+        DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this,
                 descriptor, factory);
         return descriptor.initialize(this, dcc);
     }
@@ -229,7 +229,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL),
+        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL),
                 this, descriptor, instance);
 
         return descriptor.initialize(this, dcc);
@@ -240,7 +240,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         prepareNewComponent(State.INSTALL_INVOKED);
 
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(configSite().thenStack(ConfigSiteType.COMPONENT_INSTALL), this,
+        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this,
                 descriptor, implementation);
         return descriptor.initialize(this, dcc);
     }

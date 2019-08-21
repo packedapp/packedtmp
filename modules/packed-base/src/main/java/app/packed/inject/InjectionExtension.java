@@ -28,7 +28,7 @@ import app.packed.container.extension.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import packed.internal.config.site.ConfigSiteType;
+import packed.internal.config.site.BaseConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.build.AtProvidesGroup;
@@ -115,15 +115,15 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        InternalConfigSite cs = configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        return builder.export(key, cs);
+        InternalConfigSite configSite = configuration.configSite().thenCaptureStackFrame(BaseConfigSiteType.BUNDLE_EXPOSE);
+        return builder.export(key, configSite);
     }
 
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        InternalConfigSite cs = this.configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        return builder.export(cs, configuration);
+        InternalConfigSite configSite = this.configuration.configSite().thenCaptureStackFrame(BaseConfigSiteType.BUNDLE_EXPOSE);
+        return builder.export(configuration, configSite);
     }
 
     /**
