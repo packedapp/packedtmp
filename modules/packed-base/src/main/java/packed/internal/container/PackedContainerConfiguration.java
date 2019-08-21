@@ -64,7 +64,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     public ComponentLookup lookup; // Should be more private
 
-    /** A configurator cache object, shared among container sources of the same type. */
+    /** A container model object, shared among artifact sources of the same type. */
     private final ContainerModel model;
 
     /** The source of the container configuration. */
@@ -247,6 +247,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
         // type.
+        // Maybe in the future LinkedBundle<- (LinkableContainerSource)
     }
 
     /** {@inheritDoc} */

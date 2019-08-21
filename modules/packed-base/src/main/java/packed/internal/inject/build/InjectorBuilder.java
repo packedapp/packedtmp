@@ -175,13 +175,14 @@ public final class InjectorBuilder {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FunctionHandle<T> function) {
-        BSEComponent<?> sc = cc.features().get(FK);
-        if (sc == null) {
-            sc = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(function), (List) factory.dependencies());
+        BSEComponent<?> c = cc.features().get(FK);
+        if (c == null) {
+            // config site???
+            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(function), (List) factory.dependencies());
         }
-        sc.as((Key) factory.key());
-        entries.add(sc);
-        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (BSEComponent) sc);
+        c.as((Key) factory.key());
+        entries.add(c);
+        return new PackedProvidedComponentConfiguration<>(cc, (BSEComponent) c);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -17,6 +17,7 @@ package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.feature.FeatureMap;
@@ -24,7 +25,6 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.CoreComponentConfiguration;
 
 /**
  *
@@ -35,7 +35,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     final BSE<T> buildEntry;
 
     /** The component we are exposing. */
-    private final CoreComponentConfiguration component;
+    private final ComponentConfiguration component;
 
     /**
      * Creates a new configuration object
@@ -43,7 +43,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedProvidedComponentConfiguration(CoreComponentConfiguration component, BSE<T> buildEntry) {
+    public PackedProvidedComponentConfiguration(ComponentConfiguration component, BSE<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

@@ -44,6 +44,8 @@ import app.packed.container.Bundle;
 
 // Hmm ArtifactSource??? Only DynamicContainerSource is a bit of unknown.
 // ArtifactSource type....
+
+// Rename to ContainerSource??? I think it makes more sense....
 public interface ArtifactSource {
 
     static ArtifactSource ofRepeatableBundle(Supplier<? extends Bundle> supplier) {

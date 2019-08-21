@@ -18,27 +18,30 @@ package packed.internal.config.site;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
 
-/**
- *
- */
+/** An unknown config site. */
 public final class UnknownConfigSite extends AbstractConfigSite {
 
+    /** The singleton. */
     public static final UnknownConfigSite INSTANCE = new UnknownConfigSite();
 
+    /** Singleton. */
     private UnknownConfigSite() {
         super(null, "Unknown");
     }
 
+    /** {@inheritDoc} */
     @Override
     public ConfigSite replaceParent(ConfigSite newParent) {
         return UNKNOWN;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "Unknown";
     }
 
+    /** {@inheritDoc} */
     @Override
     public void visit(ConfigSiteVisitor visitor) {
         visitor.visitUnknown(this);

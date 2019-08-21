@@ -204,10 +204,7 @@ public final class InjectionExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
-        requireNonNull(factory, "factory is null");
-        checkConfigurable();
-        ComponentConfiguration cc = use(ComponentExtension.class).install(factory);
-        return builder.provideFactory(cc, factory, factory.factory.function);
+        return builder.provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
     /**
@@ -224,10 +221,7 @@ public final class InjectionExtension extends Extension {
      * @return a service configuration for the service
      */
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
-        requireNonNull(instance, "instance is null");
-        checkConfigurable();
-        ComponentConfiguration cc = use(ComponentExtension.class).install(instance);
-        return builder.provideInstance(cc, instance);
+        return builder.provideInstance(use(ComponentExtension.class).install(instance), instance);
     }
 
     /**
