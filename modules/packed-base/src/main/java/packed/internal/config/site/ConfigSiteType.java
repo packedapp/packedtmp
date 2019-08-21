@@ -15,49 +15,33 @@
  */
 package packed.internal.config.site;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  *
  */
 
 // Separate for bundle/configuration?????
-public enum ConfigSiteType {
+public final class ConfigSiteType {
 
     /** */
-    BUNDLE_DESCRIPTOR_OF("Descriptor.of"),
+    public static final String BUNDLE_DESCRIPTOR_OF = "Descriptor.of";
 
     /** */
-    BUNDLE_EXPOSE("Injector.expose"),
+    public static final String BUNDLE_EXPOSE = "Injector.expose";
 
     /** */
-    INJECTOR_CONFIGURATION_BIND("Injector.bind"),
+    public static final String INJECTOR_CONFIGURATION_BIND = "Injector.bind";
 
-    INJECTOR_CONFIGURATION_ADD_DEPENDENCY("Injector.addDependency"),
-
-    /** */
-    INJECTOR_CONFIGURATION_INJECTOR_BIND("Injector.injectorBind"),
+    public static final String INJECTOR_CONFIGURATION_ADD_DEPENDENCY = "Injector.addDependency";
 
     /** */
-    INJECTOR_OF("Injector.of"),
+    public static final String INJECTOR_CONFIGURATION_INJECTOR_BIND = "Injector.injectorBind";
 
     /** */
-    INJECTOR_PROVIDE("Injector.provide"),
+    public static final String INJECTOR_OF = "Injector.of";
 
-    COMPONENT_INSTALL("Component.install");
+    /** */
+    public static final String INJECTOR_PROVIDE = "Injector.provide";
 
-    final String f;
+    public static final String COMPONENT_INSTALL = "Component.install";
 
-    ConfigSiteType(String f) {
-        this.f = requireNonNull(f);
-    }
-
-    public String operation() {
-        return f;
-    }
-
-    @Override
-    public String toString() {
-        return f;
-    }
 }

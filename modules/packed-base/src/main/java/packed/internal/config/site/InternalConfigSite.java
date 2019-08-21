@@ -71,14 +71,14 @@ public interface InternalConfigSite extends ConfigSite {
     static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
-    default InternalConfigSite linkFromAnnotatedField(ConfigSiteType cst, Annotation annotation, FieldDescriptor field) {
+    default InternalConfigSite linkFromAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
         if (DISABLED) {
             return UNKNOWN;
         }
         return new AnnotatedFieldConfigSite(this, cst, field, annotation);
     }
 
-    default InternalConfigSite thenAnnotatedMember(ConfigSiteType cst, Annotation annotation, Member member) {
+    default InternalConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
         if (member instanceof MethodDescriptor) {
             return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
         } else {
@@ -86,14 +86,14 @@ public interface InternalConfigSite extends ConfigSite {
         }
     }
 
-    default InternalConfigSite thenAnnotatedMethod(ConfigSiteType cst, Annotation annotation, MethodDescriptor method) {
+    default InternalConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
         if (DISABLED) {
             return UNKNOWN;
         }
         return new AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
-    default InternalConfigSite thenStack(ConfigSiteType cst) {
+    default InternalConfigSite thenStack(String cst) {
         // LinkFromCaptureStack
         if (DISABLED) {
             return UNKNOWN;
@@ -102,7 +102,7 @@ public interface InternalConfigSite extends ConfigSite {
         return sf.isPresent() ? new StackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
     }
 
-    static InternalConfigSite ofStack(ConfigSiteType cst) {
+    static InternalConfigSite ofStack(String cst) {
         if (DISABLED) {
             return UNKNOWN;
         }
@@ -120,7 +120,7 @@ public interface InternalConfigSite extends ConfigSite {
          * @param parent
          * @param operation
          */
-        StackFrameConfigSite(ConfigSite parent, ConfigSiteType operation, StackFrame caller) {
+        StackFrameConfigSite(ConfigSite parent, String operation, StackFrame caller) {
             super(parent, operation);
             this.stackFrame = requireNonNull(caller);
         }

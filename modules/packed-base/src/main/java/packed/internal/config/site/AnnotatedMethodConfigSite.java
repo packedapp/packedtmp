@@ -32,7 +32,7 @@ public final class AnnotatedMethodConfigSite extends AbstractConfigSite {
 
     final Annotation annotation;
 
-    AnnotatedMethodConfigSite(ConfigSite parent, ConfigSiteType operation, MethodDescriptor method, Annotation annotation) {
+    AnnotatedMethodConfigSite(ConfigSite parent, String operation, MethodDescriptor method, Annotation annotation) {
         super(parent, operation);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);

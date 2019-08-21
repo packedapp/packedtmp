@@ -35,7 +35,7 @@ public final class AnnotatedFieldConfigSite extends AbstractConfigSite {
     private final FieldDescriptor field;
 
     // TODO do we just want to keep a reference to the Class<? extends Annotation>?
-    AnnotatedFieldConfigSite(ConfigSite parent, ConfigSiteType operation, FieldDescriptor field, Annotation annotation) {
+    AnnotatedFieldConfigSite(ConfigSite parent, String operation, FieldDescriptor field, Annotation annotation) {
         super(parent, operation);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);

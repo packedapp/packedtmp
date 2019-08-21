@@ -27,11 +27,11 @@ import app.packed.util.MethodDescriptor;
 /** An abstract implementation of {@link ConfigSite}. */
 public abstract class AbstractConfigSite implements InternalConfigSite {
 
-    final ConfigSiteType operation;
+    final String operation;
 
     final ConfigSite parent;
 
-    AbstractConfigSite(ConfigSite parent, ConfigSiteType operation) {
+    AbstractConfigSite(ConfigSite parent, String operation) {
         this.parent = parent;
         this.operation = requireNonNull(operation);
     }
@@ -39,7 +39,7 @@ public abstract class AbstractConfigSite implements InternalConfigSite {
     /** {@inheritDoc} */
     @Override
     public String operation() {
-        return operation.toString();
+        return operation;
     }
 
     @Override
@@ -52,11 +52,11 @@ public abstract class AbstractConfigSite implements InternalConfigSite {
         return super.toString();
     }
 
-    public ConfigSite spawnOnAnnotatedField(ConfigSiteType operation, FieldDescriptor field, Annotation annotation) {
+    public ConfigSite spawnOnAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
         return new AnnotatedFieldConfigSite(this, operation, field, annotation);
     }
 
-    public ConfigSite spawnOnAnnotatedMethod(ConfigSiteType operation, MethodDescriptor method, Annotation annotation) {
+    public ConfigSite spawnOnAnnotatedMethod(String operation, MethodDescriptor method, Annotation annotation) {
         return new AnnotatedMethodConfigSite(this, operation, method, annotation);
     }
 
