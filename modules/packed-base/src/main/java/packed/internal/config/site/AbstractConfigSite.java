@@ -17,12 +17,11 @@ package packed.internal.config.site;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
+import java.lang.StackWalker.StackFrame;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import app.packed.config.ConfigSite;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.MethodDescriptor;
 
 /** An abstract implementation of {@link ConfigSite}. */
 public abstract class AbstractConfigSite implements ConfigSite {
@@ -30,6 +29,9 @@ public abstract class AbstractConfigSite implements ConfigSite {
     final String operation;
 
     final ConfigSite parent;
+
+    public static final Predicate<StackFrame> FILTER = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
+            && !f.getClassName().startsWith("java.");
 
     AbstractConfigSite(ConfigSite parent, String operation) {
         this.parent = parent;
@@ -45,19 +47,6 @@ public abstract class AbstractConfigSite implements ConfigSite {
     @Override
     public Optional<ConfigSite> parent() {
         return Optional.ofNullable(parent);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    public ConfigSite spawnOnAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
-        return new AnnotatedFieldConfigSite(this, operation, field, annotation);
-    }
-
-    public ConfigSite spawnOnAnnotatedMethod(String operation, MethodDescriptor method, Annotation annotation) {
-        return new AnnotatedMethodConfigSite(this, operation, method, annotation);
     }
 
     // @Override

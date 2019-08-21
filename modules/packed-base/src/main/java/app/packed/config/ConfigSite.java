@@ -23,10 +23,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
+import packed.internal.config.site.AbstractConfigSite;
 import packed.internal.config.site.AnnotatedFieldConfigSite;
 import packed.internal.config.site.AnnotatedMethodConfigSite;
 import packed.internal.config.site.CapturedStackFrameConfigSite;
@@ -53,33 +53,6 @@ import packed.internal.config.site.CapturedStackFrameConfigSite;
 // https://api.flutter.dev/flutter/package-stack_trace_stack_trace/Chain-class.html
 public interface ConfigSite {
     static final boolean DISABLED = false;
-
-    static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
-            && !f.getClassName().startsWith("java.");
-
-    ConfigSite replaceParent(ConfigSite newParent);
-
-    default ConfigSite linkFromAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
-        if (DISABLED) {
-            return UNKNOWN;
-        }
-        return new AnnotatedFieldConfigSite(this, cst, field, annotation);
-    }
-
-    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
-        if (member instanceof MethodDescriptor) {
-            return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
-        } else {
-            return linkFromAnnotatedField(cst, annotation, (FieldDescriptor) member);
-        }
-    }
-
-    default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
-        if (DISABLED) {
-            return UNKNOWN;
-        }
-        return new AnnotatedMethodConfigSite(this, cst, method, annotation);
-    }
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
     ConfigSite UNKNOWN = new ConfigSite() {
@@ -155,6 +128,39 @@ public interface ConfigSite {
         forEach(e -> System.out.println(e));
     }
 
+    ConfigSite replaceParent(ConfigSite newParent);
+
+    default ConfigSite thenAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        return new AnnotatedFieldConfigSite(this, cst, field, annotation);
+    }
+
+    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
+        if (member instanceof MethodDescriptor) {
+            return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
+        } else {
+            return thenAnnotatedField(cst, annotation, (FieldDescriptor) member);
+        }
+    }
+
+    default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        return new AnnotatedMethodConfigSite(this, cst, method, annotation);
+    }
+
+    default ConfigSite thenCaptureStackFrame(String cst) {
+        // LinkFromCaptureStack
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
+    }
+
     /**
      * Visits this configuration site. {@link #visitEach(ConfigSiteVisitor)} will also visit each descendant of this
      * configuration site;
@@ -172,17 +178,8 @@ public interface ConfigSite {
         if (DISABLED) {
             return UNKNOWN;
         }
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());
         return sf.isPresent() ? new CapturedStackFrameConfigSite(null, cst, sf.get()) : UNKNOWN;
-    }
-
-    default ConfigSite thenCaptureStack(String cst) {
-        // LinkFromCaptureStack
-        if (DISABLED) {
-            return UNKNOWN;
-        }
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
-        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
     }
 }
 // 5 different types

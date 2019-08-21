@@ -105,8 +105,8 @@ public abstract class Extension {
      * @return a configuration site
      * @see StackWalker
      */
-    protected final ConfigSite configSiteCapture() {
-        throw new UnsupportedOperationException();
+    protected final ConfigSite containerConfigSite() {
+        return configuration.configSite();
     }
 
     protected void buildBundle(BundleDescriptor.Builder builder) {}

@@ -54,7 +54,7 @@ final class ImportedInjector {
         }
         this.injector = (AbstractInjector) injector;
         this.wirelets = WireletList.of(wirelets);
-        this.configSite = containerConfiguration.configSite().thenCaptureStack(BaseConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        this.configSite = containerConfiguration.configSite().thenCaptureStackFrame(BaseConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
     void importAll() {
