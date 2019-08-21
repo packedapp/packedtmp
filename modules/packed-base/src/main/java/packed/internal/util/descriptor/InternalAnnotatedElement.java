@@ -42,11 +42,6 @@ public abstract class InternalAnnotatedElement implements AnnotatedElement {
     // We only store the List instance
     // TODO test with some inherited annotations
 
-    // TODO fix
-    public final Annotation[] getAnnotationsUnsafe() {
-        return annotations;
-    }
-
     /**
      * Creates a new AbstractAnnotatedElement from an {@link AnnotatedElement}.
      *

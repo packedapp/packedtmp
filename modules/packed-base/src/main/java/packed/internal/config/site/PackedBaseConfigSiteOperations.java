@@ -20,13 +20,13 @@ package packed.internal.config.site;
  */
 
 // Separate for bundle/configuration?????
-public final class BaseConfigSiteType {
+public final class PackedBaseConfigSiteOperations {
 
     /** */
     public static final String BUNDLE_DESCRIPTOR_OF = "Descriptor.of";
 
     /** */
-    public static final String BUNDLE_EXPOSE = "Injector.expose";
+    public static final String EXPORT_SERVICE = "Injector.expose";
 
     /** */
     public static final String INJECTOR_CONFIGURATION_BIND = "Injector.bind";

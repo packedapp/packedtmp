@@ -33,6 +33,7 @@ import packed.internal.invoke.FunctionHandle;
  */
 public interface ComponentLookup {
 
+    // componentModel should probably check valid types.... Basically
     ComponentModel componentModelOf(Class<?> componentType);
 
     MethodHandle acquireMethodHandle(Class<?> componentType, Method method);

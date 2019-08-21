@@ -27,7 +27,7 @@ import app.packed.container.WireletList;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
-import packed.internal.config.site.BaseConfigSiteType;
+import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.AbstractInjector;
@@ -54,7 +54,7 @@ final class ImportedInjector {
         }
         this.injector = (AbstractInjector) injector;
         this.wirelets = WireletList.of(wirelets);
-        this.configSite = containerConfiguration.configSite().thenCaptureStackFrame(BaseConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        this.configSite = containerConfiguration.configSite().thenCaptureStackFrame(PackedBaseConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
     void importAll() {

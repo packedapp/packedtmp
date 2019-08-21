@@ -24,7 +24,6 @@ import java.util.Set;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
@@ -192,10 +191,10 @@ public abstract class Bundle implements ArtifactSource {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ComponentExtension#link(Bundle, Wirelet...)
+     * @see ContainerConfiguration#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle bundle, Wirelet... wirelets) {
-        use(ComponentExtension.class).link(bundle, wirelets);
+        configuration.link(bundle, wirelets);
     }
 
     /**

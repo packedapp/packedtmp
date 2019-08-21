@@ -28,7 +28,7 @@ import app.packed.inject.ServiceDependency;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
-import packed.internal.inject.build.BSEDefault;
+import packed.internal.inject.build.BSEComponent;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.compose.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.run.DefaultInjector;
@@ -63,7 +63,7 @@ final class DependencyGraph {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void analyze() {
         ir.privateInjector = new DefaultInjector(root, ir.internalNodes);
-        BSEDefault d = new BSEDefault<>(ib, root.configSite(), ir.privateInjector);
+        BSEComponent d = new BSEComponent<>(ib, root.configSite(), ir.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ir.internalNodes.put(d);
         // TODO replace with something a.la.
@@ -129,8 +129,8 @@ final class DependencyGraph {
         // System.out.println(root.box.services().exports);
 
         for (ServiceEntry<?> node : ir.internalNodes) {
-            if (node instanceof BSEDefault) {
-                BSEDefault<?> s = (BSEDefault<?>) node;
+            if (node instanceof BSEComponent) {
+                BSEComponent<?> s = (BSEComponent<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
                     s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                 }

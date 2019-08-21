@@ -57,7 +57,7 @@ import packed.internal.config.site.UnknownConfigSite;
 // People are not going to implement their own... Because of visitors.. So might as well be a class
 public interface ConfigSite {
 
-    /** A special configuration site that is used if the actual configuration site could not be determined. */
+    /** A special configuration site indicating that the actual configuration site could not be determined. */
     ConfigSite UNKNOWN = UnknownConfigSite.INSTANCE;
 
     /**
@@ -108,9 +108,6 @@ public interface ConfigSite {
     ConfigSite replaceParent(ConfigSite newParent);
 
     default ConfigSite thenAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
-        if (AbstractConfigSite.DISABLED) {
-            return UNKNOWN;
-        }
         return new AnnotatedFieldConfigSite(this, cst, field, annotation);
     }
 
@@ -123,15 +120,11 @@ public interface ConfigSite {
     }
 
     default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
-        if (AbstractConfigSite.DISABLED) {
-            return UNKNOWN;
-        }
         return new AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
     default ConfigSite thenCaptureStackFrame(String cst) {
-        // LinkFromCaptureStack
-        if (AbstractConfigSite.DISABLED) {
+        if (AbstractConfigSite.STACK_FRAME_CAPTURING_DIABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());
@@ -152,7 +145,11 @@ public interface ConfigSite {
     }
 
     static ConfigSite captureStack(String cst) {
-        if (AbstractConfigSite.DISABLED) {
+        // capture stack frame vs capture stack
+        // Det eneste er egentlig, om vi vil have en settings saa man kan capture mere end kun en frame..
+        // Men saa skal vi ogsaa rette visitoren.
+        /// Maaske have en captureStackExtended
+        if (AbstractConfigSite.STACK_FRAME_CAPTURING_DIABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());

@@ -22,7 +22,6 @@ import app.packed.app.App;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
 
@@ -58,9 +57,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     ArtifactBuildContext buildContext();
 
     /**
-     * Returns an immutable view of all of the extension types that are used by this configuration.
+     * Returns an unmodifiable view of all of the extension types that are used by this configuration.
      * 
-     * @return an immutable view of all of the extension types that are used by this configuration
+     * @return an unmodifiable view of all of the extension types that are used by this configuration
      */
     Set<Class<? extends Extension>> extensions();
 
@@ -70,6 +69,14 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return whether or not this container is the top level container for an artifact
      */
     boolean isTopContainer();
+
+    /**
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            any wirelets
+     */
+    void link(Bundle bundle, Wirelet... wirelets);
 
     /**
      * Registers a {@link Lookup} object that will be used for accessing fields and invoking methods on registered
@@ -122,7 +129,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ArtifactSource, Wirelet...)} or {@link ComponentExtension#link(Bundle, Wirelet...)}.
+     * {@link App#of(ArtifactSource, Wirelet...)} or {@link ContainerConfiguration#link(Bundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

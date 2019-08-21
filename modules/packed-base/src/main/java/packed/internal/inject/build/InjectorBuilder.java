@@ -46,7 +46,7 @@ import packed.internal.invoke.FunctionHandle;
 public final class InjectorBuilder {
 
     /** A that is used to store parent nodes */
-    private static FeatureKey<BSEDefault<?>> FK = new FeatureKey<>() {};
+    private static FeatureKey<BSEComponent<?>> FK = new FeatureKey<>() {};
 
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration containerConfiguration;
@@ -150,13 +150,13 @@ public final class InjectorBuilder {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup apg) {
         // This is a bit complicated, to define
-        BSEDefault parentNode;
+        BSEComponent parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
-            parentNode = new BSEDefault(this, cc.configSite(), instance);
+            parentNode = new BSEComponent(this, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
-            parentNode = new BSEDefault<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(factory.function()),
+            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(factory.function()),
                     (List) factory.dependencies());
         }
 
@@ -175,29 +175,29 @@ public final class InjectorBuilder {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FunctionHandle<T> function) {
-        BSEDefault<?> sc = cc.features().get(FK);
+        BSEComponent<?> sc = cc.features().get(FK);
         if (sc == null) {
-            sc = new BSEDefault<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(function), (List) factory.dependencies());
+            sc = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(function), (List) factory.dependencies());
         }
         sc.as((Key) factory.key());
         entries.add(sc);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSEDefault) sc);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSEComponent) sc);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        BSEDefault<?> node = cc.features().get(InjectorBuilder.FK);
+        BSEComponent<?> node = cc.features().get(InjectorBuilder.FK);
 
         if (node == null) {
             // No node found, components has no @Provides method, create a new node
-            node = new BSEDefault<T>(this, cc.configSite(), instance);
+            node = new BSEComponent<T>(this, cc.configSite(), instance);
         }
 
         node.as((Key) Key.of(instance.getClass()));
         entries.add(node);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSEDefault) node);
+        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSEComponent) node);
     }
 
     public void requireExplicit(Key<?> key, boolean isOptional) {

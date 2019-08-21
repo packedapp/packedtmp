@@ -30,7 +30,7 @@ import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.BaseConfigSiteType;
+import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
@@ -41,10 +41,10 @@ import packed.internal.invoke.InvokableMember;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * A abstract node that builds thing from a factory. This node is used for all three binding modes mainly because it
- * makes extending it with {@link ProvidedComponentConfiguration} much easier.
+ * An entry representing a component node. This node is used for all three binding modes mainly because it makes
+ * extending it with {@link ProvidedComponentConfiguration} much easier.
  */
-public final class BSEDefault<T> extends BSE<T> {
+public final class BSEComponent<T> extends BSE<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -63,11 +63,11 @@ public final class BSEDefault<T> extends BSE<T> {
     private InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final BSEDefault<?> receiver;
+    private final BSEComponent<?> receiver;
 
-    public BSEDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
+    public BSEComponent(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
             List<InternalDependencyDescriptor> dependencies) {
-        super(injectorBuilder, (ConfigSite) cc.configSite(), dependencies);
+        super(injectorBuilder, cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.receiver = null;
         this.instantionMode = requireNonNull(instantionMode);
@@ -91,7 +91,7 @@ public final class BSEDefault<T> extends BSE<T> {
      * @param instance
      *            the instance
      */
-    public BSEDefault(InjectorBuilder injectorConfiguration, ConfigSite configSite, T instance) {
+    public BSEComponent(InjectorBuilder injectorConfiguration, ConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.receiver = null;
@@ -99,7 +99,7 @@ public final class BSEDefault<T> extends BSE<T> {
         this.function = null;
     }
 
-    BSEDefault(ConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSEDefault<?> parent) {
+    BSEComponent(ConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSEComponent<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.receiver = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -136,7 +136,7 @@ public final class BSEDefault<T> extends BSE<T> {
         return i;
     }
 
-    public BSEDefault<T> instantiateAs(InstantiationMode mode) {
+    public BSEComponent<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -178,6 +178,7 @@ public final class BSEDefault<T> extends BSE<T> {
         Object o;
         MethodHandle mh = fac().toMethodHandle();
 
+        // It would actually be nice with the receiver here as well...
         try {
             o = mh.invokeWithArguments(params);
         } catch (Throwable e) {
@@ -224,7 +225,7 @@ public final class BSEDefault<T> extends BSE<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BSE<?> provide(AtProvides atProvides) {
-        ConfigSite icss = configSite().thenAnnotatedMember(BaseConfigSiteType.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
+        ConfigSite icss = configSite().thenAnnotatedMember(PackedBaseConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {
@@ -232,7 +233,7 @@ public final class BSEDefault<T> extends BSE<T> {
             // fi = fi.withInstance(this.instance);
         }
 
-        BSEDefault<?> node = new BSEDefault<>(icss, atProvides, fi, this);
+        BSEComponent<?> node = new BSEComponent<>(icss, atProvides, fi, this);
         node.as((Key) atProvides.key);
         return node;
     }

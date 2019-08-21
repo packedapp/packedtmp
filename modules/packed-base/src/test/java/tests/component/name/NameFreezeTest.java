@@ -121,7 +121,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
 
     /**
      * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having linked another container via
-     * {@link ComponentExtension#link(app.packed.container.Bundle, app.packed.container.Wirelet...)}.
+     * {@link ContainerConfiguration#link(app.packed.container.Bundle, app.packed.container.Wirelet...)}.
      * <p>
      * We could actually allow this as long as the bundle we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to

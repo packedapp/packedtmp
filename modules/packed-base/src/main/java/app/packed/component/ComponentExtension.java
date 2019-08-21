@@ -17,10 +17,9 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
+import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
@@ -46,7 +45,7 @@ public final class ComponentExtension extends Extension {
     // Vi skal ikke til at have flere scans...
 
     public ComponentConfiguration install(Class<?> implementation) {
-        return configuration.install(implementation);
+        return install(Factory.findInjectable(implementation));
     }
 
     // AllowRuntimeInstallationOfComponents();
@@ -56,31 +55,34 @@ public final class ComponentExtension extends Extension {
 
     // Why export, Need to export
 
-    /**
-     * Creates a link to another container represented by a bundle.
-     * <p>
-     * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
-     * 
-     * @param bundle
-     *            a bundle representing the child
-     * @param wirelets
-     *            optional wirelets
-     */
-    public void link(Bundle bundle, Wirelet... wirelets) {
-        // I think I want to move this back to ContainerConfiguration
-        configuration.link(bundle, wirelets);
-    }
+    // /**
+    // * Creates a link to another container represented by a bundle.
+    // * <p>
+    // * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
+    // *
+    // * @param bundle
+    // * a bundle representing the child
+    // * @param wirelets
+    // * optional wirelets
+    // */
+    // public void link(Bundle bundle, Wirelet... wirelets) {
+    // // I think I want to move this back to ContainerConfiguration
+    // configuration.link(bundle, wirelets);
+    // }
 
     public ComponentConfiguration install(Factory<?> factory) {
-        return configuration.install(factory);
+        requireNonNull(factory, "factory is null");
+        return configuration.install(factory, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     public ComponentConfiguration install(Object instance) {
-        return configuration.install(instance);
+        requireNonNull(instance, "instance is null");
+        return configuration.installInstance(instance, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     public ComponentConfiguration installHelper(Class<?> implementation) {
-        return configuration.installHelper(implementation);
+        requireNonNull(implementation, "implementation is null");
+        return configuration.installHelper(implementation, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     // Scans this package...

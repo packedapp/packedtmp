@@ -26,10 +26,14 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 
 /**
- * A hook representing a field annotated with a specific type.
+ * A hook representing a field annotated with a specific annotation.
  * 
  * <p>
- * AnnotatedFieldHook are not safe to use by multiple threads
+ * AnnotatedFieldHook are never safe to use by multiple threads. Furthermore something about some methods only being
+ * active when building XX
+ * 
+ * @param <T>
+ *            the type of annotation this hook matches
  **/
 public interface AnnotatedFieldHook<T extends Annotation> {
 
@@ -51,11 +55,10 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      *            the operator to apply
      * @return the result from applying the operator to the static field
      * @throws UnsupportedOperationException
-     *             if the underlying field is not a static field
+     *             if the underlying field is not a static field. Or if the underlying field is final, and the operator
+     *             needs write access
      * @throws IllegalAccessRuntimeException
      *             if access checking failed while accessing the field
-     * @throws UnsupportedOperationException
-     *             if the underlying field is final, and the operator needs write access
      */
     <E> E applyOnStaticField(FieldOperator<E> operator);
 
@@ -67,6 +70,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     AnnotatedFieldHook<T> checkAssignableTo(Class<?> type);
 
     // Move checks to field operator????
+    // FieldOperator.checkFinalField().checkStatic
     AnnotatedFieldHook<T> checkExactType(Class<?> type);
 
     /**

@@ -20,6 +20,12 @@ package app.packed.container.extension;
  */
 
 /// Ved ikke omm vi behoever den her
+/// Ideen er vi bygger en graf op, som man kan query omkring extensions..
+
+// interessante ting->
+// Lowest common ancessors
+// Noder med hul i
+
 class ExtensionGraph<E extends Extension> {
 
     // Alle extension fra en

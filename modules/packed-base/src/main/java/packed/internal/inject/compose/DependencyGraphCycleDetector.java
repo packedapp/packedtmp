@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import app.packed.inject.InjectionException;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
-import packed.internal.inject.build.BSEDefault;
+import packed.internal.inject.build.BSEComponent;
 
 /** A utility class that can find cycles in a dependency graph. */
 final class DependencyGraphCycleDetector {
@@ -53,8 +53,8 @@ final class DependencyGraphCycleDetector {
                     to = owner;
                 }
 
-                if (to.needsResolving() && to instanceof BSEDefault) {
-                    BSEDefault<?> ic = (BSEDefault<?>) to;
+                if (to.needsResolving() && to instanceof BSEComponent) {
+                    BSEComponent<?> ic = (BSEComponent<?>) to;
                     if (!ic.detectCycleVisited) {
                         dependencies.push(to);
                         // See if the component is already on the stack -> A cycle has been detected

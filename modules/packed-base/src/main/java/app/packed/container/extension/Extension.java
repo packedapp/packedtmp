@@ -148,6 +148,10 @@ public abstract class Extension {
         }
     }
 
+    protected final ConfigSite captureStackTrace(String operation) {
+        return containerConfigSite().thenCaptureStackFrame(operation);
+    }
+
     /**
      * Returns the configuration of the container. Or fails with {@link IllegalStateException} if invoked from the
      * constructor of the extension.

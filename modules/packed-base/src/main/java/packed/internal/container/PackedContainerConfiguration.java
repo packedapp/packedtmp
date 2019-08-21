@@ -42,7 +42,7 @@ import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
-import packed.internal.config.site.BaseConfigSiteType;
+import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.hook.DelayedAccessor;
 import packed.internal.container.extension.hook.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -56,9 +56,6 @@ import packed.internal.support.AppPackedExtensionSupport;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
-    /** A configurator cache object, shared among container sources of the same type. */
-    private final ContainerModel model;
-
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, Extension> extensions = new LinkedHashMap<>();
 
@@ -66,6 +63,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     public ComponentLookup lookup; // Should be more private
+
+    /** A configurator cache object, shared among container sources of the same type. */
+    private final ContainerModel model;
 
     /** The source of the container configuration. */
     final ArtifactSource source;
@@ -84,7 +84,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
-        super(ConfigSite.captureStack(BaseConfigSiteType.INJECTOR_OF), artifactDriver);
+        super(ConfigSite.captureStack(PackedBaseConfigSiteOperations.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
@@ -101,7 +101,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the userß
      */
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
-        super(parent.configSite().thenCaptureStackFrame(BaseConfigSiteType.INJECTOR_OF), parent);
+        super(parent.configSite().thenCaptureStackFrame(PackedBaseConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
@@ -122,16 +122,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    // public DefaultInjector buildInjector() {
-    // doBuild();
-    // new PackedArtifactContext(null, this, new PackedArtifactInstantiationContext(wirelets));
-    // if (extensions.containsKey(InjectionExtension.class)) {
-    // return use(InjectionExtension.class).builder.publicInjector;
-    // } else {
-    // return new DefaultInjector(this, new ServiceNodeMap());
-    // }
-    // }
-
     /**
      * Configures the configuration.
      */
@@ -139,7 +129,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         if (source instanceof Bundle) {
             Bundle bundle = (Bundle) source;
             if (bundle.getClass().isAnnotationPresent(Install.class)) {
-                install(bundle);
+                // Hmm don't know about that config site
+                installInstance(bundle, configSite());
             }
             AppPackedContainerSupport.invoke().doConfigure(bundle, this);
         }
@@ -168,13 +159,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> extensions() {
-        // TODO should we contract wise say that we return them in order of usage???
-        // Topologically sorted??? If we keep track of this at runtime I think we should
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
     void extensionsContainerConfigured() {
-        prepareNewComponent(State.GET_NAME_INVOKED);
+        installPrepare(State.GET_NAME_INVOKED);
         for (Extension e : extensions.values()) {
             AppPackedExtensionSupport.invoke().onConfigured(e);
         }
@@ -196,53 +185,33 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super.extensionsPrepareInstantiation(ic);
     }
 
-    public ComponentConfiguration install(Class<?> implementation) {
-        return install(Factory.findInjectable(implementation));
+    public ComponentConfiguration install(Factory<?> factory, ConfigSite configSite) {
+        ComponentModel model = lookup.componentModelOf(factory.rawType());
+        installPrepare(State.INSTALL_INVOKED);
+        return model.initialize(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
     }
 
-    public ComponentConfiguration install(Factory<?> factory) {
-        // We actually do not need to create a method handle if we are just creating a descriptor...
-        // On the other hand, validation is nice right???
-        requireNonNull(factory, "factory is null");
-        ComponentModel descriptor = lookup.componentModelOf(factory.rawType());
-
-        // All validation should be done by here..
-        prepareNewComponent(State.INSTALL_INVOKED);
-
-        DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(
-                configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this, descriptor, factory);
-        return descriptor.initialize(this, dcc);
-    }
-
-    public ComponentConfiguration install(Object instance) {
-        // TODO we should allow Class instances, TypeVariable, Factory, und so weither.... Eller ogsaa skal kalde den rette
-        // metode...
-        // Eller maaske have installInstance();
-        // TODO should we allow installing bundles in this way?????
-        // Or any other ContainerSource... Basically link(ContainerSource) <- without wirelets....
-        // I'm not sure.... Should we allow install(HelloWorldBundle.class)
-        //// Nah we don't allow setting the name after we have finished...
-
-        requireNonNull(instance, "instance is null");
-        ComponentModel descriptor = lookup.componentModelOf(instance.getClass());
-
-        // All validation should be done by here..
-        prepareNewComponent(State.INSTALL_INVOKED);
-
-        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(
-                configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this, descriptor, instance);
-
-        return descriptor.initialize(this, dcc);
-    }
-
-    public ComponentConfiguration installHelper(Class<?> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        prepareNewComponent(State.INSTALL_INVOKED);
-
+    public ComponentConfiguration installHelper(Class<?> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(
-                configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this, descriptor, implementation);
-        return descriptor.initialize(this, dcc);
+        installPrepare(State.INSTALL_INVOKED);
+        return descriptor.initialize(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
+    }
+
+    public ComponentConfiguration installInstance(Object instance, ConfigSite configSite) {
+        ComponentModel model = lookup.componentModelOf(instance.getClass());
+        installPrepare(State.INSTALL_INVOKED);
+        return model.initialize(this, currentComponent = new InstantiatedComponentConfiguration(configSite, this, model, instance));
+    }
+
+    private void installPrepare(State state) {
+        if (currentComponent != null) {
+            currentComponent.initializeName(state, null);
+            requireNonNull(currentComponent.name);
+            addChild(currentComponent);
+        } else {
+            // This look strange...
+            initializeName(State.INSTALL_INVOKED, null);
+        }
     }
 
     /** {@inheritDoc} */
@@ -258,12 +227,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return parent == null;
     }
 
+    /** {@inheritDoc} */
+    @Override
     public void link(Bundle bundle, Wirelet... wirelets) {
         requireNonNull(bundle, "bundle is null");
         WireletList wl = WireletList.of(wirelets);
 
         initializeName(State.LINK_INVOKED, null);
-        prepareNewComponent(State.LINK_INVOKED);
+        installPrepare(State.LINK_INVOKED);
 
         // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
         // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
@@ -335,17 +306,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             throw new IllegalArgumentException("A layer with the name '" + name + "' has already been added");
         }
         return newLayer;
-    }
-
-    private void prepareNewComponent(State state) {
-        if (currentComponent != null) {
-            currentComponent.initializeName(state, null);
-            requireNonNull(currentComponent.name);
-            addChild(currentComponent);
-        } else {
-            // This look strange...
-            initializeName(State.INSTALL_INVOKED, null);
-        }
     }
 
     /** {@inheritDoc} */

@@ -27,7 +27,6 @@ import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
@@ -287,7 +286,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
         /** One of the install component methods has been invoked. */
         INSTALL_INVOKED,
 
-        /** {@link ComponentExtension#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
+        /** {@link ContainerConfiguration#link(Bundle, app.packed.container.Wirelet...)} has been invoked. */
         LINK_INVOKED,
 
         /** One of the install component methods has been invoked. */

@@ -33,7 +33,7 @@ public abstract class AbstractConfigSite implements ConfigSite {
     public static final Predicate<StackFrame> FILTER = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
             && !f.getClassName().startsWith("java.");
 
-    public static final boolean DISABLED = false;
+    public static final boolean STACK_FRAME_CAPTURING_DIABLED = false;
 
     AbstractConfigSite(ConfigSite parent, String operation) {
         this.parent = parent;
