@@ -161,7 +161,7 @@ public abstract class BaseBundle extends Bundle {
     }
 
     protected final ComponentConfiguration installHelper(Class<?> implementation) {
-        return component().installHelper(implementation);
+        return component().installStatic(implementation);
     }
 
     /**

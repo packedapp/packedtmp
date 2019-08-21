@@ -23,10 +23,10 @@ import packed.internal.container.model.ComponentModel;
 /**
  *
  */
-public final class InstantiatedComponentConfiguration extends DefaultComponentConfiguration {
+public final class InstantiatedComponentConfiguration extends CoreComponentConfiguration {
 
     /** The instance */
-    final Object instance;
+    public final Object instance;
 
     /**
      * @param site
@@ -36,9 +36,5 @@ public final class InstantiatedComponentConfiguration extends DefaultComponentCo
     public InstantiatedComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, Object instance) {
         super(site, containerConfiguration, ccd);
         this.instance = requireNonNull(instance);
-    }
-
-    public Object getInstance() {
-        return instance;
     }
 }

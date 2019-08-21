@@ -34,7 +34,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
-import packed.internal.container.DefaultComponentConfiguration;
+import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
@@ -152,10 +152,10 @@ public final class InjectorBuilder {
         // This is a bit complicated, to define
         BSEComponent parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
-            Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
+            Object instance = ((InstantiatedComponentConfiguration) cc).instance;
             parentNode = new BSEComponent(this, cc.configSite(), instance);
         } else {
-            Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
+            Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
             parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(factory.function()),
                     (List) factory.dependencies());
         }
@@ -181,7 +181,7 @@ public final class InjectorBuilder {
         }
         sc.as((Key) factory.key());
         entries.add(sc);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSEComponent) sc);
+        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (BSEComponent) sc);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -197,7 +197,7 @@ public final class InjectorBuilder {
 
         node.as((Key) Key.of(instance.getClass()));
         entries.add(node);
-        return new PackedProvidedComponentConfiguration<>((DefaultComponentConfiguration) cc, (BSEComponent) node);
+        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (BSEComponent) node);
     }
 
     public void requireExplicit(Key<?> key, boolean isOptional) {

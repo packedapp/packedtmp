@@ -24,21 +24,17 @@ import packed.internal.container.model.ComponentModel;
 /**
  *
  */
-public class FactoryComponentConfiguration extends DefaultComponentConfiguration {
+public final class FactoryComponentConfiguration extends CoreComponentConfiguration {
 
-    private final Factory<?> factory;
+    public final Factory<?> factory;
 
     /**
-     * @param site
+     * @param configSite
      * @param containerConfiguration
-     * @param ccd
+     * @param model
      */
-    public FactoryComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, Factory<?> factory) {
-        super(site, containerConfiguration, ccd);
+    public FactoryComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<?> factory) {
+        super(configSite, containerConfiguration, model);
         this.factory = requireNonNull(factory);
-    }
-
-    public Factory<?> getFactory() {
-        return factory;
     }
 }

@@ -20,20 +20,19 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import packed.internal.container.model.ComponentModel;
 
-/**
- *
- */
-public class StaticComponentConfiguration extends DefaultComponentConfiguration {
+/** A component configuration representing a future static component. */
+public final class StaticComponentConfiguration extends CoreComponentConfiguration {
 
-    final Class<?> implementation;
+    /** The static implementation. */
+    public final Class<?> implementation;
 
     /**
-     * @param site
+     * @param configSite
      * @param containerConfiguration
-     * @param ccd
+     * @param model
      */
-    public StaticComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, Class<?> implementation) {
-        super(site, containerConfiguration, ccd);
+    StaticComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Class<?> implementation) {
+        super(configSite, containerConfiguration, model);
         this.implementation = requireNonNull(implementation);
     }
 }

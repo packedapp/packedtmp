@@ -18,38 +18,38 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import packed.internal.container.model.ComponentModel;
 
 /**
  *
  */
-public abstract class DefaultComponentConfiguration extends AbstractComponentConfiguration implements ComponentConfiguration {
+public abstract class CoreComponentConfiguration extends AbstractComponentConfiguration {
 
-    final ComponentModel ccd;
+    final ComponentModel model;
 
-    public DefaultComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd) {
+    public CoreComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel model) {
         super(site, containerConfiguration);
-        this.ccd = requireNonNull(ccd);
+        this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
     @Override
-    public DefaultComponentConfiguration setDescription(String description) {
+    public AbstractComponent instantiate(AbstractComponent parent, ArtifactInstantiationContext ic) {
+        return new DefaultComponent(parent, this, ic);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public CoreComponentConfiguration setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public DefaultComponentConfiguration setName(String name) {
+    public CoreComponentConfiguration setName(String name) {
         super.setName(name);
         return this;
-    }
-
-    @Override
-    public AbstractComponent instantiate(AbstractComponent parent, ArtifactInstantiationContext ic) {
-        return new DefaultComponent(parent, this, ic);
     }
 }

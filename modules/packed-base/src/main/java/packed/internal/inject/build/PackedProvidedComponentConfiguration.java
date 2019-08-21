@@ -24,7 +24,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.DefaultComponentConfiguration;
+import packed.internal.container.CoreComponentConfiguration;
 
 /**
  *
@@ -35,7 +35,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     final BSE<T> buildEntry;
 
     /** The component we are exposing. */
-    private final DefaultComponentConfiguration component;
+    private final CoreComponentConfiguration component;
 
     /**
      * Creates a new configuration object
@@ -43,7 +43,7 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedProvidedComponentConfiguration(DefaultComponentConfiguration component, BSE<T> buildEntry) {
+    public PackedProvidedComponentConfiguration(CoreComponentConfiguration component, BSE<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

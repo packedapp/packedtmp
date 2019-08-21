@@ -80,9 +80,10 @@ public final class ComponentExtension extends Extension {
         return configuration.installInstance(instance, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
-    public ComponentConfiguration installHelper(Class<?> implementation) {
+    public ComponentConfiguration installStatic(Class<?> implementation) {
+        // installStatic
         requireNonNull(implementation, "implementation is null");
-        return configuration.installHelper(implementation, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.installStatic(implementation, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     // Scans this package...

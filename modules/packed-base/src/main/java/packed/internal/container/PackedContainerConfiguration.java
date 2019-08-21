@@ -191,7 +191,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return model.initialize(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
     }
 
-    public ComponentConfiguration installHelper(Class<?> implementation, ConfigSite configSite) {
+    public ComponentConfiguration installStatic(Class<?> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
         installPrepare(State.INSTALL_INVOKED);
         return descriptor.initialize(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
