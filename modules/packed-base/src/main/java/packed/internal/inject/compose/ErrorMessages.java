@@ -27,6 +27,10 @@ import packed.internal.inject.build.BSE;
 /**
  *
  */
+// Build -> Exception
+// Compose -> ErrorMessage
+// Instantiation/Injection -> Exception
+
 final class ErrorMessages {
 
     static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, HashSet<BSE<?>>> dublicateNodes) {

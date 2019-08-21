@@ -51,10 +51,10 @@ public final class BSEExported<T> extends BSE<T> {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public BSEExported(InjectorBuilder configuration, InternalConfigSite configSite, PackedProvidedComponentConfiguration<?> existingNode) {
+    public BSEExported(InjectorBuilder configuration, InternalConfigSite configSite, ServiceEntry<?> existingNode) {
         super(configuration, configSite, List.of());
-        this.exportOf = (ServiceEntry<T>) existingNode.buildNode;
-        as((Key) existingNode.getKey());
+        this.exportOf = (ServiceEntry<T>) existingNode;
+        as((Key) existingNode.key());
     }
 
     @Override

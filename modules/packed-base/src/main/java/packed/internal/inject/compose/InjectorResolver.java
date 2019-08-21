@@ -135,7 +135,7 @@ public final class InjectorResolver {
 
         // It does not make sense to try and resolve
         if (duplicateNodes.isEmpty()) {
-            DependencyGraph dg = new DependencyGraph(ib.containerConfiguration, ib);
+            DependencyGraph dg = new DependencyGraph(ib.containerConfiguration, ib, this);
             if (buildContext.isInstantiating()) {
                 dg.instantiate();
             } else {

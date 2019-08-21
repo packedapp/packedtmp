@@ -53,10 +53,10 @@ final class DependencyGraph {
      * @param root
      *            the root injector builder
      */
-    public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib) {
+    public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib, InjectorResolver resolver) {
         this.root = requireNonNull(root);
         this.ib = requireNonNull(ib);
-        ir = ib.resolver;
+        this.ir = requireNonNull(resolver);
     }
 
     /** Also used for descriptors. */
@@ -71,7 +71,7 @@ final class DependencyGraph {
         if (root.buildContext().artifactType() == Injector.class) {
             ir.publicInjector = ir.privateInjector;
         } else {
-            ir.publicInjector = new DefaultInjector(root, ib.resolver.exportedNodes);
+            ir.publicInjector = new DefaultInjector(root, ir.exportedNodes);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, configSite.UNKNOWN, c.publicInjector);
@@ -88,7 +88,7 @@ final class DependencyGraph {
         // }
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
-        resolveAllDependencies(this);
+        resolveAllDependencies();
         dependencyCyclesDetect();
     }
 
@@ -139,32 +139,30 @@ final class DependencyGraph {
 
         // Okay we are finished, convert all nodes to runtime nodes.
         ir.internalNodes.toRuntimeNodes();
-        if (ir.internalNodes != ib.resolver.exportedNodes) {
-            ib.resolver.exportedNodes.toRuntimeNodes();
+        if (ir.internalNodes != ir.exportedNodes) {
+            ir.exportedNodes.toRuntimeNodes();
         }
     }
 
     // Requirements -> cannot require any exposed services, or internally registered services...
 
-    static void resolveAllDependencies(DependencyGraph graph) {
-        graph.detectCyclesFor = new ArrayList<>();
+    void resolveAllDependencies() {
+        detectCyclesFor = new ArrayList<>();
 
-        InjectorBuilder services = graph.ib;
-
-        for (ServiceEntry<?> nn : services.resolver.internalNodes) {
+        for (ServiceEntry<?> nn : ir.internalNodes) {
             BSE<?> node = (BSE<?>) nn;
             if (node.needsResolving()) {
-                graph.detectCyclesFor.add(node);
+                detectCyclesFor.add(node);
                 List<InternalDependencyDescriptor> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = services.resolver.internalNodes.getNode(dependency);
-                    services.resolver.recordResolvedDependency(node, dependency, resolveTo, false);
+                    ServiceEntry<?> resolveTo = ir.internalNodes.getNode(dependency);
+                    ir.recordResolvedDependency(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;
                 }
             }
         }
-        services.resolver.checkForMissingDependencies();
+        ir.checkForMissingDependencies();
         // b.root.privateNodeMap.forEach(n -> ((ServiceBuildNode<?>) n).checkResolved());
     }
 }

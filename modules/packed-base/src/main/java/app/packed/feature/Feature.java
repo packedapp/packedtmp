@@ -25,6 +25,7 @@ import app.packed.util.Key;
 /**
  *
  */
+// Hoerer til i .extension
 public interface Feature {
 
     // ConfigSite+FeatureType+ComponentPath?????

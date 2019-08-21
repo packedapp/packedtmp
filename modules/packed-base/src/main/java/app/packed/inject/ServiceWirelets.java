@@ -28,7 +28,8 @@ import app.packed.util.Key;
 // push, pull
 // receive
 
-// So we can push things in, rebind them
+// So we can push things in, rebind themx
+// Maaske have mere en en *Wirelets klasse
 public final class ServiceWirelets {
 
     /** No instantiation. */
@@ -108,7 +109,7 @@ public final class ServiceWirelets {
     }
 
     // Maybe have a generic mapper, not only for injection...
-    // Transformer
+    // Transformer, maaske i .function package
     static abstract class Mapper<T, R> {
         protected Mapper(Function<? super T, ? extends R> function) {
             throw new UnsupportedOperationException();

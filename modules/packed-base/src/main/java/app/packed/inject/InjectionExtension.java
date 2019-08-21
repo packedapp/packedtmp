@@ -45,11 +45,11 @@ import packed.internal.inject.build.InjectorBuilder;
 // * Providing components
 // * Manual Requirements Management
 
-// Future functionality
+// Future potential functionality
 /// Contracts
 /// Security for public injector.... Maaske skal man explicit lave en public injector???
 /// Transient requirements Management (automatic require unresolved services from children)
-
+/// Integration pits
 // MHT til Manuel Requirements Management
 // (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseBundle og vaelge det..
 // Hmm saa auto instantiere vi jo injector extensionen

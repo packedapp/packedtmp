@@ -76,7 +76,7 @@ public final class InjectorBuilder {
     /** All provided nodes. */
     public final ArrayList<BSE<?>> entries = new ArrayList<>();
 
-    public final InjectorResolver resolver = new InjectorResolver(this);
+    final InjectorResolver resolver = new InjectorResolver(this);
 
     /**
      * Creates a new builder.
@@ -115,7 +115,7 @@ public final class InjectorBuilder {
     }
 
     public <T> ServiceConfiguration<T> export(InternalConfigSite cs, ProvidedComponentConfiguration<T> configuration) {
-        BSEExported<T> node = new BSEExported<>(this, cs, (PackedProvidedComponentConfiguration<T>) configuration);
+        BSEExported<T> node = new BSEExported<>(this, cs, ((PackedProvidedComponentConfiguration<T>) configuration).buildNode);
         exportedEntries.add(node);
         return node.toServiceConfiguration();
     }
