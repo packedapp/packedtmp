@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.inject.ProvideHelper;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.util.InternalDependencyDescriptor;
@@ -49,7 +49,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
     private static final ServiceEntry<?>[] EMPTY_ARRAY = new ServiceEntry<?>[0];
 
     /** The configuration site of this object. */
-    private final InternalConfigSite configSite;
+    private final ConfigSite configSite;
 
     /** The dependencies of this node. */
     public final List<InternalDependencyDescriptor> dependencies;
@@ -80,7 +80,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
     @Nullable
     private RSE<T> runtimeNode;
 
-    BSE(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
+    BSE(InjectorBuilder injectorBuilder, ConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
@@ -121,7 +121,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
      * @return the configuration site of this configuration
      */
     @Override
-    public final InternalConfigSite configSite() {
+    public final ConfigSite configSite() {
         return configSite;
     }
 

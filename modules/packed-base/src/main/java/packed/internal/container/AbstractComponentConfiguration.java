@@ -29,11 +29,11 @@ import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
+import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.extension.hook.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
@@ -73,7 +73,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
     final AbstractComponentConfiguration parent;
 
     /** The configuration site of this component. */
-    private final InternalConfigSite site;
+    private final ConfigSite site;
 
     /** The state of this configuration. */
     State state = State.INITIAL;
@@ -86,7 +86,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
      * @param parent
      *            the parent of the component
      */
-    AbstractComponentConfiguration(InternalConfigSite site, AbstractComponentConfiguration parent) {
+    AbstractComponentConfiguration(ConfigSite site, AbstractComponentConfiguration parent) {
         this.site = requireNonNull(site);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
@@ -101,7 +101,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
      * @param artifactDriver
      *            the artifact driver used to create the artifact.
      */
-    AbstractComponentConfiguration(InternalConfigSite site, ArtifactDriver<?> artifactDriver) {
+    AbstractComponentConfiguration(ConfigSite site, ArtifactDriver<?> artifactDriver) {
         this.site = requireNonNull(site);
         this.parent = null;
         this.depth = 0;
@@ -122,7 +122,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder 
         }
     }
 
-    public final InternalConfigSite configSite() {
+    public final ConfigSite configSite() {
         return site;
     }
 

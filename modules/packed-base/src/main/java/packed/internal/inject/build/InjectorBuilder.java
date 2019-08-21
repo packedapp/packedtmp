@@ -23,6 +23,7 @@ import java.util.List;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
+import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
@@ -33,7 +34,6 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.DefaultComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
@@ -108,11 +108,11 @@ public final class InjectorBuilder {
         resolver.buildContract(builder.contract().services());
     }
 
-    public <T> ServiceConfiguration<T> export(Key<T> key, InternalConfigSite configSite) {
+    public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
         return export0(new BSEExported<>(this, configSite, key));
     }
 
-    public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration, InternalConfigSite configSite) {
+    public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration, ConfigSite configSite) {
         PackedProvidedComponentConfiguration<T> ppcc = (PackedProvidedComponentConfiguration<T>) configuration;
         if (ppcc.buildEntry.injectorBuilder != this) {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
@@ -153,7 +153,7 @@ public final class InjectorBuilder {
         BSEDefault parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).getInstance();
-            parentNode = new BSEDefault(this, (InternalConfigSite) cc.configSite(), instance);
+            parentNode = new BSEDefault(this, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).getFactory();
             parentNode = new BSEDefault<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(factory.function()),
@@ -192,7 +192,7 @@ public final class InjectorBuilder {
 
         if (node == null) {
             // No node found, components has no @Provides method, create a new node
-            node = new BSEDefault<T>(this, (InternalConfigSite) cc.configSite(), instance);
+            node = new BSEDefault<T>(this, cc.configSite(), instance);
         }
 
         node.as((Key) Key.of(instance.getClass()));

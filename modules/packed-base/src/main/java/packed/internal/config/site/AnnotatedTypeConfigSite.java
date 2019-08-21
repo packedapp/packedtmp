@@ -32,7 +32,7 @@ public final class AnnotatedTypeConfigSite extends AbstractConfigSite {
 
     final Annotation annotation;
 
-    AnnotatedTypeConfigSite(ConfigSite parent, String operation, Class<?> clazz, Annotation annotation) {
+    AnnotatedTypeConfigSite(AbstractConfigSite parent, String operation, Class<?> clazz, Annotation annotation) {
         super(parent, operation);
         this.clazz = requireNonNull(clazz);
         this.annotation = requireNonNull(annotation);
@@ -40,7 +40,7 @@ public final class AnnotatedTypeConfigSite extends AbstractConfigSite {
 
     /** {@inheritDoc} */
     @Override
-    public InternalConfigSite replaceParent(ConfigSite newParent) {
+    public ConfigSite replaceParent(ConfigSite newParent) {
         return null;
     }
 

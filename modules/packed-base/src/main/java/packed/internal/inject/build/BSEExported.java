@@ -26,7 +26,6 @@ import app.packed.inject.ProvideHelper;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
@@ -50,13 +49,13 @@ public final class BSEExported<T> extends BSE<T> {
      * @param configSite
      *            the configuration site of the exposure
      */
-    public BSEExported(InjectorBuilder configuration, InternalConfigSite configSite, Key<T> key) {
+    public BSEExported(InjectorBuilder configuration, ConfigSite configSite, Key<T> key) {
         super(configuration, configSite, List.of());
         as(key);
     }
 
     @SuppressWarnings("unchecked")
-    public BSEExported(InjectorBuilder configuration, InternalConfigSite configSite, ServiceEntry<?> existingNode) {
+    public BSEExported(InjectorBuilder configuration, ConfigSite configSite, ServiceEntry<?> existingNode) {
         super(configuration, configSite, List.of());
         this.entryToExport = (ServiceEntry<T>) existingNode;
 

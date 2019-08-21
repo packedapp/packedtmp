@@ -19,11 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
@@ -38,7 +38,7 @@ class BSEImported<T> extends BSE<T> {
     final ImportedInjector injectorImporter;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BSEImported(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, ImportedInjector injectorToImportFrom, ServiceEntry<T> importFrom) {
+    BSEImported(InjectorBuilder injectorConfiguration, ConfigSite configSite, ImportedInjector injectorToImportFrom, ServiceEntry<T> importFrom) {
         super(injectorConfiguration, configSite, List.of());
         this.importFrom = requireNonNull(importFrom);
         this.injectorImporter = requireNonNull(injectorToImportFrom);

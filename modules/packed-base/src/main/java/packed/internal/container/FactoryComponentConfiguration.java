@@ -17,8 +17,8 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.model.ComponentModel;
 
 /**
@@ -33,8 +33,7 @@ public class FactoryComponentConfiguration extends DefaultComponentConfiguration
      * @param containerConfiguration
      * @param ccd
      */
-    public FactoryComponentConfiguration(InternalConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd,
-            Factory<?> factory) {
+    public FactoryComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, Factory<?> factory) {
         super(site, containerConfiguration, ccd);
         this.factory = requireNonNull(factory);
     }

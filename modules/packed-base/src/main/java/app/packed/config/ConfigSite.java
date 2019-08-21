@@ -17,10 +17,19 @@ package app.packed.config;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import packed.internal.config.site.InternalConfigSite;
+import app.packed.util.FieldDescriptor;
+import app.packed.util.MethodDescriptor;
+import packed.internal.config.site.AnnotatedFieldConfigSite;
+import packed.internal.config.site.AnnotatedMethodConfigSite;
+import packed.internal.config.site.CapturedStackFrameConfigSite;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a
@@ -43,9 +52,63 @@ import packed.internal.config.site.InternalConfigSite;
 // ConfigSite chain
 // https://api.flutter.dev/flutter/package-stack_trace_stack_trace/Chain-class.html
 public interface ConfigSite {
+    static final boolean DISABLED = false;
+
+    static Predicate<StackFrame> P = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
+            && !f.getClassName().startsWith("java.");
+
+    ConfigSite replaceParent(ConfigSite newParent);
+
+    default ConfigSite linkFromAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        return new AnnotatedFieldConfigSite(this, cst, field, annotation);
+    }
+
+    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
+        if (member instanceof MethodDescriptor) {
+            return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
+        } else {
+            return linkFromAnnotatedField(cst, annotation, (FieldDescriptor) member);
+        }
+    }
+
+    default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        return new AnnotatedMethodConfigSite(this, cst, method, annotation);
+    }
 
     /** A special configuration site that is used if the actual configuration site could not be determined. */
-    ConfigSite UNKNOWN = InternalConfigSite.UNKNOWN;
+    ConfigSite UNKNOWN = new ConfigSite() {
+
+        @Override
+        public String operation() {
+            return "Unknown";
+        }
+
+        @Override
+        public Optional<ConfigSite> parent() {
+            return Optional.empty();
+        }
+
+        @Override
+        public ConfigSite replaceParent(ConfigSite newParent) {
+            return UNKNOWN;
+        }
+
+        @Override
+        public String toString() {
+            return "Unknown";
+        }
+
+        @Override
+        public void visit(ConfigSiteVisitor visitor) {
+            visitor.visitUnknown(this);
+        }
+    };
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.
@@ -104,7 +167,35 @@ public interface ConfigSite {
     default void visitEach(ConfigSiteVisitor visitor) {
         forEach(s -> s.visit(visitor));
     }
+
+    static ConfigSite captureStack(String cst) {
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(null, cst, sf.get()) : UNKNOWN;
+    }
+
+    default ConfigSite thenCaptureStack(String cst) {
+        // LinkFromCaptureStack
+        if (DISABLED) {
+            return UNKNOWN;
+        }
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(P).findFirst());
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
+    }
 }
+// 5 different types
+//
+// AnnotatedField : FieldDescriptor + Annotation
+// AnnotatedMethod : MethodDescriptor + Annotation
+// AnnotatedClass : Class + Annotation
+// Programmatically: StackFrame (class, method, linenumber)
+// FromFile : DocumentInfo URI + LineNumber + Maybe line number + column, settings.xml:333:12? L333:C12
+//
+// Vi har en unik
+// operation
+// Hvis vi laver noget fra en config file er det saa naermest parent???
 
 // Example with Provides
 // The exist because the "inject.provides" because of field xxxxx

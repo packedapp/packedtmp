@@ -32,6 +32,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
+import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
@@ -42,7 +43,6 @@ import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 import packed.internal.config.site.BaseConfigSiteType;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.hook.DelayedAccessor;
 import packed.internal.container.extension.hook.DelayedAccessor.SidecarFieldDelayerAccessor;
@@ -84,7 +84,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
-        super(InternalConfigSite.captureStackFrame(BaseConfigSiteType.INJECTOR_OF), artifactDriver);
+        super(ConfigSite.captureStack(BaseConfigSiteType.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
@@ -101,7 +101,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the userß
      */
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
-        super(parent.configSite().thenCaptureStackFrame(BaseConfigSiteType.INJECTOR_OF), parent);
+        super(parent.configSite().thenCaptureStack(BaseConfigSiteType.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
@@ -209,8 +209,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this,
-                descriptor, factory);
+        DefaultComponentConfiguration dcc = currentComponent = new FactoryComponentConfiguration(
+                configSite().thenCaptureStack(BaseConfigSiteType.COMPONENT_INSTALL), this, descriptor, factory);
         return descriptor.initialize(this, dcc);
     }
 
@@ -229,8 +229,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // All validation should be done by here..
         prepareNewComponent(State.INSTALL_INVOKED);
 
-        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL),
-                this, descriptor, instance);
+        DefaultComponentConfiguration dcc = currentComponent = new InstantiatedComponentConfiguration(
+                configSite().thenCaptureStack(BaseConfigSiteType.COMPONENT_INSTALL), this, descriptor, instance);
 
         return descriptor.initialize(this, dcc);
     }
@@ -240,8 +240,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         prepareNewComponent(State.INSTALL_INVOKED);
 
         ComponentModel descriptor = lookup.componentModelOf(implementation);
-        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(configSite().thenCaptureStackFrame(BaseConfigSiteType.COMPONENT_INSTALL), this,
-                descriptor, implementation);
+        DefaultComponentConfiguration dcc = currentComponent = new StaticComponentConfiguration(
+                configSite().thenCaptureStack(BaseConfigSiteType.COMPONENT_INSTALL), this, descriptor, implementation);
         return descriptor.initialize(this, dcc);
     }
 

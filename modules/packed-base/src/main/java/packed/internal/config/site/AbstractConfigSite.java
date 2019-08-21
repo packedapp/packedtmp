@@ -25,7 +25,7 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 
 /** An abstract implementation of {@link ConfigSite}. */
-public abstract class AbstractConfigSite implements InternalConfigSite {
+public abstract class AbstractConfigSite implements ConfigSite {
 
     final String operation;
 

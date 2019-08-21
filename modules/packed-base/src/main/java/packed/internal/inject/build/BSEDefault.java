@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provide;
@@ -30,11 +31,10 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.BaseConfigSiteType;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.run.RSE;
+import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
 import packed.internal.inject.run.RSNPrototype;
-import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InvokableMember;
@@ -67,7 +67,7 @@ public final class BSEDefault<T> extends BSE<T> {
 
     public BSEDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
             List<InternalDependencyDescriptor> dependencies) {
-        super(injectorBuilder, (InternalConfigSite) cc.configSite(), dependencies);
+        super(injectorBuilder, (ConfigSite) cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
         this.receiver = null;
         this.instantionMode = requireNonNull(instantionMode);
@@ -91,7 +91,7 @@ public final class BSEDefault<T> extends BSE<T> {
      * @param instance
      *            the instance
      */
-    public BSEDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
+    public BSEDefault(InjectorBuilder injectorConfiguration, ConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.receiver = null;
@@ -99,7 +99,7 @@ public final class BSEDefault<T> extends BSE<T> {
         this.function = null;
     }
 
-    BSEDefault(InternalConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSEDefault<?> parent) {
+    BSEDefault(ConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSEDefault<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.receiver = parent;
         this.function = requireNonNull(factory, "factory is null");
@@ -224,7 +224,7 @@ public final class BSEDefault<T> extends BSE<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BSE<?> provide(AtProvides atProvides) {
-        InternalConfigSite icss = configSite().thenAnnotatedMember(BaseConfigSiteType.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
+        ConfigSite icss = configSite().thenAnnotatedMember(BaseConfigSiteType.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {

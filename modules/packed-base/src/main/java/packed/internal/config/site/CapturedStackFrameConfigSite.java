@@ -17,36 +17,41 @@ package packed.internal.config.site;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
+import java.lang.StackWalker.StackFrame;
 
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
-import app.packed.util.MethodDescriptor;
 
-/**
- *
- */
-public final class AnnotatedMethodConfigSite extends AbstractConfigSite {
+/** A programmatic configuration site from a {@link StackFrame}. */
+public class CapturedStackFrameConfigSite extends AbstractConfigSite {
 
-    private final MethodDescriptor method;
+    /** The stack frame. */
+    private final StackFrame stackFrame;
 
-    final Annotation annotation;
-
-    public AnnotatedMethodConfigSite(ConfigSite parent, String operation, MethodDescriptor method, Annotation annotation) {
+    /**
+     * @param parent
+     * @param operation
+     */
+    public CapturedStackFrameConfigSite(ConfigSite parent, String operation, StackFrame caller) {
         super(parent, operation);
-        this.method = requireNonNull(method);
-        this.annotation = requireNonNull(annotation);
+        this.stackFrame = requireNonNull(caller);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return stackFrame.toString();
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite replaceParent(ConfigSite newParent) {
-        return null;
+        return new CapturedStackFrameConfigSite(newParent, super.operation, stackFrame);
     }
 
     /** {@inheritDoc} */
     @Override
     public void visit(ConfigSiteVisitor visitor) {
-        visitor.visitAnnotatedMethod(this, method, annotation);
+        visitor.visitCapturedStackFrame(this);
     }
 }

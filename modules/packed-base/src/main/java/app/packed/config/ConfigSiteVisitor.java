@@ -57,15 +57,13 @@ public interface ConfigSiteVisitor {
     // for example, @ComponentScan -> @Install
     default void visitAnnotatedType(ConfigSite configSite, Class<?> type, Annotation annotation) {}
 
-    default void visitFunction(ConfigSite configSite, Class<?> functionType, Class<?> type) {}
-
     /**
      * This method is visited whenever.
      * 
      * @param configSite
      *            the configuration site
      */
-    default void visitTopStackFrame(ConfigSite configSite) {} // Always only the top one, we can always add a method a visitAllStackFrames
+    default void visitCapturedStackFrame(ConfigSite configSite) {} // Always only the top one, we can always add a method a visitAllStackFrames
 
     //// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere
     // default void visitConfiguration(ConfigurationNode....)visitConfiguration

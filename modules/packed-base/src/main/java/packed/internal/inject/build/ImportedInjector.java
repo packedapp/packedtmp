@@ -21,13 +21,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
 import packed.internal.config.site.BaseConfigSiteType;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.AbstractInjector;
@@ -42,7 +42,7 @@ final class ImportedInjector {
     final WireletList wirelets;
 
     /** The configuration site of the import statement. */
-    private final InternalConfigSite configSite;
+    private final ConfigSite configSite;
 
     /** The injector builder into which the injector is imported. */
     private final InjectorBuilder builder;
@@ -54,7 +54,7 @@ final class ImportedInjector {
         }
         this.injector = (AbstractInjector) injector;
         this.wirelets = WireletList.of(wirelets);
-        this.configSite = containerConfiguration.configSite().thenCaptureStackFrame(BaseConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
+        this.configSite = containerConfiguration.configSite().thenCaptureStack(BaseConfigSiteType.INJECTOR_CONFIGURATION_INJECTOR_BIND);
     }
 
     void importAll() {

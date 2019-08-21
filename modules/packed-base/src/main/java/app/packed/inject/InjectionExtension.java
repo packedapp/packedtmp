@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.config.ConfigSite;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -29,7 +30,6 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.config.site.BaseConfigSiteType;
-import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.build.AtProvidesGroup;
 import packed.internal.inject.build.InjectorBuilder;
@@ -115,14 +115,14 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        InternalConfigSite configSite = configuration.configSite().thenCaptureStackFrame(BaseConfigSiteType.BUNDLE_EXPOSE);
+        ConfigSite configSite = configuration.configSite().thenCaptureStack(BaseConfigSiteType.BUNDLE_EXPOSE);
         return builder.export(key, configSite);
     }
 
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        InternalConfigSite configSite = this.configuration.configSite().thenCaptureStackFrame(BaseConfigSiteType.BUNDLE_EXPOSE);
+        ConfigSite configSite = this.configuration.configSite().thenCaptureStack(BaseConfigSiteType.BUNDLE_EXPOSE);
         return builder.export(configuration, configSite);
     }
 
