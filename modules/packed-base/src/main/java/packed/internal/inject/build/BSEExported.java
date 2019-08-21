@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.config.ConfigSite;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.inject.ServiceConfiguration;
@@ -28,8 +29,8 @@ import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.run.RSN;
-import packed.internal.inject.run.RSNDelegate;
+import packed.internal.inject.run.RSE;
+import packed.internal.inject.run.RSEDelegate;
 
 /**
  * A build node representing an exported service.
@@ -37,9 +38,13 @@ import packed.internal.inject.run.RSNDelegate;
 public final class BSEExported<T> extends BSE<T> {
 
     /** The node that is exposed. */
-    public ServiceEntry<T> exportOf;
+    @Nullable
+    public ServiceEntry<T> entryToExport;
 
     /**
+     * Exports an entry via its key. Is typically used via {@link InjectionExtension#export(Class)} or
+     * {@link InjectionExtension#export(Key)}.
+     * 
      * @param configuration
      *            the injector configuration this node is being added to
      * @param configSite
@@ -50,24 +55,28 @@ public final class BSEExported<T> extends BSE<T> {
         as(key);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     public BSEExported(InjectorBuilder configuration, InternalConfigSite configSite, ServiceEntry<?> existingNode) {
         super(configuration, configSite, List.of());
-        this.exportOf = (ServiceEntry<T>) existingNode;
-        as((Key) existingNode.key());
+        this.entryToExport = (ServiceEntry<T>) existingNode;
+
+        // Export of export, of export????
+        // Hvad hvis en eller anden aendrer en key midt i chainen.
+        // Slaar det igennem i hele vejen ned.
+        this.key = (Key<T>) existingNode.key();
     }
 
     @Override
     @Nullable
     public BSE<?> declaringNode() {
         // Skal vi ikke returnere exposureOf?? istedet for .declaringNode
-        return (exportOf instanceof BSE) ? ((BSE<?>) exportOf).declaringNode() : null;
+        return (entryToExport instanceof BSE) ? ((BSE<?>) entryToExport).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return exportOf.instantiationMode();
+        return entryToExport.instantiationMode();
     }
 
     /** {@inheritDoc} */
@@ -90,8 +99,8 @@ public final class BSEExported<T> extends BSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    RSN<T> newRuntimeNode() {
-        return new RSNDelegate<>(this, exportOf);
+    RSE<T> newRuntimeNode() {
+        return new RSEDelegate<>(this, entryToExport);
     }
 
     ServiceConfiguration<T> toServiceConfiguration() {
@@ -154,5 +163,4 @@ public final class BSEExported<T> extends BSE<T> {
             return this;
         }
     }
-
 }

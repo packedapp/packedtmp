@@ -120,12 +120,12 @@ public final class InjectorResolver {
         // Go through all exports, and make sure they can all be fulfilled
         HashMap<Key<?>, HashSet<BSE<?>>> unresolvedExports = new HashMap<>();
         for (BSEExported<?> node : ib.exportedEntries) {
-            if (node.exportOf == null) {
+            if (node.entryToExport == null) {
                 ServiceEntry<?> sn = internalNodes.getRecursive(node.getKey());
                 if (sn == null) {
                     unresolvedExports.computeIfAbsent(node.key(), m -> new HashSet<>()).add(node);
                 }
-                node.exportOf = (ServiceEntry) sn;
+                node.entryToExport = (ServiceEntry) sn;
                 exportedNodes.put(node);
             }
         }

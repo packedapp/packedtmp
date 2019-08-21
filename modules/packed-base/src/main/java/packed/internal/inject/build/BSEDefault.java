@@ -31,10 +31,10 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.ConfigSiteType;
 import packed.internal.config.site.InternalConfigSite;
-import packed.internal.inject.run.RSN;
+import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSNLazy;
 import packed.internal.inject.run.RSNPrototype;
-import packed.internal.inject.run.RSNSingleton;
+import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InvokableMember;
@@ -63,13 +63,13 @@ public final class BSEDefault<T> extends BSE<T> {
     private InstantiationMode instantionMode;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final BSEDefault<?> parent;
+    private final BSEDefault<?> receiver;
 
     public BSEDefault(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
             List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, (InternalConfigSite) cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
-        this.parent = null;
+        this.receiver = null;
         this.instantionMode = requireNonNull(instantionMode);
 
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
@@ -94,29 +94,29 @@ public final class BSEDefault<T> extends BSE<T> {
     public BSEDefault(InjectorBuilder injectorConfiguration, InternalConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
-        this.parent = null;
+        this.receiver = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
     }
 
     BSEDefault(InternalConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSEDefault<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
-        this.parent = parent;
+        this.receiver = parent;
         this.function = requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
-        description = atProvides.description;
+        this.description = atProvides.description;
     }
 
     @Override
     public BSE<?> declaringNode() {
-        return parent;
+        return receiver;
     }
 
     private FunctionHandle<T> fac() {
-        if (parent != null) {
+        if (receiver != null) {
             InvokableMember<T> ff = (InvokableMember<T>) function;
             if (ff.isMissingInstance()) {
-                function = ff.withInstance(parent.getInstance(null));
+                function = ff.withInstance(receiver.getInstance(null));
             }
         }
         return function;
@@ -192,13 +192,13 @@ public final class BSEDefault<T> extends BSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    final RSN<T> newRuntimeNode() {
+    final RSE<T> newRuntimeNode() {
         T i = instance;
         if (i != null) {
-            return new RSNSingleton<>(this, i);
+            return new RSESingleton<>(this, i);
         }
 
-        if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
+        if (receiver == null || receiver.instantiationMode() == InstantiationMode.SINGLETON || receiver.instance != null
                 || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
             if (instantionMode == InstantiationMode.PROTOTYPE) {
                 return new RSNPrototype<>(this, fac());

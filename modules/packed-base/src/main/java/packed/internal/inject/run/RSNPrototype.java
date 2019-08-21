@@ -33,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 // No params
 // No InjectionSite parameters
 // InjectionSite parameters
-public final class RSNPrototype<T> extends RSN<T> implements Provider<T> {
+public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
 
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -51,7 +51,7 @@ public final class RSNPrototype<T> extends RSN<T> implements Provider<T> {
         this.invoker = requireNonNull(function);
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
-            RSN<?> forReal = node.resolvedDependencies[i].toRuntimeNode();
+            RSE<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();
             ProvideHelper is = null;
             ProvideHelper.of(Injector.configure(c -> {}), node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);

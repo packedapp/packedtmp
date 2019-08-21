@@ -27,7 +27,7 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
 
 /** A node that represents a service at runtime. */
-public abstract class RSN<T> implements ServiceEntry<T> {
+public abstract class RSE<T> implements ServiceEntry<T> {
 
     /** The point where this node was registered. */
     private final ConfigSite configSite;
@@ -42,13 +42,13 @@ public abstract class RSN<T> implements ServiceEntry<T> {
     /**
      * Creates a new runtime node from a build node.
      *
-     * @param node
+     * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RSN(BSE<T> node) {
-        this.configSite = requireNonNull(node.configSite());
-        this.description = node.getDescription();
-        this.key = requireNonNull(node.key());
+    RSE(BSE<T> buildEntry) {
+        this.configSite = requireNonNull(buildEntry.configSite());
+        this.description = buildEntry.getDescription();
+        this.key = requireNonNull(buildEntry.key());
     }
 
     /** {@inheritDoc} */
@@ -66,12 +66,6 @@ public abstract class RSN<T> implements ServiceEntry<T> {
     @Override
     public abstract InstantiationMode instantiationMode();
 
-    // Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
-    // F.eks. man eftersporger Foo.class, men maaske er der en FooImpl et sted
-    public boolean isAssignableTo(Class<?> type) {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
     public final Key<T> key() {
@@ -86,8 +80,8 @@ public abstract class RSN<T> implements ServiceEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final RSN<T> toRuntimeNode() {
-        return this;
+    public final RSE<T> toRuntimeEntry() {
+        return this; // this entry is already a runtime entry
     }
 
     /** {@inheritDoc} */
@@ -103,3 +97,9 @@ public abstract class RSN<T> implements ServiceEntry<T> {
         return sb.toString();
     }
 }
+//
+//// Ideen er at vi kan komme med forslag til andre noegler end den forespurgte
+//// F.eks. man eftersporger Foo.class, men maaske er der en FooImpl et sted
+// public boolean isAssignableTo(Class<?> type) {
+// throw new UnsupportedOperationException();
+// }

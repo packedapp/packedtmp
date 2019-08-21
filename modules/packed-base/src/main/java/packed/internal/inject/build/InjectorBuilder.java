@@ -51,6 +51,9 @@ public final class InjectorBuilder {
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration containerConfiguration;
 
+    /** All provided nodes. */
+    public final ArrayList<BSE<?>> entries = new ArrayList<>();
+
     /**
      * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
      * {@link InjectionExtension#requireOptionally(Key)}.
@@ -72,9 +75,6 @@ public final class InjectorBuilder {
      * really services registered via the provide methods that could make use of them.
      */
     public boolean manualRequirementsManagement;
-
-    /** All provided nodes. */
-    public final ArrayList<BSE<?>> entries = new ArrayList<>();
 
     final InjectorResolver resolver = new InjectorResolver(this);
 
@@ -108,16 +108,30 @@ public final class InjectorBuilder {
         resolver.buildContract(builder.contract().services());
     }
 
-    public <T> ServiceConfiguration<T> export(InternalConfigSite cs, Key<T> key) {
-        BSEExported<T> node = new BSEExported<>(this, cs, key);
-        exportedEntries.add(node);
-        return node.toServiceConfiguration();
+    public <T> ServiceConfiguration<T> export(Key<T> key, InternalConfigSite configSite) {
+        return export0(new BSEExported<>(this, configSite, key));
     }
 
-    public <T> ServiceConfiguration<T> export(InternalConfigSite cs, ProvidedComponentConfiguration<T> configuration) {
-        BSEExported<T> node = new BSEExported<>(this, cs, ((PackedProvidedComponentConfiguration<T>) configuration).buildNode);
-        exportedEntries.add(node);
-        return node.toServiceConfiguration();
+    public <T> ServiceConfiguration<T> export(InternalConfigSite configSite, ProvidedComponentConfiguration<T> configuration) {
+        PackedProvidedComponentConfiguration<T> ppcc = (PackedProvidedComponentConfiguration<T>) configuration;
+        if (ppcc.buildEntry.injectorBuilder != this) {
+            throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
+        }
+        return export0(new BSEExported<>(this, configSite, ppcc.buildEntry));
+    }
+
+    /**
+     * Converts the internal exported entry to a service configuration.
+     * 
+     * @param <T>
+     *            the type of service the entry wraps
+     * @param entry
+     *            the entry to convert
+     * @return a service configuration object
+     */
+    private <T> ServiceConfiguration<T> export0(BSEExported<T> entry) {
+        exportedEntries.add(entry);
+        return entry.toServiceConfiguration();
     }
 
     public void importAll(Injector injector, WireletList wirelets) {

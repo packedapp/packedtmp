@@ -26,7 +26,7 @@ import packed.internal.inject.build.BSE;
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
  * {@link InstantiationMode#LAZY} instances that was created at configuration time.
  */
-public final class RSNSingleton<T> extends RSN<T> implements Provider<T> {
+public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
 
     /**
      * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
@@ -45,7 +45,7 @@ public final class RSNSingleton<T> extends RSN<T> implements Provider<T> {
      * @param instance
      *            the singleton instance
      */
-    public RSNSingleton(BSE<T> buildNode, T instance) {
+    public RSESingleton(BSE<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
         this.instantionMode = buildNode.instantiationMode();

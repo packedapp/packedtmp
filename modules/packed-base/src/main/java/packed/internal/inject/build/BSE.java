@@ -22,21 +22,28 @@ import java.util.Optional;
 
 import app.packed.inject.Provide;
 import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.run.RSN;
+import packed.internal.inject.run.RSE;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.InternalServiceDescriptor;
 import packed.internal.util.KeyBuilder;
 
 /**
- * A build node is used at configuration time, to make sure that multiple services with the same key are not registered.
- * And for helping in initialization dependency graphs. Build nodes has extra fields that are not needed at runtime.
+ * Build service entries ...node is used at configuration time, to make sure that multiple services with the same key
+ * are not registered. And for helping in initialization dependency graphs. Build nodes has extra fields that are not
+ * needed at runtime.
+ * 
+ * <p>
+ * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ServiceConfiguration}.
  */
 public abstract class BSE<T> implements ServiceEntry<T> {
+
+    // Boolean Values: Has_Receiver, NeedsInjectionSite
 
     /** An empty array of nodes */
     private static final ServiceEntry<?>[] EMPTY_ARRAY = new ServiceEntry<?>[0];
@@ -60,9 +67,9 @@ public abstract class BSE<T> implements ServiceEntry<T> {
     protected final InjectorBuilder injectorBuilder;
 
     /**
-     * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has a
-     * methods annotated with {@link Provide}. In which the case the declaring class might need to be constructor injected
-     * before the method can be executed.
+     * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
+     * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
+     * injected before the providing method can be invoked.
      */
     Key<T> key;
 
@@ -71,7 +78,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
 
     /** We cache the runtime node, to make sure it is only created once. */
     @Nullable
-    private RSN<T> runtimeNode;
+    private RSE<T> runtimeNode;
 
     BSE(InjectorBuilder injectorBuilder, InternalConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
@@ -161,7 +168,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
      *
      * @return the new runtime node
      */
-    abstract RSN<T> newRuntimeNode();
+    abstract RSE<T> newRuntimeNode();
     //
     // protected void onFreeze() {
     // if (key != null) {
@@ -181,8 +188,8 @@ public abstract class BSE<T> implements ServiceEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final RSN<T> toRuntimeNode() {
-        RSN<T> runtime = this.runtimeNode;
+    public final RSE<T> toRuntimeEntry() {
+        RSE<T> runtime = this.runtimeNode;
         return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
 }

@@ -23,7 +23,7 @@ import app.packed.util.Key;
  *
  */
 // Could just wrap a contract with
-final class ExplicitRequirement {
+public final class ExplicitRequirement {
 
     final boolean isOptional;
 

@@ -17,8 +17,8 @@ package packed.internal.inject.run;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvideHelper;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvideHelper;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
 
@@ -26,37 +26,37 @@ import packed.internal.inject.build.BSE;
  * The runtime representation of an aliased service which delegates the getInstance() to the aliased node. This type is
  * used for exported nodes as well as nodes that are imported from other containers.
  */
-public final class RSNDelegate<T> extends RSN<T> {
+public final class RSEDelegate<T> extends RSE<T> {
 
     /** The runtime node to delegate to. */
-    private final RSN<T> aliasOf;
+    private final RSE<T> delegate;
 
     /**
      * Creates a new runtime alias node.
      *
-     * @param aliasOf
+     * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public RSNDelegate(BSE<T> buildNode, ServiceEntry<T> aliasOf) {
+    public RSEDelegate(BSE<T> buildNode, ServiceEntry<T> delegate) {
         super(buildNode);
-        this.aliasOf = requireNonNull(aliasOf.toRuntimeNode());
+        this.delegate = requireNonNull(delegate.toRuntimeEntry());
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return aliasOf.instantiationMode();
+        return delegate.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvideHelper site) {
-        return aliasOf.getInstance(site);
+        return delegate.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return aliasOf.needsInjectionSite();
+        return delegate.needsInjectionSite();
     }
 }

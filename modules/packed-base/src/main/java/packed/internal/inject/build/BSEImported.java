@@ -25,8 +25,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.site.InternalConfigSite;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.run.RSN;
-import packed.internal.inject.run.RSNDelegate;
+import packed.internal.inject.run.RSE;
+import packed.internal.inject.run.RSEDelegate;
 
 /** A build node that imports a service from another injector. */
 class BSEImported<T> extends BSE<T> {
@@ -43,7 +43,7 @@ class BSEImported<T> extends BSE<T> {
         this.importFrom = requireNonNull(importFrom);
         this.injectorImporter = requireNonNull(injectorToImportFrom);
         this.as((Key) importFrom.key());
-        description = importFrom.description().orElse(null);
+        this.description = importFrom.description().orElse(null);
     }
 
     @Override
@@ -78,7 +78,7 @@ class BSEImported<T> extends BSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    RSN<T> newRuntimeNode() {
-        return new RSNDelegate<T>(this, importFrom);
+    RSE<T> newRuntimeNode() {
+        return new RSEDelegate<T>(this, importFrom);
     }
 }

@@ -24,12 +24,12 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BSE;
-import packed.internal.inject.run.RSN;
+import packed.internal.inject.run.RSE;
 import packed.internal.util.KeyBuilder;
 
 /**
  * A service node represent the provider of a service either at {@link BSE build-time } or at
- * {@link RSN runtime-time}.
+ * {@link RSE runtime-time}.
  *
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
  * at runtime.
@@ -69,7 +69,7 @@ public interface ServiceEntry<T> extends ServiceDescriptor {
      *
      * @return if build node converts to runtime node, if runtime node returns self
      */
-    RSN<T> toRuntimeNode();
+    RSE<T> toRuntimeEntry();
 
     default boolean isPrivate() {
         return key().equals(KeyBuilder.INJECTOR_KEY);// || key().equals(KeyBuilder.CONTAINER_KEY);

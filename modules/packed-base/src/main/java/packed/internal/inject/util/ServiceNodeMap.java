@@ -100,7 +100,7 @@ public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
     }
 
     public void toRuntimeNodes() {
-        nodes.replaceAll((k, v) -> v.toRuntimeNode());
+        nodes.replaceAll((k, v) -> v.toRuntimeEntry());
     }
 
     @Override

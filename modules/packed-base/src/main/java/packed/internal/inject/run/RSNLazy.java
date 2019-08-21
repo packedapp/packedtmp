@@ -28,7 +28,7 @@ import packed.internal.invoke.FunctionHandle;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
-public final class RSNLazy<T> extends RSN<T> {
+public final class RSNLazy<T> extends RSE<T> {
 
     /** The lazily instantiated instance. */
     @Nullable
@@ -46,7 +46,7 @@ public final class RSNLazy<T> extends RSN<T> {
      * @param factory
      *            the factory that will create the instance
      */
-    public RSNLazy(BSE<T> node, FunctionHandle<T> factory, @Nullable RSN<T> parent) {
+    public RSNLazy(BSE<T> node, FunctionHandle<T> factory, @Nullable RSE<T> parent) {
         super(node);
         this.lazy = new Sync(new RSNPrototype<>(node, factory), parent);
     }
@@ -98,7 +98,7 @@ public final class RSNLazy<T> extends RSN<T> {
         /** Any failure encountered while creating a new value. */
         private Throwable failure;
 
-        RSN<T> parent;
+        RSE<T> parent;
 
         /**
          * Creates a new Sync object
@@ -106,7 +106,7 @@ public final class RSNLazy<T> extends RSN<T> {
          * @param factory
          *            the factory node that will create the value
          */
-        Sync(Provider<T> factory, @Nullable RSN<T> parent) {
+        Sync(Provider<T> factory, @Nullable RSE<T> parent) {
             super(1);
             this.factory = requireNonNull(factory);
         }

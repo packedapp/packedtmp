@@ -31,17 +31,20 @@ import packed.internal.container.DefaultComponentConfiguration;
  */
 final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
 
+    /** The service we are exposing. */
+    final BSE<T> buildEntry;
+
     /** The component we are exposing. */
     private final DefaultComponentConfiguration component;
 
-    /** The service we are exposing. */
-    final BSE<T> buildNode;
-
     /**
-     * @param buildNode
+     * Creates a new configuration object
+     * 
+     * @param buildEntry
+     *            the build entry to wrap
      */
-    public PackedProvidedComponentConfiguration(DefaultComponentConfiguration component, BSE<T> buildNode) {
-        this.buildNode = requireNonNull(buildNode);
+    public PackedProvidedComponentConfiguration(DefaultComponentConfiguration component, BSE<T> buildEntry) {
+        this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }
 
@@ -49,28 +52,40 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     @Override
     public ProvidedComponentConfiguration<T> as(Key<? super T> key) {
         component.checkConfigurable();
-        buildNode.as(key);
+        buildEntry.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
+    public void checkConfigurable() {
+        component.checkConfigurable();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public ConfigSite configSite() {
-        return buildNode.configSite();
+        return buildEntry.configSite();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public FeatureMap features() {
+        return component.features();
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public String getDescription() {
-        return buildNode.description;
+        return buildEntry.description;
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public Key<?> getKey() {
-        return buildNode.getKey();
+        return buildEntry.getKey();
     }
 
     /** {@inheritDoc} */
@@ -83,37 +98,14 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return buildNode.instantiationMode();
+        return buildEntry.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> lazy() {
         component.checkConfigurable();
-        ((BSEDefault<T>) buildNode).lazy();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidedComponentConfiguration<T> prototype() {
-        component.checkConfigurable();
-        ((BSEDefault<T>) buildNode).prototype();
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
-        component.setDescription(description);
-        buildNode.description = description;
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ProvidedComponentConfiguration<T> setName(String name) {
-        component.setName(name);
+        ((BSEDefault<T>) buildEntry).lazy();
         return this;
     }
 
@@ -125,13 +117,24 @@ final class PackedProvidedComponentConfiguration<T> implements ProvidedComponent
 
     /** {@inheritDoc} */
     @Override
-    public FeatureMap features() {
-        return component.features();
+    public ProvidedComponentConfiguration<T> prototype() {
+        component.checkConfigurable();
+        ((BSEDefault<T>) buildEntry).prototype();
+        return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void checkConfigurable() {
-        component.checkConfigurable();
+    public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
+        component.setDescription(description);
+        buildEntry.description = description;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ProvidedComponentConfiguration<T> setName(String name) {
+        component.setName(name);
+        return this;
     }
 }

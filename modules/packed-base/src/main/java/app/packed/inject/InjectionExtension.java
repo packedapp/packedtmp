@@ -116,7 +116,7 @@ public final class InjectionExtension extends Extension {
         requireNonNull(key, "key is null");
         checkConfigurable();
         InternalConfigSite cs = configuration.configSite().thenStack(ConfigSiteType.BUNDLE_EXPOSE);
-        return builder.export(cs, key);
+        return builder.export(key, cs);
     }
 
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
