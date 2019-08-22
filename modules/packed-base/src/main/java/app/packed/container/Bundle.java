@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.artifact.ArtifactBuildContext;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -44,7 +43,7 @@ import packed.internal.support.AppPackedContainerSupport;
 // Bundle b = new SomeBundle();
 // wire(b, setName("f1"));
 // wire(b, setName("f2"));
-public abstract class Bundle implements ArtifactSource {
+public abstract class Bundle implements ContainerSource {
 
     static {
         AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {

@@ -24,12 +24,12 @@ import java.util.concurrent.ExecutorService;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
 import app.packed.artifact.ArtifactRuntimeContext;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
@@ -217,21 +217,22 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be constructed properly
      */
-    static App of(ArtifactSource source, Wirelet... wirelets) {
+    static App of(ContainerSource source, Wirelet... wirelets) {
         return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 
-    static App initialized(ArtifactSource source, Wirelet... wirelets) {
+    static App initialized(ContainerSource source, Wirelet... wirelets) {
+        // Skal ogsaa matche metoder på hosts...
         return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 
-    static App starting(ArtifactSource source, Wirelet... wirelets) {
+    static App starting(ContainerSource source, Wirelet... wirelets) {
         App app = AppArtifactDriver.INSTANCE.newArtifact(source, wirelets);
         app.startAsync();
         return app;
     }
 
-    static App started(ArtifactSource source, Wirelet... wirelets) {
+    static App started(ContainerSource source, Wirelet... wirelets) {
         return AppArtifactDriver.INSTANCE.newArtifact(source, wirelets).start();
     }
 
@@ -248,7 +249,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application did not execute properly
      */
-    static void run(ArtifactSource source, Wirelet... wirelets) {
+    static void run(ContainerSource source, Wirelet... wirelets) {
         ((PackedApp) AppArtifactDriver.INSTANCE.newArtifact(source, wirelets)).execute();
     }
 
@@ -273,7 +274,7 @@ final class AppArtifactDriver extends ArtifactDriver<App> {
     }
 }
 
-/** The default implementation of {@link App}. Basically just wrapping an a runtime context. */
+/** The default implementation of {@link App}, basically just wrapping a context object. */
 final class PackedApp implements App {
 
     /** The artifact context we are wrapping. */

@@ -26,4 +26,6 @@ final class DefaultComponent extends AbstractComponent implements Component {
     DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, ArtifactInstantiationContext ic) {
         super(container, configuration, ic);
     }
+
+    // Noget med noget instanse..
 }

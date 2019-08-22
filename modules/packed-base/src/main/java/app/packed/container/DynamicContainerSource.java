@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.artifact.ArtifactSource;
 import packed.internal.thirdparty.asm.AnnotationVisitor;
 import packed.internal.thirdparty.asm.Attribute;
 import packed.internal.thirdparty.asm.ClassReader;
@@ -70,13 +69,13 @@ import packed.internal.thirdparty.asm.Type;
 /// Saa kan vi reloade et af gangen....
 
 // https://docs.microsoft.com/en-us/azure/devops/pipelines/release/artifacts?view=azure-devops
-public final class DynamicContainerSource implements ArtifactSource {
+public final class DynamicContainerSource implements ContainerSource {
 
     /** Lapp/packed/component/Install; */
     static final String PACKED_MODULE_DESCRIPTOR = Type.getDescriptor(PackedModule.class);
 
     // Ikke ArtifactSource, BundleSource....
-    public static ArtifactSource load(Path... paths) {
+    public static ContainerSource load(Path... paths) {
         try {
             return load0(paths);
         } catch (Exception e) {
@@ -84,7 +83,7 @@ public final class DynamicContainerSource implements ArtifactSource {
         }
     }
 
-    private static ArtifactSource load0(Path... paths) throws Exception {
+    private static ContainerSource load0(Path... paths) throws Exception {
         ModuleFinder mf = ModuleFinder.of(paths);
 
         String moduleName = null;

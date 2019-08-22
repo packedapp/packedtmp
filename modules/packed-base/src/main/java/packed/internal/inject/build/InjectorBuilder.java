@@ -29,7 +29,6 @@ import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
-import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
@@ -40,6 +39,7 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.compose.InjectorResolver;
+import packed.internal.inject.run.AbstractInjector;
 import packed.internal.invoke.FunctionHandle;
 
 /** This class records all service related information for a single box. */
@@ -65,6 +65,8 @@ public final class InjectorBuilder {
      * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ProvidedComponentConfiguration)}.
      */
     public final ArrayList<BSEExported<?>> exportedEntries = new ArrayList<>();
+
+    public final ArrayList<ImportedInjector> imports = new ArrayList<>(0);
 
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
@@ -134,8 +136,8 @@ public final class InjectorBuilder {
         return entry.toServiceConfiguration();
     }
 
-    public void importAll(Injector injector, WireletList wirelets) {
-        new ImportedInjector(containerConfiguration, this, injector, wirelets).importAll();
+    public void importAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
+        imports.add(new ImportedInjector(this, confitSite, injector, wirelets));
     }
 
     /** Enables manual requirements management. */

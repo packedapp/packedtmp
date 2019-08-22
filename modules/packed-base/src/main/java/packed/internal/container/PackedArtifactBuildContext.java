@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactSource;
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 import app.packed.errorhandling.ErrorMessage;
 
@@ -66,8 +66,8 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactSource source() {
-        return topContainerConfiguration.source;
+    public Class<? extends ContainerSource> sourceType() {
+        return topContainerConfiguration.source.getClass();
     }
 
     /** {@inheritDoc} */

@@ -15,6 +15,8 @@
  */
 package app.packed.artifact;
 
+import app.packed.container.ContainerSource;
+
 /**
  *
  */
@@ -26,7 +28,7 @@ package app.packed.artifact;
 // Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
 
 @FunctionalInterface
-public interface ArtifactConfigurator<T> extends ArtifactSource {
+public interface ArtifactConfigurator<T> extends ContainerSource {
 
     /**
      * Configure the artifact

@@ -29,7 +29,6 @@ import java.util.function.BiConsumer;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.config.ConfigSite;
@@ -37,6 +36,7 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
@@ -68,7 +68,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final ContainerModel model;
 
     /** The source of the container configuration. */
-    final ArtifactSource source;
+    final ContainerSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     private final WireletList wirelets;
@@ -83,7 +83,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param wirelets
      *            any wirelets specified by the user
      */
-    public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ArtifactSource source, Wirelet... wirelets) {
+    public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource source, Wirelet... wirelets) {
         super(ConfigSite.captureStack(PackedBaseConfigSiteOperations.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.of(source.getClass());

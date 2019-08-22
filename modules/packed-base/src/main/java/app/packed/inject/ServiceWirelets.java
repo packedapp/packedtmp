@@ -17,10 +17,12 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
+import packed.internal.inject.build.wirelets.ServiceWirelet;
 
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
@@ -99,6 +101,10 @@ public final class ServiceWirelets {
 
     public static void main(String[] args) {
         provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
+    }
+
+    public static Wirelet removeKeys(Key<?>... keys) {
+        return new ServiceWirelet.FilterOnKey(Set.of(keys));
     }
 
     public static Wirelet provideOnly(Class<?>... keys) {

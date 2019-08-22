@@ -15,21 +15,64 @@
  */
 package a;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.container.BaseBundle;
 import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfigurator;
+import app.packed.inject.Provide;
+import app.packed.util.Key;
+import app.packed.util.Qualifier;
 
 /**
  *
  */
-public class ITest {
+public class ITest extends BaseBundle {
     public static void main(String[] args) {
+        Injector.of(new ITest());
+
         Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             c.provide(new Stuff());
-            c.provide(new Stuff());
+            c.provide(new Stuff()).as(new Key<@QQ Stuff>() {});
+            c.provide(new Stuff()).as(new Key<@QQ Stuff>() {});
+
+            c.provide(new XXX());
+            x(c);
         });
     }
 
+    @Override
+    public void configure() {
+        provide(new Stuff());
+        provide(new Stuff()).as(new Key<@QQ Stuff>() {});
+        provide(new Stuff()).as(new Key<@QQ Stuff>() {});
+
+        provide(new XXX());
+    }
+
+    public static void x(InjectorConfigurator ic) {
+        ic.provide(new Stuff());
+    }
+
     public static class Stuff {}
+
+    public static class XXX {
+
+        @Provide
+        public Stuff pro(String nas) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
+    @Qualifier
+    public @interface QQ {
+        String value() default "X";
+    }
 }

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.config.ConfigSite;
@@ -88,6 +89,14 @@ public final class DefaultInjector extends AbstractInjector {
     @Nullable
     protected <T> ServiceEntry<T> findNode(Key<T> key) {
         return services.getRecursive(key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action) {
+        services.forEach(action);
+        // TODO Auto-generated method stub
+
     }
 
     /** {@inheritDoc} */

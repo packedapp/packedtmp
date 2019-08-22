@@ -24,6 +24,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
@@ -51,7 +52,7 @@ import packed.internal.container.PackedContainerConfiguration;
  * An image can be used to create new instances of {@link app.packed.app.App}, {@link app.packed.inject.Injector},
  * {@link BundleDescriptor} or other artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  */
-public final class ArtifactImage implements ArtifactSource {
+public final class ArtifactImage implements ContainerSource {
 
     /** The configuration of the root container of the artifact. */
     private final PackedContainerConfiguration containerConfiguration;
@@ -169,7 +170,7 @@ public final class ArtifactImage implements ArtifactSource {
      * @throws RuntimeException
      *             if the image could not be constructed properly
      */
-    public static ArtifactImage of(ArtifactSource source, Wirelet... wirelets) {
+    public static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).with(wirelets);
         }

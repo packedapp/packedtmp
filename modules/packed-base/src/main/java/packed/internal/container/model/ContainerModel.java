@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import app.packed.artifact.ArtifactSource;
 import app.packed.container.Bundle;
+import app.packed.container.ContainerSource;
 import packed.internal.util.LookupValue;
 
 /** A model of a container. Each artifact source points to a */
@@ -36,7 +36,7 @@ public final class ContainerModel implements ComponentLookup {
         @SuppressWarnings("unchecked")
         @Override
         protected ContainerModel computeValue(Class<?> type) {
-            return new ContainerModel((Class<? extends ArtifactSource>) type);
+            return new ContainerModel((Class<? extends ContainerSource>) type);
         }
     };
 
@@ -62,7 +62,7 @@ public final class ContainerModel implements ComponentLookup {
     };
 
     /** The type of container source. For example, a subclass of {@link Bundle}. */
-    private final Class<? extends ArtifactSource> sourceType;
+    private final Class<? extends ContainerSource> sourceType;
 
     /**
      * Creates a new container model.
@@ -70,7 +70,7 @@ public final class ContainerModel implements ComponentLookup {
      * @param sourceType
      *            the source type
      */
-    private ContainerModel(Class<? extends ArtifactSource> sourceType) {
+    private ContainerModel(Class<? extends ContainerSource> sourceType) {
         this.sourceType = requireNonNull(sourceType);
     }
 
@@ -129,7 +129,7 @@ public final class ContainerModel implements ComponentLookup {
      *            the bundle type to return a class cache object for
      * @return a bundle class cache object for the specified bundle type
      */
-    public static ContainerModel of(Class<? extends ArtifactSource> sourceType) {
+    public static ContainerModel of(Class<? extends ContainerSource> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 

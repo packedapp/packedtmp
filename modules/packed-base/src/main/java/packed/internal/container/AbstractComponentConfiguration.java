@@ -25,12 +25,12 @@ import java.util.Optional;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.container.extension.hook.DelayedAccessor;
@@ -211,7 +211,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         if (this instanceof PackedContainerConfiguration) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
-            ArtifactSource source = ((PackedContainerConfiguration) this).source;
+            ContainerSource source = ((PackedContainerConfiguration) this).source;
             if (source instanceof Bundle) {
                 String nnn = source.getClass().getSimpleName();
                 if (nnn.length() > 6 && nnn.endsWith("Bundle")) {

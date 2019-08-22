@@ -127,7 +127,7 @@ abstract class AbstractComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public FeatureMap features() {
+    public final FeatureMap features() {
         return features;
     }
 
@@ -135,7 +135,7 @@ abstract class AbstractComponent implements Component {
         return findComponent(path.toString());
     }
 
-    private Component findComponent(String path) {
+    private AbstractComponent findComponent(String path) {
         if (path.length() == 0) {
             throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
         }
@@ -148,7 +148,7 @@ abstract class AbstractComponent implements Component {
 
         // TODO fix for non-absolute paths....
         //
-        Component c = children.get(path);
+        AbstractComponent c = children.get(path);
         if (c == null) {
             String p = path.toString();
             String[] splits = p.split("/");
@@ -183,6 +183,7 @@ abstract class AbstractComponent implements Component {
         return PackedComponentPath.of(this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public final ComponentStream stream() {
         Map<String, AbstractComponent> c = children;

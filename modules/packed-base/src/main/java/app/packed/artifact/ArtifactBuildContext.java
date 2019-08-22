@@ -16,7 +16,7 @@
 package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
+import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.errorhandling.ErrorMessage;
@@ -28,8 +28,9 @@ import app.packed.errorhandling.ErrorMessage;
  * A build context is never available when we build something from an image. Or is it???
  */
 // Skal vi overhoved have wirelets med her????
-
 public interface ArtifactBuildContext {
+
+    void addError(ErrorMessage message);
 
     /**
      * Returns the type of artifact the build process produces.
@@ -52,17 +53,12 @@ public interface ArtifactBuildContext {
      */
     boolean isInstantiating();
 
-    void addError(ErrorMessage message);
-
     /**
-     * Returns the container source of the build, for example a {@link Bundle bundle}.
+     * Returns the source of the build.
      * 
-     * @return the container source of the build, for example a bundle or a container image
+     * @return the source of the build
      */
-    // Maybe a Class<?> sourceType() instead, eller har vi brug for at kunne access den???
-    /// Hmm kan jo starte med sourceType og saa altid tilfoeje source.
-    // Der hvor den ikke fungere skide godt er med InjectionConfigurator som jo bare er en Consumer
-    ArtifactSource source();
+    Class<? extends ContainerSource> sourceType();
 
     /**
      * Any wirelets that was used when initializing the build.

@@ -17,119 +17,61 @@ package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedHashMap;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.inject.InjectionException;
-import app.packed.inject.Injector;
 import app.packed.util.Key;
-import packed.internal.config.site.PackedBaseConfigSiteOperations;
-import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.build.wirelets.ServiceWirelet;
 import packed.internal.inject.run.AbstractInjector;
 
 /** Provides services from an existing Injector. */
-final class ImportedInjector {
+public final class ImportedInjector {
 
-    /** The injector to import services from. */
-    private final AbstractInjector injector;
+    /** The injector builder into which the injector is imported. */
+    final InjectorBuilder builder;
+
+    /** The configuration site of the import statement. */
+    public final ConfigSite configSite;
+
+    public final LinkedHashMap<Key<?>, BSEImported<?>> entries = new LinkedHashMap<>();
+
+    /** The injector to import from. */
+    final AbstractInjector injector;
 
     /** Any wirelets used when importing the injector. */
     final WireletList wirelets;
 
-    /** The configuration site of the import statement. */
-    private final ConfigSite configSite;
-
-    /** The injector builder into which the injector is imported. */
-    private final InjectorBuilder builder;
-
-    ImportedInjector(PackedContainerConfiguration containerConfiguration, InjectorBuilder ib, Injector injector, Wirelet... wirelets) {
-        this.builder = requireNonNull(ib);
-        if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
-            throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
-        }
-        this.injector = (AbstractInjector) injector;
-        this.wirelets = WireletList.of(wirelets);
-        this.configSite = containerConfiguration.configSite().thenCaptureStackFrame(PackedBaseConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND);
-    }
-
-    void importAll() {
-        processImport(injector.copyNodes());
-    }
-
     /**
-     * @param externalNodes
-     *            all nodes that are available for import from bound injector or bundle
+     * @param builder
+     *            the injector builder
+     * @param configSite
+     * @param injector
+     * @param wirelets
      */
-    private void processImport(List<? extends ServiceEntry<?>> externalNodes) {
+    ImportedInjector(InjectorBuilder builder, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+        this.builder = builder;
+        this.configSite = requireNonNull(configSite);
+        this.injector = requireNonNull(injector);
+        this.wirelets = requireNonNull(wirelets);
 
-        // First create service build nodes for every existing node
-        HashMap<Key<?>, BSE<?>> nodes = new HashMap<>();
-        for (ServiceEntry<?> node : externalNodes) {
-            if (!node.isPrivate()) {
-                BSEImported<?> n = new BSEImported<>(builder, configSite.replaceParent(node.configSite()), this, node);
-                nodes.put(node.key(), n);
+        injector.forEachServiceEntry(e -> {
+            if (!e.isPrivate()) { // ignores Injector, and other
+                entries.put(e.key(), new BSEImported<>(this, e));
             }
-        }
+        });
 
-        // Process each wirelet
-        for (Wirelet operation : wirelets.toList()) {
-            if (operation instanceof Wirelet) {
-                nodes = processWirelet(operation, nodes);
-                throw new Error();
-            }
-        }
-
-        // Add all to the private node map
-        for (BSE<?> node : nodes.values()) {
-            if (!builder.resolver.internalNodes.putIfAbsent(node)) {
-                throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already present
-            }
-        }
+        wirelets.forEach(ServiceWirelet.class, w -> w.apply(this));
     }
 
-    private HashMap<Key<?>, BSE<?>> processWirelet(Wirelet wirelet, HashMap<Key<?>, BSE<?>> nodes) {
-        // if (true) {
-        // throw new Error();
-        // }
-        // ImportExportDescriptor ied = ImportExportDescriptor.from(null /*
-        // AppPackedBundleSupport.invoke().lookupFromWireOperation(stage) */, stage.getClass());
-        //
-        // for (AtProvides m : ied.provides.members.values()) {
-        // for (InternalDependencyDescriptor s : m.dependencies) {
-        // if (!nodes.containsKey(s.key())) {
-        // throw new InjectionException("not good man, " + s.key() + " is not in the set of incoming services");
-        // }
-        // }
-        // }
+    //
+    // // Add all to the private node map
+    // // This should not be done here....
+    // for (BSE<?> node : entries.values()) {
+    // if (!builder.resolver.internalNodes.putIfAbsent(node)) {
+    // throw new InjectionException("oops for " + node.key()); // Tried to import a service with a key that was already
+    // present
+    // }
+    // }
 
-        // Make runtime nodes....
-
-        HashMap<Key<?>, BSE<?>> newNodes = new HashMap<>();
-
-        for (Iterator<BSE<?>> iterator = nodes.values().iterator(); iterator.hasNext();) {
-            BSE<?> node = iterator.next();
-            Key<?> existing = node.key();
-
-            // invoke the import function on the stage
-            // if (stage instanceof InternalServiceWirelets) {
-            // ((InternalServiceWirelets) stage).onEachService(node);
-            // }
-
-            if (node.key() == null) {
-                iterator.remove();
-            } else if (!node.key().equals(existing)) {
-                iterator.remove();
-                // TODO check if a node is already present
-                newNodes.put(node.key(), node); // Should make new, with new configuration site
-            }
-        }
-        // Put all remaining nodes in newNodes;
-        newNodes.putAll(nodes);
-        return newNodes;
-    }
 }

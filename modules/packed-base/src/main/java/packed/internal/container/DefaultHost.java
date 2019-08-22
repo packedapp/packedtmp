@@ -25,7 +25,8 @@ import app.packed.artifact.ArtifactInstantiationContext;
  */
 public class DefaultHost extends AbstractComponent implements ComponentHolder {
 
-    // well cant we use children????
+    // App is not a component, so can't really use children. Unless, we attach the artifact
+    // to the component, which we probably should
     final ConcurrentHashMap<String, App> apps = new ConcurrentHashMap<>();
 
     /**

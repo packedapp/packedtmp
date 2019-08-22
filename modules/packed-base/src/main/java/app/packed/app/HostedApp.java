@@ -15,7 +15,7 @@
  */
 package app.packed.app;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 
 /**
@@ -29,7 +29,7 @@ interface HostedApp extends App {
     void undeploy();
 
     // Ideen er egentligt at vi kan lave online redeployments
-    void replaceWith(ArtifactSource source, Wirelet... wirelets);
+    void replaceWith(ContainerSource source, Wirelet... wirelets);
 
     // Eller ogsaa have vi en specific
     // HotDeployer newHotDeployer(String name)

@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.ArtifactSource;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -222,7 +221,7 @@ public class BundleDescriptor {
     // ContainerSource????
     // For example, we should be able to take an image...
     public static BundleDescriptor of(Bundle bundle) {
-        return of((ArtifactSource) bundle);
+        return of((ContainerSource) bundle);
     }
 
     public String toJSON() {
@@ -233,10 +232,10 @@ public class BundleDescriptor {
 
     // Or just have a descriptor() on ContainerImage();
     public static BundleDescriptor of(ArtifactImage image) {
-        return of((ArtifactSource) image);
+        return of((ContainerSource) image);
     }
 
-    private static BundleDescriptor of(ArtifactSource source) {
+    private static BundleDescriptor of(ContainerSource source) {
         requireNonNull(source, "source is null");
         Bundle bundle = (Bundle) source;
         PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, source);

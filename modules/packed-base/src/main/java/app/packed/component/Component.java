@@ -43,9 +43,9 @@ public interface Component {
     }
 
     /**
-     * Returns an immutable view of all of this component's children.
+     * Returns an unmodifiable view of all of this component's children.
      *
-     * @return an immutable view of all of this component's children
+     * @return an unmodifiable view of all of this component's children
      */
     Collection<Component> children();
 

@@ -38,6 +38,8 @@ import packed.internal.config.site.UnknownConfigSite;
  * <p>
  * A configuration site can have a parent, thereby nesting for example, tthe parent of a service registration will be
  * the registration point of its injector.
+ * 
+ * @see ConfigSiteJoiner
  */
 // We need to open up... If this a generic mechanism...
 

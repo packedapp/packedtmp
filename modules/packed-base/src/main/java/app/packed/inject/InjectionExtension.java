@@ -32,6 +32,7 @@ import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.build.AtProvidesGroup;
 import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.run.AbstractInjector;
 
 /**
  * This extension provides functionality for injection and service management.
@@ -127,19 +128,25 @@ public final class InjectionExtension extends Extension {
     }
 
     /**
-     * Imports all the services from the specified injector and makes available.
+     * Imports all the services from the specified injector and make each service available to other services in the
+     * injector being build.
      * <p>
      * Wirelets can be used to transform and filter the services from the specified injector.
      * 
      * @param injector
-     *            the injector to provide services from
+     *            the injector to import services from
      * @param wirelets
      *            any wirelets used to filter and transform the provided services
+     * @throws IllegalArgumentException
+     *             if using wirelets that are not defined via ServiceWireletFunctions
      */
     public void importAll(Injector injector, Wirelet... wirelets) {
-        requireNonNull(injector, "injector is null");
+        if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
+            throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
+        }
         checkConfigurable();
-        builder.importAll(injector, WireletList.of(wirelets));
+        builder.importAll((AbstractInjector) injector, captureStackTrace(PackedBaseConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+                WireletList.of(wirelets));
     }
 
     /**

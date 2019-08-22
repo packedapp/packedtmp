@@ -15,14 +15,21 @@
  */
 package packed.internal.inject.compose;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import app.packed.artifact.ArtifactBuildContext;
+import app.packed.config.ConfigSite;
+import app.packed.config.ConfigSiteJoiner;
+import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.Key;
+import app.packed.util.MethodDescriptor;
 import packed.internal.inject.build.BSE;
+import packed.internal.util.StringFormatter;
 
 /**
  *
@@ -33,14 +40,60 @@ import packed.internal.inject.build.BSE;
 
 final class ErrorMessages {
 
-    static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, HashSet<BSE<?>>> dublicateNodes) {
-        for (Map.Entry<Key<?>, HashSet<BSE<?>>> e : dublicateNodes.entrySet()) {
-            String ss = e.getValue().stream().map(ee -> ee.configSite().toString()).collect(Collectors.joining(",\n "));
-            throw new IllegalStateException("Multiple service with the same key (" + e.getKey() + "), " + ss);
+    static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<BSE<?>>> dublicateNodes) {
+        ConfigSiteJoiner csj = new ConfigSiteJoiner();
+
+        csj.prefix("    ", "  & ", "  & ");
+        for (var e : dublicateNodes.entrySet()) {
+            // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
+
+            csj.addAll(e.getValue().stream().map(BSE::configSite).collect(Collectors.toList()));
+            System.out.println(csj.toString());
         }
+        System.out.println("------");
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Failed to create an instance of " + abc.artifactType().getSimpleName() + " from bundle: " + abc.sourceType().getCanonicalName());
+        int nn = 1;
+        for (Map.Entry<Key<?>, LinkedHashSet<BSE<?>>> e : dublicateNodes.entrySet()) {
+            sb.append("\n\n");
+            Key<?> key = e.getKey();
+            String n = "@" + key.qualifier().map(ee -> ee.annotationType().getSimpleName()).orElse("") + " " + key.typeLiteral().toStringSimple();
+            String ss = e.getValue().stream().map(ee -> format(ee)).collect(Collectors.joining("\n  & "));
+            // A service with the key <@Foo java.lang.Integer> is configured multiple places:/
+            sb.append(nn + ") Multiple services registered with the same Key<" + n + ">:\n    ");
+            sb.append(ss);
+            sb.append("\n");
+            nn += 1;
+
+        }
+
+        // throw new IllegalStateException("\nMultiple services registered with the same key {" + n + "}:\n " + ss);
+
+        throw new IllegalStateException(sb.toString());
     }
 
     static void addUnresolvedExports(ArtifactBuildContext abc, HashMap<Key<?>, HashSet<BSE<?>>> dublicateNodes) {
 
+    }
+
+    static String format(BSE<?> e) {
+        if (e.declaringNode() == null) {
+            return e.configSite().toString();
+        }
+        StringBuilder sb = new StringBuilder(e.declaringNode().configSite().toString());
+        e.configSite().visit(new ConfigSiteVisitor() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void visitAnnotatedMethod(ConfigSite configSite, MethodDescriptor method, Annotation annotation) {
+                sb.append(" via annotated method @");
+                sb.append(annotation.annotationType().getSimpleName());
+                sb.append(" ");
+                sb.append(StringFormatter.formatShortWithParameters(method));
+            }
+
+        });
+        return sb.toString();
     }
 }

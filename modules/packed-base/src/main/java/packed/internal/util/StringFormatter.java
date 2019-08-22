@@ -150,6 +150,7 @@ public final class StringFormatter {
     }
 
     public static String formatSimple(Annotation annotation) {
+        // TODO fix for inner qualifier classes
         Class<? extends Annotation> annotationType = annotation.annotationType();
         return annotation.toString().replace(annotationType.getPackageName() + ".", "");
     }

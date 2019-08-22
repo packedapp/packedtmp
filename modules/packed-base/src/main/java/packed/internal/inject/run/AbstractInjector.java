@@ -18,6 +18,7 @@ package packed.internal.inject.run;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.component.Component;
 import app.packed.inject.InjectionException;
@@ -43,6 +44,8 @@ public abstract class AbstractInjector implements Injector {
      * @param key
      */
     protected void failedGet(Key<?> key) {}
+
+    public abstract void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action);
 
     @Nullable
     protected <T> ServiceEntry<T> findNode(Class<T> key) {

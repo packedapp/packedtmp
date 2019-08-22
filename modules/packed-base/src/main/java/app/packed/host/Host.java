@@ -15,10 +15,10 @@
  */
 package app.packed.host;
 
-import app.packed.artifact.ArtifactSource;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 
 /**
@@ -42,7 +42,7 @@ interface Host {
 
     public static void main(Bundle b) {}
 
-    public static Host of(ArtifactSource source) {
+    public static Host of(ContainerSource source) {
         throw new UnsupportedOperationException();
     }
 

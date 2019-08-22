@@ -20,6 +20,7 @@ import java.util.function.Function;
 import app.packed.app.App;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Injector;
@@ -27,7 +28,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
- * This class can extended to create custom artifact types if the built-in artifact types such as {@link App} and
+ * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
  * {@link Injector} are not sufficient. In fact both {@link App} and {@link Injector} are both just a thin facade that
  * delegates all calls to {@link ArtifactRuntimeContext}.
  * 
@@ -41,6 +42,8 @@ import packed.internal.util.TypeVariableExtractorUtil;
  * @param <T>
  *            The type of artifact this driver produces.
  */
+// Support of injection of the artifact into the Container...
+// We do not generally support this, as people are free to any artifact they may like.
 public abstract class ArtifactDriver<T> {
 
     /** The type of artifact this driver produces. */
@@ -58,16 +61,12 @@ public abstract class ArtifactDriver<T> {
     }
 
     /**
-     * Returns the type of the artifact this driver produces.
+     * Returns the type of artifacts this driver produce.
      * 
-     * @return the type of the artifact this driver produces
+     * @return the type of artifacts this driver produce
      */
     public final Class<T> artifactType() {
         return type;
-    }
-
-    public boolean isInstantiating() {
-        return !(artifactType() == ArtifactImage.class || artifactType() == BundleDescriptor.class);
     }
 
     protected void configure() {
@@ -106,6 +105,10 @@ public abstract class ArtifactDriver<T> {
      */
     protected abstract T instantiate(ArtifactRuntimeContext context);
 
+    public boolean isInstantiating() {
+        return !(artifactType() == ArtifactImage.class || artifactType() == BundleDescriptor.class);
+    }
+
     // Descriptors... Er bedoevende ligeglade
     // protected abstract T newDescriptor(PackedConfiguration container);
 
@@ -122,7 +125,7 @@ public abstract class ArtifactDriver<T> {
      * @throws RuntimeException
      *             if the artifact could not be created for some reason
      */
-    public final T newArtifact(ArtifactSource source, Wirelet... wirelets) {
+    public final T newArtifact(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
             return ((ArtifactImage) source).newArtifact(this, wirelets);
         }

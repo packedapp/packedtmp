@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
@@ -29,56 +28,56 @@ import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
 /** A build node that imports a service from another injector. */
-class BSEImported<T> extends BSE<T> {
+public class BSEImported<T> extends BSE<T> {
 
     /** The node to import. */
-    final ServiceEntry<T> importFrom;
+    public final ServiceEntry<T> importedEntry;
 
     /** The bind injector source. */
-    final ImportedInjector injectorImporter;
+    public final ImportedInjector importedInjector;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BSEImported(InjectorBuilder injectorConfiguration, ConfigSite configSite, ImportedInjector injectorToImportFrom, ServiceEntry<T> importFrom) {
-        super(injectorConfiguration, configSite, List.of());
-        this.importFrom = requireNonNull(importFrom);
-        this.injectorImporter = requireNonNull(injectorToImportFrom);
-        this.as((Key) importFrom.key());
-        this.description = importFrom.description().orElse(null);
+    BSEImported(ImportedInjector importedInjector, ServiceEntry<T> importedEntry) {
+        super(importedInjector.builder, importedInjector.configSite.replaceParent(importedEntry.configSite()), List.of());
+        this.importedEntry = requireNonNull(importedEntry);
+        this.importedInjector = requireNonNull(importedInjector);
+        this.as((Key) importedEntry.key());
+        this.description = importedEntry.description().orElse(null);
     }
 
     @Override
     @Nullable
     public BSE<?> declaringNode() {
-        return (importFrom instanceof BSE) ? ((BSE<?>) importFrom).declaringNode() : null;
+        return (importedEntry instanceof BSE) ? ((BSE<?>) importedEntry).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvideHelper site) {
-        return importFrom.getInstance(site);
+        return importedEntry.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return importFrom.instantiationMode();
+        return importedEntry.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return importFrom.needsInjectionSite();
+        return importedEntry.needsInjectionSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return importFrom.needsResolving();
+        return importedEntry.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
     RSE<T> newRuntimeNode() {
-        return new RSEDelegate<T>(this, importFrom);
+        return new RSEDelegate<T>(this, importedEntry);
     }
 }

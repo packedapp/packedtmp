@@ -24,9 +24,9 @@ import app.packed.app.App;
 import app.packed.artifact.ArtifactConfigurator;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactRuntimeContext;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
 
@@ -297,7 +297,7 @@ public interface Injector {
      *             if the injector could not be created for some reason. For example, if the source defines any components
      *             that requires a lifecycle
      */
-    static Injector of(ArtifactSource source, Wirelet... wirelets) {
+    static Injector of(ContainerSource source, Wirelet... wirelets) {
         return InjectorArtifactDriver.INSTANCE.newArtifact(source, wirelets);
     }
 }

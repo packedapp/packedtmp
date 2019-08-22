@@ -20,7 +20,6 @@ import java.util.Set;
 
 import app.packed.app.App;
 import app.packed.artifact.ArtifactBuildContext;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
@@ -129,7 +128,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
 
     /**
      * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ArtifactSource, Wirelet...)} or {@link ContainerConfiguration#link(Bundle, Wirelet...)}.
+     * {@link App#of(ContainerSource, Wirelet...)} or {@link ContainerConfiguration#link(Bundle, Wirelet...)}.
      * 
      * @return a wirelet list containing any wirelets that was specified when creating this configuration
      */

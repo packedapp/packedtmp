@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.app.App;
-import app.packed.artifact.ArtifactSource;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 
 /**
@@ -35,7 +35,7 @@ public class AppTester {
         this.app = requireNonNull(app);
     }
 
-    public AppTester(ArtifactSource source, Wirelet... wirelets) {
+    public AppTester(ContainerSource source, Wirelet... wirelets) {
         this(App.of(source, wirelets));
     }
 
@@ -56,7 +56,7 @@ public class AppTester {
         return app.stream();
     }
 
-    public static AppTester of(ArtifactSource source, Wirelet... wirelets) {
+    public static AppTester of(ContainerSource source, Wirelet... wirelets) {
         return new AppTester(App.of(source, wirelets));
     }
 }

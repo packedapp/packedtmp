@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,6 +39,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
 import packed.internal.inject.build.BSEExported;
+import packed.internal.inject.build.ImportedInjector;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
@@ -99,23 +102,7 @@ public final class InjectorResolver {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void build(ArtifactBuildContext buildContext) {
 
-        // First process all our build nodes, to check if we have multiple nodes that are registered with the same key
-        HashMap<Key<?>, BSE<?>> uniqueNodes = new HashMap<>();
-        HashMap<Key<?>, HashSet<BSE<?>>> duplicateNodes = new HashMap<>();
-        for (BSE<?> node : ib.entries) {
-            requireNonNull(node.key());// This is more like an assert
-            BSE<?> existing = uniqueNodes.putIfAbsent(node.key(), node);
-            if (existing != null) {
-                HashSet<BSE<?>> hs = duplicateNodes.computeIfAbsent(node.key(), m -> new HashSet<>());
-                hs.add(existing); // might be added multiple times, hence we use a Set
-                hs.add(node);
-            }
-        }
-        // Add error messages if have nodes that have been added multiple times
-        if (!duplicateNodes.isEmpty()) {
-            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
-        }
-        internalNodes.addAll(uniqueNodes.values());
+        boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
 
         // Go through all exports, and make sure they can all be fulfilled
         HashMap<Key<?>, HashSet<BSE<?>>> unresolvedExports = new HashMap<>();
@@ -129,17 +116,49 @@ public final class InjectorResolver {
                 exportedNodes.put(node);
             }
         }
+
         if (!unresolvedExports.isEmpty()) {
             ErrorMessages.addUnresolvedExports(buildContext, unresolvedExports);
         }
-
         // It does not make sense to try and resolve
-        if (duplicateNodes.isEmpty()) {
+        if (!hasDuplicates) {
             DependencyGraph dg = new DependencyGraph(ib.containerConfiguration, ib, this);
             if (buildContext.isInstantiating()) {
                 dg.instantiate();
             } else {
                 dg.analyze();
+            }
+        }
+    }
+
+    private boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
+        HashMap<Key<?>, BSE<?>> uniqueNodes = new HashMap<>();
+        LinkedHashMap<Key<?>, LinkedHashSet<BSE<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
+
+        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ib.entries);
+        for (ImportedInjector ii : ib.imports) {
+            processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
+        }
+
+        // Add error messages if any nodes with the same key have been added multiple times
+        if (!duplicateNodes.isEmpty()) {
+            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
+        }
+        internalNodes.addAll(uniqueNodes.values());
+        return !duplicateNodes.isEmpty();
+    }
+
+    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BSE<?>> uniqueNodes, LinkedHashMap<Key<?>, LinkedHashSet<BSE<?>>> duplicateNodes,
+            Iterable<? extends BSE<?>> nodes) {
+        for (BSE<?> node : nodes) {
+            Key<?> key = node.key();
+            if (key != null) {
+                BSE<?> existing = uniqueNodes.putIfAbsent(key, node);
+                if (existing != null) {
+                    HashSet<BSE<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    hs.add(existing); // might be added multiple times, hence we use a Set
+                    hs.add(node);
+                }
             }
         }
     }

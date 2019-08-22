@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.container;
 
 import java.util.function.Supplier;
 
+import app.packed.artifact.ArtifactImage;
 import app.packed.component.Component;
-import app.packed.container.Bundle;
 
 /**
  * An artifact source is used to create an artifact. Currently the following types of artifact sources are supported:
@@ -46,16 +46,16 @@ import app.packed.container.Bundle;
 // ArtifactSource type....
 
 // Rename to ContainerSource??? I think it makes more sense....
-public interface ArtifactSource {
+public interface ContainerSource {
 
-    static ArtifactSource ofRepeatableBundle(Supplier<? extends Bundle> supplier) {
+    static ContainerSource ofRepeatableBundle(Supplier<? extends Bundle> supplier) {
         throw new UnsupportedOperationException();
     }
 
     // Ideen er egentlig at have en scanner af en slags..
     // Componenter for den pakke, med de annoteringer.. osv.
     // CacheResult = true <- Vi tillader som default ikke
-    static ArtifactSource ofComponentSelector(String s) {
+    static ContainerSource ofComponentSelector(String s) {
         throw new UnsupportedOperationException();
     }
 
@@ -66,7 +66,7 @@ public interface ArtifactSource {
      */
     // Why not just create an App????? Because it instantiates shit...
     // Just create a image then....
-    static void validate(ArtifactSource source) {}
+    static void validate(ContainerSource source) {}
 }
 
 // Not sure we can link to ContainerImages...

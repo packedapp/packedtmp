@@ -15,7 +15,7 @@
  */
 package app.packed.app;
 
-import app.packed.artifact.ArtifactSource;
+import app.packed.container.ContainerSource;
 
 /**
  *
@@ -27,7 +27,7 @@ import app.packed.artifact.ArtifactSource;
 
 interface AppHost extends App {
 
-    static AppHost of(ArtifactSource source) {
+    static AppHost of(ContainerSource source) {
         throw new UnsupportedOperationException();
     }
 }

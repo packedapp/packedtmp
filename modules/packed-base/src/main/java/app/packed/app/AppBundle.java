@@ -16,9 +16,9 @@
 package app.packed.app;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.ArtifactSource;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
+import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.inject.ServiceWirelets;
 import app.packed.lifecycle.StringArgs;
@@ -41,29 +41,29 @@ public abstract class AppBundle extends BaseBundle {
      * 
      * </pre>
      * <p>
-     * Invoking this method is identical to invoking {@link ArtifactImage#of(ArtifactSource, Wirelet...)}.
+     * Invoking this method is identical to invoking {@link ArtifactImage#of(ContainerSource, Wirelet...)}.
      * 
      * @param source
      *            the could to create the image from
      * @param wirelets
      * @return a new artifact image from the specified source
-     * @see ArtifactImage#of(ArtifactSource, Wirelet...)
+     * @see ArtifactImage#of(ContainerSource, Wirelet...)
      */
-    protected static ArtifactImage newImage(ArtifactSource source, Wirelet... wirelets) {
+    protected static ArtifactImage newImage(ContainerSource source, Wirelet... wirelets) {
         return ArtifactImage.of(source, wirelets);
     }
 
     // runMain????.. maybe still so similar. Do we want to throw Exception???
     // I think so... Wirelet.throw(Exception.class); <- Argument to runThrowing...
     // executeMain
-    static protected void run(ArtifactSource source, String[] args, Wirelet... wirelets) {
+    static protected void run(ContainerSource source, String[] args, Wirelet... wirelets) {
 
         // CTRL-C ?? Obvious a wirelet, but default on or default off.
         // Paa Bundle syntes jeg den er paa, ikke paa App which is clean
         run(source, ServiceWirelets.provide(StringArgs.of(args)).andThen(wirelets)); // + CTRL-C
     }
 
-    static protected void run(ArtifactSource source, Wirelet... wirelets) {
+    static protected void run(ContainerSource source, Wirelet... wirelets) {
         App.run(source, wirelets);
     }
 

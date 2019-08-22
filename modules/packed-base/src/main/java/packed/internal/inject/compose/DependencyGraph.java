@@ -69,7 +69,7 @@ final class DependencyGraph {
         // TODO replace with something a.la.
         // dcc.source.isInjectorConfigurator
         if (root.buildContext().artifactType() == Injector.class) {
-            ir.publicInjector = ir.privateInjector;
+            ir.publicInjector = requireNonNull(ir.privateInjector);
         } else {
             ir.publicInjector = new DefaultInjector(root, ir.exportedNodes);
 
