@@ -25,6 +25,7 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
+import app.packed.container.ContainerWirelets;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
@@ -155,7 +156,7 @@ public final class ArtifactImage implements ContainerSource {
      * @return the new container image
      */
     public ArtifactImage withName(String name) {
-        return with(Wirelet.name(name));
+        return with(ContainerWirelets.name(name));
     }
 
     /**

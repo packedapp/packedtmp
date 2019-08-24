@@ -17,8 +17,6 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -26,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.util.Nullable;
 
 /** An immutable list of wirelets. */
-public final class WireletList extends Wirelet implements Iterable<Wirelet> {
+public final class WireletList extends Wirelet {
 
     /** An empty wirelet list. */
     static final WireletList EMPTY = new WireletList();
@@ -137,58 +135,54 @@ public final class WireletList extends Wirelet implements Iterable<Wirelet> {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void forEach(Consumer<? super Wirelet> action) {
         requireNonNull(action, "action is null");
         for (Wirelet w : wirelets) {
             action.accept(w);
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public Iterator<Wirelet> iterator() {
-        return List.of(wirelets).iterator();
-    }
+    //
+    // public Iterator<Wirelet> iterator() {
+    // return List.of(wirelets).iterator();
+    // }
 
     public WireletList plus(Wirelet... wirelets) {
         return andThen(wirelets);
     }
-
-    /**
-     * Returns an immutable {@link List} representation of all of the wirelets in this list.
-     * 
-     * @return a immutable list representation of all of the wirelets in this list
-     */
-    public List<Wirelet> toList() {
-        return List.of(wirelets);
-    }
-
-    /**
-     * Returns a list of all wirelets of the specified type
-     * 
-     * @param <T>
-     *            the type of wirelets to return a list for
-     * @param wireletType
-     *            the type of wirelets to return a list for
-     * @return a list of all wirelets of the specified type
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Wirelet> List<T> toList(Class<T> wireletType) {
-        requireNonNull(wireletType, "wireletType is null");
-        for (int i = 0; i < wirelets.length; i++) {
-            Wirelet w = wirelets[i];
-            if (wireletType.isAssignableFrom(w.getClass())) {
-                for (int j = i; j < wirelets.length; j++) {
-                    System.out.println(j);
-                }
-                // only found one...
-                return (List<T>) List.of(w);
-            }
-        }
-        return List.of();
-    }
+    //
+    // /**
+    // * Returns an immutable {@link List} representation of all of the wirelets in this list.
+    // *
+    // * @return a immutable list representation of all of the wirelets in this list
+    // */
+    // public List<Wirelet> toList() {
+    // return List.of(wirelets);
+    // }
+    //
+    // /**
+    // * Returns a list of all wirelets of the specified type
+    // *
+    // * @param <T>
+    // * the type of wirelets to return a list for
+    // * @param wireletType
+    // * the type of wirelets to return a list for
+    // * @return a list of all wirelets of the specified type
+    // */
+    // @SuppressWarnings("unchecked")
+    // public <T extends Wirelet> List<T> toList(Class<T> wireletType) {
+    // requireNonNull(wireletType, "wireletType is null");
+    // for (int i = 0; i < wirelets.length; i++) {
+    // Wirelet w = wirelets[i];
+    // if (wireletType.isAssignableFrom(w.getClass())) {
+    // for (int j = i; j < wirelets.length; j++) {
+    // System.out.println(j);
+    // }
+    // // only found one...
+    // return (List<T>) List.of(w);
+    // }
+    // }
+    // return List.of();
+    // }
 
     /** {@inheritDoc} */
     @Override

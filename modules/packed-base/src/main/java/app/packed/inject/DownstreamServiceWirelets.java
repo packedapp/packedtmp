@@ -17,12 +17,10 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.inject.build.wirelets.ServiceWirelet;
 
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
@@ -32,10 +30,10 @@ import packed.internal.inject.build.wirelets.ServiceWirelet;
 
 // So we can push things in, rebind themx
 // Maaske have mere en en *Wirelets klasse
-public final class ServiceWirelets {
+public final class DownstreamServiceWirelets {
 
     /** No instantiation. */
-    private ServiceWirelets() {}
+    private DownstreamServiceWirelets() {}
 
     // restrict optional services going in (some contract????) Bare besvaereligt at lave negative contracter.
     // Med mindre vi arbejder med commotative, associative osv. kontrakter...
@@ -101,10 +99,6 @@ public final class ServiceWirelets {
 
     public static void main(String[] args) {
         provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
-    }
-
-    public static Wirelet removeKeys(Key<?>... keys) {
-        return new ServiceWirelet.FilterOnKey(Set.of(keys));
     }
 
     public static Wirelet provideOnly(Class<?>... keys) {

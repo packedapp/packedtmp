@@ -18,14 +18,12 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.module.Configuration;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
-import packed.internal.container.ComponentNameWirelet;
 
 // Wire vs link....
 
@@ -148,61 +146,18 @@ public abstract class Wirelet {
         return this;
     }
 
-    public static Wirelet configure(Configuration c) {
-        // This is for App, but why not for Injector also...
-        // we need config(String) for wire()..... configOptional() also maybe...
-        // Would be nice.. if config extends WiringOperations
-        // alternative c.wire();
-        // c.get("/sdfsdf").wire();
-
-        // Maaske skal nogle klasser bare implementere WiringOperation...
-        throw new UnsupportedOperationException();
-    }
-
-    // wire(new XBundle(), Wirelet.configure(Configuration.read("dddd");
-    // mapConfiguration, childConfiguration()
-    // ConfigurationWirelets.provide(Configuration c)
-    // ConfigurationWirelets.map(ConfigurationTransformer transformer)
-    // or extract childOf
-    // ConfigurationWirelets.mapChild(String childName) //calls map
-    // ConfigurationWirelets.mapChild(Configuration c, ConfigurationTransformer)
-    // ConfigWirelets.provide(c)
-    // ConfWirelets.provide(c)
-    // ConfSite
-
-    public static Wirelet configure(Configuration c, String child) {
-        // configure(c, "child")
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet configure(String childName) {
-        // Extracts the child named 'childName' for a configuration in the current context
-        // configure(c, "child")
-        throw new UnsupportedOperationException();
-    }
-
-    // protected void validate(); Validates that the operation can be used
-
-    static Wirelet disableConfigSet() {
-        // Man skal vel ogsaa kunne enable den igen....
-        throw new UnsupportedOperationException();
-    }
-
+    // Okay... hvordan klare vi det her med Bundle.lookup()
+    // Maaske i foerste omgang ved ikke at supportere det.
     static Wirelet lookup(MethodHandles.Lookup lookup) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a wirelet that will set the name of a container once wired, overriding any name that has previously been set,
-     * for example, via {@link Bundle#setName(String)}.
-     * 
-     * @param name
-     *            the name of the container
-     * @return a wirelet that will set name of a container once wired
-     */
-    // setName
-    public static Wirelet name(String name) {
-        return new ComponentNameWirelet(name);
+    static Wirelet execute(Runnable runable) {
+        // Can't really do this as we are not a real pipeline...
+
+        // Det eneste alternativ er callbacks. F.eks. give build context med...
+        // Her kan man saa hive en containerconfiguration ud....
+        throw new UnsupportedOperationException();
     }
 
     // The tree ways of locality for wirelets....

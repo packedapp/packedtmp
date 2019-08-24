@@ -22,6 +22,8 @@ package app.packed.container;
 // Optional<Wiring> <- is removed, for example, when undeployed...
 
 interface Wiring {
-
     boolean isRemoveable();
 }
+
+// WiredContainer/LinkedBundle
+// UnwirableContainer extends WiredContainer

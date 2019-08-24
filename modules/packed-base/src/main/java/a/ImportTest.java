@@ -18,7 +18,7 @@ package a;
 import a.ITest.QQ;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Injector;
-import app.packed.inject.ServiceWirelets;
+import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 
 /**
@@ -37,7 +37,11 @@ public class ImportTest extends BaseBundle {
     public void configure() {
         Injector inj = Injector.of(new IBundle());
         provide("fooo");
-        injector().importAll(inj, ServiceWirelets.removeKeys(new Key<@QQ("B") String>() {}, new Key<@QQ("C") String>() {}));
+        injector().importAll(inj, UpstreamServiceWirelets.peek(e -> {
+            System.out.println("SSS " + e.key());
+        }), UpstreamServiceWirelets.remove(new Key<@QQ("B") String>() {}, new Key<@QQ("C") String>() {}), UpstreamServiceWirelets.peek(e -> {
+            System.out.println("SSS " + e.key());
+        }));
 
     }
 

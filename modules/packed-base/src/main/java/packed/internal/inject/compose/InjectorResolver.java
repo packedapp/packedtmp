@@ -101,7 +101,6 @@ public final class InjectorResolver {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void build(ArtifactBuildContext buildContext) {
-
         boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
 
         // Go through all exports, and make sure they can all be fulfilled

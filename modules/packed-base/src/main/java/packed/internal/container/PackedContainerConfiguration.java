@@ -323,22 +323,26 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Extension> T getExtension(Class<T> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return (T) extensions.get(extensionType);
+    }
+
     /** {@inheritDoc} */
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends Extension> T use(Class<T> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-
+        T e = getExtension(extensionType);
         // We do not use the computeIfAbsent, because extensions might install other extensions.
         // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
-        Extension e = extensions.get(extensionType);
+
         if (e == null) {
             checkConfigurable(); // installing new extensions after configuration is done is not allowed
             e = ExtensionModel.newInstance(this, extensionType);
             extensions.put(extensionType, e); // make sure it is installed before we call into user code
             AppPackedExtensionSupport.invoke().onAdded(e, this);
         }
-        return (T) e;
+        return e;
     }
 
     /** {@inheritDoc} */

@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.util.Key;
+import packed.internal.container.ComponentNameWirelet;
 
 /**
  *
  */
-// Could just wrap a contract with
+public class ContainerWirelets {
 
-// Capture ConfigSite
-public final class ExplicitRequirement {
-
-    final boolean isOptional;
-
-    final Key<?> key;
-
-    public ExplicitRequirement(Key<?> key, boolean isOptional) {
-        this.key = requireNonNull(key, "key is null");
-        this.isOptional = isOptional;
+    /**
+     * Returns a wirelet that will set the name of a container once wired, overriding any name that has previously been set,
+     * for example, via {@link Bundle#setName(String)}.
+     * 
+     * @param name
+     *            the name of the container
+     * @return a wirelet that will set name of a container once wired
+     */
+    // setName
+    public static Wirelet name(String name) {
+        return new ComponentNameWirelet(name);
     }
 }

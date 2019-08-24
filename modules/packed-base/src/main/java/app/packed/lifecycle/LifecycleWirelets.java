@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import app.packed.app.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.inject.ServiceWirelets;
+import app.packed.inject.DownstreamServiceWirelets;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
@@ -41,14 +41,14 @@ public final class LifecycleWirelets {
 
     /**
      * Creates a {@link StringArgs} from the specified arguments and returns a wirelet that provides it, via
-     * {@link ServiceWirelets#provide(Object)}, to the wired container.
+     * {@link DownstreamServiceWirelets#provide(Object)}, to the wired container.
      * 
      * @param args
      *            the arguments to inject
      * @return a wirelet that provides the specified arguments to the linked container
      */
     static Wirelet args(String... args) {
-        return ServiceWirelets.provide(StringArgs.of(args));
+        return DownstreamServiceWirelets.provide(StringArgs.of(args));
     }
 
     /**
@@ -78,13 +78,7 @@ public final class LifecycleWirelets {
     public static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
         timeToLive(10, TimeUnit.SECONDS, () -> new CancellationException());
         // Alternativ, kan man wrappe dem i f.eks. WiringOperation.requireExecutionMode();
-        return new Wirelet() {
-
-            // @Override
-            // protected void process(BundleLink link) {
-            // link.mode().checkExecute();
-            // }
-        };
+        throw new UnsupportedOperationException();
     }
 
 }
