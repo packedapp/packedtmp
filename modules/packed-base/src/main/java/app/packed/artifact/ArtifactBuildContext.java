@@ -17,7 +17,6 @@ package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
-import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.errorhandling.ErrorMessage;
 
@@ -27,15 +26,16 @@ import app.packed.errorhandling.ErrorMessage;
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
-// Skal vi overhoved have wirelets med her????
+// Hmm, Naar vi laver et image eller en descriptor, syntes jeg egentlig ikke vi laver en Artifact
+
 public interface ArtifactBuildContext {
 
     void addError(ErrorMessage message);
 
     /**
-     * Returns the type of artifact the build process produces.
+     * Returns the type of artifact that is being built.
      * 
-     * @return the type of artifact the build process produces
+     * @return the type of artifact that is being built
      */
     Class<?> artifactType();
 
@@ -47,6 +47,15 @@ public interface ArtifactBuildContext {
     ConfigSite configSite();
 
     /**
+     * Returns whether or not an artifact image is being built.
+     * 
+     * @return whether or not an artifact image is being built
+     */
+    default boolean isImage() {
+        return artifactType() == ArtifactImage.class;
+    }
+
+    /**
      * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
      * 
      * @return whether or not we are instantiating an actual artifact
@@ -54,18 +63,11 @@ public interface ArtifactBuildContext {
     boolean isInstantiating();
 
     /**
-     * Returns the source of the build.
+     * Returns the source of the top level container.
      * 
-     * @return the source of the build
+     * @return the source of the top level container
      */
     Class<? extends ContainerSource> sourceType();
-
-    /**
-     * Any wirelets that was used when initializing the build.
-     * 
-     * @return a list of wirelets
-     */
-    WireletList wirelets();
 }
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.

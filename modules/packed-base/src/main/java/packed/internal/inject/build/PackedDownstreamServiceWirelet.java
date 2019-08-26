@@ -29,7 +29,7 @@ import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
+public abstract class PackedDownstreamServiceWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
 
     /** {@inheritDoc} */
     @Override
@@ -37,28 +37,12 @@ public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<Inje
         return new InjectionPipeline(extension);
     }
 
-    /**
-     * Processes an imported injector.
-     * 
-     * @param ii
-     *            the imported injector to process
-     */
-    abstract void process(ImportedInjector ii);
-
-    public static class FilterOnKey extends PackedUpstreamServiceWirelet {
+    public static class FilterOnKey extends PackedDownstreamServiceWirelet {
 
         final Set<Key<?>> set;
 
         public FilterOnKey(Set<Key<?>> set) {
             this.set = requireNonNull(set);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        void process(ImportedInjector ii) {
-            for (Key<?> key : set) {
-                ii.entries.remove(key);
-            }
         }
 
         /** {@inheritDoc} */
@@ -69,7 +53,7 @@ public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<Inje
     }
 
     /** A wirelet for {@link UpstreamServiceWirelets#peek(Consumer)}. */
-    public static class Peek extends PackedUpstreamServiceWirelet {
+    public static class Peek extends PackedDownstreamServiceWirelet {
 
         /** The peek action to execute. */
         private final Consumer<? super ServiceDescriptor> action;
@@ -86,16 +70,8 @@ public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<Inje
 
         /** {@inheritDoc} */
         @Override
-        void process(ImportedInjector ii) {
-            for (BSEImported<?> e : ii.entries.values()) {
-                action.accept(new ServiceConfigurationWrapper(e));
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
         protected void process(InjectionPipeline extension) {
-            // TODO Auto-generated method stub
+            System.out.println(action);
         }
     }
 

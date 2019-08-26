@@ -34,7 +34,9 @@ import packed.internal.support.AppPackedExtensionSupport;
  * Container extensions are used to extend containers with functionality.
  * <p>
  * Subclasses of this class must give open rights to app.packed.base
- *
+ * <p>
+ * Extensions form the basis, extensible model
+ * 
  * <p>
  * Subclasses of this class that are actively used should be final.
  */
@@ -61,6 +63,11 @@ public abstract class Extension {
     static {
         AppPackedExtensionSupport.Helper.init(new AppPackedExtensionSupport.Helper() {
 
+            @Override
+            public void buildBundle(Extension extension, Builder builder) {
+                extension.buildBundle(builder);
+            }
+
             /** {@inheritDoc} */
             @Override
             public void onAdded(Extension extension, PackedContainerConfiguration configuration) {
@@ -76,43 +83,25 @@ public abstract class Extension {
             }
 
             @Override
-            public void buildBundle(Extension extension, Builder builder) {
-                extension.buildBundle(builder);
-            }
-
-            @Override
             public void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context) {
                 extension.onPrepareContainerInstantiation(context);
             }
         });
     }
 
-    /** The configuration of the container in which the extension is registered. */
+    /**
+     * The configuration of the container in which the extension is registered. This field should never be read directly,
+     * but only accessed via {@link #configuration()}.
+     */
     private ContainerConfiguration configuration;
 
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
-    /**
-     * Captures the configuration site by finding the first stack frame that is not located on a subclass of
-     * {@link Extension}.
-     * <p>
-     * Invoking this method typically takes in the order of 1-2 microseconds.
-     * <p>
-     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-     * {@link ConfigSite#UNKNOWN}.
-     * 
-     * @return a configuration site
-     * @see StackWalker
-     */
-    protected final ConfigSite containerConfigSite() {
-        return configuration.configSite();
-    }
-
     protected void buildBundle(BundleDescriptor.Builder builder) {}
 
     /**
-     * Returns the build context for artifact that is being build.
+     * Returns the build context of the artifact which this extension is a part of.
      * <p>
      * Im thinking about throwing ISE on instantiation....
      * 
@@ -134,7 +123,20 @@ public abstract class Extension {
     }
 
     /**
-     * Checks that the extension is still configurable or throws an {@link IllegalStateException} if it is not.
+     * Captures a stack frame.
+     * <p>
+     * If stack frame capturing is disabled, this method returns {@link ConfigSite#UNKNOWN}.
+     * 
+     * @param operation
+     *            the operation
+     * @return a stack capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing is disabled
+     */
+    protected final ConfigSite captureStackFrame(String operation) {
+        return containerConfigSite().thenCaptureStackFrame(operation);
+    }
+
+    /**
+     * Checks that the extension is still configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer configurable after the extensions {@link #onConfigured()} has been invoked by the runtime.
      * 
@@ -146,10 +148,6 @@ public abstract class Extension {
         if (!isConfigurable) {
             throw new IllegalStateException("This extension " + getClass().getSimpleName() + " is no longer configurable");
         }
-    }
-
-    protected final ConfigSite captureStackTrace(String operation) {
-        return containerConfigSite().thenCaptureStackFrame(operation);
     }
 
     /**
@@ -166,6 +164,22 @@ public abstract class Extension {
                     "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization");
         }
         return c;
+    }
+
+    /**
+     * Captures the configuration site by finding the first stack frame that is not located on a subclass of
+     * {@link Extension}.
+     * <p>
+     * Invoking this method typically takes in the order of 1-2 microseconds.
+     * <p>
+     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+     * {@link ConfigSite#UNKNOWN}.
+     * 
+     * @return a configuration site
+     * @see StackWalker
+     */
+    protected final ConfigSite containerConfigSite() {
+        return configuration().configSite();
     }
 
     protected final void installInParentIfSameArtifact() {
@@ -186,15 +200,15 @@ public abstract class Extension {
     }
 
     /**
-     * This method is invoked (exactly once) by the runtime immediately after the extension is added to the configuration of
-     * a container. For example, via a call to {@link ContainerConfiguration#use(Class)}. After this method has returned the
-     * extension instance is returned to the user.
+     * This method is invoked (by the runtime) immediately after the extension is added to the configuration of a container.
+     * For example, via a call to {@link ContainerConfiguration#use(Class)}. After this method has returned the extension
+     * instance is returned to the user.
      * <p>
-     * {@link #onConfigured()} is the next callback method invoked by the runtime.
+     * Under normal circumstances {@link #onConfigured()} is the next callback method on this class invoked by the runtime.
      * <p>
      * The default implementation does nothing.
      */
-    protected void onAdded() {} // afterAdd
+    protected void onAdded() {}
 
     /**
      * Invoked immediately after a container has been successfully configured. Typically after {@link Bundle#configure()}
@@ -226,9 +240,9 @@ public abstract class Extension {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, unlike the method on
-     * {@link ContainerConfiguration}. This method keeps track of which extensions uses other extensions. And forming any
-     * kind of circle in the dependency graph will fail with a runtime exception.
+     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
+     * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
+     * with a runtime exception.
      * 
      * @param <E>
      *            the type of extension to return

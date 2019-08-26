@@ -45,6 +45,15 @@ public interface ArtifactInstantiationContext {
     @Nullable
     <T> T get(ContainerConfiguration configuration, Class<T> type);
 
+    /**
+     * Returns whether or not the artifact is being created from an image.
+     * 
+     * @return whether or not the artifact is being created from an image
+     */
+    default boolean isFromImage() {
+        return false;
+    }
+
     void put(ContainerConfiguration configuration, Object obj);
 
     <T> T use(ContainerConfiguration configuration, Class<T> type);

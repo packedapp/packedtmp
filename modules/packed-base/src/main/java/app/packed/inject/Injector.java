@@ -286,7 +286,7 @@ public interface Injector {
     }
 
     /**
-     * Creates a new injector from the specified artifact source.
+     * Creates a new injector from the specified source.
      *
      * @param source
      *            the source to create the artifact from

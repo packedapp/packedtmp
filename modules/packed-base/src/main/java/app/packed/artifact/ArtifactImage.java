@@ -25,7 +25,6 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
-import app.packed.container.ContainerWirelets;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
@@ -127,6 +126,20 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
+     * Returns a new artifact image.
+     * <p>
+     * The specified wirelets are never evaluated until the new image is used to create a new artifact or bundle descriptor.
+     * 
+     * @param wirelets
+     *            the wirelets to prefix
+     * @return a new image
+     */
+    public ArtifactImage prefixWith(Wirelet... wirelets) {
+        WireletList wl = this.wirelets.plus(wirelets);
+        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl);
+    }
+
+    /**
      * Returns the type of bundle that was used to create this image.
      * <p>
      * If this image was created from an existing image, the new image image will retain the original image source bundle
@@ -143,24 +156,8 @@ public final class ArtifactImage implements ContainerSource {
         return new ComponentConfigurationToComponentAdaptor(containerConfiguration).stream();
     }
 
-    public ArtifactImage with(Wirelet... wirelets) {
-        WireletList wl = this.wirelets.plus(wirelets);
-        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl);
-    }
-
     /**
-     * Returns a new container image original functionality but re
-     * 
-     * @param name
-     *            the name
-     * @return the new container image
-     */
-    public ArtifactImage withName(String name) {
-        return with(ContainerWirelets.name(name));
-    }
-
-    /**
-     * Creates a new image from the specified artifact source.
+     * Creates a new image from the specified source.
      *
      * @param source
      *            the source of the image
@@ -169,11 +166,11 @@ public final class ArtifactImage implements ContainerSource {
      *            actual artifact
      * @return the new image
      * @throws RuntimeException
-     *             if the image could not be constructed properly
+     *             if the image could not be constructed
      */
     public static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).with(wirelets);
+            throw new UnsupportedOperationException("Cannot create a new image, from an existing image");
         }
         // Wirelet are added to the container configuration, and not the image
         PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
@@ -182,6 +179,8 @@ public final class ArtifactImage implements ContainerSource {
 }
 
 /** An dummy artifact driver for creating artifact images. */
+// Den bliver kun brugt i forbindelse med build context...
+// Vil godt af med den paa en eller anden maade
 final class ArtifactImageArtifactDriver extends NonInstantiatingArtifactDriver<ArtifactImage> {
 
     /** The single instance. */

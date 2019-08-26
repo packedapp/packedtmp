@@ -178,6 +178,15 @@ public abstract class Wirelet {
         PER_CONTAINER;
     }
 }
+// However, extensions are not that simple.
+// support for GraalVM
+// Support for Artifact Image generation.
+// Descriptors
+// User Configuration
+// Config Files
+// Lifecycle
+// Relation to other extensions.
+
 //
 /// **
 // * Creates a wiring operation by composing a sequence of zero or more wiring operations.

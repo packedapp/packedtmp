@@ -40,19 +40,19 @@ import packed.internal.util.TypeVariableExtractorUtil;
  * Subclasses of this class should be thread safe.
  * 
  * @param <T>
- *            The type of artifact this driver produces.
+ *            The type of artifact this driver creates.
  */
 // Support of injection of the artifact into the Container...
 // We do not generally support this, as people are free to any artifact they may like.
 public abstract class ArtifactDriver<T> {
 
     /** The type of artifact this driver produces. */
-    private final Class<T> type;
+    private final Class<T> artifactType;
 
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
     protected ArtifactDriver() {
-        this.type = (Class<T>) TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
+        this.artifactType = (Class<T>) TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
 
         // Set tmp
         configure();
@@ -66,7 +66,7 @@ public abstract class ArtifactDriver<T> {
      * @return the type of artifacts this driver produce
      */
     public final Class<T> artifactType() {
-        return type;
+        return artifactType;
     }
 
     protected void configure() {
@@ -113,17 +113,17 @@ public abstract class ArtifactDriver<T> {
     // protected abstract T newDescriptor(PackedConfiguration container);
 
     /**
-     * Creates a new artifact using the specified artifact source.
+     * Creates a new artifact using the specified source.
      * <p>
      * This method will invoke {@link #instantiate(ArtifactRuntimeContext)} to create the actual artifact.
      * 
      * @param source
-     *            the source of the artifact
+     *            the source of the top-level container
      * @param wirelets
      *            any wirelets used to create the artifact
      * @return the new artifact
      * @throws RuntimeException
-     *             if the artifact could not be created for some reason
+     *             if the artifact could not be created
      */
     public final T newArtifact(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {

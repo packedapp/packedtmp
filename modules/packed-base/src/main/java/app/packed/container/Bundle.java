@@ -43,6 +43,10 @@ import packed.internal.support.AppPackedContainerSupport;
 // Bundle b = new SomeBundle();
 // wire(b, setName("f1"));
 // wire(b, setName("f2"));
+
+// Maybe introduce ContainerBundle()... Det jeg taenker er at introduce noget der f.eks. kan bruges i kotlin
+// saa man kan noget der minder om https://ktor.io
+// Altsaa en helt barebones bundle
 public abstract class Bundle implements ContainerSource {
 
     static {

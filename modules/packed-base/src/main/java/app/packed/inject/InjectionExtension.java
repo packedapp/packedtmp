@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.container.BundleDescriptor.Builder;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
@@ -70,7 +70,7 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    protected void buildBundle(Builder descriptor) {
+    protected void buildBundle(BundleDescriptor.Builder descriptor) {
         builder.buildBundle(descriptor);
     }
 
@@ -111,7 +111,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return builder.export(key, captureStackTrace(PackedBaseConfigSiteOperations.EXPORT_SERVICE));
+        return builder.export(key, captureStackFrame(PackedBaseConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -124,7 +124,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return builder.export(configuration, captureStackTrace(PackedBaseConfigSiteOperations.EXPORT_SERVICE));
+        return builder.export(configuration, captureStackFrame(PackedBaseConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -145,7 +145,7 @@ public final class InjectionExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
         checkConfigurable();
-        builder.importAll((AbstractInjector) injector, captureStackTrace(PackedBaseConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+        builder.importAll((AbstractInjector) injector, captureStackFrame(PackedBaseConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
                 WireletList.of(wirelets));
     }
 

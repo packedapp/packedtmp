@@ -21,7 +21,6 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
-import app.packed.container.WireletList;
 import app.packed.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link ArtifactBuildContext} */
@@ -70,11 +69,11 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
         return topContainerConfiguration.source.getClass();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public WireletList wirelets() {
-        return topContainerConfiguration.wirelets();
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public WireletList wirelets() {
+    // return topContainerConfiguration.wirelets();
+    // }
 
     /** {@inheritDoc} */
     @Override

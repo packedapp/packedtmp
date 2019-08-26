@@ -19,12 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectionExtension;
 import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * An extension that provides basic functionality for installing components in a container.
  */
+// ComponentInstallationExtension
 public final class ComponentExtension extends Extension {
 
     /** The configuration of the container. */
@@ -43,10 +45,6 @@ public final class ComponentExtension extends Extension {
 
     // Selvfoelelig er det hele komponenter... Ogsaa scoped
     // Vi skal ikke til at have flere scans...
-
-    public ComponentConfiguration install(Class<?> implementation) {
-        return install(Factory.findInjectable(implementation));
-    }
 
     // AllowRuntimeInstallationOfComponents();
 
@@ -69,21 +67,52 @@ public final class ComponentExtension extends Extension {
     // // I think I want to move this back to ContainerConfiguration
     // configuration.link(bundle, wirelets);
     // }
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * <p>
+     * Invoking this method will {@code install} the {@link InjectionExtension} if it has not already been installed.
+     * 
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
+    public ComponentConfiguration install(Class<?> implementation) {
+        return install(Factory.findInjectable(implementation));
+    }
 
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * Invoking this method will {@code install} the {@link InjectionExtension} if it has not already been installed.
+     * 
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     */
     public ComponentConfiguration install(Factory<?> factory) {
         requireNonNull(factory, "factory is null");
-        return configuration.install(factory, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.install(factory, captureStackFrame(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     public ComponentConfiguration install(Object instance) {
         requireNonNull(instance, "instance is null");
-        return configuration.installInstance(instance, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.installInstance(instance, captureStackFrame(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
+    /**
+     * Installs a component that will use.
+     * <p>
+     * Invoking this method will {@code install} the {@link InjectionExtension} if it has not already been installed.
+     * 
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
     public ComponentConfiguration installStatic(Class<?> implementation) {
-        // installStatic
         requireNonNull(implementation, "implementation is null");
-        return configuration.installStatic(implementation, captureStackTrace(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.installStatic(implementation, captureStackFrame(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     // Scans this package...

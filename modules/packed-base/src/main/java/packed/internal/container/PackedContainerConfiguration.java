@@ -64,7 +64,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     public ComponentLookup lookup; // Should be more private
 
-    /** A container model object, shared among artifact sources of the same type. */
+    /** A container model object, shared among sources of the same type. */
     private final ContainerModel model;
 
     /** The source of the container configuration. */

@@ -21,7 +21,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.Component;
 
 /**
- * An artifact source is used to create an artifact. Currently the following types of artifact sources are supported:
+ * An source is used to create an artifact. Currently the following types of sources are supported:
  * 
  * 
  * This is typically either a subclass of {@link Bundle} or a pregenerated {@link ArtifactImage container image}.

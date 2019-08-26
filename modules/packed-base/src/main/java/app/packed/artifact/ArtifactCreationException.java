@@ -15,26 +15,9 @@
  */
 package app.packed.artifact;
 
-import app.packed.container.ContainerSource;
-
 /**
  *
  */
-// Ideen er egentlig at de her configurators ogsaa er sources....
-//
+public class ArtifactCreationException {
 
-// Saa kan vi nemlig have <? extends ArtifactSource>
-
-// Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
-
-@FunctionalInterface
-public interface ArtifactConfigurator<T> extends ContainerSource {
-
-    /**
-     * Configure the artifact
-     * 
-     * @param configurator
-     *            the configurator used to configure the artifact
-     */
-    void configure(T configurator);
 }

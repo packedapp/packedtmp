@@ -26,7 +26,7 @@ import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import packed.internal.util.LookupValue;
 
-/** A model of a container. Each artifact source points to a */
+/** A model of a container. Each source points to a */
 public final class ContainerModel implements ComponentLookup {
 
     /** A cache of values. */

@@ -13,28 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.config;
 
-import app.packed.container.ContainerSource;
+import app.packed.container.extension.Extension;
 
 /**
  *
  */
-// Ideen er egentlig at de her configurators ogsaa er sources....
-//
+public final class ConfigExtension extends Extension {
 
-// Saa kan vi nemlig have <? extends ArtifactSource>
+    // Controls distribution to other extensions, services, ect.
 
-// Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
+    // Logging, debugging
 
-@FunctionalInterface
-public interface ArtifactConfigurator<T> extends ContainerSource {
+    // configuration in multiple tempos...
+    // For example, for image,
 
-    /**
-     * Configure the artifact
-     * 
-     * @param configurator
-     *            the configurator used to configure the artifact
-     */
-    void configure(T configurator);
+    // Skal vi markere
+    //// 3 maader for componenter
+    // Deres egen container
+    // Almindelige component + Extension.viaExtension(ComponentConfiguration) <- Uses the extensions LifecycleRealm
+    // Container/Artifact sidecar
 }

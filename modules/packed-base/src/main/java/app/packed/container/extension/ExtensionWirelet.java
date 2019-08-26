@@ -15,10 +15,7 @@
  */
 package app.packed.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.container.Wirelet;
-import packed.internal.util.StringFormatter;
 
 /**
  *
@@ -30,24 +27,29 @@ import packed.internal.util.StringFormatter;
 // Bacause basically anyone
 
 // Maybe check that they are the same module....
-public abstract class ExtensionWirelet<T extends Extension> extends Wirelet {
+public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionWireletPipeline<E>> extends Wirelet {
 
-    final Class<T> extensionType;
+    // final Class<T> extensionType;
+    //
+    // protected ExtensionWirelet(Class<T> extensionType) {
+    // this.extensionType = requireNonNull(extensionType, "extensionType is null");
+    // if (extensionType.getModule() != getClass().getModule()) {
+    // throw new IllegalArgumentException("The wirelet and the extension must be defined in the same module, however
+    // extension "
+    // + StringFormatter.format(extensionType) + " was defined in " + extensionType.getModule() + ", and this wirelet type "
+    // + StringFormatter.format(getClass()) + " was defined in module " + getClass().getModule());
+    // }
+    // }
 
-    protected ExtensionWirelet(Class<T> extensionType) {
-        this.extensionType = requireNonNull(extensionType, "extensionType is null");
-        if (extensionType.getModule() != getClass().getModule()) {
-            throw new IllegalArgumentException("The wirelet and the extension must be defined in the same module, however extension "
-                    + StringFormatter.format(extensionType) + " was defined in " + extensionType.getModule() + ", and this wirelet type "
-                    + StringFormatter.format(getClass()) + " was defined in module " + getClass().getModule());
-        }
-    }
+    // Skal vi tage en build context??
+    /**
+     * <p>
+     * 
+     * @param extension
+     *            the extension to create a new pipeline from
+     * @return the new pipeline
+     */
+    protected abstract T newPipeline(E extension);
 
-    /// *, ArtifactInstantiationContext context/*
-    // Eftersom vi kan lave flere instanser fra det samme image.
-    // Saa bliver vi noedt til at have instantiation context med
-
-    // create container...
-
-    protected abstract void process(T extension);
+    protected abstract void process(T context);
 }

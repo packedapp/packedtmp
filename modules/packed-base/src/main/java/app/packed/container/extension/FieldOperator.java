@@ -17,6 +17,7 @@ package app.packed.container.extension;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -102,6 +103,12 @@ public interface FieldOperator<T> {
         return (FieldOperator<E>) getOnce(fieldType.rawType());
     }
 
+    /**
+     * Returns a field operator that will
+     * 
+     * @return a field operator that will create a getter
+     * @see Lookup#unreflectGetter(Field)
+     */
     static FieldOperator<MethodHandle> getter() {
         // Giver mening at kalde denne getter hvis AnnotatedFieldHook ogsaa skal hedde Getter
         throw new UnsupportedOperationException();
@@ -113,7 +120,7 @@ public interface FieldOperator<T> {
     // getAndSetter... is that atomic??????
 
     /**
-     * Returns a field operator that creates a getter (Supplier).
+     * Returns a field operator that creates a Supplier getter (Supplier).
      * 
      * @return a field operator that creates a getter.
      */
