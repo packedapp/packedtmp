@@ -6,4 +6,4 @@
  * License. */
 
 /** This package contains various implementations of {@link app.packed.config.ConfigSite}. */
-package packed.internal.config.site;
+package packed.internal.config;

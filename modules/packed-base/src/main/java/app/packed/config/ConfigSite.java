@@ -27,8 +27,7 @@ import java.util.function.Consumer;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.config.site.CapturedStackFrameConfigSite;
-import packed.internal.config.site.ConfigSiteSupport;
+import packed.internal.config.ConfigSiteSupport;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a
@@ -124,7 +123,7 @@ public interface ConfigSite {
     }
 
     default ConfigSite thenCaptureStackFrame(String operation, StackFrame stackFrame) {
-        return new CapturedStackFrameConfigSite(this, operation, stackFrame);
+        return new ConfigSiteSupport.CapturedStackFrameConfigSite(this, operation, stackFrame);
     }
 
     default ConfigSite thenCaptureStackFrame(String operation) {
@@ -132,7 +131,7 @@ public interface ConfigSite {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
-        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, operation, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new ConfigSiteSupport.CapturedStackFrameConfigSite(this, operation, sf.get()) : UNKNOWN;
     }
 
     /**
@@ -157,7 +156,7 @@ public interface ConfigSite {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
-        return sf.isPresent() ? new CapturedStackFrameConfigSite(null, operation, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new ConfigSiteSupport.CapturedStackFrameConfigSite(null, operation, sf.get()) : UNKNOWN;
     }
 }
 // 5 different types

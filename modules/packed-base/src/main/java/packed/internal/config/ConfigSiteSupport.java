@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.config.site;
+package packed.internal.config;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,62 +36,14 @@ public interface ConfigSiteSupport {
 
     boolean STACK_FRAME_CAPTURING_DIABLED = false;
 
-    /** A config site for an annotated method.s */
-    public static final class AnnotatedMethodConfigSite implements ConfigSite {
-
-        /** The annotation value. */
-        private final Annotation annotation;
-
-        /** The annotated method. */
-        private final MethodDescriptor method;
-
-        /** The operation */
-        private final String operation;
-
-        /** Any parent config site. */
-        @Nullable
-        private final ConfigSite parent;
-
-        public AnnotatedMethodConfigSite(@Nullable ConfigSite parent, String operation, MethodDescriptor method, Annotation annotation) {
-            this.parent = parent;
-            this.operation = requireNonNull(operation, "operation is null");
-            this.method = requireNonNull(method, "method is null");
-            this.annotation = requireNonNull(annotation, "annotation is null");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final String operation() {
-            return operation;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final Optional<ConfigSite> parent() {
-            return Optional.ofNullable(parent);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigSite replaceParent(@Nullable ConfigSite newParent) {
-            return new AnnotatedMethodConfigSite(newParent, operation, method, annotation);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void visit(ConfigSiteVisitor visitor) {
-            visitor.visitAnnotatedMethod(this, method, annotation);
-        }
-    }
-
     /** A configuration site originating from an annotated method. */
     public static final class AnnotatedFieldConfigSite implements ConfigSite {
 
-        /** The annotated field. */
-        private final FieldDescriptor field;
-
         /** The annotation value. */
         private final Annotation annotation;
+
+        /** The annotated field. */
+        private final FieldDescriptor field;
 
         /** The operation */
         private final String operation;
@@ -144,11 +96,132 @@ public interface ConfigSiteSupport {
         // CompletionSite.. for lifecycle as ConfigSite for configuration???
     }
 
+    /** A config site for an annotated method.s */
+    public static final class AnnotatedMethodConfigSite implements ConfigSite {
+
+        /** The annotation value. */
+        private final Annotation annotation;
+
+        /** The annotated method. */
+        private final MethodDescriptor method;
+
+        /** The operation */
+        private final String operation;
+
+        /** Any parent config site. */
+        @Nullable
+        private final ConfigSite parent;
+
+        public AnnotatedMethodConfigSite(@Nullable ConfigSite parent, String operation, MethodDescriptor method, Annotation annotation) {
+            this.parent = parent;
+            this.operation = requireNonNull(operation, "operation is null");
+            this.method = requireNonNull(method, "method is null");
+            this.annotation = requireNonNull(annotation, "annotation is null");
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public final String operation() {
+            return operation;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public final Optional<ConfigSite> parent() {
+            return Optional.ofNullable(parent);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite replaceParent(@Nullable ConfigSite newParent) {
+            return new AnnotatedMethodConfigSite(newParent, operation, method, annotation);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void visit(ConfigSiteVisitor visitor) {
+            visitor.visitAnnotatedMethod(this, method, annotation);
+        }
+    }
+
+    /** A programmatic configuration site from a {@link StackFrame}. */
+    public static class CapturedStackFrameConfigSite implements ConfigSite {
+
+        /** The operation */
+        private final String operation;
+
+        /** Any parent config site. */
+        @Nullable
+        private final ConfigSite parent;
+
+        /** The stack frame. */
+        private final StackFrame stackFrame;
+
+        /**
+         * @param parent
+         * @param operation
+         */
+        public CapturedStackFrameConfigSite(@Nullable ConfigSite parent, String operation, StackFrame caller) {
+            this.parent = parent;
+            this.operation = requireNonNull(operation, "operation is null");
+            this.stackFrame = requireNonNull(caller);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public final String operation() {
+            return operation;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public final Optional<ConfigSite> parent() {
+            return Optional.ofNullable(parent);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite replaceParent(ConfigSite newParent) {
+            return new CapturedStackFrameConfigSite(newParent, operation, stackFrame);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return stackFrame.toString();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void visit(ConfigSiteVisitor visitor) {
+            visitor.visitCapturedStackFrame(this);
+        }
+    }
+
+    /**
+     *
+     */
+    public static class PathConfigSite {
+
+    }
+
     /** An unknown config site */
     public static final class UnknownConfigSite implements ConfigSite {
 
         /** The singleton. */
         public static final UnknownConfigSite INSTANCE = new UnknownConfigSite();
+
+        /** {@inheritDoc} */
+        @Override
+        public String operation() {
+            return "Unknown";
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<ConfigSite> parent() {
+            return Optional.empty();
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -166,18 +239,6 @@ public interface ConfigSiteSupport {
         @Override
         public void visit(ConfigSiteVisitor visitor) {
             visitor.visitUnknown(this);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String operation() {
-            return "Unknown";
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<ConfigSite> parent() {
-            return Optional.empty();
         }
     }
 }

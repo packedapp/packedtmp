@@ -32,7 +32,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
-import packed.internal.config.site.ConfigSiteSupport;
+import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /**
