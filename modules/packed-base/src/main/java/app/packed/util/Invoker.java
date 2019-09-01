@@ -19,7 +19,7 @@ package app.packed.util;
  *
  */
 // invokeAsync()
-public interface Invoker {
+interface Invoker {
     Object invoke() throws Throwable;
 
     Object invokeWithErrorHandling();

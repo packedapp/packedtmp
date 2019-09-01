@@ -35,5 +35,8 @@ public @interface PackedModule {
     // Okay I think we need to allow link to take any container source....
     // And just throw an IllegalArgumentException if using an image.
 
+    // Giver ikke rigtig nogen mening...
+    // Hvordan skal det koeres??? Som En, Som en injector?
+    // vent til slut?, restart, ect.
     Class<? extends Bundle> bundle();
 }

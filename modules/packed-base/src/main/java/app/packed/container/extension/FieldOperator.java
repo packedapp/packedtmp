@@ -59,6 +59,24 @@ public interface FieldOperator<T> {
     T applyStatic(MethodHandles.Lookup caller, Field field);
 
     /**
+     * Returns whether or not the operator reads the field.
+     * 
+     * @return whether or not the operator reads the field
+     */
+    default boolean readsField() {
+        return false;
+    }
+
+    /**
+     * Returns whether or not the operator writes the field.
+     * 
+     * @return whether or not the operator writes the field
+     */
+    default boolean writesField() {
+        return false;
+    }
+
+    /**
      * @return stuff
      */
     static FieldOperator<Consumer<Object>> consumer() {

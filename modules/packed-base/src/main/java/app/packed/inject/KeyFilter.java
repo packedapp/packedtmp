@@ -15,6 +15,7 @@
  */
 package app.packed.inject;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import app.packed.util.Key;
@@ -22,18 +23,33 @@ import app.packed.util.Key;
 /**
  *
  */
-abstract class KeyFilter implements Predicate<Key<?>> {
+interface KeyFilter extends Predicate<Key<?>> {
 
     @Override
     public abstract boolean test(Key<?> key);
 
     public abstract boolean test(Class<?> key);
 
-    KeyFilter() {}
+    default KeyFilter and(KeyFilter other) {
+        Objects.requireNonNull(other);
+        throw new UnsupportedOperationException();
+        // return (t) -> test(t) && other.test(t);
+    }
+
+    static KeyFilter anyOf(Key<?>... keys) {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unused")
+    public static void main(String[] args) {
+        KeyFilter kf = anyOf(Key.of(String.class)).and(anyOf(Key.of(Integer.class)));
+    }
+
     // KeyFilter not()
     // static anyOf (Class....)
-    // static anyOf (Key....)
-    // static annotatedWith(Class)
+
+    // static qualifiedWith(Class)
+    // static qualifiedWith(Class, Predicate<? extends Annotation> )
 
     // static inModule("Sddd");
     // static inContract("Sddd");
