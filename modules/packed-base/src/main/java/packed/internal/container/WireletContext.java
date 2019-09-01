@@ -20,9 +20,9 @@ import java.util.IdentityHashMap;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionPipeline;
-import packed.internal.support.AppPackedExtensionAccess;
+import app.packed.container.extension.ExtensionWirelet;
+import packed.internal.access.SharedSecrets;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -78,10 +78,10 @@ public class WireletContext {
                     if (e == null) {
                         throw new IllegalStateException();// Extension was never instaleld
                     }
-                    return AppPackedExtensionAccess.invoke().wireletNewPipeline(null, null);
+                    return SharedSecrets.extension().wireletNewPipeline(null, null);
 
                 });
-                AppPackedExtensionAccess.invoke().wireletProcess(p, ew);
+                SharedSecrets.extension().wireletProcess(p, ew);
             } else if (w instanceof ContainerWirelet) {
                 ((ContainerWirelet) w).process(this);
             } else {

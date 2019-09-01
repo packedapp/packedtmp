@@ -42,6 +42,7 @@ import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
+import packed.internal.access.SharedSecrets;
 import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.extension.hook.DelayedAccessor;
@@ -50,8 +51,6 @@ import packed.internal.container.extension.hook.DelayedAccessor.SidecarMethodDel
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerModel;
-import packed.internal.support.AppPackedExtensionAccess;
-import packed.internal.support.SharedSecrets;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -118,7 +117,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            AppPackedExtensionAccess.invoke().buildBundle(e.extension, builder);
+            SharedSecrets.extension().buildBundle(e.extension, builder);
         }
     }
 
@@ -165,7 +164,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     void extensionsContainerConfigured() {
         installPrepare(State.GET_NAME_INVOKED);
         for (PackedExtensionContext e : extensions.values()) {
-            AppPackedExtensionAccess.invoke().onConfigured(e.extension);
+            SharedSecrets.extension().onConfigured(e.extension);
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
@@ -179,7 +178,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         for (PackedExtensionContext e : extensions.values()) {
-            AppPackedExtensionAccess.invoke().onPrepareContainerInstantiation(e.extension, ic);
+            SharedSecrets.extension().onPrepareContainerInstantiation(e.extension, ic);
         }
         super.extensionsPrepareInstantiation(ic);
     }
@@ -344,7 +343,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             checkConfigurable(); // installing new extensions after configuration is done is not allowed
             pec = PackedExtensionContext.create(extensionType, this);
             extensions.put(extensionType, pec); // make sure it is installed before we call into user code Extension#onAdded
-            AppPackedExtensionAccess.invoke().initializeExtension(pec);
+            SharedSecrets.extension().initializeExtension(pec);
         }
         return (T) pec.extension;
     }

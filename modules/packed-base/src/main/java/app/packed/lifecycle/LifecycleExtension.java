@@ -31,7 +31,6 @@ import app.packed.container.extension.OnHook;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import packed.internal.support.AppPackedLifecycleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -60,10 +59,6 @@ import packed.internal.util.StringFormatter;
 // Smide denne ind under LifecycleExtension
 
 public final class LifecycleExtension extends Extension {
-
-    static {
-        AppPackedLifecycleAccess.Helper.init(new AppPackedLifecycleAccess.Helper() {});
-    }
 
     /**
      * This method once for each component method that is annotated with {@link Main}.

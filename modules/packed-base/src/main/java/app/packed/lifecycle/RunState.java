@@ -15,6 +15,9 @@
  */
 package app.packed.lifecycle;
 
+import packed.internal.access.AppPackedLifecycleAccess;
+import packed.internal.access.SharedSecrets;
+
 /**
  * An enum containing all valid run states.
  *
@@ -95,5 +98,9 @@ public enum RunState {
      */
     public boolean isShutdown() {
         return this == STOPPING || this == TERMINATED;
+    }
+
+    static {
+        SharedSecrets._initialize(new AppPackedLifecycleAccess() {});
     }
 }

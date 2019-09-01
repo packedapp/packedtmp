@@ -22,6 +22,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.util.Nullable;
+import packed.internal.access.AppPackedContainerAccess;
+import packed.internal.access.SharedSecrets;
 
 /** An immutable list of wirelets. */
 public final class WireletList extends Wirelet {
@@ -31,6 +33,17 @@ public final class WireletList extends Wirelet {
 
     /** The wirelets we are wrapping. */
     final Wirelet[] wirelets;
+
+    static {
+        SharedSecrets._initialize(new AppPackedContainerAccess() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
+                bundle.doConfigure(configuration);
+            }
+        });
+    }
 
     private WireletList(Wirelet... wirelets) {
         int size = wirelets.length;

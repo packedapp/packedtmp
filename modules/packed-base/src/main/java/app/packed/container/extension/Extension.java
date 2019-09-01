@@ -25,8 +25,9 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
+import packed.internal.access.AppPackedExtensionAccess;
+import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.support.AppPackedExtensionAccess;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -66,7 +67,7 @@ import packed.internal.support.AppPackedExtensionAccess;
 public abstract class Extension {
 
     static {
-        AppPackedExtensionAccess.Helper.init(new AppPackedExtensionAccess.Helper() {
+        SharedSecrets._initialize(new AppPackedExtensionAccess() {
 
             @Override
             public void buildBundle(Extension extension, Builder builder) {

@@ -36,6 +36,8 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
+import packed.internal.access.AppPackedInjectAccess;
+import packed.internal.access.SharedSecrets;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.JavaXInjectSupport;
@@ -43,8 +45,6 @@ import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InstanceFunctionHandle;
 import packed.internal.invoke.lambda.MappingFunctionHandle;
-import packed.internal.support.AppPackedInjectAccess;
-import packed.internal.support.AppPackedUtilAccess;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
@@ -104,12 +104,12 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FactoryFindInjectableExecutable.find(AppPackedUtilAccess.invoke().toTypeLiteral(t)));
+            return new Factory(FactoryFindInjectableExecutable.find(SharedSecrets.util().toTypeLiteral(t)));
         }
     };
 
     static {
-        AppPackedInjectAccess.Helper.init(new AppPackedInjectAccess.Helper() {
+        SharedSecrets._initialize(new AppPackedInjectAccess() {
 
             @Override
             public <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
@@ -380,7 +380,7 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (!AppPackedUtilAccess.invoke().isCanonicalized(implementation)) {
+        if (!SharedSecrets.util().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }

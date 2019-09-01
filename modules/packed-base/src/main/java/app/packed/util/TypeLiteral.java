@@ -28,7 +28,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import packed.internal.support.AppPackedUtilAccess;
+import packed.internal.access.AppPackedUtilAccess;
+import packed.internal.access.SharedSecrets;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
@@ -59,7 +60,7 @@ public abstract class TypeLiteral<T> {
     };
 
     static {
-        AppPackedUtilAccess.Helper.init(new AppPackedUtilAccess.Helper() {
+        SharedSecrets._initialize(new AppPackedUtilAccess() {
 
             @Override
             public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {

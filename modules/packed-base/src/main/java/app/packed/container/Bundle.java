@@ -27,7 +27,6 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
-import packed.internal.support.AppPackedContainerAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -48,17 +47,6 @@ import packed.internal.support.AppPackedContainerAccess;
 // saa man kan noget der minder om https://ktor.io
 // Altsaa en helt barebones bundle
 public abstract class Bundle implements ContainerSource {
-
-    static {
-        AppPackedContainerAccess.ContainerHelper.init(new AppPackedContainerAccess.ContainerHelper() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
-                bundle.doConfigure(configuration);
-            }
-        });
-    }
 
     /** The configuration of the container. */
     private ContainerConfiguration configuration;
@@ -133,7 +121,7 @@ public abstract class Bundle implements ContainerSource {
      * @param configuration
      *            the configuration to wrap
      */
-    private final void doConfigure(ContainerConfiguration configuration) {
+    final void doConfigure(ContainerConfiguration configuration) {
         this.configuration = configuration;
         // Im not sure we want to null it out...
         // We should have some way to mark it failed????

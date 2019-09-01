@@ -39,7 +39,7 @@ import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.TypeLiteral;
 import app.packed.util.VariableDescriptor;
-import packed.internal.support.AppPackedUtilAccess;
+import packed.internal.access.SharedSecrets;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
@@ -270,7 +270,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependencyDescriptor(AppPackedUtilAccess.invoke().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new InternalDependencyDescriptor(SharedSecrets.util().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<InternalDependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass,
@@ -326,7 +326,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
         } else if (rawType == Optional.class) {
             optionalType = Optional.class;
             Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
-            tl = AppPackedUtilAccess.invoke().toTypeLiteral(cl);
+            tl = SharedSecrets.util().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
             }
