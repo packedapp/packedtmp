@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
-import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.inject.InjectorConfigSiteOperations;
 
 /**
  * An extension that provides basic functionality for installing components in a container.
@@ -92,12 +92,12 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration install(Factory<?> factory) {
         requireNonNull(factory, "factory is null");
-        return configuration.install(factory, captureStackFrame(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.install(factory, captureStackFrame(InjectorConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     public ComponentConfiguration install(Object instance) {
         requireNonNull(instance, "instance is null");
-        return configuration.installInstance(instance, captureStackFrame(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.installInstance(instance, captureStackFrame(InjectorConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     /**
@@ -111,7 +111,7 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration installStatic(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return configuration.installStatic(implementation, captureStackFrame(PackedBaseConfigSiteOperations.COMPONENT_INSTALL));
+        return configuration.installStatic(implementation, captureStackFrame(InjectorConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     // Scans this package...

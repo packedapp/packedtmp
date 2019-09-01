@@ -53,11 +53,11 @@ import packed.internal.util.StringFormatter;
 
 // usage static final FieldOperator<IntSupplier> fo = FieldOperator.custom(IntSupplier.class);
 
-public final class AbstractFieldOperator<T> {
+public final class OldAbstractFieldOperator<T> {
 
     final PackedFieldOperator<T> operation;
 
-    private AbstractFieldOperator(PackedFieldOperator<T> operation) {
+    private OldAbstractFieldOperator(PackedFieldOperator<T> operation) {
         this.operation = requireNonNull(operation);
     }
 
@@ -110,37 +110,37 @@ public final class AbstractFieldOperator<T> {
         throw new UnsupportedOperationException();
     }
 
-    public AbstractFieldOperator<T> withAccessMode(AccessMode accessMode) {
+    public OldAbstractFieldOperator<T> withAccessMode(AccessMode accessMode) {
         throw new UnsupportedOperationException();
     }
 
-    public static AbstractFieldOperator<BiPredicate<Object, Object>> compareAndSet() {
+    public static OldAbstractFieldOperator<BiPredicate<Object, Object>> compareAndSet() {
         // Do we need one with access mode???
         throw new UnsupportedOperationException();
     }
 
     // Must be SAM, public interface.
-    public static <E> AbstractFieldOperator<E> sam(Class<E> type) {
+    public static <E> OldAbstractFieldOperator<E> sam(Class<E> type) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E> AbstractFieldOperator<E> custom(MethodHandles.Lookup caller, Class<E> type) {
+    public static <E> OldAbstractFieldOperator<E> custom(MethodHandles.Lookup caller, Class<E> type) {
         throw new UnsupportedOperationException();
     }
 
-    public static <E> AbstractFieldOperator<E> custom(TypeLiteral<E> type) {
+    public static <E> OldAbstractFieldOperator<E> custom(TypeLiteral<E> type) {
         // Kan aflaese parametererne fra SAM...
         //// Taenker ikke det er noget vi kan cache....
         //// TypeLiteral er bare taet paa umulig at cache...
         throw new UnsupportedOperationException();
     }
 
-    public static AbstractFieldOperator<Object> getOnce() {
-        return new AbstractFieldOperator<>(new PackedFieldOperator.GetOnceInternalFieldOperation<>());
+    public static OldAbstractFieldOperator<Object> getOnce() {
+        return new OldAbstractFieldOperator<>(new PackedFieldOperator.GetOnceInternalFieldOperation<>());
     }
 
     // A single read of the field... no need to create custom classes...
-    public static <E> AbstractFieldOperator<E> getOnce(Class<E> fieldType) {
+    public static <E> OldAbstractFieldOperator<E> getOnce(Class<E> fieldType) {
         throw new UnsupportedOperationException();
     }
 
@@ -154,15 +154,15 @@ public final class AbstractFieldOperator<T> {
      */
     @SuppressWarnings("unchecked")
     // We could theoretically check the signature of the field....
-    public static <E> AbstractFieldOperator<E> getOnce(TypeLiteral<E> fieldType) {
-        return (AbstractFieldOperator<E>) getOnce(fieldType.rawType());
+    public static <E> OldAbstractFieldOperator<E> getOnce(TypeLiteral<E> fieldType) {
+        return (OldAbstractFieldOperator<E>) getOnce(fieldType.rawType());
     }
 
-    public static AbstractFieldOperator<MethodHandle> getter() {
+    public static OldAbstractFieldOperator<MethodHandle> getter() {
         throw new UnsupportedOperationException();
     }
 
-    public static AbstractFieldOperator<MethodHandle> setter() {
+    public static OldAbstractFieldOperator<MethodHandle> setter() {
         throw new UnsupportedOperationException();
     }
 
@@ -171,8 +171,8 @@ public final class AbstractFieldOperator<T> {
      * 
      * @return a field mapper that creates suppliers.
      */
-    public static AbstractFieldOperator<Supplier<Object>> supplier() {
-        return new AbstractFieldOperator<>(new PackedFieldOperator.SupplierInternalFieldOperation<>());
+    public static OldAbstractFieldOperator<Supplier<Object>> supplier() {
+        return new OldAbstractFieldOperator<>(new PackedFieldOperator.SupplierInternalFieldOperation<>());
     }
 
     /**
@@ -183,13 +183,13 @@ public final class AbstractFieldOperator<T> {
      * @throws UnsupportedOperationException
      *             if the underlying field is an instance field and the receiving method does not support instance field
      */
-    public static <E> AbstractFieldOperator<Supplier<E>> supplier(Class<E> fieldType) {
+    public static <E> OldAbstractFieldOperator<Supplier<E>> supplier(Class<E> fieldType) {
         // ClassValue<FieldType, ClassValue<FunctionalInterface>>
         // Can put them in a ClassValue map...
         throw new UnsupportedOperationException();
     }
 
-    public static <E> AbstractFieldOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
+    public static <E> OldAbstractFieldOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
         throw new UnsupportedOperationException();
     }
 }

@@ -31,7 +31,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Injector;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.TypeLiteral;
-import packed.internal.config.site.PackedBaseConfigSiteOperations;
+import packed.internal.inject.InjectorConfigSiteOperations;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.D;
@@ -94,7 +94,7 @@ public class InjectorConfigSiteTest {
         ConfigSite cs = sc.configSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
-        assertThat(cs.operation()).isEqualTo(PackedBaseConfigSiteOperations.COMPONENT_INSTALL);
+        assertThat(cs.operation()).isEqualTo(InjectorConfigSiteOperations.COMPONENT_INSTALL);
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
         sites.put(sc.getKey().typeLiteral().rawType(), cs);

@@ -26,11 +26,9 @@ import java.util.function.Consumer;
 
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
-import packed.internal.config.site.AbstractConfigSite;
-import packed.internal.config.site.AnnotatedFieldConfigSite;
-import packed.internal.config.site.AnnotatedMethodConfigSite;
+import app.packed.util.Nullable;
 import packed.internal.config.site.CapturedStackFrameConfigSite;
-import packed.internal.config.site.UnknownConfigSite;
+import packed.internal.config.site.ConfigSiteSupport;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a
@@ -60,7 +58,7 @@ import packed.internal.config.site.UnknownConfigSite;
 public interface ConfigSite {
 
     /** A special configuration site indicating that the actual configuration site could not be determined. */
-    ConfigSite UNKNOWN = UnknownConfigSite.INSTANCE;
+    ConfigSite UNKNOWN = ConfigSiteSupport.UnknownConfigSite.INSTANCE;
 
     /**
      * Performs the given action on each element in configuration site chain, traversing from the top configuration site.
@@ -107,10 +105,10 @@ public interface ConfigSite {
         forEach(e -> System.out.println(e));
     }
 
-    ConfigSite replaceParent(ConfigSite newParent);
+    ConfigSite replaceParent(@Nullable ConfigSite newParent);
 
     default ConfigSite thenAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
-        return new AnnotatedFieldConfigSite(this, cst, field, annotation);
+        return new ConfigSiteSupport.AnnotatedFieldConfigSite(this, cst, field, annotation);
     }
 
     default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
@@ -122,15 +120,19 @@ public interface ConfigSite {
     }
 
     default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
-        return new AnnotatedMethodConfigSite(this, cst, method, annotation);
+        return new ConfigSiteSupport.AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
-    default ConfigSite thenCaptureStackFrame(String cst) {
-        if (AbstractConfigSite.STACK_FRAME_CAPTURING_DIABLED) {
+    default ConfigSite thenCaptureStackFrame(String operation, StackFrame stackFrame) {
+        return new CapturedStackFrameConfigSite(this, operation, stackFrame);
+    }
+
+    default ConfigSite thenCaptureStackFrame(String operation) {
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return UNKNOWN;
         }
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());
-        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, cst, sf.get()) : UNKNOWN;
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(this, operation, sf.get()) : UNKNOWN;
     }
 
     /**
@@ -146,16 +148,16 @@ public interface ConfigSite {
         forEach(s -> s.visit(visitor));
     }
 
-    static ConfigSite captureStack(String cst) {
+    static ConfigSite captureStack(String operation) {
         // capture stack frame vs capture stack
         // Det eneste er egentlig, om vi vil have en settings saa man kan capture mere end kun en frame..
         // Men saa skal vi ogsaa rette visitoren.
         /// Maaske have en captureStackExtended
-        if (AbstractConfigSite.STACK_FRAME_CAPTURING_DIABLED) {
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return UNKNOWN;
         }
-        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(AbstractConfigSite.FILTER).findFirst());
-        return sf.isPresent() ? new CapturedStackFrameConfigSite(null, cst, sf.get()) : UNKNOWN;
+        Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
+        return sf.isPresent() ? new CapturedStackFrameConfigSite(null, operation, sf.get()) : UNKNOWN;
     }
 }
 // 5 different types

@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.config.site;
+package packed.internal.inject;
 
 /**
  *
  */
 
 // Separate for bundle/configuration?????
-public final class PackedBaseConfigSiteOperations {
-
-    /** */
-    public static final String BUNDLE_DESCRIPTOR_OF = "Descriptor.of";
+public final class InjectorConfigSiteOperations {
 
     /** */
     public static final String EXPORT_SERVICE = "Injector.expose";

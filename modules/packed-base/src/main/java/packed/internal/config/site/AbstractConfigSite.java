@@ -17,9 +17,7 @@ package packed.internal.config.site;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.StackFrame;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import app.packed.config.ConfigSite;
 
@@ -29,11 +27,6 @@ public abstract class AbstractConfigSite implements ConfigSite {
     final String operation;
 
     final ConfigSite parent;
-
-    public static final Predicate<StackFrame> FILTER = f -> !f.getClassName().startsWith("app.packed.") && !f.getClassName().startsWith("packed.")
-            && !f.getClassName().startsWith("java.");
-
-    public static final boolean STACK_FRAME_CAPTURING_DIABLED = false;
 
     AbstractConfigSite(ConfigSite parent, String operation) {
         this.parent = parent;

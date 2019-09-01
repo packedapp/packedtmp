@@ -18,7 +18,7 @@ package packed.internal.container.extension.hook.field;
 /**
  *
  */
-public enum FieldOperatorType {
+public enum OldFieldOperatorType {
 
     /** An operation that makes a single get to a field. */
     GET_ONCE, METHOD_HANDLE_GET, METHOD_HANDLE_SET, FUNCTIONAL_INTERFACE

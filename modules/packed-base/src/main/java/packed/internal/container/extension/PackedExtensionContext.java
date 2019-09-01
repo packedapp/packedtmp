@@ -29,6 +29,9 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  *
  */
+// Overvejer at lave ExtensionContext...
+// Er isaer nyttigt ved komplicered plugins, hvor noget af funktionaliteten
+// bliver lagt ud i support klasser, som ikke kan kalde protected metoder paa extension
 public final class PackedExtensionContext {
 
     /** The extension this context wraps. */
@@ -36,7 +39,7 @@ public final class PackedExtensionContext {
 
     final PackedContainerConfiguration pcc;
 
-    PackedExtensionContext(PackedContainerConfiguration pcc, Extension extension) {
+    private PackedExtensionContext(PackedContainerConfiguration pcc, Extension extension) {
         this.pcc = requireNonNull(pcc);
         this.extension = requireNonNull(extension);
     }
@@ -54,6 +57,11 @@ public final class PackedExtensionContext {
         return pcc.buildContext();
     }
 
+    /**
+     * Returns the config site of the container.
+     * 
+     * @return the config site of the container
+     */
     public ConfigSite configSite() {
         return pcc.configSite();
     }

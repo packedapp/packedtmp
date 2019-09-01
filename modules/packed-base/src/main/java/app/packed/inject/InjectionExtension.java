@@ -28,8 +28,8 @@ import app.packed.container.extension.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtProvidesGroup;
@@ -116,7 +116,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return builder.export(key, captureStackFrame(PackedBaseConfigSiteOperations.EXPORT_SERVICE));
+        return builder.export(key, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -131,7 +131,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return builder.export(configuration, captureStackFrame(PackedBaseConfigSiteOperations.EXPORT_SERVICE));
+        return builder.export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -152,7 +152,7 @@ public final class InjectionExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
         checkConfigurable();
-        builder.importAll((AbstractInjector) injector, captureStackFrame(PackedBaseConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+        builder.importAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
                 WireletList.of(wirelets));
     }
 

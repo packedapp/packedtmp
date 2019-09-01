@@ -30,7 +30,7 @@ import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.config.site.PackedBaseConfigSiteOperations;
+import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
@@ -226,7 +226,7 @@ public final class BSEComponent<T> extends BSE<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public BSE<?> provide(AtProvides atProvides) {
-        ConfigSite icss = configSite().thenAnnotatedMember(PackedBaseConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
+        ConfigSite icss = configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
         InvokableMember<?> fi = atProvides.invokable;
         if (!atProvides.isStaticMember) {

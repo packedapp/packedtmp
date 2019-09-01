@@ -176,6 +176,7 @@ public final class SharedSecrets {
         private static final AppPackedExtensionAccess SINGLETON;
 
         static {
+            // TODO try an avoid constructing a new class
             new Extension() {}; // Forces class initialization of Extension which invokes _initialize
             SINGLETON = requireNonNull(SharedSecrets.TMP_EXTENSION_ACCESS, "internal error");
         }

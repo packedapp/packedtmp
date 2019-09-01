@@ -15,7 +15,11 @@
  */
 package app.packed.container.extension;
 
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Modifier;
+import java.util.Optional;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
@@ -24,9 +28,11 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
 import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
+import packed.internal.config.site.ConfigSiteSupport;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /**
@@ -65,6 +71,9 @@ import packed.internal.container.extension.PackedExtensionContext;
 // Disallow registering extensions as a service??? Actually together with a lot of other types...
 // ContainerExtension vs ContainerPlugin
 public abstract class Extension {
+
+    /** A stack walker used from {@link #captureStackFrame(String)}. */
+    private static final StackWalker SW = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     static {
         SharedSecrets._initialize(new AppPackedExtensionAccess() {
@@ -136,8 +145,8 @@ public abstract class Extension {
     }
 
     /**
-     * Captures the configuration site by finding the first stack frame that is not located on a subclass of
-     * {@link Extension}.
+     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+     * not located on {@link Extension} or a subclass of it .
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -149,8 +158,19 @@ public abstract class Extension {
      * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
      * @see StackWalker
      */
+    // TODO add stuff about we also ignore non-concrete container sources...
     protected final ConfigSite captureStackFrame(String operation) {
-        return context().configSite().thenCaptureStackFrame(operation);
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return ConfigSite.UNKNOWN;
+        }
+        Optional<StackFrame> sf = SW.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+        return sf.isPresent() ? context().configSite().thenCaptureStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+    }
+
+    private boolean captureStackFrameIgnoreFilter(StackFrame f) {
+        Class<?> c = f.getDeclaringClass();
+        return Extension.class.isAssignableFrom(c)
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
     }
 
     /**
