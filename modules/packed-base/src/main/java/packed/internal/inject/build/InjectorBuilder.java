@@ -51,7 +51,7 @@ public final class InjectorBuilder {
     private static FeatureKey<BSEComponent<?>> FK = new FeatureKey<>() {};
 
     /** The configuration of the container to which this builder belongs to. */
-    public final PackedContainerConfiguration containerConfiguration;
+    public final PackedContainerConfiguration pcc;
 
     /** All provided nodes. */
     public final ArrayList<BSE<?>> entries = new ArrayList<>();
@@ -85,11 +85,11 @@ public final class InjectorBuilder {
     /**
      * Creates a new builder.
      * 
-     * @param containerConfiguration
+     * @param pcc
      *            the configuration of the container
      */
-    public InjectorBuilder(PackedContainerConfiguration containerConfiguration) {
-        this.containerConfiguration = requireNonNull(containerConfiguration);
+    public InjectorBuilder(PackedContainerConfiguration pcc) {
+        this.pcc = requireNonNull(pcc);
     }
 
     public void build(ArtifactBuildContext buildContext) {
@@ -148,7 +148,7 @@ public final class InjectorBuilder {
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(containerConfiguration, resolver.publicInjector); // Used by PackedContainer
+        context.put(pcc, resolver.publicInjector); // Used by PackedContainer
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -160,7 +160,7 @@ public final class InjectorBuilder {
             parentNode = new BSEComponent(this, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(factory.function()),
+            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(factory.function()),
                     (List) factory.dependencies());
         }
 
@@ -182,7 +182,7 @@ public final class InjectorBuilder {
         BSEComponent<?> c = cc.features().get(FK);
         if (c == null) {
             // config site???
-            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, containerConfiguration.lookup.readable(function), (List) factory.dependencies());
+            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(function), (List) factory.dependencies());
         }
         c.as((Key) factory.key());
         entries.add(c);

@@ -15,8 +15,6 @@
  */
 package app.packed.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.artifact.ArtifactBuildContext;
@@ -27,7 +25,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.support.AppPackedExtensionSupport;
 
 /**
@@ -70,9 +68,9 @@ public abstract class Extension {
 
             /** {@inheritDoc} */
             @Override
-            public void onAdded(Extension extension, PackedContainerConfiguration configuration) {
-                extension.configuration = requireNonNull(configuration);
-                extension.onAdded();
+            public void onAdded(PackedExtensionContext context) {
+                context.extension.context = context;
+                context.extension.onAdded();
             }
 
             /** {@inheritDoc} */
@@ -99,11 +97,8 @@ public abstract class Extension {
         });
     }
 
-    /**
-     * The configuration of the container in which the extension is registered. This field should never be read directly,
-     * but only accessed via {@link #configuration()}.
-     */
-    private ContainerConfiguration configuration;
+    /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
+    private PackedExtensionContext context;
 
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
@@ -124,7 +119,7 @@ public abstract class Extension {
         // Because this should not be used on instantiation time because
         // Any wirelets specified when initializing an image is not included...
         // Or is this controllable from ContainerConfiguration????
-        ArtifactBuildContext c = configuration().buildContext();
+        ArtifactBuildContext c = context().buildContext();
         if (!isConfigurable) {
             throw new IllegalStateException(
                     "This method can only be called while the container is being configured. After onConfigured() has returned the build ");
@@ -147,34 +142,33 @@ public abstract class Extension {
      * @see StackWalker
      */
     protected final ConfigSite captureStackFrame(String operation) {
-        return configuration().configSite().thenCaptureStackFrame(operation);
+        return context().configSite().thenCaptureStackFrame(operation);
     }
 
     /**
-     * Checks that the extension is still configurable, throwing {@link IllegalStateException} if it is not.
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer configurable after the extensions {@link #onConfigured()} has been invoked by the runtime.
      * 
      * @throws IllegalStateException
-     *             if the extension is no longer configurable.
+     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        configuration();// First check that we are not invoking this from the constructor of the extension
+        context();// First check that we are not invoking this from the constructor of the extension
         if (!isConfigurable) {
             throw new IllegalStateException("This extension " + getClass().getSimpleName() + " is no longer configurable");
         }
     }
 
     /**
-     * Returns the configuration of the container. Or fails with {@link IllegalStateException} if invoked from the
-     * constructor of the extension.
+     * Returns this extension's context. Or fails with {@link IllegalStateException} if invoked from the constructor of the
+     * extension.
      * 
      * @return the configuration of the container
      */
-    // Is used to put stuff into ArtifactInstantiationContext...
-    protected final ContainerConfiguration configuration() {
+    private PackedExtensionContext context() {
         // When calling this method remember to add test to BasicExtensionTest
-        ContainerConfiguration c = configuration;
+        PackedExtensionContext c = context;
         if (c == null) {
             throw new IllegalStateException(
                     "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization");
@@ -236,6 +230,10 @@ public abstract class Extension {
     // har extension communication
     protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
 
+    protected final void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
+        context().putIntoInstantiationContext(context, sidecar);
+    }
+
     final void runWithLookup(Lookup lookup, Runnable runnable) {
         // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....
         // D.v.s. vi laver en push, pop af et evt. eksisterende lookup object
@@ -264,7 +262,7 @@ public abstract class Extension {
      *             already been installed
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
-        return configuration().use(extensionType);
+        return context().use(extensionType);
     }
 
     /**
@@ -275,6 +273,6 @@ public abstract class Extension {
      * @return a list of any wirelets that was used to configure the container
      */
     protected final WireletList wirelets() {
-        return configuration().wirelets();
+        return context().wirelets();
     }
 }

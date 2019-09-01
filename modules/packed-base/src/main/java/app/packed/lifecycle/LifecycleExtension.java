@@ -24,10 +24,10 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.MethodOperator;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -117,7 +117,7 @@ public final class LifecycleExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(configuration(), new LifecycleSidecar());
+        putIntoInstantiationContext(context, new LifecycleSidecar());
     }
 
     /** {@inheritDoc} */

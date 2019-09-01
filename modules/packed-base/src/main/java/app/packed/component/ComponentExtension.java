@@ -26,7 +26,6 @@ import packed.internal.container.PackedContainerConfiguration;
 /**
  * An extension that provides basic functionality for installing components in a container.
  */
-// ComponentInstallationExtension
 public final class ComponentExtension extends Extension {
 
     /** The configuration of the container. */

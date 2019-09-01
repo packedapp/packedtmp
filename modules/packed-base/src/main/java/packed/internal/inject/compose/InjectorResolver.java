@@ -121,7 +121,7 @@ public final class InjectorResolver {
         }
         // It does not make sense to try and resolve
         if (!hasDuplicates) {
-            DependencyGraph dg = new DependencyGraph(ib.containerConfiguration, ib, this);
+            DependencyGraph dg = new DependencyGraph(ib.pcc, ib, this);
             if (buildContext.isInstantiating()) {
                 dg.instantiate();
             } else {

@@ -38,7 +38,7 @@ import packed.internal.util.TypeUtil;
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
-public final class ExtensionModel<T> {
+final class ExtensionModel<T> {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
@@ -147,8 +147,8 @@ public final class ExtensionModel<T> {
      */
     @SuppressWarnings("unchecked")
     static <T extends Extension> T newInstance(Class<T> extensionType, PackedContainerConfiguration pcc) {
-        // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get down to 6
-        // ns
+        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
+        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         ExtensionModel<T> model = (ExtensionModel<T>) CACHE.get(extensionType);
         try {
             if (model.needsPackedContainerConfiguration) {

@@ -40,6 +40,7 @@ public class Stuff {
 
     }
 
+    @SuppressWarnings("deprecation")
     public static void madin(String[] args) throws Exception {
         GeneratingClassLoader gcl = new GeneratingClassLoader();
 
@@ -68,7 +69,7 @@ public class Stuff {
             mv.visitAnnotation(Type.getDescriptor(Inject.class), true);
             mv.visitCode();
             mv.visitVarInsn(Opcodes.ALOAD, 0);
-            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(Object.class), "<init>", "()V");
+            mv.visitMethodInsn(Opcodes.INVOKESPECIAL, Type.getInternalName(Object.class), "<init>", "()V", false);
             mv.visitInsn(Opcodes.RETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();

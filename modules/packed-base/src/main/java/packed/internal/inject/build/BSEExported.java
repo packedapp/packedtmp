@@ -103,7 +103,7 @@ public final class BSEExported<T> extends BSE<T> {
     }
 
     ServiceConfiguration<T> toServiceConfiguration() {
-        return new ExportedServiceConfiguration<>(injectorBuilder.containerConfiguration, this);
+        return new ExportedServiceConfiguration<>(injectorBuilder.pcc, this);
     }
 
     private static final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {

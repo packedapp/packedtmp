@@ -344,7 +344,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             checkConfigurable(); // installing new extensions after configuration is done is not allowed
             pec = PackedExtensionContext.create(extensionType, this);
             extensions.put(extensionType, pec); // make sure it is installed before we call into user code Extension#onAdded
-            AppPackedExtensionSupport.invoke().onAdded(pec.extension, this);
+            AppPackedExtensionSupport.invoke().onAdded(pec);
         }
         return (T) pec.extension;
     }

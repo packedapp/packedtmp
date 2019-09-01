@@ -25,10 +25,10 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.FieldOperator;
+import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.MethodOperator;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.HookAggregateBuilder;
 
 /**
  *
@@ -54,7 +54,7 @@ public class MyExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(configuration(), new MySidecar());
+        putIntoInstantiationContext(context, new MySidecar());
     }
 
     public static class Agg implements HookAggregateBuilder<AXA> {

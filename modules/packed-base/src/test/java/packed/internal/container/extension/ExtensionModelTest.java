@@ -63,6 +63,7 @@ public class ExtensionModelTest {
     @Test
     public void testGen() {
         // We should use codegen to test, for example, that stuff is open...
+        // And unnamed, automatic modules...
     }
 
     public abstract class AbstractExtension extends Extension {}

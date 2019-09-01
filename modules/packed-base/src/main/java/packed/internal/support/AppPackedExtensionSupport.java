@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionPipeline;
-import packed.internal.container.PackedContainerConfiguration;
+import app.packed.container.extension.ExtensionWirelet;
+import packed.internal.container.extension.PackedExtensionContext;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public final class AppPackedExtensionSupport {
@@ -40,12 +40,10 @@ public final class AppPackedExtensionSupport {
         /**
          * Initializes the extension with the configuration of the container in which it is registered.
          * 
-         * @param extension
-         *            the extension to configure
-         * @param configuration
-         *            the configuration of the container in which the extension is registered
+         * @param context
+         *            the extension context
          */
-        public abstract void onAdded(Extension extension, PackedContainerConfiguration configuration);
+        public abstract void onAdded(PackedExtensionContext context);
 
         public abstract void onConfigured(Extension extension);
 

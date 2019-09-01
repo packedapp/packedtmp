@@ -44,6 +44,9 @@ public @interface ExtensionProperties {
      * 
      * @return any extensions this extensions requires
      */
+
+    // Strictly we only need to define not packed extensions...
+    // Because we can order the extensions ourself...
     Class<? extends Extension>[] dependencies() default {};
 
     /**
