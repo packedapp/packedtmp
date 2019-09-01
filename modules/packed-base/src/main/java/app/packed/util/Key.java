@@ -32,7 +32,8 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
-import packed.internal.inject.util.JavaXInjectSupport;
+import packed.internal.inject.util.QualifierHelper;
+import packed.internal.util.AnnotationUtil;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -246,7 +247,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      */
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);// qualifierType instead??
+        QualifierHelper.checkQualifierAnnotationPresent(qualifier);// qualifierType instead??
         return new CanonicalizedKey<>(typeLiteral, qualifier);
     }
 
@@ -263,7 +264,12 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      *             if the specified qualifier type is not annotated with {@link Qualifier}.
      */
     public final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
-        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifierType);
+        requireNonNull(qualifierType, "qualifierType is null");
+        AnnotationUtil.validateRuntimeRetentionPolicy(qualifierType);
+        if (!qualifierType.isAnnotationPresent(Qualifier.class)) {
+            throw new IllegalArgumentException(
+                    "@" + qualifierType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        }
         throw new UnsupportedOperationException();
     }
 
@@ -282,14 +288,14 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
     public static Key<?> fromField(Field field) {
         requireNonNull(field, "field is null");
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box();
-        Annotation annotation = JavaXInjectSupport.findQualifier(field, field.getAnnotations());
+        Annotation annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
     public static Key<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
         TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
-        Annotation annotation = JavaXInjectSupport.findQualifier(parameter, parameter.getAnnotations());
+        Annotation annotation = QualifierHelper.findQualifier(parameter, parameter.getAnnotations());
         return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
 
@@ -311,7 +317,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
             throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
         TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
-        Annotation annotation = JavaXInjectSupport.findQualifier(method, method.getAnnotations());
+        Annotation annotation = QualifierHelper.findQualifier(method, method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
@@ -341,7 +347,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
      */
     static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        JavaXInjectSupport.checkQualifierAnnotationPresent(qualifier);
+        QualifierHelper.checkQualifierAnnotationPresent(qualifier);
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
@@ -368,7 +374,7 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
-        Annotation qa = JavaXInjectSupport.findQualifier(pta, annotations);
+        Annotation qa = QualifierHelper.findQualifier(pta, annotations);
         return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 

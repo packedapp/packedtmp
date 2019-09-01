@@ -29,28 +29,28 @@ import app.packed.util.MethodDescriptor;
 public interface ConfigSiteVisitor {
 
     /**
-     * Visits an annotated field that was the origin of a configuration action. For example, a service provided via a field
-     * annotated with {@link Provide}.
+     * Visits a config site created from an annotated field. For example, a service that is provided via a field annotated
+     * with {@link Provide}.
      * 
      * @param configSite
      *            the configuration site
      * @param field
      *            the annotated field
      * @param annotation
-     *            the annotation that resulted in the configuration
+     *            the annotation value
      */
     default void visitAnnotatedField(ConfigSite configSite, FieldDescriptor field, Annotation annotation) {}
 
     /**
-     * Visits an annotated method that was the origin of a configuration action. For example, a service provided via a
-     * method annotated with {@link Provide}.
+     * Visits a config site created from an annotated method. For example, a service provided via a method annotated with
+     * {@link Provide}.
      * 
      * @param configSite
      *            the configuration site
      * @param method
      *            the annotated method
      * @param annotation
-     *            the annotation that resulted in the configuration
+     *            the annotation value
      */
     default void visitAnnotatedMethod(ConfigSite configSite, MethodDescriptor method, Annotation annotation) {}
 

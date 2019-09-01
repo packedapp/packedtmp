@@ -40,7 +40,6 @@ import packed.internal.access.AppPackedInjectAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.inject.util.JavaXInjectSupport;
 import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InstanceFunctionHandle;
@@ -441,7 +440,7 @@ final class FactoryFindInjectableExecutable {
         // Try to find a single static method annotated with @Inject
         Method method = null;
         for (Method m : type.getDeclaredMethods()) {
-            if (Modifier.isStatic(m.getModifiers()) && JavaXInjectSupport.isInjectAnnotationPresent(m)) {
+            if (Modifier.isStatic(m.getModifiers()) && m.isAnnotationPresent(Inject.class)) {
                 if (method != null) {
                     throw new IllegalArgumentException("There are multiple static methods annotated with @Inject on " + format(type));
                 }
@@ -474,7 +473,7 @@ final class FactoryFindInjectableExecutable {
         int maxParameters = 0;
         for (Constructor<?> c : constructors) {
             maxParameters = Math.max(maxParameters, c.getParameterCount());
-            if (JavaXInjectSupport.isInjectAnnotationPresent(c)) {
+            if (c.isAnnotationPresent(Inject.class)) {
                 if (constructor != null) {
                     throw new InvalidDeclarationException(
                             "Multiple constructors annotated with @" + Inject.class.getSimpleName() + " on class " + format(type));

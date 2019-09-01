@@ -22,7 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.function.Consumer;
 
 import app.packed.inject.InjectionException;
-import packed.internal.inject.util.JavaXInjectSupport;
+import packed.internal.inject.util.QualifierHelper;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
 public abstract class InternalAnnotatedElement implements AnnotatedElement {
@@ -135,7 +135,7 @@ public abstract class InternalAnnotatedElement implements AnnotatedElement {
      *             if more than one qualifier are present on the element
      */
     public final Annotation findQualifiedAnnotation() {
-        return JavaXInjectSupport.findQualifier(element, annotations);
+        return QualifierHelper.findQualifier(element, annotations);
     }
 
     /** {@inheritDoc} */

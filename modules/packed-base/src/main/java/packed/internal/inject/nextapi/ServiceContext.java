@@ -13,12 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.app.packed.inject2;
+package packed.internal.inject.nextapi;
+
+import java.util.Set;
+
+import app.packed.util.Key;
 
 /**
  *
  */
-interface ServiceManager {
-    // like injector except, inject + new instance???
-    // Vi vil gode have at App kan noget med nogle services....
+// Oehhh er det egentlig service descriptoren??
+// Nej, service descriptor er extern vil jeg sige
+// ServiceContext er internt, kan kun injectes ind i selve servicen.
+// Eller i den metoder der provider services...
+// Maaske slaa den sammen med ProvisionContext <- Saa er det ogsaa vi ligesom kan sige
+// Er noget man kun bruge i forbindelse med at lave en service.
+// ServiceContext
+public interface ServiceContext {
+
+    boolean exported();
+
+    Set<Key<?>> exportedAs();
+
+    Key<?> key();
 }

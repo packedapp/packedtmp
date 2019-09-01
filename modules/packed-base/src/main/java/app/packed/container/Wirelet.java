@@ -17,7 +17,6 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,9 +147,9 @@ public abstract class Wirelet {
 
     // Okay... hvordan klare vi det her med Bundle.lookup()
     // Maaske i foerste omgang ved ikke at supportere det.
-    static Wirelet lookup(MethodHandles.Lookup lookup) {
-        throw new UnsupportedOperationException();
-    }
+    // static Wirelet lookup(MethodHandles.Lookup lookup) {
+    // throw new UnsupportedOperationException();
+    // }
 
     static Wirelet execute(Runnable runable) {
         // Can't really do this as we are not a real pipeline...

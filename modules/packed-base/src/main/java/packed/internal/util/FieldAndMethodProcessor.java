@@ -37,7 +37,6 @@ public abstract class FieldAndMethodProcessor {
     public final void process(Class<?> cl) {
         // Step 1, find all public methods (including default methods)
         HashMap<Key, HashSet<Package>> types = new HashMap<>();
-
         for (Method m : cl.getMethods()) {
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 processMethod(m);
@@ -47,6 +46,7 @@ public abstract class FieldAndMethodProcessor {
 
         // Step 2 process all declared methods
         for (Class<?> c = cl; c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
+            // First process every field
             for (Field field : c.getDeclaredFields()) {
                 processField(field);
             }

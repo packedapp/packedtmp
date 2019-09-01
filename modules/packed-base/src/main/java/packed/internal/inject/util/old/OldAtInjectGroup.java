@@ -25,7 +25,6 @@ import java.util.List;
 import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.inject.util.JavaXInjectSupport;
 import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -78,7 +77,7 @@ public final class OldAtInjectGroup {
         @Nullable
         public OldAtInject createIfInjectable(Lookup lookup, Field field, Annotation[] annotations) {
             OldAtInject result = null;
-            if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+            if (isInjectAnnotationPresent(annotations)) {
                 InternalFieldDescriptor descriptor = InternalFieldDescriptor.of(field);
 
                 if (fields == null) {
@@ -94,7 +93,7 @@ public final class OldAtInjectGroup {
         @Nullable
         public OldAtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
             OldAtInject result = null;
-            if (JavaXInjectSupport.isInjectAnnotationPresent(annotations)) {
+            if (isInjectAnnotationPresent(annotations)) {
                 InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
                 // static @Inject methods are treated like factory methods, and captured elsewhere
 
@@ -105,6 +104,15 @@ public final class OldAtInjectGroup {
                         InternalDependencyDescriptor.fromExecutable(descriptor)));
             }
             return result;
+        }
+
+        public static boolean isInjectAnnotationPresent(Annotation[] annotations) {
+            for (Annotation an : annotations) {
+                if (an.annotationType() == Inject.class) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 

@@ -13,26 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.app.packed.inject2;
-
-import app.packed.inject.Injector;
+package packed.internal.inject.nextapi;
 
 /**
  *
  */
-
-// Why we need it...
-
-// To get all services
-
-// We need a clear separation between the outfacing injector and the internal injector...
-
-// Replace with ContainerContext....
-
-// Containeren har e
-interface InjectorContext extends Injector {
-
-    Injector publicInjector();// Hmm bliver svaer at extende mht til App
-
-    // I don't want to call it services.....
+interface ServiceManager {
+    // like injector except, inject + new instance???
+    // Vi vil gode have at App kan noget med nogle services....
 }

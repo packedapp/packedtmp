@@ -250,7 +250,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
-        Annotation qa = JavaXInjectSupport.findQualifier(pta, annotations);
+        Annotation qa = QualifierHelper.findQualifier(pta, annotations);
 
         Class<?> optionalType = null;
         if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Optional.class) {

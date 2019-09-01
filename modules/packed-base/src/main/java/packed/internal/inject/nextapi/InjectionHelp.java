@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.app.packed.inject2;
+package packed.internal.inject.nextapi;
 
 /**
  * Ideen er at alle metoder, constructor, fields, osv. Hvor man kan

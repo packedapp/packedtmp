@@ -5,5 +5,5 @@
  * either express or implied. See the License for the specific language governing permissions and limitations under the
  * License. */
 
-/** This package contains various implementations of {@link app.packed.config.ConfigSite}. */
+/** This package contains various internal classes for the app.packed.config package. */
 package packed.internal.config;

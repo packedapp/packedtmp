@@ -46,11 +46,13 @@ public interface FieldOperator<T> {
     T apply(MethodHandles.Lookup caller, Field field, Object instance);
 
     /**
+     * Applies this operator to the specified static field.
+     * 
      * @param caller
      *            a lookup object that must have access to the specified field
      * @param field
      *            the field to operate on
-     * @return the ope
+     * @return the result of applying this operator
      * @throws IllegalArgumentException
      *             if the specified field is not static
      */
