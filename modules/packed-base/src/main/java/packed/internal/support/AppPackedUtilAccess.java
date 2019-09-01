@@ -17,39 +17,27 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.Factory;
-import app.packed.inject.InjectionExtension;
-import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.invoke.FunctionHandle;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
-/** A support class for calling package private methods in the app.packed.inject package. */
-public final class AppPackedInjectSupport {
+import app.packed.util.Key;
+import app.packed.util.TypeLiteral;
 
-    /**
-     * Extracts the internal factory from the specified factory
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory to extract from
-     * @return the internal factory
-     */
-    public static <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
-        return SingletonHolder.SINGLETON.toInternalFunction(factory);
-    }
+/** A support class for calling package private methods in the app.packed.util package. */
+public final class AppPackedUtilAccess {
 
     public static Helper invoke() {
         return SingletonHolder.SINGLETON;
     }
 
     /** Holder of the singleton. */
-    static class SingletonHolder {
+    private static class SingletonHolder {
 
         /** The singleton instance. */
         static final Helper SINGLETON;
 
         static {
-            Factory.ofInstance("foo");
+            TypeLiteral.of(Object.class); // Initializes TypeLiteral, which in turn will call Helper#init
             SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
         }
     }
@@ -60,18 +48,20 @@ public final class AppPackedInjectSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        /**
-         * Extracts the internal factory from the specified factory
-         * 
-         * @param <T>
-         *            the type of elements the factory produces
-         * @param factory
-         *            the factory to extract from
-         * @return the internal factory
-         */
-        public abstract <T> FunctionHandle<T> toInternalFunction(Factory<T> factory);
+        // Take a Source??? For example, a method to use for error message.
+        // When creating the key
+        public abstract Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
 
-        public abstract InjectorBuilder getBuilder(InjectionExtension ie);
+        /**
+         * Converts the type to a type literal.
+         * 
+         * @param type
+         *            the type to convert
+         * @return the type literal
+         */
+        public abstract TypeLiteral<?> toTypeLiteral(Type type);
+
+        public abstract boolean isCanonicalized(TypeLiteral<?> typeLiteral);
 
         /**
          * Initializes this class.
@@ -79,9 +69,9 @@ public final class AppPackedInjectSupport {
          * @param support
          *            an implementation of this class
          */
-        public static void init(Helper support) {
+        public static synchronized void init(Helper support) {
             if (SUPPORT != null) {
-                throw new Error("Can only be initialized ince");
+                throw new ExceptionInInitializerError("Can only be initialized once");
             }
             SUPPORT = requireNonNull(support);
         }

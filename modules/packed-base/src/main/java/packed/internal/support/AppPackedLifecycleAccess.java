@@ -17,43 +17,22 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionPipeline;
-import app.packed.container.extension.ExtensionWirelet;
-import packed.internal.container.extension.PackedExtensionContext;
 
-/** A support class for calling package private methods in the app.packed.extension package. */
-public final class AppPackedExtensionSupport {
+/** A support class for calling package private methods in the app.packed.lifecycle package. */
+public final class AppPackedLifecycleAccess {
 
     public static Helper invoke() {
         return SingletonHolder.SINGLETON;
     }
 
-    /** An abstract class that must be implemented by a class in app.packed.container. */
+    /** An abstract class that must be implemented by a class in app.packed.lifecycle. */
     public static abstract class Helper {
 
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        /**
-         * Initializes the extension with the configuration of the container in which it is registered.
-         * 
-         * @param context
-         *            the extension context
-         */
-        public abstract void onAdded(PackedExtensionContext context);
-
-        public abstract void onConfigured(Extension extension);
-
-        public abstract void buildBundle(Extension extension, BundleDescriptor.Builder builder);
-
-        public abstract void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
-
-        public abstract <E extends Extension, T extends ExtensionPipeline<T>> T wireletNewPipeline(E extension, ExtensionWirelet<E, T> wirelet);
-
-        public abstract <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet);
+        // public abstract void doConfigure(LifecycleExtension extension, MethodHandle mh);
 
         /**
          * Initializes this class.

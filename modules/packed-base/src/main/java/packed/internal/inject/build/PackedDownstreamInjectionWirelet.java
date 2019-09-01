@@ -27,7 +27,7 @@ import app.packed.inject.InjectionExtension;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
-import packed.internal.support.AppPackedInjectSupport;
+import packed.internal.support.AppPackedInjectAccess;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
@@ -35,7 +35,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
     /** {@inheritDoc} */
     @Override
     public final InjectionPipeline newPipeline(InjectionExtension extension) {
-        return new InjectionPipeline(AppPackedInjectSupport.invoke().getBuilder(extension));
+        return new InjectionPipeline(AppPackedInjectAccess.invoke().getBuilder(extension));
     }
 
     public static class FilterOnKey extends PackedDownstreamInjectionWirelet {

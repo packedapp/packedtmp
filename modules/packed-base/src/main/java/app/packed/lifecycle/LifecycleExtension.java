@@ -31,7 +31,7 @@ import app.packed.container.extension.OnHook;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import packed.internal.support.AppPackedLifecycleSupport;
+import packed.internal.support.AppPackedLifecycleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -62,7 +62,7 @@ import packed.internal.util.StringFormatter;
 public final class LifecycleExtension extends Extension {
 
     static {
-        AppPackedLifecycleSupport.Helper.init(new AppPackedLifecycleSupport.Helper() {});
+        AppPackedLifecycleAccess.Helper.init(new AppPackedLifecycleAccess.Helper() {});
     }
 
     /**

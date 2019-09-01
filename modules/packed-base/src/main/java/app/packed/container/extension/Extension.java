@@ -26,10 +26,10 @@ import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.support.AppPackedExtensionSupport;
+import packed.internal.support.AppPackedExtensionAccess;
 
 /**
- * Container extensions are used to extend containers with functionality.
+ * Container extensions allows you to extend the basic functionality of containers.
  * <p>
  * Subclasses of this class must give open rights to app.packed.base
  * <p>
@@ -38,6 +38,13 @@ import packed.internal.support.AppPackedExtensionSupport;
  * <p>
  * Subclasses of this class that are actively used should be final.
  */
+
+// Step1
+// final Extension
+// package private constructor
+// open to app.packed.base
+// exported for other users
+
 // ErrorHandle, Logging
 
 // ErrorHandling / Notifications ???
@@ -59,7 +66,7 @@ import packed.internal.support.AppPackedExtensionSupport;
 public abstract class Extension {
 
     static {
-        AppPackedExtensionSupport.Helper.init(new AppPackedExtensionSupport.Helper() {
+        AppPackedExtensionAccess.Helper.init(new AppPackedExtensionAccess.Helper() {
 
             @Override
             public void buildBundle(Extension extension, Builder builder) {
@@ -68,7 +75,7 @@ public abstract class Extension {
 
             /** {@inheritDoc} */
             @Override
-            public void onAdded(PackedExtensionContext context) {
+            public void initializeExtension(PackedExtensionContext context) {
                 context.extension.context = context;
                 context.extension.onAdded();
             }

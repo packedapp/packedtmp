@@ -17,12 +17,18 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.artifact.ArtifactInstantiationContext;
+import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWirelet;
+import packed.internal.container.extension.PackedExtensionContext;
 
-/** A support class for calling package private methods in the app.packed.container package. */
-public final class AppPackedContainerSupport {
+/** A support class for calling package private methods in the app.packed.extension package. */
+public final class AppPackedExtensionAccess {
+
+    /** Never instantiate. */
+    private AppPackedExtensionAccess() {}
 
     public static Helper invoke() {
         return SingletonHolder.SINGLETON;
@@ -34,7 +40,23 @@ public final class AppPackedContainerSupport {
         /** An instance of the single implementation of this class. */
         private static Helper SUPPORT;
 
-        public abstract void doConfigure(Bundle bundle, ContainerConfiguration configuration);
+        public abstract void buildBundle(Extension extension, BundleDescriptor.Builder builder);
+
+        /**
+         * Initializes the extension.
+         * 
+         * @param context
+         *            the extension context containing the extension
+         */
+        public abstract void initializeExtension(PackedExtensionContext context);
+
+        public abstract void onConfigured(Extension extension);
+
+        public abstract void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
+
+        public abstract <E extends Extension, T extends ExtensionPipeline<T>> T wireletNewPipeline(E extension, ExtensionWirelet<E, T> wirelet);
+
+        public abstract <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet);
 
         /**
          * Initializes this class.
@@ -44,17 +66,17 @@ public final class AppPackedContainerSupport {
          */
         public static void init(Helper support) {
             if (SUPPORT != null) {
-                throw new Error("Can only be initialized ince");
+                throw new Error("Can only be initialized once");
             }
             SUPPORT = requireNonNull(support);
         }
     }
 
     /** Holder of the singleton. */
-    static class SingletonHolder {
+    private static class SingletonHolder {
 
         /** The singleton instance. */
-        static final Helper SINGLETON;
+        private static final Helper SINGLETON;
 
         static {
             new Extension() {};

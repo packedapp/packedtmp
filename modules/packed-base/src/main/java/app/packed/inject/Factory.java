@@ -43,8 +43,8 @@ import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InstanceFunctionHandle;
 import packed.internal.invoke.lambda.MappingFunctionHandle;
-import packed.internal.support.AppPackedInjectSupport;
-import packed.internal.support.AppPackedUtilSupport;
+import packed.internal.support.AppPackedInjectAccess;
+import packed.internal.support.AppPackedUtilAccess;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
@@ -104,12 +104,12 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
-            return new Factory(FactoryFindInjectableExecutable.find(AppPackedUtilSupport.invoke().toTypeLiteral(t)));
+            return new Factory(FactoryFindInjectableExecutable.find(AppPackedUtilAccess.invoke().toTypeLiteral(t)));
         }
     };
 
     static {
-        AppPackedInjectSupport.Helper.init(new AppPackedInjectSupport.Helper() {
+        AppPackedInjectAccess.Helper.init(new AppPackedInjectAccess.Helper() {
 
             @Override
             public <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
@@ -380,7 +380,7 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (!AppPackedUtilSupport.invoke().isCanonicalized(implementation)) {
+        if (!AppPackedUtilAccess.invoke().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }

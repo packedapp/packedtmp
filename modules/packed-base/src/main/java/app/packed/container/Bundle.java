@@ -27,7 +27,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
-import packed.internal.support.AppPackedContainerSupport;
+import packed.internal.support.AppPackedContainerAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -50,7 +50,7 @@ import packed.internal.support.AppPackedContainerSupport;
 public abstract class Bundle implements ContainerSource {
 
     static {
-        AppPackedContainerSupport.Helper.init(new AppPackedContainerSupport.Helper() {
+        AppPackedContainerAccess.ContainerHelper.init(new AppPackedContainerAccess.ContainerHelper() {
 
             /** {@inheritDoc} */
             @Override

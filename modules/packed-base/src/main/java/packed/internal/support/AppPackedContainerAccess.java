@@ -17,22 +17,19 @@ package packed.internal.support;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.extension.Extension;
+import app.packed.container.Bundle;
+import app.packed.container.ContainerConfiguration;
 
-/** A support class for calling package private methods in the app.packed.lifecycle package. */
-public final class AppPackedLifecycleSupport {
+/** A support class for calling package private methods in the app.packed.container package. */
+public final class AppPackedContainerAccess {
 
-    public static Helper invoke() {
-        return SingletonHolder.SINGLETON;
-    }
-
-    /** An abstract class that must be implemented by a class in app.packed.lifecycle. */
-    public static abstract class Helper {
+    /** An abstract class that must be implemented by a class in app.packed.container. */
+    public static abstract class ContainerHelper {
 
         /** An instance of the single implementation of this class. */
-        private static Helper SUPPORT;
+        static ContainerHelper SUPPORT;
 
-        // public abstract void doConfigure(LifecycleExtension extension, MethodHandle mh);
+        public abstract void doConfigure(Bundle bundle, ContainerConfiguration configuration);
 
         /**
          * Initializes this class.
@@ -40,7 +37,7 @@ public final class AppPackedLifecycleSupport {
          * @param support
          *            an implementation of this class
          */
-        public static void init(Helper support) {
+        public static void init(ContainerHelper support) {
             if (SUPPORT != null) {
                 throw new Error("Can only be initialized ince");
             }
@@ -48,15 +45,4 @@ public final class AppPackedLifecycleSupport {
         }
     }
 
-    /** Holder of the singleton. */
-    static class SingletonHolder {
-
-        /** The singleton instance. */
-        static final Helper SINGLETON;
-
-        static {
-            new Extension() {};
-            SINGLETON = requireNonNull(Helper.SUPPORT, "internal error");
-        }
-    }
 }

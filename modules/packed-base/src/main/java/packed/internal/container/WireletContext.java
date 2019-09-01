@@ -22,7 +22,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionPipeline;
-import packed.internal.support.AppPackedExtensionSupport;
+import packed.internal.support.AppPackedExtensionAccess;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -78,10 +78,10 @@ public class WireletContext {
                     if (e == null) {
                         throw new IllegalStateException();// Extension was never instaleld
                     }
-                    return AppPackedExtensionSupport.invoke().wireletNewPipeline(null, null);
+                    return AppPackedExtensionAccess.invoke().wireletNewPipeline(null, null);
 
                 });
-                AppPackedExtensionSupport.invoke().wireletProcess(p, ew);
+                AppPackedExtensionAccess.invoke().wireletProcess(p, ew);
             } else if (w instanceof ContainerWirelet) {
                 ((ContainerWirelet) w).process(this);
             } else {
