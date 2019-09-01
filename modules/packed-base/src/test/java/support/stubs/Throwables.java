@@ -22,6 +22,7 @@ package support.stubs;
 public class Throwables {
 
     public static class Error1 extends Error {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -32,6 +33,7 @@ public class Throwables {
     }
 
     public static class Error2 extends Error {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -40,6 +42,7 @@ public class Throwables {
     }
 
     public static class Error3 extends Error {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -48,6 +51,7 @@ public class Throwables {
     }
 
     public static class Exception1 extends Exception {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -56,6 +60,7 @@ public class Throwables {
     }
 
     public static class Exception2 extends Exception {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -64,6 +69,7 @@ public class Throwables {
     }
 
     public static class Exception3 extends Exception {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -81,6 +87,7 @@ public class Throwables {
     }
 
     public static class RuntimeException2 extends RuntimeException {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -89,6 +96,7 @@ public class Throwables {
     }
 
     public static class RuntimeException3 extends RuntimeException {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -97,6 +105,7 @@ public class Throwables {
     }
 
     public static class Throwable1 extends Throwable {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -105,6 +114,7 @@ public class Throwables {
     }
 
     public static class Throwable2 extends Throwable {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 
@@ -113,6 +123,7 @@ public class Throwables {
     }
 
     public static class Throwable3 extends Throwable {
+
         /** serialVersionUID */
         private static final long serialVersionUID = 1L;
 

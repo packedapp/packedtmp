@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package a;
 
-import app.packed.component.Component;
+import java.util.List;
+
+import app.packed.container.extension.Extension;
 
 /**
  *
  */
-final class DefaultComponent extends AbstractComponent implements Component {
+// Dette kan foerst laves naar artifacten er faerdig konfigureret
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
-        super(container, configuration, ic);
+public class ExtensionRealTree<E extends Extension> {
+
+    boolean hasCommonRoot() {
+        throw new UnsupportedOperationException();
     }
 
-    // Noget med noget instanse..
+    List<E> roots() {
+        throw new UnsupportedOperationException();
+    }
 }
+// The 3 Levels of communication
+// Extensions communicate in the same artifact
+// Extension communicate with host via sidecars
+// Extensions communicate with each other in a sidemesh.. Either via extensions or sidecars

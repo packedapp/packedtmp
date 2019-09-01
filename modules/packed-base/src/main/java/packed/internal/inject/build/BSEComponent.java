@@ -35,6 +35,7 @@ import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
 import packed.internal.inject.run.RSNPrototype;
+import packed.internal.inject.util.AtProvides;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.FunctionHandle;
 import packed.internal.invoke.InvokableMember;

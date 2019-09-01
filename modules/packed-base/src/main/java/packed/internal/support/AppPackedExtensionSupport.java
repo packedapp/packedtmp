@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.extension.ExtensionPipeline;
 import packed.internal.container.PackedContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
@@ -50,6 +52,10 @@ public final class AppPackedExtensionSupport {
         public abstract void buildBundle(Extension extension, BundleDescriptor.Builder builder);
 
         public abstract void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
+
+        public abstract <E extends Extension, T extends ExtensionPipeline<T>> T wireletNewPipeline(E extension, ExtensionWirelet<E, T> wirelet);
+
+        public abstract <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet);
 
         /**
          * Initializes this class.

@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package a;
 
-import app.packed.component.Component;
+import app.packed.inject.InjectionExtension;
 
 /**
  *
  */
-final class DefaultComponent extends AbstractComponent implements Component {
+@ExtensionProperties(dependencies = InjectionExtension.class)
+public class XX {
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
-        super(container, configuration, ic);
+    public static void main(String[] args) {
+
+        System.out.println("HI");
+        // for (Annotation a : XX.class.getAnnotations()) {
+        // System.out.println(a);
+        // }
     }
-
-    // Noget med noget instanse..
 }

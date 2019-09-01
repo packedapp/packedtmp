@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.inject.build.PackedUpstreamServiceWirelet;
+import packed.internal.inject.build.PackedUpstreamInjectionWirelet;
 
 /**
  *
@@ -34,7 +34,7 @@ public final class UpstreamServiceWirelets {
     // reject(Predicate<? super Key|ServiceDescriptor>)
 
     public static Wirelet remove(Key<?>... keys) {
-        return new PackedUpstreamServiceWirelet.FilterOnKey(Set.of(keys));
+        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys));
     }
 
     /**
@@ -55,6 +55,6 @@ public final class UpstreamServiceWirelets {
      * @return a peeking stage
      */
     public static Wirelet peek(Consumer<? super ServiceDescriptor> action) {
-        return new PackedUpstreamServiceWirelet.Peek(action);
+        return new PackedUpstreamInjectionWirelet.Peek(action);
     }
 }

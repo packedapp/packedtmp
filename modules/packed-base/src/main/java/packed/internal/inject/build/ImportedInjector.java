@@ -66,6 +66,6 @@ public final class ImportedInjector {
         });
 
         // process wirelets for filtering/transformations
-        wirelets.forEach(PackedUpstreamServiceWirelet.class, w -> w.process(this));
+        wirelets.forEach(PackedUpstreamInjectionWirelet.class, w -> w.process(this));
     }
 }

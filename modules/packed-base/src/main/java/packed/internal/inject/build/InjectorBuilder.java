@@ -40,6 +40,8 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.run.AbstractInjector;
+import packed.internal.inject.util.AtProvides;
+import packed.internal.inject.util.AtProvidesGroup;
 import packed.internal.invoke.FunctionHandle;
 
 /** This class records all service related information for a single box. */

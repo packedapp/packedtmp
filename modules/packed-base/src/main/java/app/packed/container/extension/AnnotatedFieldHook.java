@@ -19,11 +19,9 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.Modifier;
 
 import app.packed.util.FieldDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
-import app.packed.util.InvalidDeclarationException;
 
 /**
  * A hook representing a field annotated with a specific annotation.
@@ -47,7 +45,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
     <E> HookApplicator<E> applicator(FieldOperator<E> operator);
 
     /**
-     * Applies the specified field operator to the underlying static field.
+     * Applies the specified operator to the underlying field.
      * 
      * @param <E>
      *            the type of result from applying the operator
@@ -58,65 +56,14 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      *             if the underlying field is not a static field. Or if the underlying field is final, and the operator
      *             needs write access
      * @throws IllegalAccessRuntimeException
-     *             if access checking failed while accessing the field
+     *             if access checking failed when accessing the field
      */
-    <E> E applyOnStaticField(FieldOperator<E> operator);
-
-    // Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
-    // Move these to descriptor????
-    // hook.field().checkFinal().checkAssignableTo()....
-    //// Nah... Tror gerne vi vil have annoteringen med...
-    //// Det kan vi ikke faa hvis vi har den paa descriptoren...
-    AnnotatedFieldHook<T> checkAssignableTo(Class<?> type);
-
-    // Move checks to field operator????
-    // FieldOperator.checkFinalField().checkStatic
-    AnnotatedFieldHook<T> checkExactType(Class<?> type);
+    <E> E applyStatic(FieldOperator<E> operator);
 
     /**
-     * Checks that the underlying field is final.
+     * Returns a descriptor for the underlying field.
      * 
-     * @throws InvalidDeclarationException
-     *             if the underlying field is not final
-     * @return this hook
-     * @see Modifier#isFinal(int)
-     */
-    AnnotatedFieldHook<T> checkFinal();
-
-    /**
-     * Checks that the underlying field is not final.
-     * 
-     * @throws InvalidDeclarationException
-     *             if the underlying field is final
-     * @return this hook
-     * @see Modifier#isFinal(int)
-     */
-    AnnotatedFieldHook<T> checkNotFinal();
-
-    /**
-     * Checks that the underlying field is not static.
-     * 
-     * @throws InvalidDeclarationException
-     *             if the underlying field is static
-     * @return this hook
-     * @see Modifier#isStatic(int)
-     */
-    AnnotatedFieldHook<T> checkNotStatic();
-
-    /**
-     * Checks that the underlying field is static.
-     * 
-     * @throws InvalidDeclarationException
-     *             if the underlying field is not static
-     * @return this hook
-     * @see Modifier#isStatic(int)
-     */
-    AnnotatedFieldHook<T> checkStatic();
-
-    /**
-     * Returns a field descriptor for the underlying field.
-     * 
-     * @return a field descriptor for the underlying field
+     * @return a descriptor for the underlying field
      */
     FieldDescriptor field();
 

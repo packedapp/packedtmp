@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import packed.internal.container.model.ComponentModel;
 
@@ -35,7 +34,7 @@ public abstract class CoreComponentConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public AbstractComponent instantiate(AbstractComponent parent, ArtifactInstantiationContext ic) {
+    public AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         return new DefaultComponent(parent, this, ic);
     }
 

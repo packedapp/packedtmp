@@ -13,18 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package a;
 
-import app.packed.component.Component;
+import app.packed.container.extension.Extension;
+import app.packed.util.Nullable;
 
 /**
  *
  */
-final class DefaultComponent extends AbstractComponent implements Component {
+public class ExtensionTree2<E extends Extension> {
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
-        super(container, configuration, ic);
+    // Hvad med wiring...
+    //
+    @Nullable
+    protected final E findFirstParentOf(Extension e) {
+        throw new UnsupportedOperationException();
     }
 
-    // Noget med noget instanse..
+    public void onChildConfigured(E child) {
+
+    }
+
+    public void onParentConfigured(@Nullable E parent, E child) {
+
+    }
+
 }

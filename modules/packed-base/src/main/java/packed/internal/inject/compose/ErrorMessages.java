@@ -53,6 +53,7 @@ final class ErrorMessages {
         System.out.println("------");
         StringBuilder sb = new StringBuilder();
 
+        // create an instance sounds like something that should not be used in the build phase...
         sb.append("Failed to create an instance of " + abc.artifactType().getSimpleName() + " from bundle: " + abc.sourceType().getCanonicalName());
         int nn = 1;
         for (Map.Entry<Key<?>, LinkedHashSet<BSE<?>>> e : dublicateNodes.entrySet()) {

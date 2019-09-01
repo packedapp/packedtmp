@@ -91,7 +91,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
 
     /** {@inheritDoc} */
     @Override
-    public <E> E applyOnStaticField(FieldOperator<E> operator) {
+    public <E> E applyStatic(FieldOperator<E> operator) {
         PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);
@@ -100,20 +100,14 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         return o.applyStaticHook(this);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public AnnotatedFieldHook<T> checkFinal() {
         // Methods annotated with @Dooo cannot be static
         // Methods annotated with @Dooo must be static
@@ -135,8 +129,6 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public AnnotatedFieldHook<T> checkNotFinal() {
         if (Modifier.isFinal(field.getModifiers())) {
             throw new IllegalStateException(
@@ -149,8 +141,6 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public AnnotatedFieldHook<T> checkNotStatic() {
         if (Modifier.isStatic(field.getModifiers())) {
             throw new IllegalStateException(
@@ -167,8 +157,6 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public AnnotatedFieldHook<T> checkStatic() {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalStateException(

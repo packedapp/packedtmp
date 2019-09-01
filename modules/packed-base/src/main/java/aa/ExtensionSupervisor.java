@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package aa;
+
+import java.util.List;
+
+import a.ExtensionWiring;
+import app.packed.container.extension.Extension;
+import app.packed.util.Nullable;
 
 /**
  *
@@ -26,7 +32,28 @@ package app.packed.container.extension;
 // Lowest common ancessors
 // Noder med hul i
 
-class ExtensionGraph<E extends Extension> {
+public abstract class ExtensionSupervisor<E extends Extension> {
 
-    // Alle extension fra en
+    @Nullable
+    protected final <T> T findHostedSidecar(Class<T> sidecarType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Maaske er det et interface, saa det kun er hvis man bruger wirelets...
+    public abstract ExtensionWiring<E> newWiring();
+
+    // start
+    // ForEachNode
+    // stopch
+
+    interface Node<E extends Extension> {
+
+        E node();
+
+        List<?> wirelets();
+
+        @Nullable
+        E parent();
+
+    }
 }

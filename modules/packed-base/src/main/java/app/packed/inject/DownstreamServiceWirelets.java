@@ -25,11 +25,6 @@ import app.packed.util.Key;
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
  */
-// push, pull
-// receive
-
-// So we can push things in, rebind themx
-// Maaske have mere en en *Wirelets klasse
 public final class DownstreamServiceWirelets {
 
     /** No instantiation. */
@@ -43,6 +38,7 @@ public final class DownstreamServiceWirelets {
      * @param factory
      * @return a wirelet that provides
      */
+    // providePrototype()
     public static <T> Wirelet provide(Factory0<T> factory) {
         throw new UnsupportedOperationException();
     }

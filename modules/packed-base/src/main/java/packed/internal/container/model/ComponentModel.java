@@ -28,6 +28,7 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.hook.ExtensionHookPerComponentGroup;
+import packed.internal.util.FieldAndMethodProcessor;
 
 /**
  *
@@ -37,6 +38,7 @@ public final class ComponentModel {
     /** The component type. */
     private final Class<?> componentType;
 
+    /** An array of any extension groups defined by the component type. */
     private final ExtensionHookPerComponentGroup[] extensionGroups;
 
     /** The simple name of the component type. */
@@ -87,7 +89,7 @@ public final class ComponentModel {
     }
 
     /** A builder object for a component class descriptor. */
-    public static class Builder {
+    public static final class Builder extends FieldAndMethodProcessor {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
@@ -99,16 +101,16 @@ public final class ComponentModel {
             }
         };
 
-        /** The component type. */
+        /** The type of component we are building a model for. */
         private final Class<?> componentType;
 
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, ExtensionHookPerComponentGroup.Builder> extensionBuilders = new IdentityHashMap<>();
 
+        private boolean isBuild;
+
         /** A lookup object for the component. */
         private final ComponentLookup lookup;
-
-        private boolean isBuild;
 
         /**
          * @param lookup
@@ -119,12 +121,29 @@ public final class ComponentModel {
             this.componentType = requireNonNull(componentType);
         }
 
+        /**
+         * Builds and returns a new descriptor.
+         * 
+         * @return a new descriptor
+         */
+        ComponentModel build() {
+            process(componentType);
+            ComponentModel cm = new ComponentModel(this);
+            isBuild = true;
+            return cm;
+        }
+
         public void checkActive() {
             if (isBuild) {
                 throw new IllegalStateException();
             }
         }
 
+        /**
+         * Returns the type of component we are building a model for.
+         * 
+         * @return the type of component we are building a model for
+         */
         public Class<?> componentType() {
             return componentType;
         }
@@ -133,42 +152,30 @@ public final class ComponentModel {
             return lookup;
         }
 
-        /**
-         * Builds and returns a new descriptor.
-         * 
-         * @return a new descriptor
-         */
-        ComponentModel build() {
-            // TODO add default methods, check for overrides, ...
-
-            for (Class<?> c = componentType; c != Object.class; c = c.getSuperclass()) {
-                for (Field field : c.getDeclaredFields()) {
-                    for (Annotation a : field.getAnnotations()) {
-                        Class<? extends Extension>[] cc = EXTENSION_ACTIVATORS.get(a.annotationType());
-                        if (cc != null) {
-                            for (Class<? extends Extension> ccc : cc) {
-                                extensionBuilders.computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(this, extensionType))
-                                        .onAnnotatedField(field, a);
-                            }
-                        }
+        /** {@inheritDoc} */
+        @Override
+        protected void processField(Field field) {
+            for (Annotation a : field.getAnnotations()) {
+                Class<? extends Extension>[] extensions = EXTENSION_ACTIVATORS.get(a.annotationType());
+                if (extensions != null) {
+                    for (Class<? extends Extension> e : extensions) {
+                        extensionBuilders.computeIfAbsent(e, c -> new ExtensionHookPerComponentGroup.Builder(this, c)).onAnnotatedField(field, a);
                     }
                 }
-                for (Method method : c.getDeclaredMethods()) {
-                    for (Annotation a : method.getAnnotations()) {
-                        Class<? extends Extension> cc[] = EXTENSION_ACTIVATORS.get(a.annotationType());
-                        if (cc != null) {
-                            for (Class<? extends Extension> ccc : cc) {
-                                extensionBuilders.computeIfAbsent(ccc, extensionType -> new ExtensionHookPerComponentGroup.Builder(this, extensionType))
-                                        .onAnnotatedMethod(method, a);
-                            }
-                        }
-                    }
-                }
-                // TODO default methods
             }
-            ComponentModel cm = new ComponentModel(this);
-            isBuild = true;
-            return cm;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected void processMethod(Method method) {
+            for (Annotation a : method.getAnnotations()) {
+                Class<? extends Extension>[] extensions = EXTENSION_ACTIVATORS.get(a.annotationType());
+                if (extensions != null) {
+                    for (Class<? extends Extension> e : extensions) {
+                        extensionBuilders.computeIfAbsent(e, c -> new ExtensionHookPerComponentGroup.Builder(this, c)).onAnnotatedMethod(method, a);
+                    }
+                }
+            }
         }
     }
 }

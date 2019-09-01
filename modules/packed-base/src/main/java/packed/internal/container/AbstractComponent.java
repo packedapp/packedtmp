@@ -25,13 +25,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
+import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
 /** An abstract base implementation of {@link Component}. */
 abstract class AbstractComponent implements Component {
@@ -73,7 +73,7 @@ abstract class AbstractComponent implements Component {
      * @param configuration
      *            the configuration used for creating this component
      */
-    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, ArtifactInstantiationContext ic) {
+    AbstractComponent(@Nullable AbstractComponent parent, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         this.parent = parent;
         this.configSite = requireNonNull(configuration.configSite());
         this.description = configuration.getDescription();

@@ -44,7 +44,7 @@ public class MyExtension2 extends Extension {
 
     // @OnHook
     public void foo(ComponentConfiguration cc, AnnotatedFieldHook<MyA> h) throws Throwable {
-        Supplier<?> ss = h.applyOnStaticField(FieldOperator.supplier());
+        Supplier<?> ss = h.applyStatic(FieldOperator.supplier());
         System.out.println(ss.get());
     }
 
@@ -62,7 +62,7 @@ public class MyExtension2 extends Extension {
         public void foo(AnnotatedMethodHook<MyA> h) {
             sum += h.annotation().value();
             if (h.method().isStatic()) {
-                Runnable val = h.applyOnStaticMethod(MethodOperator.runnable());
+                Runnable val = h.applyStatic(MethodOperator.runnable());
                 val.run();
             }
         }
@@ -70,7 +70,7 @@ public class MyExtension2 extends Extension {
         public void foo(AnnotatedFieldHook<MyA> h) throws Throwable {
             sum += h.annotation().value();
             if (h.field().isStatic()) {
-                Supplier<Object> val = h.applyOnStaticField(FieldOperator.supplier());
+                Supplier<Object> val = h.applyStatic(FieldOperator.supplier());
                 System.out.println("VAL = " + val.get());
             }
             ral.add(h, FieldOperator.supplier());

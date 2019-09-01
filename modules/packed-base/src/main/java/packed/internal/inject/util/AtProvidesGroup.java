@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
@@ -27,7 +27,6 @@ import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.ExecutableFunctionHandle;
 import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.invoke.InvokableMember;

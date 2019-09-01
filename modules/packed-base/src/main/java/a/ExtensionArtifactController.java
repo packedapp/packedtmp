@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package a;
 
 import java.util.Collection;
 import java.util.Optional;
 
+import aa.ExtensionSupervisor;
 import app.packed.artifact.ArtifactSidecar;
+import app.packed.container.extension.Extension;
 
 //Extensions
 //Sidecars...
@@ -84,7 +86,7 @@ abstract class ExtensionArtifactController<E extends Extension, S extends Artifa
 
     }
 
-    protected S configure(ExtensionGraph<E> g) {
+    protected S configure(ExtensionSupervisor<E> g) {
         return null;
     }
 

@@ -28,14 +28,15 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
-import packed.internal.container.ComponentNameWirelet;
+import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.WireletContext;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
- * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. Images are
- * reusable, so you can create multiple artifacts from a single image.
+ * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. Artifact
+ * images are reusable, so you can create multiple artifacts from a single image.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.
@@ -58,7 +59,10 @@ public final class ArtifactImage implements ContainerSource {
     private final PackedContainerConfiguration containerConfiguration;
 
     /** Additional wirelets. */
+    // Vi evaluere them naar
     private final WireletList wirelets;
+
+    WireletContext wl;
 
     /**
      * Creates a new image from the specified configuration.
@@ -76,7 +80,7 @@ public final class ArtifactImage implements ContainerSource {
      * @param containerConfiguration
      *            the configuration this image will wrap
      * @param wirelets
-     *            any wirelets for the image configuration or artifact instantionation
+     *            any wirelets for the image configuration or artifact instantiation
      */
     private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletList wirelets) {
         this.containerConfiguration = requireNonNull(containerConfiguration);

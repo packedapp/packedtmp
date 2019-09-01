@@ -18,6 +18,7 @@ package app.packed.container.extension;
 import java.lang.annotation.Annotation;
 
 /** A hook representing a instance whose type is annotated with a specific annotation type. */
+// What about inheritance
 public interface AnnotatedTypeHook<T extends Annotation> {
 
     /**

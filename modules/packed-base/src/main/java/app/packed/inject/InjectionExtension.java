@@ -30,9 +30,9 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.config.site.PackedBaseConfigSiteOperations;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.build.AtProvidesGroup;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.AbstractInjector;
+import packed.internal.inject.util.AtProvidesGroup;
 
 /**
  * This extension provides functionality for injection and service management.
@@ -61,7 +61,7 @@ import packed.internal.inject.run.AbstractInjector;
 public final class InjectionExtension extends Extension {
 
     /** The injector builder that does the hard work. */
-    private final InjectorBuilder builder;
+    final InjectorBuilder builder;
 
     /** Creates a new injector extension. */
     InjectionExtension(PackedContainerConfiguration configuration) {
@@ -75,10 +75,15 @@ public final class InjectionExtension extends Extension {
     }
 
     /**
+     * Exports a service with the specified type.
+     * 
+     * 
      * @param <T>
+     *            the type of service to export
      * @param key
-     *            the key to export
+     *            the key of the service to export
      * @return a configuration for the exported service
+     * @see #export(Key)
      */
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
@@ -102,7 +107,7 @@ public final class InjectionExtension extends Extension {
      * </pre>
      * 
      * @param <T>
-     *            the type of the exposed service
+     *            the type of the service to export
      * @param key
      *            the key of the internal service to expose
      * @return a service configuration for the exposed service
@@ -120,6 +125,8 @@ public final class InjectionExtension extends Extension {
      * @param configuration
      *            the service to export
      * @return a new service configuration object representing the exported service
+     * @throws IllegalArgumentException
+     *             if the specified configuration object was created by another injection extension instance .
      */
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");

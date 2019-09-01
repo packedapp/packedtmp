@@ -18,7 +18,6 @@ package packed.internal.container;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactRuntimeContext;
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
 import packed.internal.inject.run.DefaultInjector;
@@ -43,7 +42,8 @@ public final class PackedArtifactContext extends AbstractComponent implements Ar
      * @param instantiationContext
      *            the instantiation context of the container
      */
-    PackedArtifactContext(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration, ArtifactInstantiationContext instantiationContext) {
+    PackedArtifactContext(@Nullable AbstractComponent parent, PackedContainerConfiguration configuration,
+            PackedArtifactInstantiationContext instantiationContext) {
         super(parent, configuration, instantiationContext);
         Injector i = instantiationContext.get(configuration, DefaultInjector.class);
         if (i == null) {
@@ -53,10 +53,12 @@ public final class PackedArtifactContext extends AbstractComponent implements Ar
         instantiationContext.put(configuration, this);
     }
 
+    @Override
     public Injector injector() {
         return injector;
     }
 
+    @Override
     public <T> T use(Class<T> key) {
         return injector.use(key);
     }

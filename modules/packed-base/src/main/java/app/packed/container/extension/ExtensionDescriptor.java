@@ -16,8 +16,10 @@
 package app.packed.container.extension;
 
 /**
- *
+ * Ideen er egentlig at man kan tage en extension klasse som parameter.. og finde ud af dens properties....
  */
+
+/// Maaske man altid skal define hookOnAnnotatedFields... og saa lade @ActivateExtension vaere som den er...
 class ExtensionDescriptor {
 
     // Hook Annotations
@@ -27,7 +29,7 @@ class ExtensionDescriptor {
 
     //// Sidecars
 
-    public static ExtensionDescriptor of(ExtensionDescriptor ed) {
+    public static ExtensionDescriptor of(Class<? extends Extension> ed) {
         throw new UnsupportedOperationException();
     }
 

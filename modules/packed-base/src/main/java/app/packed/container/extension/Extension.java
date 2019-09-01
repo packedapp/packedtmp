@@ -86,6 +86,16 @@ public abstract class Extension {
             public void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context) {
                 extension.onPrepareContainerInstantiation(context);
             }
+
+            @Override
+            public <E extends Extension, T extends ExtensionPipeline<T>> T wireletNewPipeline(E extension, ExtensionWirelet<E, T> wirelet) {
+                return wirelet.newPipeline(extension);
+            }
+
+            @Override
+            public <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet) {
+                wirelet.process(pipeline);
+            }
         });
     }
 
@@ -123,16 +133,21 @@ public abstract class Extension {
     }
 
     /**
-     * Captures a stack frame.
+     * Captures the configuration site by finding the first stack frame that is not located on a subclass of
+     * {@link Extension}.
      * <p>
-     * If stack frame capturing is disabled, this method returns {@link ConfigSite#UNKNOWN}.
+     * Invoking this method typically takes in the order of 1-2 microseconds.
+     * <p>
+     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+     * {@link ConfigSite#UNKNOWN}.
      * 
      * @param operation
      *            the operation
-     * @return a stack capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing is disabled
+     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+     * @see StackWalker
      */
     protected final ConfigSite captureStackFrame(String operation) {
-        return containerConfigSite().thenCaptureStackFrame(operation);
+        return configuration().configSite().thenCaptureStackFrame(operation);
     }
 
     /**
@@ -156,7 +171,8 @@ public abstract class Extension {
      * 
      * @return the configuration of the container
      */
-    protected ContainerConfiguration configuration() {
+    // Is used to put stuff into ArtifactInstantiationContext...
+    protected final ContainerConfiguration configuration() {
         // When calling this method remember to add test to BasicExtensionTest
         ContainerConfiguration c = configuration;
         if (c == null) {
@@ -164,22 +180,6 @@ public abstract class Extension {
                     "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization");
         }
         return c;
-    }
-
-    /**
-     * Captures the configuration site by finding the first stack frame that is not located on a subclass of
-     * {@link Extension}.
-     * <p>
-     * Invoking this method typically takes in the order of 1-2 microseconds.
-     * <p>
-     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-     * {@link ConfigSite#UNKNOWN}.
-     * 
-     * @return a configuration site
-     * @see StackWalker
-     */
-    protected final ConfigSite containerConfigSite() {
-        return configuration().configSite();
     }
 
     protected final void installInParentIfSameArtifact() {
@@ -200,22 +200,28 @@ public abstract class Extension {
     }
 
     /**
-     * This method is invoked (by the runtime) immediately after the extension is added to the configuration of a container.
-     * For example, via a call to {@link ContainerConfiguration#use(Class)}. After this method has returned the extension
-     * instance is returned to the user.
+     * This callback method is invoked (by the runtime) immediately after this extension has been instantiated and added to
+     * the configuration of the container, but before the extension instance has been returned to the user. This method is
+     * typically invoked as the result of a user calling {@link ContainerConfiguration#use(Class)}.
      * <p>
-     * Under normal circumstances {@link #onConfigured()} is the next callback method on this class invoked by the runtime.
+     * The newly instantiated extension is returned to the user immediately after this method returns.
      * <p>
-     * The default implementation does nothing.
+     * Unless any errors occur, {@link #onConfigured()} is the next callback method that is invoked by the runtime.
+     * <p>
+     * The default implementation of this method does nothing.
      */
     protected void onAdded() {}
 
     /**
-     * Invoked immediately after a container has been successfully configured. Typically after {@link Bundle#configure()}
-     * has returned.
+     * A callback method that is invoked immediately after a container has been successfully configured. This is typically
+     * after {@link Bundle#configure()} has returned.
      * <p>
-     * The default implementation does nothing.
+     * <p>
+     * The default implementation of this method does nothing.
      */
+    // If the container contains multiple extensions. They are invoked in reverse order. If E2 has a dependency on E1.
+    // E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform
+    // additional configuration on other extension after user code has been executed
     protected void onConfigured() {} // afterConfigure,
 
     /**
@@ -225,6 +231,9 @@ public abstract class Extension {
      * @param context
      *            an instantiation context object
      */
+    // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
+    // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
+    // har extension communication
     protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
 
     final void runWithLookup(Lookup lookup, Runnable runnable) {
@@ -235,6 +244,7 @@ public abstract class Extension {
         // Ikke goer noget sjovt her. Hmm, altsaa indvitere man en extension indenfor...
 
         // Men vi vel helst have at de giver adgang via module-info...
+        // Eller via Factory.withLookup();
     }
 
     /**

@@ -19,10 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.container.extension.hook.PackedFieldOperator;
 
@@ -35,10 +35,18 @@ import packed.internal.container.extension.hook.PackedFieldOperator;
 // An operator that when applied ....
 public interface FieldOperator<T> {
 
-    T apply(MethodHandles.Lookup lookup, Field field, Object instance);
+    /**
+     * Returns a new operator that will fail to work with non final-fields.
+     * 
+     * @return the new operator
+     * @see Modifier#isFinal(int)
+     */
+    FieldOperator<T> requireFinal();
+
+    T apply(MethodHandles.Lookup caller, Field field, Object instance);
 
     /**
-     * @param lookup
+     * @param caller
      *            a lookup object that must have access to the specified field
      * @param field
      *            the field to operate on
@@ -46,8 +54,11 @@ public interface FieldOperator<T> {
      * @throws IllegalArgumentException
      *             if the specified field is not static
      */
-    T applyStatic(MethodHandles.Lookup lookup, Field field);
+    T applyStatic(MethodHandles.Lookup caller, Field field);
 
+    /**
+     * @return stuff
+     */
     static FieldOperator<Consumer<Object>> consumer() {
         throw new UnsupportedOperationException();
     }
@@ -55,25 +66,18 @@ public interface FieldOperator<T> {
     static <E> FieldOperator<Consumer<E>> consumer(Class<E> fieldType) {
         throw new UnsupportedOperationException();
     }
-    //
-    // static FieldOperator<Object> getOnce() {
-    // // throw new XXX("Fields annotated with XXX cannot return null");
-    // // Hmm. Saa burde vi jo ogsaa have suppliers der ikke returnere null....
-    // throw new UnsupportedOperationException();
-    // }
 
     /**
      * Returns a field operator that reads a field once, and returns the value (possible null).
      * 
      * @return a field operator that reads a field once
      */
-    @Nullable
     static FieldOperator<Object> getOnce() {
         return new PackedFieldOperator.GetOnceInternalFieldOperation<>();
     }
 
     /**
-     * Returns a field operator that reads a field once.
+     * Returns a field operator that can be used to read a field exactly once.
      * 
      * @param <E>
      *            the type of field (value to get)
@@ -82,8 +86,10 @@ public interface FieldOperator<T> {
      * @return the new field operator
      */
     @SuppressWarnings("unchecked")
-    @Nullable
     // TODO do we do exact check...
+    // Yeah, or throws ClassCastException..
+    // Den er en lille smule ligegyldig here.
+    // Da brugeren formentlig vil lave et cast lige bagefter
     static <E> FieldOperator<E> getOnce(Class<E> fieldType) {
         return (FieldOperator<E>) getOnce();
     }
@@ -98,13 +104,13 @@ public interface FieldOperator<T> {
      */
     @SuppressWarnings("unchecked")
     // We could theoretically check the signature of the field....
-    @Nullable
     static <E> FieldOperator<E> getOnce(TypeLiteral<E> fieldType) {
         return (FieldOperator<E>) getOnce(fieldType.rawType());
     }
 
     /**
-     * Returns a field operator that will
+     * Returns a field operator that creates {@link MethodHandle} with getter semantics as outlined in
+     * {@link Lookup#unreflectGetter(Field)}.
      * 
      * @return a field operator that will create a getter
      * @see Lookup#unreflectGetter(Field)
@@ -136,3 +142,54 @@ public interface FieldOperator<T> {
         return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 }
+
+//// Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
+//// Move these to descriptor????
+//// hook.field().checkFinal().checkAssignableTo()....
+////// Nah... Tror gerne vi vil have annoteringen med...
+////// Det kan vi ikke faa hvis vi har den paa descriptoren...
+// AnnotatedFieldHook<T> checkAssignableTo(Class<?> type);
+//
+//// Move checks to field operator????
+//// FieldOperator.checkFinalField().checkStatic
+// AnnotatedFieldHook<T> checkExactType(Class<?> type);
+//
+/// **
+// * Checks that the underlying field is final.
+// *
+// * @throws InvalidDeclarationException
+// * if the underlying field is not final
+// * @return this hook
+// * @see Modifier#isFinal(int)
+// */
+// AnnotatedFieldHook<T> checkFinal();
+//
+/// **
+// * Checks that the underlying field is not final.
+// *
+// * @throws InvalidDeclarationException
+// * if the underlying field is final
+// * @return this hook
+// * @see Modifier#isFinal(int)
+// */
+// AnnotatedFieldHook<T> checkNotFinal();
+//
+/// **
+// * Checks that the underlying field is not static.
+// *
+// * @throws InvalidDeclarationException
+// * if the underlying field is static
+// * @return this hook
+// * @see Modifier#isStatic(int)
+// */
+// AnnotatedFieldHook<T> checkNotStatic();
+//
+/// **
+// * Checks that the underlying field is static.
+// *
+// * @throws InvalidDeclarationException
+// * if the underlying field is not static
+// * @return this hook
+// * @see Modifier#isStatic(int)
+// */
+// AnnotatedFieldHook<T> checkStatic();

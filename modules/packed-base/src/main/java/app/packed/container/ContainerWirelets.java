@@ -15,7 +15,7 @@
  */
 package app.packed.container;
 
-import packed.internal.container.ComponentNameWirelet;
+import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 
 /**
  *

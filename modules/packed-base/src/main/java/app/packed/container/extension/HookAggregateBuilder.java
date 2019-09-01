@@ -31,6 +31,7 @@ import java.util.function.BiFunction;
 // Take all methods that starts with "on"
 
 // HookGroupBuilder istedet for???
+// HookAggregator
 public interface HookAggregateBuilder<T> {
 
     /** Builds and returns the aggregate object. */

@@ -43,6 +43,12 @@ public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
 
     /** {@inheritDoc} */
     @Override
+    public FieldOperator<T> requireFinal() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final T applyStatic(Lookup lookup, Field field) {
         MethodHandle mh;
         try {
@@ -104,6 +110,7 @@ public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
     }
 
     public static class StaticSup<T> implements Supplier<T> {
+
         private final MethodHandle mh;
 
         /**

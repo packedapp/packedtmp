@@ -28,8 +28,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.container.extension.Extension;
-import packed.internal.container.extension.ExtensionModel;
-import packed.internal.container.extension.ExtensionModelWithCachedSupplier;
 
 /**
  *
@@ -54,7 +52,7 @@ public class ExtensionMicro {
 
     @Benchmark
     public MyExtension newExtensionCachedMethodHandle() {
-        return ExtensionModel.newInstance(null, MyExtension.class);
+        return ExtensionModel.newInstance(MyExtension.class, null);
     }
 
     @Benchmark

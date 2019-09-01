@@ -43,7 +43,7 @@ import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 import packed.internal.config.site.PackedBaseConfigSiteOperations;
-import packed.internal.container.extension.ExtensionModel;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.extension.hook.DelayedAccessor;
 import packed.internal.container.extension.hook.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.container.extension.hook.DelayedAccessor.SidecarMethodDelayerAccessor;
@@ -57,7 +57,7 @@ import packed.internal.support.AppPackedExtensionSupport;
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** All registered extensions, in order of registration. */
-    private final LinkedHashMap<Class<? extends Extension>, Extension> extensions = new LinkedHashMap<>();
+    private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
 
     private HashMap<String, DefaultLayer> layers;
 
@@ -86,7 +86,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource source, Wirelet... wirelets) {
         super(ConfigSite.captureStack(PackedBaseConfigSiteOperations.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
-        this.lookup = this.model = ContainerModel.of(source.getClass());
+        this.lookup = this.model = ContainerModel.from(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -98,12 +98,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      * @param bundle
      *            the bundle that was linked
      * @param wirelets
-     *            any wirelets specified by the userß
+     *            any wirelets specified by the user
      */
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
         super(parent.configSite().thenCaptureStackFrame(PackedBaseConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
-        this.lookup = this.model = ContainerModel.of(bundle.getClass());
+        this.lookup = this.model = ContainerModel.from(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
     }
 
@@ -117,8 +117,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         doBuild();
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
-        for (Extension e : extensions.values()) {
-            AppPackedExtensionSupport.invoke().buildBundle(e, builder);
+        for (PackedExtensionContext e : extensions.values()) {
+            AppPackedExtensionSupport.invoke().buildBundle(e.extension, builder);
         }
     }
 
@@ -164,23 +164,22 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     void extensionsContainerConfigured() {
         installPrepare(State.GET_NAME_INVOKED);
-        for (Extension e : extensions.values()) {
-            AppPackedExtensionSupport.invoke().onConfigured(e);
+        for (PackedExtensionContext e : extensions.values()) {
+            AppPackedExtensionSupport.invoke().onConfigured(e.extension);
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof PackedContainerConfiguration) {
-                    PackedContainerConfiguration dcc = (PackedContainerConfiguration) acc;
-                    dcc.extensionsContainerConfigured();
+                    ((PackedContainerConfiguration) acc).extensionsContainerConfigured();
                 }
             }
         }
     }
 
     @Override
-    void extensionsPrepareInstantiation(ArtifactInstantiationContext ic) {
-        for (Extension e : extensions.values()) {
-            AppPackedExtensionSupport.invoke().onPrepareContainerInstantiation(e, ic);
+    void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
+        for (PackedExtensionContext e : extensions.values()) {
+            AppPackedExtensionSupport.invoke().onPrepareContainerInstantiation(e.extension, ic);
         }
         super.extensionsPrepareInstantiation(ic);
     }
@@ -216,7 +215,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     /** {@inheritDoc} */
     @Override
-    PackedArtifactContext instantiate(AbstractComponent parent, ArtifactInstantiationContext ic) {
+    PackedArtifactContext instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         return new PackedArtifactContext(parent, this, ic);
     }
 
@@ -324,25 +323,30 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T extends Extension> T getExtension(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return (T) extensions.get(extensionType);
+        PackedExtensionContext pec = extensions.get(extensionType);
+        return pec == null ? null : (T) pec.extension;
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        T e = getExtension(extensionType);
-        // We do not use the computeIfAbsent, because extensions might install other extensions.
-        // Which would fail with ConcurrentModificationException (see ExtensionDependenciesTest)
+        requireNonNull(extensionType, "extensionType is null");
+        PackedExtensionContext pec = extensions.get(extensionType);
 
-        if (e == null) {
+        // We do not use the computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
+        // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
+
+        if (pec == null) {
             checkConfigurable(); // installing new extensions after configuration is done is not allowed
-            e = ExtensionModel.newInstance(this, extensionType);
-            extensions.put(extensionType, e); // make sure it is installed before we call into user code
-            AppPackedExtensionSupport.invoke().onAdded(e, this);
+            pec = PackedExtensionContext.create(extensionType, this);
+            extensions.put(extensionType, pec); // make sure it is installed before we call into user code Extension#onAdded
+            AppPackedExtensionSupport.invoke().onAdded(pec.extension, this);
         }
-        return e;
+        return (T) pec.extension;
     }
 
     /** {@inheritDoc} */

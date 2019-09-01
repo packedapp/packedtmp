@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package packed.app.packed.inject2;
 
 import static java.util.Objects.requireNonNull;
+
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.extension.ExtensionPipeline;
 
 /**
  *
@@ -47,7 +51,7 @@ class MyExtensionWirelet extends ExtensionWirelet<MyExtension, MyExtensionWirele
 }
 
 //// Supportere aldrig mere end en type per extension.....
-class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtension> {
+class MyExtensionWireletPipeline extends ExtensionPipeline<MyExtensionWireletPipeline> {
 
     String name;
     final MyExtension extension;
@@ -70,7 +74,7 @@ class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtension> {
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensionWireletPipeline<MyExtension> split() {
+    protected MyExtensionWireletPipeline split() {
         return new MyExtensionWireletPipeline(extension, name);
     }
 }

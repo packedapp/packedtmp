@@ -27,14 +27,15 @@ import app.packed.inject.InjectionExtension;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
+import packed.internal.support.AppPackedInjectSupport;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
+public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
 
     /** {@inheritDoc} */
     @Override
     public final InjectionPipeline newPipeline(InjectionExtension extension) {
-        return new InjectionPipeline(extension);
+        return new InjectionPipeline(AppPackedInjectSupport.invoke().getBuilder(extension));
     }
 
     /**
@@ -45,7 +46,7 @@ public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<Inje
      */
     abstract void process(ImportedInjector ii);
 
-    public static class FilterOnKey extends PackedUpstreamServiceWirelet {
+    public static class FilterOnKey extends PackedUpstreamInjectionWirelet {
 
         final Set<Key<?>> set;
 
@@ -69,7 +70,7 @@ public abstract class PackedUpstreamServiceWirelet extends ExtensionWirelet<Inje
     }
 
     /** A wirelet for {@link UpstreamServiceWirelets#peek(Consumer)}. */
-    public static class Peek extends PackedUpstreamServiceWirelet {
+    public static class Peek extends PackedUpstreamInjectionWirelet {
 
         /** The peek action to execute. */
         private final Consumer<? super ServiceDescriptor> action;

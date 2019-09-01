@@ -38,6 +38,11 @@ public interface ComponentLookup {
 
     MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
 
+    /**
+     * @param method
+     *            the method to unreflect
+     * @return a method handle for the unreflected method
+     */
     default MethodHandle unreflect(Method method) {
         try {
             Lookup l = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup());
@@ -57,7 +62,6 @@ public interface ComponentLookup {
     }
 
     default MethodHandle unreflectSetter(Field field) {
-
         try {
             Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
             return l.unreflectSetter(field);

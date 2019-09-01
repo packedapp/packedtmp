@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,12 +28,11 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.invoke.InvokableMember;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /** A descriptor for a member annotated with {@link Provide}. */
-final class AtProvides {
+public final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */
     @Nullable
@@ -60,7 +59,7 @@ final class AtProvides {
     /** The invokable member. */
     public final InvokableMember<?> invokable;
 
-    AtProvides(MethodHandle mh, InternalMemberDescriptor member, InvokableMember<?> invokable, Key<?> key, Provide provides,
+    public AtProvides(MethodHandle mh, InternalMemberDescriptor member, InvokableMember<?> invokable, Key<?> key, Provide provides,
             List<InternalDependencyDescriptor> dependencies) {
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);

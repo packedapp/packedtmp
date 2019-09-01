@@ -18,30 +18,12 @@ package app.packed.container.extension;
 import app.packed.container.Wirelet;
 
 /**
- *
- *
+ * Extensions that make use of wirelets must use extends
  * 
+ * A wirelet attached to
  */
+public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionPipeline<T>> extends Wirelet {
 
-// CheckConfigurable is more important than ever...
-// Bacause basically anyone
-
-// Maybe check that they are the same module....
-public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionWireletPipeline<E>> extends Wirelet {
-
-    // final Class<T> extensionType;
-    //
-    // protected ExtensionWirelet(Class<T> extensionType) {
-    // this.extensionType = requireNonNull(extensionType, "extensionType is null");
-    // if (extensionType.getModule() != getClass().getModule()) {
-    // throw new IllegalArgumentException("The wirelet and the extension must be defined in the same module, however
-    // extension "
-    // + StringFormatter.format(extensionType) + " was defined in " + extensionType.getModule() + ", and this wirelet type "
-    // + StringFormatter.format(getClass()) + " was defined in module " + getClass().getModule());
-    // }
-    // }
-
-    // Skal vi tage en build context??
     /**
      * <p>
      * 
@@ -51,5 +33,8 @@ public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionW
      */
     protected abstract T newPipeline(E extension);
 
+    /**
+     * @param context
+     */
     protected abstract void process(T context);
 }

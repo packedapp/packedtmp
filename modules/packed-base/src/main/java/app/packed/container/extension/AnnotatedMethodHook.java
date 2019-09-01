@@ -35,7 +35,7 @@ public interface AnnotatedMethodHook<T extends Annotation> {
     <E> HookApplicator<E> applicator(MethodOperator<E> operator);
 
     /**
-     * Applies the specified method operator to the underlying static method.
+     * Applies the specified operator to the underlying method.
      * 
      * @param <E>
      *            the type of result from applying the operator
@@ -47,17 +47,17 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * @throws IllegalAccessRuntimeException
      *             if access checking failed while applying the operator
      */
-    <E> E applyOnStaticMethod(MethodOperator<E> operator);
+    <E> E applyStatic(MethodOperator<E> operator);
 
     /**
-     * Returns the annotated method.
+     * Returns a descriptor for the underlying method.
      * 
-     * @return the annotated method
+     * @return a descriptor for the underlying method
      */
     MethodDescriptor method();
 
     /**
-     * Returns a {@link MethodHandle} to the underlying method.
+     * Returns a {@link MethodHandle} for the underlying method.
      * <p>
      * The returned method handle is never bound to a receiver, even if the underlying method is an instance method.
      * 

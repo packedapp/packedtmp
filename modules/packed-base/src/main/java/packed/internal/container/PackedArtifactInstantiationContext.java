@@ -84,7 +84,12 @@ final class PackedArtifactInstantiationContext implements ArtifactInstantiationC
         return (T) o;
     }
 
-    @Override
+    /**
+     * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
+     * using an image.
+     * 
+     * @return a list of wirelets that used to instantiate
+     */
     public WireletList wirelets() {
         return wirelets;
     }

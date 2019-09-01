@@ -36,6 +36,7 @@ import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
+import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.JavaXInjectSupport;
 import packed.internal.invoke.ExecutableFunctionHandle;
@@ -111,8 +112,13 @@ public class Factory<T> {
         AppPackedInjectSupport.Helper.init(new AppPackedInjectSupport.Helper() {
 
             @Override
-            protected <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
+            public <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
                 return factory.factory.function;
+            }
+
+            @Override
+            public InjectorBuilder getBuilder(InjectionExtension ie) {
+                return ie.builder;
             }
         });
     }

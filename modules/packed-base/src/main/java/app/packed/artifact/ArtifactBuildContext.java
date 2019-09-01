@@ -27,7 +27,7 @@ import app.packed.errorhandling.ErrorMessage;
  * A build context is never available when we build something from an image. Or is it???
  */
 // Hmm, Naar vi laver et image eller en descriptor, syntes jeg egentlig ikke vi laver en Artifact
-
+// Saa burde vi jo heller ikke have en build context....
 public interface ArtifactBuildContext {
 
     void addError(ErrorMessage message);

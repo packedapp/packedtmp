@@ -32,8 +32,8 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHook;
 import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.OnHook;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
@@ -93,7 +93,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @ActivateExtension(MyExtension.class /* = Builder.class */)
+    @ActivateExtension(MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
     }

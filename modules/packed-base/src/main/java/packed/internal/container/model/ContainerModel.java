@@ -107,6 +107,7 @@ public final class ContainerModel implements ComponentLookup {
     /** {@inheritDoc} */
     @Override
     public Lookup lookup() {
+        // Should we return a private lookup???
         // TODO fix, this method does not work
         return MethodHandles.lookup();
     }
@@ -118,18 +119,30 @@ public final class ContainerModel implements ComponentLookup {
         return sourceType;
     }
 
+    ComponentLookup defaultLookup;
+
     public ComponentLookup withLookup(Lookup lookup) {
-        return lookup == null ? this : lookups.get(lookup);
+        // Use default access (this) if we specify null lookup
+        if (lookup == null) {
+            return this;
+        } else if (lookup.lookupClass() == sourceType() && lookup.lookupModes() == 3) {
+            ComponentLookup cl = defaultLookup;
+            if (cl != null) {
+                return cl;
+            }
+            return defaultLookup = lookups.get(lookup);
+        }
+        return lookups.get(lookup);
     }
 
     /**
-     * Returns a bundle class cache object for the specified bundle type.
+     * Returns a container model for the specified container source type
      * 
      * @param sourceType
-     *            the bundle type to return a class cache object for
-     * @return a bundle class cache object for the specified bundle type
+     *            the container source type
+     * @return a container model for the specified container source type
      */
-    public static ContainerModel of(Class<? extends ContainerSource> sourceType) {
+    public static ContainerModel from(Class<? extends ContainerSource> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 

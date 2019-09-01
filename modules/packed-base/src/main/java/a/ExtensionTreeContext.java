@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
-
-import app.packed.component.Component;
+package a;
 
 /**
  *
  */
-final class DefaultComponent extends AbstractComponent implements Component {
+public class ExtensionTreeContext<E> {
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
-        super(container, configuration, ic);
-    }
+    // Wirelets
 
-    // Noget med noget instanse..
+    // Extension-To-Extension communication
+
+    // Skal man selv bygge den op????
+
+    // Er dom eller sax?????
+
 }

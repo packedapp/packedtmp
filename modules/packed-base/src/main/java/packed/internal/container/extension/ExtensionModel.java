@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InaccessibleObjectException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.extension.Extension;
@@ -30,6 +30,7 @@ import app.packed.util.NativeImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
+import packed.internal.util.TypeUtil;
 
 /**
  * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
@@ -60,13 +61,25 @@ public final class ExtensionModel<T> {
     private final Class<? extends Extension> extensionType;
 
     /**
-     * Creates a new extension class cache.
+     * Creates a new extension model.
      * 
      * @param type
      *            the extension type
      */
     private ExtensionModel(Class<? extends Extension> type) {
         this.extensionType = requireNonNull(type);
+
+        if (Modifier.isAbstract(type.getModifiers())) {
+            throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(type));
+        } else if (!Extension.class.isAssignableFrom(type)) {
+            throw new IllegalArgumentException(
+                    "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
+        } else if (TypeUtil.isInnerOrLocalClass(type)) {
+            throw new IllegalArgumentException("The specified type '" + StringFormatter.format(type) + "' cannot be an inner or local class");
+        }
+
+        // We have a small hack where we allow PackedContainerConfiguration to be injected.
+        // This only works for modules where PackedContainerConfiguration is exported to
         boolean needsPackedContainerConfiguration = false;
 
         Constructor<?> constructor;
@@ -77,18 +90,45 @@ public final class ExtensionModel<T> {
                 constructor = type.getDeclaredConstructor(PackedContainerConfiguration.class);
                 needsPackedContainerConfiguration = true;
             } catch (NoSuchMethodException ee) {
-                throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be installed.");
+                throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be used");
             }
         }
         this.needsPackedContainerConfiguration = needsPackedContainerConfiguration;
 
+        // Check that the package the extension is located in, is open to app.packed.base
+        if (!type.getModule().isOpen(type.getPackageName(), ExtensionModel.class.getModule())) {
+            String n = type.getModule().getName();
+            String m = ExtensionModel.class.getModule().getName();
+            String p = type.getPackageName();
+            throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
+                    + type.getModule().getName() + "' must be open to '" + m + "'. This can be done either via\n -> open module " + n + "\n -> opens " + p
+                    + "\n -> opens " + p + " to " + m);
+        }
+
+        // Make sure we can read the module where the extension is located.
+        if (!getClass().getModule().canRead(type.getModule())) {
+            getClass().getModule().addReads(type.getModule());
+        }
+
         Lookup lookup = MethodHandles.lookup();
+
+        // See if need to use a private lookup
+        if (!Modifier.isPublic(type.getModifiers()) || !Modifier.isPublic(constructor.getModifiers())) {
+            try {
+                lookup = MethodHandles.privateLookupIn(type, lookup);
+            } catch (IllegalAccessException e) {
+                // This should never happen, because we have checked all preconditions
+                // And we use our own lookup object which have Module access mode enabled.
+
+                // Maybe something with unnamed modules...
+                throw new IllegalAccessRuntimeException("This exception was not expected, please file a bug report with details", e);
+            }
+        }
+
         try {
-            lookup = MethodHandles.privateLookupIn(type, lookup);
             this.constructor = lookup.unreflectConstructor(constructor);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
-                    + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
+        } catch (IllegalAccessException e) {
+            throw new IllegalAccessRuntimeException("This exception was not expected, please file a bug report with details", e);
         }
 
         NativeImage.registerConstructor(constructor);
@@ -101,21 +141,24 @@ public final class ExtensionModel<T> {
      *            the type of extension
      * @param extensionType
      *            the type of extension
+     * @param pcc
+     *            the configuration of the container the extension is being added to
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Extension> T newInstance(PackedContainerConfiguration pcc, Class<T> extensionType) {
-        // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get to 6 ns
-        ExtensionModel<T> ecc = (ExtensionModel<T>) CACHE.get(extensionType);
+    static <T extends Extension> T newInstance(Class<T> extensionType, PackedContainerConfiguration pcc) {
+        // Time goes from around 1000 ns to 12 ns when we cache, with LambdaMetafactory wrapped in supplier we can get down to 6
+        // ns
+        ExtensionModel<T> model = (ExtensionModel<T>) CACHE.get(extensionType);
         try {
-            if (ecc.needsPackedContainerConfiguration) {
-                return (T) ecc.constructor.invoke(pcc);
+            if (model.needsPackedContainerConfiguration) {
+                return (T) model.constructor.invoke(pcc);
             } else {
-                return (T) ecc.constructor.invoke();
+                return (T) model.constructor.invoke();
             }
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
-            throw new UndeclaredThrowableException(t, "Could not instantiate extension '" + StringFormatter.format(ecc.extensionType) + "'");
+            throw new UndeclaredThrowableException(t, "Could not instantiate extension '" + StringFormatter.format(model.extensionType) + "'");
         }
     }
 }

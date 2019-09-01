@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -33,6 +32,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.feature.FeatureMap;
 import app.packed.util.Nullable;
+import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.extension.hook.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
@@ -133,7 +133,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return depth;
     }
 
-    void extensionsPrepareInstantiation(ArtifactInstantiationContext ic) {
+    void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (buildContext == acc.buildContext) {
@@ -159,7 +159,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         return initializeName(State.GET_NAME_INVOKED, null);
     }
 
-    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, ArtifactInstantiationContext ic) {
+    Map<String, AbstractComponent> initializeChildren(AbstractComponent parent, PackedArtifactInstantiationContext ic) {
         if (children == null) {
             return null;
         }
@@ -234,7 +234,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     }
 
-    abstract AbstractComponent instantiate(AbstractComponent parent, ArtifactInstantiationContext ic);
+    abstract AbstractComponent instantiate(AbstractComponent parent, PackedArtifactInstantiationContext ic);
 
     /**
      * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component

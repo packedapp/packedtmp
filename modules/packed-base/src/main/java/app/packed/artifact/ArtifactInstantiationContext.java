@@ -16,7 +16,6 @@
 package app.packed.artifact;
 
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.WireletList;
 import app.packed.util.Nullable;
 
 /**
@@ -57,12 +56,4 @@ public interface ArtifactInstantiationContext {
     void put(ContainerConfiguration configuration, Object obj);
 
     <T> T use(ContainerConfiguration configuration, Class<T> type);
-
-    /**
-     * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
-     * using an image.
-     * 
-     * @return a list of wirelets that used to instantiate
-     */
-    WireletList wirelets();
 }

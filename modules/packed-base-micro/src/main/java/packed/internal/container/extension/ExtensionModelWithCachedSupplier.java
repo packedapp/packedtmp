@@ -35,6 +35,8 @@ import packed.internal.util.StringFormatter;
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
+
+// Gaar fra ca 12 ns til 6 ns
 final class ExtensionModelWithCachedSupplier<T> {
 
     /** A cache of values. */

@@ -15,27 +15,33 @@
  */
 package packed.internal.inject.build;
 
-import app.packed.container.extension.ExtensionWireletPipeline;
-import app.packed.inject.InjectionExtension;
+import static java.util.Objects.requireNonNull;
+
+import app.packed.container.extension.ExtensionPipeline;
+import packed.internal.inject.compose.InjectorResolver;
 
 /**
  *
  */
-public class InjectionPipeline extends ExtensionWireletPipeline<InjectionExtension> {
+public final class InjectionPipeline extends ExtensionPipeline<InjectionPipeline> {
 
-    final InjectionExtension extension;
+    /// ARGHHH... vi skal jo resolve foerst....
 
-    InjectionPipeline(InjectionExtension extension) {
-        this.extension = extension;
+    final InjectorResolver ib;
+
+    InjectionPipeline(InjectorBuilder ib) {
+        this.ib = requireNonNull(ib.resolver);
     }
 
-    InjectionPipeline(InjectionExtension extension, InjectionPipeline previous) {
-        this.extension = extension;
+    InjectionPipeline(InjectionPipeline previous) {
+        this.ib = previous.ib;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensionWireletPipeline<InjectionExtension> split() {
-        return new InjectionPipeline(extension, this);
+    protected InjectionPipeline split() {
+        return new InjectionPipeline(this);
     }
+
+    // Always invoked after resolving...
 }

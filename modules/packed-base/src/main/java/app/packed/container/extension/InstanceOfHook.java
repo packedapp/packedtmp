@@ -32,6 +32,7 @@ public interface InstanceOfHook<T> {
      *
      * @return the instance
      */
+    // Den virker jo ikke.... Skal ogsaa have noget applicator noget.
     T instance();
 
     /**

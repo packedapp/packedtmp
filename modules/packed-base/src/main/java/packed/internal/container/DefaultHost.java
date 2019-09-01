@@ -18,7 +18,6 @@ package packed.internal.container;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.app.App;
-import app.packed.artifact.ArtifactInstantiationContext;
 
 /**
  *
@@ -32,7 +31,7 @@ public class DefaultHost extends AbstractComponent implements ComponentHolder {
     /**
      * @param configuration
      */
-    DefaultHost(AbstractComponentConfiguration configuration, ArtifactInstantiationContext ic) {
+    DefaultHost(AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
         super(null, configuration, ic);
     }
 }
