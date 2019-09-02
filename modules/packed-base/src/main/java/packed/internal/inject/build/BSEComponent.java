@@ -68,11 +68,11 @@ public final class BSEComponent<T> extends BSE<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BSEComponent<?> parent;
 
-    BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, FunctionHandle<T> factory, BSEComponent<?> parent) {
+    BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, BSEComponent<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.mha = requireNonNull(mh);
         this.parent = parent;
-        this.function = requireNonNull(factory, "factory is null");
+        this.function = null;// requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
         this.description = atProvides.description;
     }
@@ -253,12 +253,11 @@ public final class BSEComponent<T> extends BSE<T> {
     public BSE<?> provide(AtProvides atProvides) {
         ConfigSite icss = configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
-        InvokableMember<?> im = atProvides.invokable;
         // if (!atProvides.isStaticMember) {
         // // getInstance(null);
         // // fi = fi.withInstance(this.instance);
         // }
-        BSEComponent<?> node = new BSEComponent<>(icss, atProvides, atProvides.methodHandle, im, this);
+        BSEComponent<?> node = new BSEComponent<>(icss, atProvides, atProvides.methodHandle, this);
         node.as((Key) atProvides.key);
         return node;
     }

@@ -26,9 +26,6 @@ import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import packed.internal.invoke.ExecutableFunctionHandle;
-import packed.internal.invoke.FieldFunctionHandle;
-import packed.internal.invoke.InvokableMember;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMemberDescriptor;
@@ -81,23 +78,20 @@ public final class AtProvidesGroup {
             InternalFieldDescriptor field = InternalFieldDescriptor.of(amh.field());
 
             // Generation of Key, I think we might want to do something that produces a good error message.
-            FieldFunctionHandle<?> handle = new FieldFunctionHandle<>(field.getTypeLiteral(), field, amh.varHandle(), null);
 
-            tryAdd0(amh.getter(), handle, field, Key.fromField(field.unsafeField()), amh.annotation(), List.of());
+            tryAdd0(amh.getter(), field, Key.fromField(field.unsafeField()), amh.annotation(), List.of());
         }
 
         void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
             InternalMethodDescriptor method = (InternalMethodDescriptor) amh.method();
 
-            ExecutableFunctionHandle<?> handle = new ExecutableFunctionHandle<>(method.returnTypeLiteral(), method, amh.methodHandle(), null);
-
-            tryAdd0(amh.methodHandle(), handle, method, Key.fromMethodReturnType(method.newMethod()), amh.annotation(),
+            tryAdd0(amh.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), amh.annotation(),
                     InternalDependencyDescriptor.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, InvokableMember<?> im, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,
+        private AtProvides tryAdd0(MethodHandle mh, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,
                 List<InternalDependencyDescriptor> dependencies) {
-            AtProvides ap = new AtProvides(mh, descriptor, im, key, provides, dependencies);
+            AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this
             // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
