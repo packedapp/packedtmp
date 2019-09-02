@@ -25,7 +25,6 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
 import packed.internal.inject.build.BSE;
-import packed.internal.invoke.FunctionHandle;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -38,17 +37,16 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
     /** An empty object array. */
     private final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-    /** The factory used for creating new instances. */
-    private final FunctionHandle<T> invoker;
-
     Provider<?>[] providers;
+
+    private final MethodHandle mh;
 
     /**
      * @param node
      */
-    public RSNPrototype(BSE<T> node, FunctionHandle<T> function) {
+    public RSNPrototype(BSE<T> node, MethodHandle mh) {
         super(node);
-        this.invoker = requireNonNull(function);
+        this.mh = requireNonNull(mh);
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RSE<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();
@@ -99,11 +97,10 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
             }
         }
         try {
-            MethodHandle mh = invoker.toMethodHandle();
             return (T) mh.invokeWithArguments(params);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new InjectionException("Failed to inject " + invoker, e);
+            throw new InjectionException("Failed to inject ", e);
         }
     }
 }

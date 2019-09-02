@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.Semaphore;
 
-import app.packed.inject.ProvideHelper;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
 import packed.internal.inject.Provider;
 import packed.internal.inject.build.BSE;
@@ -48,7 +48,7 @@ public final class RSNLazy<T> extends RSE<T> {
      */
     public RSNLazy(BSE<T> node, FunctionHandle<T> factory, @Nullable RSE<T> parent) {
         super(node);
-        this.lazy = new Sync(new RSNPrototype<>(node, factory), parent);
+        this.lazy = new Sync(new RSNPrototype<>(node, factory.toMethodHandle()), parent);
     }
 
     /** {@inheritDoc} */

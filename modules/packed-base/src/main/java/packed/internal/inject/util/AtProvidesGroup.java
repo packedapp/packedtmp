@@ -99,7 +99,6 @@ public final class AtProvidesGroup {
                 List<InternalDependencyDescriptor> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, im, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
-
             // Check this
             // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
             // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");

@@ -63,14 +63,25 @@ public final class BSEComponent<T> extends BSE<T> {
     /** The instantiation mode of this node. */
     private InstantiationMode instantionMode;
 
+    private final MethodHandle mha;
+
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final BSEComponent<?> receiver;
+    private final BSEComponent<?> parent;
+
+    BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, FunctionHandle<T> factory, BSEComponent<?> parent) {
+        super(parent.injectorBuilder, configSite, atProvides.dependencies);
+        this.mha = requireNonNull(mh);
+        this.parent = parent;
+        this.function = requireNonNull(factory, "factory is null");
+        this.instantionMode = atProvides.instantionMode;
+        this.description = atProvides.description;
+    }
 
     public BSEComponent(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
             List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.function = requireNonNull(function, "factory is null");
-        this.receiver = null;
+        this.parent = null;
         this.instantionMode = requireNonNull(instantionMode);
 
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
@@ -80,7 +91,7 @@ public final class BSEComponent<T> extends BSE<T> {
         // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
         // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         // }
-        mh = null;
+        mha = null;
     }
 
     /**
@@ -96,36 +107,15 @@ public final class BSEComponent<T> extends BSE<T> {
     public BSEComponent(InjectorBuilder injectorConfiguration, ConfigSite configSite, T instance) {
         super(injectorConfiguration, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
-        this.receiver = null;
+        this.parent = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
-        this.mh = null;
-    }
-
-    private final MethodHandle mh;
-
-    BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, FunctionHandle<T> factory, BSEComponent<?> parent) {
-        super(parent.injectorBuilder, configSite, atProvides.dependencies);
-        this.mh = requireNonNull(mh);
-        this.receiver = parent;
-        this.function = requireNonNull(factory, "factory is null");
-        this.instantionMode = atProvides.instantionMode;
-        this.description = atProvides.description;
+        this.mha = null;
     }
 
     @Override
     public BSE<?> declaringNode() {
-        return receiver;
-    }
-
-    private FunctionHandle<T> fac() {
-        if (receiver != null) {
-            InvokableMember<T> ff = (InvokableMember<T>) function;
-            if (ff.isMissingInstance()) {
-                function = ff.withInstance(receiver.getInstance(null));
-            }
-        }
-        return function;
+        return parent;
     }
 
     /** {@inheritDoc} */
@@ -182,7 +172,22 @@ public final class BSEComponent<T> extends BSE<T> {
             }
         }
         Object o;
-        MethodHandle mh = fac().toMethodHandle();
+        MethodHandle mh;
+        if (mha == null) {
+            mh = newInstanceHelper().toMethodHandle();
+        } else {
+            mh = mha;
+            if (parent != null) {
+                if (mh.type().parameterCount() == 1) {
+                    mh = mh.bindTo(parent.getInstance(null));
+                }
+            }
+        }
+
+        if (mha != null) {
+            System.out.println(mh + "  " + newInstanceHelper().toMethodHandle());
+        }
+        // System.out.println();
 
         // It would actually be nice with the receiver here as well...
         try {
@@ -197,6 +202,18 @@ public final class BSEComponent<T> extends BSE<T> {
         return t;
     }
 
+    boolean instanceBound;
+
+    private FunctionHandle<T> newInstanceHelper() {
+        if (parent != null) {
+            InvokableMember<T> ff = (InvokableMember<T>) function;
+            if (ff.isMissingInstance()) {
+                function = ff.withInstance(parent.getInstance(null));
+            }
+        }
+        return function;
+    }
+
     /** {@inheritDoc} */
     @Override
     final RSE<T> newRuntimeNode() {
@@ -204,18 +221,18 @@ public final class BSEComponent<T> extends BSE<T> {
         if (i != null) {
             return new RSESingleton<>(this, i);
         }
-
-        if (receiver == null || receiver.instantiationMode() == InstantiationMode.SINGLETON || receiver.instance != null
+        FunctionHandle<T> fh = newInstanceHelper();
+        if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
                 || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
             if (instantionMode == InstantiationMode.PROTOTYPE) {
-                return new RSNPrototype<>(this, fac());
+                return new RSNPrototype<>(this, fh.toMethodHandle());
             } else {
-                return new RSNLazy<>(this, fac(), null);
+                return new RSNLazy<>(this, fh, null);
             }
         }
         // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
 
-        return new RSNLazy<>(this, fac(), null);
+        return new RSNLazy<>(this, fh, null);
 
     }
 
