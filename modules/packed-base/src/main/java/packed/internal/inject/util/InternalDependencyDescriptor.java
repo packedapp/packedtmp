@@ -244,6 +244,10 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
         return ofVariable(InternalFieldDescriptor.of(field));
     }
 
+    public static InternalDependencyDescriptor fromField(FieldDescriptor field) {
+        return ofVariable(InternalFieldDescriptor.of(field));
+    }
+
     public static <T> InternalDependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(actualClass, baseClass, baseClassTypeVariableIndex);
 

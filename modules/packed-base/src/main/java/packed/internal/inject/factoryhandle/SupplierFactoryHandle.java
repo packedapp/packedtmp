@@ -53,23 +53,23 @@ public final class SupplierFactoryHandle<T> extends FactoryHandle<T> {
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // @Nullable
-    // public T invoke(Object[] ignore) {
-    // T instance = supplier.get();
-    // if (!returnTypeRaw().isInstance(instance)) {
-    // throw new InjectionException(
-    // "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce
-    // instances of '"
-    // + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-    // }
-    // return instance;
-    // }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
         return GET.bindTo(supplier);
     }
 }
+
+// /** {@inheritDoc} */
+// @Override
+// @Nullable
+// public T invoke(Object[] ignore) {
+// T instance = supplier.get();
+// if (!returnTypeRaw().isInstance(instance)) {
+// throw new InjectionException(
+// "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce
+// instances of '"
+// + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+// }
+// return instance;
+// }

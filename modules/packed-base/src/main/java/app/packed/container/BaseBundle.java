@@ -130,9 +130,8 @@ public abstract class BaseBundle extends Bundle {
         return injector().export(configuration);
     }
 
-    protected final void exportHooks(Class<?>... hookTypes) {
-        // interface = Instance Of Hooks
-        throw new UnsupportedOperationException();
+    protected final void exportAll() {
+        injector().exportAll();
     }
 
     // protected final void exportHooks(Contract contract) {

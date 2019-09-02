@@ -41,26 +41,26 @@ public class BiFunctionFactoryHandle<T, U, R> extends FactoryHandle<R> {
         this.function = requireNonNull(function);
     }
 
-    // /** {@inheritDoc} */
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // @Nullable
-    // public R invoke(Object[] params) {
-    // T t = (T) params[0];
-    // U u = (U) params[1];
-    // R instance = function.apply(t, u);
-    // if (!returnTypeRaw().isInstance(instance)) {
-    // throw new InjectionException(
-    // "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce
-    // instances of '"
-    // + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-    // }
-    // return instance;
-    // }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
         return APPLY.bindTo(function);
     }
 }
+
+// /** {@inheritDoc} */
+// @SuppressWarnings("unchecked")
+// @Override
+// @Nullable
+// public R invoke(Object[] params) {
+// T t = (T) params[0];
+// U u = (U) params[1];
+// R instance = function.apply(t, u);
+// if (!returnTypeRaw().isInstance(instance)) {
+// throw new InjectionException(
+// "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce
+// instances of '"
+// + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+// }
+// return instance;
+// }

@@ -22,7 +22,6 @@ import app.packed.util.TypeLiteral;
 /**
  *
  */
-// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
 public class BindableFactoryHandle<T> extends FactoryHandle<T> {
 
     FactoryHandle<T> wrapping;
@@ -31,16 +30,16 @@ public class BindableFactoryHandle<T> extends FactoryHandle<T> {
         super(typeLiteral);
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // @Nullable
-    // public T invoke(Object[] params) {
-    // return null;
-    // }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
         throw new UnsupportedOperationException();
     }
 }
+
+// /** {@inheritDoc} */
+// @Override
+// @Nullable
+// public T invoke(Object[] params) {
+// return null;
+// }

@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.container.extension.ActivateExtension;
+
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
  * <code>@Inject</code> annotations on the constructor or method that must have dependencies injected. However, in some
@@ -44,4 +46,5 @@ import java.lang.annotation.Target;
 
 // It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
 // invoked during the injection phase
+@ActivateExtension(InjectionExtension.class)
 public @interface Inject {}

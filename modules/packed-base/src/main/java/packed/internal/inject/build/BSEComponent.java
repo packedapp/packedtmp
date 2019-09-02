@@ -242,10 +242,4 @@ public final class BSEComponent<T> extends BSE<T> {
         node.as((Key) atProvides.key);
         return node;
     }
-
-    // @Override
-    // public final String toString() {
-    //
-    // return function == null ? String.valueOf(instance) : function.toString();
-    // }
 }

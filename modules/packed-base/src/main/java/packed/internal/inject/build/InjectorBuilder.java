@@ -42,6 +42,7 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
+import packed.internal.inject.util.AtInjectGroup;
 import packed.internal.inject.util.AtProvides;
 import packed.internal.inject.util.AtProvidesGroup;
 
@@ -50,9 +51,6 @@ public final class InjectorBuilder {
 
     /** A that is used to store parent nodes */
     private static FeatureKey<BSEComponent<?>> FK = new FeatureKey<>() {};
-
-    /** The configuration of the container to which this builder belongs to. */
-    public final PackedContainerConfiguration pcc;
 
     /** All provided nodes. */
     public final ArrayList<BSE<?>> entries = new ArrayList<>();
@@ -80,6 +78,9 @@ public final class InjectorBuilder {
      * really services registered via the provide methods that could make use of them.
      */
     public boolean manualRequirementsManagement;
+
+    /** The configuration of the container to which this builder belongs to. */
+    public final PackedContainerConfiguration pcc;
 
     final InjectorResolver resolver = new InjectorResolver(this);
 
@@ -139,6 +140,10 @@ public final class InjectorBuilder {
         return entry.toServiceConfiguration();
     }
 
+    public void exportAll(ConfigSite configSite) {
+        throw new UnsupportedOperationException();
+    }
+
     public void importAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
         imports.add(new ProvideAllFromInjector(this, confitSite, injector, wirelets));
     }
@@ -150,6 +155,21 @@ public final class InjectorBuilder {
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         context.put(pcc, resolver.publicInjector); // Used by PackedContainer
+    }
+
+    /**
+     * @param cc
+     * @param group
+     */
+    public void onProvidedMembers(ComponentConfiguration cc, AtInjectGroup group) {
+        new Exception().printStackTrace();
+
+        // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
+
+        // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
+
+        // Det skal ogsaa tilfoejes requires...
+
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

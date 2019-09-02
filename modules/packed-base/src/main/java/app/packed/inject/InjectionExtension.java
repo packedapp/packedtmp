@@ -32,6 +32,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.AbstractInjector;
+import packed.internal.inject.util.AtInjectGroup;
 import packed.internal.inject.util.AtProvidesGroup;
 
 /**
@@ -135,6 +136,8 @@ public final class InjectionExtension extends Extension {
     }
 
     public void exportAll() {
+        checkConfigurable();
+        builder.exportAll(captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
         // any exportAll can be called at most one
         // Can be called at any time
@@ -151,6 +154,7 @@ public final class InjectionExtension extends Extension {
     // Jeg taenker lidt det er enten eller. Vi kan ikke goere det per component.
     // Problemet er dem der f.eks. har metoder
     public void manualRequirementsManagement() {
+        // explicitRequirementsManagement
         checkConfigurable();
         builder.manualRequirementsManagement();
     }
@@ -177,6 +181,11 @@ public final class InjectionExtension extends Extension {
      */
     @OnHook(AtProvidesGroup.Builder.class)
     void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup group) {
+        builder.onProvidedMembers(cc, group);
+    }
+
+    @OnHook(AtInjectGroup.Builder.class)
+    void onInjectMembers(ComponentConfiguration cc, AtInjectGroup group) {
         builder.onProvidedMembers(cc, group);
     }
 
@@ -238,7 +247,7 @@ public final class InjectionExtension extends Extension {
      *             if using wirelets that are not defined via ServiceWireletFunctions
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
-        // rename to provideAll to be consistent with exportAll
+        // renamed to provideAll to be consistent with exportAll
         if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }

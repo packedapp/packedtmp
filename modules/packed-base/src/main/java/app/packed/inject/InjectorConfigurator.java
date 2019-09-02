@@ -116,7 +116,7 @@ public final class InjectorConfigurator {
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
-    public void importAll(Injector injector, Wirelet... options) {
+    public void provideAll(Injector injector, Wirelet... options) {
         injector().provideAll(injector, options);
     }
 

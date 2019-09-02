@@ -75,29 +75,6 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         return mh;
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // public @Nullable T invoke(Object[] params) {
-    // if (isStatic) {
-    // if (isVolatile) {
-    // return (T) varHandle.getVolatile();
-    // } else {
-    // return (T) varHandle.get();
-    // }
-    // }
-    // requireNonNull(instance);
-    // if (isVolatile) {
-    // return (T) varHandle.getVolatile(instance);
-    // } else {
-    // return (T) varHandle.get(instance);
-    // }
-    // }
-
-    // @Override
-    // public boolean isMissingInstance() {
-    // return !field.isStatic() && instance == null;
-    // }
-
     /**
      * Sets the value of the field
      * 
@@ -120,17 +97,6 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         }
     }
 
-    // @Override
-    // public FieldFunctionHandle<T> withInstance(Object instance) {
-    // requireNonNull(instance, "instance is null");
-    // if (this.instance != null) {
-    // throw new IllegalStateException("An instance has already been set");
-    // } else if (isStatic) {
-    // throw new IllegalStateException("The field is static");
-    // }
-    // return new FieldFunctionHandle<>(this, instance);
-    // }
-
     /**
      * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
      * 
@@ -152,6 +118,40 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         return new FieldFactoryHandle<>(returnType(), field, handle);
     }
 }
+
+// /** {@inheritDoc} */
+// @Override
+// public @Nullable T invoke(Object[] params) {
+// if (isStatic) {
+// if (isVolatile) {
+// return (T) varHandle.getVolatile();
+// } else {
+// return (T) varHandle.get();
+// }
+// }
+// requireNonNull(instance);
+// if (isVolatile) {
+// return (T) varHandle.getVolatile(instance);
+// } else {
+// return (T) varHandle.get(instance);
+// }
+// }
+
+// @Override
+// public boolean isMissingInstance() {
+// return !field.isStatic() && instance == null;
+// }
+// @Override
+// public FieldFunctionHandle<T> withInstance(Object instance) {
+// requireNonNull(instance, "instance is null");
+// if (this.instance != null) {
+// throw new IllegalStateException("An instance has already been set");
+// } else if (isStatic) {
+// throw new IllegalStateException("The field is static");
+// }
+// return new FieldFunctionHandle<>(this, instance);
+// }
+
 /**
  * Returns the value of this field for the given instance.
  * 

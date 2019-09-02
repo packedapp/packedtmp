@@ -34,22 +34,10 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
         this.instance = instance;
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // public T invoke(Object[] ignore) {
-    // return instance;
-    // }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
         return MethodHandles.constant(instance.getClass(), instance);
-    }
-
-    public static void main(String[] args) throws Throwable {
-        FactoryHandle<String> f = InstanceFactoryHandle.of("Foo");
-        System.out.println(f.toMethodHandle().invoke());
-        System.out.println(f.toMethodHandle().type());
     }
 
     /**
