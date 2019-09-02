@@ -27,19 +27,19 @@ import app.packed.inject.Injector;
 import app.packed.util.Key;
 import packed.internal.inject.run.AbstractInjector;
 
-/** Represents an injector that was imported via {@link InjectionExtension#importAll(Injector, Wirelet...)}. */
-public final class ImportedInjector {
+/** Represents an injector that used via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
+public final class ProvideAllFromInjector {
 
-    /** The injector builder into which the injector is imported. */
+    /** The injector builder from where the service will be provided. */
     final InjectorBuilder builder;
 
-    /** The configuration site of the import statement. */
-    public final ConfigSite configSite;
+    /** The configuration site of the provide all statement. */
+    final ConfigSite configSite;
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     public final LinkedHashMap<Key<?>, BSEImported<?>> entries = new LinkedHashMap<>();
 
-    /** The injector to import from. */
+    /** The injector that provides the services. */
     final AbstractInjector injector;
 
     /**
@@ -54,7 +54,7 @@ public final class ImportedInjector {
      * @param wirelets
      *            any wirelets used when importing the injector
      */
-    ImportedInjector(InjectorBuilder builder, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+    ProvideAllFromInjector(InjectorBuilder builder, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
         this.builder = requireNonNull(builder);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);

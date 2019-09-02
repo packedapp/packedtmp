@@ -27,7 +27,7 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.factoryhandle.FieldFunctionHandle;
+import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.old.OldAtInject;
 import packed.internal.inject.util.old.OldAtInjectGroup;
@@ -98,7 +98,7 @@ public abstract class AbstractInjector implements Injector {
         if (!descriptor.fields.isEmpty()) {
             for (OldAtInject atInject : descriptor.fields) {
                 InternalDependencyDescriptor dependency = atInject.dependencies.get(0);
-                FieldFunctionHandle<?> field = (FieldFunctionHandle<?>) atInject.invokable;
+                FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
                 ServiceEntry<?> node = findNode(dependency.key());
                 if (node != null) {
                     Object value = node.getInstance(this, dependency, component);

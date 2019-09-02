@@ -69,7 +69,7 @@ public final class InjectorBuilder {
      */
     public final ArrayList<BSEExported<?>> exportedEntries = new ArrayList<>();
 
-    public final ArrayList<ImportedInjector> imports = new ArrayList<>(0);
+    public final ArrayList<ProvideAllFromInjector> imports = new ArrayList<>(0);
 
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
@@ -140,7 +140,7 @@ public final class InjectorBuilder {
     }
 
     public void importAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
-        imports.add(new ImportedInjector(this, confitSite, injector, wirelets));
+        imports.add(new ProvideAllFromInjector(this, confitSite, injector, wirelets));
     }
 
     /** Enables manual requirements management. */

@@ -29,7 +29,7 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /** An invoker that can read and write fields. */
-public final class FieldFunctionHandle<T> extends InvokableMember<T> {
+public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
 
     /** The field we invoke. */
     public final FieldDescriptor field;
@@ -45,24 +45,16 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
     public final VarHandle varHandle;
 
     @SuppressWarnings("unchecked")
-    public FieldFunctionHandle(FieldDescriptor field) {
-        super((TypeLiteral<T>) field.getTypeLiteral(), null);
+    public FieldFactoryHandle(FieldDescriptor field) {
+        super((TypeLiteral<T>) field.getTypeLiteral());
         this.field = field;
         this.varHandle = null;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    private FieldFunctionHandle(FieldFunctionHandle<T> other, Object instance) {
-        super(other.returnType(), requireNonNull(instance));
-        this.field = other.field;
-        this.varHandle = other.varHandle;
-        this.isVolatile = Modifier.isVolatile(field.getModifiers());
-        this.isStatic = Modifier.isStatic(field.getModifiers());
-    }
-
-    public FieldFunctionHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, Object instance) {
-        super(typeLiteralOrKey, instance);
+    public FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle) {
+        super(typeLiteralOrKey);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
@@ -77,9 +69,9 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
     @Override
     public MethodHandle toMethodHandle() {
         MethodHandle mh = varHandle.toMethodHandle(Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET);
-        if (instance != null) {
-            mh = mh.bindTo(instance);
-        }
+        // if (instance != null) {
+        // mh = mh.bindTo(instance);
+        // }
         return mh;
     }
 
@@ -147,7 +139,7 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public FieldFunctionHandle<T> withLookup(Lookup lookup) {
+    public FieldFactoryHandle<T> withLookup(Lookup lookup) {
         VarHandle handle;
         try {
             if (Modifier.isPrivate(field.getModifiers())) {
@@ -157,7 +149,7 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
         } catch (IllegalAccessException e) {
             throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldFunctionHandle<>(returnType(), field, handle, instance);
+        return new FieldFactoryHandle<>(returnType(), field, handle);
     }
 }
 /**

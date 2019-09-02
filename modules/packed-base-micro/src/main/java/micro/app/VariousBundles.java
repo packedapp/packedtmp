@@ -30,7 +30,10 @@ public class VariousBundles {
     public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
 
     public static Bundle empty() {
-        return new BaseBundle() {};
+        return new BaseBundle() {
+            @Override
+            protected void configure() {}
+        };
     }
 
     public static Bundle oneComponent() {
@@ -62,7 +65,10 @@ public class VariousBundles {
 
             @Override
             public void configure() {
-                link(new BaseBundle() {});
+                link(new BaseBundle() {
+                    @Override
+                    protected void configure() {}
+                });
             }
         };
     }

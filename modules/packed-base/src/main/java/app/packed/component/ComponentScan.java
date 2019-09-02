@@ -129,6 +129,9 @@ public @interface ComponentScan {
 @ComponentScan(modules = { "*" })
 class SomeBundle extends AppBundle {
 
+    @Override
+    protected void configure() {}
+
     public static void main(String[] args) {
         run(new SomeBundle());
     }

@@ -39,7 +39,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
 import packed.internal.inject.build.BSEExported;
-import packed.internal.inject.build.ImportedInjector;
+import packed.internal.inject.build.ProvideAllFromInjector;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
@@ -135,7 +135,7 @@ public final class InjectorResolver {
         LinkedHashMap<Key<?>, LinkedHashSet<BSE<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
 
         processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ib.entries);
-        for (ImportedInjector ii : ib.imports) {
+        for (ProvideAllFromInjector ii : ib.imports) {
             processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
         }
 

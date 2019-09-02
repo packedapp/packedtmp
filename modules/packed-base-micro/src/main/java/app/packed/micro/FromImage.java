@@ -38,8 +38,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHook;
 import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.OnHook;
 
 /**
  *
@@ -52,7 +52,10 @@ import app.packed.container.extension.HookAggregateBuilder;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new BaseBundle() {});
+    static final ArtifactImage EMPTY = ArtifactImage.of(new BaseBundle() {
+        @Override
+        protected void configure() {}
+    });
 
     static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new BaseBundle() {
         @Override

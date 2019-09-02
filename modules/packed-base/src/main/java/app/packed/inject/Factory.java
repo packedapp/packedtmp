@@ -419,15 +419,14 @@ final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, null),
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
                 InternalDependencyDescriptor.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, null),
-                InternalDependencyDescriptor.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), InternalDependencyDescriptor.fromExecutable(executable));
     }
 
     private static InternalExecutableDescriptor findExecutable(Class<?> type) {

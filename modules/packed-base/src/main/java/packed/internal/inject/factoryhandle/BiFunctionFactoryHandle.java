@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import app.packed.inject.Factory2;
 import app.packed.util.TypeLiteral;
@@ -35,7 +34,7 @@ public class BiFunctionFactoryHandle<T, U, R> extends FactoryHandle<R> {
     static {
         try {
             MethodHandles.Lookup l = MethodHandles.lookup();
-            APPLY = l.findVirtual(Function.class, "apply", MethodType.methodType(Object.class, Object.class, Object.class));
+            APPLY = l.findVirtual(BiFunction.class, "apply", MethodType.methodType(Object.class, Object.class, Object.class));
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }

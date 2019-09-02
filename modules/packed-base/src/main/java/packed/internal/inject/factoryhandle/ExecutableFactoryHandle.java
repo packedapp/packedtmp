@@ -23,11 +23,10 @@ import app.packed.inject.Factory;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /** The backing class of {@link Factory}. */
-public final class ExecutableFactoryHandle<T> extends InvokableMember<T> {
+public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
 
     /**
      * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for
@@ -44,14 +43,14 @@ public final class ExecutableFactoryHandle<T> extends InvokableMember<T> {
 
     @SuppressWarnings("unchecked")
     public ExecutableFactoryHandle(MethodDescriptor methodDescriptor) {
-        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), null);
+        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral());
         this.executable = methodDescriptor;
         this.methodHandle = null;
         this.checkLowerBound = false;
     }
 
-    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, @Nullable Object instance) {
-        super(key, instance);
+    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle) {
+        super(key);
         this.executable = executable;
         this.methodHandle = methodHandle;
         this.checkLowerBound = false;
@@ -110,16 +109,16 @@ public final class ExecutableFactoryHandle<T> extends InvokableMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableFactoryHandle<>(returnType(), executable, handle, instance);
+        return new ExecutableFactoryHandle<>(returnType(), executable, handle);
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
         MethodHandle mh = methodHandle;
-        if (instance != null) {
-            mh = methodHandle.bindTo(instance);
-        }
+        // if (instance != null) {
+        // mh = methodHandle.bindTo(instance);
+        // }
         if (executable.isVarArgs()) {
             mh = mh.asFixedArity();
         }

@@ -37,8 +37,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHook;
 import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.OnHook;
 
 /**
  *
@@ -53,7 +53,10 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage empty() {
-        BaseBundle b = new BaseBundle() {};
+        BaseBundle b = new BaseBundle() {
+            @Override
+            protected void configure() {}
+        };
         return ArtifactImage.of(b);
     }
 

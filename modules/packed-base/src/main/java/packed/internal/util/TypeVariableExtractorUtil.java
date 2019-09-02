@@ -35,7 +35,6 @@ public class TypeVariableExtractorUtil {
         if (baseClass == childClass) {
             throw new IllegalArgumentException("baseClass and chilClass cannot be the same class, ");
         }
-
         TypeVariable<Class<T>>[] typeParameters = baseClass.getTypeParameters();
         if (typeParameters.length == 0) {
             throw new IllegalArgumentException("baseClass '" + format(baseClass) + "' does not define any type parameters");

@@ -42,7 +42,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
         @Override
         protected Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>> computeValue(Class<?> type) {
             return new SimpleImmutableEntry<>(TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0),
-                    InternalDependencyDescriptor.fromTypeVariables(Factory2.class, (Class) type, 0, 1));
+                    InternalDependencyDescriptor.fromTypeVariables((Class) type, Factory2.class, 0, 1));
         }
     };
 

@@ -117,7 +117,7 @@ public final class InjectorConfigurator {
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
     public void importAll(Injector injector, Wirelet... options) {
-        injector().importAll(injector, options);
+        injector().provideAll(injector, options);
     }
 
     /**

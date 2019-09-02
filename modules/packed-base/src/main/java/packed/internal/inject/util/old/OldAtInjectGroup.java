@@ -25,7 +25,7 @@ import java.util.List;
 import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.inject.factoryhandle.FieldFunctionHandle;
+import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -84,7 +84,7 @@ public final class OldAtInjectGroup {
                     fields = new ArrayList<>();
                 }
 
-                fields.add(result = new OldAtInject(new FieldFunctionHandle<>(descriptor).withLookup(lookup),
+                fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
                         List.of(InternalDependencyDescriptor.of(descriptor))));
             }
             return result;

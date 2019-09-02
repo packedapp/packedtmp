@@ -44,7 +44,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
      * @param ii
      *            the imported injector to process
      */
-    abstract void process(ImportedInjector ii);
+    abstract void process(ProvideAllFromInjector ii);
 
     public static class FilterOnKey extends PackedUpstreamInjectionWirelet {
 
@@ -56,7 +56,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        void process(ImportedInjector ii) {
+        void process(ProvideAllFromInjector ii) {
             for (Key<?> key : set) {
                 ii.entries.remove(key);
             }
@@ -87,7 +87,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        void process(ImportedInjector ii) {
+        void process(ProvideAllFromInjector ii) {
             for (BSEImported<?> e : ii.entries.values()) {
                 action.accept(new ServiceConfigurationWrapper(e));
             }

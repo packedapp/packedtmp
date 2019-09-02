@@ -98,7 +98,7 @@ public abstract class Bundle implements ContainerSource {
      *             if called outside {@link #configure()}
      */
     protected final ContainerConfiguration configuration() {
-        // This method is protected for now, but should be private
+        // This method is protected for now, but should be (package?) private
         // Det er primaert extensions vi ikke vil have der skal have fat i den
         ContainerConfiguration c = configuration;
         if (c == null) {
@@ -111,9 +111,9 @@ public abstract class Bundle implements ContainerSource {
     /**
      * Configures the bundle using the various inherited methods that are available.
      * <p>
-     * Users should <b>never</b> invoke this method directly. Instead letting the runtime invoke it.
+     * This method is intended to be invoked by runtime. Users should <b>never</b> invoke this method directly.
      */
-    protected void configure() {}
+    protected abstract void configure();
 
     /**
      * Invoked by the runtime to start the configuration process.
@@ -135,9 +135,9 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
-     * Returns an immutable view of all of the extension types that are used by this bundle.
+     * Returns an immutable view of all of the extension types that are currently used.
      * 
-     * @return an immutable view of all of the extension types that are used by this bundle
+     * @return an immutable view of all of the extension types that are currently used
      * 
      * @see ContainerConfiguration#extensions()
      */

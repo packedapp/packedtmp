@@ -59,7 +59,7 @@ final class ErrorMessages {
         for (Map.Entry<Key<?>, LinkedHashSet<BSE<?>>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");
             Key<?> key = e.getKey();
-            String n = "@" + key.qualifier().map(ee -> ee.annotationType().getSimpleName()).orElse("") + " " + key.typeLiteral().toStringSimple();
+            String n = key.qualifier().map(ee -> "@" + ee.annotationType().getSimpleName() + " ").orElse("") + key.typeLiteral().toStringSimple();
             String ss = e.getValue().stream().map(ee -> format(ee)).collect(Collectors.joining("\n  & "));
             // A service with the key <@Foo java.lang.Integer> is configured multiple places:/
             sb.append(nn + ") Multiple services registered with the same Key<" + n + ">:\n    ");

@@ -34,10 +34,10 @@ public class BSEImported<T> extends BSE<T> {
     public final ServiceEntry<T> importedEntry;
 
     /** The bind injector source. */
-    public final ImportedInjector importedInjector;
+    public final ProvideAllFromInjector importedInjector;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BSEImported(ImportedInjector importedInjector, ServiceEntry<T> importedEntry) {
+    BSEImported(ProvideAllFromInjector importedInjector, ServiceEntry<T> importedEntry) {
         super(importedInjector.builder, importedInjector.configSite.withParent(importedEntry.configSite()), List.of());
         this.importedEntry = requireNonNull(importedEntry);
         this.importedInjector = requireNonNull(importedInjector);

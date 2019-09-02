@@ -134,26 +134,12 @@ public final class InjectionExtension extends Extension {
         return builder.export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
-    /**
-     * Imports all the services from the specified injector and make each service available to other services in the
-     * injector being build.
-     * <p>
-     * Wirelets can be used to transform and filter the services from the specified injector.
-     * 
-     * @param injector
-     *            the injector to import services from
-     * @param wirelets
-     *            any wirelets used to filter and transform the provided services
-     * @throws IllegalArgumentException
-     *             if using wirelets that are not defined via ServiceWireletFunctions
-     */
-    public void importAll(Injector injector, Wirelet... wirelets) {
-        if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
-            throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
-        }
-        checkConfigurable();
-        builder.importAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
-                WireletList.of(wirelets));
+    public void exportAll() {
+        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
+        // any exportAll can be called at most one
+        // Can be called at any time
+        // explicit single exports will override any exportedAll. But aliases are allowed
+        // transient linked exports, will work regardless
     }
 
     /**
@@ -236,6 +222,29 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
         return builder.provideInstance(use(ComponentExtension.class).install(instance), instance);
+    }
+
+    /**
+     * Imports all the services from the specified injector and make each service available to other services in the
+     * injector being build.
+     * <p>
+     * Wirelets can be used to transform and filter the services from the specified injector.
+     * 
+     * @param injector
+     *            the injector to import services from
+     * @param wirelets
+     *            any wirelets used to filter and transform the provided services
+     * @throws IllegalArgumentException
+     *             if using wirelets that are not defined via ServiceWireletFunctions
+     */
+    public void provideAll(Injector injector, Wirelet... wirelets) {
+        // rename to provideAll to be consistent with exportAll
+        if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
+            throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
+        }
+        checkConfigurable();
+        builder.importAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+                WireletList.of(wirelets));
     }
 
     /**
