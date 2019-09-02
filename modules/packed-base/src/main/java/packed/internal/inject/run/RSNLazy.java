@@ -17,6 +17,7 @@ package packed.internal.inject.run;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.concurrent.Semaphore;
 
 import app.packed.inject.InstantiationMode;
@@ -24,7 +25,6 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
 import packed.internal.inject.Provider;
 import packed.internal.inject.build.BSE;
-import packed.internal.invoke.FunctionHandle;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
@@ -43,12 +43,10 @@ public final class RSNLazy<T> extends RSE<T> {
      * 
      * @param node
      *            the build node to create this node from
-     * @param factory
-     *            the factory that will create the instance
      */
-    public RSNLazy(BSE<T> node, FunctionHandle<T> factory, @Nullable RSE<T> parent) {
+    public RSNLazy(BSE<T> node, MethodHandle mh, @Nullable RSE<T> parent) {
         super(node);
-        this.lazy = new Sync(new RSNPrototype<>(node, factory.toMethodHandle()), parent);
+        this.lazy = new Sync(new RSNPrototype<>(node, mh), parent);
     }
 
     /** {@inheritDoc} */

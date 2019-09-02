@@ -172,21 +172,7 @@ public final class BSEComponent<T> extends BSE<T> {
             }
         }
         Object o;
-        MethodHandle mh;
-        if (mha == null) {
-            mh = newInstanceHelper().toMethodHandle();
-        } else {
-            mh = mha;
-            if (parent != null) {
-                if (mh.type().parameterCount() == 1) {
-                    mh = mh.bindTo(parent.getInstance(null));
-                }
-            }
-        }
-
-        if (mha != null) {
-            System.out.println(mh + "  " + newInstanceHelper().toMethodHandle());
-        }
+        MethodHandle mh = toMethodHandle();
         // System.out.println();
 
         // It would actually be nice with the receiver here as well...
@@ -203,6 +189,25 @@ public final class BSEComponent<T> extends BSE<T> {
     }
 
     boolean instanceBound;
+
+    private MethodHandle toMethodHandle() {
+        MethodHandle mh;
+        if (mha == null) {
+            mh = newInstanceHelper().toMethodHandle();
+        } else {
+            mh = mha;
+            if (parent != null) {
+                if (mh.type().parameterCount() == 1) {
+                    mh = mh.bindTo(parent.getInstance(null));
+                }
+            }
+        }
+
+        if (mha != null) {
+            System.out.println(mh + "  " + newInstanceHelper().toMethodHandle());
+        }
+        return mh;
+    }
 
     private FunctionHandle<T> newInstanceHelper() {
         if (parent != null) {
@@ -221,18 +226,19 @@ public final class BSEComponent<T> extends BSE<T> {
         if (i != null) {
             return new RSESingleton<>(this, i);
         }
-        FunctionHandle<T> fh = newInstanceHelper();
-        if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
-                || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
-            if (instantionMode == InstantiationMode.PROTOTYPE) {
-                return new RSNPrototype<>(this, fh.toMethodHandle());
-            } else {
-                return new RSNLazy<>(this, fh, null);
-            }
+        // if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
+        // || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
+        if (instantionMode == InstantiationMode.PROTOTYPE) {
+            return new RSNPrototype<>(this, toMethodHandle());
+        } else {
+            return new RSNLazy<>(this, toMethodHandle(), null);
         }
-        // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
-
-        return new RSNLazy<>(this, fh, null);
+        // }
+        // // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
+        // if (true) {
+        // throw new Error();
+        // }
+        // return new RSNLazy<>(this, toMethodHandle(), null);
 
     }
 
@@ -260,8 +266,9 @@ public final class BSEComponent<T> extends BSE<T> {
         return node;
     }
 
-    @Override
-    public final String toString() {
-        return function == null ? String.valueOf(instance) : function.toString();
-    }
+    // @Override
+    // public final String toString() {
+    //
+    // return function == null ? String.valueOf(instance) : function.toString();
+    // }
 }
