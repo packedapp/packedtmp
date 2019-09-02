@@ -18,12 +18,19 @@ package packed.internal.inject.factoryhandle;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.util.TypeLiteral;
+import packed.internal.util.MethodHandleUtil;
 
 /** A function that maps the result of another function. */
 public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
+
+    /** A method handle for {@link Function#apply(Object)}. */
+    private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Function.class, "apply",
+            MethodType.methodType(Object.class, Object.class));
 
     /** The function we map the result from. */
     final FactoryHandle<T> mapFrom;
@@ -37,18 +44,27 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
         this.mapper = requireNonNull(mapper, "mapper is null");
     }
 
-    // /** {@inheritDoc} */
-    // @Override
-    // public @Nullable R invoke(Object[] params) {
-    // throw new UnsupportedOperationException();
-    // }
+    public static void main(String[] args) throws Throwable {
+        MethodHandle c = MethodHandles.constant(Object.class, 5);
+
+        Function<Integer, Integer> ff = i -> i + 1;
+
+        MethodHandle apply = MethodHandles.lookup().findVirtual(Function.class, "apply", MethodType.methodType(Object.class, Object.class));
+        MethodHandle fu = apply.bindTo(ff);
+
+        c = c.asType(c.type().changeReturnType(Object.class));
+        MethodHandles.foldArguments(fu, c);
+
+        System.out.println(MethodHandles.foldArguments(fu, c).invoke());
+    }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
-        // MethodHandle mh = mapFrom.toMethodHandle();
-        // Look for methods in MethodHandles that takes two MethodHandle
+        // Change return type to Object so the method handle for the function will accept it
+        MethodHandle mf = mapFrom.toMethodHandle();
+        mf = mf.asType(mf.type().changeReturnType(Object.class));
 
-        throw new UnsupportedOperationException();
+        return MethodHandles.foldArguments(APPLY.bindTo(mapper), mf);
     }
 }

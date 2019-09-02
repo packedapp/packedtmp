@@ -17,7 +17,7 @@ package packed.internal.container.model;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
-import app.packed.inject.Factory2;
+import app.packed.inject.Factory;
 
 /**
  *
@@ -27,9 +27,12 @@ public class TestIt extends AppBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        Factory<Integer> ff = Factory.ofInstance("122323323").mapTo(e -> e.length(), Integer.class);
         provide("foo");
         provide("foo").as(CharSequence.class);
-        provide(new Factory2<>((CharSequence cs, String s) -> 3 + s.length() + cs.length()) {});
+
+        provide(ff);
+        // provide(new Factory2<>((CharSequence cs, String s) -> 3 + s.length() + cs.length()) {});
         export(Integer.class);
     }
 

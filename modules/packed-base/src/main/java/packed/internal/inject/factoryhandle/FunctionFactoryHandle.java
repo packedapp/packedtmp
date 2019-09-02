@@ -24,21 +24,14 @@ import java.util.function.Function;
 
 import app.packed.inject.Factory1;
 import app.packed.util.TypeLiteral;
+import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory1}. */
 public final class FunctionFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    static final MethodHandle APPLY;
-
-    static {
-        try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            APPLY = l.findVirtual(Function.class, "apply", MethodType.methodType(Object.class, Object.class));
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+    private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Function.class, "apply",
+            MethodType.methodType(Object.class, Object.class));
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;

@@ -24,21 +24,14 @@ import java.util.function.BiFunction;
 
 import app.packed.inject.Factory2;
 import app.packed.util.TypeLiteral;
+import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory2}. */
 public class BiFunctionFactoryHandle<T, U, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link BiFunction#apply(Object, Object)}. */
-    private static final MethodHandle APPLY;
-
-    static {
-        try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            APPLY = l.findVirtual(BiFunction.class, "apply", MethodType.methodType(Object.class, Object.class, Object.class));
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+    private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), BiFunction.class, "apply",
+            MethodType.methodType(Object.class, Object.class, Object.class));
 
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
