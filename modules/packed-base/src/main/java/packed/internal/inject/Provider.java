@@ -29,18 +29,17 @@ public interface Provider<T> {
      *             if an exception is encountered while providing an instance
      */
     T get();
-
-    // default Stream<T> toStream() {
-    // // getProvide(UUID.class).limit(50).collect(Collectors.toList());
-    // return Stream.generate(() -> get());
-    // }
-    //
-    // // Super advanced
-    // static Provider<Integer> of(IntSupplier i) {
-    // return new ProviderToIntWrapper(i);
-    // }
 }
 
+// default Stream<T> toStream() {
+// // getProvide(UUID.class).limit(50).collect(Collectors.toList());
+// return Stream.generate(() -> get());
+// }
+//
+// // Super advanced
+// static Provider<Integer> of(IntSupplier i) {
+// return new ProviderToIntWrapper(i);
+// }
 // class ProviderToIntWrapper implements Provider<Integer> {
 // final IntSupplier s;
 //

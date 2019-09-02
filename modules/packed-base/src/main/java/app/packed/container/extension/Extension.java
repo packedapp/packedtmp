@@ -164,10 +164,10 @@ public abstract class Extension {
             return ConfigSite.UNKNOWN;
         }
         Optional<StackFrame> sf = SW.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? context().configSite().thenCaptureStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+        return sf.isPresent() ? context().configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
-    private boolean captureStackFrameIgnoreFilter(StackFrame f) {
+    final boolean captureStackFrameIgnoreFilter(StackFrame f) {
         Class<?> c = f.getDeclaringClass();
         return Extension.class.isAssignableFrom(c)
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
@@ -194,7 +194,7 @@ public abstract class Extension {
      * 
      * @return the configuration of the container
      */
-    private PackedExtensionContext context() {
+    final PackedExtensionContext context() {
         // When calling this method remember to add test to BasicExtensionTest
         PackedExtensionContext c = context;
         if (c == null) {

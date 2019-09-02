@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
-import app.packed.config.ConfigSiteJoiner;
 import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
+import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.inject.build.BSE;
 import packed.internal.util.StringFormatter;
 

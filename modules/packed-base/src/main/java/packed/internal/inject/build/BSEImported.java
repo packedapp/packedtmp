@@ -38,7 +38,7 @@ public class BSEImported<T> extends BSE<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     BSEImported(ImportedInjector importedInjector, ServiceEntry<T> importedEntry) {
-        super(importedInjector.builder, importedInjector.configSite.replaceParent(importedEntry.configSite()), List.of());
+        super(importedInjector.builder, importedInjector.configSite.withParent(importedEntry.configSite()), List.of());
         this.importedEntry = requireNonNull(importedEntry);
         this.importedInjector = requireNonNull(importedInjector);
         this.as((Key) importedEntry.key());

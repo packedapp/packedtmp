@@ -19,6 +19,8 @@ package app.packed.inject;
  *
  */
 // Injector extends ServiceManager
+
+// Ideen er lidt at lave noget der wrapper et (eller maaske flere) Lookup object..
 interface RealInjector {
 
     // newInstance()

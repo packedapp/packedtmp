@@ -15,22 +15,20 @@
  */
 package app.packed.config;
 
+import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 
-import app.packed.inject.Provide;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 
 /**
- * While the {@link ConfigSite} class contains all common information about a configuration site, this visitor can be
- * used to get details that are specific to a specific type of a configuration site.
+ * A visitor for the various {@link ConfigSite config sites} that are supported. This visitor can be used to get details
+ * about a specific type of a configuration site.
  */
-// When we get Configuration-> rename to getLazy() or just lazyRead, lazy
 public interface ConfigSiteVisitor {
 
     /**
-     * Visits a config site created from an annotated field. For example, a service that is provided via a field annotated
-     * with {@link Provide}.
+     * Visits a config site created from an annotated field.
      * 
      * @param configSite
      *            the configuration site
@@ -42,8 +40,7 @@ public interface ConfigSiteVisitor {
     default void visitAnnotatedField(ConfigSite configSite, FieldDescriptor field, Annotation annotation) {}
 
     /**
-     * Visits a config site created from an annotated method. For example, a service provided via a method annotated with
-     * {@link Provide}.
+     * Visits a config site created from an annotated method.
      * 
      * @param configSite
      *            the configuration site
@@ -54,27 +51,40 @@ public interface ConfigSiteVisitor {
      */
     default void visitAnnotatedMethod(ConfigSite configSite, MethodDescriptor method, Annotation annotation) {}
 
-    // for example, @ComponentScan -> @Install
-    default void visitAnnotatedType(ConfigSite configSite, Class<?> type, Annotation annotation) {}
-
     /**
-     * This method is visited whenever.
+     * Visits a config site created from an annotated type.
      * 
      * @param configSite
      *            the configuration site
+     * @param type
+     *            the annotated type
+     * @param annotation
+     *            the annotation value
      */
-    default void visitCapturedStackFrame(ConfigSite configSite) {} // Always only the top one, we can always add a method a visitAllStackFrames
+    default void visitAnnotatedType(ConfigSite configSite, Class<?> type, Annotation annotation) {}
 
-    //// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere
-    // default void visitConfiguration(ConfigurationNode....)visitConfiguration
-    //
     /**
-     * Visits a unknown configuration site, for example, if the capturing of configuration sites has been disabled.
+     * Visits a config site created by capturing the top stack frame.
+     * 
+     * @param configSite
+     *            the configuration site
+     * @param stackFrame
+     *            the top stack frame
+     */
+    default void visitStackFrame(ConfigSite configSite, StackFrame stackFrame) {}
+
+    /**
+     * Visits an unknown configuration site, for example, if stack frame capturing has been disabled.
      * 
      * @param configSite
      *            the configuration site
      */
     default void visitUnknown(ConfigSite configSite) {}
 }
+// When we get Configuration-> rename to getLazy() or just lazyRead, lazy
+
+//// Ahhh vi gemmer ikke noedvendig informationen, skal lige have fundet ud af hvordan det fungere
+// default void visitConfiguration(ConfigurationNode....)visitConfiguration
+//
 // Look at ConfigurationSource in some closed project. Has a number of options as well
 //// Maybe linenumber + column number both start and stop, possible for -1 indicating unknown..

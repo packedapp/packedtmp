@@ -45,9 +45,9 @@ public interface ArtifactInstantiationContext {
     <T> T get(ContainerConfiguration configuration, Class<T> type);
 
     /**
-     * Returns whether or not the artifact is being created from an image.
+     * Returns whether or not the artifact is being created from an {@link ArtifactImage}.
      * 
-     * @return whether or not the artifact is being created from an image
+     * @return whether or not the artifact is being created from an {@link ArtifactImage}
      */
     default boolean isFromImage() {
         return false;

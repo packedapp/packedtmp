@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.config;
+package packed.internal.config;
 
 import java.lang.module.Configuration;
 

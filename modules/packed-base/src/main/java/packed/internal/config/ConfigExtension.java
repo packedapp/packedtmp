@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.nextapi;
+package packed.internal.config;
+
+import app.packed.container.extension.Extension;
 
 /**
- * Ideen er at alle metoder, constructor, fields, osv. Hvor man kan
+ *
  */
+public final class ConfigExtension extends Extension {
 
-// Skal vi ogsaa have sync points, listeners, o.s.v. med???? // Kunne have en HookHelp
-// Hvilke hooks er tilgaengelig lige nu og her....
-// Hvis vi ikke gider have en per type (listener, hook, ect) kan vi maaske extende denne..
-interface InjectionHelp {
-    // Supported Services
-    // Supported Injection annotations.. For example, @Meter() @InjectConfiguration,...
-    // Men altsaa, den information burde jo ogsaa vaere paa injecteren.....
+    // Controls distribution to other extensions, services, ect.
 
-    // I don't want to call it services.....
+    // Logging, debugging
+
+    // configuration in multiple tempos...
+    // For example, for image,
+
+    // Skal vi markere
+    //// 3 maader for componenter
+    // Deres egen container
+    // Almindelige component + Extension.viaExtension(ComponentConfiguration) <- Uses the extensions LifecycleRealm
+    // Container/Artifact sidecar
 }

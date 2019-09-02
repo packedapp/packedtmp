@@ -13,27 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.nextapi;
-
-import java.util.Set;
-
-import app.packed.util.Key;
+package packed.internal.inject.util.nextapi;
 
 /**
- *
+ * Ideen er at alle metoder, constructor, fields, osv. Hvor man kan
  */
-// Oehhh er det egentlig service descriptoren??
-// Nej, service descriptor er extern vil jeg sige
-// ServiceContext er internt, kan kun injectes ind i selve servicen.
-// Eller i den metoder der provider services...
-// Maaske slaa den sammen med ProvisionContext <- Saa er det ogsaa vi ligesom kan sige
-// Er noget man kun bruge i forbindelse med at lave en service.
-// ServiceContext
-public interface ServiceContext {
 
-    boolean exported();
+// Skal vi ogsaa have sync points, listeners, o.s.v. med???? // Kunne have en HookHelp
+// Hvilke hooks er tilgaengelig lige nu og her....
+// Hvis vi ikke gider have en per type (listener, hook, ect) kan vi maaske extende denne..
+interface InjectionHelp {
+    // Supported Services
+    // Supported Injection annotations.. For example, @Meter() @InjectConfiguration,...
+    // Men altsaa, den information burde jo ogsaa vaere paa injecteren.....
 
-    Set<Key<?>> exportedAs();
-
-    Key<?> key();
+    // I don't want to call it services.....
 }

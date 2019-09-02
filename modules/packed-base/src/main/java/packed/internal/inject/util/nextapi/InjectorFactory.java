@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.nextapi;
+package packed.internal.inject.util.nextapi;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;

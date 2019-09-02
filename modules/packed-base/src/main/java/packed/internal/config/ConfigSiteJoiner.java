@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.config;
+package packed.internal.config;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,6 +23,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+import app.packed.config.ConfigSite;
 import app.packed.util.Nullable;
 
 /**

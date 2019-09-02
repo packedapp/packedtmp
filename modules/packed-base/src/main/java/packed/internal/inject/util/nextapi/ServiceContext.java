@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.config;
+package packed.internal.inject.util.nextapi;
 
-import app.packed.container.extension.Extension;
+import java.util.Set;
+
+import app.packed.util.Key;
 
 /**
  *
  */
-public final class ConfigExtension extends Extension {
+// Oehhh er det egentlig service descriptoren??
+// Nej, service descriptor er extern vil jeg sige
+// ServiceContext er internt, kan kun injectes ind i selve servicen.
+// Eller i den metoder der provider services...
+// Maaske slaa den sammen med ProvisionContext <- Saa er det ogsaa vi ligesom kan sige
+// Er noget man kun bruge i forbindelse med at lave en service.
+// ServiceContext
+public interface ServiceContext {
 
-    // Controls distribution to other extensions, services, ect.
+    boolean exported();
 
-    // Logging, debugging
+    Set<Key<?>> exportedAs();
 
-    // configuration in multiple tempos...
-    // For example, for image,
-
-    // Skal vi markere
-    //// 3 maader for componenter
-    // Deres egen container
-    // Almindelige component + Extension.viaExtension(ComponentConfiguration) <- Uses the extensions LifecycleRealm
-    // Container/Artifact sidecar
+    Key<?> key();
 }

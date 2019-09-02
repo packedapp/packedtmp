@@ -73,14 +73,14 @@ public interface ConfigSiteSupport {
 
         /** {@inheritDoc} */
         @Override
-        public ConfigSite replaceParent(ConfigSite newParent) {
-            return new AnnotatedFieldConfigSite(newParent, operation, field, annotation);
+        public void visit(ConfigSiteVisitor visitor) {
+            visitor.visitAnnotatedField(this, field, annotation);
         }
 
         /** {@inheritDoc} */
         @Override
-        public void visit(ConfigSiteVisitor visitor) {
-            visitor.visitAnnotatedField(this, field, annotation);
+        public ConfigSite withParent(ConfigSite newParent) {
+            return new AnnotatedFieldConfigSite(newParent, operation, field, annotation);
         }
 
         // toString
@@ -133,19 +133,26 @@ public interface ConfigSiteSupport {
 
         /** {@inheritDoc} */
         @Override
-        public ConfigSite replaceParent(@Nullable ConfigSite newParent) {
-            return new AnnotatedMethodConfigSite(newParent, operation, method, annotation);
+        public void visit(ConfigSiteVisitor visitor) {
+            visitor.visitAnnotatedMethod(this, method, annotation);
         }
 
         /** {@inheritDoc} */
         @Override
-        public void visit(ConfigSiteVisitor visitor) {
-            visitor.visitAnnotatedMethod(this, method, annotation);
+        public ConfigSite withParent(@Nullable ConfigSite newParent) {
+            return new AnnotatedMethodConfigSite(newParent, operation, method, annotation);
         }
     }
 
+    /**
+     *
+     */
+    public static final class PathConfigSite {
+
+    }
+
     /** A programmatic configuration site from a {@link StackFrame}. */
-    public static class CapturedStackFrameConfigSite implements ConfigSite {
+    public static final class StackFrameConfigSite implements ConfigSite {
 
         /** The operation */
         private final String operation;
@@ -155,34 +162,44 @@ public interface ConfigSiteSupport {
         private final ConfigSite parent;
 
         /** The stack frame. */
+        // TODO I think we can intern the stackFrame, similar to MethodType
+        // Actually we can intern the whole ConfigSite....
+        // I think every ContainerSource, can have their own interner.
+        // Not sure we want to support for user created ConfigSites...
+        // You could theoretically create a OOM, if you kept supplying
+        // different annotation values... and interned at the same time.
+        // Because they are not cleared until class is unloaded..
+
+        // Its mainly too much memory usage we want to avoid. So
+        // Maybe just weak reference it.
         private final StackFrame stackFrame;
 
         /**
          * @param parent
          * @param operation
          */
-        public CapturedStackFrameConfigSite(@Nullable ConfigSite parent, String operation, StackFrame caller) {
+        public StackFrameConfigSite(@Nullable ConfigSite parent, String operation, StackFrame stackFrame) {
             this.parent = parent;
             this.operation = requireNonNull(operation, "operation is null");
-            this.stackFrame = requireNonNull(caller);
+            this.stackFrame = requireNonNull(stackFrame, "stackFrame is null");
+            if (stackFrame.getClass().getModule() != String.class.getModule()) {
+                // Makes it much easier to intern....
+                // Because we know it won't change
+                // Or maybe just don't care
+                throw new IllegalArgumentException();
+            }
         }
 
         /** {@inheritDoc} */
         @Override
-        public final String operation() {
+        public String operation() {
             return operation;
         }
 
         /** {@inheritDoc} */
         @Override
-        public final Optional<ConfigSite> parent() {
+        public Optional<ConfigSite> parent() {
             return Optional.ofNullable(parent);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigSite replaceParent(ConfigSite newParent) {
-            return new CapturedStackFrameConfigSite(newParent, operation, stackFrame);
         }
 
         /** {@inheritDoc} */
@@ -194,15 +211,14 @@ public interface ConfigSiteSupport {
         /** {@inheritDoc} */
         @Override
         public void visit(ConfigSiteVisitor visitor) {
-            visitor.visitCapturedStackFrame(this);
+            visitor.visitStackFrame(this, stackFrame);
         }
-    }
 
-    /**
-     *
-     */
-    public static class PathConfigSite {
-
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite withParent(ConfigSite newParent) {
+            return new StackFrameConfigSite(newParent, operation, stackFrame);
+        }
     }
 
     /** An unknown config site */
@@ -225,12 +241,6 @@ public interface ConfigSiteSupport {
 
         /** {@inheritDoc} */
         @Override
-        public ConfigSite replaceParent(ConfigSite newParent) {
-            return UNKNOWN;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public String toString() {
             return "Unknown";
         }
@@ -239,6 +249,12 @@ public interface ConfigSiteSupport {
         @Override
         public void visit(ConfigSiteVisitor visitor) {
             visitor.visitUnknown(this);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite withParent(ConfigSite newParent) {
+            return UNKNOWN;
         }
     }
 }

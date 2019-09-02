@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;
 
 /**
@@ -39,21 +40,33 @@ import packed.internal.config.ConfigSiteSupport;
  * @see ConfigSiteJoiner
  */
 // We need to open up... If this a generic mechanism...
-
 // Can we intern them????? ClassValue<ConfigSite>
 // 99% of the time they will probably have the same parents...
+// No need to store hash. Just make sure parents are always interned as well...
 // Maybe store a hash... for the total configuration site.
 // No matter what, we should never new ConfigSite*** in any way
 
 // Can lazily generate line numbers from AnnotatedMethods+fields via reading of classinfo
-
 // https://api.flutter.dev/flutter/package-source_span_source_span/package-source_span_source_span-library.html
 
 // ConfigSite chain
 // https://api.flutter.dev/flutter/package-stack_trace_stack_trace/Chain-class.html
 
-// Interface vs class...
-// People are not going to implement their own... Because of visitors.. So might as well be a class
+// It is a interface to save space.
+
+// TODO
+// Intern Stuff
+
+// Remove stack capturing. Anyone who does it must do it themself?
+// How are are we to know
+// Maybe allow it with a filter? Problem is I think we need to canonicalize it.
+// Or at least check that stackFrame.getClass().getModule()==Java.base
+// In which case we know its good.
+// Theoretically people could change
+
+// Maaske lav om til Abstract Class (IGEn!!! dough).
+// Og saa automatisk intern naar man laver noget...
+// Det
 public interface ConfigSite {
 
     /** A special configuration site indicating that the actual configuration site could not be determined. */
@@ -104,17 +117,15 @@ public interface ConfigSite {
         forEach(e -> System.out.println(e));
     }
 
-    ConfigSite replaceParent(@Nullable ConfigSite newParent);
-
-    default ConfigSite thenAnnotatedField(String cst, Annotation annotation, FieldDescriptor field) {
-        return new ConfigSiteSupport.AnnotatedFieldConfigSite(this, cst, field, annotation);
+    default ConfigSite thenAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
+        return new ConfigSiteSupport.AnnotatedFieldConfigSite(this, operation, field, annotation);
     }
 
     default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, Member member) {
         if (member instanceof MethodDescriptor) {
             return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
         } else {
-            return thenAnnotatedField(cst, annotation, (FieldDescriptor) member);
+            return thenAnnotatedField(cst, (FieldDescriptor) member, annotation);
         }
     }
 
@@ -122,16 +133,17 @@ public interface ConfigSite {
         return new ConfigSiteSupport.AnnotatedMethodConfigSite(this, cst, method, annotation);
     }
 
-    default ConfigSite thenCaptureStackFrame(String operation, StackFrame stackFrame) {
-        return new ConfigSiteSupport.CapturedStackFrameConfigSite(this, operation, stackFrame);
-    }
-
+    // TODO maybe people need to implement this them self???
     default ConfigSite thenCaptureStackFrame(String operation) {
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
-        return sf.isPresent() ? new ConfigSiteSupport.CapturedStackFrameConfigSite(this, operation, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new ConfigSiteSupport.StackFrameConfigSite(this, operation, sf.get()) : UNKNOWN;
+    }
+
+    default ConfigSite thenStackFrame(String operation, StackFrame stackFrame) {
+        return new ConfigSiteSupport.StackFrameConfigSite(this, operation, stackFrame);
     }
 
     /**
@@ -147,6 +159,15 @@ public interface ConfigSite {
         forEach(s -> s.visit(visitor));
     }
 
+    /**
+     * Returns a new config site retaining the top config site, but replacing the parent with the specified new parent.
+     * 
+     * @param newParent
+     *            the new parent
+     * @return the new config site
+     */
+    ConfigSite withParent(@Nullable ConfigSite newParent);
+
     static ConfigSite captureStack(String operation) {
         // capture stack frame vs capture stack
         // Det eneste er egentlig, om vi vil have en settings saa man kan capture mere end kun en frame..
@@ -156,7 +177,15 @@ public interface ConfigSite {
             return UNKNOWN;
         }
         Optional<StackFrame> sf = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE).walk(e -> e.filter(ConfigSiteSupport.FILTER).findFirst());
-        return sf.isPresent() ? new ConfigSiteSupport.CapturedStackFrameConfigSite(null, operation, sf.get()) : UNKNOWN;
+        return sf.isPresent() ? new ConfigSiteSupport.StackFrameConfigSite(null, operation, sf.get()) : UNKNOWN;
+    }
+
+    default ConfigSite fromStackFrame(String operation, StackFrame stackFrame) {
+        return new ConfigSiteSupport.StackFrameConfigSite(null, operation, stackFrame);
+    }
+
+    static ConfigSite fromAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
+        return new ConfigSiteSupport.AnnotatedFieldConfigSite(null, operation, field, annotation);
     }
 }
 // 5 different types
