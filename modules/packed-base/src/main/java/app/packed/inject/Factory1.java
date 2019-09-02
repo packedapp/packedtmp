@@ -23,8 +23,8 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
+import packed.internal.inject.factoryhandle.FunctionFunctionHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invoke.lambda.FunctionFunctionHandle;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input

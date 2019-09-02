@@ -18,7 +18,7 @@ package packed.internal.access;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.invoke.FunctionHandle;
+import packed.internal.inject.factoryhandle.FunctionHandle;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public interface AppPackedInjectAccess {

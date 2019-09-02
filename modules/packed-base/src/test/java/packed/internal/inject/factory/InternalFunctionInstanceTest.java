@@ -20,8 +20,8 @@ import static support.assertj.Assertions.checkThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.util.Key;
-import packed.internal.invoke.FunctionHandle;
-import packed.internal.invoke.InstanceFunctionHandle;
+import packed.internal.inject.factoryhandle.FunctionHandle;
+import packed.internal.inject.factoryhandle.InstanceFunctionHandle;
 
 /** Tests {@link InstanceFunctionHandle} */
 public class InternalFunctionInstanceTest {

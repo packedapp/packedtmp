@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke.lambda;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invoke.FunctionHandle;
 
 /** A function that maps the result of another function. */
 public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
@@ -39,11 +37,11 @@ public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
         this.mapper = requireNonNull(mapper, "mapper is null");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable R invoke(Object[] params) {
-        throw new UnsupportedOperationException();
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public @Nullable R invoke(Object[] params) {
+    // throw new UnsupportedOperationException();
+    // }
 
     /** {@inheritDoc} */
     @Override

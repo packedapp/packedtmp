@@ -13,22 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.inject.factoryhandle;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 
 import app.packed.inject.Factory;
-import app.packed.inject.InjectionException;
 import app.packed.util.ExecutableDescriptor;
 import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.util.ThrowableUtil;
 
 /** The backing class of {@link Factory}. */
 public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
@@ -64,20 +60,20 @@ public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
     public boolean hasMethodHandle() {
         return methodHandle != null;
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Nullable
-    public T invoke(Object[] params) {
-        requireNonNull(methodHandle, "internal error");
-        try {
-            MethodHandle mh = toMethodHandle();
-            return (T) mh.invokeWithArguments(params);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new InjectionException("Failed to inject " + executable.descriptorTypeName(), e);
-        }
-    }
+    //
+    // @SuppressWarnings("unchecked")
+    // @Override
+    // @Nullable
+    // public T invoke(Object[] params) {
+    // requireNonNull(methodHandle, "internal error");
+    // try {
+    // MethodHandle mh = toMethodHandle();
+    // return (T) mh.invokeWithArguments(params);
+    // } catch (Throwable e) {
+    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
+    // throw new InjectionException("Failed to inject " + executable.descriptorTypeName(), e);
+    // }
+    // }
 
     @Override
     public boolean isMissingInstance() {

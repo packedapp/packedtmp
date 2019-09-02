@@ -24,8 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.util.IllegalAccessRuntimeException;
-import packed.internal.invoke.ExecutableFunctionHandle;
-import packed.internal.invoke.FunctionHandle;
+import packed.internal.inject.factoryhandle.ExecutableFunctionHandle;
+import packed.internal.inject.factoryhandle.FunctionHandle;
 
 /**
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and

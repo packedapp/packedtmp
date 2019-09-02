@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -34,11 +34,11 @@ public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
         this.instance = instance;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public T invoke(Object[] ignore) {
-        return instance;
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public T invoke(Object[] ignore) {
+    // return instance;
+    // }
 
     /** {@inheritDoc} */
     @Override

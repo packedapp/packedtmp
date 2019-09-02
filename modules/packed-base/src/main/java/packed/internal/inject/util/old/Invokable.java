@@ -13,35 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.inject.util.old;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /**
  *
  */
-// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class BindableFunctionHandle<T> extends FunctionHandle<T> {
+public interface Invokable<T> {
 
-    FunctionHandle<T> wrapping;
+    TypeLiteral<T> getType();
 
-    public BindableFunctionHandle(TypeLiteral<T> typeLiteral) {
-        super(typeLiteral);
+    @SuppressWarnings("unchecked")
+    default Class<T> getRawType() {
+        return (Class<T>) getType().rawType();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public T invoke(Object[] params) {
-        return null;
-    }
+    boolean isNullable();
 
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
-        throw new UnsupportedOperationException();
+    boolean isFailable();
+
+    T invoke(Object[] arguments);
+
+    enum Type {
+        UNSAFE_NULLABLE, /**/
+        SUPER_SAFE_NULLABLE, /**/
+        FIXED;
     }
 }
+// should invoke

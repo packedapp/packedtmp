@@ -13,25 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.inject.factoryhandle;
 
-import app.packed.util.Nullable;
+import java.lang.invoke.MethodHandle;
+
 import app.packed.util.TypeLiteral;
 
 /**
- * An internal factory
+ *
  */
-public abstract class InvokableMember<T> extends FunctionHandle<T> {
+// Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
+public class BindableFunctionHandle<T> extends FunctionHandle<T> {
 
-    @Nullable
-    public final Object instance;
+    FunctionHandle<T> wrapping;
 
-    public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
-        super(typeLiteralOrKey);
-        this.instance = instance;
+    public BindableFunctionHandle(TypeLiteral<T> typeLiteral) {
+        super(typeLiteral);
     }
 
-    public abstract InvokableMember<T> withInstance(Object instance);
+    // /** {@inheritDoc} */
+    // @Override
+    // @Nullable
+    // public T invoke(Object[] params) {
+    // return null;
+    // }
 
-    public abstract boolean isMissingInstance();
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -83,23 +83,23 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
         return mh;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable T invoke(Object[] params) {
-        if (isStatic) {
-            if (isVolatile) {
-                return (T) varHandle.getVolatile();
-            } else {
-                return (T) varHandle.get();
-            }
-        }
-        requireNonNull(instance);
-        if (isVolatile) {
-            return (T) varHandle.getVolatile(instance);
-        } else {
-            return (T) varHandle.get(instance);
-        }
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public @Nullable T invoke(Object[] params) {
+    // if (isStatic) {
+    // if (isVolatile) {
+    // return (T) varHandle.getVolatile();
+    // } else {
+    // return (T) varHandle.get();
+    // }
+    // }
+    // requireNonNull(instance);
+    // if (isVolatile) {
+    // return (T) varHandle.getVolatile(instance);
+    // } else {
+    // return (T) varHandle.get(instance);
+    // }
+    // }
 
     @Override
     public boolean isMissingInstance() {

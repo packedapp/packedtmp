@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionException;
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /**
@@ -85,16 +84,16 @@ public abstract class FunctionHandle<T> extends Object {
         }
         return instance;
     }
-
-    /**
-     * Instantiates a new object using the specified parameters
-     * 
-     * @param params
-     *            the parameters to use
-     * @return the new instance
-     */
-    @Nullable
-    public abstract T invoke(Object[] params);
+    //
+    // /**
+    // * Instantiates a new object using the specified parameters
+    // *
+    // * @param params
+    // * the parameters to use
+    // * @return the new instance
+    // */
+    // @Nullable
+    // public abstract T invoke(Object[] params);
 
     /**
      * Returns the type of objects this operation returns on invocation.

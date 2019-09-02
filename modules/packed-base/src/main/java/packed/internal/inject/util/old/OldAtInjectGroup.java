@@ -24,9 +24,9 @@ import java.util.List;
 
 import app.packed.inject.Inject;
 import app.packed.util.Nullable;
+import packed.internal.inject.factoryhandle.ExecutableFunctionHandle;
+import packed.internal.inject.factoryhandle.FieldFunctionHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invoke.ExecutableFunctionHandle;
-import packed.internal.invoke.FieldFunctionHandle;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 

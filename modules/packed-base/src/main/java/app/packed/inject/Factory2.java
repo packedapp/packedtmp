@@ -22,8 +22,8 @@ import java.util.function.BiFunction;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
+import packed.internal.inject.factoryhandle.BiFunctionFunctionHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invoke.lambda.BiFunctionFunctionHandle;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input

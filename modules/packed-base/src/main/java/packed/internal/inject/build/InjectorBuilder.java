@@ -17,6 +17,7 @@ package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +40,10 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.compose.InjectorResolver;
+import packed.internal.inject.factoryhandle.FunctionHandle;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtProvides;
 import packed.internal.inject.util.AtProvidesGroup;
-import packed.internal.invoke.FunctionHandle;
 
 /** This class records all service related information for a single box. */
 public final class InjectorBuilder {
@@ -159,8 +160,8 @@ public final class InjectorBuilder {
             parentNode = new BSEComponent(this, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(factory.function()).toMethodHandle(),
-                    (List) factory.dependencies());
+            MethodHandle mh = pcc.lookup.readable(factory.function()).toMethodHandle();
+            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -181,7 +182,8 @@ public final class InjectorBuilder {
         BSEComponent<?> c = cc.features().get(FK);
         if (c == null) {
             // config site???
-            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(function).toMethodHandle(), (List) factory.dependencies());
+            MethodHandle mh = pcc.lookup.readable(function).toMethodHandle();
+            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());
         entries.add(c);

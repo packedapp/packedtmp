@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.invoke.lambda.SupplierFunctionHandle;
+import packed.internal.inject.factoryhandle.SupplierFunctionHandle;
 
 /**
  * A special {@link Factory} type that uses the supplied value from a {@link Supplier} to dynamically provide new

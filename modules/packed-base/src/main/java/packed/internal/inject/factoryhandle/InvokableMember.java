@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.inject.factoryhandle;
 
+import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /**
- *
+ * An internal factory
  */
-public interface Invokable<T> {
+public abstract class InvokableMember<T> extends FunctionHandle<T> {
 
-    TypeLiteral<T> getType();
+    @Nullable
+    public final Object instance;
 
-    @SuppressWarnings("unchecked")
-    default Class<T> getRawType() {
-        return (Class<T>) getType().rawType();
+    public InvokableMember(TypeLiteral<T> typeLiteralOrKey, Object instance) {
+        super(typeLiteralOrKey);
+        this.instance = instance;
     }
 
-    boolean isNullable();
+    public abstract InvokableMember<T> withInstance(Object instance);
 
-    boolean isFailable();
-
-    T invoke(Object[] arguments);
-
-    enum Type {
-        UNSAFE_NULLABLE, /**/
-        SUPER_SAFE_NULLABLE, /**/
-        FIXED;
-    }
+    public abstract boolean isMissingInstance();
 }
-// should invoke

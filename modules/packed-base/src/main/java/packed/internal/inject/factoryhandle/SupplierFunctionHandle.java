@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke.lambda;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,10 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Supplier;
 
 import app.packed.inject.Factory0;
-import app.packed.inject.InjectionException;
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invoke.FunctionHandle;
 
 /**
  * An function handle that wraps a {@link Supplier}. Is used, for example, from {@link Factory0}.
@@ -42,8 +38,7 @@ public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
 
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            GET = l.findVirtual(Supplier.class, "get", MethodType.methodType(Object.class));
+            GET = MethodHandles.lookup().findVirtual(Supplier.class, "get", MethodType.methodType(Object.class));
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -65,18 +60,19 @@ public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public T invoke(Object[] ignore) {
-        T instance = supplier.get();
-        if (!returnTypeRaw().isInstance(instance)) {
-            throw new InjectionException(
-                    "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce instances of '"
-                            + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-        }
-        return instance;
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // @Nullable
+    // public T invoke(Object[] ignore) {
+    // T instance = supplier.get();
+    // if (!returnTypeRaw().isInstance(instance)) {
+    // throw new InjectionException(
+    // "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce
+    // instances of '"
+    // + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+    // }
+    // return instance;
+    // }
 
     /** {@inheritDoc} */
     @Override

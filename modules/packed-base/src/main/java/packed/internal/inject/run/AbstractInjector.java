@@ -27,10 +27,10 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.factoryhandle.FieldFunctionHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.old.OldAtInject;
 import packed.internal.inject.util.old.OldAtInjectGroup;
-import packed.internal.invoke.FieldFunctionHandle;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {

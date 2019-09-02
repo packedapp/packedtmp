@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke.lambda;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -25,10 +24,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.inject.Factory2;
-import app.packed.inject.InjectionException;
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invoke.FunctionHandle;
 
 /** An internal factory for {@link Factory2}. */
 public class BiFunctionFunctionHandle<T, U, R> extends FunctionHandle<R> {
@@ -53,21 +49,22 @@ public class BiFunctionFunctionHandle<T, U, R> extends FunctionHandle<R> {
         this.function = requireNonNull(function);
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    @Nullable
-    public R invoke(Object[] params) {
-        T t = (T) params[0];
-        U u = (U) params[1];
-        R instance = function.apply(t, u);
-        if (!returnTypeRaw().isInstance(instance)) {
-            throw new InjectionException(
-                    "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce instances of '"
-                            + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-        }
-        return instance;
-    }
+    // /** {@inheritDoc} */
+    // @SuppressWarnings("unchecked")
+    // @Override
+    // @Nullable
+    // public R invoke(Object[] params) {
+    // T t = (T) params[0];
+    // U u = (U) params[1];
+    // R instance = function.apply(t, u);
+    // if (!returnTypeRaw().isInstance(instance)) {
+    // throw new InjectionException(
+    // "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce
+    // instances of '"
+    // + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+    // }
+    // return instance;
+    // }
 
     /** {@inheritDoc} */
     @Override

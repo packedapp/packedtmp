@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke.lambda;
+package packed.internal.inject.factoryhandle;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,10 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.inject.Factory1;
-import app.packed.inject.InjectionException;
-import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.invoke.FunctionHandle;
 
 /** An internal factory for {@link Factory1}. */
 public final class FunctionFunctionHandle<T, R> extends FunctionHandle<R> {
@@ -51,20 +47,21 @@ public final class FunctionFunctionHandle<T, R> extends FunctionHandle<R> {
         super(type);
         this.function = requireNonNull(function, "function is null");
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    @Nullable
-    public R invoke(Object[] params) {
-        T t = (T) params[0];
-        R instance = function.apply(t);
-        if (!returnTypeRaw().isInstance(instance)) {
-            throw new InjectionException(
-                    "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce instances of '"
-                            + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-        }
-        return instance;
-    }
+    //
+    // @SuppressWarnings("unchecked")
+    // @Override
+    // @Nullable
+    // public R invoke(Object[] params) {
+    // T t = (T) params[0];
+    // R instance = function.apply(t);
+    // if (!returnTypeRaw().isInstance(instance)) {
+    // throw new InjectionException(
+    // "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce
+    // instances of '"
+    // + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
+    // }
+    // return instance;
+    // }
 
     /** {@inheritDoc} */
     @Override
