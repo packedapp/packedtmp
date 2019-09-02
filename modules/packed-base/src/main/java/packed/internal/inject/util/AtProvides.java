@@ -59,8 +59,11 @@ public final class AtProvides {
     /** The invokable member. */
     public final InvokableMember<?> invokable;
 
+    public final MethodHandle methodHandle;
+
     public AtProvides(MethodHandle mh, InternalMemberDescriptor member, InvokableMember<?> invokable, Key<?> key, Provide provides,
             List<InternalDependencyDescriptor> dependencies) {
+        this.methodHandle = requireNonNull(mh);
         this.invokable = requireNonNull(invokable);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

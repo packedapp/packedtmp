@@ -160,6 +160,15 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
         }
     }
 
+    /**
+     * Returns the field that this descriptor wraps.
+     * 
+     * @return the field that this descriptor wraps
+     */
+    public Field unsafeField() {
+        return field;
+    }
+
     /** {@inheritDoc} */
     @Override
     public String toString() {

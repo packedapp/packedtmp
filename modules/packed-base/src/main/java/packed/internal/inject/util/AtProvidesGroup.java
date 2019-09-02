@@ -16,7 +16,6 @@
 package packed.internal.inject.util;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,18 +78,21 @@ public final class AtProvidesGroup {
         }
 
         void onFieldProvide(AnnotatedFieldHook<Provide> amh) {
-            InternalFieldDescriptor fd = InternalFieldDescriptor.of(amh.field());
-            FieldFunctionHandle<?> ffh = new FieldFunctionHandle<>(fd.getTypeLiteral(), fd, amh.varHandle(), null);
-            Field field = amh.field().newField();
-            tryAdd0(amh.getter(), ffh, fd, Key.fromField(field), amh.annotation(), List.of());
+            InternalFieldDescriptor field = InternalFieldDescriptor.of(amh.field());
+
+            // Generation of Key, I think we might want to do something that produces a good error message.
+            FieldFunctionHandle<?> handle = new FieldFunctionHandle<>(field.getTypeLiteral(), field, amh.varHandle(), null);
+
+            tryAdd0(amh.getter(), handle, field, Key.fromField(field.unsafeField()), amh.annotation(), List.of());
         }
 
         void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
-            InternalMethodDescriptor descriptor = (InternalMethodDescriptor) amh.method();
+            InternalMethodDescriptor method = (InternalMethodDescriptor) amh.method();
 
-            ExecutableFunctionHandle<?> efh = new ExecutableFunctionHandle<>(descriptor.returnTypeLiteral(), descriptor, amh.methodHandle(), null);
-            tryAdd0(amh.methodHandle(), efh, descriptor, Key.fromMethodReturnType(descriptor.newMethod()), amh.annotation(),
-                    InternalDependencyDescriptor.fromExecutable(descriptor));
+            ExecutableFunctionHandle<?> handle = new ExecutableFunctionHandle<>(method.returnTypeLiteral(), method, amh.methodHandle(), null);
+
+            tryAdd0(amh.methodHandle(), handle, method, Key.fromMethodReturnType(method.newMethod()), amh.annotation(),
+                    InternalDependencyDescriptor.fromExecutable(method));
         }
 
         private AtProvides tryAdd0(MethodHandle mh, InvokableMember<?> im, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,

@@ -80,6 +80,7 @@ public final class BSEComponent<T> extends BSE<T> {
         // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
         // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         // }
+        mh = null;
     }
 
     /**
@@ -98,10 +99,14 @@ public final class BSEComponent<T> extends BSE<T> {
         this.receiver = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.function = null;
+        this.mh = null;
     }
 
-    BSEComponent(ConfigSite configSite, AtProvides atProvides, FunctionHandle<T> factory, BSEComponent<?> parent) {
+    private final MethodHandle mh;
+
+    BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, FunctionHandle<T> factory, BSEComponent<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
+        this.mh = requireNonNull(mh);
         this.receiver = parent;
         this.function = requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
@@ -228,13 +233,12 @@ public final class BSEComponent<T> extends BSE<T> {
     public BSE<?> provide(AtProvides atProvides) {
         ConfigSite icss = configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
 
-        InvokableMember<?> fi = atProvides.invokable;
-        if (!atProvides.isStaticMember) {
-            // getInstance(null);
-            // fi = fi.withInstance(this.instance);
-        }
-
-        BSEComponent<?> node = new BSEComponent<>(icss, atProvides, fi, this);
+        InvokableMember<?> im = atProvides.invokable;
+        // if (!atProvides.isStaticMember) {
+        // // getInstance(null);
+        // // fi = fi.withInstance(this.instance);
+        // }
+        BSEComponent<?> node = new BSEComponent<>(icss, atProvides, atProvides.methodHandle, im, this);
         node.as((Key) atProvides.key);
         return node;
     }
