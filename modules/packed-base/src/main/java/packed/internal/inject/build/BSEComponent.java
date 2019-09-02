@@ -193,7 +193,14 @@ public final class BSEComponent<T> extends BSE<T> {
     private MethodHandle toMethodHandle() {
         MethodHandle mh;
         if (mha == null) {
-            mh = newInstanceHelper().toMethodHandle();
+            if (parent != null) {
+                InvokableMember<T> ff = (InvokableMember<T>) function;
+                if (ff.isMissingInstance()) {
+                    function = ff.withInstance(parent.getInstance(null));
+                }
+            }
+            mh = function.toMethodHandle();
+            // mh = newInstanceHelper().toMethodHandle();
         } else {
             mh = mha;
             if (parent != null) {
@@ -204,19 +211,9 @@ public final class BSEComponent<T> extends BSE<T> {
         }
 
         if (mha != null) {
-            System.out.println(mh + "  " + newInstanceHelper().toMethodHandle());
+            // System.out.println(mh + " " + newInstanceHelper().toMethodHandle());
         }
         return mh;
-    }
-
-    private FunctionHandle<T> newInstanceHelper() {
-        if (parent != null) {
-            InvokableMember<T> ff = (InvokableMember<T>) function;
-            if (ff.isMissingInstance()) {
-                function = ff.withInstance(parent.getInstance(null));
-            }
-        }
-        return function;
     }
 
     /** {@inheritDoc} */
