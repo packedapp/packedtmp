@@ -153,14 +153,13 @@ public final class InjectorBuilder {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup apg) {
-        // This is a bit complicated, to define
         BSEComponent parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;
             parentNode = new BSEComponent(this, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(factory.function()),
+            parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(factory.function()).toMethodHandle(),
                     (List) factory.dependencies());
         }
 
@@ -169,7 +168,7 @@ public final class InjectorBuilder {
         parentNode.hasInstanceMembers = apg.hasInstanceMembers;
 
         // Add each @Provide as children of the parent node
-        for (AtProvides provides : apg.members.values()) {
+        for (AtProvides provides : apg.members) {
             entries.add(parentNode.provide(provides));
         }
 
@@ -182,7 +181,7 @@ public final class InjectorBuilder {
         BSEComponent<?> c = cc.features().get(FK);
         if (c == null) {
             // config site???
-            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(function), (List) factory.dependencies());
+            c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, pcc.lookup.readable(function).toMethodHandle(), (List) factory.dependencies());
         }
         c.as((Key) factory.key());
         entries.add(c);

@@ -37,8 +37,6 @@ import packed.internal.inject.run.RSNLazy;
 import packed.internal.inject.run.RSNPrototype;
 import packed.internal.inject.util.AtProvides;
 import packed.internal.inject.util.InternalDependencyDescriptor;
-import packed.internal.invoke.FunctionHandle;
-import packed.internal.invoke.InvokableMember;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -49,10 +47,6 @@ public final class BSEComponent<T> extends BSE<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-
-    /** An internal factory, null for nodes created from an instance. */
-    @Nullable
-    private FunctionHandle<T> function;
 
     public boolean hasInstanceMembers;
 
@@ -72,15 +66,13 @@ public final class BSEComponent<T> extends BSE<T> {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.mha = requireNonNull(mh);
         this.parent = parent;
-        this.function = null;// requireNonNull(factory, "factory is null");
         this.instantionMode = atProvides.instantionMode;
         this.description = atProvides.description;
     }
 
-    public BSEComponent(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, FunctionHandle<T> function,
+    public BSEComponent(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
             List<InternalDependencyDescriptor> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
-        this.function = requireNonNull(function, "factory is null");
         this.parent = null;
         this.instantionMode = requireNonNull(instantionMode);
 
@@ -91,7 +83,7 @@ public final class BSEComponent<T> extends BSE<T> {
         // if (instantionMode != InstantiationMode.PROTOTYPE && hasDependencyOnInjectionSite) {
         // throw new InvalidDeclarationException("Cannot inject InjectionSite into singleton services");
         // }
-        mha = null;
+        mha = requireNonNull(mh);
     }
 
     /**
@@ -109,7 +101,6 @@ public final class BSEComponent<T> extends BSE<T> {
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
         this.instantionMode = InstantiationMode.SINGLETON;
-        this.function = null;
         this.mha = null;
     }
 
@@ -193,18 +184,19 @@ public final class BSEComponent<T> extends BSE<T> {
     private MethodHandle toMethodHandle() {
         MethodHandle mh;
         if (mha == null) {
-            if (parent != null) {
-                InvokableMember<T> ff = (InvokableMember<T>) function;
-                if (ff.isMissingInstance()) {
-                    function = ff.withInstance(parent.getInstance(null));
-                }
-            }
-            mh = function.toMethodHandle();
+            // if (parent != null) {
+            // InvokableMember<T> ff = (InvokableMember<T>) function;
+            // if (ff.isMissingInstance()) {
+            // function = ff.withInstance(parent.getInstance(null));
+            // }
+            // }
+            // mh = function.toMethodHandle();
             // mh = newInstanceHelper().toMethodHandle();
+            throw new Error();
         } else {
             mh = mha;
             if (parent != null) {
-                if (mh.type().parameterCount() == 1) {
+                if (mh.type().parameterCount() != dependencies.size()) {
                     mh = mh.bindTo(parent.getInstance(null));
                 }
             }

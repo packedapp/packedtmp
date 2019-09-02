@@ -28,7 +28,6 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.util.descriptor.InternalMemberDescriptor;
 
 /** A descriptor for a member annotated with {@link Provide}. */
 public final class AtProvides {
@@ -55,9 +54,10 @@ public final class AtProvides {
     /** The dependencies (parameters) of the member. */
     public final List<InternalDependencyDescriptor> dependencies;
 
+    /** A unbound method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
-    public AtProvides(MethodHandle mh, InternalMemberDescriptor member, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
+    public AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

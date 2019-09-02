@@ -174,6 +174,18 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
         return new InternalMethodDescriptor(method);
     }
 
+    /**
+     * If the specified descriptor is an instance of this class. This method casts and returns the specified descriptor.
+     * Otherwise creates a new descriptor.
+     *
+     * @param descriptor
+     *            the descriptor to copy or return
+     * @return a field descriptor
+     */
+    public static InternalMethodDescriptor of(MethodDescriptor descriptor) {
+        return descriptor instanceof InternalMethodDescriptor ? (InternalMethodDescriptor) descriptor : of(descriptor.newMethod());
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean isStatic() {

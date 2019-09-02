@@ -16,9 +16,9 @@
 package packed.internal.inject.util;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
@@ -28,7 +28,6 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalMemberDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
@@ -41,8 +40,7 @@ public final class AtProvidesGroup {
     public final boolean hasInstanceMembers;
 
     /** An immutable map of all providing members. */
-    // Not sure we need a map, A list should be fine
-    public final Map<Key<?>, AtProvides> members;
+    public final List<AtProvides> members;
 
     /**
      * Creates a new provides group
@@ -51,7 +49,7 @@ public final class AtProvidesGroup {
      *            the builder to create the group for
      */
     private AtProvidesGroup(Builder builder) {
-        this.members = builder.members == null ? Map.of() : Map.copyOf(builder.members);
+        this.members = builder.members == null ? List.of() : List.copyOf(builder.members.values());
         this.hasInstanceMembers = builder.hasInstanceMembers;
     }
 
@@ -74,23 +72,21 @@ public final class AtProvidesGroup {
             return new AtProvidesGroup(this);
         }
 
-        void onFieldProvide(AnnotatedFieldHook<Provide> amh) {
-            InternalFieldDescriptor field = InternalFieldDescriptor.of(amh.field());
+        void onFieldProvide(AnnotatedFieldHook<Provide> fieldHook) {
+            InternalFieldDescriptor field = InternalFieldDescriptor.of(fieldHook.field());
 
             // Generation of Key, I think we might want to do something that produces a good error message.
-
-            tryAdd0(amh.getter(), field, Key.fromField(field.unsafeField()), amh.annotation(), List.of());
+            tryAdd0(fieldHook.getter(), field, Key.fromField(field.unsafeField()), fieldHook.annotation(), List.of());
         }
 
-        void onMethodProvide(AnnotatedMethodHook<Provide> amh) {
-            InternalMethodDescriptor method = (InternalMethodDescriptor) amh.method();
+        void onMethodProvide(AnnotatedMethodHook<Provide> methodHook) {
+            InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
 
-            tryAdd0(amh.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), amh.annotation(),
+            tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), methodHook.annotation(),
                     InternalDependencyDescriptor.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, InternalMemberDescriptor descriptor, Key<?> key, Provide provides,
-                List<InternalDependencyDescriptor> dependencies) {
+        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this
