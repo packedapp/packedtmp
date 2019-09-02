@@ -101,10 +101,10 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
     // }
     // }
 
-    @Override
-    public boolean isMissingInstance() {
-        return !field.isStatic() && instance == null;
-    }
+    // @Override
+    // public boolean isMissingInstance() {
+    // return !field.isStatic() && instance == null;
+    // }
 
     /**
      * Sets the value of the field
@@ -128,16 +128,16 @@ public final class FieldFunctionHandle<T> extends InvokableMember<T> {
         }
     }
 
-    @Override
-    public FieldFunctionHandle<T> withInstance(Object instance) {
-        requireNonNull(instance, "instance is null");
-        if (this.instance != null) {
-            throw new IllegalStateException("An instance has already been set");
-        } else if (isStatic) {
-            throw new IllegalStateException("The field is static");
-        }
-        return new FieldFunctionHandle<>(this, instance);
-    }
+    // @Override
+    // public FieldFunctionHandle<T> withInstance(Object instance) {
+    // requireNonNull(instance, "instance is null");
+    // if (this.instance != null) {
+    // throw new IllegalStateException("An instance has already been set");
+    // } else if (isStatic) {
+    // throw new IllegalStateException("The field is static");
+    // }
+    // return new FieldFunctionHandle<>(this, instance);
+    // }
 
     /**
      * Returns a new internal factory that uses the specified lookup object to instantiate new objects.

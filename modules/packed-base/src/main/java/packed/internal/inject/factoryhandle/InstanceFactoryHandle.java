@@ -24,12 +24,12 @@ import app.packed.inject.Factory;
 import app.packed.util.TypeLiteral;
 
 /** A function handle that takes no arguments and returns the same instance every time. */
-public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
+public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
 
     /** The instance that is returned every time. */
     private final T instance;
 
-    private InstanceFunctionHandle(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
+    private InstanceFactoryHandle(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
         super(typeLiteralOrKey, actualType);
         this.instance = instance;
     }
@@ -47,7 +47,7 @@ public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
     }
 
     public static void main(String[] args) throws Throwable {
-        FunctionHandle<String> f = InstanceFunctionHandle.of("Foo");
+        FactoryHandle<String> f = InstanceFactoryHandle.of("Foo");
         System.out.println(f.toMethodHandle().invoke());
         System.out.println(f.toMethodHandle().type());
     }
@@ -63,9 +63,9 @@ public final class InstanceFunctionHandle<T> extends FunctionHandle<T> {
      * @see Factory#ofInstance(Object)
      */
     @SuppressWarnings("unchecked")
-    public static <T> FunctionHandle<T> of(T instance) {
+    public static <T> FactoryHandle<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
-        return new InstanceFunctionHandle<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
+        return new InstanceFactoryHandle<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
     }
 }

@@ -21,7 +21,7 @@ import app.packed.util.TypeLiteral;
 /**
  * An internal factory
  */
-public abstract class InvokableMember<T> extends FunctionHandle<T> {
+public abstract class InvokableMember<T> extends FactoryHandle<T> {
 
     @Nullable
     public final Object instance;
@@ -31,7 +31,7 @@ public abstract class InvokableMember<T> extends FunctionHandle<T> {
         this.instance = instance;
     }
 
-    public abstract InvokableMember<T> withInstance(Object instance);
+    // public abstract InvokableMember<T> withInstance(Object instance);
 
-    public abstract boolean isMissingInstance();
+    // public abstract boolean isMissingInstance();
 }

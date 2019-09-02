@@ -57,6 +57,8 @@ public final class BSEComponent<T> extends BSE<T> {
     /** The instantiation mode of this node. */
     private InstantiationMode instantionMode;
 
+    /** Is null for instance components. */
+    @Nullable
     private final MethodHandle mha;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
@@ -89,15 +91,15 @@ public final class BSEComponent<T> extends BSE<T> {
     /**
      * Creates a new node from an instance.
      * 
-     * @param injectorConfiguration
-     *            the injector configuration
+     * @param ib
+     *            the injector builder
      * @param configSite
      *            the configuration site
      * @param instance
      *            the instance
      */
-    public BSEComponent(InjectorBuilder injectorConfiguration, ConfigSite configSite, T instance) {
-        super(injectorConfiguration, configSite, List.of());
+    public BSEComponent(InjectorBuilder ib, ConfigSite configSite, T instance) {
+        super(ib, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
         this.instantionMode = InstantiationMode.SINGLETON;
@@ -182,28 +184,15 @@ public final class BSEComponent<T> extends BSE<T> {
     boolean instanceBound;
 
     private MethodHandle toMethodHandle() {
-        MethodHandle mh;
-        if (mha == null) {
-            // if (parent != null) {
-            // InvokableMember<T> ff = (InvokableMember<T>) function;
-            // if (ff.isMissingInstance()) {
-            // function = ff.withInstance(parent.getInstance(null));
-            // }
-            // }
-            // mh = function.toMethodHandle();
-            // mh = newInstanceHelper().toMethodHandle();
-            throw new Error();
-        } else {
-            mh = mha;
-            if (parent != null) {
-                if (mh.type().parameterCount() != dependencies.size()) {
-                    mh = mh.bindTo(parent.getInstance(null));
-                }
-            }
+        MethodHandle mh = mha;
+        if (mh == null) {
+            throw new Error();// called with instance field..
         }
 
-        if (mha != null) {
-            // System.out.println(mh + " " + newInstanceHelper().toMethodHandle());
+        if (parent != null) {
+            if (mh.type().parameterCount() != dependencies.size()) {
+                mh = mh.bindTo(parent.getInstance(null));
+            }
         }
         return mh;
     }

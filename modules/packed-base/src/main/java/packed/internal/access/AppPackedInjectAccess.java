@@ -18,7 +18,7 @@ package packed.internal.access;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.factoryhandle.FunctionHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
 public interface AppPackedInjectAccess {
@@ -32,7 +32,7 @@ public interface AppPackedInjectAccess {
      *            the factory to extract from
      * @return the internal factory
      */
-    <T> FunctionHandle<T> toInternalFunction(Factory<T> factory);
+    <T> FactoryHandle<T> toInternalFunction(Factory<T> factory);
 
     InjectorBuilder getBuilder(InjectionExtension ie);
 }

@@ -34,7 +34,7 @@ import app.packed.util.TypeLiteral;
 
 // checker aldrig for null.
 // Men checker den korrekte type???
-public abstract class FunctionHandle<T> extends Object {
+public abstract class FactoryHandle<T> extends Object {
 
     //////// TYPES (Raw)
     // ExactType... -> Instance, Constructor
@@ -67,11 +67,11 @@ public abstract class FunctionHandle<T> extends Object {
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    public FunctionHandle(TypeLiteral<T> typeLiteralOrKey) {
+    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey) {
         this(typeLiteralOrKey, typeLiteralOrKey.rawType());
     }
 
-    public FunctionHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
+    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.type = typeLiteral.rawType();
@@ -115,7 +115,7 @@ public abstract class FunctionHandle<T> extends Object {
 
     public abstract MethodHandle toMethodHandle();
 
-    public FunctionHandle<T> withLookup(Lookup lookup) {
+    public FactoryHandle<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
     }
 }

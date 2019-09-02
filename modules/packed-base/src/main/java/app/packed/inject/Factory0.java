@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.factoryhandle.SupplierFunctionHandle;
+import packed.internal.inject.factoryhandle.SupplierFactoryHandle;
 
 /**
  * A special {@link Factory} type that uses the supplied value from a {@link Supplier} to dynamically provide new
@@ -81,6 +81,6 @@ public abstract class Factory0<R> extends Factory<R> {
     @SuppressWarnings("unchecked")
     static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
         TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
-        return new FactorySupport<>(new SupplierFunctionHandle<>(tt, supplier), List.of());
+        return new FactorySupport<>(new SupplierFactoryHandle<>(tt, supplier), List.of());
     }
 }

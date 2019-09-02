@@ -15,9 +15,9 @@
  */
 package packed.internal.inject.factory;
 
-import packed.internal.inject.factoryhandle.SupplierFunctionHandle;
+import packed.internal.inject.factoryhandle.SupplierFactoryHandle;
 
-/** Tests {@link SupplierFunctionHandle}. */
+/** Tests {@link SupplierFactoryHandle}. */
 public class InternalFactory0Test {
 
 

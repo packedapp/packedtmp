@@ -20,54 +20,46 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
-import app.packed.inject.Factory0;
+import app.packed.inject.Factory2;
 import app.packed.util.TypeLiteral;
 
-/**
- * An function handle that wraps a {@link Supplier}. Is used, for example, from {@link Factory0}.
- * 
- * @param <T>
- *            the type of elements the factory produces
- */
-public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
+/** An internal factory for {@link Factory2}. */
+public class BiFunctionFactoryHandle<T, U, R> extends FactoryHandle<R> {
 
-    /** A method handle for {@link Supplier#get()}. */
-    private static final MethodHandle GET;
+    /** A method handle for {@link BiFunction#apply(Object, Object)}. */
+    private static final MethodHandle APPLY;
 
     static {
         try {
-            GET = MethodHandles.lookup().findVirtual(Supplier.class, "get", MethodType.methodType(Object.class));
+            MethodHandles.Lookup l = MethodHandles.lookup();
+            APPLY = l.findVirtual(Function.class, "apply", MethodType.methodType(Object.class, Object.class, Object.class));
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
     }
 
-    /** The supplier that creates the actual objects. */
-    private final Supplier<? extends T> supplier;
+    /** The function responsible for creating the actual objects. */
+    private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    /**
-     * Creates a SupplierFunctionHandle instance.
-     * 
-     * @param type
-     *            the class to extract type info from.
-     * @param supplier
-     *            the supplier that creates the actual values
-     */
-    public SupplierFunctionHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
-        super(type);
-        this.supplier = requireNonNull(supplier, "supplier is null");
+    public BiFunctionFactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
+        super(typeLiteral);
+        this.function = requireNonNull(function);
     }
 
     // /** {@inheritDoc} */
+    // @SuppressWarnings("unchecked")
     // @Override
     // @Nullable
-    // public T invoke(Object[] ignore) {
-    // T instance = supplier.get();
+    // public R invoke(Object[] params) {
+    // T t = (T) params[0];
+    // U u = (U) params[1];
+    // R instance = function.apply(t, u);
     // if (!returnTypeRaw().isInstance(instance)) {
     // throw new InjectionException(
-    // "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce
+    // "The BiFunction '" + format(function.getClass()) + "' used when creating a Factory2 instance was expected to produce
     // instances of '"
     // + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
     // }
@@ -77,6 +69,6 @@ public final class SupplierFunctionHandle<T> extends FunctionHandle<T> {
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
-        return GET.bindTo(supplier);
+        return APPLY.bindTo(function);
     }
 }

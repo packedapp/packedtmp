@@ -40,7 +40,7 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.compose.InjectorResolver;
-import packed.internal.inject.factoryhandle.FunctionHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtProvides;
 import packed.internal.inject.util.AtProvidesGroup;
@@ -160,7 +160,7 @@ public final class InjectorBuilder {
             parentNode = new BSEComponent(this, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            MethodHandle mh = pcc.lookup.readable(factory.function()).toMethodHandle();
+            MethodHandle mh = pcc.lookup.toMethodHandle(factory.handle());
             parentNode = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
@@ -178,11 +178,11 @@ public final class InjectorBuilder {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FunctionHandle<T> function) {
+    public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         BSEComponent<?> c = cc.features().get(FK);
         if (c == null) {
             // config site???
-            MethodHandle mh = pcc.lookup.readable(function).toMethodHandle();
+            MethodHandle mh = pcc.lookup.toMethodHandle(function);
             c = new BSEComponent<>(this, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());

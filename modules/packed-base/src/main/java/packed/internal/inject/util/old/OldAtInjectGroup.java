@@ -24,7 +24,7 @@ import java.util.List;
 
 import app.packed.inject.Inject;
 import app.packed.util.Nullable;
-import packed.internal.inject.factoryhandle.ExecutableFunctionHandle;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFunctionHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -100,7 +100,7 @@ public final class OldAtInjectGroup {
                 if (methods == null) {
                     methods = new ArrayList<>();
                 }
-                methods.add(result = new OldAtInject(new ExecutableFunctionHandle<>(descriptor).withLookup(lookup),
+                methods.add(result = new OldAtInject(new ExecutableFactoryHandle<>(descriptor).withLookup(lookup),
                         InternalDependencyDescriptor.fromExecutable(descriptor)));
             }
             return result;

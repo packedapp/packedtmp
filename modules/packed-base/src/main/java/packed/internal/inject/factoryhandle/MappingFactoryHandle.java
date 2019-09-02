@@ -23,15 +23,15 @@ import java.util.function.Function;
 import app.packed.util.TypeLiteral;
 
 /** A function that maps the result of another function. */
-public final class MappingFunctionHandle<T, R> extends FunctionHandle<R> {
+public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** The function we map the result from. */
-    final FunctionHandle<T> mapFrom;
+    final FactoryHandle<T> mapFrom;
 
     /** The function used to map the result. */
     final Function<? super T, ? extends R> mapper;
 
-    public MappingFunctionHandle(TypeLiteral<R> typeLiteral, FunctionHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
+    public MappingFactoryHandle(TypeLiteral<R> typeLiteral, FactoryHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
         super(typeLiteral);
         this.mapFrom = requireNonNull(mapFrom, "mapFrom is null");
         this.mapper = requireNonNull(mapper, "mapper is null");

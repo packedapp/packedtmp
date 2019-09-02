@@ -27,7 +27,7 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
 /** The backing class of {@link Factory}. */
-public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
+public final class ExecutableFactoryHandle<T> extends InvokableMember<T> {
 
     /**
      * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for
@@ -43,14 +43,14 @@ public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
     final MethodHandle methodHandle;
 
     @SuppressWarnings("unchecked")
-    public ExecutableFunctionHandle(MethodDescriptor methodDescriptor) {
+    public ExecutableFactoryHandle(MethodDescriptor methodDescriptor) {
         super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), null);
         this.executable = methodDescriptor;
         this.methodHandle = null;
         this.checkLowerBound = false;
     }
 
-    public ExecutableFunctionHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, @Nullable Object instance) {
+    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, @Nullable Object instance) {
         super(key, instance);
         this.executable = executable;
         this.methodHandle = methodHandle;
@@ -74,22 +74,22 @@ public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
     // throw new InjectionException("Failed to inject " + executable.descriptorTypeName(), e);
     // }
     // }
-
-    @Override
-    public boolean isMissingInstance() {
-        return executable instanceof MethodDescriptor && !((MethodDescriptor) executable).isStatic() && instance == null;
-    }
+    //
+    // @Override
+    // public boolean isMissingInstance() {
+    // return executable instanceof MethodDescriptor && !((MethodDescriptor) executable).isStatic() && instance == null;
+    // }
 
     @Override
     public String toString() {
         return executable.toString();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ExecutableFunctionHandle<T> withInstance(Object instance) {
-        return new ExecutableFunctionHandle<>(returnType(), executable, methodHandle, instance);
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public ExecutableFactoryHandle<T> withInstance(Object instance) {
+    // return new ExecutableFactoryHandle<>(returnType(), executable, methodHandle, instance);
+    // }
 
     /**
      * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
@@ -99,7 +99,7 @@ public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public ExecutableFunctionHandle<T> withLookup(Lookup lookup) {
+    public ExecutableFactoryHandle<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
             if (Modifier.isPrivate(executable.getModifiers())) {
@@ -110,7 +110,7 @@ public final class ExecutableFunctionHandle<T> extends InvokableMember<T> {
             throw new IllegalAccessRuntimeException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableFunctionHandle<>(returnType(), executable, handle, instance);
+        return new ExecutableFactoryHandle<>(returnType(), executable, handle, instance);
     }
 
     /** {@inheritDoc} */

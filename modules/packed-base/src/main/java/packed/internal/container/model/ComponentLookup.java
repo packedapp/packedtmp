@@ -24,8 +24,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.util.IllegalAccessRuntimeException;
-import packed.internal.inject.factoryhandle.ExecutableFunctionHandle;
-import packed.internal.inject.factoryhandle.FunctionHandle;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /**
  * This class exists because we have to ways to access the members of a component. One with a {@link Lookup} object, and
@@ -89,12 +89,16 @@ public interface ComponentLookup {
 
     Lookup lookup();
 
-    default <T> FunctionHandle<T> readable(FunctionHandle<T> factory) {
+    default MethodHandle toMethodHandle(FactoryHandle<?> factory) {
+        return readable(factory).toMethodHandle();
+    }
+
+    default <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
         // TODO needs to cached
 
         // TODO add field...
-        if (factory instanceof ExecutableFunctionHandle) {
-            ExecutableFunctionHandle<T> e = (ExecutableFunctionHandle<T>) factory;
+        if (factory instanceof ExecutableFactoryHandle) {
+            ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
             if (!e.hasMethodHandle()) {
                 return e.withLookup(lookup());
             }

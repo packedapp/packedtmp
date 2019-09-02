@@ -39,10 +39,10 @@ import app.packed.util.TypeLiteral;
 import packed.internal.access.AppPackedInjectAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.factoryhandle.ExecutableFunctionHandle;
-import packed.internal.inject.factoryhandle.FunctionHandle;
-import packed.internal.inject.factoryhandle.InstanceFunctionHandle;
-import packed.internal.inject.factoryhandle.MappingFunctionHandle;
+import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
+import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
@@ -111,7 +111,7 @@ public class Factory<T> {
         SharedSecrets._initialize(new AppPackedInjectAccess() {
 
             @Override
-            public <T> FunctionHandle<T> toInternalFunction(Factory<T> factory) {
+            public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
                 return factory.factory.function;
             }
 
@@ -125,7 +125,7 @@ public class Factory<T> {
     /** The internal factory that all calls delegate to. */
     final FactorySupport<T> factory;
 
-    public final FunctionHandle<T> function() {
+    public final FactoryHandle<T> handle() {
         return factory.function;
     }
 
@@ -233,7 +233,7 @@ public class Factory<T> {
      * @return a new mapped factory
      */
     public final <R> Factory<R> mapTo(Function<? super T, R> mapper, TypeLiteral<R> type) {
-        MappingFunctionHandle<T, R> f = new MappingFunctionHandle<>(type, factory.function, mapper);
+        MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.function, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));
     }
 
@@ -405,7 +405,7 @@ public class Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {
-        return new Factory<>(new FactorySupport<>(InstanceFunctionHandle.of(instance), List.of()));
+        return new Factory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance), List.of()));
     }
 
     static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
@@ -419,14 +419,14 @@ final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableFunctionHandle<>(TypeLiteral.of(implementation), executable, null, null),
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, null),
                 InternalDependencyDescriptor.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFunctionHandle<>(implementation, executable, null, null),
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, null),
                 InternalDependencyDescriptor.fromExecutable(executable));
     }
 
@@ -510,9 +510,9 @@ final class FactorySupport<T> {
     final List<InternalDependencyDescriptor> dependencies;
 
     /** The function used to create a new instance. */
-    final FunctionHandle<T> function;
+    final FactoryHandle<T> function;
 
-    FactorySupport(FunctionHandle<T> function, List<InternalDependencyDescriptor> dependencies) {
+    FactorySupport(FactoryHandle<T> function, List<InternalDependencyDescriptor> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
         this.defaultKey = function.typeLiteral.toKey();

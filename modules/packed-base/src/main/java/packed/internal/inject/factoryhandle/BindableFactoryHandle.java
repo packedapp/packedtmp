@@ -23,11 +23,11 @@ import app.packed.util.TypeLiteral;
  *
  */
 // Taenker vi extender InternalFactoryOfExecutable. I foerste omgang har vi kun
-public class BindableFunctionHandle<T> extends FunctionHandle<T> {
+public class BindableFactoryHandle<T> extends FactoryHandle<T> {
 
-    FunctionHandle<T> wrapping;
+    FactoryHandle<T> wrapping;
 
-    public BindableFunctionHandle(TypeLiteral<T> typeLiteral) {
+    public BindableFactoryHandle(TypeLiteral<T> typeLiteral) {
         super(typeLiteral);
     }
 

@@ -19,14 +19,14 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.factoryhandle.FunctionHandle;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /**
  *
  */
-public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAssert<T>, FunctionHandle<T>> {
+public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAssert<T>, FactoryHandle<T>> {
 
-    public InternalFunctionAssert(FunctionHandle<T> actual) {
+    public InternalFunctionAssert(FactoryHandle<T> actual) {
         super(actual, InternalFunctionAssert.class);
     }
 

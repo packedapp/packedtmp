@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.factoryhandle.FunctionFunctionHandle;
+import packed.internal.inject.factoryhandle.FunctionFactoryHandle;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 
 /**
@@ -115,6 +115,6 @@ public abstract class Factory1<T, R> extends Factory<R> {
     @SuppressWarnings("unchecked")
     static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
         Entry<TypeLiteral<?>, List<InternalDependencyDescriptor>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(new FunctionFunctionHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
+        return new FactorySupport<>(new FunctionFactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }
