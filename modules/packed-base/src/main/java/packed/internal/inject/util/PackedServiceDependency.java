@@ -277,8 +277,7 @@ public final class PackedServiceDependency implements ServiceDependency {
         return new PackedServiceDependency(SharedSecrets.util().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
-    public static <T> List<PackedServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass,
-            int... baseClassTypeVariableIndexes) {
+    public static <T> List<PackedServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
         ArrayList<PackedServiceDependency> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
             result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
@@ -318,6 +317,7 @@ public final class PackedServiceDependency implements ServiceDependency {
 
     private static PackedServiceDependency ofVariable(InternalVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
+
         Annotation a = variable.findQualifiedAnnotation();
 
         // Illegal

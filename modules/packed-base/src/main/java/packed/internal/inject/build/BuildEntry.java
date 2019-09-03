@@ -29,7 +29,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
-import packed.internal.inject.util.InternalServiceDescriptor;
+import packed.internal.inject.util.PackedServiceDescriptor;
 import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.KeyBuilder;
 
@@ -181,7 +181,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     // }
 
     public final ServiceDescriptor toDescriptor() {
-        return new InternalServiceDescriptor(key, configSite, description /* immutableCopyOfTags() */);
+        return new PackedServiceDescriptor(key, configSite, description /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */

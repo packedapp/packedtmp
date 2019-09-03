@@ -15,33 +15,32 @@
  */
 package packed.internal.inject;
 
-/**
- *
- */
+/** The names of the various config site operations for the inject extension. */
+public final class InjectConfigSiteOperations {
 
-// Separate for bundle/configuration?????
-public final class InjectorConfigSiteOperations {
+    public static final String COMPONENT_INSTALL = "Component.install";
 
     /** */
-    public static final String EXPORT_SERVICE = "Injector.expose";
+    public static final String INJECTOR_EXPORT_SERVICE = "Injector.export";
+
+    public static final String INJECTOR_CONFIGURATION_ADD_DEPENDENCY = "Injector.addDependency";
 
     /** */
     public static final String INJECTOR_CONFIGURATION_BIND = "Injector.bind";
-
-    public static final String INJECTOR_CONFIGURATION_ADD_DEPENDENCY = "Injector.addDependency";
 
     /** */
     public static final String INJECTOR_CONFIGURATION_INJECTOR_BIND = "Injector.injectorBind";
 
     /** */
     public static final String INJECTOR_OF = "Injector.of";
-
     /** */
     public static final String INJECTOR_PROVIDE = "Injector.provide";
 
-    public static final String COMPONENT_INSTALL = "Component.install";
+    public static final String INJECTOR_PROVIDE_ALL = "Injector.provideAll";
 
     public static final String INJECTOR_REQUIRE = "Injector.require";
 
     public static final String INJECTOR_REQUIRE_OPTIONAL = "Injector.requireOptional";
+
+    // Problemet er lidt, for example, provide == install, fordi vi delegare to install
 }

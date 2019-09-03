@@ -50,7 +50,7 @@ import packed.internal.container.extension.hook.DelayedAccessor.SidecarMethodDel
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerModel;
-import packed.internal.inject.InjectorConfigSiteOperations;
+import packed.internal.inject.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
@@ -83,7 +83,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource source, Wirelet... wirelets) {
-        super(ConfigSite.captureStack(InjectorConfigSiteOperations.INJECTOR_OF), artifactDriver);
+        super(ConfigSite.captureStack(InjectConfigSiteOperations.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerModel.from(source.getClass());
         this.wirelets = WireletList.of(wirelets);
@@ -100,7 +100,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
      *            any wirelets specified by the user
      */
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
-        super(parent.configSite().thenCaptureStackFrame(InjectorConfigSiteOperations.INJECTOR_OF), parent);
+        super(parent.configSite().thenCaptureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerModel.from(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);

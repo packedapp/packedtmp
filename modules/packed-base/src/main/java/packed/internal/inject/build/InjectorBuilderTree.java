@@ -18,6 +18,6 @@ package packed.internal.inject.build;
 /**
  *
  */
-final class InjectionTree {
+final class InjectorBuilderTree {
 
 }

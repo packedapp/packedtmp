@@ -23,7 +23,6 @@ import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
-import packed.internal.inject.Provider;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 

@@ -37,7 +37,7 @@ import app.packed.util.Key;
 import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
-import packed.internal.inject.InjectorConfigSiteOperations;
+import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectorBuilder;
@@ -84,7 +84,7 @@ public final class ServiceProvidingManager {
 
         // Add each @Provide as children of the parent node
         for (AtProvides atProvides : apg.members) {
-            ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
+            ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
             ComponentBuildEntry<?> node = new ComponentBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
             node.as((Key) atProvides.key);

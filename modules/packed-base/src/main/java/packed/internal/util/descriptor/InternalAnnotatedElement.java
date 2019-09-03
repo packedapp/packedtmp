@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.function.Consumer;
 
 import app.packed.inject.InjectionException;
+import app.packed.util.Nullable;
 import packed.internal.inject.util.QualifierHelper;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
@@ -134,6 +135,7 @@ public abstract class InternalAnnotatedElement implements AnnotatedElement {
      * @throws InjectionException
      *             if more than one qualifier are present on the element
      */
+    @Nullable
     public final Annotation findQualifiedAnnotation() {
         return QualifierHelper.findQualifier(element, annotations);
     }

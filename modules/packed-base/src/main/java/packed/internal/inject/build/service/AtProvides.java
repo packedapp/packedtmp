@@ -30,7 +30,7 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.util.PackedServiceDependency;
 
-/** A descriptor for a member annotated with {@link Provide}. */
+/** A descriptor for a field or method (member) annotated with {@link Provide}. */
 final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */

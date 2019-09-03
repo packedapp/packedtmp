@@ -29,7 +29,7 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.InjectorConfigSiteOperations;
+import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.run.AbstractInjector;
@@ -117,7 +117,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return builder.exports().export(key, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        return builder.exports().export(key, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -132,7 +132,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return builder.exports().export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        return builder.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -140,7 +140,7 @@ public final class InjectionExtension extends Extension {
      */
     public void exportAll() {
         checkConfigurable();
-        builder.exports().exportAll(captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        builder.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -250,7 +250,7 @@ public final class InjectionExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
         checkConfigurable();
-        builder.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+        builder.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
                 WireletList.of(wirelets));
     }
 
@@ -273,7 +273,7 @@ public final class InjectionExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(key, false, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE));
+        builder.dependencies().require(key, false, captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
     /**
@@ -290,7 +290,7 @@ public final class InjectionExtension extends Extension {
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(key, true, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+        builder.dependencies().require(key, true, captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }
 // manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?

@@ -23,7 +23,6 @@ import java.util.concurrent.Semaphore;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
-import packed.internal.inject.Provider;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 

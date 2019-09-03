@@ -25,7 +25,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /** The default implementation of {@link ServiceDescriptor}. */
-public class InternalServiceDescriptor implements ServiceDescriptor {
+public class PackedServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
@@ -44,7 +44,7 @@ public class InternalServiceDescriptor implements ServiceDescriptor {
      * @param description
      * @param key
      */
-    public InternalServiceDescriptor(Key<?> key, ConfigSite configSite, String description /* Set<String> tags */) {
+    public PackedServiceDescriptor(Key<?> key, ConfigSite configSite, String description /* Set<String> tags */) {
         this.configSite = requireNonNull(configSite);
         this.description = description;
         this.key = requireNonNull(key);
