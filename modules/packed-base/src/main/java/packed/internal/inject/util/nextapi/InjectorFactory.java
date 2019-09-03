@@ -82,3 +82,57 @@ class InjectorFactory {
     // Maaske kan vi registerere det her med en host ogsaa...
     // F.eks. i henhold til Sessions. Hvor vi registererer dem som apps.
 }
+
+interface InjectorFactory2 {
+    // Tager disse to objekter, laver en injector fra bundlen.
+    // Og saa outputter String, hvor str1 og str2 er dependencies....
+    String spawn(long str1, int str2);
+
+    Injector spawn(String httpRequest, String httpResponse);
+}
+
+interface UserDefinedSpawner {
+    // App spawn(Host h, String httpRequest, String httpResponse);
+}
+
+// We do not put service contract on a running object, because it does not work very good.
+/// **
+// * Returns a service contract
+// *
+// * @return
+// */
+//// Hmm, vi extender jo maaske den her klasse, og vil returnere en MultiContract
+// default ServiceContract contract() {
+// // Injector.serviceContractOf(Injector i);
+// Injector.contractOf(Injector i); -> contractOf(i).services();
+// // O
+// throw new UnsupportedOperationException();
+// }
+
+// default void print() {
+// services().forEach(s -> System.out.println(s));
+// }
+/// **
+// * Creates a new injector builder with this injector with all the services available in this injector also be
+/// available
+// * in the new injector. To override existing service in this injector use {@link #spawn(Consumer, Predicate)} and
+/// remove
+// * the service you do not want via a filter Put on Injectors???
+// *
+// * @return a new injector builder
+// */
+// default Injector spawnInjector(Consumer<? super InjectorConfiguration> configurator) {
+// // Nej vil sgu have det så man let kan overskrive dem.
+// // Bliver noedt til at have noget special support.
+// // Maa smide dem alle ind i
+//
+
+// spawnFiltered(Predicate<? extends ServiceDescriptor);
+
+// // Would also be nice with a filtered injector, but spawn(c->{}, filter) will do it for now
+// requireNonNull(configurator, "configurator is null");
+// return Injector.of(c -> {
+// c.importInjector(this);
+// configurator.accept(c);
+// });
+// }

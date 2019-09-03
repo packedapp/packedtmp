@@ -36,10 +36,3 @@ public class BindableFactoryHandle<T> extends FactoryHandle<T> {
         throw new UnsupportedOperationException();
     }
 }
-
-// /** {@inheritDoc} */
-// @Override
-// @Nullable
-// public T invoke(Object[] params) {
-// return null;
-// }

@@ -18,6 +18,8 @@ package app.packed.inject;
 /**
  * A mutable factory where you can bind dependencies. For example,
  */
+// FactoryBuilder...
+//// kan man lave noget smart med MethodHandle????
 public final class BindableFactory<T> extends Factory<T> {
 
     /**

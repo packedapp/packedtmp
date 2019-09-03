@@ -32,7 +32,7 @@ import packed.internal.util.MethodHandleUtil;
  * @param <T>
  *            the type of elements the factory produces
  */
-public final class SupplierFactoryHandle<T> extends FactoryHandle<T> {
+public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
 
     /** A method handle for {@link Supplier#get()}. */
     private static final MethodHandle GET = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Supplier.class, "get", MethodType.methodType(Object.class));
@@ -48,7 +48,7 @@ public final class SupplierFactoryHandle<T> extends FactoryHandle<T> {
      * @param supplier
      *            the supplier that creates the actual values
      */
-    public SupplierFactoryHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
+    public Factory0FactoryHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
         super(type);
         this.supplier = requireNonNull(supplier, "supplier is null");
     }

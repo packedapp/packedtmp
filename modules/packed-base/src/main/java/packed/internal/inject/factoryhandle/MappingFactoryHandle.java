@@ -61,10 +61,10 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle() {
-        // Change return type to Object so the method handle for the function will accept it
         MethodHandle mf = mapFrom.toMethodHandle();
-        mf = mf.asType(mf.type().changeReturnType(Object.class));
 
+        // Change return type to Object so the method handle for the function will accept it
+        mf = mf.asType(mf.type().changeReturnType(Object.class));
         return MethodHandles.foldArguments(APPLY.bindTo(mapper), mf);
     }
 }

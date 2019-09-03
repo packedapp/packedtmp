@@ -63,6 +63,15 @@ public final class InjectorConfigurator {
     }
 
     /**
+     * Returns an instance of the injector extension.
+     * 
+     * @return an instance of the injector extension
+     */
+    private InjectionExtension extension() {
+        return configuration.use(InjectionExtension.class);
+    }
+
+    /**
      * Returns the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
      *
      * @return the description of the injector, or null if no description has been set via {@link #setDescription(String)}.
@@ -72,61 +81,6 @@ public final class InjectorConfigurator {
     @Nullable
     public String getDescription() {
         return configuration.getDescription();
-    }
-
-    /**
-     * Binds all services from the specified injector.
-     * <p>
-     * A simple example, importing a singleton {@code String} service from one injector into another:
-     * 
-     * <pre> {@code
-     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
-     * 
-     * Injector importTo = Injector.of(c -&gt; {
-     *   c.bind(12345); 
-     *   c.provideAll(importFrom);
-     * });
-     * 
-     * System.out.println(importTo.with(String.class));// prints "foostring"}}
-     * </pre>
-     * <p>
-     * It is possible to specify one or import stages that can restrict or transform the imported services.
-     * <p>
-     * For example, the following example takes the injector we created in the previous example, and creates a new injector
-     * that only imports the {@code String.class} service.
-     * 
-     * <pre>
-     * Injector i = Injector.of(c -&gt; {
-     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
-     * });
-     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
-     * Injector i = Injector.of(c -&gt; {
-     *   c.provideAll(importTo, InjectorImportStage.reject(Integer.class));
-     * });
-     * </pre> @param injector the injector to bind services from
-     * 
-     * @param injector
-     *            the injector to import services from
-     * @param options
-     *            any number of stages that restricts or transforms the services that are imported
-     * @throws IllegalArgumentException
-     *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
-     *             {@link Wirelet#andThen(Wirelet)} thereof
-     */
-    // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
-    // Er ikke sikker paa vi skal have wirelets her....
-    // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
-    public void provideAll(Injector injector, Wirelet... options) {
-        injector().provideAll(injector, options);
-    }
-
-    /**
-     * Returns an instance of the injector extension.
-     * 
-     * @return an instance of the injector extension
-     */
-    private InjectionExtension injector() {
-        return configuration.use(InjectionExtension.class);
     }
 
     /**
@@ -192,7 +146,7 @@ public final class InjectorConfigurator {
      * @see BaseBundle#provide(Class)
      */
     public <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
-        return injector().provide(implementation);
+        return extension().provide(implementation);
     }
 
     /**
@@ -208,7 +162,7 @@ public final class InjectorConfigurator {
      * @return a service configuration for the service
      */
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
-        return injector().provide(factory);
+        return extension().provide(factory);
     }
 
     /**
@@ -225,7 +179,53 @@ public final class InjectorConfigurator {
      * @return a service configuration for the service
      */
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
-        return injector().provide(instance);
+        return extension().provide(instance);
+    }
+
+    /**
+     * Binds all services from the specified injector.
+     * <p>
+     * A simple example, importing a singleton {@code String} service from one injector into another:
+     * 
+     * <pre> {@code
+     * Injector importFrom = Injector.of(c -&gt; c.bind("foostring"));
+     * 
+     * Injector importTo = Injector.of(c -&gt; {
+     *   c.bind(12345); 
+     *   c.provideAll(importFrom);
+     * });
+     * 
+     * System.out.println(importTo.with(String.class));// prints "foostring"}}
+     * </pre>
+     * <p>
+     * It is possible to specify one or import stages that can restrict or transform the imported services.
+     * <p>
+     * For example, the following example takes the injector we created in the previous example, and creates a new injector
+     * that only imports the {@code String.class} service.
+     * 
+     * <pre>
+     * Injector i = Injector.of(c -&gt; {
+     *   c.injectorBind(importTo, InjectorImportStage.accept(String.class));
+     * });
+     * </pre> Another way of writing this would be to explicitly reject the {@code Integer.class} service. <pre>
+     * Injector i = Injector.of(c -&gt; {
+     *   c.provideAll(importTo, InjectorImportStage.reject(Integer.class));
+     * });
+     * </pre> @param injector the injector to bind services from
+     * 
+     * @param injector
+     *            the injector to import services from
+     * @param options
+     *            any number of stages that restricts or transforms the services that are imported
+     * @throws IllegalArgumentException
+     *             if the specified stages are not instance all instance of {@link Wirelet} or combinations (via
+     *             {@link Wirelet#andThen(Wirelet)} thereof
+     */
+    // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
+    // Er ikke sikker paa vi skal have wirelets her....
+    // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
+    public void provideAll(Injector injector, Wirelet... options) {
+        extension().provideAll(injector, options);
     }
 
     /**
@@ -258,31 +258,8 @@ public final class InjectorConfigurator {
 // .neverInstantiate(); static @OnHook...
 // noInstantiation()
 // provideStatics(Object instance)
-
-// /**
-// * Binds the specified implementation lazily. This is equivalent to {@link #provide(Class)} except that the instance
-// * will not be instantiatied until it is requested, possible never.
-// *
-// * @param <T>
-// * the type of service
-// * @param implementation
-// * the implementation to bind
-// * @return a service configuration object
-// */
 // <T> ServiceConfiguration<T> provideLazy(Class<T> implementation);
-//
-// /**
-// * Binds the specified factory to a new service. The first time the service is requested, the factory will be invoked
-// to
-// * instantiate the service instance. The instance produced by the factory will be used for all subsequent requests.
-// The
-// * runtime guarantees that at most service instance is ever created, blocking concurrent requests to the instance at
-// * creation time.
-// *
-// * @param <T>
-// * the type of service to bind
-// * @param factory
-// * the factory to bind
+
 // * @return a service configuration for the service
 // */
 // <T> ServiceConfiguration<T> provideLazy(Factory<T> factory);
@@ -290,18 +267,6 @@ public final class InjectorConfigurator {
 // <T> ServiceConfiguration<T> provideLazy(TypeLiteral<T> implementation);
 
 // <T> ServiceConfiguration<T> providePrototype(Class<T> implementation);
-//
-// /**
-// * Binds the specified factory to a new service. When the service is requested the factory is used to create a new
-// * instance of the service. The runtime will never cache instances, once they are returned to the client requesting
-// the
-// * service, the runtime will keep no references to them.
-// *
-// * @param <T>
-// * the type of service to bind
-// * @param factory
-// * the factory to bind
-// * @return a service configuration for the service
 // */
 // <T> ServiceConfiguration<T> providePrototype(Factory<T> factory);
 //

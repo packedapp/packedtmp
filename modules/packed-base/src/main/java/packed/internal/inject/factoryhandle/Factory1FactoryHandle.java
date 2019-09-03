@@ -27,7 +27,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory1}. */
-public final class FunctionFactoryHandle<T, R> extends FactoryHandle<R> {
+public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
     private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), Function.class, "apply",
@@ -36,7 +36,7 @@ public final class FunctionFactoryHandle<T, R> extends FactoryHandle<R> {
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    public FunctionFactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
+    public Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
         super(type);
         this.function = requireNonNull(function, "function is null");
     }

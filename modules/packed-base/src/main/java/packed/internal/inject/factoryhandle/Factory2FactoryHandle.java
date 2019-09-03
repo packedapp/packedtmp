@@ -27,7 +27,7 @@ import app.packed.util.TypeLiteral;
 import packed.internal.util.MethodHandleUtil;
 
 /** An internal factory for {@link Factory2}. */
-public class BiFunctionFactoryHandle<T, U, R> extends FactoryHandle<R> {
+public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link BiFunction#apply(Object, Object)}. */
     private static final MethodHandle APPLY = MethodHandleUtil.findVirtual(MethodHandles.lookup(), BiFunction.class, "apply",
@@ -36,7 +36,7 @@ public class BiFunctionFactoryHandle<T, U, R> extends FactoryHandle<R> {
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    public BiFunctionFactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
+    public Factory2FactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
         super(typeLiteral);
         this.function = requireNonNull(function);
     }
