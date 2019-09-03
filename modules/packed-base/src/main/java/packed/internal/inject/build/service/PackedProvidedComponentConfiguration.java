@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.build.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.build.service.BSEComponent;
+import packed.internal.inject.build.BuildEntry;
 
 /**
  *

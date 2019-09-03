@@ -35,7 +35,7 @@ import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.InjectorResolver;
-import packed.internal.inject.build.PackedProvidedComponentConfiguration;
+import packed.internal.inject.build.service.PackedProvidedComponentConfiguration;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
 

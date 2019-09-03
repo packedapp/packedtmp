@@ -109,8 +109,8 @@ public final class InjectorResolver {
         HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
         LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
 
-        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ib.entries);
-        for (ProvideAllFromInjector ii : ib.provideAll) {
+        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ib.provider.entries);
+        for (ProvideAllFromInjector ii : ib.provider.provideAll) {
             processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
         }
 

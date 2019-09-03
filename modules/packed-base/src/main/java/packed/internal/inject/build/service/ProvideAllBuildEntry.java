@@ -32,16 +32,16 @@ import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
 /** A build node specifically used for {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
-public final class BSEFromProvideAll<T> extends BuildEntry<T> {
+public final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** The node in the 'imported' injector. */
-    public final ServiceEntry<T> entry;
+    final ServiceEntry<T> entry;
 
     /** A wrapper for the 'imported' injector. */
-    public final ProvideAllFromInjector fromInjector;
+    final ProvideAllFromInjector fromInjector;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BSEFromProvideAll(ProvideAllFromInjector fromInjector, ServiceEntry<T> entry) {
+    ProvideAllBuildEntry(ProvideAllFromInjector fromInjector, ServiceEntry<T> entry) {
         super(fromInjector.builder, fromInjector.configSite.withParent(entry.configSite()), List.of());
         this.entry = requireNonNull(entry);
         this.fromInjector = requireNonNull(fromInjector);

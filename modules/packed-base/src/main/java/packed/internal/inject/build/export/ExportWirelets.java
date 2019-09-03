@@ -19,7 +19,7 @@ package packed.internal.inject.build.export;
  *
  */
 // As an alternative put directly on ServiceExporter
-public class ExportedUpstreamWirelets {
+public class ExportWirelets {
 
     // EXPORT ALL TRANSIENT
     // EXPORT ALL

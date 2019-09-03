@@ -184,7 +184,7 @@ public final class InjectionExtension extends Extension {
      */
     @OnHook(AtProvidesGroup.Builder.class)
     void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup group) {
-        builder.onProvidesGroup(cc, group);
+        builder.provider().onProvidesGroup(cc, group);
     }
 
     /**
@@ -211,7 +211,7 @@ public final class InjectionExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
-        return builder.provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
+        return builder.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
     /**
@@ -228,7 +228,7 @@ public final class InjectionExtension extends Extension {
      * @return a service configuration for the service
      */
     public <T> ProvidedComponentConfiguration<T> provide(T instance) {
-        return builder.provideInstance(use(ComponentExtension.class).install(instance), instance);
+        return builder.provider().provideInstance(use(ComponentExtension.class).install(instance), instance);
     }
 
     /**
@@ -250,7 +250,7 @@ public final class InjectionExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
         checkConfigurable();
-        builder.provideAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+        builder.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
                 WireletList.of(wirelets));
     }
 
