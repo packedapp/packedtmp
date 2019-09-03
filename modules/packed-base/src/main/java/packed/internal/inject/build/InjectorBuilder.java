@@ -132,8 +132,8 @@ public final class InjectorBuilder {
      * @param cc
      * @param group
      */
-    public void onProvidedMembers(ComponentConfiguration cc, AtInjectGroup group) {
-        new Exception().printStackTrace();
+    public void onInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
+        // new Exception().printStackTrace();
 
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
 
@@ -144,7 +144,7 @@ public final class InjectorBuilder {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup apg) {
+    public void onProvidesGroup(ComponentConfiguration cc, AtProvidesGroup apg) {
         BSEComponent parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;

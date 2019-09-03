@@ -15,13 +15,11 @@
  */
 package packed.internal.inject.util;
 
-import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.FieldOperator;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Inject;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
@@ -32,7 +30,7 @@ import packed.internal.util.descriptor.InternalMethodDescriptor;
  */
 public final class AtInjectGroup {
 
-    static final FieldOperator<MethodHandle> FIELD_OP = FieldOperator.setter().requireNonFinal().requireNonStatic();
+    // static final FieldOperator<MethodHandle> FIELD_OP = FieldOperator.setter().requireNonFinal().requireNonStatic();
 
     /** An immutable map of all providing members. */
     public final List<AtInject> members;

@@ -165,7 +165,7 @@ public final class InjectionExtension extends Extension {
 
     @OnHook(AtInjectGroup.Builder.class)
     void onInjectMembers(ComponentConfiguration cc, AtInjectGroup group) {
-        builder.onProvidedMembers(cc, group);
+        builder.onInjectGroup(cc, group);
     }
 
     /** {@inheritDoc} */
@@ -184,7 +184,7 @@ public final class InjectionExtension extends Extension {
      */
     @OnHook(AtProvidesGroup.Builder.class)
     void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup group) {
-        builder.onProvidedMembers(cc, group);
+        builder.onProvidesGroup(cc, group);
     }
 
     /**

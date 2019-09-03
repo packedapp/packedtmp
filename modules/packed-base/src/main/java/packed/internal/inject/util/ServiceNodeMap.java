@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -35,7 +35,7 @@ import packed.internal.inject.ServiceEntry;
  */
 public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
 
-    private final HashMap<Key<?>, ServiceEntry<?>> nodes = new HashMap<>();
+    private final LinkedHashMap<Key<?>, ServiceEntry<?>> nodes = new LinkedHashMap<>();
 
     /** Any parent this node map might have */
     @Nullable

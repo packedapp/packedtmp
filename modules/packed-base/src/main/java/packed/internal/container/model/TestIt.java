@@ -28,16 +28,17 @@ public class TestIt extends AppBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        exportAll();
+
         Factory<Integer> ff = Factory.ofInstance("122323323").mapTo(e -> e.length(), Integer.class);
 
         provide("foo");
         provide("foo").as(CharSequence.class);
         provide(Doo.class);
+        provide(ff);
 
-        injector().provide(ff);
         // provide(new Factory2<>((CharSequence cs, String s) -> 3 + s.length() + cs.length()) {});
-        export(Integer.class);
-        export(Doo.class);
+
     }
 
     public static void main(String[] args) {
