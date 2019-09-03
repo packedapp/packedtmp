@@ -39,8 +39,8 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExporter;
-import packed.internal.inject.build.requirements.ServiceDependencyManager;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
@@ -96,7 +96,7 @@ public final class InjectorBuilder {
         if (exporter != null) {
             exporter.addExportsToContract(builder.contract().services());
         }
-        resolver.buildContract(builder.contract().services());
+        resolver.dg.buildContract(builder.contract().services());
     }
 
     public ServiceDependencyManager dependencies() {

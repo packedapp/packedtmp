@@ -83,10 +83,10 @@ public final class AtProvidesGroup {
             InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
 
             tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), methodHook.annotation(),
-                    InternalDependencyDescriptor.fromExecutable(method));
+                    PackedServiceDependency.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
+        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this

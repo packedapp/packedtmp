@@ -52,12 +52,12 @@ public final class AtProvides {
     public final Provide provides;
 
     /** The dependencies (parameters) of the member. */
-    public final List<InternalDependencyDescriptor> dependencies;
+    public final List<PackedServiceDependency> dependencies;
 
     /** A unbound method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
-    public AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<InternalDependencyDescriptor> dependencies) {
+    public AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

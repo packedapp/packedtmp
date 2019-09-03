@@ -26,7 +26,7 @@ import app.packed.inject.Inject;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -85,7 +85,7 @@ public final class OldAtInjectGroup {
                 }
 
                 fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
-                        List.of(InternalDependencyDescriptor.of(descriptor))));
+                        List.of(PackedServiceDependency.of(descriptor))));
             }
             return result;
         }
@@ -101,7 +101,7 @@ public final class OldAtInjectGroup {
                     methods = new ArrayList<>();
                 }
                 methods.add(result = new OldAtInject(new ExecutableFactoryHandle<>(descriptor).withLookup(lookup),
-                        InternalDependencyDescriptor.fromExecutable(descriptor)));
+                        PackedServiceDependency.fromExecutable(descriptor)));
             }
             return result;
         }

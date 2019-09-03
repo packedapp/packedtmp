@@ -26,7 +26,7 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
@@ -105,11 +105,11 @@ public interface ServiceDependency {
     Optional<VariableDescriptor> variable();
 
     public static <T> ServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
-        return InternalDependencyDescriptor.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
+        return PackedServiceDependency.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<ServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        return (List) InternalDependencyDescriptor.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
+        return (List) PackedServiceDependency.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
     }
 }

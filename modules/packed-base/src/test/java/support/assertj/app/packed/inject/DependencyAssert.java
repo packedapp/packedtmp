@@ -18,12 +18,12 @@ package support.assertj.app.packed.inject;
 import org.assertj.core.api.AbstractAssert;
 
 import app.packed.util.Key;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 
 /**
  *
  */
-public class DependencyAssert extends AbstractAssert<DependencyAssert, InternalDependencyDescriptor> {
+public class DependencyAssert extends AbstractAssert<DependencyAssert, PackedServiceDependency> {
 
     public DependencyAssert keyIs(Class<?> type) {
         return keyIs(Key.of(type));
@@ -72,11 +72,11 @@ public class DependencyAssert extends AbstractAssert<DependencyAssert, InternalD
         return this;
     }
 
-    public DependencyAssert(InternalDependencyDescriptor actual) {
+    public DependencyAssert(PackedServiceDependency actual) {
         super(actual, DependencyAssert.class);
     }
 
-    public static DependencyAssert assertThat(InternalDependencyDescriptor actual) {
+    public static DependencyAssert assertThat(PackedServiceDependency actual) {
         return new DependencyAssert(actual);
     }
 }

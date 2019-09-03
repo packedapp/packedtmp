@@ -43,7 +43,7 @@ import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
@@ -420,13 +420,13 @@ final class FactoryFindInjectableExecutable {
     static <T> FactorySupport<T> find(Class<T> implementation) {
         InternalExecutableDescriptor executable = findExecutable(implementation);
         return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
-                InternalDependencyDescriptor.fromExecutable(executable));
+                PackedServiceDependency.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), InternalDependencyDescriptor.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), PackedServiceDependency.fromExecutable(executable));
     }
 
     private static InternalExecutableDescriptor findExecutable(Class<?> type) {
@@ -506,12 +506,12 @@ final class FactorySupport<T> {
     final Key<T> defaultKey;
 
     /** A list of all of this factory's dependencies. */
-    final List<InternalDependencyDescriptor> dependencies;
+    final List<PackedServiceDependency> dependencies;
 
     /** The function used to create a new instance. */
     final FactoryHandle<T> function;
 
-    FactorySupport(FactoryHandle<T> function, List<InternalDependencyDescriptor> dependencies) {
+    FactorySupport(FactoryHandle<T> function, List<PackedServiceDependency> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.function = requireNonNull(function);
         this.defaultKey = function.typeLiteral.toKey();

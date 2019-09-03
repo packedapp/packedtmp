@@ -34,7 +34,7 @@ import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
 import packed.internal.inject.run.RSNPrototype;
 import packed.internal.inject.util.AtProvides;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -71,7 +71,7 @@ public final class BSEComponent<T> extends BuildEntry<T> {
     }
 
     public BSEComponent(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
-            List<InternalDependencyDescriptor> dependencies) {
+            List<PackedServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.parent = null;
         this.instantionMode = requireNonNull(instantionMode);

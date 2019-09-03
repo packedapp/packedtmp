@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build.requirements;
+package packed.internal.inject.build.dependencies;
 
 import static java.util.Objects.requireNonNull;
 

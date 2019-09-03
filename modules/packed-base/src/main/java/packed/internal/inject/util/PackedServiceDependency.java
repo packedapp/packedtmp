@@ -52,7 +52,7 @@ import packed.internal.util.descriptor.InternalVariableDescriptor;
 /**
  * The default implementation of {@link ServiceDependency}.
  */
-public final class InternalDependencyDescriptor implements ServiceDependency {
+public final class PackedServiceDependency implements ServiceDependency {
 
     /** The key of this dependency. */
     private final Key<?> key;
@@ -68,7 +68,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
     @Nullable
     private final InternalVariableDescriptor variable;
 
-    private InternalDependencyDescriptor(Key<?> key, Class<?> optionalType, InternalVariableDescriptor variable) {
+    private PackedServiceDependency(Key<?> key, Class<?> optionalType, InternalVariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionalType = optionalType;
         this.variable = variable;
@@ -208,12 +208,12 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
-    public static List<InternalDependencyDescriptor> fromExecutable(Executable executable) {
+    public static List<PackedServiceDependency> fromExecutable(Executable executable) {
         requireNonNull(executable, "executable is null");
         throw new UnsupportedOperationException();
     }
 
-    public static List<InternalDependencyDescriptor> fromExecutable(InternalExecutableDescriptor executable) {
+    public static List<PackedServiceDependency> fromExecutable(InternalExecutableDescriptor executable) {
         InternalParameterDescriptor[] parameters = executable.getParametersUnsafe();
         switch (parameters.length) {
         case 0:
@@ -223,7 +223,7 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
         case 2:
             return List.of(of(parameters[0]), of(parameters[1]));
         default:
-            ArrayList<InternalDependencyDescriptor> list = new ArrayList<>(parameters.length);
+            ArrayList<PackedServiceDependency> list = new ArrayList<>(parameters.length);
             for (int i = 0; i < parameters.length; i++) {
                 list.add(of(parameters[i]));
             }
@@ -239,16 +239,16 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
      * @return the type literal for the field
      * @see Field#getGenericType()
      */
-    public static InternalDependencyDescriptor fromField(Field field) {
+    public static PackedServiceDependency fromField(Field field) {
         requireNonNull(field, "field is null");
         return ofVariable(InternalFieldDescriptor.of(field));
     }
 
-    public static InternalDependencyDescriptor fromField(FieldDescriptor field) {
+    public static PackedServiceDependency fromField(FieldDescriptor field) {
         return ofVariable(InternalFieldDescriptor.of(field));
     }
 
-    public static <T> InternalDependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
+    public static <T> PackedServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(actualClass, baseClass, baseClassTypeVariableIndex);
 
         // Find any qualifier annotation that might be present
@@ -274,12 +274,12 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
             type = Double.class;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new InternalDependencyDescriptor(SharedSecrets.util().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new PackedServiceDependency(SharedSecrets.util().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
-    public static <T> List<InternalDependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass,
+    public static <T> List<PackedServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass,
             int... baseClassTypeVariableIndexes) {
-        ArrayList<InternalDependencyDescriptor> result = new ArrayList<>();
+        ArrayList<PackedServiceDependency> result = new ArrayList<>();
         for (int i = 0; i < baseClassTypeVariableIndexes.length; i++) {
             result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
         }
@@ -293,30 +293,30 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
      *            the class to return a dependency for
      * @return a dependency for the specified class
      */
-    public static InternalDependencyDescriptor of(Class<?> type) {
+    public static PackedServiceDependency of(Class<?> type) {
         requireNonNull(type, "type is null");
         if (type == Optional.class) {
             throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
         } else if (type == OptionalInt.class) {
-            return new InternalDependencyDescriptor(Key.of(Integer.class), OptionalInt.class, null);
+            return new PackedServiceDependency(Key.of(Integer.class), OptionalInt.class, null);
         } else if (type == OptionalLong.class) {
-            return new InternalDependencyDescriptor(Key.of(Long.class), OptionalLong.class, null);
+            return new PackedServiceDependency(Key.of(Long.class), OptionalLong.class, null);
         } else if (type == OptionalDouble.class) {
-            return new InternalDependencyDescriptor(Key.of(Double.class), OptionalDouble.class, null);
+            return new PackedServiceDependency(Key.of(Double.class), OptionalDouble.class, null);
         }
         return of(Key.of(type));
     }
 
-    public static <T> InternalDependencyDescriptor of(Key<?> key) {
-        return new InternalDependencyDescriptor(key, null, null);
+    public static <T> PackedServiceDependency of(Key<?> key) {
+        return new PackedServiceDependency(key, null, null);
     }
 
-    public static <T> InternalDependencyDescriptor of(VariableDescriptor variable) {
+    public static <T> PackedServiceDependency of(VariableDescriptor variable) {
         requireNonNull(variable, "variable is null");
         return ofVariable(InternalVariableDescriptor.unwrap(variable));
     }
 
-    private static InternalDependencyDescriptor ofVariable(InternalVariableDescriptor variable) {
+    private static PackedServiceDependency ofVariable(InternalVariableDescriptor variable) {
         TypeLiteral<?> tl = variable.getTypeLiteral();
         Annotation a = variable.findQualifiedAnnotation();
 
@@ -357,6 +357,6 @@ public final class InternalDependencyDescriptor implements ServiceDependency {
         // TL is free from Optional
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(variable, tl, a);
 
-        return new InternalDependencyDescriptor(key, optionalType, variable);
+        return new PackedServiceDependency(key, optionalType, variable);
     }
 }

@@ -29,7 +29,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.inject.util.InternalServiceDescriptor;
 import packed.internal.util.KeyBuilder;
 
@@ -52,7 +52,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     private final ConfigSite configSite;
 
     /** The dependencies of this node. */
-    public final List<InternalDependencyDescriptor> dependencies;
+    public final List<PackedServiceDependency> dependencies;
 
     public String description;
 
@@ -80,14 +80,14 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     @Nullable
     private RSE<T> runtimeNode;
 
-    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
+    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<PackedServiceDependency> dependencies) {
         this.configSite = requireNonNull(configSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceEntry<?>[dependencies.size()];
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
-            for (InternalDependencyDescriptor e : dependencies) {
+            for (PackedServiceDependency e : dependencies) {
                 if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;

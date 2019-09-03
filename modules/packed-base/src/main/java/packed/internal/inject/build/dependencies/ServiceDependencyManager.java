@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build.requirements;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.inject.build.dependencies;
 
 import java.util.ArrayList;
 
@@ -24,14 +22,12 @@ import app.packed.inject.InjectionExtension;
 import app.packed.util.Key;
 
 /**
- * This class takes care of contract and requirements.
+ * This class takes care of dependencies.
  * 
  * @see InjectionExtension#manualRequirementsManagement()
  * @see InjectionExtension#require(Key)
  * @see InjectionExtension#requireOptionally(Key)
  */
-
-// Dependencies???
 public final class ServiceDependencyManager {
 
     /**
@@ -61,26 +57,5 @@ public final class ServiceDependencyManager {
 
     public void requireOptional(Key<?> key, ConfigSite configSite) {
         explicitRequirements.add(new ExplicitRequirement(key, configSite, true));
-    }
-
-    /**
-     *
-     */
-    // Could just wrap a contract with
-
-    // Capture ConfigSite
-    static final class ExplicitRequirement {
-
-        final ConfigSite configSite;
-
-        final boolean isOptional;
-
-        final Key<?> key;
-
-        public ExplicitRequirement(Key<?> key, ConfigSite configSite, boolean isOptional) {
-            this.key = requireNonNull(key, "key is null");
-            this.configSite = requireNonNull(configSite);
-            this.isOptional = isOptional;
-        }
     }
 }

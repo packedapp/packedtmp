@@ -65,12 +65,12 @@ public final class AtInjectGroup {
 
         void onFieldInject(AnnotatedFieldHook<Inject> fieldHook) {
             InternalFieldDescriptor field = InternalFieldDescriptor.of(fieldHook.field());
-            members.add(new AtInject(fieldHook.setter(), field, List.of(InternalDependencyDescriptor.fromField(field))));
+            members.add(new AtInject(fieldHook.setter(), field, List.of(PackedServiceDependency.fromField(field))));
         }
 
         void onMethodProvide(AnnotatedMethodHook<Inject> methodHook) {
             InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
-            List<InternalDependencyDescriptor> dependencies = InternalDependencyDescriptor.fromExecutable(method);
+            List<PackedServiceDependency> dependencies = PackedServiceDependency.fromExecutable(method);
             // TestNotStatic... Hmm kan ikke kalde hook.checkNotStatic mere...
             members.add(new AtInject(methodHook.methodHandle(), method, dependencies));
         }

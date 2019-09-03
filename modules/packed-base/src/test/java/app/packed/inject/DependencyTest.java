@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 
 /**
  *
@@ -49,7 +49,7 @@ public class DependencyTest {
 
         @Test
         public void fromTypeAttribute() {
-            InternalDependencyDescriptor opString = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(),
+            PackedServiceDependency opString = PackedServiceDependency.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(),
                     TypeLiteral.class, 0);
             assertThat(opString).keyIs(String.class);
         }
@@ -60,12 +60,12 @@ public class DependencyTest {
 
         @Test
         public void fromTypeParameter() {
-            assertThat(InternalDependencyDescriptor.of(OptionalInt.class)).isOptionalInt();
+            assertThat(PackedServiceDependency.of(OptionalInt.class)).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).isOptionalInt();
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            InternalDependencyDescriptor opInt = InternalDependencyDescriptor.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class,
+            PackedServiceDependency opInt = PackedServiceDependency.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class,
                     0);
             assertThat(opInt).isOptionalInt();
 
@@ -76,16 +76,16 @@ public class DependencyTest {
 
     @Test
     public void ofClass() {
-        assertThatNullPointerException().isThrownBy(() -> InternalDependencyDescriptor.of((Class<?>) null));
+        assertThatNullPointerException().isThrownBy(() -> PackedServiceDependency.of((Class<?>) null));
 
-        assertThatIllegalArgumentException().isThrownBy(() -> InternalDependencyDescriptor.of(Optional.class))
+        assertThatIllegalArgumentException().isThrownBy(() -> PackedServiceDependency.of(Optional.class))
                 .withMessage("Cannot determine type variable <T> for type Optional<T>");
 
-        InternalDependencyDescriptor opLong = InternalDependencyDescriptor.of(OptionalLong.class);
+        PackedServiceDependency opLong = PackedServiceDependency.of(OptionalLong.class);
         assertThat(opLong).isOptional(OptionalLong.class);
         assertThat(opLong).keyIs(Long.class);
 
-        InternalDependencyDescriptor opDouble = InternalDependencyDescriptor.of(OptionalDouble.class);
+        PackedServiceDependency opDouble = PackedServiceDependency.of(OptionalDouble.class);
         assertThat(opDouble).isOptional(OptionalDouble.class);
         assertThat(opDouble).keyIs(Double.class);
     }
