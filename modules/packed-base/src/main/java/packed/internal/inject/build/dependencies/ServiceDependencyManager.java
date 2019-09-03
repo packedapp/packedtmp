@@ -19,7 +19,9 @@ import java.util.ArrayList;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
+import app.packed.inject.InjectorContract.Builder;
 import app.packed.util.Key;
+import packed.internal.inject.build.InjectorBuilder;
 
 /**
  * This class takes care of dependencies.
@@ -46,6 +48,8 @@ public final class ServiceDependencyManager {
      */
     public boolean manualRequirementsManagement;
 
+    DependencyGraph dg;
+
     /** Enables manual requirements management. */
     public void manualRequirementsManagement() {
         manualRequirementsManagement = true;
@@ -53,5 +57,19 @@ public final class ServiceDependencyManager {
 
     public void require(Key<?> key, boolean isOptional, ConfigSite configSite) {
         explicitRequirements.add(new ExplicitRequirement(key, configSite, isOptional));
+    }
+
+    public void analyze(InjectorBuilder builder) {
+        // It does not make sense to try and resolve
+        dg = new DependencyGraph(builder);
+        dg.analyze(builder.exporter);
+
+    }
+
+    /**
+     * @param services
+     */
+    public void buildDescriptor(Builder services) {
+        dg.buildContract(services);
     }
 }

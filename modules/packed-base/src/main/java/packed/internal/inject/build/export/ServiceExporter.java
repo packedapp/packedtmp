@@ -80,11 +80,9 @@ public final class ServiceExporter {
         this.builder = requireNonNull(builder);
     }
 
-    public void addExportsToContract(InjectorContract.Builder builder) {
-        // TODO Det er jo egentlig resolved exports vi skal bruge...
-        // System.out.println(resolvedExports.copyNodes().size() + " - " + exports.size());
-        for (ExportedBuildEntry<?> n : exports) {
-            builder.addProvides(n.getKey());
+    public void buildDescriptor(InjectorContract.Builder builder) {
+        for (ServiceEntry<?> n : resolvedExports) {
+            builder.addProvides(n.key());
         }
     }
 

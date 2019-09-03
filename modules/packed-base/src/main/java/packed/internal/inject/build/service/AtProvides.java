@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.util;
+package packed.internal.inject.build.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,36 +28,37 @@ import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
+import packed.internal.inject.util.PackedServiceDependency;
 
 /** A descriptor for a member annotated with {@link Provide}. */
-public final class AtProvides {
+final class AtProvides {
 
     /** An (optional) description from {@link Provide#description()}. */
     @Nullable
-    public final String description;
+    final String description;
 
     /** The instantiation mode from {@link Provide#instantionMode()}. */
-    public final InstantiationMode instantionMode;
+    final InstantiationMode instantionMode;
 
     /** Whether or not the member on which the annotation is present is a static member. */
-    public final boolean isStaticMember;
+    final boolean isStaticMember;
 
     /** The key under which the provided service will be made available. */
-    public final Key<?> key;
+    final Key<?> key;
 
     /** The annotated member, either an {@link FieldDescriptor} or an {@link MethodDescriptor}. */
-    public final Member member;
+    final Member member;
 
     /** The annotated value, is used for creating config sites. */
-    public final Provide provides;
+    final Provide provides;
 
     /** The dependencies (parameters) of the member. */
-    public final List<PackedServiceDependency> dependencies;
+    final List<PackedServiceDependency> dependencies;
 
     /** A unbound method handle to the underlying field or method. */
-    public final MethodHandle methodHandle;
+    final MethodHandle methodHandle;
 
-    public AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {
+    AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

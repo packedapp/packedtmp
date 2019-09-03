@@ -47,7 +47,7 @@ import packed.internal.util.KeyBuilder;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptor;
 
-public final class DependencyGraph {
+final class DependencyGraph {
 
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildEntry<?>> detectCyclesFor;
@@ -72,17 +72,15 @@ public final class DependencyGraph {
     /**
      * Creates a new dependency graph.
      * 
-     * @param root
-     *            the root injector builder
      */
-    public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib) {
-        this.root = requireNonNull(root);
+    DependencyGraph(InjectorBuilder ib) {
+        this.root = requireNonNull(ib.pcc);
         this.ib = requireNonNull(ib);
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void analyze(ServiceExporter exporter) {
+    void analyze(ServiceExporter exporter) {
         ib.privateInjector = new DefaultInjector(root, ib.resolvedEntries);
         ComponentBuildEntry d = new ComponentBuildEntry<>(ib, root.configSite(), ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
@@ -149,7 +147,7 @@ public final class DependencyGraph {
         checkForMissingDependencies();
     }
 
-    public void buildContract(InjectorContract.Builder builder) {
+    void buildContract(InjectorContract.Builder builder) {
         if (requiredOptionally != null) {
             requiredOptionally.forEach(k -> {
                 // We remove all optional dependencies that are also mandatory.

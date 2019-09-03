@@ -27,14 +27,9 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.build.BuildEntry;
 
 /**
- *
- */
-
-/**
  * An instance of {@link ServiceConfiguration} that is returned to the user, for example, when invoking
  * {@link InjectionExtension#export(Class)}.
  */
-
 // We should use injectorExtension.checkConfigurable
 final class ExposedExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 

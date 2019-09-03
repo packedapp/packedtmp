@@ -25,7 +25,6 @@ import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.dependencies.DependencyGraph;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExporter;
 import packed.internal.inject.build.service.ComponentBuildEntry;
@@ -41,11 +40,9 @@ public final class InjectorBuilder {
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
 
-    DependencyGraph dg;
-
     /** A service exporter handles everything to do with exports. */
     @Nullable
-    ServiceExporter exporter;
+    public ServiceExporter exporter;
 
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
@@ -74,7 +71,6 @@ public final class InjectorBuilder {
     public void build(ArtifactBuildContext buildContext) {
         boolean hasDuplicates = provider().processNodesAndCheckForDublicates(buildContext);
 
-        // Go through all exports, and make sure they can all be fulfilled
         if (exporter != null) {
             exporter.resolve(this, buildContext);
         }
@@ -82,9 +78,7 @@ public final class InjectorBuilder {
         if (hasDuplicates) {
             return;
         }
-        // It does not make sense to try and resolve
-        dg = new DependencyGraph(pcc, this);
-        dg.analyze(exporter);
+        dependencies().analyze(this);
 
         if (buildContext.isInstantiating()) {
             instantiate();
@@ -100,9 +94,9 @@ public final class InjectorBuilder {
         }
 
         if (exporter != null) {
-            exporter.addExportsToContract(builder.contract().services());
+            exporter.buildDescriptor(builder.contract().services());
         }
-        dg.buildContract(builder.contract().services());
+        dependencies().buildDescriptor(builder.contract().services());
     }
 
     /**

@@ -43,8 +43,6 @@ import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
-import packed.internal.inject.util.AtProvides;
-import packed.internal.inject.util.AtProvidesGroup;
 
 /**
  *
