@@ -19,8 +19,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.WireletList;
@@ -34,6 +39,7 @@ import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
@@ -122,5 +128,37 @@ public final class ServiceProvidingManager {
         node.as((Key) Key.of(instance.getClass()));
         entries.add(node);
         return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) node);
+    }
+
+    public boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
+        HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
+        LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
+
+        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, entries);
+        for (ProvideAllFromInjector ii : provideAll) {
+            processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
+        }
+
+        // Add error messages if any nodes with the same key have been added multiple times
+        if (!duplicateNodes.isEmpty()) {
+            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
+        }
+        builder.resolvedEntries.addAll(uniqueNodes.values());
+        return !duplicateNodes.isEmpty();
+    }
+
+    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> uniqueNodes,
+            LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes, Iterable<? extends BuildEntry<?>> nodes) {
+        for (BuildEntry<?> node : nodes) {
+            Key<?> key = node.key();
+            if (key != null) {
+                BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
+                if (existing != null) {
+                    HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                    hs.add(node);
+                }
+            }
+        }
     }
 }

@@ -17,17 +17,11 @@ package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.inject.InstantiationMode;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
@@ -35,7 +29,6 @@ import packed.internal.inject.build.dependencies.DependencyGraph;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExporter;
 import packed.internal.inject.build.service.ComponentBuildEntry;
-import packed.internal.inject.build.service.ProvideAllFromInjector;
 import packed.internal.inject.build.service.ServiceProvidingManager;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.AtInject;
@@ -79,7 +72,7 @@ public final class InjectorBuilder {
     }
 
     public void build(ArtifactBuildContext buildContext) {
-        boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
+        boolean hasDuplicates = provider().processNodesAndCheckForDublicates(buildContext);
 
         // Go through all exports, and make sure they can all be fulfilled
         if (exporter != null) {
@@ -95,29 +88,6 @@ public final class InjectorBuilder {
 
         if (buildContext.isInstantiating()) {
             instantiate();
-        }
-    }
-
-    private void instantiate() {
-        // Instantiate
-        for (ServiceEntry<?> node : resolvedEntries) {
-            if (node instanceof ComponentBuildEntry) {
-                ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
-                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
-                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
-                }
-            }
-        }
-
-        // Okay we are finished, convert all nodes to runtime nodes.
-        resolvedEntries.toRuntimeNodes();
-
-        // Now inject all components...
-
-        if (exporter != null) {
-            if (resolvedEntries != exporter.resolvedExports) {
-                exporter.resolvedExports.toRuntimeNodes();
-            }
         }
     }
 
@@ -161,6 +131,29 @@ public final class InjectorBuilder {
         return e;
     }
 
+    private void instantiate() {
+        // Instantiate
+        for (ServiceEntry<?> node : resolvedEntries) {
+            if (node instanceof ComponentBuildEntry) {
+                ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
+                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
+                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
+                }
+            }
+        }
+
+        // Okay we are finished, convert all nodes to runtime nodes.
+        resolvedEntries.toRuntimeNodes();
+
+        // Now inject all components...
+
+        if (exporter != null) {
+            if (resolvedEntries != exporter.resolvedExports) {
+                exporter.resolvedExports.toRuntimeNodes();
+            }
+        }
+    }
+
     /**
      * @param cc
      * @param group
@@ -185,38 +178,6 @@ public final class InjectorBuilder {
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         context.put(pcc, publicInjector); // Used by PackedContainer
-    }
-
-    private boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
-        HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
-        LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
-
-        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, provider.entries);
-        for (ProvideAllFromInjector ii : provider.provideAll) {
-            processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
-        }
-
-        // Add error messages if any nodes with the same key have been added multiple times
-        if (!duplicateNodes.isEmpty()) {
-            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
-        }
-        resolvedEntries.addAll(uniqueNodes.values());
-        return !duplicateNodes.isEmpty();
-    }
-
-    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> uniqueNodes,
-            LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes, Iterable<? extends BuildEntry<?>> nodes) {
-        for (BuildEntry<?> node : nodes) {
-            Key<?> key = node.key();
-            if (key != null) {
-                BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
-                if (existing != null) {
-                    HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
-                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                    hs.add(node);
-                }
-            }
-        }
     }
 
     public ServiceProvidingManager provider() {
