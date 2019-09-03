@@ -54,7 +54,11 @@ public final class ServiceExporter {
 
     /** A map of multiple exports for the same key. */
     @Nullable
-    public LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
+    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
+
+    /** A map of all keyed exports where an entry matching the key could not be found. */
+    @Nullable
+    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
     /**
      * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
@@ -64,10 +68,6 @@ public final class ServiceExporter {
 
     /** */
     public final ServiceNodeMap resolvedExports = new ServiceNodeMap();
-
-    /** A map of all keyed exports where an entry matching the key could not be found. */
-    @Nullable
-    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
     private ConfigSite exportAll;
 
@@ -146,12 +146,8 @@ public final class ServiceExporter {
 
     public void exportAll(ConfigSite configSite) {
         exportAll = configSite;
-        // exportAllAs(Function<?, Key>
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
-        // any exportAll can be called at most one
-        // Can be called at any time
-        // explicit single exports will override any exportedAll. But aliases are allowed
-        // transient linked exports, will work regardless
+        // exportAllAs(Function<?, Key>
     }
 
     /**
@@ -164,6 +160,12 @@ public final class ServiceExporter {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void resolve(InjectorResolver resolver, ArtifactBuildContext buildContext) {
+
+        // TODO move unresolvedKeyedExports and duplicateExports here, no need have them as fields...
+        // But we keep as fields for now though, we might have some more complicated logic later..
+        // Export all entries except foo which should be export as Boo
+        // exportAll(Predicate) <- takes key or service configuration???
+
         // Process every exported build entry
         for (ExportedBuildEntry<?> entry : exports) {
             // try and find a matching service entry for key'ed exports via
@@ -171,7 +173,7 @@ public final class ServiceExporter {
             ServiceEntry<?> entryToExport = entry.exportedEntry;
             boolean export = true;
             if (entryToExport == null) {
-                entryToExport = resolver.internalNodes.getRecursive(entry.keyToExport);
+                entryToExport = resolver.resolvedEntries.getRecursive(entry.keyToExport);
                 if (entryToExport == null) {
                     if (unresolvedKeyedExports == null) {
                         unresolvedKeyedExports = new LinkedHashMap<>();
@@ -193,16 +195,6 @@ public final class ServiceExporter {
                     hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                     hs.add(entry);
                 }
-
-            }
-        }
-        if (exportAll != null) {
-            for (ServiceEntry<?> e : resolver.internalNodes) {
-                if (!e.isPrivate()) {
-                    if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(new ExportedBuildEntry<>(builder, e, exportAll));
-                    }
-                }
             }
         }
 
@@ -212,9 +204,17 @@ public final class ServiceExporter {
         if (duplicateExports != null) {
             // TODO add error messages
         }
+
+        if (exportAll != null) {
+            for (ServiceEntry<?> e : resolver.resolvedEntries) {
+                if (!e.isPrivate()) {
+                    if (!resolvedExports.containsKey(e.key())) {
+                        resolvedExports.put(new ExportedBuildEntry<>(builder, e, exportAll));
+                    }
+                }
+            }
+        }
+
     }
 
-    public boolean isFailed() {
-        return unresolvedKeyedExports != null || duplicateExports != null;
-    }
 }

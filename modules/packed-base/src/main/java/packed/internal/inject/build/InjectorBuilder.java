@@ -41,6 +41,8 @@ import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExporter;
+import packed.internal.inject.build.service.BSEComponent;
+import packed.internal.inject.build.service.ProvideAllFromInjector;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtInjectGroup;
@@ -61,14 +63,14 @@ public final class InjectorBuilder {
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
-    public ServiceExporter exporter;
+    ServiceExporter exporter;
 
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
 
     public final ArrayList<ProvideAllFromInjector> provideAll = new ArrayList<>(0);
 
-    final InjectorResolver resolver = new InjectorResolver(this);
+    public final InjectorResolver resolver = new InjectorResolver(this);
 
     /**
      * Creates a new builder.
@@ -84,9 +86,9 @@ public final class InjectorBuilder {
         resolver.build(buildContext);
     }
 
-    public void buildBundle(BundleDescriptor.Builder builder) {
+    public void buildDescriptor(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
-        for (ServiceEntry<?> n : resolver.internalNodes) {
+        for (ServiceEntry<?> n : resolver.resolvedEntries) {
             if (n instanceof BuildEntry) {
                 builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }

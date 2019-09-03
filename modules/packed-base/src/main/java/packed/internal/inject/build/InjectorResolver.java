@@ -27,6 +27,8 @@ import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.DependencyGraph;
+import packed.internal.inject.build.service.BSEComponent;
+import packed.internal.inject.build.service.ProvideAllFromInjector;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.ServiceNodeMap;
 
@@ -54,7 +56,7 @@ public final class InjectorResolver {
     final InjectorBuilder ib;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final ServiceNodeMap internalNodes = new ServiceNodeMap();
+    public final ServiceNodeMap resolvedEntries = new ServiceNodeMap();
 
     public DefaultInjector privateInjector;
 
@@ -64,7 +66,7 @@ public final class InjectorResolver {
         this.ib = requireNonNull(ib);
     }
 
-    public DependencyGraph dg;
+    DependencyGraph dg;
 
     public void build(ArtifactBuildContext buildContext) {
         boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
@@ -74,27 +76,30 @@ public final class InjectorResolver {
             ib.exporter.resolve(this, buildContext);
         }
 
+        if (hasDuplicates) {
+            return;
+        }
         // It does not make sense to try and resolve
-        if (!hasDuplicates) {
-            dg = new DependencyGraph(ib.pcc, ib, this);
-            dg.analyze();
-            if (buildContext.isInstantiating()) {
-                for (ServiceEntry<?> node : internalNodes) {
-                    if (node instanceof BSEComponent) {
-                        BSEComponent<?> s = (BSEComponent<?>) node;
-                        if (s.instantiationMode() == InstantiationMode.SINGLETON) {
-                            s.getInstance(null);// getInstance() caches the new instance, newInstance does not
-                        }
+        dg = new DependencyGraph(ib.pcc, ib, this);
+        dg.analyze(ib.exporter);
+
+        // Instantiate
+        if (buildContext.isInstantiating()) {
+            for (ServiceEntry<?> node : resolvedEntries) {
+                if (node instanceof BSEComponent) {
+                    BSEComponent<?> s = (BSEComponent<?>) node;
+                    if (s.instantiationMode() == InstantiationMode.SINGLETON) {
+                        s.getInstance(null);// getInstance() caches the new instance, newInstance does not
                     }
                 }
+            }
 
-                // Okay we are finished, convert all nodes to runtime nodes.
-                internalNodes.toRuntimeNodes();
+            // Okay we are finished, convert all nodes to runtime nodes.
+            resolvedEntries.toRuntimeNodes();
 
-                if (ib.exporter != null) {
-                    if (internalNodes != ib.exporter.resolvedExports) {
-                        ib.exporter.resolvedExports.toRuntimeNodes();
-                    }
+            if (ib.exporter != null) {
+                if (resolvedEntries != ib.exporter.resolvedExports) {
+                    ib.exporter.resolvedExports.toRuntimeNodes();
                 }
             }
         }
@@ -113,7 +118,7 @@ public final class InjectorResolver {
         if (!duplicateNodes.isEmpty()) {
             ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
         }
-        internalNodes.addAll(uniqueNodes.values());
+        resolvedEntries.addAll(uniqueNodes.values());
         return !duplicateNodes.isEmpty();
     }
 

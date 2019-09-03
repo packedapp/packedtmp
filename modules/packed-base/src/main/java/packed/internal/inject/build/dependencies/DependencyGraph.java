@@ -35,11 +35,12 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSEComponent;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.InjectorResolver;
 import packed.internal.inject.build.dependencies.DependencyGraphCycleDetector.DependencyCycle;
+import packed.internal.inject.build.export.ServiceExporter;
+import packed.internal.inject.build.service.BSEComponent;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -85,16 +86,16 @@ public final class DependencyGraph {
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void analyze() {
-        ir.privateInjector = new DefaultInjector(root, ir.internalNodes);
+    public void analyze(ServiceExporter exporter) {
+        ir.privateInjector = new DefaultInjector(root, ir.resolvedEntries);
         BSEComponent d = new BSEComponent<>(ib, root.configSite(), ir.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
-        ir.internalNodes.put(d);
+        ir.resolvedEntries.put(d);
 
         if (root.buildContext().artifactType() == Injector.class) {
             ir.publicInjector = requireNonNull(ir.privateInjector);
         } else {
-            ServiceNodeMap sm = ib.exporter == null ? new ServiceNodeMap() : ib.exporter.resolvedExports;
+            ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedExports;
             ir.publicInjector = new DefaultInjector(root, sm);
         }
 
@@ -136,14 +137,14 @@ public final class DependencyGraph {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> nn : ir.internalNodes) {
+        for (ServiceEntry<?> nn : ir.resolvedEntries) {
             BuildEntry<?> node = (BuildEntry<?>) nn;
             if (node.needsResolving()) {
                 detectCyclesFor.add(node);
                 List<PackedServiceDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = ir.internalNodes.getNode(dependency);
+                    ServiceEntry<?> resolveTo = ir.resolvedEntries.getNode(dependency);
                     recordResolvedDependency(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;
                 }

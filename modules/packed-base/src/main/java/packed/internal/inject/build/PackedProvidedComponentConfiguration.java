@@ -25,6 +25,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.inject.build.service.BSEComponent;
 
 /**
  *

@@ -80,7 +80,7 @@ public abstract class Extension {
 
             @Override
             public void buildBundle(Extension extension, Builder builder) {
-                extension.buildBundle(builder);
+                extension.buildDescriptor(builder);
             }
 
             /** {@inheritDoc} */
@@ -120,7 +120,7 @@ public abstract class Extension {
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
-    protected void buildBundle(BundleDescriptor.Builder builder) {}
+    protected void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     /**
      * Returns the build context of the artifact which this extension is a part of.

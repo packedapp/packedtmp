@@ -71,8 +71,8 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    protected void buildBundle(BundleDescriptor.Builder descriptor) {
-        builder.buildBundle(descriptor);
+    protected void buildDescriptor(BundleDescriptor.Builder descriptor) {
+        builder.buildDescriptor(descriptor);
     }
 
     /**
@@ -273,7 +273,7 @@ public final class InjectionExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(key, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE));
+        builder.dependencies().require(key, false, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
     /**
@@ -290,7 +290,7 @@ public final class InjectionExtension extends Extension {
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().requireOptional(key, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+        builder.dependencies().require(key, true, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }
 // manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?

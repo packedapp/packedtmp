@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.build.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,11 +27,12 @@ import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
 /** A build node specifically used for {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
-final class BSEFromProvideAll<T> extends BuildEntry<T> {
+public final class BSEFromProvideAll<T> extends BuildEntry<T> {
 
     /** The node in the 'imported' injector. */
     public final ServiceEntry<T> entry;

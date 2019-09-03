@@ -23,14 +23,14 @@ import app.packed.util.Key;
 /**
  *
  */
-public class ExplicitRequirement {
+class ExplicitRequirement {
     final ConfigSite configSite;
 
     final boolean isOptional;
 
     final Key<?> key;
 
-    public ExplicitRequirement(Key<?> key, ConfigSite configSite, boolean isOptional) {
+    ExplicitRequirement(Key<?> key, ConfigSite configSite, boolean isOptional) {
         this.key = requireNonNull(key, "key is null");
         this.configSite = requireNonNull(configSite);
         this.isOptional = isOptional;

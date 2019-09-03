@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import app.packed.inject.InjectionException;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
-import packed.internal.inject.build.BSEComponent;
+import packed.internal.inject.build.service.BSEComponent;
 
 /** A utility class that can find cycles in a dependency graph. */
 final class DependencyGraphCycleDetector {

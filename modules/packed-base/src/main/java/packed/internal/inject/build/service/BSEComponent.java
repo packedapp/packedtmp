@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.build.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +29,8 @@ import app.packed.inject.ProvideHelper;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
+import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
@@ -62,7 +64,7 @@ public final class BSEComponent<T> extends BuildEntry<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BSEComponent<?> parent;
 
-    BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, BSEComponent<?> parent) {
+    public BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, BSEComponent<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.mha = requireNonNull(mh);
         this.parent = parent;

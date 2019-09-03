@@ -51,11 +51,7 @@ public final class ServiceDependencyManager {
         manualRequirementsManagement = true;
     }
 
-    public void require(Key<?> key, ConfigSite configSite) {
-        explicitRequirements.add(new ExplicitRequirement(key, configSite, false));
-    }
-
-    public void requireOptional(Key<?> key, ConfigSite configSite) {
-        explicitRequirements.add(new ExplicitRequirement(key, configSite, true));
+    public void require(Key<?> key, boolean isOptional, ConfigSite configSite) {
+        explicitRequirements.add(new ExplicitRequirement(key, configSite, isOptional));
     }
 }

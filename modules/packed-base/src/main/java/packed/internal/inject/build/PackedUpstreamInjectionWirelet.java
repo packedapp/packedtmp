@@ -28,6 +28,8 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.access.SharedSecrets;
+import packed.internal.inject.build.service.BSEFromProvideAll;
+import packed.internal.inject.build.service.ProvideAllFromInjector;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
@@ -44,7 +46,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
      * @param ii
      *            the imported injector to process
      */
-    abstract void process(ProvideAllFromInjector ii);
+    public abstract void process(ProvideAllFromInjector ii);
 
     public static class FilterOnKey extends PackedUpstreamInjectionWirelet {
 
@@ -56,7 +58,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        void process(ProvideAllFromInjector ii) {
+        public void process(ProvideAllFromInjector ii) {
             for (Key<?> key : set) {
                 ii.entries.remove(key);
             }
@@ -87,7 +89,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        void process(ProvideAllFromInjector ii) {
+        public void process(ProvideAllFromInjector ii) {
             for (BSEFromProvideAll<?> e : ii.entries.values()) {
                 action.accept(new ServiceConfigurationWrapper(e));
             }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.build.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,6 +25,8 @@ import app.packed.container.WireletList;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.util.Key;
+import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.PackedUpstreamInjectionWirelet;
 import packed.internal.inject.run.AbstractInjector;
 
 /** Represents an injector that used via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
@@ -54,7 +56,7 @@ public final class ProvideAllFromInjector {
      * @param wirelets
      *            any wirelets used when importing the injector
      */
-    ProvideAllFromInjector(InjectorBuilder builder, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+    public ProvideAllFromInjector(InjectorBuilder builder, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
         this.builder = requireNonNull(builder);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);

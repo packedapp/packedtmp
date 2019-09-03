@@ -29,8 +29,8 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
 import packed.internal.inject.util.PackedServiceDependency;
-import packed.internal.inject.util.old.OldAtInject;
-import packed.internal.inject.util.old.OldAtInjectGroup;
+import packed.internal.inject.util.nextapi.OldAtInject;
+import packed.internal.inject.util.nextapi.OldAtInjectGroup;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {

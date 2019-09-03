@@ -29,8 +29,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.inject.util.InternalServiceDescriptor;
+import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -42,8 +42,6 @@ import packed.internal.util.KeyBuilder;
  * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ServiceConfiguration}.
  */
 public abstract class BuildEntry<T> implements ServiceEntry<T> {
-
-    // Boolean Values: Has_Receiver, NeedsInjectionSite
 
     /** An empty array of nodes */
     private static final ServiceEntry<?>[] EMPTY_ARRAY = new ServiceEntry<?>[0];
@@ -60,9 +58,9 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     public boolean detectCycleVisited;
 
     /** Whether or this node contains a dependency on {@link ProvideHelper}. */
-    final boolean hasDependencyOnInjectionSite;
+    protected final boolean hasDependencyOnInjectionSite;
 
-    /** The injector configuration this node is registered with. */
+    /** The injector builder this node belongs to. */
     @Nullable // Is nullable for stages for now
     public final InjectorBuilder injectorBuilder;
 
@@ -76,13 +74,13 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     /** The resolved dependencies of this node. */
     public final ServiceEntry<?>[] resolvedDependencies;
 
-    /** We cache the runtime node, to make sure it is only created once. */
+    /** The runtime representation of this node. We cache it, to make sure it is only created once. */
     @Nullable
     private RSE<T> runtimeNode;
 
     public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<PackedServiceDependency> dependencies) {
-        this.configSite = requireNonNull(configSite);
         this.injectorBuilder = injectorBuilder;
+        this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceEntry<?>[dependencies.size()];
         boolean hasDependencyOnInjectionSite = false;
