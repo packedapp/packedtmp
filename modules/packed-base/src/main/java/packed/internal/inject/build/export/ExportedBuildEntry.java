@@ -46,14 +46,15 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the config site of the export
      * @see InjectionExtension#export(ProvidedComponentConfiguration)
      */
-    ExportedBuildEntry(BuildEntry<T> entryToExport, ConfigSite configSite) {
-        super(entryToExport.injectorBuilder, configSite, List.of());
+    @SuppressWarnings("unchecked")
+    ExportedBuildEntry(InjectorBuilder builder, ServiceEntry<T> entryToExport, ConfigSite configSite) {
+        super(builder, configSite, List.of());
         this.exportedEntry = entryToExport;
 
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
         // Slaar det igennem i hele vejen ned.
-        this.key = entryToExport.key();
+        this.key = (Key<T>) entryToExport.key();
     }
 
     /**

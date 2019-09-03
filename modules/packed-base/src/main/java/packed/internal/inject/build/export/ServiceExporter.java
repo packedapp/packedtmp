@@ -69,6 +69,8 @@ public final class ServiceExporter {
     @Nullable
     private HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
+    private ConfigSite exportAll;
+
     /**
      * Creates a new service exporter.
      * 
@@ -125,7 +127,7 @@ public final class ServiceExporter {
         if (entryToExport.injectorBuilder != builder) {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
         }
-        return export0(new ExportedBuildEntry<>(entryToExport, configSite));
+        return export0(new ExportedBuildEntry<>(builder, entryToExport, configSite));
     }
 
     /**
@@ -143,6 +145,7 @@ public final class ServiceExporter {
     }
 
     public void exportAll(ConfigSite configSite) {
+        exportAll = configSite;
         // exportAllAs(Function<?, Key>
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
         // any exportAll can be called at most one
@@ -162,10 +165,12 @@ public final class ServiceExporter {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void resolve(InjectorResolver resolver, ArtifactBuildContext buildContext) {
+        // Process every exported build entry
         for (ExportedBuildEntry<?> entry : exports) {
             // try and find a matching service entry for key'ed exports via
             // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
             ServiceEntry<?> entryToExport = entry.exportedEntry;
+            boolean export = true;
             if (entryToExport == null) {
                 entryToExport = resolver.internalNodes.getRecursive(entry.getKey());
                 if (entryToExport == null) {
@@ -173,13 +178,13 @@ public final class ServiceExporter {
                         unresolvedKeyedExports = new HashMap<>();
                     }
                     unresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new HashSet<>()).add(entry);
+                    export = false;
                 } else {
                     entry.exportedEntry = (ServiceEntry) entryToExport;
                 }
             }
-            // Ignore unresolved entries
-            if (entryToExport != null) {
-                resolvedExports.put(entry);
+
+            if (export) {
                 ExportedBuildEntry<?> existing = (ExportedBuildEntry<?>) resolvedExports.putIfAbsent(entry);
                 if (existing != null) {
                     if (duplicateExports == null) {
@@ -192,8 +197,25 @@ public final class ServiceExporter {
 
             }
         }
+        if (exportAll != null) {
+            for (ServiceEntry<?> e : resolver.internalNodes) {
+                if (!e.isPrivate()) {
+                    if (!resolvedExports.containsKey(e.key())) {
+                        resolvedExports.put(new ExportedBuildEntry<>(builder, e, exportAll));
+                    }
+                }
+            }
+        }
+
         if (unresolvedKeyedExports != null) {
             ErrorMessages.addUnresolvedExports(buildContext, unresolvedKeyedExports);
         }
+        if (duplicateExports != null) {
+            // TODO add error messages
+        }
+    }
+
+    public boolean isFailed() {
+        return unresolvedKeyedExports != null || duplicateExports != null;
     }
 }
