@@ -18,7 +18,6 @@ package packed.internal.inject.build;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.extension.ExtensionPipeline;
-import packed.internal.inject.compose.InjectorResolver;
 
 /**
  *

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
@@ -31,10 +32,10 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.InjectorResolver;
 import packed.internal.inject.build.PackedProvidedComponentConfiguration;
-import packed.internal.inject.compose.ErrorMessages;
-import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
 
@@ -53,7 +54,7 @@ public final class ServiceExporter {
 
     /** A map of multiple exports for the same key. */
     @Nullable
-    public HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> duplicateExports;
+    public HashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
 
     /**
      * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
@@ -64,11 +65,12 @@ public final class ServiceExporter {
     /** */
     public final ServiceNodeMap resolvedExports = new ServiceNodeMap();
 
-    /** A map of all keyed exports where an entry matching the key could not be resolved. */
-    public HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports = new HashMap<>();
+    /** A map of all keyed exports where an entry matching the key could not be found. */
+    @Nullable
+    private HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
     /**
-     * Creates a new exporter.
+     * Creates a new service exporter.
      * 
      * @param builder
      *            the builder this exporter belongs to
@@ -79,7 +81,7 @@ public final class ServiceExporter {
 
     public void addExportsToContract(InjectorContract.Builder builder) {
         // TODO Det er jo egentlig resolved exports vi skal bruge...
-        System.out.println(resolvedExports.copyNodes().size() + " - " + exports.size());
+        // System.out.println(resolvedExports.copyNodes().size() + " - " + exports.size());
         for (ExportedBuildEntry<?> n : exports) {
             builder.addProvides(n.getKey());
         }
@@ -163,17 +165,35 @@ public final class ServiceExporter {
         for (ExportedBuildEntry<?> entry : exports) {
             // try and find a matching service entry for key'ed exports via
             // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-            if (entry.exportedEntry == null) {
-                ServiceEntry<?> sn = resolver.internalNodes.getRecursive(entry.getKey());
-
-                if (sn == null) {
+            ServiceEntry<?> entryToExport = entry.exportedEntry;
+            if (entryToExport == null) {
+                entryToExport = resolver.internalNodes.getRecursive(entry.getKey());
+                if (entryToExport == null) {
+                    if (unresolvedKeyedExports == null) {
+                        unresolvedKeyedExports = new HashMap<>();
+                    }
                     unresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new HashSet<>()).add(entry);
                 } else {
-                    entry.exportedEntry = (ServiceEntry) sn;
-                    resolvedExports.put(entry);
+                    entry.exportedEntry = (ServiceEntry) entryToExport;
                 }
             }
+            // Ignore unresolved entries
+            if (entryToExport != null) {
+                resolvedExports.put(entry);
+                ExportedBuildEntry<?> existing = (ExportedBuildEntry<?>) resolvedExports.putIfAbsent(entry);
+                if (existing != null) {
+                    if (duplicateExports == null) {
+                        duplicateExports = new HashMap<>();
+                    }
+                    LinkedHashSet<ExportedBuildEntry<?>> hs = duplicateExports.computeIfAbsent(entry.key, m -> new LinkedHashSet<>());
+                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                    hs.add(entry);
+                }
+
+            }
         }
-        ErrorMessages.addUnresolvedExports(buildContext, unresolvedKeyedExports);
+        if (unresolvedKeyedExports != null) {
+            ErrorMessages.addUnresolvedExports(buildContext, unresolvedKeyedExports);
+        }
     }
 }

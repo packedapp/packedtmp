@@ -41,7 +41,6 @@ import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExporter;
-import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtInjectGroup;
@@ -99,6 +98,11 @@ public final class InjectorBuilder {
         resolver.dg.buildContract(builder.contract().services());
     }
 
+    /**
+     * Returns the dependency manager for this builder.
+     * 
+     * @return the dependency manager for this builder
+     */
     public ServiceDependencyManager dependencies() {
         ServiceDependencyManager d = dependencies;
         if (d == null) {
@@ -107,7 +111,12 @@ public final class InjectorBuilder {
         return d;
     }
 
-    public ServiceExporter exporter() {
+    /**
+     * Returns the {@link ServiceExporter} for this builder.
+     * 
+     * @return the service exporter for this builder
+     */
+    public ServiceExporter exports() {
         ServiceExporter e = exporter;
         if (e == null) {
             e = exporter = new ServiceExporter(this);

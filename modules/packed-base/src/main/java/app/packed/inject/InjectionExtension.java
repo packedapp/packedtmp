@@ -117,7 +117,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return builder.exporter().export(key, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        return builder.exports().export(key, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -132,7 +132,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return builder.exporter().export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        return builder.exports().export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -140,7 +140,7 @@ public final class InjectionExtension extends Extension {
      */
     public void exportAll() {
         checkConfigurable();
-        builder.exporter().exportAll(captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        builder.exports().exportAll(captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**

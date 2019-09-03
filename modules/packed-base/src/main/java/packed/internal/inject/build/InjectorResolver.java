@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.compose;
+package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,10 +26,6 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSEComponent;
-import packed.internal.inject.build.BuildEntry;
-import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.build.ProvideAllFromInjector;
 import packed.internal.inject.build.dependencies.DependencyGraph;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -129,7 +125,7 @@ public final class InjectorResolver {
                 BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
                 if (existing != null) {
                     HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
-                    hs.add(existing); // might be added multiple times, hence we use a Set
+                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                     hs.add(node);
                 }
             }

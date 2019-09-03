@@ -90,9 +90,9 @@ public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
         nodes.put(node.key(), node);
     }
 
-    public boolean putIfAbsent(ServiceEntry<?> node) {
+    public ServiceEntry<?> putIfAbsent(ServiceEntry<?> node) {
         requireNonNull(node.key());
-        return nodes.putIfAbsent(node.key(), node) == null;
+        return nodes.putIfAbsent(node.key(), node);
     }
 
     public Stream<ServiceEntry<?>> stream() {

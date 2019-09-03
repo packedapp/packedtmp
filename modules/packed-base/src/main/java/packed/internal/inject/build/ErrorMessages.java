@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.compose;
+package packed.internal.inject.build;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -28,7 +28,6 @@ import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
-import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.export.ExportedBuildEntry;
 import packed.internal.util.StringFormatter;
 
@@ -41,7 +40,7 @@ import packed.internal.util.StringFormatter;
 
 public final class ErrorMessages {
 
-    static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> dublicateNodes) {
+    public static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
 
         csj.prefix("    ", "  & ", "  & ");
