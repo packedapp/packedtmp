@@ -48,6 +48,8 @@ public final class InjectorBuilder {
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
 
+    DependencyGraph dg;
+
     /** A service exporter handles everything to do with exports. */
     @Nullable
     ServiceExporter exporter;
@@ -55,9 +57,16 @@ public final class InjectorBuilder {
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
 
+    public DefaultInjector privateInjector;
+
     /** A service exporter handles everything to do with exports. */
     @Nullable
     ServiceProvidingManager provider;
+
+    public DefaultInjector publicInjector;
+
+    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
+    public final ServiceNodeMap resolvedEntries = new ServiceNodeMap();
 
     /**
      * Creates a new builder.
@@ -67,6 +76,49 @@ public final class InjectorBuilder {
      */
     public InjectorBuilder(PackedContainerConfiguration pcc) {
         this.pcc = requireNonNull(pcc);
+    }
+
+    public void build(ArtifactBuildContext buildContext) {
+        boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
+
+        // Go through all exports, and make sure they can all be fulfilled
+        if (exporter != null) {
+            exporter.resolve(this, buildContext);
+        }
+
+        if (hasDuplicates) {
+            return;
+        }
+        // It does not make sense to try and resolve
+        dg = new DependencyGraph(pcc, this);
+        dg.analyze(exporter);
+
+        if (buildContext.isInstantiating()) {
+            instantiate();
+        }
+    }
+
+    private void instantiate() {
+        // Instantiate
+        for (ServiceEntry<?> node : resolvedEntries) {
+            if (node instanceof ComponentBuildEntry) {
+                ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
+                if (s.instantiationMode() == InstantiationMode.SINGLETON) {
+                    s.getInstance(null);// getInstance() caches the new instance, newInstance does not
+                }
+            }
+        }
+
+        // Okay we are finished, convert all nodes to runtime nodes.
+        resolvedEntries.toRuntimeNodes();
+
+        // Now inject all components...
+
+        if (exporter != null) {
+            if (resolvedEntries != exporter.resolvedExports) {
+                exporter.resolvedExports.toRuntimeNodes();
+            }
+        }
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {
@@ -109,18 +161,6 @@ public final class InjectorBuilder {
         return e;
     }
 
-    public ServiceProvidingManager provider() {
-        ServiceProvidingManager p = provider;
-        if (p == null) {
-            p = provider = new ServiceProvidingManager(this);
-        }
-        return p;
-    }
-
-    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(pcc, publicInjector); // Used by PackedContainer
-    }
-
     /**
      * @param cc
      * @param group
@@ -143,50 +183,8 @@ public final class InjectorBuilder {
         }
     }
 
-    /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final ServiceNodeMap resolvedEntries = new ServiceNodeMap();
-
-    public DefaultInjector privateInjector;
-
-    public DefaultInjector publicInjector;
-
-    DependencyGraph dg;
-
-    public void build(ArtifactBuildContext buildContext) {
-        boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
-
-        // Go through all exports, and make sure they can all be fulfilled
-        if (exporter != null) {
-            exporter.resolve(this, buildContext);
-        }
-
-        if (hasDuplicates) {
-            return;
-        }
-        // It does not make sense to try and resolve
-        dg = new DependencyGraph(pcc, this);
-        dg.analyze(exporter);
-
-        // Instantiate
-        if (buildContext.isInstantiating()) {
-            for (ServiceEntry<?> node : resolvedEntries) {
-                if (node instanceof ComponentBuildEntry) {
-                    ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
-                    if (s.instantiationMode() == InstantiationMode.SINGLETON) {
-                        s.getInstance(null);// getInstance() caches the new instance, newInstance does not
-                    }
-                }
-            }
-
-            // Okay we are finished, convert all nodes to runtime nodes.
-            resolvedEntries.toRuntimeNodes();
-
-            if (exporter != null) {
-                if (resolvedEntries != exporter.resolvedExports) {
-                    exporter.resolvedExports.toRuntimeNodes();
-                }
-            }
-        }
+    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+        context.put(pcc, publicInjector); // Used by PackedContainer
     }
 
     private boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
@@ -221,4 +219,11 @@ public final class InjectorBuilder {
         }
     }
 
+    public ServiceProvidingManager provider() {
+        ServiceProvidingManager p = provider;
+        if (p == null) {
+            p = provider = new ServiceProvidingManager(this);
+        }
+        return p;
+    }
 }
