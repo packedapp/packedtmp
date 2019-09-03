@@ -24,7 +24,7 @@ import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -44,7 +44,7 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
     /**
      * @param node
      */
-    public RSNPrototype(BSE<T> node, MethodHandle mh) {
+    public RSNPrototype(BuildEntry<T> node, MethodHandle mh) {
         super(node);
         this.mh = requireNonNull(mh);
         this.providers = new Provider[node.dependencies.size()];

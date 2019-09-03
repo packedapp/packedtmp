@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 
 /**
  * A delegating runtime service node.
@@ -38,7 +38,7 @@ public final class RSEDelegate<T> extends RSE<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public RSEDelegate(BSE<T> buildNode, ServiceEntry<T> delegate) {
+    public RSEDelegate(BuildEntry<T> buildNode, ServiceEntry<T> delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate.toRuntimeEntry());
     }

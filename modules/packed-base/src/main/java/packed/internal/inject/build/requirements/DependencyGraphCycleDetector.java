@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.compose;
+package packed.internal.inject.build.requirements;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import app.packed.inject.InjectionException;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.BSEComponent;
 
 /** A utility class that can find cycles in a dependency graph. */
@@ -41,14 +41,14 @@ final class DependencyGraphCycleDetector {
      * @throws InjectionException
      *             if there is a cycle in the graph
      */
-    static DependencyCycle detectCycle(BSE<?> node, ArrayDeque<BSE<?>> stack, ArrayDeque<BSE<?>> dependencies) {
+    static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             ServiceEntry<?> dependency = node.resolvedDependencies[i];
-            if (dependency instanceof BSE) {
-                BSE<?> to = (BSE<?>) dependency;
+            if (dependency instanceof BuildEntry) {
+                BuildEntry<?> to = (BuildEntry<?>) dependency;
                 // If the dependency is a @Provides method, we need to use the declaring node
-                BSE<?> owner = to.declaringNode();
+                BuildEntry<?> owner = to.declaringNode();
                 if (owner != null) {
                     to = owner;
                 }
@@ -83,15 +83,15 @@ final class DependencyGraphCycleDetector {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<BSE<?>> dependencies;
+        final ArrayDeque<BuildEntry<?>> dependencies;
 
-        DependencyCycle(ArrayDeque<BSE<?>> dependencies) {
+        DependencyCycle(ArrayDeque<BuildEntry<?>> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 
         @Override
         public String toString() {
-            ArrayList<BSE<?>> list = new ArrayList<>(dependencies);
+            ArrayList<BuildEntry<?>> list = new ArrayList<>(dependencies);
             // This method does not yet support Provides methods
 
             // Try checking this out and running some examples, it should have better error messages.
@@ -105,7 +105,7 @@ final class DependencyGraphCycleDetector {
 
             // Uncomments the 3
             // sb.append(format(s.factory.mirror.getType()));
-            for (BSE<?> n : list) {
+            for (BuildEntry<?> n : list) {
                 System.out.println(n);
                 sb.append(" -");
                 // s = (BuildNodeOldFactory<?>) n;

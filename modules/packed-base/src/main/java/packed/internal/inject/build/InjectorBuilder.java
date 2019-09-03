@@ -32,6 +32,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
@@ -39,6 +40,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.export.ServiceExporter;
+import packed.internal.inject.build.requirements.ServiceDependencyManager;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
@@ -52,13 +54,14 @@ public final class InjectorBuilder {
     /** A that is used to store parent nodes */
     private static FeatureKey<BSEComponent<?>> FK = new FeatureKey<>() {};
 
-    /** Handles everything to do with exports. */
-    public InjectorBuilderContracts contracts;
+    /** Handles everything to do with dependencies, for example, explicit requirements. */
+    public ServiceDependencyManager dependencies;
 
     /** All provided nodes. */
-    public final ArrayList<BSE<?>> entries = new ArrayList<>();
+    public final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
 
-    /** Handles everything to do with exports. */
+    /** A service exporter handles everything to do with exports. */
+    @Nullable
     public ServiceExporter exporter;
 
     /** The configuration of the container to which this builder belongs to. */
@@ -85,23 +88,23 @@ public final class InjectorBuilder {
     public void buildBundle(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
         for (ServiceEntry<?> n : resolver.internalNodes) {
-            if (n instanceof BSE) {
-                builder.addServiceDescriptor(((BSE<?>) n).toDescriptor());
+            if (n instanceof BuildEntry) {
+                builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }
         }
 
         if (exporter != null) {
-            exporter.buildContract(builder.contract().services());
+            exporter.addExportsToContract(builder.contract().services());
         }
         resolver.buildContract(builder.contract().services());
     }
 
-    public InjectorBuilderContracts contracts() {
-        InjectorBuilderContracts c = contracts;
-        if (c == null) {
-            c = contracts = new InjectorBuilderContracts();
+    public ServiceDependencyManager dependencies() {
+        ServiceDependencyManager d = dependencies;
+        if (d == null) {
+            d = dependencies = new ServiceDependencyManager();
         }
-        return c;
+        return d;
     }
 
     public ServiceExporter exporter() {

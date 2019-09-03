@@ -31,7 +31,7 @@ import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
 /** A build node specifically used for {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
-final class BSEFromProvideAll<T> extends BSE<T> {
+final class BSEFromProvideAll<T> extends BuildEntry<T> {
 
     /** The node in the 'imported' injector. */
     public final ServiceEntry<T> entry;
@@ -51,8 +51,8 @@ final class BSEFromProvideAll<T> extends BSE<T> {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public BSE<?> declaringNode() {
-        return (entry instanceof BSE) ? ((BSE<?>) entry).declaringNode() : null;
+    public BuildEntry<?> declaringNode() {
+        return (entry instanceof BuildEntry) ? ((BuildEntry<?>) entry).declaringNode() : null;
     }
 
     /** {@inheritDoc} */

@@ -36,9 +36,10 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.ProvideAllFromInjector;
+import packed.internal.inject.build.requirements.DependencyGraph;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -72,9 +73,9 @@ public final class InjectorResolver {
     public final ServiceNodeMap internalNodes = new ServiceNodeMap();
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<Entry<BSE<?>, ServiceDependency>> missingDependencies;
+    private ArrayList<Entry<BuildEntry<?>, ServiceDependency>> missingDependencies;
 
-    DefaultInjector privateInjector;
+    public DefaultInjector privateInjector;
 
     public DefaultInjector publicInjector;
 
@@ -85,7 +86,7 @@ public final class InjectorResolver {
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<BSE<?>, List<ServiceDependency>> unresolvedDependencies;
+    IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
 
     public InjectorResolver(InjectorBuilder ib) {
         this.ib = requireNonNull(ib);
@@ -96,11 +97,7 @@ public final class InjectorResolver {
 
         // Go through all exports, and make sure they can all be fulfilled
         if (ib.exporter != null) {
-            ib.exporter.resolve(this);
-            if (!ib.exporter.unresolvedExports.isEmpty()) {
-                ErrorMessages.addUnresolvedExports(buildContext, ib.exporter.unresolvedExports);
-            }
-
+            ib.exporter.resolve(this, buildContext);
         }
 
         // It does not make sense to try and resolve
@@ -115,8 +112,8 @@ public final class InjectorResolver {
     }
 
     private boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
-        HashMap<Key<?>, BSE<?>> uniqueNodes = new HashMap<>();
-        LinkedHashMap<Key<?>, LinkedHashSet<BSE<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
+        HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
+        LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
 
         processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ib.entries);
         for (ProvideAllFromInjector ii : ib.provideAll) {
@@ -131,14 +128,14 @@ public final class InjectorResolver {
         return !duplicateNodes.isEmpty();
     }
 
-    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BSE<?>> uniqueNodes, LinkedHashMap<Key<?>, LinkedHashSet<BSE<?>>> duplicateNodes,
-            Iterable<? extends BSE<?>> nodes) {
-        for (BSE<?> node : nodes) {
+    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> uniqueNodes,
+            LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes, Iterable<? extends BuildEntry<?>> nodes) {
+        for (BuildEntry<?> node : nodes) {
             Key<?> key = node.key();
             if (key != null) {
-                BSE<?> existing = uniqueNodes.putIfAbsent(key, node);
+                BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
                 if (existing != null) {
-                    HashSet<BSE<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
                     hs.add(existing); // might be added multiple times, hence we use a Set
                     hs.add(node);
                 }
@@ -160,11 +157,11 @@ public final class InjectorResolver {
         }
     }
 
-    void checkForMissingDependencies() {
-        boolean manualRequirementsManagement = ib.contracts != null && ib.contracts.manualRequirementsManagement;
+    public void checkForMissingDependencies() {
+        boolean manualRequirementsManagement = ib.dependencies != null && ib.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (Entry<BSE<?>, ServiceDependency> e : missingDependencies) {
+            for (Entry<BuildEntry<?>, ServiceDependency> e : missingDependencies) {
                 if (!e.getValue().isOptional() && manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
@@ -211,7 +208,7 @@ public final class InjectorResolver {
         }
     }
 
-    public void recordMissingDependency(BSE<?> node, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildEntry<?> node, ServiceDependency dependency, boolean fromParent) {
 
     }
 
@@ -221,19 +218,19 @@ public final class InjectorResolver {
      * @param node
      * @param dependency
      */
-    public void recordResolvedDependency(BSE<?> node, ServiceDependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(BuildEntry<?> node, ServiceDependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
         requireNonNull(node);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<Entry<BSE<?>, ServiceDependency>> m = missingDependencies;
+        ArrayList<Entry<BuildEntry<?>, ServiceDependency>> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }
         m.add(new SimpleImmutableEntry<>(node, dependency));
 
-        if (ib.contracts == null || !ib.contracts.manualRequirementsManagement) {
+        if (ib.dependencies == null || !ib.dependencies.manualRequirementsManagement) {
             if (dependency.isOptional()) {
                 requiredOptionally.add(dependency.key());
             } else {

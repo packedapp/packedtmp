@@ -104,7 +104,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
     static class ServiceConfigurationWrapper implements ServiceDescriptor {
 
         /** The configuration we read through to. */
-        private final BSE<?> configuration;
+        private final BuildEntry<?> configuration;
 
         /**
          * Creates a new wrapper
@@ -112,7 +112,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
          * @param configuration
          *            the configuration to wrap
          */
-        ServiceConfigurationWrapper(BSE<?> configuration) {
+        ServiceConfigurationWrapper(BuildEntry<?> configuration) {
             this.configuration = requireNonNull(configuration, "configuration is null");
         }
 

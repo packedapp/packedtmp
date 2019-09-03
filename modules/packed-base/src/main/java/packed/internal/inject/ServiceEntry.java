@@ -23,12 +23,12 @@ import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.util.KeyBuilder;
 
 /**
- * A service node represent the provider of a service either at {@link BSE build-time } or at {@link RSE runtime-time}.
+ * A service node represent the provider of a service either at {@link BuildEntry build-time } or at {@link RSE runtime-time}.
  *
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
  * at runtime.

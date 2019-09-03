@@ -24,7 +24,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 
 /** A node that represents a service at runtime. */
 public abstract class RSE<T> implements ServiceEntry<T> {
@@ -45,7 +45,7 @@ public abstract class RSE<T> implements ServiceEntry<T> {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RSE(BSE<T> buildEntry) {
+    RSE(BuildEntry<T> buildEntry) {
         this.configSite = requireNonNull(buildEntry.configSite());
         this.description = buildEntry.getDescription();
         this.key = requireNonNull(buildEntry.key());

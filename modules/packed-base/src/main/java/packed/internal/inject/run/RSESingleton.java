@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import packed.internal.inject.Provider;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 
 /**
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
@@ -45,7 +45,7 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
      * @param instance
      *            the singleton instance
      */
-    public RSESingleton(BSE<T> buildNode, T instance) {
+    public RSESingleton(BuildEntry<T> buildNode, T instance) {
         super(buildNode);
         this.instance = requireNonNull(instance);
         this.instantionMode = buildNode.instantiationMode();

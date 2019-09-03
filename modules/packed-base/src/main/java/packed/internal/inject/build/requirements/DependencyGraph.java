@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.compose;
+package packed.internal.inject.build.requirements;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,19 +27,20 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
 import packed.internal.inject.build.BSEComponent;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.compose.DependencyGraphCycleDetector.DependencyCycle;
+import packed.internal.inject.build.requirements.DependencyGraphCycleDetector.DependencyCycle;
+import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.KeyBuilder;
 
-final class DependencyGraph {
+public final class DependencyGraph {
 
     /** A list of nodes to use when detecting dependency cycles. */
-    ArrayList<BSE<?>> detectCyclesFor;
+    ArrayList<BuildEntry<?>> detectCyclesFor;
 
     /** The root injector builder. */
     final PackedContainerConfiguration root;
@@ -111,9 +112,9 @@ final class DependencyGraph {
         if (detectCyclesFor == null) {
             throw new IllegalStateException("Must resolve nodes before detecting cycles");
         }
-        ArrayDeque<BSE<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BSE<?>> dependencies = new ArrayDeque<>();
-        for (BSE<?> node : detectCyclesFor) {
+        ArrayDeque<BuildEntry<?>> stack = new ArrayDeque<>();
+        ArrayDeque<BuildEntry<?>> dependencies = new ArrayDeque<>();
+        for (BuildEntry<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
@@ -155,7 +156,7 @@ final class DependencyGraph {
         detectCyclesFor = new ArrayList<>();
 
         for (ServiceEntry<?> nn : ir.internalNodes) {
-            BSE<?> node = (BSE<?>) nn;
+            BuildEntry<?> node = (BuildEntry<?>) nn;
             if (node.needsResolving()) {
                 detectCyclesFor.add(node);
                 List<InternalDependencyDescriptor> dependencies = node.dependencies;

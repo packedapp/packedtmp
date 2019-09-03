@@ -24,7 +24,7 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 
 /**
  *
@@ -36,17 +36,17 @@ import packed.internal.inject.build.BSE;
  */
 
 // We should use injectorExtension.checkConfigurable
-final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
+final class ExposedExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     private final PackedContainerConfiguration containerConfiguration;
 
     /** The entry that is wrapped. */
-    final BSE<T> entry;
+    final BuildEntry<T> entry;
 
     /**
      * @param node
      */
-    ExportedServiceConfiguration(PackedContainerConfiguration containerConfiguration, ExportedBuildEntry<T> node) {
+    ExposedExportedServiceConfiguration(PackedContainerConfiguration containerConfiguration, ExportedBuildEntry<T> node) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.entry = requireNonNull(node);
     }

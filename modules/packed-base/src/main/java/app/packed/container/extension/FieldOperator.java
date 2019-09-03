@@ -43,6 +43,14 @@ public interface FieldOperator<T> {
      */
     FieldOperator<T> requireFinal();
 
+    default FieldOperator<T> requireNonFinal() {
+        return this;
+    }
+
+    default FieldOperator<T> requireNonStatic() {
+        return this;
+    }
+
     T apply(MethodHandles.Lookup caller, Field field, Object instance);
 
     /**

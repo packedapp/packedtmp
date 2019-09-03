@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InjectorContract;
@@ -29,14 +30,22 @@ import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.PackedProvidedComponentConfiguration;
+import packed.internal.inject.compose.ErrorMessages;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
 
-/** This class takes care of everything related to exported entries. */
+/**
+ * This class takes care of everything to do with exporting entries.
+ *
+ * @see InjectionExtension#export(Class)
+ * @see InjectionExtension#export(Key)
+ * @see InjectionExtension#export(ProvidedComponentConfiguration)
+ * @see InjectionExtension#exportAll()
+ */
 public final class ServiceExporter {
 
     /** The injector builder this exporter belongs to. */
@@ -44,7 +53,7 @@ public final class ServiceExporter {
 
     /** A map of multiple exports for the same key. */
     @Nullable
-    public HashMap<Key<?>, ArrayList<ExportedBuildEntry<?>>> duplicateExports;
+    public HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> duplicateExports;
 
     /**
      * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
@@ -55,7 +64,8 @@ public final class ServiceExporter {
     /** */
     public final ServiceNodeMap resolvedExports = new ServiceNodeMap();
 
-    public HashMap<Key<?>, HashSet<BSE<?>>> unresolvedExports = new HashMap<>();
+    /** A map of all keyed exports where an entry matching the key could not be resolved. */
+    public HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports = new HashMap<>();
 
     /**
      * Creates a new exporter.
@@ -67,11 +77,11 @@ public final class ServiceExporter {
         this.builder = requireNonNull(builder);
     }
 
-    public void buildContract(InjectorContract.Builder builder) {
-        for (BSE<?> n : exports) {
-            if (n instanceof ExportedBuildEntry) {
-                builder.addProvides(n.getKey());
-            }
+    public void addExportsToContract(InjectorContract.Builder builder) {
+        // TODO Det er jo egentlig resolved exports vi skal bruge...
+        System.out.println(resolvedExports.copyNodes().size() + " - " + exports.size());
+        for (ExportedBuildEntry<?> n : exports) {
+            builder.addProvides(n.getKey());
         }
     }
 
@@ -109,7 +119,7 @@ public final class ServiceExporter {
             throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ProvidedComponentConfiguration.class)
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
-        BSE<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
+        BuildEntry<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
         if (entryToExport.injectorBuilder != builder) {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
         }
@@ -127,10 +137,11 @@ public final class ServiceExporter {
      */
     private <T> ServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
         exports.add(entry);
-        return new ExportedServiceConfiguration<>(builder.pcc, entry);
+        return new ExposedExportedServiceConfiguration<>(builder.pcc, entry);
     }
 
     public void exportAll(ConfigSite configSite) {
+        // exportAllAs(Function<?, Key>
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
         // any exportAll can be called at most one
         // Can be called at any time
@@ -139,21 +150,30 @@ public final class ServiceExporter {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * This method tries to find matching entries for exports added via {@link InjectionExtension#export(Class)}and
+     * {@link InjectionExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries
+     * at any point, even before the
+     * 
+     * @param resolver
+     * @param buildContext
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void resolve(InjectorResolver resolver) {
+    public void resolve(InjectorResolver resolver, ArtifactBuildContext buildContext) {
         for (ExportedBuildEntry<?> entry : exports) {
-            // try and find a matching service entry for key'ed exports.
+            // try and find a matching service entry for key'ed exports via
             // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
             if (entry.exportedEntry == null) {
                 ServiceEntry<?> sn = resolver.internalNodes.getRecursive(entry.getKey());
 
                 if (sn == null) {
-                    unresolvedExports.computeIfAbsent(entry.key(), m -> new HashSet<>()).add(entry);
+                    unresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new HashSet<>()).add(entry);
                 } else {
                     entry.exportedEntry = (ServiceEntry) sn;
                     resolvedExports.put(entry);
                 }
             }
         }
+        ErrorMessages.addUnresolvedExports(buildContext, unresolvedKeyedExports);
     }
 }

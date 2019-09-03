@@ -25,19 +25,17 @@ import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
-/**
- * A build node representing an exported service.
- */
-public final class ExportedBuildEntry<T> extends BSE<T> {
+/** A build entry representing an exported service. */
+public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
-    /** The node that is exported. */
+    /** The node that is exported. Is null initially for key'ed exports. */
     @Nullable
-    public ServiceEntry<T> exportedEntry;
+    ServiceEntry<T> exportedEntry;
 
     /**
      * Exports an existing entry in an injector extension.
@@ -48,7 +46,7 @@ public final class ExportedBuildEntry<T> extends BSE<T> {
      *            the config site of the export
      * @see InjectionExtension#export(ProvidedComponentConfiguration)
      */
-    ExportedBuildEntry(BSE<T> entryToExport, ConfigSite configSite) {
+    ExportedBuildEntry(BuildEntry<T> entryToExport, ConfigSite configSite) {
         super(entryToExport.injectorBuilder, configSite, List.of());
         this.exportedEntry = entryToExport;
 
@@ -72,11 +70,12 @@ public final class ExportedBuildEntry<T> extends BSE<T> {
         as(key);
     }
 
+    /** {@inheritDoc} */
     @Override
     @Nullable
-    public BSE<?> declaringNode() {
+    public BuildEntry<?> declaringNode() {
         // Skal vi ikke returnere exposureOf?? istedet for .declaringNode
-        return (exportedEntry instanceof BSE) ? ((BSE<?>) exportedEntry).declaringNode() : null;
+        return (exportedEntry instanceof BuildEntry) ? ((BuildEntry<?>) exportedEntry).declaringNode() : null;
     }
 
     /** {@inheritDoc} */

@@ -154,7 +154,7 @@ public final class InjectionExtension extends Extension {
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
         checkConfigurable();
-        builder.contracts().manualRequirementsManagement();
+        builder.dependencies().manualRequirementsManagement();
     }
 
     /** {@inheritDoc} */
@@ -273,7 +273,7 @@ public final class InjectionExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        builder.contracts().requireExplicit(key, false);
+        builder.dependencies().require(key, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
     /**
@@ -287,9 +287,10 @@ public final class InjectionExtension extends Extension {
      *            the key to add
      */
     // Should be have varargs???, or as a minimum support method chaining
+    // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        builder.contracts().requireExplicit(key, true);
+        builder.dependencies().requireOptional(key, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }
 // manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?

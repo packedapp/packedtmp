@@ -41,7 +41,7 @@ import packed.internal.util.KeyBuilder;
  * <p>
  * BSEs are never exposed to end-users, but instead wrapped in implementations of {@link ServiceConfiguration}.
  */
-public abstract class BSE<T> implements ServiceEntry<T> {
+public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     // Boolean Values: Has_Receiver, NeedsInjectionSite
 
@@ -80,7 +80,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
     @Nullable
     private RSE<T> runtimeNode;
 
-    public BSE(InjectorBuilder injectorBuilder, ConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
+    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
@@ -132,7 +132,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
      * @return stuff
      */
     @Nullable
-    public BSE<?> declaringNode() {
+    public BuildEntry<?> declaringNode() {
         return null;
     }
 

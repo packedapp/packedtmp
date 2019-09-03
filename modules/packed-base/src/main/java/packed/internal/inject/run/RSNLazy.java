@@ -24,7 +24,7 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Nullable;
 import packed.internal.inject.Provider;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */
@@ -44,7 +44,7 @@ public final class RSNLazy<T> extends RSE<T> {
      * @param node
      *            the build node to create this node from
      */
-    public RSNLazy(BSE<T> node, MethodHandle mh, @Nullable RSE<T> parent) {
+    public RSNLazy(BuildEntry<T> node, MethodHandle mh, @Nullable RSE<T> parent) {
         super(node);
         this.lazy = new Sync(new RSNPrototype<>(node, mh), parent);
     }

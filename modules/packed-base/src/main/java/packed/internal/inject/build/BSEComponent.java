@@ -41,7 +41,7 @@ import packed.internal.util.ThrowableUtil;
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
  * extending it with {@link ProvidedComponentConfiguration} much easier.
  */
-public final class BSEComponent<T> extends BSE<T> {
+public final class BSEComponent<T> extends BuildEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -105,7 +105,7 @@ public final class BSEComponent<T> extends BSE<T> {
     }
 
     @Override
-    public BSE<?> declaringNode() {
+    public BuildEntry<?> declaringNode() {
         return parent;
     }
 

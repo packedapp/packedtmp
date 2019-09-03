@@ -32,7 +32,7 @@ import app.packed.util.Nullable;
 public final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
 
     /** The service we are exposing. */
-    public final BSE<T> buildEntry;
+    public final BuildEntry<T> buildEntry;
 
     /** The component we are exposing. */
     private final ComponentConfiguration component;
@@ -43,7 +43,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedProvidedComponentConfiguration(ComponentConfiguration component, BSE<T> buildEntry) {
+    public PackedProvidedComponentConfiguration(ComponentConfiguration component, BuildEntry<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

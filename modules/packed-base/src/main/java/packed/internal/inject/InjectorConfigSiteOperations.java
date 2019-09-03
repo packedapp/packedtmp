@@ -41,4 +41,7 @@ public final class InjectorConfigSiteOperations {
 
     public static final String COMPONENT_INSTALL = "Component.install";
 
+    public static final String INJECTOR_REQUIRE = "Injector.require";
+
+    public static final String INJECTOR_REQUIRE_OPTIONAL = "Injector.requireOptional";
 }

@@ -28,7 +28,8 @@ import app.packed.config.ConfigSiteVisitor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
-import packed.internal.inject.build.BSE;
+import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.export.ExportedBuildEntry;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -38,16 +39,16 @@ import packed.internal.util.StringFormatter;
 // Compose -> ErrorMessage
 // Instantiation/Injection -> Exception
 
-final class ErrorMessages {
+public final class ErrorMessages {
 
-    static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<BSE<?>>> dublicateNodes) {
+    static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
 
         csj.prefix("    ", "  & ", "  & ");
         for (var e : dublicateNodes.entrySet()) {
             // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
 
-            csj.addAll(e.getValue().stream().map(BSE::configSite).collect(Collectors.toList()));
+            csj.addAll(e.getValue().stream().map(BuildEntry::configSite).collect(Collectors.toList()));
             System.out.println(csj.toString());
         }
         System.out.println("------");
@@ -56,7 +57,7 @@ final class ErrorMessages {
         // create an instance sounds like something that should not be used in the build phase...
         sb.append("Failed to create an instance of " + abc.artifactType().getSimpleName() + " from bundle: " + abc.sourceType().getCanonicalName());
         int nn = 1;
-        for (Map.Entry<Key<?>, LinkedHashSet<BSE<?>>> e : dublicateNodes.entrySet()) {
+        for (Map.Entry<Key<?>, LinkedHashSet<BuildEntry<?>>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");
             Key<?> key = e.getKey();
             String n = key.qualifier().map(ee -> "@" + ee.annotationType().getSimpleName() + " ").orElse("") + key.typeLiteral().toStringSimple();
@@ -74,11 +75,11 @@ final class ErrorMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    static void addUnresolvedExports(ArtifactBuildContext abc, HashMap<Key<?>, HashSet<BSE<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(ArtifactBuildContext abc, HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> dublicateNodes) {
 
     }
 
-    static String format(BSE<?> e) {
+    static String format(BuildEntry<?> e) {
         if (e.declaringNode() == null) {
             return e.configSite().toString();
         }

@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.build.requirements;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
 import app.packed.util.Key;
 
 /**
- * This class takes care of contract and requirements
+ * This class takes care of contract and requirements.
+ * 
+ * @see InjectionExtension#manualRequirementsManagement()
+ * @see InjectionExtension#require(Key)
+ * @see InjectionExtension#requireOptionally(Key)
  */
-public final class InjectorBuilderContracts {
+
+// Dependencies???
+public final class ServiceDependencyManager {
 
     /**
      * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
@@ -48,8 +55,12 @@ public final class InjectorBuilderContracts {
         manualRequirementsManagement = true;
     }
 
-    public void requireExplicit(Key<?> key, boolean isOptional) {
-        explicitRequirements.add(new ExplicitRequirement(key, isOptional));
+    public void require(Key<?> key, ConfigSite configSite) {
+        explicitRequirements.add(new ExplicitRequirement(key, configSite, false));
+    }
+
+    public void requireOptional(Key<?> key, ConfigSite configSite) {
+        explicitRequirements.add(new ExplicitRequirement(key, configSite, true));
     }
 
     /**
@@ -58,14 +69,17 @@ public final class InjectorBuilderContracts {
     // Could just wrap a contract with
 
     // Capture ConfigSite
-    public static final class ExplicitRequirement {
+    static final class ExplicitRequirement {
+
+        final ConfigSite configSite;
 
         final boolean isOptional;
 
         final Key<?> key;
 
-        public ExplicitRequirement(Key<?> key, boolean isOptional) {
+        public ExplicitRequirement(Key<?> key, ConfigSite configSite, boolean isOptional) {
             this.key = requireNonNull(key, "key is null");
+            this.configSite = requireNonNull(configSite);
             this.isOptional = isOptional;
         }
     }
