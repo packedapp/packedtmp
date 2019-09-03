@@ -37,10 +37,9 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.build.InjectorResolver;
 import packed.internal.inject.build.dependencies.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.build.export.ServiceExporter;
-import packed.internal.inject.build.service.BSEComponent;
+import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -57,8 +56,6 @@ public final class DependencyGraph {
     final PackedContainerConfiguration root;
 
     final InjectorBuilder ib;
-
-    final InjectorResolver ir;
 
     /** A set of all explicitly registered required service keys. */
     final HashSet<Key<?>> required = new HashSet<>();
@@ -78,25 +75,24 @@ public final class DependencyGraph {
      * @param root
      *            the root injector builder
      */
-    public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib, InjectorResolver resolver) {
+    public DependencyGraph(PackedContainerConfiguration root, InjectorBuilder ib) {
         this.root = requireNonNull(root);
         this.ib = requireNonNull(ib);
-        this.ir = requireNonNull(resolver);
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void analyze(ServiceExporter exporter) {
-        ir.privateInjector = new DefaultInjector(root, ir.resolvedEntries);
-        BSEComponent d = new BSEComponent<>(ib, root.configSite(), ir.privateInjector);
+        ib.privateInjector = new DefaultInjector(root, ib.resolvedEntries);
+        ComponentBuildEntry d = new ComponentBuildEntry<>(ib, root.configSite(), ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
-        ir.resolvedEntries.put(d);
+        ib.resolvedEntries.put(d);
 
         if (root.buildContext().artifactType() == Injector.class) {
-            ir.publicInjector = requireNonNull(ir.privateInjector);
+            ib.publicInjector = requireNonNull(ib.privateInjector);
         } else {
             ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedExports;
-            ir.publicInjector = new DefaultInjector(root, sm);
+            ib.publicInjector = new DefaultInjector(root, sm);
         }
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
@@ -137,14 +133,14 @@ public final class DependencyGraph {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> nn : ir.resolvedEntries) {
+        for (ServiceEntry<?> nn : ib.resolvedEntries) {
             BuildEntry<?> node = (BuildEntry<?>) nn;
             if (node.needsResolving()) {
                 detectCyclesFor.add(node);
                 List<PackedServiceDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = ir.resolvedEntries.getNode(dependency);
+                    ServiceEntry<?> resolveTo = ib.resolvedEntries.getNode(dependency);
                     recordResolvedDependency(node, dependency, resolveTo, false);
                     node.resolvedDependencies[i] = resolveTo;
                 }

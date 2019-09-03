@@ -43,7 +43,7 @@ import packed.internal.util.ThrowableUtil;
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
  * extending it with {@link ProvidedComponentConfiguration} much easier.
  */
-public final class BSEComponent<T> extends BuildEntry<T> {
+public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -62,9 +62,9 @@ public final class BSEComponent<T> extends BuildEntry<T> {
     private MethodHandle mha;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
-    private final BSEComponent<?> parent;
+    private final ComponentBuildEntry<?> parent;
 
-    public BSEComponent(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, BSEComponent<?> parent) {
+    public ComponentBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.mha = requireNonNull(mh);
         this.parent = parent;
@@ -72,7 +72,7 @@ public final class BSEComponent<T> extends BuildEntry<T> {
         this.description = atProvides.description;
     }
 
-    public BSEComponent(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
+    public ComponentBuildEntry(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
             List<PackedServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.parent = null;
@@ -98,7 +98,7 @@ public final class BSEComponent<T> extends BuildEntry<T> {
      * @param instance
      *            the instance
      */
-    public BSEComponent(InjectorBuilder ib, ConfigSite configSite, T instance) {
+    public ComponentBuildEntry(InjectorBuilder ib, ConfigSite configSite, T instance) {
         super(ib, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
@@ -125,7 +125,7 @@ public final class BSEComponent<T> extends BuildEntry<T> {
         return i;
     }
 
-    public BSEComponent<T> instantiateAs(InstantiationMode mode) {
+    public ComponentBuildEntry<T> instantiateAs(InstantiationMode mode) {
         requireNonNull(mode, "mode is null");
         this.instantionMode = mode;
         return this;
@@ -160,8 +160,7 @@ public final class BSEComponent<T> extends BuildEntry<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.resolver.publicInjector, dependencies.get(i),
-                        null);
+                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
             }
         }
         Object o;

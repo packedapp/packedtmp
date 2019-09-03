@@ -34,7 +34,6 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.build.InjectorResolver;
 import packed.internal.inject.build.service.PackedProvidedComponentConfiguration;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
@@ -159,7 +158,7 @@ public final class ServiceExporter {
      * @param buildContext
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void resolve(InjectorResolver resolver, ArtifactBuildContext buildContext) {
+    public void resolve(InjectorBuilder resolver, ArtifactBuildContext buildContext) {
 
         // TODO move unresolvedKeyedExports and duplicateExports here, no need have them as fields...
         // But we keep as fields for now though, we might have some more complicated logic later..

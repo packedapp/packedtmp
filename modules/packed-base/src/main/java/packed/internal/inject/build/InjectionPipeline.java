@@ -26,10 +26,10 @@ public final class InjectionPipeline extends ExtensionPipeline<InjectionPipeline
 
     /// ARGHHH... vi skal jo resolve foerst....
 
-    final InjectorResolver ib;
+    final InjectorBuilder ib;
 
     InjectionPipeline(InjectorBuilder ib) {
-        this.ib = requireNonNull(ib.resolver);
+        this.ib = requireNonNull(ib);
     }
 
     InjectionPipeline(InjectionPipeline previous) {

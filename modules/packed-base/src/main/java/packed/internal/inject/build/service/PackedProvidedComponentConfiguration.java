@@ -106,7 +106,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
     @Override
     public ProvidedComponentConfiguration<T> lazy() {
         component.checkConfigurable();
-        ((BSEComponent<T>) buildEntry).lazy();
+        ((ComponentBuildEntry<T>) buildEntry).lazy();
         return this;
     }
 
@@ -120,7 +120,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
     @Override
     public ProvidedComponentConfiguration<T> prototype() {
         component.checkConfigurable();
-        ((BSEComponent<T>) buildEntry).prototype();
+        ((ComponentBuildEntry<T>) buildEntry).prototype();
         return this;
     }
 

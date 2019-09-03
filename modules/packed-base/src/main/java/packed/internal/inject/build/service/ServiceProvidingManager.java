@@ -46,7 +46,7 @@ import packed.internal.inject.util.AtProvidesGroup;
 public final class ServiceProvidingManager {
 
     /** A that is used to store parent nodes */
-    private static FeatureKey<BSEComponent<?>> FK = new FeatureKey<>() {};
+    private static FeatureKey<ComponentBuildEntry<?>> FK = new FeatureKey<>() {};
 
     /** All provided nodes. */
     public final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
@@ -64,14 +64,14 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onProvidesGroup(ComponentConfiguration cc, AtProvidesGroup apg) {
-        BSEComponent parentNode;
+        ComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;
-            parentNode = new BSEComponent(builder, cc.configSite(), instance);
+            parentNode = new ComponentBuildEntry(builder, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
             MethodHandle mh = builder.pcc.lookup.toMethodHandle(factory.handle());
-            parentNode = new BSEComponent<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            parentNode = new ComponentBuildEntry<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
@@ -82,7 +82,7 @@ public final class ServiceProvidingManager {
         for (AtProvides atProvides : apg.members) {
             ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
-            BSEComponent<?> node = new BSEComponent<>(configSite, atProvides, atProvides.methodHandle, parentNode);
+            ComponentBuildEntry<?> node = new ComponentBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
             node.as((Key) atProvides.key);
             entries.add(node);
         }
@@ -97,30 +97,30 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
-        BSEComponent<?> c = cc.features().get(FK);
+        ComponentBuildEntry<?> c = cc.features().get(FK);
         if (c == null) {
             // config site???
             MethodHandle mh = builder.pcc.lookup.toMethodHandle(function);
-            c = new BSEComponent<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            c = new ComponentBuildEntry<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());
         entries.add(c);
-        return new PackedProvidedComponentConfiguration<>(cc, (BSEComponent) c);
+        return new PackedProvidedComponentConfiguration<>(cc, (ComponentBuildEntry) c);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ProvidedComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        BSEComponent<?> node = cc.features().get(FK);
+        ComponentBuildEntry<?> node = cc.features().get(FK);
 
         if (node == null) {
             // No node found, components has no @Provides method, create a new node
-            node = new BSEComponent<T>(builder, cc.configSite(), instance);
+            node = new ComponentBuildEntry<T>(builder, cc.configSite(), instance);
         }
 
         node.as((Key) Key.of(instance.getClass()));
         entries.add(node);
-        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (BSEComponent) node);
+        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) node);
     }
 }
