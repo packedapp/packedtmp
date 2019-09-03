@@ -117,7 +117,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return builder.export(key, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        return builder.exporter().export(key, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -132,17 +132,15 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return builder.export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
+        return builder.exporter().export(configuration, captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
+    /**
+     * 
+     */
     public void exportAll() {
         checkConfigurable();
-        builder.exportAll(captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
-        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
-        // any exportAll can be called at most one
-        // Can be called at any time
-        // explicit single exports will override any exportedAll. But aliases are allowed
-        // transient linked exports, will work regardless
+        builder.exporter().exportAll(captureStackFrame(InjectorConfigSiteOperations.EXPORT_SERVICE));
     }
 
     /**
@@ -156,13 +154,18 @@ public final class InjectionExtension extends Extension {
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
         checkConfigurable();
-        builder.manualRequirementsManagement();
+        builder.contracts().manualRequirementsManagement();
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onConfigured() {
         builder.build(buildContext());
+    }
+
+    @OnHook(AtInjectGroup.Builder.class)
+    void onInjectMembers(ComponentConfiguration cc, AtInjectGroup group) {
+        builder.onProvidedMembers(cc, group);
     }
 
     /** {@inheritDoc} */
@@ -181,11 +184,6 @@ public final class InjectionExtension extends Extension {
      */
     @OnHook(AtProvidesGroup.Builder.class)
     void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup group) {
-        builder.onProvidedMembers(cc, group);
-    }
-
-    @OnHook(AtInjectGroup.Builder.class)
-    void onInjectMembers(ComponentConfiguration cc, AtInjectGroup group) {
         builder.onProvidedMembers(cc, group);
     }
 
@@ -275,7 +273,7 @@ public final class InjectionExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        builder.requireExplicit(key, false);
+        builder.contracts().requireExplicit(key, false);
     }
 
     /**
@@ -291,7 +289,7 @@ public final class InjectionExtension extends Extension {
     // Should be have varargs???, or as a minimum support method chaining
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        builder.requireExplicit(key, true);
+        builder.contracts().requireExplicit(key, true);
     }
 }
 // manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?

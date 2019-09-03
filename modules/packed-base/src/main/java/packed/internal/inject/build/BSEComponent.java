@@ -28,9 +28,7 @@ import app.packed.inject.Provide;
 import app.packed.inject.ProvideHelper;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
@@ -59,7 +57,7 @@ public final class BSEComponent<T> extends BSE<T> {
 
     /** Is null for instance components. */
     @Nullable
-    private final MethodHandle mha;
+    private MethodHandle mha;
 
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final BSEComponent<?> parent;
@@ -181,18 +179,10 @@ public final class BSEComponent<T> extends BSE<T> {
         return t;
     }
 
-    boolean instanceBound;
-
     private MethodHandle toMethodHandle() {
         MethodHandle mh = mha;
-        if (mh == null) {
-            throw new Error();// called with instance field..
-        }
-
-        if (parent != null) {
-            if (mh.type().parameterCount() != dependencies.size()) {
-                mh = mh.bindTo(parent.getInstance(null));
-            }
+        if (parent != null && mh.type().parameterCount() != dependencies.size()) {
+            mh = mha = mh.bindTo(parent.getInstance(null));
         }
         return mh;
     }
@@ -204,20 +194,11 @@ public final class BSEComponent<T> extends BSE<T> {
         if (i != null) {
             return new RSESingleton<>(this, i);
         }
-        // if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
-        // || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
         if (instantionMode == InstantiationMode.PROTOTYPE) {
             return new RSNPrototype<>(this, toMethodHandle());
         } else {
             return new RSNLazy<>(this, toMethodHandle(), null);
         }
-        // }
-        // // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
-        // if (true) {
-        // throw new Error();
-        // }
-        // return new RSNLazy<>(this, toMethodHandle(), null);
-
     }
 
     public void prototype() {
@@ -229,17 +210,13 @@ public final class BSEComponent<T> extends BSE<T> {
         }
         instantiateAs(InstantiationMode.PROTOTYPE);
     }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public BSE<?> provide(AtProvides atProvides) {
-        ConfigSite icss = configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides, atProvides.member);
-
-        // if (!atProvides.isStaticMember) {
-        // // getInstance(null);
-        // // fi = fi.withInstance(this.instance);
-        // }
-        BSEComponent<?> node = new BSEComponent<>(icss, atProvides, atProvides.methodHandle, this);
-        node.as((Key) atProvides.key);
-        return node;
-    }
 }
+// if (parent == null || parent.instantiationMode() == InstantiationMode.SINGLETON || parent.instance != null
+// || (function instanceof InvokableMember && !((InvokableMember<?>) function).isMissingInstance())) {
+
+// }
+// // parent==LAZY and not initialized, this.instantionMode=Lazy or Prototype
+// if (true) {
+// throw new Error();
+// }
+// return new RSNLazy<>(this, toMethodHandle(), null);

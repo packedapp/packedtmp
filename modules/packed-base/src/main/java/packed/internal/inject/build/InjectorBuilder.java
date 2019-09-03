@@ -29,15 +29,14 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.factoryhandle.FactoryHandle;
@@ -52,32 +51,16 @@ public final class InjectorBuilder {
     /** A that is used to store parent nodes */
     private static FeatureKey<BSEComponent<?>> FK = new FeatureKey<>() {};
 
+    /** Handles everything to do with exports. */
+    public InjectorBuilderContracts contracts;
+
     /** All provided nodes. */
     public final ArrayList<BSE<?>> entries = new ArrayList<>();
 
-    /**
-     * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
-     * {@link InjectionExtension#requireOptionally(Key)}.
-     */
-    final ArrayList<ExplicitRequirement> explicitRequirements = new ArrayList<>();
-
-    /**
-     * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
-     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ProvidedComponentConfiguration)}.
-     */
-    public final ArrayList<BSEExported<?>> exportedEntries = new ArrayList<>();
+    /** Handles everything to do with exports. */
+    public InjectorBuilderExporter exporter;
 
     public final ArrayList<ProvideAllFromInjector> imports = new ArrayList<>(0);
-
-    /**
-     * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
-     * {@link InjectionExtension#requireOptionally(Key)} and add contract.
-     * <p>
-     * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
-     * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
-     * really services registered via the provide methods that could make use of them.
-     */
-    public boolean manualRequirementsManagement;
 
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
@@ -106,51 +89,34 @@ public final class InjectorBuilder {
             }
         }
 
-        for (BSE<?> n : exportedEntries) {
-            if (n instanceof BSEExported) {
-                builder.contract().services().addProvides(n.getKey());
+        if (exporter != null) {
+            for (BSE<?> n : exporter.exportedEntries) {
+                if (n instanceof BSEExported) {
+                    builder.contract().services().addProvides(n.getKey());
+                }
             }
         }
         resolver.buildContract(builder.contract().services());
     }
 
-    public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new BSEExported<>(this, configSite, key));
-    }
-
-    public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration, ConfigSite configSite) {
-        PackedProvidedComponentConfiguration<T> ppcc = (PackedProvidedComponentConfiguration<T>) configuration;
-        if (ppcc.buildEntry.injectorBuilder != this) {
-            throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
+    public InjectorBuilderContracts contracts() {
+        InjectorBuilderContracts c = contracts;
+        if (c == null) {
+            c = contracts = new InjectorBuilderContracts();
         }
-        return export0(new BSEExported<>(this, configSite, ppcc.buildEntry));
+        return c;
     }
 
-    /**
-     * Converts the internal exported entry to a service configuration object.
-     * 
-     * @param <T>
-     *            the type of service the entry wraps
-     * @param entry
-     *            the entry to convert
-     * @return a service configuration object
-     */
-    private <T> ServiceConfiguration<T> export0(BSEExported<T> entry) {
-        exportedEntries.add(entry);
-        return entry.toServiceConfiguration();
-    }
-
-    public void exportAll(ConfigSite configSite) {
-        throw new UnsupportedOperationException();
+    public InjectorBuilderExporter exporter() {
+        InjectorBuilderExporter e = exporter;
+        if (e == null) {
+            e = exporter = new InjectorBuilderExporter(this);
+        }
+        return e;
     }
 
     public void importAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
         imports.add(new ProvideAllFromInjector(this, confitSite, injector, wirelets));
-    }
-
-    /** Enables manual requirements management. */
-    public void manualRequirementsManagement() {
-        manualRequirementsManagement = true;
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
@@ -189,8 +155,12 @@ public final class InjectorBuilder {
         parentNode.hasInstanceMembers = apg.hasInstanceMembers;
 
         // Add each @Provide as children of the parent node
-        for (AtProvides provides : apg.members) {
-            entries.add(parentNode.provide(provides));
+        for (AtProvides atProvides : apg.members) {
+            ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectorConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
+                    atProvides.member);
+            BSEComponent<?> node = new BSEComponent<>(configSite, atProvides, atProvides.methodHandle, parentNode);
+            node.as((Key) atProvides.key);
+            entries.add(node);
         }
 
         // Set the parent node, so it can be found from provideFactory or provideInstance
@@ -226,7 +196,4 @@ public final class InjectorBuilder {
         return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (BSEComponent) node);
     }
 
-    public void requireExplicit(Key<?> key, boolean isOptional) {
-        explicitRequirements.add(new ExplicitRequirement(key, isOptional));
-    }
 }

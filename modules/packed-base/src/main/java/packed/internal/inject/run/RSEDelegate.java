@@ -23,8 +23,9 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
 
 /**
- * The runtime representation of an aliased service which delegates the getInstance() to the aliased node. This type is
- * used for exported nodes as well as nodes that are imported from other containers.
+ * A delegating runtime service node.
+ * <p>
+ * This type is used for exported nodes as well as nodes that are imported from other containers.
  */
 public final class RSEDelegate<T> extends RSE<T> {
 

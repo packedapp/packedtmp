@@ -19,6 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
+import app.packed.container.Wirelet;
+import app.packed.inject.InjectionExtension;
+import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvideHelper;
 import app.packed.util.Key;
@@ -27,57 +30,58 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
-/** A build node that imports a service from another injector. */
-public class BSEImported<T> extends BSE<T> {
+/** A build node specifically used for {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
+final class BSEFromProvideAll<T> extends BSE<T> {
 
-    /** The node to import. */
-    public final ServiceEntry<T> importedEntry;
+    /** The node in the 'imported' injector. */
+    public final ServiceEntry<T> entry;
 
-    /** The bind injector source. */
-    public final ProvideAllFromInjector importedInjector;
+    /** A wrapper for the 'imported' injector. */
+    public final ProvideAllFromInjector fromInjector;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    BSEImported(ProvideAllFromInjector importedInjector, ServiceEntry<T> importedEntry) {
-        super(importedInjector.builder, importedInjector.configSite.withParent(importedEntry.configSite()), List.of());
-        this.importedEntry = requireNonNull(importedEntry);
-        this.importedInjector = requireNonNull(importedInjector);
-        this.as((Key) importedEntry.key());
-        this.description = importedEntry.description().orElse(null);
+    BSEFromProvideAll(ProvideAllFromInjector fromInjector, ServiceEntry<T> entry) {
+        super(fromInjector.builder, fromInjector.configSite.withParent(entry.configSite()), List.of());
+        this.entry = requireNonNull(entry);
+        this.fromInjector = requireNonNull(fromInjector);
+        this.as((Key) entry.key());
+        this.description = entry.description().orElse(null);
     }
 
+    /** {@inheritDoc} */
     @Override
     @Nullable
     public BSE<?> declaringNode() {
-        return (importedEntry instanceof BSE) ? ((BSE<?>) importedEntry).declaringNode() : null;
+        return (entry instanceof BSE) ? ((BSE<?>) entry).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvideHelper site) {
-        return importedEntry.getInstance(site);
+        return entry.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return importedEntry.instantiationMode();
+        return entry.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsInjectionSite() {
-        return importedEntry.needsInjectionSite();
+        return entry.needsInjectionSite();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return importedEntry.needsResolving();
+        return entry.needsResolving();
     }
 
     /** {@inheritDoc} */
     @Override
     RSE<T> newRuntimeNode() {
-        return new RSEDelegate<T>(this, importedEntry);
+        return new RSEDelegate<T>(this, entry);
     }
 }

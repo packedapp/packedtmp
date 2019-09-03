@@ -37,7 +37,7 @@ public final class ProvideAllFromInjector {
     final ConfigSite configSite;
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
-    public final LinkedHashMap<Key<?>, BSEImported<?>> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, BSEFromProvideAll<?>> entries = new LinkedHashMap<>();
 
     /** The injector that provides the services. */
     final AbstractInjector injector;
@@ -61,7 +61,7 @@ public final class ProvideAllFromInjector {
 
         injector.forEachServiceEntry(e -> {
             if (!e.isPrivate()) { // ignores Injector, and other
-                entries.put(e.key(), new BSEImported<>(this, e));
+                entries.put(e.key(), new BSEFromProvideAll<>(this, e));
             }
         });
 

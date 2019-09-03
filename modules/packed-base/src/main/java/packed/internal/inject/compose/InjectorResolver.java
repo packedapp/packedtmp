@@ -39,8 +39,8 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
 import packed.internal.inject.build.BSEExported;
-import packed.internal.inject.build.ProvideAllFromInjector;
 import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.ProvideAllFromInjector;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -105,14 +105,16 @@ public final class InjectorResolver {
 
         // Go through all exports, and make sure they can all be fulfilled
         HashMap<Key<?>, HashSet<BSE<?>>> unresolvedExports = new HashMap<>();
-        for (BSEExported<?> node : ib.exportedEntries) {
-            if (node.entryToExport == null) {
-                ServiceEntry<?> sn = internalNodes.getRecursive(node.getKey());
-                if (sn == null) {
-                    unresolvedExports.computeIfAbsent(node.key(), m -> new HashSet<>()).add(node);
+        if (ib.exporter != null) {
+            for (BSEExported<?> node : ib.exporter.exportedEntries) {
+                if (node.exportedEntry == null) {
+                    ServiceEntry<?> sn = internalNodes.getRecursive(node.getKey());
+                    if (sn == null) {
+                        unresolvedExports.computeIfAbsent(node.key(), m -> new HashSet<>()).add(node);
+                    }
+                    node.exportedEntry = (ServiceEntry) sn;
+                    exportedNodes.put(node);
                 }
-                node.entryToExport = (ServiceEntry) sn;
-                exportedNodes.put(node);
             }
         }
 
@@ -177,10 +179,11 @@ public final class InjectorResolver {
     }
 
     void checkForMissingDependencies() {
+        boolean manualRequirementsManagement = ib.contracts != null && ib.contracts.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (Entry<BSE<?>, ServiceDependency> e : missingDependencies) {
-                if (!e.getValue().isOptional() && ib.manualRequirementsManagement) {
+                if (!e.getValue().isOptional() && manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
@@ -248,7 +251,7 @@ public final class InjectorResolver {
         }
         m.add(new SimpleImmutableEntry<>(node, dependency));
 
-        if (!ib.manualRequirementsManagement) {
+        if (ib.contracts == null || !ib.contracts.manualRequirementsManagement) {
             if (dependency.isOptional()) {
                 requiredOptionally.add(dependency.key());
             } else {

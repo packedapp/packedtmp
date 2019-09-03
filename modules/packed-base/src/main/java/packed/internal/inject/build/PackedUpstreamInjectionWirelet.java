@@ -88,7 +88,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         /** {@inheritDoc} */
         @Override
         void process(ProvideAllFromInjector ii) {
-            for (BSEImported<?> e : ii.entries.values()) {
+            for (BSEFromProvideAll<?> e : ii.entries.values()) {
                 action.accept(new ServiceConfigurationWrapper(e));
             }
         }

@@ -36,28 +36,28 @@ import packed.internal.inject.run.RSEDelegate;
  */
 public final class BSEExported<T> extends BSE<T> {
 
-    /** The node that is exposed. */
+    /** The node that is exported. */
     @Nullable
-    public ServiceEntry<T> entryToExport;
+    public ServiceEntry<T> exportedEntry;
 
     /**
      * Exports an entry via its key. Is typically used via {@link InjectionExtension#export(Class)} or
      * {@link InjectionExtension#export(Key)}.
      * 
-     * @param configuration
+     * @param builder
      *            the injector configuration this node is being added to
      * @param configSite
      *            the configuration site of the exposure
      */
-    public BSEExported(InjectorBuilder configuration, ConfigSite configSite, Key<T> key) {
-        super(configuration, configSite, List.of());
+    public BSEExported(InjectorBuilder builder, ConfigSite configSite, Key<T> key) {
+        super(builder, configSite, List.of());
         as(key);
     }
 
     @SuppressWarnings("unchecked")
-    public BSEExported(InjectorBuilder configuration, ConfigSite configSite, ServiceEntry<?> existingNode) {
-        super(configuration, configSite, List.of());
-        this.entryToExport = (ServiceEntry<T>) existingNode;
+    public BSEExported(InjectorBuilder builder, ConfigSite configSite, ServiceEntry<?> existingNode) {
+        super(builder, configSite, List.of());
+        this.exportedEntry = (ServiceEntry<T>) existingNode;
 
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
@@ -69,19 +69,19 @@ public final class BSEExported<T> extends BSE<T> {
     @Nullable
     public BSE<?> declaringNode() {
         // Skal vi ikke returnere exposureOf?? istedet for .declaringNode
-        return (entryToExport instanceof BSE) ? ((BSE<?>) entryToExport).declaringNode() : null;
+        return (exportedEntry instanceof BSE) ? ((BSE<?>) exportedEntry).declaringNode() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public InstantiationMode instantiationMode() {
-        return entryToExport.instantiationMode();
+        return exportedEntry.instantiationMode();
     }
 
     /** {@inheritDoc} */
     @Override
     public T getInstance(ProvideHelper site) {
-        return null;
+        return null;// ???
     }
 
     /** {@inheritDoc} */
@@ -99,13 +99,19 @@ public final class BSEExported<T> extends BSE<T> {
     /** {@inheritDoc} */
     @Override
     RSE<T> newRuntimeNode() {
-        return new RSEDelegate<>(this, entryToExport);
+        return new RSEDelegate<>(this, exportedEntry);
     }
 
     ServiceConfiguration<T> toServiceConfiguration() {
         return new ExportedServiceConfiguration<>(injectorBuilder.pcc, this);
     }
 
+    /**
+     * An instance of {@link ServiceConfiguration} that is returned to the user, for example, when invoking
+     * {@link InjectionExtension#export(Class)}.
+     */
+
+    // We should use injectorExtension.checkConfigurable
     private static final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
         private final PackedContainerConfiguration containerConfiguration;
@@ -143,7 +149,8 @@ public final class BSEExported<T> extends BSE<T> {
 
         /** {@inheritDoc} */
         @Override
-        public @Nullable Key<?> getKey() {
+        @Nullable
+        public Key<?> getKey() {
             return node.getKey();
         }
 
