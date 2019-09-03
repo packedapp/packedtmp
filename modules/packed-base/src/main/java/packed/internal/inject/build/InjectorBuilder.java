@@ -38,6 +38,7 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.InjectorConfigSiteOperations;
 import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.build.export.ServiceExporter;
 import packed.internal.inject.compose.InjectorResolver;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
@@ -58,12 +59,12 @@ public final class InjectorBuilder {
     public final ArrayList<BSE<?>> entries = new ArrayList<>();
 
     /** Handles everything to do with exports. */
-    public InjectorBuilderExporter exporter;
-
-    public final ArrayList<ProvideAllFromInjector> imports = new ArrayList<>(0);
+    public ServiceExporter exporter;
 
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
+
+    public final ArrayList<ProvideAllFromInjector> provideAll = new ArrayList<>(0);
 
     final InjectorResolver resolver = new InjectorResolver(this);
 
@@ -90,11 +91,7 @@ public final class InjectorBuilder {
         }
 
         if (exporter != null) {
-            for (BSE<?> n : exporter.exportedEntries) {
-                if (n instanceof BSEExported) {
-                    builder.contract().services().addProvides(n.getKey());
-                }
-            }
+            exporter.buildContract(builder.contract().services());
         }
         resolver.buildContract(builder.contract().services());
     }
@@ -107,16 +104,12 @@ public final class InjectorBuilder {
         return c;
     }
 
-    public InjectorBuilderExporter exporter() {
-        InjectorBuilderExporter e = exporter;
+    public ServiceExporter exporter() {
+        ServiceExporter e = exporter;
         if (e == null) {
-            e = exporter = new InjectorBuilderExporter(this);
+            e = exporter = new ServiceExporter(this);
         }
         return e;
-    }
-
-    public void importAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
-        imports.add(new ProvideAllFromInjector(this, confitSite, injector, wirelets));
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
@@ -165,6 +158,10 @@ public final class InjectorBuilder {
 
         // Set the parent node, so it can be found from provideFactory or provideInstance
         cc.features().set(InjectorBuilder.FK, parentNode);
+    }
+
+    public void provideAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
+        provideAll.add(new ProvideAllFromInjector(this, confitSite, injector, wirelets));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

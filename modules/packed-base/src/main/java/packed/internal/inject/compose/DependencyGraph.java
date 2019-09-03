@@ -33,6 +33,7 @@ import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.compose.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.InternalDependencyDescriptor;
+import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.KeyBuilder;
 
 final class DependencyGraph {
@@ -71,7 +72,8 @@ final class DependencyGraph {
         if (root.buildContext().artifactType() == Injector.class) {
             ir.publicInjector = requireNonNull(ir.privateInjector);
         } else {
-            ir.publicInjector = new DefaultInjector(root, ir.exportedNodes);
+            ServiceNodeMap sm = ib.exporter == null ? new ServiceNodeMap() : ib.exporter.resolvedExports;
+            ir.publicInjector = new DefaultInjector(root, sm);
 
             // Add public injector
             // bn = new BuildNodeInstance<>(c, configSite.UNKNOWN, c.publicInjector);
@@ -139,8 +141,11 @@ final class DependencyGraph {
 
         // Okay we are finished, convert all nodes to runtime nodes.
         ir.internalNodes.toRuntimeNodes();
-        if (ir.internalNodes != ir.exportedNodes) {
-            ir.exportedNodes.toRuntimeNodes();
+
+        if (ib.exporter != null) {
+            if (ir.internalNodes != ib.exporter.resolvedExports) {
+                ib.exporter.resolvedExports.toRuntimeNodes();
+            }
         }
     }
 

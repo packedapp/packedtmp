@@ -25,7 +25,6 @@ import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
@@ -38,7 +37,6 @@ import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BSE;
-import packed.internal.inject.build.BSEExported;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.ProvideAllFromInjector;
 import packed.internal.inject.run.DefaultInjector;
@@ -68,12 +66,6 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 public final class InjectorResolver {
 
-    final ServiceNodeMap exportedNodes = new ServiceNodeMap();
-
-    /** A map of multiple exports for the same key. */
-    @Nullable
-    Map<Key<?>, ArrayList<BSEExported<?>>> exportsDuplicates;
-
     final InjectorBuilder ib;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
@@ -99,28 +91,18 @@ public final class InjectorResolver {
         this.ib = requireNonNull(ib);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void build(ArtifactBuildContext buildContext) {
         boolean hasDuplicates = processNodesAndCheckForDublicates(buildContext);
 
         // Go through all exports, and make sure they can all be fulfilled
-        HashMap<Key<?>, HashSet<BSE<?>>> unresolvedExports = new HashMap<>();
         if (ib.exporter != null) {
-            for (BSEExported<?> node : ib.exporter.exportedEntries) {
-                if (node.exportedEntry == null) {
-                    ServiceEntry<?> sn = internalNodes.getRecursive(node.getKey());
-                    if (sn == null) {
-                        unresolvedExports.computeIfAbsent(node.key(), m -> new HashSet<>()).add(node);
-                    }
-                    node.exportedEntry = (ServiceEntry) sn;
-                    exportedNodes.put(node);
-                }
+            ib.exporter.resolve(this);
+            if (!ib.exporter.unresolvedExports.isEmpty()) {
+                ErrorMessages.addUnresolvedExports(buildContext, ib.exporter.unresolvedExports);
             }
+
         }
 
-        if (!unresolvedExports.isEmpty()) {
-            ErrorMessages.addUnresolvedExports(buildContext, unresolvedExports);
-        }
         // It does not make sense to try and resolve
         if (!hasDuplicates) {
             DependencyGraph dg = new DependencyGraph(ib.pcc, ib, this);
@@ -137,7 +119,7 @@ public final class InjectorResolver {
         LinkedHashMap<Key<?>, LinkedHashSet<BSE<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
 
         processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ib.entries);
-        for (ProvideAllFromInjector ii : ib.imports) {
+        for (ProvideAllFromInjector ii : ib.provideAll) {
             processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
         }
 

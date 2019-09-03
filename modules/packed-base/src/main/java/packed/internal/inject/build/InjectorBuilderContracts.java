@@ -15,6 +15,8 @@
  */
 package packed.internal.inject.build;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 
 import app.packed.inject.InjectionExtension;
@@ -48,5 +50,23 @@ public final class InjectorBuilderContracts {
 
     public void requireExplicit(Key<?> key, boolean isOptional) {
         explicitRequirements.add(new ExplicitRequirement(key, isOptional));
+    }
+
+    /**
+     *
+     */
+    // Could just wrap a contract with
+
+    // Capture ConfigSite
+    public static final class ExplicitRequirement {
+
+        final boolean isOptional;
+
+        final Key<?> key;
+
+        public ExplicitRequirement(Key<?> key, boolean isOptional) {
+            this.key = requireNonNull(key, "key is null");
+            this.isOptional = isOptional;
+        }
     }
 }

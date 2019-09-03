@@ -64,14 +64,14 @@ public abstract class BSE<T> implements ServiceEntry<T> {
 
     /** The injector configuration this node is registered with. */
     @Nullable // Is nullable for stages for now
-    protected final InjectorBuilder injectorBuilder;
+    public final InjectorBuilder injectorBuilder;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
      * injected before the providing method can be invoked.
      */
-    Key<T> key;
+    public Key<T> key;
 
     /** The resolved dependencies of this node. */
     public final ServiceEntry<?>[] resolvedDependencies;
@@ -80,7 +80,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
     @Nullable
     private RSE<T> runtimeNode;
 
-    BSE(InjectorBuilder injectorBuilder, ConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
+    public BSE(InjectorBuilder injectorBuilder, ConfigSite configSite, List<InternalDependencyDescriptor> dependencies) {
         this.configSite = requireNonNull(configSite);
         this.injectorBuilder = injectorBuilder;
         this.dependencies = requireNonNull(dependencies);
@@ -168,7 +168,7 @@ public abstract class BSE<T> implements ServiceEntry<T> {
      *
      * @return the new runtime node
      */
-    abstract RSE<T> newRuntimeNode();
+    protected abstract RSE<T> newRuntimeNode();
     //
     // protected void onFreeze() {
     // if (key != null) {

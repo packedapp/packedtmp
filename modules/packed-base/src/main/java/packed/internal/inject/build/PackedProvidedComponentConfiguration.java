@@ -29,10 +29,10 @@ import app.packed.util.Nullable;
 /**
  *
  */
-final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
+public final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
 
     /** The service we are exposing. */
-    final BSE<T> buildEntry;
+    public final BSE<T> buildEntry;
 
     /** The component we are exposing. */
     private final ComponentConfiguration component;

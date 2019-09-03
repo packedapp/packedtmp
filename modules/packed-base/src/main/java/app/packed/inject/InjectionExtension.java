@@ -250,7 +250,7 @@ public final class InjectionExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
         checkConfigurable();
-        builder.importAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
+        builder.provideAll((AbstractInjector) injector, captureStackFrame(InjectorConfigSiteOperations.INJECTOR_CONFIGURATION_INJECTOR_BIND),
                 WireletList.of(wirelets));
     }
 

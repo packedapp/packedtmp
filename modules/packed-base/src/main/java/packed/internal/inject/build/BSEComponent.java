@@ -189,7 +189,7 @@ public final class BSEComponent<T> extends BSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    final RSE<T> newRuntimeNode() {
+    protected final RSE<T> newRuntimeNode() {
         T i = instance;
         if (i != null) {
             return new RSESingleton<>(this, i);

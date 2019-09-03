@@ -81,7 +81,7 @@ final class BSEFromProvideAll<T> extends BSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    RSE<T> newRuntimeNode() {
+    protected RSE<T> newRuntimeNode() {
         return new RSEDelegate<T>(this, entry);
     }
 }
