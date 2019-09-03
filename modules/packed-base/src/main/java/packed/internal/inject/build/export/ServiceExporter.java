@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
@@ -43,18 +42,18 @@ public final class ServiceExporter {
     /** The injector builder this exporter belongs to. */
     private final InjectorBuilder builder;
 
+    /** A map of multiple exports for the same key. */
+    @Nullable
+    public HashMap<Key<?>, ArrayList<ExportedBuildEntry<?>>> duplicateExports;
+
     /**
      * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
      * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ProvidedComponentConfiguration)}.
      */
-    public final ArrayList<ExportedBuildEntry<?>> exports = new ArrayList<>();
+    private final ArrayList<ExportedBuildEntry<?>> exports = new ArrayList<>();
 
     /** */
     public final ServiceNodeMap resolvedExports = new ServiceNodeMap();
-
-    /** A map of multiple exports for the same key. */
-    @Nullable
-    public Map<Key<?>, ArrayList<ExportedBuildEntry<?>>> exportsDuplicates;
 
     public HashMap<Key<?>, HashSet<BSE<?>>> unresolvedExports = new HashMap<>();
 
@@ -76,20 +75,6 @@ public final class ServiceExporter {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void resolve(InjectorResolver resolver) {
-        for (ExportedBuildEntry<?> node : exports) {
-            if (node.exportedEntry == null) {
-                ServiceEntry<?> sn = resolver.internalNodes.getRecursive(node.getKey());
-                if (sn == null) {
-                    unresolvedExports.computeIfAbsent(node.key(), m -> new HashSet<>()).add(node);
-                }
-                node.exportedEntry = (ServiceEntry) sn;
-                resolvedExports.put(node);
-            }
-        }
-    }
-
     /**
      * Registers the specified key to be exported.
      * 
@@ -100,21 +85,35 @@ public final class ServiceExporter {
      * @param configSite
      *            the config site of the export
      * @return a service configuration that can be returned to the user
+     * @see InjectionExtension#export(Class)
+     * @see InjectionExtension#export(Key)
      */
     public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedBuildEntry<>(builder, configSite, key));
+        return export0(new ExportedBuildEntry<>(builder, key, configSite));
     }
 
+    /**
+     * Creates an export for the specified configuration.
+     * 
+     * @param <T>
+     *            the type of service
+     * @param configuration
+     *            the configuration of an existing entry to export
+     * @param configSite
+     *            the config site of the export
+     * @return stuff
+     * @see InjectionExtension#export(ProvidedComponentConfiguration)
+     */
     public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration, ConfigSite configSite) {
         if (!(configuration instanceof PackedProvidedComponentConfiguration)) {
             throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ProvidedComponentConfiguration.class)
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
-        BSE<T> e = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
-        if (e.injectorBuilder != builder) {
+        BSE<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
+        if (entryToExport.injectorBuilder != builder) {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
         }
-        return export0(new ExportedBuildEntry<>(e, configSite));
+        return export0(new ExportedBuildEntry<>(entryToExport, configSite));
     }
 
     /**
@@ -138,5 +137,23 @@ public final class ServiceExporter {
         // explicit single exports will override any exportedAll. But aliases are allowed
         // transient linked exports, will work regardless
         throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void resolve(InjectorResolver resolver) {
+        for (ExportedBuildEntry<?> entry : exports) {
+            // try and find a matching service entry for key'ed exports.
+            // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
+            if (entry.exportedEntry == null) {
+                ServiceEntry<?> sn = resolver.internalNodes.getRecursive(entry.getKey());
+
+                if (sn == null) {
+                    unresolvedExports.computeIfAbsent(entry.key(), m -> new HashSet<>()).add(entry);
+                } else {
+                    entry.exportedEntry = (ServiceEntry) sn;
+                    resolvedExports.put(entry);
+                }
+            }
+        }
     }
 }

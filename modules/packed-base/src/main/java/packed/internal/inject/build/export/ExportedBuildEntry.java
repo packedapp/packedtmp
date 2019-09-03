@@ -67,7 +67,7 @@ public final class ExportedBuildEntry<T> extends BSE<T> {
      * @param configSite
      *            the configuration site of the exposure
      */
-    ExportedBuildEntry(InjectorBuilder builder, ConfigSite configSite, Key<T> key) {
+    ExportedBuildEntry(InjectorBuilder builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite, List.of());
         as(key);
     }
