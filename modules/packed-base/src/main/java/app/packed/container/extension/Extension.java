@@ -153,6 +153,8 @@ public abstract class Extension {
      */
     // TODO add stuff about we also ignore non-concrete container sources...
     protected final ConfigSite captureStackFrame(String operation) {
+        // API-NOTE This method is not available on ExtensionContext to encouarge capturing of any stack frame to be limited
+        // to the extension class in order to have simplify the filtering mechanism.
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return ConfigSite.UNKNOWN;
         }
@@ -184,7 +186,7 @@ public abstract class Extension {
      * 
      * @return the configuration of the container
      */
-    private PackedExtensionContext context() {
+    protected final ExtensionContext context() {
         // When calling this method remember to add test to BasicExtensionTest
         PackedExtensionContext c = context;
         if (c == null) {

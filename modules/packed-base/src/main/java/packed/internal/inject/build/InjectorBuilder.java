@@ -21,6 +21,7 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.extension.ExtensionContext;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
@@ -66,6 +67,16 @@ public final class InjectorBuilder {
      */
     public InjectorBuilder(PackedContainerConfiguration pcc) {
         this.pcc = requireNonNull(pcc);
+    }
+
+    private ExtensionContext context;
+
+    public ExtensionContext context() {
+        return context;
+    }
+
+    public void setContext(ExtensionContext context) {
+        this.context = requireNonNull(context);
     }
 
     public void build(ArtifactBuildContext buildContext) {
@@ -180,5 +191,9 @@ public final class InjectorBuilder {
             p = provider = new ServiceProvidingManager(this);
         }
         return p;
+    }
+
+    public void checkExportConfigurable() {
+
     }
 }

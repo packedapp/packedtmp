@@ -15,8 +15,11 @@
  */
 package app.packed.container.extension;
 
+import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.WireletList;
 
 /**
  *
@@ -44,4 +47,10 @@ public interface ExtensionContext {
      *             already been installed
      */
     <E extends Extension> E use(Class<E> extensionType);
+
+    ArtifactBuildContext buildContext();
+
+    void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar);
+
+    WireletList wirelets();
 }

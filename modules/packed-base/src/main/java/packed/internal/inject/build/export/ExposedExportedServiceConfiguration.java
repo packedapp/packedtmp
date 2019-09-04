@@ -23,8 +23,8 @@ import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.InjectorBuilder;
 
 /**
  * An instance of {@link ServiceConfiguration} that is returned to the user, for example, when invoking
@@ -33,7 +33,7 @@ import packed.internal.inject.build.BuildEntry;
 // We should use injectorExtension.checkConfigurable
 final class ExposedExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
-    private final PackedContainerConfiguration containerConfiguration;
+    private final InjectorBuilder builder;
 
     /** The entry that is wrapped. */
     final BuildEntry<T> entry;
@@ -41,15 +41,15 @@ final class ExposedExportedServiceConfiguration<T> implements ServiceConfigurati
     /**
      * @param node
      */
-    ExposedExportedServiceConfiguration(PackedContainerConfiguration containerConfiguration, ExportedBuildEntry<T> node) {
-        this.containerConfiguration = requireNonNull(containerConfiguration);
+    ExposedExportedServiceConfiguration(InjectorBuilder builder, ExportedBuildEntry<T> node) {
+        this.builder = requireNonNull(builder);
         this.entry = requireNonNull(node);
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
-        containerConfiguration.checkConfigurable();
+        builder.checkExportConfigurable();
         entry.as(key);
         return this;
     }
@@ -84,7 +84,7 @@ final class ExposedExportedServiceConfiguration<T> implements ServiceConfigurati
     @Override
     public ServiceConfiguration<T> setDescription(String description) {
         requireNonNull(description, "description is null");
-        containerConfiguration.checkConfigurable();
+        builder.checkExportConfigurable();
         entry.description = description;
         return this;
     }

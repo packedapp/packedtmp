@@ -55,9 +55,7 @@ public final class ServiceExporter {
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
 
-    /** A map of all keyed exports where an entry matching the key could not be found. */
-    @Nullable
-    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
+    private ConfigSite exportAll;
 
     /**
      * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
@@ -68,7 +66,9 @@ public final class ServiceExporter {
     /** */
     public final ServiceNodeMap resolvedExports = new ServiceNodeMap();
 
-    private ConfigSite exportAll;
+    /** A map of all keyed exports where an entry matching the key could not be found. */
+    @Nullable
+    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
     /**
      * Creates a new service exporter.
@@ -138,7 +138,7 @@ public final class ServiceExporter {
      */
     private <T> ServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
         exports.add(entry);
-        return new ExposedExportedServiceConfiguration<>(builder.pcc, entry);
+        return new ExposedExportedServiceConfiguration<>(builder, entry);
     }
 
     public void exportAll(ConfigSite configSite) {

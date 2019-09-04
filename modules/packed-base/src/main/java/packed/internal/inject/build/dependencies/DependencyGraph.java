@@ -33,7 +33,6 @@ import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
@@ -52,9 +51,6 @@ final class DependencyGraph {
     /** A list of nodes to use when detecting dependency cycles. */
     ArrayList<BuildEntry<?>> detectCyclesFor;
 
-    /** The root injector builder. */
-    final PackedContainerConfiguration root;
-
     final InjectorBuilder ib;
 
     /** A set of all explicitly registered required service keys. */
@@ -71,26 +67,24 @@ final class DependencyGraph {
 
     /**
      * Creates a new dependency graph.
-     * 
      */
     DependencyGraph(InjectorBuilder ib) {
-        this.root = requireNonNull(ib.pcc);
         this.ib = requireNonNull(ib);
     }
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     void analyze(ServiceExporter exporter) {
-        ib.privateInjector = new DefaultInjector(root, ib.resolvedEntries);
-        ComponentBuildEntry d = new ComponentBuildEntry<>(ib, root.configSite(), ib.privateInjector);
+        ib.privateInjector = new DefaultInjector(ib.pcc, ib.resolvedEntries);
+        ComponentBuildEntry d = new ComponentBuildEntry<>(ib, ib.context().containerConfigSite(), ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);
         ib.resolvedEntries.put(d);
 
-        if (root.buildContext().artifactType() == Injector.class) {
+        if (ib.context().buildContext().artifactType() == Injector.class) {
             ib.publicInjector = requireNonNull(ib.privateInjector);
         } else {
             ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedExports;
-            ib.publicInjector = new DefaultInjector(root, sm);
+            ib.publicInjector = new DefaultInjector(ib.pcc, sm);
         }
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
