@@ -40,11 +40,9 @@ import packed.internal.inject.util.AtInjectGroup;
  */
 
 // Functionality for
-// * Explicitly requiring services: require, requiOpt
-// * Exporting services: export
-// * Importing injectors : importEx
-// * Providing components
-// * Manual Requirements Management
+// * Explicitly requiring services: require, requiOpt & Manual Requirements Management
+// * Exporting services: export, exportAll
+// * Providing components or injectors (provideAll)
 
 // Future potential functionality
 /// Contracts
@@ -56,12 +54,13 @@ import packed.internal.inject.util.AtInjectGroup;
 // Hmm saa auto instantiere vi jo injector extensionen
 //// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
 // altid bruge Manual Requirements
+
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 public final class InjectionExtension extends Extension {
 
-    /** The injector builder that does the hard work. */
+    /** The injector builder that does all the hard work. */
     final InjectorBuilder builder;
 
     /** Creates a new injector extension. */
@@ -163,15 +162,17 @@ public final class InjectionExtension extends Extension {
         builder.build(buildContext());
     }
 
+    /**
+     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
+     * 
+     * @param cc
+     *            the configuration of the annotated component
+     * @param group
+     *            a inject group object
+     */
     @OnHook(AtInjectGroup.Builder.class)
-    void onInjectMembers(ComponentConfiguration cc, AtInjectGroup group) {
+    void onHookAtInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
         builder.onInjectGroup(cc, group);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        builder.onPrepareContainerInstantiation(context);
     }
 
     /**
@@ -180,11 +181,17 @@ public final class InjectionExtension extends Extension {
      * @param cc
      *            the configuration of the annotated component
      * @param group
-     *            a provides aggregate object
+     *            a provides group object
      */
     @OnHook(AtProvidesGroup.Builder.class)
-    void onProvidedMembers(ComponentConfiguration cc, AtProvidesGroup group) {
+    void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
         builder.provider().onProvidesGroup(cc, group);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+        builder.onPrepareContainerInstantiation(context);
     }
 
     /**
@@ -242,10 +249,9 @@ public final class InjectionExtension extends Extension {
      * @param wirelets
      *            any wirelets used to filter and transform the provided services
      * @throws IllegalArgumentException
-     *             if using wirelets that are not defined via ServiceWireletFunctions
+     *             if specifying wirelets that are not defined via {@link UpstreamServiceWirelets}
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
-        // renamed to provideAll to be consistent with exportAll
         if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
@@ -293,7 +299,3 @@ public final class InjectionExtension extends Extension {
         builder.dependencies().require(key, true, captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }
-// manualRequirementManagement(); Do we need or can we just say that we should extend this contract exactly?
-// Registered registererUnqualifiedAnnotation <---
-// Tror kun det ville skabe en masse problemer, en bundle der registrere den, men en anden hvor man glemmer det.
-// Man faar ikke nogle fejl fordi runtimen i det "glemte" bundle ikke er klar over den har nogen betydning.

@@ -50,7 +50,7 @@ import packed.internal.container.extension.PackedExtensionContext;
 // final Extension
 // package private constructor
 // open to app.packed.base
-// exported for other users
+// exported to other users to use
 
 // ErrorHandle, Logging
 
@@ -94,7 +94,6 @@ public abstract class Extension {
             @Override
             public void onConfigured(Extension extension) {
                 extension.onConfigured();
-                extension.isConfigurable = false;
             }
 
             @Override
@@ -117,11 +116,6 @@ public abstract class Extension {
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
     private PackedExtensionContext context;
 
-    /** Whether or not the extension is configurable. */
-    private boolean isConfigurable = true;
-
-    protected void buildDescriptor(BundleDescriptor.Builder builder) {}
-
     /**
      * Returns the build context of the artifact which this extension is a part of.
      * <p>
@@ -137,12 +131,11 @@ public abstract class Extension {
         // Any wirelets specified when initializing an image is not included...
         // Or is this controllable from ContainerConfiguration????
         ArtifactBuildContext c = context().buildContext();
-        if (!isConfigurable) {
-            throw new IllegalStateException(
-                    "This method can only be called while the container is being configured. After onConfigured() has returned the build ");
-        }
+        checkConfigurable();
         return c;
     }
+
+    protected void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -164,7 +157,7 @@ public abstract class Extension {
             return ConfigSite.UNKNOWN;
         }
         Optional<StackFrame> sf = SW.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? context().configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+        return sf.isPresent() ? context().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
     final boolean captureStackFrameIgnoreFilter(StackFrame f) {
@@ -182,10 +175,7 @@ public abstract class Extension {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        context();// First check that we are not invoking this from the constructor of the extension
-        if (!isConfigurable) {
-            throw new IllegalStateException("This extension " + getClass().getSimpleName() + " is no longer configurable");
-        }
+        context().checkConfigurable();
     }
 
     /**
@@ -194,7 +184,7 @@ public abstract class Extension {
      * 
      * @return the configuration of the container
      */
-    final PackedExtensionContext context() {
+    private PackedExtensionContext context() {
         // When calling this method remember to add test to BasicExtensionTest
         PackedExtensionContext c = context;
         if (c == null) {

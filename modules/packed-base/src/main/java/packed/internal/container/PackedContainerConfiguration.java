@@ -164,7 +164,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     void extensionsContainerConfigured() {
         installPrepare(State.GET_NAME_INVOKED);
         for (PackedExtensionContext e : extensions.values()) {
-            SharedSecrets.extension().onConfigured(e.extension);
+            e.onConfigured();
         }
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {

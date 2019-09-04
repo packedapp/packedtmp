@@ -28,6 +28,8 @@ public class Ddd extends AppBundle {
     public void configure() {
         install(new Ssss());
         installHelper(MyComp.class);
+
+        // injector().provideAll(injector, wirelets);
     }
 
     public static void main(String[] args) {

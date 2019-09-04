@@ -55,7 +55,7 @@ final class AtProvides {
     /** The dependencies (parameters) of the member. */
     final List<PackedServiceDependency> dependencies;
 
-    /** A unbound method handle to the underlying field or method. */
+    /** An unbound method handle to the underlying field or method. */
     final MethodHandle methodHandle;
 
     AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {

@@ -28,9 +28,12 @@ import java.util.List;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectionExtension;
+import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.util.Key;
@@ -52,18 +55,20 @@ public final class ServiceProvidingManager {
     /** A that is used to store parent nodes */
     private static FeatureKey<ComponentBuildEntry<?>> FK = new FeatureKey<>() {};
 
+    /** The injector builder. */
+    private final InjectorBuilder builder;
+
     /** All provided nodes. */
-    public final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
+    private final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
 
-    public final ArrayList<ProvideAllFromInjector> provideAll = new ArrayList<>(0);
-
-    final InjectorBuilder builder;
+    /** All injectors added via {@link InjectionExtension#provideAll(Injector, Wirelet...)} */
+    private ArrayList<ProvideAllFromInjector> provideAll;
 
     /**
-     * @param injectorBuilder
+     * @param builder
      */
-    public ServiceProvidingManager(InjectorBuilder injectorBuilder) {
-        this.builder = requireNonNull(injectorBuilder);
+    public ServiceProvidingManager(InjectorBuilder builder) {
+        this.builder = requireNonNull(builder);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -95,8 +100,45 @@ public final class ServiceProvidingManager {
         cc.features().set(FK, parentNode);
     }
 
-    public void provideAll(AbstractInjector injector, ConfigSite confitSite, WireletList wirelets) {
-        provideAll.add(new ProvideAllFromInjector(builder, confitSite, injector, wirelets));
+    public boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
+        HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
+        LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
+
+        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, entries);
+        if (provideAll != null) {
+            for (ProvideAllFromInjector ii : provideAll) {
+                processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
+            }
+        }
+
+        // Add error messages if any nodes with the same key have been added multiple times
+        if (!duplicateNodes.isEmpty()) {
+            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
+        }
+        builder.resolvedEntries.addAll(uniqueNodes.values());
+        return !duplicateNodes.isEmpty();
+    }
+
+    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> uniqueNodes,
+            LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes, Iterable<? extends BuildEntry<?>> nodes) {
+        for (BuildEntry<?> node : nodes) {
+            Key<?> key = node.key();
+            if (key != null) {
+                BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
+                if (existing != null) {
+                    HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                    hs.add(node);
+                }
+            }
+        }
+    }
+
+    public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+        if (provideAll == null) {
+            provideAll = new ArrayList<>(1);
+        }
+        provideAll.add(new ProvideAllFromInjector(builder, configSite, injector, wirelets));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -126,37 +168,5 @@ public final class ServiceProvidingManager {
         node.as((Key) Key.of(instance.getClass()));
         entries.add(node);
         return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) node);
-    }
-
-    public boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
-        HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
-        LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
-
-        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, entries);
-        for (ProvideAllFromInjector ii : provideAll) {
-            processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
-        }
-
-        // Add error messages if any nodes with the same key have been added multiple times
-        if (!duplicateNodes.isEmpty()) {
-            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
-        }
-        builder.resolvedEntries.addAll(uniqueNodes.values());
-        return !duplicateNodes.isEmpty();
-    }
-
-    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> uniqueNodes,
-            LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes, Iterable<? extends BuildEntry<?>> nodes) {
-        for (BuildEntry<?> node : nodes) {
-            Key<?> key = node.key();
-            if (key != null) {
-                BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
-                if (existing != null) {
-                    HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
-                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                    hs.add(node);
-                }
-            }
-        }
     }
 }
