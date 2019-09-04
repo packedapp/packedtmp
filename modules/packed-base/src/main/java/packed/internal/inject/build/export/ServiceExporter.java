@@ -157,9 +157,9 @@ public final class ServiceExporter {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void resolve(InjectorBuilder resolver, ArtifactBuildContext buildContext) {
+        // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
+        // to have identical structure to ServiceProvidingManager
 
-        // TODO move unresolvedKeyedExports and duplicateExports here, no need have them as fields...
-        // But we keep as fields for now though, we might have some more complicated logic later..
         // Export all entries except foo which should be export as Boo
         // exportAll(Predicate) <- takes key or service configuration???
 

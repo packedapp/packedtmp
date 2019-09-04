@@ -17,12 +17,15 @@ package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
+
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.inject.InstantiationMode;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
@@ -79,14 +82,22 @@ public final class InjectorBuilder {
         this.context = requireNonNull(context);
     }
 
+    private boolean hasFailed;
+
+    public void addErrorMessage() {
+
+        hasFailed = true;
+    }
+
     public void build(ArtifactBuildContext buildContext) {
-        boolean hasDuplicates = provider().processNodesAndCheckForDublicates(buildContext);
+        HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolveAndCheckForDublicates(buildContext);
+        resolvedEntries.addAll(resolvedServices.values());
 
         if (exporter != null) {
             exporter.resolve(this, buildContext);
         }
 
-        if (hasDuplicates) {
+        if (hasFailed) {
             return;
         }
         dependencies().analyze(this);
@@ -194,6 +205,7 @@ public final class InjectorBuilder {
     }
 
     public void checkExportConfigurable() {
-
+        // when processing wirelets
+        // We should make sure some stuff is no longer configurable...
     }
 }

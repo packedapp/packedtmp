@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -57,6 +56,8 @@ public final class ServiceProvidingManager {
 
     /** The injector builder. */
     private final InjectorBuilder builder;
+
+    private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes;
 
     /** All provided nodes. */
     private final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
@@ -100,40 +101,6 @@ public final class ServiceProvidingManager {
         cc.features().set(FK, parentNode);
     }
 
-    public boolean processNodesAndCheckForDublicates(ArtifactBuildContext buildContext) {
-        HashMap<Key<?>, BuildEntry<?>> uniqueNodes = new HashMap<>();
-        LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes = new LinkedHashMap<>(); // preserve order for error message
-
-        processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, entries);
-        if (provideAll != null) {
-            for (ProvideAllFromInjector ii : provideAll) {
-                processNodesAndCheckForDublicates0(uniqueNodes, duplicateNodes, ii.entries.values());
-            }
-        }
-
-        // Add error messages if any nodes with the same key have been added multiple times
-        if (!duplicateNodes.isEmpty()) {
-            ErrorMessages.addDuplicateNodes(buildContext, duplicateNodes);
-        }
-        builder.resolvedEntries.addAll(uniqueNodes.values());
-        return !duplicateNodes.isEmpty();
-    }
-
-    private void processNodesAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> uniqueNodes,
-            LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes, Iterable<? extends BuildEntry<?>> nodes) {
-        for (BuildEntry<?> node : nodes) {
-            Key<?> key = node.key();
-            if (key != null) {
-                BuildEntry<?> existing = uniqueNodes.putIfAbsent(key, node);
-                if (existing != null) {
-                    HashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
-                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                    hs.add(node);
-                }
-            }
-        }
-    }
-
     public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
         if (provideAll == null) {
             provideAll = new ArrayList<>(1);
@@ -168,5 +135,43 @@ public final class ServiceProvidingManager {
         node.as((Key) Key.of(instance.getClass()));
         entries.add(node);
         return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) node);
+    }
+
+    public HashMap<Key<?>, BuildEntry<?>> resolveAndCheckForDublicates(ArtifactBuildContext buildContext) {
+        HashMap<Key<?>, BuildEntry<?>> resolvedServices = new HashMap<>();
+
+        // First process provided entries, then any entries added via provideAll
+        resolveAndCheckForDublicates0(resolvedServices, entries);
+        if (provideAll != null) {
+            for (ProvideAllFromInjector ii : provideAll) {
+                resolveAndCheckForDublicates0(resolvedServices, ii.entries.values());
+            }
+        }
+
+        // Run through all linked containers...
+        // Apply any wirelets to exports, and take
+
+        // Add error messages if any nodes with the same key have been added multiple times
+        if (duplicateNodes != null) {
+            ErrorMessages.addDuplicateNodes(builder.context().buildContext(), duplicateNodes);
+        }
+        return resolvedServices;
+    }
+
+    private void resolveAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> resolvedServices, Iterable<? extends BuildEntry<?>> entries) {
+        for (BuildEntry<?> entry : entries) {
+            Key<?> key = entry.key(); // whats the deal with null keys
+            if (key != null) {
+                BuildEntry<?> existing = resolvedServices.putIfAbsent(key, entry);
+                if (existing != null) {
+                    if (duplicateNodes == null) {
+                        duplicateNodes = new LinkedHashMap<>();
+                    }
+                    LinkedHashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                    hs.add(entry);
+                }
+            }
+        }
     }
 }
