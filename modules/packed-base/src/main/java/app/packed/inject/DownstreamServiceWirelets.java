@@ -79,6 +79,13 @@ public final class DownstreamServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public static <F, T> Wirelet provideMapped(Class<F> form, Class<T> to, Function<F, T> r) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <F, T> Wirelet provideMapped(Key<F> form, Key<T> to, Function<F, T> r) {
+        throw new UnsupportedOperationException();
+    }
     // Maaske bare tag et factory?????
     //// Multiplicity many or singleton???
     // Saa kan vi have vilkaerlige
@@ -89,6 +96,10 @@ public final class DownstreamServiceWirelets {
 
     public static void main(String[] args) {
         provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
+
+        provideMapped(Long.class, Integer.class, e -> e.intValue());
+
+        provideMapped(Key.of(Long.class), Key.of(Integer.class), e -> e.intValue());
     }
 
     public static Wirelet provideOnly(Class<?>... keys) {

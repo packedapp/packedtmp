@@ -20,7 +20,10 @@ import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 /**
  *
  */
-public class ContainerWirelets {
+public final class ContainerWirelets {
+
+    /** Never instantitate. */
+    private ContainerWirelets() {}
 
     /**
      * Returns a wirelet that will set the name of a container once wired, overriding any name that has previously been set,

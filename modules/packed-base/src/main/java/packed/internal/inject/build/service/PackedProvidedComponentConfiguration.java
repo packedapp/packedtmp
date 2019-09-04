@@ -127,6 +127,8 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
     /** {@inheritDoc} */
     @Override
     public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
+        // TODO, vi har kun en description...hvis man er lavet fra en component configuration...
+        // Skriver direkte igennem til the underlying component configuration.. Hvis man er lavet via provide...
         component.setDescription(description);
         buildEntry.description = description;
         return this;

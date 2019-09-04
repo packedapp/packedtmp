@@ -22,6 +22,22 @@ import app.packed.util.Nullable;
  */
 public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
 
+    // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
+    // Det betyder at man godt kan have en slags context... Idet vi kan have et index
+    // til den nuvaerende wirelet der bliver processeret....
+    // F.eks.
+    boolean logAll() {
+        return false;
+    }
+
+    boolean isStackCapturingEnable() {
+        return false;
+    }
+
+    boolean isDetailedStackCapturingEnable() {
+        return false;
+    }
+
     /**
      * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
      * an artifact image. Or tries to create a new artifact image from an existing image.
@@ -49,7 +65,6 @@ public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
 
     public void buildBundle() {}
 
-    
     public void onParentConfigured(@Nullable Object extension) {
 
     }

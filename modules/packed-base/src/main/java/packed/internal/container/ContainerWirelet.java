@@ -41,6 +41,12 @@ public abstract class ContainerWirelet extends Wirelet {
             this.name = checkName(name);
         }
 
+        /** {@inheritDoc} */
+        @Override
+        void process(WireletContext c) {
+            c.newName = this;// will override any set previously
+        }
+
         /**
          * Checks the name of the component.
          * 
@@ -54,12 +60,6 @@ public abstract class ContainerWirelet extends Wirelet {
 
             }
             return name;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        void process(WireletContext c) {
-            c.newName = this;// will override any set previously
         }
     }
 

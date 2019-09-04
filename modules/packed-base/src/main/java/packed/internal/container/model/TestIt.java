@@ -15,15 +15,26 @@
  */
 package packed.internal.container.model;
 
+import static app.packed.inject.UpstreamServiceWirelets.map;
+import static app.packed.inject.UpstreamServiceWirelets.peek;
+
 import app.packed.app.App;
 import app.packed.app.AppBundle;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
+import app.packed.inject.Injector;
+import app.packed.util.Key;
 
 /**
  *
  */
 public class TestIt extends AppBundle {
+
+    static final Injector INJ = Injector.configure(c -> {
+        c.provide("foo123");
+        c.provide(123L);
+    });
 
     /** {@inheritDoc} */
     @Override
@@ -32,21 +43,23 @@ public class TestIt extends AppBundle {
 
         Factory<Integer> ff = Factory.ofInstance("122323323").mapTo(e -> e.length(), Integer.class);
 
-        provide("foo");
-        provide("foo").as(CharSequence.class);
+        Wirelet w = map(Key.of(String.class), Key.of(Short.class), s -> (short) s.length());
+        provideAll(INJ, peek(e -> System.out.println("Adding " + e.key())), w, peek(e -> System.out.println("Importing " + e.key())));
+
         provide(Doo.class);
         provide(ff);
-
-        // provide(new Factory2<>((CharSequence cs, String s) -> 3 + s.length() + cs.length()) {});
 
     }
 
     public static void main(String[] args) {
-        try (App a = App.of(new TestIt())) {
-            a.injector().services().forEach(e -> System.out.println(e));
-            System.out.println(a.injector().use(Integer.class));
 
-            System.out.println(a.use(Doo.class).foo);
+        try (App a = App.of(new TestIt())) {
+            System.out.println("");
+            a.injector().services().forEach(e -> System.out.println(e));
+
+            System.out.println(a.injector().use(Short.class));
+
+            // System.out.println(a.use(Doo.class).foo);
         }
     }
 

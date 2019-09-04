@@ -48,7 +48,7 @@ public final class ServiceDependencyManager {
      */
     public boolean manualRequirementsManagement;
 
-    DependencyGraph dg;
+    DependencyGraph graph;
 
     /** Enables manual requirements management. */
     public void manualRequirementsManagement() {
@@ -61,15 +61,14 @@ public final class ServiceDependencyManager {
 
     public void analyze(InjectorBuilder builder) {
         // It does not make sense to try and resolve
-        dg = new DependencyGraph(builder);
-        dg.analyze(builder.exporter);
-
+        graph = new DependencyGraph(builder);
+        graph.analyze(builder.exporter);
     }
 
     /**
      * @param services
      */
     public void buildDescriptor(Builder services) {
-        dg.buildContract(services);
+        graph.buildContract(services);
     }
 }

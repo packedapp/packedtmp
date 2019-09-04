@@ -17,6 +17,8 @@ package app.packed.inject;
 
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
@@ -29,9 +31,27 @@ public final class UpstreamServiceWirelets {
 
     private UpstreamServiceWirelets() {}
 
+    static class Transformer<F, T> {
+        Key<F> from() {
+            throw new UnsupportedOperationException();
+        }
+
+        Key<F> to() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
     // reject(Key... key)
     // reject(Class<?>... key)
     // reject(Predicate<? super Key|ServiceDescriptor>)
+
+    public static <F, T> Wirelet map(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
+        return new PackedUpstreamInjectionWirelet.ApplyFunction(fromKey, toKey, mapper);
+    }
+
+    public static Wirelet remove(Class<?>... keys) {
+        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys).stream().map(e -> Key.of(e)).collect(Collectors.toSet()));
+    }
 
     public static Wirelet remove(Key<?>... keys) {
         return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys));

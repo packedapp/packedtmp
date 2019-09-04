@@ -30,7 +30,7 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 
 /**
- * Base bundles contains easy access to common functionality difined by the various extension in this module.
+ * Base bundles contains easy access to common functionality defined by the various extension in this module.
  * 
  * 
  * With common functionality provide by app.packed.base
@@ -132,6 +132,10 @@ public abstract class BaseBundle extends Bundle {
 
     protected final void exportAll() {
         injector().exportAll();
+    }
+
+    protected final void provideAll(Injector injector, Wirelet... wirelets) {
+        injector().provideAll(injector, wirelets);
     }
 
     // protected final void exportHooks(Contract contract) {

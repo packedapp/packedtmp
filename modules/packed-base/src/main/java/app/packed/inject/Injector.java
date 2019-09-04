@@ -302,6 +302,12 @@ public interface Injector {
     }
 }
 
+// default Injector spawn(Wirelet... wirelets) {
+// spawn = new injector + import...
+// // Fucking ConfigSite...
+// // if (wir)
+// throw new UnsupportedOperationException();
+// }
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
 

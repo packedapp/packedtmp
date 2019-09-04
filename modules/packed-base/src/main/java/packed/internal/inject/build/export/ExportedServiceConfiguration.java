@@ -20,36 +20,37 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.inject.build.BuildEntry;
-import packed.internal.inject.build.InjectorBuilder;
 
 /**
- * An instance of {@link ServiceConfiguration} that is returned to the user, for example, when invoking
- * {@link InjectionExtension#export(Class)}.
+ * An instance of {@link ServiceConfiguration} that is returned to the user when he exports a service
+ * 
+ * @see InjectionExtension#export(Class)
+ * @see InjectionExtension#export(Key)
+ * @see InjectionExtension#export(ProvidedComponentConfiguration)
  */
-// We should use injectorExtension.checkConfigurable
-final class ExposedExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
+final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
-    private final InjectorBuilder builder;
-
-    /** The entry that is wrapped. */
-    final BuildEntry<T> entry;
+    /** The entry that is exported. */
+    private final ExportedBuildEntry<T> entry;
 
     /**
-     * @param node
+     * Creates a new service configuration object.
+     * 
+     * @param entry
+     *            the entry to export
      */
-    ExposedExportedServiceConfiguration(InjectorBuilder builder, ExportedBuildEntry<T> node) {
-        this.builder = requireNonNull(builder);
-        this.entry = requireNonNull(node);
+    ExportedServiceConfiguration(ExportedBuildEntry<T> entry) {
+        this.entry = requireNonNull(entry);
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
-        builder.checkExportConfigurable();
+        entry.injectorBuilder.checkExportConfigurable();
         entry.as(key);
         return this;
     }
@@ -84,7 +85,7 @@ final class ExposedExportedServiceConfiguration<T> implements ServiceConfigurati
     @Override
     public ServiceConfiguration<T> setDescription(String description) {
         requireNonNull(description, "description is null");
-        builder.checkExportConfigurable();
+        entry.injectorBuilder.checkExportConfigurable();
         entry.description = description;
         return this;
     }

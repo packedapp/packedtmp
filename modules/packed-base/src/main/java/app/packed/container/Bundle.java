@@ -31,10 +31,15 @@ import app.packed.util.Nullable;
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
  * around {@link ContainerConfiguration}. Delegating all calls to container configurations.
- * 
+ * <p>
+ * Once consumed a bundle cannot be used...
  * 
  * A generic bundle. Normally you would extend {@link BaseBundle}
  */
+// Bundles and reusability, mulighed
+// Ingen
+// Repeatable, men ikke concurrently <--- Nej
+// Concurrent
 
 // A bundle can be used by one thread at a time...
 // However, once configured once. It cannot be changed...
@@ -109,9 +114,9 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
-     * Configures the bundle using the various inherited methods that are available.
+     * Configures the bundle using the various methods that are available.
      * <p>
-     * This method is intended to be invoked by runtime. Users should <b>never</b> invoke this method directly.
+     * This method is intended to be invoked by the runtime. Users should normally <b>never</b> invoke this method directly.
      */
     protected abstract void configure();
 

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.ExtensionWirelet;
@@ -28,8 +29,8 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.access.SharedSecrets;
-import packed.internal.inject.build.service.ProvideAllBuildEntry;
 import packed.internal.inject.build.service.ProvideAllFromInjector;
+import packed.internal.inject.build.wirelets.MappingBuildEntry;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
@@ -71,6 +72,46 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         }
     }
 
+    // Transform/map -> Replaces
+    // Extract -> does not remove existing item..
+    public static class ApplyFunction extends PackedUpstreamInjectionWirelet {
+
+        final Function<?, ?> function;
+        final Key<?> frpm;
+        final Key<?> to;
+
+        public ApplyFunction(Key<?> key, Key<?> to, Function<?, ?> function) {
+            this.frpm = requireNonNull(key, "key is null");
+            this.function = requireNonNull(function);
+            this.to = requireNonNull(to);
+        }
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @Override
+        public void process(ProvideAllFromInjector ii) {
+            if (ii.entries.containsKey(to)) {
+                throw new RuntimeException();
+            }
+            // We map, not alias...
+            BuildEntry<?> e = ii.entries.remove(frpm);
+            if (e == null) {
+                // FAIL -> WireletProcessingException????
+                throw new RuntimeException();
+            }
+            BuildEntry newE = new MappingBuildEntry(ii.builder, e, to, function, ii.configSite);
+            ii.entries.put(to, newE);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected void process(InjectionPipeline p) {
+            // Kan vi smide ProvideAllFromInjector in i pipelinen???
+
+            throw new UnsupportedOperationException();
+        }
+    }
+
     /** A wirelet for {@link UpstreamServiceWirelets#peek(Consumer)}. */
     public static class Peek extends PackedUpstreamInjectionWirelet {
 
@@ -90,7 +131,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         /** {@inheritDoc} */
         @Override
         public void process(ProvideAllFromInjector ii) {
-            for (ProvideAllBuildEntry<?> e : ii.entries.values()) {
+            for (BuildEntry<?> e : ii.entries.values()) {
                 action.accept(new ServiceConfigurationWrapper(e));
             }
         }

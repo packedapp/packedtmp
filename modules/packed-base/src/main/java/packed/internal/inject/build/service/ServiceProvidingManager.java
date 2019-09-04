@@ -112,7 +112,6 @@ public final class ServiceProvidingManager {
     public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         ComponentBuildEntry<?> c = cc.features().get(FK);
         if (c == null) {
-            // config site???
             MethodHandle mh = builder.pcc.lookup.toMethodHandle(function);
             c = new ComponentBuildEntry<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
@@ -143,8 +142,9 @@ public final class ServiceProvidingManager {
         // First process provided entries, then any entries added via provideAll
         resolveAndCheckForDublicates0(resolvedServices, entries);
         if (provideAll != null) {
-            for (ProvideAllFromInjector ii : provideAll) {
-                resolveAndCheckForDublicates0(resolvedServices, ii.entries.values());
+            // All injectors have already had wirelets transform and filter
+            for (ProvideAllFromInjector fromInjector : provideAll) {
+                resolveAndCheckForDublicates0(resolvedServices, fromInjector.entries.values());
             }
         }
 

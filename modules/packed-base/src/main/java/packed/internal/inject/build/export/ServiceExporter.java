@@ -100,7 +100,9 @@ public final class ServiceExporter {
      * @see InjectionExtension#export(Key)
      */
     public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedBuildEntry<>(builder, key, configSite));
+        ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, key, configSite);
+        exports.add(e);
+        return new ExportedServiceConfiguration<>(e);
     }
 
     /**
@@ -124,27 +126,18 @@ public final class ServiceExporter {
         if (entryToExport.injectorBuilder != builder) {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
         }
-        return export0(new ExportedBuildEntry<>(builder, entryToExport, configSite));
-    }
-
-    /**
-     * Converts the internal exported entry to a service configuration object.
-     * 
-     * @param <T>
-     *            the type of service the entry wraps
-     * @param entry
-     *            the entry to convert
-     * @return a service configuration object
-     */
-    private <T> ServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
-        exports.add(entry);
-        return new ExposedExportedServiceConfiguration<>(builder, entry);
+        ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, entryToExport, configSite);
+        exports.add(e);
+        return new ExportedServiceConfiguration<>(e);
     }
 
     public void exportAll(ConfigSite configSite) {
         exportAll = configSite;
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
         // exportAllAs(Function<?, Key>
+
+        // Export all entries except foo which should be export as Boo
+        // exportAll(Predicate) <- takes key or service configuration???
     }
 
     /**
@@ -159,9 +152,6 @@ public final class ServiceExporter {
     public void resolve(InjectorBuilder resolver, ArtifactBuildContext buildContext) {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
-
-        // Export all entries except foo which should be export as Boo
-        // exportAll(Predicate) <- takes key or service configuration???
 
         // Process every exported build entry
         for (ExportedBuildEntry<?> entry : exports) {

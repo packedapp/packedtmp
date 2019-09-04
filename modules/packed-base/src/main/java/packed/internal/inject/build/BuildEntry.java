@@ -78,6 +78,10 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     @Nullable
     private RSE<T> runtimeNode;
 
+    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite) {
+        this(injectorBuilder, configSite, List.of());
+    }
+
     public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<PackedServiceDependency> dependencies) {
         this.injectorBuilder = injectorBuilder;
         this.configSite = requireNonNull(configSite);

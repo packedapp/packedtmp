@@ -22,13 +22,33 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 
 /**
- *
+ * A instance of this interface from an extension via {@link Extension#context()}. Since the extension itself defines
+ * all methods in this interface via protected methods. This interface is typically used to be able to delegate. For
+ * example, if the extension is to complex to be contained in a single class.
  */
 public interface ExtensionContext {
 
+    ArtifactBuildContext buildContext();
+
+    /**
+     * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * <p>
+     * An extension is no longer configurable after the extensions {@link Extension#onConfigured()} has been invoked by the
+     * runtime.
+     * 
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
+     */
     void checkConfigurable();
 
+    /**
+     * Returns the config site of the container to which the extension is registered with.
+     * 
+     * @return the config site of the container to which the extension is registered with
+     */
     ConfigSite containerConfigSite();
+
+    void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar);
 
     /**
      * Returns an extension of the specified type.
@@ -47,10 +67,6 @@ public interface ExtensionContext {
      *             already been installed
      */
     <E extends Extension> E use(Class<E> extensionType);
-
-    ArtifactBuildContext buildContext();
-
-    void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar);
 
     WireletList wirelets();
 }

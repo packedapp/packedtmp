@@ -153,8 +153,8 @@ public abstract class Extension {
      */
     // TODO add stuff about we also ignore non-concrete container sources...
     protected final ConfigSite captureStackFrame(String operation) {
-        // API-NOTE This method is not available on ExtensionContext to encouarge capturing of any stack frame to be limited
-        // to the extension class in order to have simplify the filtering mechanism.
+        // API-NOTE This method is not available on ExtensionContext to encourage capturing of any stack frame to be limited
+        // to the extension class in order to simplify the filtering mechanism.
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return ConfigSite.UNKNOWN;
         }
@@ -171,7 +171,7 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after the extensions {@link #onConfigured()} has been invoked by the runtime.
+     * This method delegates to {@link ExtensionContext#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
