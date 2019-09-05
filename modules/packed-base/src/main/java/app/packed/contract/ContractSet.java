@@ -20,16 +20,21 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 
 /**
  *
  */
 public final class ContractSet extends Contract implements Iterable<Contract> {
-    public static final ContractSet EMPTY = new ContractSet();
+    public static final ContractSet EMPTY = new ContractSet(new IdentityHashMap<>());
 
     // Do we want to maintain some kind of order????
     // SimpleName???
-    final IdentityHashMap<Class<?>, Contract> contracts = new IdentityHashMap<>();
+    final IdentityHashMap<Class<?>, Contract> contracts;
+
+    ContractSet(IdentityHashMap<Class<?>, Contract> contracts) {
+        this.contracts = requireNonNull(contracts);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -56,20 +61,24 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
     public static ContractSet of(Contract... contracts) {
         requireNonNull(contracts, "contracts is null");
         IdentityHashMap<Class<?>, Contract> m = new IdentityHashMap<>();
-        for (int i = 0; i < contracts.length; i++) {
-            //
+        for (Contract contract : contracts) {
+            if (contract instanceof ContractSet) {
+                for (Contract cc : ((ContractSet) contract)) {
+                    m.put(cc.getClass(), cc);
+                }
+            } else {
+                m.put(contract.getClass(), contract);
+            }
         }
-        System.out.println(m);
         // Fail if the same contract is add multiple times... nah just overwrite.
         // otherwise we need to do it in with to.
 
         // If we add contract set we extract all
-        throw new UnsupportedOperationException();
+        return new ContractSet(m);
     }
 
     public static ContractSet of(Iterable<? extends Contract> contracts) {
-
-        throw new UnsupportedOperationException();
+        return of(StreamSupport.stream(contracts.spliterator(), false).toArray(Contract[]::new));
     }
 
 }

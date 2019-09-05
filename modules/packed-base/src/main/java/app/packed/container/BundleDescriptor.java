@@ -22,11 +22,15 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.artifact.ArtifactImage;
+import app.packed.contract.Contract;
+import app.packed.contract.ContractSet;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -90,7 +94,9 @@ public class BundleDescriptor {
     private final Class<? extends Bundle> bundleType;
 
     /** A Services object. */
-    private final BaseBundleContract contract;
+    private final BaseBundleContract oldContract;
+
+    private final ContractSet contracts;
 
     /** The (optional) description of the bundle. */
     @Nullable
@@ -109,7 +115,8 @@ public class BundleDescriptor {
      */
     protected BundleDescriptor(BundleDescriptor.Builder builder) {
         requireNonNull(builder, "builder is null");
-        this.contract = builder.contract().build();
+        this.oldContract = builder.contract().build();
+        this.contracts = ContractSet.of(builder.contracts);
         this.bundleType = builder.bundleType();
         this.description = builder.getBundleDescription();
         this.name = builder.name == null ? "?" : builder.name;
@@ -154,7 +161,12 @@ public class BundleDescriptor {
      * @return the bundle contract
      */
     public BaseBundleContract contract() {
-        return contract;
+        return oldContract;
+    }
+
+    public ContractSet contracts() {
+        return contracts;
+
     }
 
     /**
@@ -284,6 +296,8 @@ public class BundleDescriptor {
         private String name;
 
         private Map<Key<?>, ServiceDescriptor> services;
+
+        public Set<Contract> contracts = new HashSet<>();
 
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");

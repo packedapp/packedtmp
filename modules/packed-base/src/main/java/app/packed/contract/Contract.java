@@ -24,6 +24,13 @@ import app.packed.util.Nullable;
 /**
  *
  */
+// En contract er kun noedvendig naar vi har en taet wiring..
+// Mellem 2 containere....
+// F.eks. injection, lifecycle...
+
+// Men ikke errorHandling, tror bare den eksistere
+// Logging ihvertfald
+// Eller AOP, eller maaske eksistere den bare.
 public abstract class Contract {
 
     public final boolean contains(Class<? extends Contract> contractType) {

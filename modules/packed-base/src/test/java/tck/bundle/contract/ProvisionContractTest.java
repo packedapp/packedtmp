@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseBundle;
 import app.packed.container.BaseBundleContract;
 import app.packed.inject.InjectionExtension;
+import app.packed.inject.InjectorContract;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
@@ -39,23 +40,25 @@ public class ProvisionContractTest {
 
     @Test
     public void empty() {
-        BaseBundleContract c = BaseBundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
 
             @Override
             protected void configure() {
                 use(InjectionExtension.class);
             }
         });
-        assertThat(c.services()).isNotNull();
-        assertThat(c.services()).isSameAs(c.services());
-        assertThat(c.services().services()).isEmpty();
-        assertThat(c.services().optional()).isEmpty();
-        assertThat(c.services().requires()).isEmpty();
+
+        InjectorContract ic = c.services();
+        assertThat(ic).isNotNull();
+        assertThat(ic).isSameAs(c.services());
+        assertThat(ic.services()).isEmpty();
+        assertThat(ic.optional()).isEmpty();
+        assertThat(ic.requires()).isEmpty();
     }
 
     @Test
     public void provides() {
-        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -65,14 +68,16 @@ public class ProvisionContractTest {
                 export(A.class);
             }
         });
-        assertThat(d.services().services()).containsExactly(Key.of(A.class));
-        assertThat(d.services().optional()).isEmpty();
-        assertThat(d.services().requires()).isEmpty();
+
+        InjectorContract ic = c.services();
+        assertThat(ic.services()).containsExactly(Key.of(A.class));
+        assertThat(ic.optional()).isEmpty();
+        assertThat(ic.requires()).isEmpty();
     }
 
     @Test
     public void requires() {
-        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -81,14 +86,16 @@ public class ProvisionContractTest {
                 provide(B.class);
             }
         });
-        assertThat(d.services().requires()).containsExactly(Key.of(A.class));
-        assertThat(d.services().optional()).isEmpty();
-        assertThat(d.services().services()).isEmpty();
+
+        InjectorContract ic = c.services();
+        assertThat(ic.requires()).containsExactly(Key.of(A.class));
+        assertThat(ic.optional()).isEmpty();
+        assertThat(ic.services()).isEmpty();
     }
 
     @Test
     public void optional() {
-        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -97,15 +104,17 @@ public class ProvisionContractTest {
                 provide(B.class);
             }
         });
-        assertThat(d.services().requires()).isEmpty();
-        assertThat(d.services().services()).isEmpty();
-        assertThat(d.services().optional()).containsExactly(Key.of(A.class));
+
+        InjectorContract ic = c.services();
+        assertThat(ic.requires()).isEmpty();
+        assertThat(ic.services()).isEmpty();
+        assertThat(ic.optional()).containsExactly(Key.of(A.class));
     }
 
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -115,14 +124,16 @@ public class ProvisionContractTest {
                 provide(B.class);
             }
         });
-        assertThat(d.services().requires()).containsExactly(Key.of(A.class));
-        assertThat(d.services().optional()).isEmpty();
-        assertThat(d.services().services()).isEmpty();
+
+        InjectorContract ic = c.services();
+        assertThat(ic.requires()).containsExactly(Key.of(A.class));
+        assertThat(ic.optional()).isEmpty();
+        assertThat(ic.services()).isEmpty();
     }
 
     @Test
     public void all() {
-        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -132,8 +143,10 @@ public class ProvisionContractTest {
                 export(provide(C.class));
             }
         });
-        assertThat(d.services().optional()).containsExactly(Key.of(A.class));
-        assertThat(d.services().requires()).containsExactly(Key.of(B.class));
-        assertThat(d.services().services()).containsExactly(Key.of(C.class));
+
+        InjectorContract ic = c.services();
+        assertThat(ic.optional()).containsExactly(Key.of(A.class));
+        assertThat(ic.requires()).containsExactly(Key.of(B.class));
+        assertThat(ic.services()).containsExactly(Key.of(C.class));
     }
 }

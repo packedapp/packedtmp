@@ -15,8 +15,8 @@
  */
 package app.packed.container;
 
+import app.packed.contract.ContractSet;
 import app.packed.inject.InjectorContract;
-import app.packed.lifecycle.LifecycleBundleContractPoints;
 
 /**
  * The contract of a base bundle.
@@ -35,10 +35,6 @@ public class BaseBundleContract {
     /** A service contract object. */
     private final InjectorContract services;
 
-    private final LifecycleBundleContractPoints startingPoints = null;
-
-    private final LifecycleBundleContractPoints stoppingPoints = null;
-
     private BaseBundleContract(BaseBundleContract.Builder builder) {
         this.services = builder.services;
     }
@@ -53,15 +49,6 @@ public class BaseBundleContract {
         return services;
     }
 
-    // Er detn bare tom for en injector bundle???? Det er den vel
-    public final LifecycleBundleContractPoints startingPoints() {
-        return startingPoints;
-    }
-
-    public final LifecycleBundleContractPoints stoppingPoints() {
-        return stoppingPoints;
-    }
-
     /**
      * Returns a contract for the specified bundle.
      *
@@ -69,8 +56,12 @@ public class BaseBundleContract {
      *            the bundle to return a descriptor for
      * @return a descriptor for the specified bundle
      */
-    public static BaseBundleContract of(BaseBundle bundle) {
+    public static BaseBundleContract oldOf(BaseBundle bundle) {
         return BundleDescriptor.of(bundle).contract();
+    }
+
+    public static ContractSet of(BaseBundle bundle) {
+        return BundleDescriptor.of(bundle).contracts();
     }
 
     public void print() {
