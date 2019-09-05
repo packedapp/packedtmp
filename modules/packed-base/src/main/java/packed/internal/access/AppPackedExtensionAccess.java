@@ -39,7 +39,7 @@ public interface AppPackedExtensionAccess {
 
     void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
 
-    <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet);
+    <T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 
     ExtensionPipeline<?> newPipeline(Extension extension);
 }

@@ -36,7 +36,7 @@ public class ExtensionWireletModel {
         @SuppressWarnings("unchecked")
         @Override
         protected ExtensionWireletModel computeValue(Class<?> type) {
-            return new ExtensionWireletModel((Class<? extends ExtensionWirelet<?, ?>>) type);
+            return new ExtensionWireletModel((Class<? extends ExtensionWirelet<?>>) type);
         }
     };
 
@@ -48,7 +48,7 @@ public class ExtensionWireletModel {
      * @param type
      */
     @SuppressWarnings("unchecked")
-    private ExtensionWireletModel(Class<? extends ExtensionWirelet<?, ?>> type) {
+    private ExtensionWireletModel(Class<? extends ExtensionWirelet<?>> type) {
         extensionType = (Class<? extends Extension>) EXTENSION_TYPE_EXTRACTOR.extract(type);
 
         // Check that the method is overrriden....

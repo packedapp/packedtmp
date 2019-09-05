@@ -42,7 +42,7 @@ class MyExtension extends Extension {
 }
 
 // Wirelets must be immutable....
-class MyExtensionWirelet extends ExtensionWirelet<MyExtension, MyExtensionWireletPipeline> {
+class MyExtensionWirelet extends ExtensionWirelet<MyExtensionWireletPipeline> {
 
     private String newName;
 

@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.inject.InjectionExtension;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
@@ -32,7 +31,7 @@ import packed.internal.inject.build.service.ProvideAllFromInjector;
 import packed.internal.inject.build.wirelets.MappingBuildEntry;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
+public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionPipeline> {
 
     /**
      * Processes an imported injector.

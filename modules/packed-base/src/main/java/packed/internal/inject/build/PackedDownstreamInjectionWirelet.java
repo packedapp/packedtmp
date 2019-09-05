@@ -23,13 +23,12 @@ import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.inject.InjectionExtension;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
+public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<InjectionPipeline> {
 
     public static class FilterOnKey extends PackedDownstreamInjectionWirelet {
 

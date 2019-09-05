@@ -22,7 +22,7 @@ import app.packed.container.Wirelet;
  * 
  * A wirelet attached to
  */
-public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionPipeline<T>> extends Wirelet {
+public abstract class ExtensionWirelet<T extends ExtensionPipeline<T>> extends Wirelet {
 
     /**
      * @param context
