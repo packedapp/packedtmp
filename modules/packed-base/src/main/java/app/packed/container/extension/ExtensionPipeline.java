@@ -18,8 +18,11 @@ package app.packed.container.extension;
 import app.packed.util.Nullable;
 
 /**
+ * Extension wirelet pipelines
+ * 
  * If a given extension allows specific wirelets to late configure it after. You need to use a pipeline.
  */
+// Kan sagtens lave alle metoder public....
 public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
 
     // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
@@ -37,6 +40,8 @@ public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
     boolean isDetailedStackCapturingEnable() {
         return false;
     }
+
+    // Kunne godt tage en boolean der sagde noget om hvordan den koerer...
 
     /**
      * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
@@ -68,4 +73,5 @@ public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
     public void onParentConfigured(@Nullable Object extension) {
 
     }
+
 }

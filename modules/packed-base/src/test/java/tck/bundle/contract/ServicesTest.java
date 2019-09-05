@@ -22,7 +22,8 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseBundle;
-import app.packed.container.BaseBundleContract;
+import app.packed.container.BundleDescriptor;
+import app.packed.contract.ContractSet;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InjectorContract;
 import app.packed.util.Key;
@@ -34,13 +35,13 @@ import support.stubs.Letters.NeedsAOptional;
 import support.stubs.Letters.NeedsB;
 
 /**
- * Test {@link BaseBundleContract#services()}.
+ * 
  */
 public class ServicesTest {
 
     @Test
     public void empty() {
-        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -48,7 +49,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.services();
+        InjectorContract ic = c.use(InjectorContract.class);
         assertThat(ic).isNotNull();
         assertThat(ic).isSameAs(ic);
         assertThat(ic.services()).isEmpty();
@@ -58,7 +59,7 @@ public class ServicesTest {
 
     @Test
     public void provides() {
-        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -69,7 +70,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.services();
+        InjectorContract ic = c.use(InjectorContract.class);
         assertThat(ic.services()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.requires()).isEmpty();
@@ -77,7 +78,7 @@ public class ServicesTest {
 
     @Test
     public void requires() {
-        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -87,7 +88,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.services();
+        InjectorContract ic = c.use(InjectorContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.services()).isEmpty();
@@ -95,7 +96,7 @@ public class ServicesTest {
 
     @Test
     public void optional() {
-        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -105,7 +106,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.services();
+        InjectorContract ic = c.use(InjectorContract.class);
         assertThat(ic.requires()).isEmpty();
         assertThat(ic.services()).isEmpty();
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
@@ -114,7 +115,7 @@ public class ServicesTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -125,7 +126,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.services();
+        InjectorContract ic = c.use(InjectorContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.services()).isEmpty();
@@ -133,7 +134,7 @@ public class ServicesTest {
 
     @Test
     public void all() {
-        BaseBundleContract c = BaseBundleContract.oldOf(new BaseBundle() {
+        ContractSet c = BundleDescriptor.constractOf(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -144,7 +145,8 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.services();
+        InjectorContract ic = c.use(InjectorContract.class);
+
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
         assertThat(ic.requires()).containsExactly(Key.of(B.class));
         assertThat(ic.services()).containsExactly(Key.of(C.class));

@@ -28,18 +28,11 @@ import app.packed.inject.InjectionExtension;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
-import packed.internal.access.SharedSecrets;
 import packed.internal.inject.build.service.ProvideAllFromInjector;
 import packed.internal.inject.build.wirelets.MappingBuildEntry;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionExtension, InjectionPipeline> {
-
-    /** {@inheritDoc} */
-    @Override
-    public final InjectionPipeline newPipeline(InjectionExtension extension) {
-        return new InjectionPipeline(SharedSecrets.inject().getBuilder(extension));
-    }
 
     /**
      * Processes an imported injector.

@@ -260,13 +260,13 @@ public final class TypeUtil {
             throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an interface and cannot be instantiated");
         } else if (clazz.isArray()) {
             throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an array and cannot be instantiated");
+        } else if (clazz.isPrimitive()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
         }
         int modifiers = clazz.getModifiers();
         if (Modifier.isAbstract(modifiers)) {
             // Yes a primitive class is abstract
-            if (clazz.isPrimitive()) {
-                throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
-            }
+
             throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an abstract class and cannot be instantiated");
         }
         /*

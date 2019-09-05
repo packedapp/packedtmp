@@ -28,7 +28,7 @@ public final class InjectionPipeline extends ExtensionPipeline<InjectionPipeline
 
     final InjectorBuilder ib;
 
-    InjectionPipeline(InjectorBuilder ib) {
+    public InjectionPipeline(InjectorBuilder ib) {
         this.ib = requireNonNull(ib);
     }
 

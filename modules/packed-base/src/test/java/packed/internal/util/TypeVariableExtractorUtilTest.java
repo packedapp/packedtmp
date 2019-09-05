@@ -34,10 +34,10 @@ public class TypeVariableExtractorUtilTest {
         class X<T1, T2, T3, T4> {}
         class Y<T> extends X<String, int[], List<String>, T> {}
 
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, X.class, 0)).isSameAs(String.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, X.class, 1)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, X.class, 2)).isEqualTo(TypeStubs.LIST_STRING);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, X.class, 3)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.rawClass(X.class, 0).extract(Y.class)).isSameAs(String.class);
+        assertThat(TypeVariableExtractor.rawClass(X.class, 1).extract(Y.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.rawClass(X.class, 2).extract(Y.class)).isEqualTo(TypeStubs.LIST_STRING);
+        assertThat(TypeVariableExtractor.rawClass(X.class, 3).extract(Y.class)).isInstanceOf(TypeVariable.class);
     }
 
     @Test

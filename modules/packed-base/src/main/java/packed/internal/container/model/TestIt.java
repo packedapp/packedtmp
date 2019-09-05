@@ -24,6 +24,7 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import app.packed.inject.Injector;
+import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 
 /**
@@ -53,7 +54,7 @@ public class TestIt extends AppBundle {
 
     public static void main(String[] args) {
 
-        try (App a = App.of(new TestIt())) {
+        try (App a = App.of(new TestIt(), UpstreamServiceWirelets.peek(e -> {}))) {
             System.out.println("");
             a.injector().services().forEach(e -> System.out.println(e));
 

@@ -33,15 +33,6 @@ import app.packed.util.Nullable;
 // Eller AOP, eller maaske eksistere den bare.
 public abstract class Contract {
 
-    public final boolean contains(Class<? extends Contract> contractType) {
-        requireNonNull(contractType, "contractType is null");
-        if (this instanceof ContractSet) {
-            return ((ContractSet) this).contracts.containsKey(contractType);
-        } else {
-            return this.getClass() == contractType;
-        }
-    }
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(Object obj) {
@@ -52,8 +43,8 @@ public abstract class Contract {
     // Supported, compatible..
     protected abstract boolean equalsTo(Contract other);
 
-    public final <T extends Contract> Optional<T> get(Class<T> contractType) {
-        return Optional.ofNullable(get0(contractType));
+    public static final <T extends Contract> Optional<T> get(Contract c, Class<T> contractType) {
+        return Optional.ofNullable(c.get0(contractType));
     }
 
     @SuppressWarnings("unchecked")
@@ -70,8 +61,17 @@ public abstract class Contract {
         }
     }
 
-    public final <T extends Contract> T use(Class<T> contractType) {
-        T t = get0(contractType);
+    public static final boolean contains(Contract c, Class<? extends Contract> contractType) {
+        requireNonNull(contractType, "contractType is null");
+        if (c instanceof ContractSet) {
+            return ((ContractSet) c).contracts.containsKey(contractType);
+        } else {
+            return c.getClass() == contractType;
+        }
+    }
+
+    public static <T extends Contract> T use(Contract c, Class<T> contractType) {
+        T t = c.get0(contractType);
         if (t == null) {
             throw new Error();
         }

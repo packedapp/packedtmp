@@ -115,12 +115,13 @@ public final class InjectorBuilder {
                 builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }
         }
-        builder.contract().services = InjectorContract.of(c -> {
+
+        builder.contracts.add(InjectorContract.of(c -> {
             if (exporter != null) {
                 exporter.buildDescriptor(c);
             }
             dependencies().buildDescriptor(c);
-        });
+        }));
     }
 
     /**

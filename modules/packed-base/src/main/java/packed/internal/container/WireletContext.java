@@ -23,6 +23,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionPipeline;
 import app.packed.container.extension.ExtensionWirelet;
 import packed.internal.access.SharedSecrets;
+import packed.internal.container.extension.ExtensionWireletModel;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeVariableExtractorUtil;
 
@@ -69,6 +70,7 @@ public class WireletContext {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
+        System.out.println("WHAT");
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWirelet ew = (ExtensionWirelet) w;
@@ -78,7 +80,7 @@ public class WireletContext {
                     if (e == null) {
                         throw new IllegalStateException();// Extension was never instaleld
                     }
-                    return SharedSecrets.extension().wireletNewPipeline(null, null);
+                    return ExtensionWireletModel.newPipeline(e, ew.getClass());
 
                 });
                 SharedSecrets.extension().wireletProcess(p, ew);

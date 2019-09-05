@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.inject;
 
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+
+import app.packed.artifact.ArtifactConfigurator;
 import app.packed.container.Wirelet;
 
 /**
- * Extensions that make use of wirelets must use extends
- * 
- * A wirelet attached to
+ *
  */
-public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionPipeline<T>> extends Wirelet {
+interface InjectorProxy {
 
-    /**
-     * @param context
-     */
-    protected abstract void process(T context);
+    Injector create(String s, List<String> list);
+
+    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
+            Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 }

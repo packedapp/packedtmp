@@ -22,14 +22,13 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseBundle;
-import app.packed.container.BaseBundleContract;
 import app.packed.container.BundleDescriptor;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.C;
 
 /**
- * Test {@link BaseBundleContract#services()}.
+ * 
  */
 public class ServicesTest {
 

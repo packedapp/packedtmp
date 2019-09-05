@@ -17,31 +17,34 @@ package packed.internal.inject.util.nextapi;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWirelet;
 
 /**
  *
  */
 public class ExtensionWireletPipelineTester {
 
+    public static void main(String[] args) {
+
+    }
 }
 
 class MyExtension extends Extension {
     String name;
+
+    @Override
+    protected MyExtensionWireletPipeline newPipeline() {
+        return new MyExtensionWireletPipeline(this);
+    }
 }
 
 // Wirelets must be immutable....
 class MyExtensionWirelet extends ExtensionWirelet<MyExtension, MyExtensionWireletPipeline> {
 
     private String newName;
-
-    /** {@inheritDoc} */
-    @Override
-    protected MyExtensionWireletPipeline newPipeline(MyExtension extension) {
-        return new MyExtensionWireletPipeline(extension);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -77,4 +80,12 @@ class MyExtensionWireletPipeline extends ExtensionPipeline<MyExtensionWireletPip
     protected MyExtensionWireletPipeline split() {
         return new MyExtensionWireletPipeline(extension, name);
     }
+}
+
+abstract class EW<T extends ExtensionPipeline<?>> extends Wirelet {
+
+}
+
+class W extends EW<MyExtensionWireletPipeline> {
+
 }

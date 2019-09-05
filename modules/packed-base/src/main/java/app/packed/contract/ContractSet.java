@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.stream.StreamSupport;
 
 /**
- *
+ * A set of contracts guaranteed to contain no more then a single contract of a particular type.
  */
 public final class ContractSet extends Contract implements Iterable<Contract> {
     public static final ContractSet EMPTY = new ContractSet(new IdentityHashMap<>());
@@ -81,4 +81,7 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
         return of(StreamSupport.stream(contracts.spliterator(), false).toArray(Contract[]::new));
     }
 
+    public <T extends Contract> T use(Class<T> contractType) {
+        return use(this, contractType);
+    }
 }

@@ -93,9 +93,6 @@ public class BundleDescriptor {
     /** The type of the bundle. */
     private final Class<? extends Bundle> bundleType;
 
-    /** A Services object. */
-    private final BaseBundleContract oldContract;
-
     private final ContractSet contracts;
 
     /** The (optional) description of the bundle. */
@@ -115,7 +112,6 @@ public class BundleDescriptor {
      */
     protected BundleDescriptor(BundleDescriptor.Builder builder) {
         requireNonNull(builder, "builder is null");
-        this.oldContract = builder.contract().build();
         this.contracts = ContractSet.of(builder.contracts);
         this.bundleType = builder.bundleType();
         this.description = builder.getBundleDescription();
@@ -153,15 +149,6 @@ public class BundleDescriptor {
         // Saa skal vi vel ogsaa have navne...
         // Maaske kan vi have Container? <- Indicating that it will be created with Container and then some postfix
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the bundle contract.
-     * 
-     * @return the bundle contract
-     */
-    public BaseBundleContract contract() {
-        return oldContract;
     }
 
     public ContractSet contracts() {
@@ -242,6 +229,10 @@ public class BundleDescriptor {
         throw new UnsupportedOperationException();
     }
 
+    public static ContractSet constractOf(BaseBundle bundle) {
+        return BundleDescriptor.of(bundle).contracts();
+    }
+
     // Or just have a descriptor() on ContainerImage();
     public static BundleDescriptor of(ArtifactImage image) {
         return of((ContainerSource) image);
@@ -291,8 +282,6 @@ public class BundleDescriptor {
         /** The bundleType */
         private final Class<? extends Bundle> bundleType;
 
-        private BaseBundleContract.Builder contract = new BaseBundleContract.Builder();
-
         private String name;
 
         private Map<Key<?>, ServiceDescriptor> services;
@@ -322,10 +311,6 @@ public class BundleDescriptor {
          */
         public final Class<? extends Bundle> bundleType() {
             return bundleType;
-        }
-
-        public BaseBundleContract.Builder contract() {
-            return contract;
         }
 
         @Nullable

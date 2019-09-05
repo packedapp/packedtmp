@@ -27,7 +27,7 @@ public class ContractTests {
             c.addProvides(Long.class);
         });
 
-        ContractSet.of(ic);
+        System.out.println(ContractSet.of(ic));
 
         // json
         // toString

@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
+// implements MemberDescriptor
 public interface ExecutableDescriptor extends Member, AnnotatedElement {
 
     /**

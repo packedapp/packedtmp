@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container.extension.stuff;
 
-import app.packed.container.Wirelet;
+import app.packed.container.extension.ExtensionPipeline;
 
 /**
- * Extensions that make use of wirelets must use extends
- * 
- * A wirelet attached to
+ *
  */
-public abstract class ExtensionWirelet<E extends Extension, T extends ExtensionPipeline<T>> extends Wirelet {
+public class CIBuilderPipeline extends ExtensionPipeline<CIBuilderPipeline> implements CommonInterface {
 
-    /**
-     * @param context
-     */
-    protected abstract void process(T context);
+    /** {@inheritDoc} */
+    @Override
+    protected CIBuilderPipeline split() {
+        throw new UnsupportedOperationException();
+    }
+
 }

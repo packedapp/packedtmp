@@ -102,13 +102,13 @@ public abstract class Extension {
             }
 
             @Override
-            public <E extends Extension, T extends ExtensionPipeline<T>> T wireletNewPipeline(E extension, ExtensionWirelet<E, T> wirelet) {
-                return wirelet.newPipeline(extension);
+            public <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet) {
+                wirelet.process(pipeline);
             }
 
             @Override
-            public <E extends Extension, T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<E, T> wirelet) {
-                wirelet.process(pipeline);
+            public ExtensionPipeline<?> newPipeline(Extension extension) {
+                return extension.newPipeline();
             }
         });
     }
@@ -178,6 +178,10 @@ public abstract class Extension {
      */
     protected final void checkConfigurable() {
         context().checkConfigurable();
+    }
+
+    protected ExtensionPipeline<?> newPipeline() {
+        throw new UnsupportedOperationException("This extension does not support pipelines");
     }
 
     /**

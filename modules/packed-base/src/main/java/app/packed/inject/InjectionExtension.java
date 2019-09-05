@@ -17,6 +17,8 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Member;
+
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
@@ -30,6 +32,7 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.InjectConfigSiteOperations;
+import packed.internal.inject.build.InjectionPipeline;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.run.AbstractInjector;
@@ -87,6 +90,12 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected final InjectionPipeline newPipeline() {
+        return new InjectionPipeline(builder);
     }
 
     /**
@@ -154,6 +163,16 @@ public final class InjectionExtension extends Extension {
         // explicitRequirementsManagement
         checkConfigurable();
         builder.dependencies().manualRequirementsManagement();
+    }
+
+    protected final void disableMemberInjection(Class<? extends Member> memberType) {
+        //// Det burde vaere noget paa component....
+        // Ahh vi har instance of and types...
+        // architecture().disable(Inject.class)
+        // architecture().disable(Inject.class, Class<? extends Member> fieldOrMethod);
+        // // Field, Method, Member.class
+
+        // Kunne ogsaa lave en @Rules() man kunne smide paa bundles...
     }
 
     /** {@inheritDoc} */
