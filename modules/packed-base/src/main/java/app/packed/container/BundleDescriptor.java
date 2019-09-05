@@ -90,7 +90,7 @@ public class BundleDescriptor {
     private final Class<? extends Bundle> bundleType;
 
     /** A Services object. */
-    private final BundleContract contract;
+    private final BaseBundleContract contract;
 
     /** The (optional) description of the bundle. */
     @Nullable
@@ -153,7 +153,7 @@ public class BundleDescriptor {
      * 
      * @return the bundle contract
      */
-    public BundleContract contract() {
+    public BaseBundleContract contract() {
         return contract;
     }
 
@@ -279,7 +279,7 @@ public class BundleDescriptor {
         /** The bundleType */
         private final Class<? extends Bundle> bundleType;
 
-        private BundleContract.Builder contract = new BundleContract.Builder();
+        private BaseBundleContract.Builder contract = new BaseBundleContract.Builder();
 
         private String name;
 
@@ -310,7 +310,7 @@ public class BundleDescriptor {
             return bundleType;
         }
 
-        public BundleContract.Builder contract() {
+        public BaseBundleContract.Builder contract() {
             return contract;
         }
 

@@ -22,7 +22,8 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseBundle;
-import app.packed.container.BundleContract;
+import app.packed.container.BaseBundleContract;
+import app.packed.inject.InjectionExtension;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
@@ -32,16 +33,18 @@ import support.stubs.Letters.NeedsAOptional;
 import support.stubs.Letters.NeedsB;
 
 /**
- * Test {@link BundleContract#services()}.
+ * Test {@link BaseBundleContract#services()}.
  */
 public class ServicesTest {
 
     @Test
     public void empty() {
-        BundleContract c = BundleContract.of(new BaseBundle() {
+        BaseBundleContract c = BaseBundleContract.of(new BaseBundle() {
 
             @Override
-            protected void configure() {}
+            protected void configure() {
+                use(InjectionExtension.class);
+            }
         });
         assertThat(c.services()).isNotNull();
         assertThat(c.services()).isSameAs(c.services());
@@ -52,7 +55,7 @@ public class ServicesTest {
 
     @Test
     public void provides() {
-        BundleContract d = BundleContract.of(new BaseBundle() {
+        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -69,7 +72,7 @@ public class ServicesTest {
 
     @Test
     public void requires() {
-        BundleContract d = BundleContract.of(new BaseBundle() {
+        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -85,7 +88,7 @@ public class ServicesTest {
 
     @Test
     public void optional() {
-        BundleContract d = BundleContract.of(new BaseBundle() {
+        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -102,7 +105,7 @@ public class ServicesTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        BundleContract d = BundleContract.of(new BaseBundle() {
+        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {
@@ -119,7 +122,7 @@ public class ServicesTest {
 
     @Test
     public void all() {
-        BundleContract d = BundleContract.of(new BaseBundle() {
+        BaseBundleContract d = BaseBundleContract.of(new BaseBundle() {
 
             @Override
             protected void configure() {

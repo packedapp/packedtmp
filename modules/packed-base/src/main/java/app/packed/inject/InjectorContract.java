@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.contract.Contract;
 import app.packed.util.Key;
 
 /**
@@ -52,10 +53,10 @@ import app.packed.util.Key;
 // * A service contract cannot both have the same service as a requirement and provide it.
 // * A key can only in one catagory at a time! Builder validates this....
 // InjectorContract.of(new Bundle());
-public final class InjectorContract {
+public final class InjectorContract extends Contract {
 
     /** A service contract that has no requirements and provides no services. */
-    public static final InjectorContract EMPTY = new Builder().build();
+    public static final InjectorContract EMPTY = new InjectorContract(new Builder());
 
     /** An immutable set of optional service keys. */
     private final Set<Key<?>> optional;
@@ -85,11 +86,8 @@ public final class InjectorContract {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof InjectorContract)) {
-            return false;
-        }
-        InjectorContract sc = (InjectorContract) obj;
+    protected boolean equalsTo(Contract other) {
+        InjectorContract sc = (InjectorContract) other;
         return optional.equals(sc.optional) && provides.equals(sc.provides) && requires.equals(sc.requires);
     }
 
@@ -159,7 +157,7 @@ public final class InjectorContract {
         return new InjectorContract.Builder();
     }
 
-    public static InjectorContract builder(Consumer<? super InjectorContract.Builder> action) {
+    public static InjectorContract of(Consumer<? super InjectorContract.Builder> action) {
         requireNonNull(action, "action is null");
         InjectorContract.Builder b = new InjectorContract.Builder();
         action.accept(b);
@@ -182,7 +180,7 @@ public final class InjectorContract {
     }
 
     public static InjectorContract ofRequired(Class<?>... keys) {
-        return builder(b -> List.of(keys).forEach(k -> b.addRequires(k)));
+        return of(b -> List.of(keys).forEach(k -> b.addRequires(k)));
     }
 
     public static InjectorContract ofRequired(Key<?>... keys) {
@@ -314,6 +312,9 @@ public final class InjectorContract {
                 requires.retainAll(optional);
                 // TODO I think just automatically remove it...
                 throw new IllegalStateException("One or more keys have been registered as both optional and required: " + requires);
+            }
+            if ((optional == null || optional.isEmpty()) && (requires == null || requires.isEmpty()) && (provides == null || provides.isEmpty())) {
+                return InjectorContract.EMPTY;
             }
             return new InjectorContract(this);
         }

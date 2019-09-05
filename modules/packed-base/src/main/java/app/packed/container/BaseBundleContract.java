@@ -19,7 +19,7 @@ import app.packed.inject.InjectorContract;
 import app.packed.lifecycle.LifecycleBundleContractPoints;
 
 /**
- * The contract of a bundle.
+ * The contract of a base bundle.
  * <p>
  * The main difference to {@link BundleDescriptor} is that class does not include any implementation details. For
  * example, BundleDescriptor lists all annotated methods.
@@ -27,7 +27,10 @@ import app.packed.lifecycle.LifecycleBundleContractPoints;
  * 
  * Lists all Components also?????
  */
-public class BundleContract {
+// Hmmmmmmmmmmmmm
+/// Ideen er vel lidt at lave det type sikkert....
+/// Men hvad hvis den ikke har en given ting
+public class BaseBundleContract {
 
     /** A service contract object. */
     private final InjectorContract services;
@@ -36,9 +39,8 @@ public class BundleContract {
 
     private final LifecycleBundleContractPoints stoppingPoints = null;
 
-    private BundleContract(BundleContract.Builder builder) {
-        InjectorContract.Builder s = builder.services;
-        this.services = s == null ? InjectorContract.EMPTY : s.build();
+    private BaseBundleContract(BaseBundleContract.Builder builder) {
+        this.services = builder.services;
     }
 
     /**
@@ -67,7 +69,7 @@ public class BundleContract {
      *            the bundle to return a descriptor for
      * @return a descriptor for the specified bundle
      */
-    public static BundleContract of(BaseBundle bundle) {
+    public static BaseBundleContract of(BaseBundle bundle) {
         return BundleDescriptor.of(bundle).contract();
     }
 
@@ -80,20 +82,15 @@ public class BundleContract {
     public static class Builder {
 
         /** A service contract builder object. */
-        private InjectorContract.Builder services;
+        public InjectorContract services;
 
         /**
          * Builds and returns a new contract
          * 
          * @return the new contract
          */
-        public BundleContract build() {
-            return new BundleContract(this);
-        }
-
-        public InjectorContract.Builder services() {
-            InjectorContract.Builder s = services;
-            return s == null ? services = InjectorContract.builder() : s;
+        public BaseBundleContract build() {
+            return new BaseBundleContract(this);
         }
     }
 

@@ -224,7 +224,7 @@ public abstract class BaseBundle extends Bundle {
      *            the bundle to print the contract for
      */
     protected static void printContract(BaseBundle bundle) {
-        BundleContract.of(bundle).print();
+        // BaseBundleContract.of(bundle).print();
     }
 
     protected static void printDescriptor(BaseBundle bundle) {

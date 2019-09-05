@@ -29,7 +29,7 @@ import packed.internal.util.LookupValue;
 /** A model of a container. Each source points to a */
 public final class ContainerModel implements ComponentLookup {
 
-    /** A cache of values. */
+    /** A cache of model. */
     private static final ClassValue<ContainerModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
