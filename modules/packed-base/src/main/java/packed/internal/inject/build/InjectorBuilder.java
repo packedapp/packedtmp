@@ -167,8 +167,8 @@ public final class InjectorBuilder {
         // Now inject all components...
 
         if (exporter != null) {
-            if (resolvedEntries != exporter.resolvedExports) {
-                exporter.resolvedExports.toRuntimeNodes();
+            if (resolvedEntries != exporter.oldResolvedExports) {
+                exporter.oldResolvedExports.toRuntimeNodes();
             }
         }
     }

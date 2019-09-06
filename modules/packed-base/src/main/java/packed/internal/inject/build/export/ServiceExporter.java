@@ -24,9 +24,9 @@ import java.util.LinkedHashSet;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InjectorContract;
-import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -55,16 +55,21 @@ public final class ServiceExporter {
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
 
+    /** The config site, if we export all entries. */
+    @Nullable
     private ConfigSite exportAll;
 
     /**
-     * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
-     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}.
+     * An entry to this list is added every time the user calls {@link InjectionExtension#export(Class)},
+     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}. Export
+     * all does not make use of this list.
      */
     private final ArrayList<ExportedBuildEntry<?>> exports = new ArrayList<>();
 
     /** */
-    public final ServiceNodeMap resolvedExports = new ServiceNodeMap();
+    public final ServiceNodeMap oldResolvedExports = new ServiceNodeMap();
+
+    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> resolvedExports = new LinkedHashMap<>();
 
     /** A map of all keyed exports where an entry matching the key could not be found. */
     @Nullable
@@ -81,28 +86,9 @@ public final class ServiceExporter {
     }
 
     public void buildDescriptor(InjectorContract.Builder builder) {
-        for (ServiceEntry<?> n : resolvedExports) {
+        for (ServiceEntry<?> n : oldResolvedExports) {
             builder.addProvides(n.key());
         }
-    }
-
-    /**
-     * Registers the specified key to be exported.
-     * 
-     * @param <T>
-     *            the type of service
-     * @param key
-     *            the key of the service to export
-     * @param configSite
-     *            the config site of the export
-     * @return a service configuration that can be returned to the user
-     * @see InjectionExtension#export(Class)
-     * @see InjectionExtension#export(Key)
-     */
-    public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, key, configSite);
-        exports.add(e);
-        return new ExportedServiceConfiguration<>(e);
     }
 
     /**
@@ -127,6 +113,25 @@ public final class ServiceExporter {
             throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
         }
         ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, entryToExport, configSite);
+        exports.add(e);
+        return new ExportedServiceConfiguration<>(e);
+    }
+
+    /**
+     * Registers the specified key to be exported.
+     * 
+     * @param <T>
+     *            the type of service
+     * @param key
+     *            the key of the service to export
+     * @param configSite
+     *            the config site of the export
+     * @return a service configuration that can be returned to the user
+     * @see InjectionExtension#export(Class)
+     * @see InjectionExtension#export(Key)
+     */
+    public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
+        ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, key, configSite);
         exports.add(e);
         return new ExportedServiceConfiguration<>(e);
     }
@@ -173,7 +178,7 @@ public final class ServiceExporter {
             }
 
             if (export) {
-                ExportedBuildEntry<?> existing = (ExportedBuildEntry<?>) resolvedExports.putIfAbsent(entry);
+                ExportedBuildEntry<?> existing = (ExportedBuildEntry<?>) oldResolvedExports.putIfAbsent(entry);
                 if (existing != null) {
                     if (duplicateExports == null) {
                         duplicateExports = new LinkedHashMap<>();
@@ -195,13 +200,11 @@ public final class ServiceExporter {
         if (exportAll != null) {
             for (ServiceEntry<?> e : resolver.resolvedEntries) {
                 if (!e.isPrivate()) {
-                    if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(new ExportedBuildEntry<>(builder, e, exportAll));
+                    if (!oldResolvedExports.containsKey(e.key())) {
+                        oldResolvedExports.put(new ExportedBuildEntry<>(builder, e, exportAll));
                     }
                 }
             }
         }
-
     }
-
 }

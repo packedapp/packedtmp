@@ -107,6 +107,12 @@ public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
     public String toString() {
         return nodes.toString();
     }
+
+    public ServiceNodeMap of(LinkedHashMap<Key<?>, ServiceEntry<?>> nodes) {
+        ServiceNodeMap m = new ServiceNodeMap();
+        m.nodes.putAll(nodes);
+        return m;
+    }
 }
 
 // Couple of ideas.

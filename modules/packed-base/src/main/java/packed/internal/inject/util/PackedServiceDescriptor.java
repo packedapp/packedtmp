@@ -25,7 +25,10 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /** The default implementation of {@link ServiceDescriptor}. */
-public class PackedServiceDescriptor implements ServiceDescriptor {
+// We might ditch the interface is future versions, and just have a class.
+// However, for now I think we might like the flexibility of not having.
+// ServiceDescriptor.of
+public final class PackedServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
@@ -37,18 +40,20 @@ public class PackedServiceDescriptor implements ServiceDescriptor {
     /** The key of the service. */
     private final Key<?> key;
 
-    // private final Set<String> tags;
-
     /**
-     * @param configSite
-     * @param description
+     * Creates a new descriptor.
+     * 
      * @param key
+     *            the key of the service
+     * @param configSite
+     *            the config site of the service
+     * @param description
+     *            the (optional) description of the service
      */
-    public PackedServiceDescriptor(Key<?> key, ConfigSite configSite, String description /* Set<String> tags */) {
+    public PackedServiceDescriptor(Key<?> key, ConfigSite configSite, String description) {
+        this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
         this.description = description;
-        this.key = requireNonNull(key);
-        // this.tags = requireNonNull(tags);
     }
 
     /** {@inheritDoc} */
@@ -68,13 +73,8 @@ public class PackedServiceDescriptor implements ServiceDescriptor {
     public Key<?> key() {
         return key;
     }
-    //
-    // /** {@inheritDoc} */
-    // @Override
-    // public Set<String> tags() {
-    // return tags;
-    // }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "InternalServiceDescriptor [configSite=" + configSite + ", description=" + description + ", key=" + key /* + ", tags=" + tags */
