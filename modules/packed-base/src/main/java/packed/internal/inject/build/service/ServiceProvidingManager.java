@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -48,7 +49,7 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 
 /**
- *
+ * Manages all entities that provide a service.
  */
 public final class ServiceProvidingManager {
 
@@ -58,18 +59,21 @@ public final class ServiceProvidingManager {
     /** The injector builder. */
     private final InjectorBuilder builder;
 
-    /** A map of all providers */
+    /** A map of build entries that provide services with the same key. */
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateProviders;
 
-    /** All provided nodes. */
+    /** All explicit added build entries. */
     private final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
 
-    /** All injectors added via {@link InjectionExtension#provideAll(Injector, Wirelet...)} */
+    /** All injectors added via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromInjector> provideAll;
 
     /**
+     * Creates a new manager.
+     * 
      * @param builder
+     *            the injector builder
      */
     public ServiceProvidingManager(InjectorBuilder builder) {
         this.builder = requireNonNull(builder);
@@ -140,7 +144,7 @@ public final class ServiceProvidingManager {
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolveAndCheckForDublicates(ArtifactBuildContext buildContext) {
-        HashMap<Key<?>, BuildEntry<?>> resolvedServices = new HashMap<>();
+        LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
         resolveAndCheckForDublicates0(resolvedServices, entries);
@@ -161,7 +165,7 @@ public final class ServiceProvidingManager {
         return resolvedServices;
     }
 
-    private void resolveAndCheckForDublicates0(HashMap<Key<?>, BuildEntry<?>> resolvedServices, Iterable<? extends BuildEntry<?>> entries) {
+    private void resolveAndCheckForDublicates0(LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices, Collection<? extends BuildEntry<?>> entries) {
         for (BuildEntry<?> entry : entries) {
             Key<?> key = entry.key(); // whats the deal with null keys
             if (key != null) {
