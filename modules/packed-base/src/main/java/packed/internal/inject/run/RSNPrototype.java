@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
 
@@ -49,8 +49,8 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
         this.providers = new Provider[node.dependencies.size()];
         for (int i = 0; i < providers.length; i++) {
             RSE<?> forReal = node.resolvedDependencies[i].toRuntimeEntry();
-            ProvideHelper is = null;
-            ProvideHelper.of(Injector.configure(c -> {}), node.dependencies.get(i));
+            ServiceRequest is = null;
+            ServiceRequest.of(Injector.configure(c -> {}), node.dependencies.get(i));
             providers[i] = () -> forReal.getInstance(is);
         }
         // Create local injection site for each parameter.
@@ -71,7 +71,7 @@ public final class RSNPrototype<T> extends RSE<T> implements Provider<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         return newInstance();
     }
 

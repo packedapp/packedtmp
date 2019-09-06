@@ -211,7 +211,7 @@ final class DependencyGraph {
                         if (dependencies.size() > 1) {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
-                                if (j == dependency.parameterIndex().getAsInt()) {
+                                if (j == dependency.parameterIndex()) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {
                                     sj.add(dependencies.get(j).key().typeLiteral().rawType().getSimpleName());

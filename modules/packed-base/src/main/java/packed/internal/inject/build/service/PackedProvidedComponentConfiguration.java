@@ -22,7 +22,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.feature.FeatureMap;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
@@ -30,7 +30,7 @@ import packed.internal.inject.build.BuildEntry;
 /**
  *
  */
-public final class PackedProvidedComponentConfiguration<T> implements ProvidedComponentConfiguration<T> {
+public final class PackedProvidedComponentConfiguration<T> implements ComponentServiceConfiguration<T> {
 
     /** The service we are exposing. */
     public final BuildEntry<T> buildEntry;
@@ -51,7 +51,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> as(Key<? super T> key) {
+    public ComponentServiceConfiguration<T> as(Key<? super T> key) {
         component.checkConfigurable();
         buildEntry.as(key);
         return this;
@@ -104,7 +104,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> lazy() {
+    public ComponentServiceConfiguration<T> lazy() {
         component.checkConfigurable();
         ((ComponentBuildEntry<T>) buildEntry).lazy();
         return this;
@@ -118,7 +118,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> prototype() {
+    public ComponentServiceConfiguration<T> prototype() {
         component.checkConfigurable();
         ((ComponentBuildEntry<T>) buildEntry).prototype();
         return this;
@@ -126,7 +126,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> setDescription(@Nullable String description) {
+    public ComponentServiceConfiguration<T> setDescription(@Nullable String description) {
         // TODO, vi har kun en description...hvis man er lavet fra en component configuration...
         // Skriver direkte igennem til the underlying component configuration.. Hvis man er lavet via provide...
         component.setDescription(description);
@@ -136,7 +136,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ProvidedCo
 
     /** {@inheritDoc} */
     @Override
-    public ProvidedComponentConfiguration<T> setName(String name) {
+    public ComponentServiceConfiguration<T> setName(String name) {
         component.setName(name);
         return this;
     }

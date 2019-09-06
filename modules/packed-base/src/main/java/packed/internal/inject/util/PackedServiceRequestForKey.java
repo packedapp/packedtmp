@@ -19,12 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Member;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 import app.packed.component.Component;
-import app.packed.inject.ServiceDependency;
 import app.packed.inject.Injector;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.VariableDescriptor;
@@ -33,21 +31,21 @@ import app.packed.util.VariableDescriptor;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-public class InjectionSiteForDependency implements ProvideHelper {
+public class PackedServiceRequestForKey implements ServiceRequest {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
     private final Component component;
 
-    /** The key of the service that was requested */
-    private final ServiceDependency dependency;
-
     /** The injector from where the service was requested. */
-    private final Injector injector;
+    final Injector injector;
 
-    public InjectionSiteForDependency(Injector injector, ServiceDependency dependency, @Nullable Component component) {
+    /** The key of the service that was requested */
+    private final Key<?> key;
+
+    public PackedServiceRequestForKey(Injector injector, Key<?> key, @Nullable Component component) {
         this.injector = requireNonNull(injector, "injector is null");
-        this.dependency = requireNonNull(dependency, "dependency is null");
+        this.key = requireNonNull(key, "key is null");
         this.component = component;
     }
 
@@ -59,52 +57,31 @@ public class InjectionSiteForDependency implements ProvideHelper {
 
     /** {@inheritDoc} */
     @Override
-    public OptionalInt parameterIndex() {
-        return dependency.parameterIndex();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Injector injector() {
-        return injector;
+    public int parameterIndex() {
+        return -1;
     }
 
     /** {@inheritDoc} */
     @Override
     public Key<?> key() {
-        return dependency.key();
+        return key;
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<Member> member() {
-        return dependency.member();
+        return Optional.empty();
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<VariableDescriptor> variable() {
-        return dependency.variable();
+        return Optional.empty();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isOptional() {
-        return dependency.isOptional();
+        return false;
     }
-
-    // public static void main(String[] args) {
-    // new Factory1<InjectionSite, Logger>(
-    // site -> site.getComponent().isPresent() ? Logger.getLogger(site.getComponent().get().getPath().toString()) :
-    // Logger.getAnonymousLogger()) {};
-    // }
-    //
-    // @Provides
-    // public static Logger provideLogger(InjectionSite site) {
-    // if (site.getComponent().isPresent()) {
-    // return Logger.getLogger(site.getComponent().get().getPath().toString());
-    // } else {
-    // return Logger.getAnonymousLogger();
-    // }
-    // }
 }

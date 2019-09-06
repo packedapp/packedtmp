@@ -17,6 +17,8 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
+
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
@@ -71,7 +73,7 @@ public final class ComponentExtension extends Extension {
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * <p>
-     * Invoking this method will {@code install} the {@link InjectionExtension} if it has not already been installed.
+     * This method uses the {@link InjectionExtension}.
      * 
      * @param implementation
      *            the type of instantiate and use as the component instance
@@ -84,7 +86,7 @@ public final class ComponentExtension extends Extension {
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
-     * Invoking this method will {@code install} the {@link InjectionExtension} if it has not already been installed.
+     * This method uses the {@link InjectionExtension}.
      * 
      * @param factory
      *            the factory to install
@@ -101,9 +103,9 @@ public final class ComponentExtension extends Extension {
     }
 
     /**
-     * Installs a component that will use.
+     * Installs a component that does not have any instance representing it.
      * <p>
-     * Invoking this method will {@code install} the {@link InjectionExtension} if it has not already been installed.
+     * This method uses the {@link InjectionExtension}.
      * 
      * @param implementation
      *            the type of instantiate and use as the component instance
@@ -121,4 +123,34 @@ public final class ComponentExtension extends Extension {
 
     // Alternative to ComponentScan
     public void scanForInstall(Class<?>... classesInPackages) {}
+
+    void addRule(ComponentRule rule) {
+
+    }
+}
+
+class ComponentRule {
+
+    // What to disable
+    // Where (which components)to Disable it?
+    // What todo... warn. fail, ...
+
+    static ComponentRule disableAnnotatedMethodHook(Class<? extends Annotation> type, Class<?>... scannable) {
+        // Fungere daarlig med hook groups....
+        // Vi bliver noedt til at lave en ny...
+        // Og det bliver nok ikke superlet at cache den...
+
+        // disableAnnotatedMethodHook(Main.class, String
+        throw new UnsupportedOperationException();
+    }
+
+    static ComponentRule disableAnnotatedMethodHook(Class<? extends Annotation> type, Object componentFilter) {
+        // ComponentFilter
+        // path
+        // name
+        // module
+        // Bundle
+        // ScannableType
+        throw new UnsupportedOperationException();
+    }
 }

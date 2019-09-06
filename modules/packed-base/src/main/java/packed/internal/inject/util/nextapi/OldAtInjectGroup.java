@@ -85,7 +85,7 @@ public final class OldAtInjectGroup {
                 }
 
                 fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
-                        List.of(PackedServiceDependency.of(descriptor))));
+                        List.of(PackedServiceDependency.fromVariable(descriptor))));
             }
             return result;
         }

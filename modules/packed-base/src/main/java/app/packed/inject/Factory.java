@@ -108,7 +108,7 @@ public class Factory<T> {
     };
 
     static {
-        SharedSecrets._initialize(new AppPackedInjectAccess() {
+        SharedSecrets.zet(new AppPackedInjectAccess() {
 
             @Override
             public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
@@ -182,7 +182,7 @@ public class Factory<T> {
      * {@link InjectorConfigurator#provide(Factory)}. This method returns the key for which the factory
      * 
      * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
-     * {@link ProvidedComponentConfiguration#as(Key)}.
+     * {@link ComponentServiceConfiguration#as(Key)}.
      *
      * @return the key under which this factory will be registered unless
      * @see #withKey(Key)

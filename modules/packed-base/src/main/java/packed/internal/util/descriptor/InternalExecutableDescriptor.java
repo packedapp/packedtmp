@@ -21,7 +21,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Arrays;
 
 import app.packed.util.ExecutableDescriptor;
 
@@ -93,10 +92,6 @@ public abstract class InternalExecutableDescriptor extends InternalAnnotatedElem
         return executable.isVarArgs();
     }
 
-    public final boolean matchesParameters(Class<?>[] parameterTypes) {
-        return Arrays.equals(this.parameterTypes, parameterTypes);
-    }
-
     /**
      * Creates a new Executable from this descriptor.
      *
@@ -114,5 +109,9 @@ public abstract class InternalExecutableDescriptor extends InternalAnnotatedElem
     public static InternalExecutableDescriptor of(Executable executable) {
         requireNonNull(executable, "executable is null");
         return executable instanceof Method ? InternalMethodDescriptor.of((Method) executable) : InternalConstructorDescriptor.of((Constructor<?>) executable);
+    }
+
+    public static InternalExecutableDescriptor of(ExecutableDescriptor descriptor) {
+        return descriptor instanceof InternalExecutableDescriptor ? (InternalExecutableDescriptor) descriptor : of(descriptor.newExecutable());
     }
 }

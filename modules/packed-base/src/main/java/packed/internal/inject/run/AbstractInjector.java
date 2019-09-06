@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import app.packed.component.Component;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -78,18 +78,18 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ProvideHelper.of(this, key));
+        return n.getInstance(ServiceRequest.of(this, key));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean hasService(Class<?> key) {
+    public final boolean contains(Class<?> key) {
         return findNode(key) != null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean hasService(Key<?> key) {
+    public final boolean contains(Key<?> key) {
         return findNode(key) != null;
     }
 

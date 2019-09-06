@@ -15,6 +15,8 @@
  */
 package app.packed.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -73,4 +75,17 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Lookup#unreflectConstructor(Constructor)
      */
     abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
+
+    /**
+     * Creates a new Executable from this descriptor.
+     *
+     * @return a new Executable from this descriptor
+     */
+    abstract Executable newExecutable();
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    static ExecutableDescriptor of(Executable executable) {
+        requireNonNull(executable, "executable is null");
+        return executable instanceof Constructor ? ConstructorDescriptor.of((Constructor) executable) : MethodDescriptor.of((Method) executable);
+    }
 }

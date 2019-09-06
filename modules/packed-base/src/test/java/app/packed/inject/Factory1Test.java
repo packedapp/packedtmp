@@ -38,7 +38,7 @@ public class Factory1Test {
         // These would only be non-empty if we had made the factory from Factory.ofMethod(Integer.class, "valueOf",
         // String.class)
         assertThat(d.member()).isEmpty();
-        assertThat(d.parameterIndex()).isEmpty();
+        assertThat(d.parameterIndex()).isEqualTo(-1);
         assertThat(d.variable()).isEmpty();
     }
 

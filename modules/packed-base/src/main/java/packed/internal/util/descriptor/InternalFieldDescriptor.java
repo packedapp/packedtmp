@@ -124,12 +124,6 @@ public final class InternalFieldDescriptor extends InternalVariableDescriptor im
 
     /** {@inheritDoc} */
     @Override
-    public boolean isPrimitiveType() {
-        return field.getType().isPrimitive();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }

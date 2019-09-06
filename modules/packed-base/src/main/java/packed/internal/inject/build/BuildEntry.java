@@ -22,7 +22,7 @@ import java.util.Optional;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -57,7 +57,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     /** A flag used to detect cycles in the dependency graph. */
     public boolean detectCycleVisited;
 
-    /** Whether or this node contains a dependency on {@link ProvideHelper}. */
+    /** Whether or this node contains a dependency on {@link ServiceRequest}. */
     protected final boolean hasDependencyOnInjectionSite;
 
     /** The injector builder this node belongs to. */

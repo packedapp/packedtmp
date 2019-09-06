@@ -115,7 +115,7 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
     @Override
     public Type getParameterizedType() {
         Class<?> dc = getDeclaringClass();
-        // Works around for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
+        // Workaround for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
         if (index() > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
             return declaringExecutable.executable.getGenericParameterTypes()[index() - 1];
         } else {
@@ -145,12 +145,6 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
     @Override
     public boolean isNamePresent() {
         return parameter.isNamePresent();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isPrimitiveType() {
-        return parameter.getType().isPrimitive();
     }
 
     /** {@inheritDoc} */

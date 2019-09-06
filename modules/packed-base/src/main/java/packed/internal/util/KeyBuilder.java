@@ -17,7 +17,7 @@ package packed.internal.util;
 
 import app.packed.component.Component;
 import app.packed.inject.Injector;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 
 /** A builder of keys, mainly useful for creating proper error messages. */
@@ -29,8 +29,8 @@ public final class KeyBuilder {
     /// ** The {@link Container} class as a key. */
     // public static final Key<?> CONTAINER_KEY = Key.of(Container.class);
 
-    /** The {@link ProvideHelper} class as a key. */
-    public static final Key<?> INJECTION_SITE_KEY = Key.of(ProvideHelper.class);
+    /** The {@link ServiceRequest} class as a key. */
+    public static final Key<?> INJECTION_SITE_KEY = Key.of(ServiceRequest.class);
 
     /** The {@link Injector} class as a key. */
     public static final Key<?> INJECTOR_KEY = Key.of(Injector.class);

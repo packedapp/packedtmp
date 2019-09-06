@@ -48,7 +48,6 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
         assertThat(d.hashCode()).isEqualTo(f.hashCode());
         assertThat(d.isNamePresent()).isTrue();
-        assertThat(d.isPrimitiveType()).isEqualTo(f.getType().isPrimitive());
         assertThat(d.newField()).isEqualTo(f);
 
         assertThat(d).isEqualTo(d);

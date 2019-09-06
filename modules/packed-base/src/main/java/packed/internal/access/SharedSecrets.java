@@ -53,7 +53,7 @@ public final class SharedSecrets {
      * @param access
      *            the access object
      */
-    public static void _initialize(AppPackedContainerAccess access) {
+    public static void zet(AppPackedContainerAccess access) {
         if (TMP_CONTAINER_ACCESS != null) {
             throw new Error("Can only be initialized once");
         }
@@ -66,7 +66,7 @@ public final class SharedSecrets {
      * @param access
      *            the access object
      */
-    public static void _initialize(AppPackedExtensionAccess access) {
+    public static void zet(AppPackedExtensionAccess access) {
         if (TMP_EXTENSION_ACCESS != null) {
             throw new Error("Can only be initialized once");
         }
@@ -79,7 +79,7 @@ public final class SharedSecrets {
      * @param access
      *            the access object
      */
-    public static void _initialize(AppPackedInjectAccess access) {
+    public static void zet(AppPackedInjectAccess access) {
         if (TMP_INJECT_ACCESS != null) {
             throw new Error("Can only be initialized once");
         }
@@ -92,7 +92,7 @@ public final class SharedSecrets {
      * @param access
      *            the access object
      */
-    public static void _initialize(AppPackedLifecycleAccess access) {
+    public static void zet(AppPackedLifecycleAccess access) {
         if (TMP_LIFECYCLE_ACCESS != null) {
             throw new Error("Can only be initialized once");
         }
@@ -105,7 +105,7 @@ public final class SharedSecrets {
      * @param access
      *            the access object
      */
-    public static void _initialize(AppPackedUtilAccess access) {
+    public static void zet(AppPackedUtilAccess access) {
         if (TMP_UTIL_ACCESS != null) {
             throw new Error("Can only be initialized once");
         }
@@ -164,7 +164,7 @@ public final class SharedSecrets {
         private static final AppPackedContainerAccess SINGLETON;
 
         static {
-            WireletList.of(); // Forces class initialization of WireletList which invokes _initialize
+            WireletList.of(); // Forces class initialization of WireletList which invokes zet()
             SINGLETON = requireNonNull(SharedSecrets.TMP_CONTAINER_ACCESS, "internal error");
         }
     }
@@ -177,7 +177,7 @@ public final class SharedSecrets {
 
         static {
             // TODO try an avoid constructing a new class
-            new Extension() {}; // Forces class initialization of Extension which invokes _initialize
+            new Extension() {}; // Forces class initialization of Extension which invokes zet()
             SINGLETON = requireNonNull(SharedSecrets.TMP_EXTENSION_ACCESS, "internal error");
         }
     }
@@ -189,7 +189,7 @@ public final class SharedSecrets {
         private static final AppPackedInjectAccess SINGLETON;
 
         static {
-            Factory.ofInstance("foo"); // Forces class initialization of Factory which invokes _initialize
+            Factory.ofInstance("foo"); // Forces class initialization of Factory which invokes zet()
             SINGLETON = requireNonNull(SharedSecrets.TMP_INJECT_ACCESS, "internal error");
         }
     }
@@ -201,7 +201,7 @@ public final class SharedSecrets {
         private static final AppPackedLifecycleAccess SINGLETON;
 
         static {
-            RunState.INITIALIZED.ordinal();// Forces class initialization of RunState which invokes _initialize
+            RunState.INITIALIZED.ordinal();// Forces class initialization of RunState which invokes zet()
             SINGLETON = requireNonNull(SharedSecrets.TMP_LIFECYCLE_ACCESS, "internal error");
         }
     }
@@ -213,7 +213,7 @@ public final class SharedSecrets {
         private static final AppPackedUtilAccess SINGLETON;
 
         static {
-            TypeLiteral.of(Object.class); // Forces class initialization of TypeLiteral, which in turn will call _initialize
+            TypeLiteral.of(Object.class); // Forces class initialization of TypeLiteral, which in turn will call zet()
             SINGLETON = requireNonNull(SharedSecrets.TMP_UTIL_ACCESS, "internal error");
         }
     }

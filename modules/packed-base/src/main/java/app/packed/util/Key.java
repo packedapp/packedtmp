@@ -91,16 +91,14 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         }
     };
 
-    /**
-     * The computed hash code, not lazy because we are probably always going to use it for comparison against other keys.
-     */
+    /** The eagerly computed hash code, as we assume almost all keys are going to be used with some kind of hash table. */
     private final int hash;
 
     /** An (optional) qualifier for this key. */
     @Nullable
     private final Annotation qualifier;
 
-    /** The generic type for this key. */
+    /** The (canonicalized) type literal for this key. */
     private final CanonicalizedTypeLiteral<T> typeLiteral;
 
     /** Constructs a new key. Derives the type from this class's type parameter. */
@@ -292,13 +290,6 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
-    public static Key<?> fromParameter(Parameter parameter) {
-        requireNonNull(parameter, "parameter is null");
-        TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
-        Annotation annotation = QualifierHelper.findQualifier(parameter, parameter.getAnnotations());
-        return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
-    }
-
     /**
      * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
      * 
@@ -327,6 +318,13 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
             return ((InternalMethodDescriptor) method).fromMethodReturnType();
         }
         return fromMethodReturnType(method.newMethod());
+    }
+
+    public static Key<?> fromParameter(Parameter parameter) {
+        requireNonNull(parameter, "parameter is null");
+        TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
+        Annotation annotation = QualifierHelper.findQualifier(parameter, parameter.getAnnotations());
+        return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
 
     static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {

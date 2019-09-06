@@ -13,29 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
-
-import java.util.Collection;
-
-import app.packed.config.ConfigSite;
+package app.packed.util;
 
 /**
  *
  */
-// Det er ikke meningen folk selv skal lave descriptor imodsaetning til contracts.
-// De skal heller ikke extendes....
-
-// De er primaert taenkt til at vaere taet knyttet til f.eks. en Injector
-
-// injector.descriptor();
-public interface ServiceComponenent {
-
-    ConfigSite configSite();
-
-    Collection<ServiceDescriptor> services();
-
-    // Map<Key, ServiceDescriptor>
-
-    // InjectorContract contract();
+public interface MemberDescriptor {
 
 }

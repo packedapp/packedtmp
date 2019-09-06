@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.concurrent.Semaphore;
 
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;
@@ -56,7 +56,7 @@ public final class RSNLazy<T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         for (;;) {
             T i = instance;
             if (i != null) {

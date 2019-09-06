@@ -21,10 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.Factory1;
-import app.packed.inject.Factory2;
-
 /**
  * This annotation indicates that the annotated element may be null under some circumstances.
  * <p>
@@ -39,11 +35,13 @@ import app.packed.inject.Factory2;
  * resolved.<b>NOTE:</b>If the injection of a field is optional and the dependency could not be resolved. The initial
  * value of the field is never changed. This is useful, for example, to declare a default value in case the dependency
  * is missing.</li>
- * <li><b>On a type parameter,</b> {@link ServiceDependency#fromTypeVariable(Class, Class, int)} and
- * {@link ServiceDependency#fromTypeVariables(Class, Class, int...)} will acknowledges the annotation and mark the dependency
- * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
  * </ul>
  */
+// * <li><b>On a type parameter,</b> {@link ServiceDependency#fromTypeVariable(Class, Class, int)} and
+// * {@link ServiceDependency#fromTypeVariables(Class, Class, int...)} will acknowledges the annotation and mark the
+// dependency
+// * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
 @Documented

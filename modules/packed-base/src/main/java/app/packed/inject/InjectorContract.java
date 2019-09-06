@@ -53,6 +53,8 @@ import app.packed.util.Key;
 // * A service contract cannot both have the same service as a requirement and provide it.
 // * A key can only in one catagory at a time! Builder validates this....
 // InjectorContract.of(new Bundle());
+
+// ServiceContract
 public final class InjectorContract extends Contract {
 
     /** A service contract that has no requirements and provides no services. */

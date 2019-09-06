@@ -16,9 +16,7 @@
 package app.packed.inject;
 
 import java.lang.reflect.Member;
-import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 import app.packed.util.ConstructorDescriptor;
 import app.packed.util.FieldDescriptor;
@@ -26,7 +24,6 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.util.PackedServiceDependency;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
@@ -34,26 +31,7 @@ import packed.internal.inject.util.PackedServiceDependency;
  * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
  * instance of {@link FieldDescriptor}. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
-// Flyt member, parameterIndex og Variable???? til ServiceRequest..
-// Vi goer det kun for at faa en paenere arkitk
-// Bliver brugt med factory, for at kunne se dens dependencies.....
-// Bliver brugt med Factory + BindableFactory
-
-// From Field
-// From Parameter
-// From Type variable
-// From InjectorExtension.require
-// From InjectorExtension.optional
-// Via Wildcard Qualifier methods (static? Dependency Chain). Jeg har en @Foo int fff
-// -- Som goer at jeg dependenr paa Configuration + XConverter.. Heh saa giver parameter index.. vel ikke mening
-// -- Kunne lave en limitation der siger at man kun maa transformere med 1 parameter...
-
-// ServiceDependency, a dependency is really general
 public interface ServiceDependency {
-
-    // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
-    // Includes any qualifier...
-    // AnnotatedElement annotations();
 
     /**
      * Returns whether or not this dependency is optional.
@@ -81,35 +59,23 @@ public interface ServiceDependency {
      *         member.
      * @see #variable()
      */
+    // Vi skal have MemberDescriptor, og saa et sealed interface
     Optional<Member> member();
 
+    default <T extends Member> T member(Class<T> memberType) {
+        return memberType.cast(member().get());
+    }
+
     /**
-     * If this dependency represents a parameter to a constructor or method. This method will return an optional holding the
-     * index of the parameter. Otherwise, this method returns an empty optional.
+     * If this dependency represents a parameter to a constructor or method. This method will return the index of the
+     * parameter, otherwise {@code -1}.
+     * 
+     * @apiNote While it would be natural for this method to return OptionalInt. We have found that in most use cases it has
+     *          already been established whether a parameter is present via the optional return by {@link #variable()}.
      * 
      * @return the optional parameter index of the dependency
      */
-    OptionalInt parameterIndex();
+    int parameterIndex();
 
-    /**
-     * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
-     * dependency was not created from a variable.
-     * <p>
-     * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
-     * created from a parameter this method will return a {@link ParameterDescriptor}.
-     * 
-     * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
-     *         variable.
-     * @see #member()
-     */
     Optional<VariableDescriptor> variable();
-
-    public static <T> ServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
-        return PackedServiceDependency.fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndex);
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> List<ServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
-        return (List) PackedServiceDependency.fromTypeVariables(actualClass, baseClass, baseClassTypeVariableIndexes);
-    }
 }

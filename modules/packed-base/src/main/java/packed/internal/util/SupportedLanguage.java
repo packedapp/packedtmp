@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
-
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-
-import app.packed.artifact.ArtifactConfigurator;
-import app.packed.container.Wirelet;
+package packed.internal.util;
 
 /**
  *
  */
-interface InjectorProxy {
+enum SupportedLanguage {
+    JAVA;
+}
 
-    Injector create(String s, List<String> list);
+class MyInjectorContractorBuilder {
 
-    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
-            Wirelet... wirelets) {
+    // Could also auto detect the platform... via a service loader....
+    // But lets say we are running java, but using a kotlin library...
+
+    public String toBuilderString(SupportedLanguage language) {
         throw new UnsupportedOperationException();
     }
+
+    // Outputs
+    // InjectorContract.of(->);
 }

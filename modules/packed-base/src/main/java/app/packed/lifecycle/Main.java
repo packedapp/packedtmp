@@ -42,6 +42,14 @@ import app.packed.container.extension.ActivateExtension;
 // It is really heavily related to App actually because, you cannot have a Main for a Container
 // Only a main for an App.
 // Furthermore we also want to put cli here...
+
+// Main skal have en lifecycle. Fordi der er forskel paa
+// inde main() bliver koert -> Initialized/Starting
+// naar main bliver koert -> Running
+// og efter main er koert.... -> Stoppping/Stopped
+// Ogsaa selvom vi ikke har shutdown metoder...
+
+// Det samme kan man sige om CLI
 @ActivateExtension(LifecycleExtension.class)
 public @interface Main {
 

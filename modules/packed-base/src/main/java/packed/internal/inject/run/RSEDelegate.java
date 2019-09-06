@@ -18,7 +18,7 @@ package packed.internal.inject.run;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 
@@ -51,7 +51,7 @@ public final class RSEDelegate<T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         return delegate.getInstance(site);
     }
 

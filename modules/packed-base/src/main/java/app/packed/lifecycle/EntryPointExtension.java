@@ -26,7 +26,11 @@ import app.packed.container.extension.Extension;
  * <p>
  * This extension or {@link Main} is not supported at runtime.
  */
+// Har lyst til at den ikke skal vaere en del af lifecycle...
+// Jamen, hvorfor skal mainargs vaere her???
+// Kan vi ikke sende den til Injector ogsaa????
 
+// Men maaske flyt MainArgs til util....
 final class EntryPointExtension extends Extension {
 
     /** Creates a new entry point extension. */

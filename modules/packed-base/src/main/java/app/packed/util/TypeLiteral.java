@@ -60,7 +60,7 @@ public abstract class TypeLiteral<T> {
     };
 
     static {
-        SharedSecrets._initialize(new AppPackedUtilAccess() {
+        SharedSecrets.zet(new AppPackedUtilAccess() {
 
             @Override
             public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {

@@ -23,6 +23,7 @@ import app.packed.util.Key;
 /**
  *
  */
+// Or KeySelector...
 interface KeyFilter extends Predicate<Key<?>> {
 
     @Override

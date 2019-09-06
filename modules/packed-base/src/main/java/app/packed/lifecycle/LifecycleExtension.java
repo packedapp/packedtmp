@@ -75,6 +75,7 @@ public final class LifecycleExtension extends Extension {
         main(Key.of(serviceKey), consumer);
     }
 
+    // Vi vil sgu gerne bare smide any exception we will...
     public <T> void main(Key<T> serviceKey, Consumer<? super T> consumer) {
         // invocation multiple times??? Error?
         // What if we have a @Main method? override. What about the dependencies
@@ -161,6 +162,6 @@ class X extends BaseBundle {
 
     @Override
     public void configure() {
-        use(LifecycleExtension.class).main(ConcurrentHashMap.class, c -> System.out.println("size = " + c.size()));
+        lifecycle().main(ConcurrentHashMap.class, c -> System.out.println("size = " + c.size()));
     }
 }

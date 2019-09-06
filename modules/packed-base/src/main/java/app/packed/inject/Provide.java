@@ -113,7 +113,7 @@ public @interface Provide {
      * The default value is the empty string, indicating that there is no description for the provided service
      * 
      * @return a description of the service provided by the providing method, field or type
-     * @see ProvidedComponentConfiguration#setDescription(String)
+     * @see ComponentServiceConfiguration#setDescription(String)
      * @see ServiceDescriptor#description()
      */
     // how does this relate to description on component??? description on component???

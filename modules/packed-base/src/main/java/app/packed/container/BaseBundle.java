@@ -17,12 +17,12 @@ package app.packed.container;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorConfigurator;
 import app.packed.inject.Provide;
-import app.packed.inject.ProvidedComponentConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
@@ -126,7 +126,7 @@ public abstract class BaseBundle extends Bundle {
         return injector().export(key);
     }
 
-    protected final <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
+    protected final <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
         return injector().export(configuration);
     }
 
@@ -181,8 +181,7 @@ public abstract class BaseBundle extends Bundle {
      * @return a service configuration for the service
      * @see InjectorConfigurator#provide(Class)
      */
-    // Rename to Provide@
-    protected final <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
         return injector().provide(implementation);
     }
 
@@ -197,11 +196,11 @@ public abstract class BaseBundle extends Bundle {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
         return injector().provide(factory);
     }
 
-    protected final <T> ProvidedComponentConfiguration<T> provide(T instance) {
+    protected final <T> ComponentServiceConfiguration<T> provide(T instance) {
         return injector().provide(instance);
     }
 

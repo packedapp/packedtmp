@@ -41,5 +41,4 @@ public interface AppPackedExtensionAccess {
 
     <T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 
-    ExtensionPipeline<?> newPipeline(Extension extension);
 }

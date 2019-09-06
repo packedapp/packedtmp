@@ -34,7 +34,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.Key;
 import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
@@ -109,7 +109,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ProvidedComponentConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
+    public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         ComponentBuildEntry<?> c = cc.features().get(FK);
         if (c == null) {
             MethodHandle mh = builder.pcc.lookup.toMethodHandle(function);
@@ -121,7 +121,7 @@ public final class ServiceProvidingManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> ProvidedComponentConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
+    public <T> ComponentServiceConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
         ComponentBuildEntry<?> node = cc.features().get(FK);

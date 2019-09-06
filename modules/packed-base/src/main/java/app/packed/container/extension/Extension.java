@@ -76,7 +76,7 @@ public abstract class Extension {
     private static final StackWalker SW = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     static {
-        SharedSecrets._initialize(new AppPackedExtensionAccess() {
+        SharedSecrets.zet(new AppPackedExtensionAccess() {
 
             @Override
             public void buildBundle(Extension extension, Builder builder) {
@@ -104,11 +104,6 @@ public abstract class Extension {
             @Override
             public <T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
-            }
-
-            @Override
-            public ExtensionPipeline<?> newPipeline(Extension extension) {
-                return extension.newPipeline();
             }
         });
     }
@@ -178,10 +173,6 @@ public abstract class Extension {
      */
     protected final void checkConfigurable() {
         context().checkConfigurable();
-    }
-
-    protected ExtensionPipeline<?> newPipeline() {
-        throw new UnsupportedOperationException("This extension does not support pipelines");
     }
 
     /**

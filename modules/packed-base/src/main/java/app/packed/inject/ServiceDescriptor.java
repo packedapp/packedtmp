@@ -20,7 +20,7 @@ public interface ServiceDescriptor /* extends Taggable */ {
      * Returns the optional description of this service.
      *
      * @return the optional description of this service
-     * @see ProvidedComponentConfiguration#setDescription(String)
+     * @see ComponentServiceConfiguration#setDescription(String)
      */
     Optional<String> description();
 
@@ -28,10 +28,16 @@ public interface ServiceDescriptor /* extends Taggable */ {
      * Returns the key that the service is registered with.
      *
      * @return the key that the service is registered with
-     * @see ProvidedComponentConfiguration#as(Key)
+     * @see ComponentServiceConfiguration#as(Key)
      */
     Key<?> key();
 }
+
+// ComponentPath() <- The path to the component that defines the service...
+//// What if we use wirelets????
+//// Same problem as with ServiceRequest....
+////
+
 // Optional<Class<?>> implementation(); Does not work for @Provides...
 // Ideen var at vi ville bruge det til at skrive XZY.
 // Men hvis vi nu ikke

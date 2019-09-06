@@ -18,7 +18,7 @@ package packed.internal.inject.run;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import packed.internal.inject.build.BuildEntry;
 
 /**
@@ -64,7 +64,7 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper ignore) {
+    public T getInstance(ServiceRequest ignore) {
         return instance;
     }
 

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -30,7 +30,7 @@ import app.packed.util.Nullable;
  * 
  * @see InjectionExtension#export(Class)
  * @see InjectionExtension#export(Key)
- * @see InjectionExtension#export(ProvidedComponentConfiguration)
+ * @see InjectionExtension#export(ComponentServiceConfiguration)
  */
 final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 

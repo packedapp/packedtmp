@@ -20,8 +20,8 @@ import java.util.List;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ServiceRequest;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -46,7 +46,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the entry to export
      * @param configSite
      *            the config site of the export
-     * @see InjectionExtension#export(ProvidedComponentConfiguration)
+     * @see InjectionExtension#export(ComponentServiceConfiguration)
      */
     @SuppressWarnings("unchecked")
     ExportedBuildEntry(InjectorBuilder builder, ServiceEntry<T> entryToExport, ConfigSite configSite) {
@@ -84,7 +84,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         return null;// ???
     }
 

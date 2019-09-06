@@ -23,7 +23,7 @@ import app.packed.container.Wirelet;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -58,7 +58,7 @@ public final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         return entry.getInstance(site);
     }
 

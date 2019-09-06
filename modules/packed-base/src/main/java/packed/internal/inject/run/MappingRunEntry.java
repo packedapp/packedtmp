@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 
@@ -54,7 +54,7 @@ public class MappingRunEntry<F, T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         F f = delegate.getInstance(site);
         T t = function.apply(f);
         // Check Type, and not null

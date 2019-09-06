@@ -21,7 +21,7 @@ import java.util.Set;
 
 import app.packed.inject.Injector;
 import app.packed.inject.Provide;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.Key;
 
 /**
@@ -40,7 +40,7 @@ class InjectorFactory {
     }
 
     // ConfigSource is disabled per default
-    protected <T> ProvidedComponentConfiguration<T> registerInjectorFactory(Class<T> injectorFactory, Set<Key<?>> keysToInheritFromParent) {
+    protected <T> ComponentServiceConfiguration<T> registerInjectorFactory(Class<T> injectorFactory, Set<Key<?>> keysToInheritFromParent) {
         // key = class, description = Interface factory for xxxxx
         throw new UnsupportedOperationException();
     }

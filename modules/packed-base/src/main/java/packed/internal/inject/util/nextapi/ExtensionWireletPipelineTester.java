@@ -35,10 +35,6 @@ public class ExtensionWireletPipelineTester {
 class MyExtension extends Extension {
     String name;
 
-    @Override
-    protected MyExtensionWireletPipeline newPipeline() {
-        return new MyExtensionWireletPipeline(this);
-    }
 }
 
 // Wirelets must be immutable....

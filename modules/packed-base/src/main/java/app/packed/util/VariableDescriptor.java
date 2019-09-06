@@ -91,13 +91,4 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @see Field#getName()
      */
     boolean isNamePresent();
-
-    /**
-     * Returns whether or not the type of the variable is a primitive type.
-     *
-     * @return whether or not the type of the variable is a primitive type
-     *
-     * @see Class#isPrimitive()
-     */
-    boolean isPrimitiveType();
 }

@@ -39,13 +39,13 @@ public class InjectorHasService {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        assertThat(i.hasService(A.class)).isTrue();
-        assertThat(i.hasService(new Key<A>() {})).isTrue();
-        assertThat(i.hasService(new Key<@Left A>() {})).isTrue();
+        assertThat(i.contains(A.class)).isTrue();
+        assertThat(i.contains(new Key<A>() {})).isTrue();
+        assertThat(i.contains(new Key<@Left A>() {})).isTrue();
 
-        assertThat(i.hasService(B.class)).isFalse();
-        assertThat(i.hasService(new Key<B>() {})).isFalse();
-        assertThat(i.hasService(new Key<@Right A>() {})).isFalse();
+        assertThat(i.contains(B.class)).isFalse();
+        assertThat(i.contains(new Key<B>() {})).isFalse();
+        assertThat(i.contains(new Key<@Right A>() {})).isFalse();
 
     }
 }

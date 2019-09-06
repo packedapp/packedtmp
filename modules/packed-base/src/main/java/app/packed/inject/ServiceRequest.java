@@ -17,10 +17,8 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 import app.packed.app.App;
 import app.packed.component.Component;
@@ -31,8 +29,8 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.util.InjectionSiteForDependency;
-import packed.internal.inject.util.InjectionSiteForKey;
+import packed.internal.inject.util.PackedServiceRequestForDependency;
+import packed.internal.inject.util.PackedServiceRequestForKey;
 
 /**
  * An instance of this class is available for any component method annotated with {@link Provide}.
@@ -126,7 +124,16 @@ import packed.internal.inject.util.InjectionSiteForKey;
 // provide(MyService).from(MyServiceImpl.class)
 // provide(MyServiceImpl).as(MyService.class)
 
-public interface ProvideHelper {
+// ServiceRequest... Somebody is requesting a service...
+
+// Kan not be used with singletons...
+
+// ConfigSite???? <- Use unknown for service locator...
+
+// ComponentPath
+// ConfigSite
+public interface ServiceRequest extends ServiceDependency {
+
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
     // AnnotatedElement annotations();
@@ -136,6 +143,7 @@ public interface ProvideHelper {
      *
      * @return whether or not this dependency is optional
      */
+    @Override
     boolean isOptional();
 
     /**
@@ -143,6 +151,7 @@ public interface ProvideHelper {
      *
      * @return the key of this dependency
      */
+    @Override
     Key<?> key();
 
     /**
@@ -157,6 +166,7 @@ public interface ProvideHelper {
      *         member.
      * @see #variable()
      */
+    @Override
     Optional<Member> member();
 
     /**
@@ -165,7 +175,8 @@ public interface ProvideHelper {
      * 
      * @return the optional parameter index of the dependency
      */
-    OptionalInt parameterIndex();
+    @Override
+    int parameterIndex();
 
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
@@ -178,6 +189,7 @@ public interface ProvideHelper {
      *         variable.
      * @see #member()
      */
+    @Override
     Optional<VariableDescriptor> variable();
 
     /**
@@ -190,9 +202,9 @@ public interface ProvideHelper {
         throw new UnsupportedOperationException();
     }
 
-    default <T extends Annotation> T qualifier(Class<T> qualifierType) {
-        throw new UnsupportedOperationException();
-    }
+    // default <T extends Annotation> T qualifier(Class<T> qualifierType) {
+    // throw new UnsupportedOperationException();
+    // }
 
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
@@ -206,20 +218,12 @@ public interface ProvideHelper {
     // throw new UnsupportedOperationException();
     // }
 
-    /**
-     * Returns the injector through which injection was requested. If the injection was requested via a container, the
-     * returned injector can be cast to Container.
-     *
-     * @return the injector through which injection was requested
-     */
-    Injector injector();// HMMMMM,
-
-    static ProvideHelper of(Injector injector, ServiceDependency dependency) {
-        return new InjectionSiteForDependency(injector, dependency, null);
+    static ServiceRequest of(Injector injector, ServiceDependency dependency) {
+        return new PackedServiceRequestForDependency(injector, dependency, null);
     }
 
-    static ProvideHelper of(Injector injector, ServiceDependency dependency, Component componenent) {
-        return new InjectionSiteForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
+    static ServiceRequest of(Injector injector, ServiceDependency dependency, Component componenent) {
+        return new PackedServiceRequestForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
     }
 
     /**
@@ -233,8 +237,8 @@ public interface ProvideHelper {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static ProvideHelper of(Injector injector, Key<?> key) {
-        return new InjectionSiteForKey(injector, key, null);
+    static ServiceRequest of(Injector injector, Key<?> key) {
+        return new PackedServiceRequestForKey(injector, key, null);
     }
 
     /**
@@ -252,8 +256,8 @@ public interface ProvideHelper {
      * @return an injection site for the specified injector and key and component.
      * @see #of(Injector, ServiceDependency)
      */
-    static ProvideHelper of(Injector injector, Key<?> key, Component component) {
-        return new InjectionSiteForKey(injector, key, requireNonNull(component, "component is null"));
+    static ServiceRequest of(Injector injector, Key<?> key, Component component) {
+        return new PackedServiceRequestForKey(injector, key, requireNonNull(component, "component is null"));
     }
 
     // withTags();// A way to provide info to @Provides....ahh bare mere boebl

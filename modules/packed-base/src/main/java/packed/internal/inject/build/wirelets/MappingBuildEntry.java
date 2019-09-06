@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
@@ -53,7 +53,7 @@ public class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideHelper site) {
+    public T getInstance(ServiceRequest site) {
         // TODO Auto-generated method stub
         return null;
     }

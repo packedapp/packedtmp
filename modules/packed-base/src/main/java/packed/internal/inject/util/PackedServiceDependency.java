@@ -32,9 +32,12 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.inject.ServiceDependency;
+import app.packed.util.ConstructorDescriptor;
+import app.packed.util.ExecutableDescriptor;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
+import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.TypeLiteral;
@@ -50,15 +53,37 @@ import packed.internal.util.descriptor.InternalParameterDescriptor;
 import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /**
- * The default implementation of {@link ServiceDependency}.
+ * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
+ * method. In which case the parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling
+ * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
+ * instance of {@link FieldDescriptor}. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
 public final class PackedServiceDependency implements ServiceDependency {
+
+    /** A cache of service dependencies. */
+    private static final ClassValue<PackedServiceDependency> CLASS_CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @Override
+        protected PackedServiceDependency computeValue(Class<?> type) {
+            if (type == Optional.class) {
+                throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
+            } else if (type == OptionalInt.class) {
+                return new PackedServiceDependency(Key.of(Integer.class), OptionalInt.class, null);
+            } else if (type == OptionalLong.class) {
+                return new PackedServiceDependency(Key.of(Long.class), OptionalLong.class, null);
+            } else if (type == OptionalDouble.class) {
+                return new PackedServiceDependency(Key.of(Double.class), OptionalDouble.class, null);
+            }
+            return of(Key.of(type));
+        }
+    };
 
     /** The key of this dependency. */
     private final Key<?> key;
 
     /**
-     * Null if a non-optional dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
+     * Null if it is a required dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
      * {@link OptionalDouble} or {@link Nullable} annotation.
      */
     @Nullable
@@ -76,8 +101,8 @@ public final class PackedServiceDependency implements ServiceDependency {
 
     /**
      * Returns an object indicating that an optional dependency could not be fulfilled. For example, this method will return
-     * {@link OptionalInt#empty()} if a dependency was created from field with a {@link OptionalInt} type. And {@code null}
-     * if a parameter is annotated with {@link Nullable}.
+     * {@link OptionalInt#empty()} if a dependency was created from a field with a {@link OptionalInt} type. And
+     * {@code null} if a parameter is annotated with {@link Nullable}.
      * <p>
      * If this dependency is not optional this method throws an {@link UnsupportedOperationException}.
      * 
@@ -106,31 +131,6 @@ public final class PackedServiceDependency implements ServiceDependency {
         throw new UnsupportedOperationException("This dependency is not optional, dependency = " + this);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public OptionalInt parameterIndex() {
-        // TODO cache?
-        return variable == null ? OptionalInt.empty() : OptionalInt.of(variable.index());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Key<?> key() {
-        return key;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Member> member() {
-        if (variable instanceof FieldDescriptor) {
-            return Optional.of(((FieldDescriptor) variable));
-        } else if (variable instanceof ParameterDescriptor) {
-            return Optional.of(((ParameterDescriptor) variable).declaringExecutable());
-        } else {
-            return Optional.empty();
-        }
-    }
-
     /**
      * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble},
      * {@link OptionalLong} or {@link Nullable}) that was used to create this dependency or {@code null} if this dependency
@@ -144,16 +144,61 @@ public final class PackedServiceDependency implements ServiceDependency {
         return optionalType;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Optional<VariableDescriptor> variable() {
-        return Optional.ofNullable(variable);
-    }
-
-    /** {@inheritDoc} */
+    /**
+     * Returns whether or not this dependency is optional.
+     *
+     * @return whether or not this dependency is optional
+     */
     @Override
     public boolean isOptional() {
         return optionalType != null;
+    }
+
+    /**
+     * Returns the key of this dependency.
+     *
+     * @return the key of this dependency
+     */
+    @Override
+    public Key<?> key() {
+        return key;
+    }
+
+    /**
+     * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
+     * dependency was not created from a member.
+     * <p>
+     * If this dependency was created from a member this method will an optional containing either a {@link FieldDescriptor}
+     * in case of field injection, A {@link MethodDescriptor} in case of method injection or a {@link ConstructorDescriptor}
+     * in case of constructor injection.
+     * 
+     * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
+     *         member.
+     * @see #variable()
+     */
+    @Override
+    public Optional<Member> member() {
+        if (variable instanceof FieldDescriptor) {
+            return Optional.of(((FieldDescriptor) variable));
+        } else if (variable instanceof ParameterDescriptor) {
+            return Optional.of(((ParameterDescriptor) variable).declaringExecutable());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * If this dependency represents a parameter to a constructor or method. This method will return the index of the
+     * parameter, otherwise {@code -1}.
+     * 
+     * @apiNote While it would be natural for this method to return OptionalInt. We have found that in most use cases it has
+     *          already been established whether a parameter is present via the optional return by {@link #variable()}.
+     * 
+     * @return the optional parameter index of the dependency
+     */
+    @Override
+    public int parameterIndex() {
+        return variable instanceof InternalParameterDescriptor ? variable.index() : -1;
     }
 
     /** {@inheritDoc} */
@@ -172,6 +217,22 @@ public final class PackedServiceDependency implements ServiceDependency {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    /**
+     * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
+     * dependency was not created from a variable.
+     * <p>
+     * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
+     * created from a parameter this method will return a {@link ParameterDescriptor}.
+     * 
+     * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
+     *         variable.
+     * @see #member()
+     */
+    @Override
+    public Optional<VariableDescriptor> variable() {
+        return Optional.ofNullable(variable);
     }
 
     /**
@@ -209,23 +270,23 @@ public final class PackedServiceDependency implements ServiceDependency {
      * @return a list of dependencies from the specified executable
      */
     public static List<PackedServiceDependency> fromExecutable(Executable executable) {
-        requireNonNull(executable, "executable is null");
-        throw new UnsupportedOperationException();
+        return fromExecutable(ExecutableDescriptor.of(executable));
     }
 
-    public static List<PackedServiceDependency> fromExecutable(InternalExecutableDescriptor executable) {
-        InternalParameterDescriptor[] parameters = executable.getParametersUnsafe();
+    public static List<PackedServiceDependency> fromExecutable(ExecutableDescriptor executable) {
+        InternalExecutableDescriptor desc = InternalExecutableDescriptor.of(executable);
+        InternalParameterDescriptor[] parameters = desc.getParametersUnsafe();
         switch (parameters.length) {
         case 0:
             return List.of();
         case 1:
-            return List.of(of(parameters[0]));
+            return List.of(fromVariable(parameters[0]));
         case 2:
-            return List.of(of(parameters[0]), of(parameters[1]));
+            return List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
         default:
             ArrayList<PackedServiceDependency> list = new ArrayList<>(parameters.length);
             for (int i = 0; i < parameters.length; i++) {
-                list.add(of(parameters[i]));
+                list.add(fromVariable(parameters[i]));
             }
             return List.copyOf(list);
         }
@@ -240,12 +301,11 @@ public final class PackedServiceDependency implements ServiceDependency {
      * @see Field#getGenericType()
      */
     public static PackedServiceDependency fromField(Field field) {
-        requireNonNull(field, "field is null");
-        return ofVariable(InternalFieldDescriptor.of(field));
+        return fromVariable(InternalFieldDescriptor.of(field));
     }
 
     public static PackedServiceDependency fromField(FieldDescriptor field) {
-        return ofVariable(InternalFieldDescriptor.of(field));
+        return fromVariable(InternalFieldDescriptor.of(field));
     }
 
     public static <T> PackedServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
@@ -285,40 +345,12 @@ public final class PackedServiceDependency implements ServiceDependency {
         return List.copyOf(result);
     }
 
-    /**
-     * Returns a dependency on the specified class
-     *
-     * @param type
-     *            the class to return a dependency for
-     * @return a dependency for the specified class
-     */
-    public static PackedServiceDependency of(Class<?> type) {
-        requireNonNull(type, "type is null");
-        if (type == Optional.class) {
-            throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
-        } else if (type == OptionalInt.class) {
-            return new PackedServiceDependency(Key.of(Integer.class), OptionalInt.class, null);
-        } else if (type == OptionalLong.class) {
-            return new PackedServiceDependency(Key.of(Long.class), OptionalLong.class, null);
-        } else if (type == OptionalDouble.class) {
-            return new PackedServiceDependency(Key.of(Double.class), OptionalDouble.class, null);
-        }
-        return of(Key.of(type));
-    }
-
-    public static <T> PackedServiceDependency of(Key<?> key) {
-        return new PackedServiceDependency(key, null, null);
-    }
-
-    public static <T> PackedServiceDependency of(VariableDescriptor variable) {
+    public static <T> PackedServiceDependency fromVariable(VariableDescriptor variable) {
         requireNonNull(variable, "variable is null");
-        return ofVariable(InternalVariableDescriptor.unwrap(variable));
-    }
+        InternalVariableDescriptor desc = InternalVariableDescriptor.unwrap(variable);
+        TypeLiteral<?> tl = desc.getTypeLiteral();
 
-    private static PackedServiceDependency ofVariable(InternalVariableDescriptor variable) {
-        TypeLiteral<?> tl = variable.getTypeLiteral();
-
-        Annotation a = variable.findQualifiedAnnotation();
+        Annotation qualifier = desc.findQualifiedAnnotation();
 
         // Illegal
         // Optional<Optional*>
@@ -329,10 +361,10 @@ public final class PackedServiceDependency implements ServiceDependency {
             tl = tl.box();
         } else if (rawType == Optional.class) {
             optionalType = Optional.class;
-            Type cl = ((ParameterizedType) variable.getParameterizedType()).getActualTypeArguments()[0];
+            Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
             tl = SharedSecrets.util().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
-                throw new InvalidDeclarationException(ErrorMessageBuilder.of(variable).cannot("have multiple layers of optionals such as " + cl));
+                throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("have multiple layers of optionals such as " + cl));
             }
         } else if (rawType == OptionalLong.class) {
             optionalType = OptionalLong.class;
@@ -345,18 +377,67 @@ public final class PackedServiceDependency implements ServiceDependency {
             tl = TypeLiteral.of(Double.class);
         }
 
-        if (variable.isAnnotationPresent(Nullable.class)) {
+        if (desc.isAnnotationPresent(Nullable.class)) {
             if (optionalType != null) {
                 throw new InvalidDeclarationException(
-                        ErrorMessageBuilder.of(variable).cannot("both be of type " + optionalType.getSimpleName() + " and annotated with @Nullable")
+                        ErrorMessageBuilder.of(desc).cannot("both be of type " + optionalType.getSimpleName() + " and annotated with @Nullable")
                                 .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
             }
             optionalType = Nullable.class;
         }
 
         // TL is free from Optional
-        Key<?> key = Key.fromTypeLiteralNullableAnnotation(variable, tl, a);
+        Key<?> key = Key.fromTypeLiteralNullableAnnotation(desc, tl, qualifier);
 
-        return new PackedServiceDependency(key, optionalType, variable);
+        return new PackedServiceDependency(key, optionalType, desc);
+    }
+
+    /**
+     * Returns a dependency on the specified class
+     *
+     * @param type
+     *            the class to return a dependency for
+     * @return a dependency for the specified class
+     */
+    public static PackedServiceDependency of(Class<?> type) {
+        requireNonNull(type, "type is null");
+        return CLASS_CACHE.get(type);
+    }
+
+    public static <T> PackedServiceDependency of(Key<?> key) {
+        requireNonNull(key, "key is null");
+        if (!key.hasQualifier()) {
+            TypeLiteral<?> tl = key.typeLiteral();
+            if (tl.type() == tl.rawType()) {
+                return CLASS_CACHE.get(tl.rawType());
+            }
+        }
+        // KeyInterner???? Irritere mig bare med den, WeakReference instantiation..
+        return new PackedServiceDependency(key, null, null);
     }
 }
+// Flyt member, parameterIndex og Variable???? til ServiceRequest..
+// Vi goer det kun for at faa en paenere arkitk
+// Bliver brugt med factory, for at kunne se dens dependencies.....
+// Bliver brugt med Factory + BindableFactory
+
+// From Field
+// From Parameter
+// From Type variable
+// From InjectorExtension.require
+// From InjectorExtension.optional
+// Via Wildcard Qualifier methods (static? Dependency Chain). Jeg har en @Foo int fff
+// -- Som goer at jeg dependenr paa Configuration + XConverter.. Heh saa giver parameter index.. vel ikke mening
+// -- Kunne lave en limitation der siger at man kun maa transformere med 1 parameter...
+
+// Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
+// Includes any qualifier...
+
+/// **
+// * Returns . Returns
+// *
+// * @return stuff
+// */
+// default AnnotatedElement annotations() {
+
+// }

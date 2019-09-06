@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.inject.nextgen;
 
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+
+import app.packed.artifact.ArtifactConfigurator;
 import app.packed.container.Wirelet;
+import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfigurator;
 
 /**
- * Extensions that define their own wirelets must extend this class.
- * 
- * Extension wirelets that uses the same extension pipeline type are processed in the order they are specified in. No
- * guarantees are made for extension wirelets that define for different extension pipeline types.
+ *
  */
-public abstract class ExtensionWirelet<T extends ExtensionPipeline<T>> extends Wirelet {
+interface InjectorProxy {
 
-    /**
-     * Process this wirelet.
-     * 
-     * @param pipeline
-     *            the extensions pipeline
-     */
-    protected abstract void process(T pipeline);
+    Injector create(String s, List<String> list);
+
+    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
+            Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 }

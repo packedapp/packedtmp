@@ -23,17 +23,27 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /**
- * The configuration representing an entity that is both being registered as a component and as a service.
+ * This configuration represents an entity that is both being registered as a component and as a service at the same
+ * time.
  * 
  * 
  * <p>
  * All the methods in this interface is solely added to allow
  * 
  * A component configuration instance is usually obtained by calling one of the install methods on
- * {@link ProvidedComponentConfiguration} or {@link BaseBundle} at configuration time. Or one of the install methods on
+ * {@link ComponentServiceConfiguration} or {@link BaseBundle} at configuration time. Or one of the install methods on
  * {@link Component} at runtime.
+ * 
+ * @see InjectionExtension#provide(Class)
+ * @see InjectionExtension#provide(Factory)
+ * @see InjectionExtension#provide(Object)
+ *
+ * @see BaseBundle#provide(Class)
+ * @see BaseBundle#provide(Factory)
+ * @see BaseBundle#provide(Object)
  */
-public interface ProvidedComponentConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {
+// or maybe just ComponentServiceConfgiuration
+public interface ComponentServiceConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {
 
     // /**
     // * @param implementation
@@ -96,7 +106,7 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
      * @see #as(Key)
      */
     @Override
-    default ProvidedComponentConfiguration<T> as(Class<? super T> key) {
+    default ComponentServiceConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -110,7 +120,7 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
      * @see #as(Class)
      */
     @Override
-    ProvidedComponentConfiguration<T> as(Key<? super T> key);
+    ComponentServiceConfiguration<T> as(Key<? super T> key);
 
     /**
      * Returns the configuration site where this configuration was created.
@@ -157,9 +167,9 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
      * @throws UnsupportedOperationException
      *             if the service cannot be lazy
      */
-    ProvidedComponentConfiguration<T> lazy();
+    ComponentServiceConfiguration<T> lazy();
 
-    ProvidedComponentConfiguration<T> prototype();
+    ComponentServiceConfiguration<T> prototype();
 
     /**
      * Sets the description of this service.
@@ -170,7 +180,7 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
      * @see #getDescription()
      */
     @Override
-    ProvidedComponentConfiguration<T> setDescription(@Nullable String description);
+    ComponentServiceConfiguration<T> setDescription(@Nullable String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -189,7 +199,7 @@ public interface ProvidedComponentConfiguration<T> extends ComponentConfiguratio
      * @see Component#name()
      */
     @Override
-    ProvidedComponentConfiguration<T> setName(String name);
+    ComponentServiceConfiguration<T> setName(String name);
 
     // default ContainerActionable on(LifecycleState... states) {
     // throw new UnsupportedOperationException();

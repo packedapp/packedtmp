@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Kasper Nielsen.
+  * Copyright (c) 2008 Kasper Nielsen.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,6 +108,28 @@ public interface Injector {
     ConfigSite configSite();
 
     /**
+     * Returns true if the injector contains a service with the specified key.
+     *
+     * @param key
+     *            the key of the service
+     * @return true if a service with the specified key exists.
+     * @see #contains(Key)
+     */
+    default boolean contains(Class<?> key) {
+        return contains(Key.of(key));
+    }
+
+    /**
+     * Returns {@code true} if a service matching the specified type exists. Otherwise {@code false}.
+     *
+     * @param key
+     *            the type of service
+     * @return true if a service matching the specified type exists. Otherwise false.
+     * @see #contains(Class)
+     */
+    boolean contains(Key<?> key); // We do not call get here, as it might create a value
+
+    /**
      * Returns the description of this injector. Or an empty optional if no description has been set
      * <p>
      * The returned description is always identical to the description of the injector's root container.
@@ -151,31 +173,10 @@ public interface Injector {
     }
 
     default <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
+
         requireNonNull(key, "key is null");
         return services().filter(d -> d.key().equals(key)).findFirst();
     }
-
-    /**
-     * Returns true if a service matching the specified type exists. Otherwise false.
-     *
-     * @param key
-     *            the type of service
-     * @return true if a service matching the specified type exists. Otherwise false.
-     * @see #hasService(Key)
-     */
-    default boolean hasService(Class<?> key) {
-        return hasService(Key.of(key));
-    }
-
-    /**
-     * Returns {@code true} if a service matching the specified type exists. Otherwise {@code false}.
-     *
-     * @param key
-     *            the type of service
-     * @return true if a service matching the specified type exists. Otherwise false.
-     * @see #hasService(Class)
-     */
-    boolean hasService(Key<?> key); // We do not call get here, as it might create a value
 
     // /**
     // * Injects services into the fields and methods of the specified instance.
@@ -192,6 +193,8 @@ public interface Injector {
     // * @throws InjectionException
     // * if any of the injectable members of the specified instance could not be injected
     // */
+
+    // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
     /**
@@ -199,6 +202,7 @@ public interface Injector {
      *
      * @return a unordered {@code Stream} of all services that this injector provides
      */
+    // services().service(s();
     Stream<ServiceDescriptor> services();
 
     /**
@@ -218,7 +222,7 @@ public interface Injector {
      *             example, if injecting an injector into a constructor of a service and then using the injector to try and
      *             access other service that have not been properly initialized yet. For example, a service that depends on
      *             the service being constructed
-     * @see #hasService(Class)
+     * @see #contains(Class)
      */
     default <T> T use(Class<T> key) {
         Optional<T> t = get(key);

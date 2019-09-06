@@ -25,8 +25,8 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.Provide;
-import app.packed.inject.ProvideHelper;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ServiceRequest;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
@@ -40,7 +40,7 @@ import packed.internal.util.ThrowableUtil;
 
 /**
  * An entry representing a component node. This node is used for all three binding modes mainly because it makes
- * extending it with {@link ProvidedComponentConfiguration} much easier.
+ * extending it with {@link ComponentServiceConfiguration} much easier.
  */
 public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
@@ -112,7 +112,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final T getInstance(ProvideHelper ignore) {
+    public final T getInstance(ServiceRequest ignore) {
         if (instantionMode == InstantiationMode.PROTOTYPE) {
             return newInstance();
         }

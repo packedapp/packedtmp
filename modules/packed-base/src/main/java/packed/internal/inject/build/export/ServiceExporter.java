@@ -26,7 +26,7 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InjectorContract;
-import app.packed.inject.ProvidedComponentConfiguration;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -43,7 +43,7 @@ import packed.internal.util.StringFormatter;
  *
  * @see InjectionExtension#export(Class)
  * @see InjectionExtension#export(Key)
- * @see InjectionExtension#export(ProvidedComponentConfiguration)
+ * @see InjectionExtension#export(ComponentServiceConfiguration)
  * @see InjectionExtension#exportAll()
  */
 public final class ServiceExporter {
@@ -59,7 +59,7 @@ public final class ServiceExporter {
 
     /**
      * All nodes that have been exported, typically via {@link InjectionExtension#export(Class)},
-     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ProvidedComponentConfiguration)}.
+     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}.
      */
     private final ArrayList<ExportedBuildEntry<?>> exports = new ArrayList<>();
 
@@ -115,11 +115,11 @@ public final class ServiceExporter {
      * @param configSite
      *            the config site of the export
      * @return stuff
-     * @see InjectionExtension#export(ProvidedComponentConfiguration)
+     * @see InjectionExtension#export(ComponentServiceConfiguration)
      */
-    public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration, ConfigSite configSite) {
+    public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration, ConfigSite configSite) {
         if (!(configuration instanceof PackedProvidedComponentConfiguration)) {
-            throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ProvidedComponentConfiguration.class)
+            throw new IllegalArgumentException("Custom implementations of " + StringFormatter.format(ComponentServiceConfiguration.class)
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
         BuildEntry<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;

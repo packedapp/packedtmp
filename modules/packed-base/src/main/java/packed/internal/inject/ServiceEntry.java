@@ -18,7 +18,7 @@ package packed.internal.inject;
 import app.packed.component.Component;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ProvideHelper;
+import app.packed.inject.ServiceRequest;
 import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -44,21 +44,21 @@ public interface ServiceEntry<T> extends ServiceDescriptor {
     // }
 
     default T getInstance(Injector injector, ServiceDependency dependency, @Nullable Component component) {
-        return getInstance(ProvideHelper.of(injector, dependency));
+        return getInstance(ServiceRequest.of(injector, dependency));
     }
 
     InstantiationMode instantiationMode();
 
     default T getInstance(Injector injector, Key<T> key, @Nullable Component component) {
-        return getInstance(ProvideHelper.of(injector, key));
+        return getInstance(ServiceRequest.of(injector, key));
     }
 
-    T getInstance(ProvideHelper site);
+    T getInstance(ServiceRequest site);
 
     /**
-     * Returns whether or not this node needs a {@link ProvideHelper} instance to be able to deliver a service.
+     * Returns whether or not this node needs a {@link ServiceRequest} instance to be able to deliver a service.
      *
-     * @return whether or not this node needs a {@link ProvideHelper} instance to be able to deliver a service
+     * @return whether or not this node needs a {@link ServiceRequest} instance to be able to deliver a service
      */
     boolean needsInjectionSite();
 

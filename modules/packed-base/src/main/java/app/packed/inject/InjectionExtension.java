@@ -32,7 +32,6 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.InjectConfigSiteOperations;
-import packed.internal.inject.build.InjectionPipeline;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.run.AbstractInjector;
@@ -92,12 +91,6 @@ public final class InjectionExtension extends Extension {
         return export(Key.of(key));
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected final InjectionPipeline newPipeline() {
-        return new InjectionPipeline(builder);
-    }
-
     /**
      * Exposes an internal service outside of this bundle.
      * 
@@ -137,7 +130,7 @@ public final class InjectionExtension extends Extension {
      * @throws IllegalArgumentException
      *             if the specified configuration object was created by another injection extension instance .
      */
-    public <T> ServiceConfiguration<T> export(ProvidedComponentConfiguration<T> configuration) {
+    public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
         return builder.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
@@ -227,7 +220,7 @@ public final class InjectionExtension extends Extension {
      * 
      * @return a configuration of the service
      */
-    public <T> ProvidedComponentConfiguration<T> provide(Class<T> implementation) {
+    public <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
         return provide(Factory.findInjectable(implementation));
     }
 
@@ -242,7 +235,7 @@ public final class InjectionExtension extends Extension {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public <T> ProvidedComponentConfiguration<T> provide(Factory<T> factory) {
+    public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
         return builder.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
@@ -259,7 +252,7 @@ public final class InjectionExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ProvidedComponentConfiguration<T> provide(T instance) {
+    public <T> ComponentServiceConfiguration<T> provide(T instance) {
         return builder.provider().provideInstance(use(ComponentExtension.class).install(instance), instance);
     }
 

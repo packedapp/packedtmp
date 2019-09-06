@@ -23,6 +23,10 @@ import app.packed.util.Nullable;
  * If a given extension allows specific wirelets to late configure it after. You need to use a pipeline.
  */
 // Kan sagtens lave alle metoder public....
+
+// Er en pipeline mere end en pipeline!!!
+// Er den ogsaa noden...???
+
 public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
 
     // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
