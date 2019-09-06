@@ -22,7 +22,6 @@ import static support.stubs.TypeStubs.LIST_WILDCARD;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,46 +29,29 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
-import app.packed.reflect.InternalParameterDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
-/** Tests {@link InternalParameterDescriptor}. */
+/** Tests {@link ParameterDescriptor}. */
 public class InternalParameterDescriptorTest {
 
     static Method M = Arrays.stream(InternalParameterDescriptorTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("someMethod")).findFirst().get();
     static Parameter P1 = M.getParameters()[0];
     static Parameter P2 = M.getParameters()[1];
 
-    ParameterDescriptor PD_OTHER_1 = (ParameterDescriptor) Proxy.newProxyInstance(InternalParameterDescriptorTest.class.getClassLoader(),
-            new Class<?>[] { ParameterDescriptor.class }, (p, mm, a) -> {
-                if (mm.getName().equals("newParameter")) {
-                    return P1;
-                }
-                throw new AssertionError();
-            });
-
-    @Test
-    public void ofParameterDescriptor() throws Exception {
-        InternalParameterDescriptor ipd = InternalParameterDescriptor.of(P1);
-        assertThat(InternalParameterDescriptor.of(ipd)).isSameAs(ipd);
-        assertThat(InternalParameterDescriptor.of(PD_OTHER_1)).isEqualTo(ipd);
-    }
-
     @Test
     public void ofParameter() throws Exception {
-        npe(() -> InternalParameterDescriptor.of((Parameter) null), "parameter");
+        npe(() -> ParameterDescriptor.of((Parameter) null), "parameter");
 
-        InternalParameterDescriptor ipd = InternalParameterDescriptor.of(P1);
+        ParameterDescriptor ipd = ParameterDescriptor.of(P1);
 
         assertThat(ipd.descriptorTypeName()).isEqualTo("parameter");
 
         assertThat(ipd).isEqualTo(ipd);
-        assertThat(ipd).isEqualTo(InternalParameterDescriptor.of(P1));
-        assertThat(ipd).isNotEqualTo(InternalParameterDescriptor.of(P2));
+        assertThat(ipd).isEqualTo(ParameterDescriptor.of(P1));
+        assertThat(ipd).isNotEqualTo(ParameterDescriptor.of(P2));
 
-        assertThat(ipd).isEqualTo(PD_OTHER_1);
         assertThat(ipd).isNotEqualTo("");
 
         // ipd.annotations

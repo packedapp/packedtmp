@@ -28,7 +28,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import app.packed.reflect.InternalParameterDescriptor;
+import app.packed.reflect.ParameterDescriptor;
 import packed.internal.access.AppPackedUtilAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.util.TypeUtil;
@@ -259,7 +259,7 @@ public abstract class TypeLiteral<T> {
      */
     public static TypeLiteral<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
-        return new CanonicalizedTypeLiteral<>(InternalParameterDescriptor.of(parameter).getParameterizedType());
+        return new CanonicalizedTypeLiteral<>(ParameterDescriptor.of(parameter).getParameterizedType());
     }
 
     /**

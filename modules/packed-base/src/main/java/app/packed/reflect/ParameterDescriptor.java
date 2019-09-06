@@ -15,15 +15,79 @@
  */
 package app.packed.reflect;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
+
+import app.packed.util.Key;
+import app.packed.util.Nullable;
+import app.packed.util.TypeLiteral;
+import packed.internal.util.InternalErrorException;
 
 /**
  * A parameter descriptor.
  * <p>
  * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public interface ParameterDescriptor extends VariableDescriptor {
+public final class ParameterDescriptor extends VariableDescriptor {
+
+    /** The executable that declares the parameter. */
+    private final InternalExecutableDescriptor declaringExecutable;
+
+    /** The index of the parameter. */
+    private final int index;
+
+    /** The actual parameter this instance is an descriptor for. */
+    private final Parameter parameter;
+
+    /**
+     * Creates a new descriptor
+     *
+     * @param declaringExecutable
+     *            the executable that declares the parameter
+     * @param parameter
+     *            the parameter
+     * @param index
+     *            the index of the parameter
+     */
+    ParameterDescriptor(InternalExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
+        super(parameter);
+        this.declaringExecutable = declaringExecutable;
+        this.parameter = parameter;
+        this.index = index;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String descriptorTypeName() {
+        return "parameter";
+    }
+
+    public Key<?> toKey() {
+        return Key.fromParameter(parameter);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (obj instanceof ParameterDescriptor) {
+            return ((ParameterDescriptor) obj).parameter.equals(parameter);
+        }
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> getDeclaringClass() {
+        return parameter.getDeclaringExecutable().getDeclaringClass();
+    }
 
     /**
      * Return a descriptor of the executable declaring this parameter.
@@ -31,14 +95,66 @@ public interface ParameterDescriptor extends VariableDescriptor {
      * @return a descriptor of the executable declaring this parameter
      * @see Parameter#getDeclaringExecutable()
      */
-    ExecutableDescriptor declaringExecutable();
+    public ExecutableDescriptor declaringExecutable() {
+        return declaringExecutable;
+    }
 
     /**
      * Returns the index of the parameter.
      *
      * @return the index of the parameter
      */
-    int index();
+    @Override
+    public int index() {
+        return index;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getModifiers() {
+        return parameter.getModifiers();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getName() {
+        return parameter.getName();
+    }
+
+    @Override
+    public Type getParameterizedType() {
+        Class<?> dc = getDeclaringClass();
+        // Workaround for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
+        if (index() > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
+            return declaringExecutable.executable.getGenericParameterTypes()[index() - 1];
+        } else {
+            return parameter.getParameterizedType();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> getType() {
+        return parameter.getType();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TypeLiteral<?> getTypeLiteral() {
+        return TypeLiteral.fromParameter(parameter);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return parameter.hashCode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isNamePresent() {
+        return parameter.isNamePresent();
+    }
 
     /**
      * Returns true if this parameter represents a variable argument list, otherwise returns false.
@@ -46,7 +162,9 @@ public interface ParameterDescriptor extends VariableDescriptor {
      * @return true if an only if this parameter represents a variable argument list.
      * @see Parameter#isVarArgs()
      */
-    boolean isVarArgs();
+    public boolean isVarArgs() {
+        return parameter.isVarArgs();
+    }
 
     /**
      * Creates a new {@link Parameter} corresponding to this descriptor.
@@ -56,16 +174,45 @@ public interface ParameterDescriptor extends VariableDescriptor {
      *
      * @return a new parameter
      */
-    Parameter newParameter();
+    public Parameter newParameter() {
+        // Parameter is immutable, but it contains a reference to its declaring executable exposed via
+        // Parameter#getDeclaringExecutable. So we need to create a new copy
+        return declaringExecutable.newExecutable().getParameters()[index];
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return parameter.toString();
+    }
 
     /**
-     * Returns a descriptor from the specified parameter.
+     * Creates a new parameter descriptor from the specified parameter.
      *
      * @param parameter
-     *            the parameter to return a descriptor for
-     * @return a descriptor from the specified parameter
+     *            the parameter to create a descriptor for
+     * @return a new parameter descriptor
      */
-    static ParameterDescriptor of(Parameter parameter) {
-        return InternalParameterDescriptor.of(parameter);
+    public static ParameterDescriptor of(Parameter parameter) {
+        requireNonNull(parameter, "parameter is null");
+
+        InternalExecutableDescriptor em;
+        if (parameter.getDeclaringExecutable() instanceof Constructor) {
+            em = InternalConstructorDescriptor.of(parameter.getDeclaringExecutable());
+        } else {
+            em = InternalMethodDescriptor.of((Method) parameter.getDeclaringExecutable());
+        }
+
+        // parameter.index is not visible, so we need to iterate through all parameters to find the right one
+        if (em.parameterCount() == 1) {
+            return em.getParametersUnsafe()[0];
+        } else {
+            for (ParameterDescriptor p : em.getParametersUnsafe()) {
+                if (p.parameter.equals(parameter)) {
+                    return p;
+                }
+            }
+        }
+        throw new InternalErrorException("parameter", parameter);// We should never get to here
     }
 }

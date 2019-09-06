@@ -29,7 +29,7 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
     final Executable executable;
 
     /** An array of the parameter descriptor for this executable */
-    private final InternalParameterDescriptor[] parameters;
+    private final ParameterDescriptor[] parameters;
 
     /** The parameter types of the executable. */
     final Class<?>[] parameterTypes;
@@ -44,9 +44,9 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
         super(executable);
         this.executable = executable;
         Parameter[] javaParameters = executable.getParameters();
-        this.parameters = new InternalParameterDescriptor[javaParameters.length];
+        this.parameters = new ParameterDescriptor[javaParameters.length];
         for (int i = 0; i < javaParameters.length; i++) {
-            this.parameters[i] = new InternalParameterDescriptor(this, javaParameters[i], i);
+            this.parameters[i] = new ParameterDescriptor(this, javaParameters[i], i);
         }
         this.parameterTypes = executable.getParameterTypes();
     }
@@ -74,7 +74,7 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
      *
      * @return an array of parameter mirrors of the executable
      */
-    public final InternalParameterDescriptor[] getParametersUnsafe() {
+    public final ParameterDescriptor[] getParametersUnsafe() {
         return parameters;
     }
 

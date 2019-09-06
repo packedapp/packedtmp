@@ -18,14 +18,12 @@ package packed.internal.util.descriptor;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Proxy;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.InternalFieldDescriptor;
 
-/** Tests {@link InternalFieldDescriptor}. */
+/** Tests {@link FieldDescriptor}. */
 public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
     static final Class<?> C = InternalFieldDescriptorTest.class;
@@ -36,11 +34,11 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
 
     @Test
     public void basics() throws Exception {
-        validateField(C.getDeclaredField("string"), InternalFieldDescriptor.of(C, "string"));
-        validateField(C.getDeclaredField("C"), InternalFieldDescriptor.of(C, "C"));
+        validateField(C.getDeclaredField("string"), FieldDescriptor.of(C, "string"));
+        validateField(C.getDeclaredField("C"), FieldDescriptor.of(C, "C"));
     }
 
-    static void validateField(Field f, InternalFieldDescriptor d) {
+    static void validateField(Field f, FieldDescriptor d) {
         validateMember(f, d);
         assertThat(d.descriptorTypeName()).isEqualTo("field");// always field
         assertThat(d.index()).isEqualTo(0);
@@ -52,19 +50,9 @@ public class InternalFieldDescriptorTest extends AbstractDescriptorTest {
         assertThat(d.newField()).isEqualTo(f);
 
         assertThat(d).isEqualTo(d);
-        assertThat(d).isEqualTo(InternalFieldDescriptor.of(d.getDeclaringClass(), d.getName()));
-        assertThat(d).isNotEqualTo(InternalFieldDescriptor.of(C, "never"));
+        assertThat(d).isEqualTo(FieldDescriptor.of(d.getDeclaringClass(), d.getName()));
+        assertThat(d).isNotEqualTo(FieldDescriptor.of(C, "never"));
         assertThat(d).isNotEqualTo("me");
-
-        // Poormans mocking...
-        FieldDescriptor fd = (FieldDescriptor) Proxy.newProxyInstance(InternalFieldDescriptorTest.class.getClassLoader(),
-                new Class<?>[] { FieldDescriptor.class }, (p, m, a) -> {
-                    if (m.getName().equals("newField")) {
-                        return f;
-                    }
-                    throw new AssertionError();
-                });
-        assertThat(d).isEqualTo(fd);
 
         String packageName = f.getDeclaringClass().getCanonicalName();
         assertThat(d.toString()).isEqualTo(packageName + "#" + f.getName());

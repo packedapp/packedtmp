@@ -25,7 +25,7 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceDependency;
-import app.packed.reflect.InternalFieldDescriptor;
+import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.InternalMethodDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
@@ -71,7 +71,7 @@ public final class AtProvidesGroup {
         }
 
         void onFieldProvide(AnnotatedFieldHook<Provide> fieldHook) {
-            InternalFieldDescriptor field = InternalFieldDescriptor.of(fieldHook.field());
+            FieldDescriptor field = fieldHook.field();
 
             // Generation of Key, I think we might want to do something that produces a good error message.
             tryAdd0(fieldHook.getter(), field, Key.fromField(field.unsafeField()), fieldHook.annotation(), List.of());

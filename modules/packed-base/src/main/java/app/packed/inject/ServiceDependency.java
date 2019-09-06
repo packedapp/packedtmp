@@ -36,9 +36,6 @@ import app.packed.reflect.ConstructorDescriptor;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.InternalExecutableDescriptor;
-import app.packed.reflect.InternalFieldDescriptor;
-import app.packed.reflect.InternalParameterDescriptor;
-import app.packed.reflect.InternalVariableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.reflect.VariableDescriptor;
@@ -92,7 +89,7 @@ public final class ServiceDependency {
 
     /** The variable of this dependency. */
     @Nullable
-    private final InternalVariableDescriptor variable;
+    private final VariableDescriptor variable;
 
     /**
      * Creates a new dependency.
@@ -104,7 +101,7 @@ public final class ServiceDependency {
      * @param variable
      *            an optional field or parameter
      */
-    private ServiceDependency(Key<?> key, @Nullable Class<?> optionalType, @Nullable InternalVariableDescriptor variable) {
+    private ServiceDependency(Key<?> key, @Nullable Class<?> optionalType, @Nullable VariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionalType = optionalType;
         this.variable = variable;
@@ -224,7 +221,7 @@ public final class ServiceDependency {
      * @return the optional parameter index of the dependency
      */
     public int parameterIndex() {
-        return variable instanceof InternalParameterDescriptor ? variable.index() : -1;
+        return variable instanceof ParameterDescriptor ? variable.index() : -1;
     }
 
     /** {@inheritDoc} */
@@ -300,7 +297,7 @@ public final class ServiceDependency {
 
     public static List<ServiceDependency> fromExecutable(ExecutableDescriptor executable) {
         InternalExecutableDescriptor desc = InternalExecutableDescriptor.of(executable);
-        InternalParameterDescriptor[] parameters = desc.getParametersUnsafe();
+        ParameterDescriptor[] parameters = desc.getParametersUnsafe();
         switch (parameters.length) {
         case 0:
             return List.of();
@@ -326,11 +323,11 @@ public final class ServiceDependency {
      * @see Field#getGenericType()
      */
     public static ServiceDependency fromField(Field field) {
-        return fromVariable(InternalFieldDescriptor.of(field));
+        return fromVariable(FieldDescriptor.of(field));
     }
 
     public static ServiceDependency fromField(FieldDescriptor field) {
-        return fromVariable(InternalFieldDescriptor.of(field));
+        return fromVariable(field);
     }
 
     public static <T> ServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
@@ -370,9 +367,8 @@ public final class ServiceDependency {
         return List.copyOf(result);
     }
 
-    public static <T> ServiceDependency fromVariable(VariableDescriptor variable) {
-        requireNonNull(variable, "variable is null");
-        InternalVariableDescriptor desc = InternalVariableDescriptor.unwrap(variable);
+    public static <T> ServiceDependency fromVariable(VariableDescriptor desc) {
+        requireNonNull(desc, "variable is null");
         TypeLiteral<?> tl = desc.getTypeLiteral();
 
         Annotation qualifier = desc.findQualifiedAnnotation();

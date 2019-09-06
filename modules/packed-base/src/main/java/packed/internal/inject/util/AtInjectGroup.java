@@ -23,7 +23,7 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
-import app.packed.reflect.InternalFieldDescriptor;
+import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.InternalMethodDescriptor;
 
 /**
@@ -63,7 +63,7 @@ public final class AtInjectGroup {
         }
 
         void onFieldInject(AnnotatedFieldHook<Inject> fieldHook) {
-            InternalFieldDescriptor field = InternalFieldDescriptor.of(fieldHook.field());
+            FieldDescriptor field = fieldHook.field();
             members.add(new AtInject(fieldHook.setter(), field, List.of(ServiceDependency.fromField(field))));
         }
 
