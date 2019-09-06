@@ -30,8 +30,8 @@ import app.packed.component.Component;
  * <p>
  * 
  * 
- * @apiNote User-code should never implement this interface. Future versions of this interface may make use of sealed
- *          types if they become available.
+ * @apiNote User-code should never directly extend or implement this interface. Future versions of this interface may
+ *          make use of sealed types if they become available.
  */
 // ContainerFactory?? But this maybe implies that you can invoke it multiple times
 

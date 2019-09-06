@@ -29,7 +29,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
-import app.packed.feature.FeatureMap;
+import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 

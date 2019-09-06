@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.feature;
+package app.packed.container.extension.feature;
 
 import java.util.List;
 import java.util.Map;

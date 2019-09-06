@@ -86,9 +86,9 @@ public abstract class Bundle implements ContainerSource {
     }
 
     /**
-     * Returns the configuration site that created this bundle.
+     * Returns the configuration site of this bundle.
      * 
-     * @return the configuration site that created this bundle
+     * @return the configuration site of this bundle
      * @see ContainerConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
