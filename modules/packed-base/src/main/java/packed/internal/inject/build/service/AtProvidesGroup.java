@@ -23,10 +23,10 @@ import java.util.List;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
@@ -84,10 +84,10 @@ public final class AtProvidesGroup {
             InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
 
             tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), methodHook.annotation(),
-                    PackedServiceDependency.fromExecutable(method));
+                    ServiceDependency.fromExecutable(method));
         }
 
-        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {
+        private AtProvides tryAdd0(MethodHandle mh, Member descriptor, Key<?> key, Provide provides, List<ServiceDependency> dependencies) {
             AtProvides ap = new AtProvides(mh, descriptor, key, provides, dependencies);
             hasInstanceMembers |= !ap.isStaticMember;
             // Check this

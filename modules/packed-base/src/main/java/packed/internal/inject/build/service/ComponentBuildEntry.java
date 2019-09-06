@@ -24,6 +24,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceRequest;
 import app.packed.inject.ComponentServiceConfiguration;
@@ -35,7 +36,6 @@ import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
 import packed.internal.inject.run.RSNPrototype;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -72,7 +72,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     }
 
     public ComponentBuildEntry(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
-            List<PackedServiceDependency> dependencies) {
+            List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.parent = null;
         this.instantionMode = requireNonNull(instantionMode);

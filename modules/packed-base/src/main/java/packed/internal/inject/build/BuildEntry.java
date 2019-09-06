@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceRequest;
 import app.packed.inject.ServiceConfiguration;
@@ -30,7 +31,6 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.util.PackedServiceDescriptor;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -50,7 +50,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     private final ConfigSite configSite;
 
     /** The dependencies of this node. */
-    public final List<PackedServiceDependency> dependencies;
+    public final List<ServiceDependency> dependencies;
 
     public String description;
 
@@ -82,14 +82,14 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
         this(injectorBuilder, configSite, List.of());
     }
 
-    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<PackedServiceDependency> dependencies) {
+    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<ServiceDependency> dependencies) {
         this.injectorBuilder = injectorBuilder;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);
         this.resolvedDependencies = dependencies.isEmpty() ? EMPTY_ARRAY : new ServiceEntry<?>[dependencies.size()];
         boolean hasDependencyOnInjectionSite = false;
         if (!dependencies.isEmpty()) {
-            for (PackedServiceDependency e : dependencies) {
+            for (ServiceDependency e : dependencies) {
                 if (e.key().equals(KeyBuilder.INJECTION_SITE_KEY)) {
                     hasDependencyOnInjectionSite = true;
                     break;

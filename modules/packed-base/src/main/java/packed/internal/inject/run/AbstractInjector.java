@@ -23,12 +23,12 @@ import java.util.function.Consumer;
 import app.packed.component.Component;
 import app.packed.inject.InjectionException;
 import app.packed.inject.Injector;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.inject.util.nextapi.OldAtInject;
 import packed.internal.inject.util.nextapi.OldAtInjectGroup;
 
@@ -97,7 +97,7 @@ public abstract class AbstractInjector implements Injector {
         // Inject fields
         if (!descriptor.fields.isEmpty()) {
             for (OldAtInject atInject : descriptor.fields) {
-                PackedServiceDependency dependency = atInject.dependencies.get(0);
+                ServiceDependency dependency = atInject.dependencies.get(0);
                 FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
                 ServiceEntry<?> node = findNode(dependency.key());
                 if (node != null) {
@@ -131,7 +131,7 @@ public abstract class AbstractInjector implements Injector {
             for (OldAtInject method : descriptor.methods) {
                 Object[] arguments = new Object[method.dependencies.size()];
                 System.out.println(Arrays.toString(arguments));
-                for (PackedServiceDependency dependency : method.dependencies) {
+                for (ServiceDependency dependency : method.dependencies) {
                     ServiceEntry<?> node = findNode(dependency.key());
                     System.out.println(node);
                 }

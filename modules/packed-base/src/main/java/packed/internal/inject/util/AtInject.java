@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Member;
 import java.util.List;
 
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.MethodDescriptor;
@@ -32,12 +33,12 @@ public final class AtInject {
     public final Member member;
 
     /** The dependencies (parameters) of the member. */
-    public final List<PackedServiceDependency> dependencies;
+    public final List<ServiceDependency> dependencies;
 
     /** A unbound method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
-    public AtInject(MethodHandle mh, Member member, List<PackedServiceDependency> dependencies) {
+    public AtInject(MethodHandle mh, Member member, List<ServiceDependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.member = requireNonNull(member);

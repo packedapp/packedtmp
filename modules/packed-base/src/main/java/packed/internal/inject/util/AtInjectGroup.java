@@ -22,6 +22,7 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Inject;
+import app.packed.inject.ServiceDependency;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -63,12 +64,12 @@ public final class AtInjectGroup {
 
         void onFieldInject(AnnotatedFieldHook<Inject> fieldHook) {
             InternalFieldDescriptor field = InternalFieldDescriptor.of(fieldHook.field());
-            members.add(new AtInject(fieldHook.setter(), field, List.of(PackedServiceDependency.fromField(field))));
+            members.add(new AtInject(fieldHook.setter(), field, List.of(ServiceDependency.fromField(field))));
         }
 
         void onMethodProvide(AnnotatedMethodHook<Inject> methodHook) {
             InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
-            List<PackedServiceDependency> dependencies = PackedServiceDependency.fromExecutable(method);
+            List<ServiceDependency> dependencies = ServiceDependency.fromExecutable(method);
             // TestNotStatic... Hmm kan ikke kalde hook.checkNotStatic mere...
             members.add(new AtInject(methodHook.methodHandle(), method, dependencies));
         }

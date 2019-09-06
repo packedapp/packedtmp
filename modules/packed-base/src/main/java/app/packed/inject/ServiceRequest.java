@@ -132,7 +132,7 @@ import packed.internal.inject.util.PackedServiceRequestForKey;
 
 // ComponentPath
 // ConfigSite
-public interface ServiceRequest extends ServiceDependency {
+public interface ServiceRequest /* extends ServiceDependency */ {
 
     // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
     // Includes any qualifier...
@@ -143,7 +143,6 @@ public interface ServiceRequest extends ServiceDependency {
      *
      * @return whether or not this dependency is optional
      */
-    @Override
     boolean isOptional();
 
     /**
@@ -151,7 +150,6 @@ public interface ServiceRequest extends ServiceDependency {
      *
      * @return the key of this dependency
      */
-    @Override
     Key<?> key();
 
     /**
@@ -166,7 +164,6 @@ public interface ServiceRequest extends ServiceDependency {
      *         member.
      * @see #variable()
      */
-    @Override
     Optional<Member> member();
 
     /**
@@ -175,7 +172,6 @@ public interface ServiceRequest extends ServiceDependency {
      * 
      * @return the optional parameter index of the dependency
      */
-    @Override
     int parameterIndex();
 
     /**
@@ -189,7 +185,6 @@ public interface ServiceRequest extends ServiceDependency {
      *         variable.
      * @see #member()
      */
-    @Override
     Optional<VariableDescriptor> variable();
 
     /**

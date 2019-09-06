@@ -23,12 +23,12 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
 import app.packed.util.FieldDescriptor;
 import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
-import packed.internal.inject.util.PackedServiceDependency;
 
 /** A descriptor for a field or method (member) annotated with {@link Provide}. */
 final class AtProvides {
@@ -53,12 +53,12 @@ final class AtProvides {
     final Provide provides;
 
     /** The dependencies (parameters) of the member. */
-    final List<PackedServiceDependency> dependencies;
+    final List<ServiceDependency> dependencies;
 
     /** An unbound method handle to the underlying field or method. */
     final MethodHandle methodHandle;
 
-    AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<PackedServiceDependency> dependencies) {
+    AtProvides(MethodHandle mh, Member member, Key<?> key, Provide provides, List<ServiceDependency> dependencies) {
         this.methodHandle = requireNonNull(mh);
         this.dependencies = requireNonNull(dependencies);
         this.provides = requireNonNull(provides);

@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Inject;
+import app.packed.inject.ServiceDependency;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
@@ -85,7 +85,7 @@ public final class OldAtInjectGroup {
                 }
 
                 fields.add(result = new OldAtInject(new FieldFactoryHandle<>(descriptor).withLookup(lookup),
-                        List.of(PackedServiceDependency.fromVariable(descriptor))));
+                        List.of(ServiceDependency.fromVariable(descriptor))));
             }
             return result;
         }
@@ -101,7 +101,7 @@ public final class OldAtInjectGroup {
                     methods = new ArrayList<>();
                 }
                 methods.add(result = new OldAtInject(new ExecutableFactoryHandle<>(descriptor).withLookup(lookup),
-                        PackedServiceDependency.fromExecutable(descriptor)));
+                        ServiceDependency.fromExecutable(descriptor)));
             }
             return result;
         }

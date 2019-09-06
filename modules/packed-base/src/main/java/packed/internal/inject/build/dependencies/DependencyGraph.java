@@ -40,7 +40,6 @@ import packed.internal.inject.build.dependencies.DependencyGraphCycleDetector.De
 import packed.internal.inject.build.export.ServiceExporter;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.run.DefaultInjector;
-import packed.internal.inject.util.PackedServiceDependency;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.KeyBuilder;
 import packed.internal.util.descriptor.InternalExecutableDescriptor;
@@ -129,7 +128,7 @@ final class DependencyGraph {
             BuildEntry<?> node = (BuildEntry<?>) nn;
             if (node.needsResolving()) {
                 detectCyclesFor.add(node);
-                List<PackedServiceDependency> dependencies = node.dependencies;
+                List<ServiceDependency> dependencies = node.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
                     ServiceEntry<?> resolveTo = ib.resolvedEntries.getNode(dependency);
@@ -191,7 +190,7 @@ final class DependencyGraph {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
-                    List<PackedServiceDependency> dependencies = e.getKey().dependencies;
+                    List<ServiceDependency> dependencies = e.getKey().dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");
