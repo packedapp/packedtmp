@@ -77,10 +77,6 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      */
     MethodHandle unreflectSpecial(MethodHandles.Lookup lookup, Class<?> specialCaller) throws IllegalAccessException;
 
-    static MethodDescriptor of(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns a new method descriptor from the specified method.
      *

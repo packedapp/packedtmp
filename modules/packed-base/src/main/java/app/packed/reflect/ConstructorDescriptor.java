@@ -20,9 +20,6 @@ import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.reflect.Constructor;
 
-import app.packed.inject.Factory;
-import app.packed.util.TypeLiteral;
-
 /**
  * A constructor descriptor.
  * <p>
@@ -36,18 +33,6 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
      * @return a new constructor
      */
     Constructor<T> newConstructor();
-
-    /**
-     * Returns a new factory from this constructor. Taking all of this constructor's parameters as dependencies.
-     *
-     * @throws IllegalArgumentException
-     *             if some of the parameters are not valid.
-     *
-     * @return a new factory from this constructor
-     */
-    default Factory<T> toFactory() {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Creates a new descriptor by finding a constructor on the specified declaring class with the specified parameter
@@ -89,9 +74,4 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
         return InternalConstructorDescriptor.of(constructor);
     }
 
-    @SuppressWarnings("unchecked")
-    static <T> ConstructorDescriptor<T> of(TypeLiteral<T> declaringClass, Class<?>... parameterTypes) {
-        requireNonNull(declaringClass, "declaringClass is null");
-        return (ConstructorDescriptor<T>) of(declaringClass.rawType(), parameterTypes);
-    }
 }

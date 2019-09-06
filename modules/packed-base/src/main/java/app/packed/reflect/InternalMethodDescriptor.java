@@ -31,7 +31,12 @@ import app.packed.util.TypeLiteral;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.StringFormatter;
 
-/** The default implementation of {@link MethodDescriptor}. */
+/**
+ * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is
+ * immutable, and can be be freely shared.
+ */
+// Refac using
+// https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/ExecutableElement.html
 public final class InternalMethodDescriptor extends InternalExecutableDescriptor implements MethodDescriptor {
 
     /** The method that is being mirrored (private to avoid exposing). */
@@ -92,13 +97,28 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
         return method.hashCode();
     }
 
+    /**
+     * Returns whether or not this method is a static method.
+     *
+     * @return whether or not this method is a static method
+     * @see Modifier#isStatic(int)
+     */
+    @Override
+    public boolean isStatic() {
+        return Modifier.isStatic(getModifiers());
+    }
+
     /** {@inheritDoc} */
     @Override
     public Executable newExecutable() {
         return newMethod();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns a new method from this descriptor.
+     *
+     * @return a new method from this descriptor
+     */
     @Override
     public Method newMethod() {
         Class<?> declaringClass = method.getDeclaringClass();
@@ -118,13 +138,23 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns a {@code Class} object that represents the formal return type of this method .
+     *
+     * @return the return type of this method
+     * @see Method#getReturnType()
+     */
     @Override
     public Class<?> returnType() {
         return method.getReturnType();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns a type literal that identifies the generic type return type of the method.
+     *
+     * @return a type literal that identifies the generic type return type of the method
+     * @see Method#getGenericReturnType()
+     */
     @Override
     public TypeLiteral<?> returnTypeLiteral() {
         return TypeLiteral.fromMethodReturnType(method);
@@ -143,7 +173,19 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
         return lookup.unreflect(method);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Produces a method handle for the underlying method.
+     * 
+     * @param lookup
+     *            the lookup object
+     * @param specialCaller
+     *            the class nominally calling the method
+     * @return a method handle which can invoke the reflected method
+     * @throws IllegalAccessException
+     *             if access checking fails, or if the method is {@code static}, or if the method's variable arity modifier
+     *             bit is set and {@code asVarargsCollector} fails
+     * @see Lookup#unreflectSpecial(Method, Class)
+     */
     @Override
     public MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException {
         return lookup.unreflectSpecial(method, specialCaller);
@@ -183,11 +225,5 @@ public final class InternalMethodDescriptor extends InternalExecutableDescriptor
      */
     public static InternalMethodDescriptor of(MethodDescriptor descriptor) {
         return descriptor instanceof InternalMethodDescriptor ? (InternalMethodDescriptor) descriptor : of(descriptor.newMethod());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isStatic() {
-        return Modifier.isStatic(getModifiers());
     }
 }

@@ -35,13 +35,6 @@ import java.lang.reflect.Method;
 public interface ExecutableDescriptor extends Member, AnnotatedElement {
 
     /**
-     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
-     *
-     * @return the descriptor type
-     */
-    String descriptorTypeName();
-
-    /**
      * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
      * underlying executable.
      *
@@ -52,6 +45,13 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Constructor#getParameterCount()
      */
     int parameterCount();
+
+    /**
+     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
+     *
+     * @return the descriptor type
+     */
+    String descriptorTypeName();
 
     /**
      * Returns true if the takes a variable number of arguments, otherwise false.

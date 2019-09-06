@@ -15,9 +15,10 @@
  */
 package app.packed.reflect;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+
 /**
  *
  */
-public interface MemberDescriptor {
-
-}
+public interface MemberDescriptor extends Member, AnnotatedElement {}

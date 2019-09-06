@@ -17,13 +17,16 @@ package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
-public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElement implements ExecutableDescriptor, InternalMemberDescriptor {
+public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElement implements ExecutableDescriptor, MemberDescriptor {
 
     /** The executable */
     final Executable executable;
@@ -51,6 +54,14 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
         this.parameterTypes = executable.getParameterTypes();
     }
 
+    /**
+     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
+     *
+     * @return the descriptor type
+     */
+    @Override
+    public abstract String descriptorTypeName();
+
     /** {@inheritDoc} */
     @Override
     public final Class<?> getDeclaringClass() {
@@ -63,7 +74,16 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
         return executable.getModifiers();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
+     * underlying executable.
+     *
+     * @return The number of formal parameters for the method this object represents
+     *
+     * @see Executable#getParameterCount()
+     * @see Method#getParameterCount()
+     * @see Constructor#getParameterCount()
+     */
     @Override
     public final int parameterCount() {
         return parameters.length;
@@ -84,7 +104,14 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
         return executable.isSynthetic();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns true if the takes a variable number of arguments, otherwise false.
+     *
+     * @return true if the takes a variable number of arguments, otherwise false.
+     * 
+     * @see Method#isVarArgs()
+     * @see Constructor#isVarArgs()
+     */
     @Override
     public final boolean isVarArgs() {
         return executable.isVarArgs();
@@ -95,7 +122,22 @@ public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElem
      *
      * @return a new Executable from this descriptor
      */
+    @Override
     public abstract Executable newExecutable();
+
+    /**
+     * Unreflects this executable.
+     * 
+     * @param lookup
+     *            the lookup object to use for unreflecting this executable
+     * @return a MethodHandle corresponding to this executable
+     * @throws IllegalAccessException
+     *             if the lookup object does not have access to the executable
+     * @see Lookup#unreflect(Method)
+     * @see Lookup#unreflectConstructor(Constructor)
+     */
+    @Override
+    public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     /**
      * Creates a new descriptor from a corresponding {@link Method} or {@link Constructor}.

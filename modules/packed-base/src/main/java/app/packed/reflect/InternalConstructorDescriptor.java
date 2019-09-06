@@ -17,15 +17,21 @@ package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
+import static packed.internal.util.StringFormatter.formatSimple;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
+import app.packed.util.TypeLiteral;
 import packed.internal.util.InternalErrorException;
 
-/** The default implementation of {@link ConstructorDescriptor}. */
+/**
+ * A constructor descriptor.
+ * <p>
+ * Unlike the {@link Constructor} class, this interface contains no mutable operations, so it can be freely shared.
+ */
 public final class InternalConstructorDescriptor<T> extends InternalExecutableDescriptor implements ConstructorDescriptor<T> {
 
     /** The constructor that is being mirrored. */
@@ -74,7 +80,11 @@ public final class InternalConstructorDescriptor<T> extends InternalExecutableDe
         return constructor.hashCode();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns a new constructor.
+     *
+     * @return a new constructor
+     */
     @SuppressWarnings("unchecked")
     @Override
     public Constructor<T> newConstructor() {
@@ -117,5 +127,38 @@ public final class InternalConstructorDescriptor<T> extends InternalExecutableDe
      */
     public static <T> InternalConstructorDescriptor<T> of(Constructor<T> constructor) {
         return new InternalConstructorDescriptor<T>(constructor);
+    }
+
+    /**
+     * Creates a new descriptor by finding a constructor on the specified declaring class with the specified parameter
+     * types.
+     * 
+     * @param <T>
+     *            the class in which the constructor is declared
+     * @param declaringClass
+     *            the class that declares the constructor
+     * @param parameterTypes
+     *            the parameter types of the constructor
+     * @return a new constructor descriptor
+     * @throws IllegalArgumentException
+     *             if a constructor with the specified parameter types does not exist on the specified type
+     * @see Class#getDeclaredConstructor(Class...)
+     */
+    public static <T> InternalConstructorDescriptor<T> of(Class<T> declaringClass, Class<?>... parameterTypes) {
+        requireNonNull(declaringClass, "declaringClass is null");
+        Constructor<T> constructor;
+        try {
+            constructor = declaringClass.getDeclaredConstructor(parameterTypes);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("A constructor with the specified signature does not exist, signature: " + declaringClass.getSimpleName() + "("
+                    + formatSimple(parameterTypes) + ")");
+        }
+        return of(constructor);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> InternalConstructorDescriptor<T> of(TypeLiteral<T> declaringClass, Class<?>... parameterTypes) {
+        requireNonNull(declaringClass, "declaringClass is null");
+        return (InternalConstructorDescriptor<T>) of(declaringClass.rawType(), parameterTypes);
     }
 }

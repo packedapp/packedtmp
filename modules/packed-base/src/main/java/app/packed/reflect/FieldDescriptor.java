@@ -36,7 +36,7 @@ import packed.internal.util.InternalErrorException;
  * <p>
  * Unlike the {@link Field} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public final class FieldDescriptor extends VariableDescriptor implements InternalMemberDescriptor {
+public final class FieldDescriptor extends VariableDescriptor implements MemberDescriptor {
 
     /** The field that is being wrapped. */
     private final Field field;
