@@ -18,13 +18,30 @@ package packed.internal.inject.build.dependencies;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.StringJoiner;
 
 import app.packed.config.ConfigSite;
+import app.packed.inject.InjectionException;
 import app.packed.inject.InjectionExtension;
+import app.packed.inject.Injector;
 import app.packed.inject.InjectorContract;
 import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
+import app.packed.util.MethodDescriptor;
+import app.packed.util.Nullable;
+import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.export.ServiceExportManager;
+import packed.internal.inject.build.service.ComponentBuildEntry;
+import packed.internal.inject.run.DefaultInjector;
+import packed.internal.inject.util.ServiceNodeMap;
+import packed.internal.util.KeyBuilder;
+import packed.internal.util.descriptor.InternalExecutableDescriptor;
+import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link InjectionExtension}.
@@ -44,8 +61,6 @@ public final class ServiceDependencyManager {
      */
     final ArrayList<Requirement> explicitRequirements = new ArrayList<>();
 
-    DependencyGraph graph;
-
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
      * {@link InjectionExtension#requireOptionally(Key)} and add contract.
@@ -56,24 +71,23 @@ public final class ServiceDependencyManager {
      */
     boolean manualRequirementsManagement;
 
+    /** A list of nodes to use when detecting dependency cycles. */
+    ArrayList<BuildEntry<?>> detectCyclesFor;
+
+    /** A set of all explicitly registered required service keys. */
+    final HashSet<Key<?>> required = new HashSet<>();
+
+    /** A set of all explicitly registered optional service keys. */
+    final HashSet<Key<?>> requiredOptionally = new HashSet<>();
+
+    /** A map of all dependencies that could not be resolved */
+    IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
+
+    /** A list of all dependencies that have not been resolved */
+    private ArrayList<Requirement> missingDependencies;
+
     public ServiceDependencyManager(InjectorBuilder builder) {
         this.builder = requireNonNull(builder);
-    }
-
-    public void analyze() {
-        // It does not make sense to try and resolve
-        graph = new DependencyGraph(builder);
-        graph.analyze(builder.exporter);
-    }
-
-    /**
-     * Helps build an {@link InjectorContract}.
-     * 
-     * @param builder
-     *            the contract builder
-     */
-    public void buildContract(InjectorContract.Builder builder) {
-        graph.buildContract(builder);
     }
 
     /**
@@ -98,5 +112,141 @@ public final class ServiceDependencyManager {
      */
     public void require(ServiceDependency dependency, ConfigSite configSite) {
         explicitRequirements.add(new Requirement(dependency, configSite));
+    }
+
+    /** Also used for descriptors. */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void analyze(ServiceExportManager exporter) {
+        builder.privateInjector = new DefaultInjector(builder.pcc, builder.resolvedEntries);
+        ComponentBuildEntry d = new ComponentBuildEntry<>(builder, builder.context().containerConfigSite(), builder.privateInjector);
+        d.as(KeyBuilder.INJECTOR_KEY);
+        builder.resolvedEntries.put(d);
+
+        if (builder.context().buildContext().artifactType() == Injector.class) {
+            builder.publicInjector = requireNonNull(builder.privateInjector);
+        } else {
+            ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
+            builder.publicInjector = new DefaultInjector(builder.pcc, sm);
+        }
+
+        // If we do not export services into a bundle. We should be able to resolver much quicker..
+        resolveAllDependencies();
+        CycleDetector.dependencyCyclesDetect(detectCyclesFor);
+    }
+
+    private void resolveAllDependencies() {
+        detectCyclesFor = new ArrayList<>();
+
+        for (ServiceEntry<?> se : builder.resolvedEntries) {
+            BuildEntry<?> entry = (BuildEntry<?>) se;
+            if (entry.needsResolving()) {
+                detectCyclesFor.add(entry);
+                List<ServiceDependency> dependencies = entry.dependencies;
+                for (int i = 0; i < dependencies.size(); i++) {
+                    ServiceDependency dependency = dependencies.get(i);
+                    ServiceEntry<?> resolveTo = builder.resolvedEntries.getNode(dependency);
+                    recordResolvedDependency(entry, dependency, resolveTo, false);
+                    entry.resolvedDependencies[i] = resolveTo;
+                }
+            }
+        }
+        checkForMissingDependencies();
+    }
+
+    /**
+     * Helps build an {@link InjectorContract}.
+     * 
+     * @param builder
+     *            the contract builder
+     */
+    public void buildContract(InjectorContract.Builder builder) {
+        if (requiredOptionally != null) {
+            requiredOptionally.forEach(k -> builder.addOptional(k));
+        }
+        if (required != null) {
+            required.forEach(k -> builder.addRequires(k));
+        }
+    }
+
+    /**
+     * Record a dependency that could not be resolved
+     * 
+     * @param node
+     * @param dependency
+     */
+    public void recordResolvedDependency(BuildEntry<?> node, ServiceDependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
+        requireNonNull(node);
+        requireNonNull(dependency);
+        if (resolvedTo != null) {
+            return;
+        }
+        ArrayList<Requirement> m = missingDependencies;
+        if (m == null) {
+            m = missingDependencies = new ArrayList<>();
+        }
+        m.add(new Requirement(dependency, node));
+
+        if (builder.dependencies == null || !builder.dependencies.manualRequirementsManagement) {
+            if (dependency.isOptional()) {
+                requiredOptionally.add(dependency.key());
+            } else {
+                required.add(dependency.key());
+            }
+        }
+    }
+
+    public void checkForMissingDependencies() {
+        boolean manualRequirementsManagement = builder.dependencies != null && builder.dependencies.manualRequirementsManagement;
+        if (missingDependencies != null) {
+            // if (!box.source.unresolvedServicesAllowed()) {
+            for (Requirement e : missingDependencies) {
+                if (!e.dependency.isOptional() && manualRequirementsManagement) {
+                    // Long long error message
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Cannot resolve dependency for ");
+                    List<ServiceDependency> dependencies = e.entry.dependencies;
+
+                    if (dependencies.size() == 1) {
+                        sb.append("single ");
+                    }
+                    ServiceDependency dependency = e.dependency;
+                    sb.append("parameter on ");
+                    if (dependency.variable() != null) {
+
+                        InternalExecutableDescriptor ed = (InternalExecutableDescriptor) ((InternalParameterDescriptor) dependency.variable().get())
+                                .declaringExecutable();
+                        sb.append(ed.descriptorTypeName()).append(": ");
+                        sb.append(ed.getDeclaringClass().getCanonicalName());
+                        if (ed instanceof MethodDescriptor) {
+                            sb.append("#").append(((MethodDescriptor) ed).getName());
+                        }
+                        sb.append("(");
+                        if (dependencies.size() > 1) {
+                            StringJoiner sj = new StringJoiner(", ");
+                            for (int j = 0; j < dependencies.size(); j++) {
+                                if (j == dependency.parameterIndex()) {
+                                    sj.add("-> " + dependency.key().toString() + " <-");
+                                } else {
+                                    sj.add(dependencies.get(j).key().typeLiteral().rawType().getSimpleName());
+                                }
+                            }
+                            sb.append(sj.toString());
+                        } else {
+                            sb.append(dependency.key().toString());
+                            sb.append(" ");
+                            sb.append(dependency.variable().get().getName());
+                        }
+                        sb.append(")");
+                    }
+                    // b.root.requiredServicesMandatory.add(e.get)
+                    // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
+                    throw new InjectionException(sb.toString());
+                }
+            }
+        }
+    }
+
+    public void recordMissingDependency(BuildEntry<?> node, ServiceDependency dependency, boolean fromParent) {
+
     }
 }

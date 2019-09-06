@@ -22,11 +22,10 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.contract.Contract;
@@ -112,7 +111,7 @@ public class BundleDescriptor {
      */
     protected BundleDescriptor(BundleDescriptor.Builder builder) {
         requireNonNull(builder, "builder is null");
-        this.contracts = ContractSet.of(builder.contracts);
+        this.contracts = ContractSet.of(builder.contracts.values());
         this.bundleType = builder.bundleType();
         this.description = builder.getBundleDescription();
         this.name = builder.name == null ? "?" : builder.name;
@@ -286,7 +285,7 @@ public class BundleDescriptor {
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        public Set<Contract> contracts = new HashSet<>();
+        private IdentityHashMap<Class<? extends Contract>, Contract> contracts = new IdentityHashMap<>();
 
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
@@ -300,6 +299,13 @@ public class BundleDescriptor {
             }
             s.put(descriptor.key(), descriptor); // Do we want a defensive copy???
             return this;
+        }
+
+        public void addContract(Contract contract) {
+            requireNonNull(contract, "contract is null");
+            if (contracts.putIfAbsent(contract.getClass(), contract) != null) {
+                throw new IllegalStateException("A contract of the specified type has already been added, type " + contract.getClass());
+            }
         }
 
         public BundleDescriptor build() {

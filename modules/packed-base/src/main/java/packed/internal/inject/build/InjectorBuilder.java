@@ -101,7 +101,7 @@ public final class InjectorBuilder {
         if (hasFailed) {
             return;
         }
-        dependencies().analyze();
+        dependencies().analyze(exporter);
 
         if (buildContext.isInstantiating()) {
             instantiate();
@@ -116,7 +116,7 @@ public final class InjectorBuilder {
             }
         }
 
-        builder.contracts.add(InjectorContract.of(c -> {
+        builder.addContract(InjectorContract.of(c -> {
             if (exporter != null) {
                 exporter.buildContract(c);
             }

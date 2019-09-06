@@ -26,7 +26,7 @@ import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 
 /** A utility class that can find cycles in a dependency graph. */
-final class DependencyGraphCycleDetector {
+final class CycleDetector {
 
     /**
      * Tries to find a dependency cycle.
@@ -49,7 +49,7 @@ final class DependencyGraphCycleDetector {
         ArrayDeque<BuildEntry<?>> dependencies = new ArrayDeque<>();
         for (BuildEntry<?> node : detectCyclesFor) {
             if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
+                DependencyCycle dc = CycleDetector.detectCycle(node, stack, dependencies);
                 if (dc != null) {
                     return dc;
                 }
