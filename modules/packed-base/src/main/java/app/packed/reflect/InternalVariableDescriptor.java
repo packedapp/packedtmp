@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -24,12 +24,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 import app.packed.inject.ServiceDependency;
-import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.ParameterDescriptor;
-import app.packed.reflect.VariableDescriptor;
 
 /** The default abstract implementation of {@link VariableDescriptor}. */
-public abstract class InternalVariableDescriptor extends InternalAnnotatedElement implements VariableDescriptor {
+public abstract class InternalVariableDescriptor extends AbstractAnnotatedElement implements VariableDescriptor {
 
     /**
      * Creates a new descriptor.

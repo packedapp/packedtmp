@@ -35,6 +35,10 @@ import java.util.OptionalLong;
 import app.packed.reflect.ConstructorDescriptor;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.InternalExecutableDescriptor;
+import app.packed.reflect.InternalFieldDescriptor;
+import app.packed.reflect.InternalParameterDescriptor;
+import app.packed.reflect.InternalVariableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.reflect.VariableDescriptor;
@@ -48,10 +52,6 @@ import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.descriptor.InternalExecutableDescriptor;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalParameterDescriptor;
-import packed.internal.util.descriptor.InternalVariableDescriptor;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or

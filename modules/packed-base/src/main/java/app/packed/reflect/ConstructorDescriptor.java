@@ -22,7 +22,6 @@ import java.lang.reflect.Constructor;
 
 import app.packed.inject.Factory;
 import app.packed.util.TypeLiteral;
-import packed.internal.util.descriptor.InternalConstructorDescriptor;
 
 /**
  * A constructor descriptor.

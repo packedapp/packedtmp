@@ -24,11 +24,11 @@ import java.util.List;
 
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
+import app.packed.reflect.InternalFieldDescriptor;
+import app.packed.reflect.InternalMethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** A group of injectable fields and methods. */
 public final class OldAtInjectGroup {

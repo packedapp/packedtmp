@@ -18,8 +18,6 @@ package app.packed.reflect;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 
-import packed.internal.util.descriptor.InternalParameterDescriptor;
-
 /**
  * A parameter descriptor.
  * <p>

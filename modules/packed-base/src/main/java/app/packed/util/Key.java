@@ -32,13 +32,13 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.InternalMethodDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * A key defines a unique identifier with two parts: a mandatory type literal and an optional annotation called a

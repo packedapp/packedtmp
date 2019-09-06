@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,10 +22,8 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-import app.packed.reflect.ExecutableDescriptor;
-
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
-public abstract class InternalExecutableDescriptor extends InternalAnnotatedElement implements ExecutableDescriptor, InternalMemberDescriptor {
+public abstract class InternalExecutableDescriptor extends AbstractAnnotatedElement implements ExecutableDescriptor, InternalMemberDescriptor {
 
     /** The executable */
     final Executable executable;

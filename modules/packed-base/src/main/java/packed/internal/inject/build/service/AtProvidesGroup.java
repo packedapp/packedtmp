@@ -25,11 +25,11 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceDependency;
+import app.packed.reflect.InternalFieldDescriptor;
+import app.packed.reflect.InternalMethodDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /** Information about fields and methods annotated with {@link Provide}. */
 public final class AtProvidesGroup {

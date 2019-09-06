@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,8 +23,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.reflect.ExecutableDescriptor;
-import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
@@ -52,7 +50,7 @@ public final class InternalParameterDescriptor extends InternalVariableDescripto
      * @param index
      *            the index of the parameter
      */
-    public InternalParameterDescriptor(InternalExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
+    InternalParameterDescriptor(InternalExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
         super(parameter);
         this.declaringExecutable = declaringExecutable;
         this.parameter = parameter;

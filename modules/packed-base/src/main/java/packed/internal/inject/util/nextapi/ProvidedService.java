@@ -58,6 +58,8 @@ final class ProvidedService<T> {
         return false;
     }
 
+    // ComponentPath???
+
     /**
      * Returns the module that provides the service.
      * 

@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.reflect;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 
 /**
  *
  */
-// invokeAsync()
-interface Invoker {
-    Object invoke() throws Throwable;
-
-    Object invokeWithErrorHandling();
-}
+public interface InternalMemberDescriptor extends Member, AnnotatedElement {}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -26,7 +26,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import app.packed.container.extension.FieldOperator;
-import app.packed.reflect.FieldDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.container.extension.hook.PackedFieldOperator;

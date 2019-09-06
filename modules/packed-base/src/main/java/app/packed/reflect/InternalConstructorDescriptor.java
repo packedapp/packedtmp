@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
-import app.packed.reflect.ConstructorDescriptor;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */

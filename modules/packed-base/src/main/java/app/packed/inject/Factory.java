@@ -31,6 +31,9 @@ import java.util.function.Supplier;
 
 import app.packed.lifecycle.OnStart;
 import app.packed.reflect.ConstructorDescriptor;
+import app.packed.reflect.InternalConstructorDescriptor;
+import app.packed.reflect.InternalExecutableDescriptor;
+import app.packed.reflect.InternalMethodDescriptor;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.BaseSupport;
 import app.packed.util.InvalidDeclarationException;
@@ -45,9 +48,6 @@ import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.util.TypeUtil;
 import packed.internal.util.TypeVariableExtractorUtil;
-import packed.internal.util.descriptor.InternalConstructorDescriptor;
-import packed.internal.util.descriptor.InternalExecutableDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * Factories are used for creating new instances of a particular type.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.descriptor;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,7 +26,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.util.QualifierHelper;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
-public abstract class InternalAnnotatedElement implements AnnotatedElement {
+public abstract class AbstractAnnotatedElement implements AnnotatedElement {
 
     /** The annotations present on the element */
     private final Annotation[] annotations;
@@ -49,7 +49,7 @@ public abstract class InternalAnnotatedElement implements AnnotatedElement {
      * @param element
      *            the annotated element
      */
-    InternalAnnotatedElement(AnnotatedElement element) {
+    AbstractAnnotatedElement(AnnotatedElement element) {
         this.element = element;
         this.annotations = element.getAnnotations();
     }

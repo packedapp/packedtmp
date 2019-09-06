@@ -29,6 +29,8 @@ import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorContract;
 import app.packed.inject.ServiceDependency;
+import app.packed.reflect.InternalExecutableDescriptor;
+import app.packed.reflect.InternalParameterDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -40,8 +42,6 @@ import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.KeyBuilder;
-import packed.internal.util.descriptor.InternalExecutableDescriptor;
-import packed.internal.util.descriptor.InternalParameterDescriptor;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link InjectionExtension}.

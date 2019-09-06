@@ -23,8 +23,8 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
+import app.packed.reflect.InternalFieldDescriptor;
+import app.packed.reflect.InternalMethodDescriptor;
 
 /**
  *

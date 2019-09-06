@@ -30,6 +30,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
+import app.packed.reflect.InternalParameterDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;

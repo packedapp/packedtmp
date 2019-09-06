@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.util.TypeLiteral;
-import packed.internal.util.descriptor.InternalMethodDescriptor;
 
 /**
  * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is

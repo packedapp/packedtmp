@@ -24,7 +24,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 
 import app.packed.container.extension.FieldOperator;
-import packed.internal.util.descriptor.InternalFieldDescriptor;
 
 /**
  * A field descriptor.
