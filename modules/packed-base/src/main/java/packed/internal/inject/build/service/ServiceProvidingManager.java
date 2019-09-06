@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,7 +31,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.feature.FeatureKey;
 import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
@@ -53,15 +53,15 @@ import packed.internal.inject.run.AbstractInjector;
  */
 public final class ServiceProvidingManager {
 
-    /** A that is used to store parent nodes */
-    private static FeatureKey<ComponentBuildEntry<?>> FK = new FeatureKey<>() {};
-
     /** The injector builder. */
     private final InjectorBuilder builder;
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateProviders;
+
+    /** A map used to connect stuff */
+    private final IdentityHashMap<ComponentConfiguration, ComponentBuildEntry<?>> en = new IdentityHashMap<>();
 
     /** All explicit added build entries. */
     private final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
@@ -81,6 +81,7 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onProvidesGroup(ComponentConfiguration cc, AtProvidesGroup apg) {
+        // The parent node is not added until #provideFactory or #provideInstance
         ComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;
@@ -105,7 +106,7 @@ public final class ServiceProvidingManager {
         }
 
         // Set the parent node, so it can be found from provideFactory or provideInstance
-        cc.features().set(FK, parentNode);
+        en.put(cc, parentNode);
     }
 
     public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
@@ -117,7 +118,8 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
-        ComponentBuildEntry<?> c = cc.features().get(FK);
+        ComponentBuildEntry<?> c = en.get(cc);
+        // ComponentBuildEntry<?> c = cc.features().get(FK);
         if (c == null) {
             MethodHandle mh = builder.pcc.lookup.toMethodHandle(function);
             c = new ComponentBuildEntry<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
@@ -131,16 +133,16 @@ public final class ServiceProvidingManager {
     public <T> ComponentServiceConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        ComponentBuildEntry<?> node = cc.features().get(FK);
-
-        if (node == null) {
+        // ComponentBuildEntry<?> c = cc.features().get(FK);
+        ComponentBuildEntry<?> c = en.get(cc);
+        if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            node = new ComponentBuildEntry<T>(builder, cc.configSite(), instance);
+            c = new ComponentBuildEntry<T>(builder, cc.configSite(), instance);
         }
 
-        node.as((Key) Key.of(instance.getClass()));
-        entries.add(node);
-        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) node);
+        c.as((Key) Key.of(instance.getClass()));
+        entries.add(c);
+        return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) c);
     }
 
     public HashMap<Key<?>, BuildEntry<?>> resolveAndCheckForDublicates(ArtifactBuildContext buildContext) {
