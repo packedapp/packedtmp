@@ -417,8 +417,18 @@ public final class ServiceDependency {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        // KeyInterner???? Irritere mig bare med den, WeakReference instantiation..
         return new ServiceDependency(key, null, null);
+    }
+
+    public static <T> ServiceDependency ofOptional(Key<?> key) {
+        requireNonNull(key, "key is null");
+        if (!key.hasQualifier()) {
+            TypeLiteral<?> tl = key.typeLiteral();
+            if (tl.type() == tl.rawType()) {
+                return CLASS_CACHE.get(tl.rawType());
+            }
+        }
+        return new ServiceDependency(key, Nullable.class, null);
     }
 }
 // Flyt member, parameterIndex og Variable???? til ServiceRequest..

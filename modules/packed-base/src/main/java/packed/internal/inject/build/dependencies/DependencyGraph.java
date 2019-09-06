@@ -37,7 +37,7 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.dependencies.DependencyGraphCycleDetector.DependencyCycle;
-import packed.internal.inject.build.export.ServiceExporter;
+import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -73,7 +73,7 @@ final class DependencyGraph {
 
     /** Also used for descriptors. */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    void analyze(ServiceExporter exporter) {
+    void analyze(ServiceExportManager exporter) {
         ib.privateInjector = new DefaultInjector(ib.pcc, ib.resolvedEntries);
         ComponentBuildEntry d = new ComponentBuildEntry<>(ib, ib.context().containerConfigSite(), ib.privateInjector);
         d.as(KeyBuilder.INJECTOR_KEY);

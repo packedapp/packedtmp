@@ -297,7 +297,7 @@ public final class InjectionExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(key, false, captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
+        builder.dependencies().require(ServiceDependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
     /**
@@ -314,6 +314,6 @@ public final class InjectionExtension extends Extension {
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(key, true, captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+        builder.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }

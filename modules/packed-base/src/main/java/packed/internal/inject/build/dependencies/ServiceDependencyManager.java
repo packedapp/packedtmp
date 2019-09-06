@@ -19,12 +19,13 @@ import java.util.ArrayList;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionExtension;
-import app.packed.inject.InjectorContract.Builder;
+import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
 import packed.internal.inject.build.InjectorBuilder;
 
 /**
- * This class takes care of dependencies.
+ * This class manages everything to do with dependencies of components and service for an {@link InjectionExtension}.
  * 
  * @see InjectionExtension#manualRequirementsManagement()
  * @see InjectionExtension#require(Key)
@@ -38,6 +39,8 @@ public final class ServiceDependencyManager {
      */
     final ArrayList<ExplicitRequirement> explicitRequirements = new ArrayList<>();
 
+    DependencyGraph graph;
+
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
      * {@link InjectionExtension#requireOptionally(Key)} and add contract.
@@ -46,18 +49,7 @@ public final class ServiceDependencyManager {
      * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
      * really services registered via the provide methods that could make use of them.
      */
-    public boolean manualRequirementsManagement;
-
-    DependencyGraph graph;
-
-    /** Enables manual requirements management. */
-    public void manualRequirementsManagement() {
-        manualRequirementsManagement = true;
-    }
-
-    public void require(Key<?> key, boolean isOptional, ConfigSite configSite) {
-        explicitRequirements.add(new ExplicitRequirement(key, configSite, isOptional));
-    }
+    boolean manualRequirementsManagement;
 
     public void analyze(InjectorBuilder builder) {
         // It does not make sense to try and resolve
@@ -66,9 +58,34 @@ public final class ServiceDependencyManager {
     }
 
     /**
-     * @param services
+     * Helps build an {@link InjectorContract}.
+     * 
+     * @param builder
+     *            the contract builder
      */
-    public void buildDescriptor(Builder services) {
-        graph.buildContract(services);
+    public void buildContract(InjectorContract.Builder builder) {
+        graph.buildContract(builder);
+    }
+
+    /**
+     * Enables manual requirements management.
+     * 
+     * @see InjectionExtension#manualRequirementsManagement()
+     */
+    public void manualRequirementsManagement() {
+        manualRequirementsManagement = true;
+    }
+
+    /**
+     * @param dependency
+     *            the service dependency
+     * @param configSite
+     *            the config site
+     * 
+     * @see InjectionExtension#require(Key)
+     * @see InjectionExtension#requireOptionally(Key)
+     */
+    public void require(ServiceDependency dependency, ConfigSite configSite) {
+        explicitRequirements.add(new ExplicitRequirement(dependency, configSite));
     }
 }

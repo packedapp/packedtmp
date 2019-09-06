@@ -18,7 +18,7 @@ package packed.internal.inject.build.dependencies;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.util.Key;
+import app.packed.inject.ServiceDependency;
 
 /**
  *
@@ -26,13 +26,10 @@ import app.packed.util.Key;
 class ExplicitRequirement {
     final ConfigSite configSite;
 
-    final boolean isOptional;
+    final ServiceDependency dependency;
 
-    final Key<?> key;
-
-    ExplicitRequirement(Key<?> key, ConfigSite configSite, boolean isOptional) {
-        this.key = requireNonNull(key, "key is null");
+    ExplicitRequirement(ServiceDependency dependency, ConfigSite configSite) {
+        this.dependency = requireNonNull(dependency, "key is null");
         this.configSite = requireNonNull(configSite);
-        this.isOptional = isOptional;
     }
 }

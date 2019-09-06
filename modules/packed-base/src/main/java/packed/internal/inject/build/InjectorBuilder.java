@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
-import packed.internal.inject.build.export.ServiceExporter;
+import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.build.service.ServiceProvidingManager;
 import packed.internal.inject.run.DefaultInjector;
@@ -47,7 +47,7 @@ public final class InjectorBuilder {
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
-    public ServiceExporter exporter;
+    public ServiceExportManager exporter;
 
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
@@ -120,7 +120,7 @@ public final class InjectorBuilder {
             if (exporter != null) {
                 exporter.buildContract(c);
             }
-            dependencies().buildDescriptor(c);
+            dependencies().buildContract(c);
         }));
     }
 
@@ -138,14 +138,14 @@ public final class InjectorBuilder {
     }
 
     /**
-     * Returns the {@link ServiceExporter} for this builder.
+     * Returns the {@link ServiceExportManager} for this builder.
      * 
      * @return the service exporter for this builder
      */
-    public ServiceExporter exports() {
-        ServiceExporter e = exporter;
+    public ServiceExportManager exports() {
+        ServiceExportManager e = exporter;
         if (e == null) {
-            e = exporter = new ServiceExporter(this);
+            e = exporter = new ServiceExportManager(this);
         }
         return e;
     }

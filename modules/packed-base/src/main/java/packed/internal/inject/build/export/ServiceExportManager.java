@@ -38,14 +38,14 @@ import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
 
 /**
- * This class takes care of everything to do with exporting entries.
+ * This class manages everything to do with exporting of entries for an {@link InjectionExtension}.
  *
  * @see InjectionExtension#export(Class)
  * @see InjectionExtension#export(Key)
  * @see InjectionExtension#export(ComponentServiceConfiguration)
  * @see InjectionExtension#exportAll()
  */
-public final class ServiceExporter {
+public final class ServiceExportManager {
 
     /** The injector builder this exporter belongs to. */
     private final InjectorBuilder builder;
@@ -54,16 +54,15 @@ public final class ServiceExporter {
     @Nullable
     private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
 
+    /**
+     * An entry to this list is added every time the user calls {@link InjectionExtension#export(Class)},
+     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}.
+     */
+    private final ArrayList<ExportedBuildEntry<?>> explicitExports = new ArrayList<>();
+
     /** The config site, if we export all entries. */
     @Nullable
     private ConfigSite exportAll;
-
-    /**
-     * An entry to this list is added every time the user calls {@link InjectionExtension#export(Class)},
-     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}. Export
-     * all does not make use of this list.
-     */
-    private final ArrayList<ExportedBuildEntry<?>> exports = new ArrayList<>();
 
     /** All resolved exports. Is null until {@link #resolve(InjectorBuilder, ArtifactBuildContext)} has been invoked. */
     @Nullable
@@ -78,15 +77,21 @@ public final class ServiceExporter {
     private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
     /**
-     * Creates a new service exporter.
+     * Creates a new service export manager.
      * 
      * @param builder
-     *            the builder this exporter belongs to
+     *            the builder this export manager belongs to
      */
-    public ServiceExporter(InjectorBuilder builder) {
+    public ServiceExportManager(InjectorBuilder builder) {
         this.builder = requireNonNull(builder);
     }
 
+    /**
+     * Helps build an {@link InjectorContract}.
+     * 
+     * @param builder
+     *            the contract builder
+     */
     public void buildContract(InjectorContract.Builder builder) {
         for (ExportedBuildEntry<?> n : resolvedExports.values()) {
             builder.addProvides(n.key());
@@ -112,10 +117,10 @@ public final class ServiceExporter {
         }
         BuildEntry<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
         if (entryToExport.injectorBuilder != builder) {
-            throw new IllegalArgumentException("The specified configuration object was created by another injector extension instance");
+            throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }
         ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, entryToExport, configSite);
-        exports.add(e);
+        explicitExports.add(e);
         return new ExportedServiceConfiguration<>(e);
     }
 
@@ -134,10 +139,16 @@ public final class ServiceExporter {
      */
     public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
         ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, key, configSite);
-        exports.add(e);
+        explicitExports.add(e);
         return new ExportedServiceConfiguration<>(e);
     }
 
+    /**
+     * Registers all entries for export.
+     * 
+     * @param configSite
+     *            the config site of the export
+     */
     public void exportAll(ConfigSite configSite) {
         exportAll = configSite;
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
@@ -162,7 +173,7 @@ public final class ServiceExporter {
 
         LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
-        for (ExportedBuildEntry<?> entry : exports) {
+        for (ExportedBuildEntry<?> entry : explicitExports) {
             // try and find a matching service entry for key'ed exports via
             // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
             ServiceEntry<?> entryToExport = entry.exportedEntry;
@@ -210,6 +221,7 @@ public final class ServiceExporter {
             }
         }
 
+        // Finally, make the resolved exports visible.
         this.resolvedExports = resolvedExports;
     }
 
