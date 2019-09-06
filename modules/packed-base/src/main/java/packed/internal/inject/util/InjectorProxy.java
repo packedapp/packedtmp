@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.nextgen;
+package packed.internal.inject.util;
 
-import app.packed.inject.ServiceDescriptor;
-import app.packed.util.Key;
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+
+import app.packed.artifact.ArtifactConfigurator;
+import app.packed.container.Wirelet;
+import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfigurator;
 
 /**
  *
  */
-public interface Service<T> {
+interface InjectorProxy {
 
-    // Component??? Component er internt....
+    Injector create(String s, List<String> list);
 
-    ServiceDescriptor descriptor();
-
-    Key<T> key();
+    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
+            Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.stuff;
-
-import app.packed.container.extension.ExtensionPipeline;
+package packed.internal.container.extension.stuff;
 
 /**
  *
  */
-public class CIBuilderPipeline extends ExtensionPipeline<CIBuilderPipeline> implements CommonInterface {
-
-    /** {@inheritDoc} */
-    @Override
-    protected CIBuilderPipeline split() {
-        throw new UnsupportedOperationException();
-    }
+public interface CommonInterface {
 
 }

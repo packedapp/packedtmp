@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.nextgen;
+package packed.internal.inject.util;
 
 import java.util.Collection;
 
@@ -29,6 +29,9 @@ import app.packed.inject.ServiceDescriptor;
 // De er primaert taenkt til at vaere taet knyttet til f.eks. en Injector
 
 // injector.descriptor();
+
+// Den var tiltaenkt til at vise alle services paa en component...
+// Alternativt, kan
 public interface ServiceComponenent {
 
     ConfigSite configSite();

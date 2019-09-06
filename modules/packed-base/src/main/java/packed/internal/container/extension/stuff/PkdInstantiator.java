@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.nextgen;
+package packed.internal.container.extension.stuff;
 
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-
-import app.packed.artifact.ArtifactConfigurator;
-import app.packed.container.Wirelet;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.container.extension.ExtensionPipeline;
 
 /**
  *
  */
-interface InjectorProxy {
+public interface PkdInstantiator {
 
-    Injector create(String s, List<String> list);
-
-    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
-            Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+    public <T extends ExtensionPipeline<T>> T get(Class<T> t);
 }

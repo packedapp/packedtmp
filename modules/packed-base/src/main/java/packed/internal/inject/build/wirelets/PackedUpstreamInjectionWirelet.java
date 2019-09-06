@@ -28,7 +28,6 @@ import app.packed.util.Key;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectionPipeline;
 import packed.internal.inject.build.service.ProvideAllFromInjector;
-import packed.internal.inject.util.BuildEntryServiceDescriptionWrapper;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionPipeline> {
@@ -124,7 +123,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         @Override
         public void process(ProvideAllFromInjector ii) {
             for (BuildEntry<?> e : ii.entries.values()) {
-                action.accept(new BuildEntryServiceDescriptionWrapper(e));
+                action.accept(e.toDescriptor());
             }
         }
 

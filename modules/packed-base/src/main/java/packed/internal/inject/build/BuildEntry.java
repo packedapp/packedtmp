@@ -30,7 +30,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.run.RSE;
-import packed.internal.inject.util.PackedServiceDescriptor;
 import packed.internal.util.KeyBuilder;
 
 /**

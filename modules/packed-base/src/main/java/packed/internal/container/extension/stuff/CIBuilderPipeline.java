@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension.stuff;
+package packed.internal.container.extension.stuff;
 
 import app.packed.container.extension.ExtensionPipeline;
 
 /**
  *
  */
-public interface PkdInstantiator {
+public class CIBuilderPipeline extends ExtensionPipeline<CIBuilderPipeline> implements CommonInterface {
 
-    public <T extends ExtensionPipeline<T>> T get(Class<T> t);
+    /** {@inheritDoc} */
+    @Override
+    protected CIBuilderPipeline split() {
+        throw new UnsupportedOperationException();
+    }
+
 }

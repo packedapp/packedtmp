@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.util;
+package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,7 @@ import app.packed.util.Nullable;
 // We might ditch the interface is future versions, and just have a class.
 // However, for now I think we might like the flexibility of not having.
 // ServiceDescriptor.of
-public final class PackedServiceDescriptor implements ServiceDescriptor {
+final class PackedServiceDescriptor implements ServiceDescriptor {
 
     /** The configuration site of the service. */
     private final ConfigSite configSite;
@@ -50,7 +50,7 @@ public final class PackedServiceDescriptor implements ServiceDescriptor {
      * @param description
      *            the (optional) description of the service
      */
-    public PackedServiceDescriptor(Key<?> key, ConfigSite configSite, String description) {
+    PackedServiceDescriptor(Key<?> key, ConfigSite configSite, String description) {
         this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
         this.description = description;
@@ -77,7 +77,6 @@ public final class PackedServiceDescriptor implements ServiceDescriptor {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "InternalServiceDescriptor [configSite=" + configSite + ", description=" + description + ", key=" + key /* + ", tags=" + tags */
-                + "]";
+        return "ServiceDescriptor[key=\" + key + \", configSite=" + configSite + ", description=" + description + "]";
     }
 }
