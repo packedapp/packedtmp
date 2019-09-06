@@ -17,7 +17,6 @@ package packed.internal.inject.build.dependencies;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -34,7 +33,6 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.build.dependencies.DependencyGraphCycleDetector.DependencyCycle;
 import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.run.DefaultInjector;
@@ -86,37 +84,7 @@ final class DependencyGraph {
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies();
-        dependencyCyclesDetect();
-    }
-
-    /**
-     * Tries to find a dependency cycle.
-     *
-     * @throws InjectionException
-     *             if a dependency cycle was detected
-     */
-    private void dependencyCyclesDetect() {
-        DependencyCycle c = dependencyCyclesFind();
-        if (c != null) {
-            throw new InjectionException("Dependency cycle detected: " + c);
-        }
-    }
-
-    private DependencyCycle dependencyCyclesFind() {
-        if (detectCyclesFor == null) {
-            throw new IllegalStateException("Must resolve nodes before detecting cycles");
-        }
-        ArrayDeque<BuildEntry<?>> stack = new ArrayDeque<>();
-        ArrayDeque<BuildEntry<?>> dependencies = new ArrayDeque<>();
-        for (BuildEntry<?> node : detectCyclesFor) {
-            if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
-                if (dc != null) {
-                    return dc;
-                }
-            }
-        }
-        return null;
+        DependencyGraphCycleDetector.dependencyCyclesDetect(detectCyclesFor);
     }
 
     private void resolveAllDependencies() {

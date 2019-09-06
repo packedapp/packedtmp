@@ -101,7 +101,7 @@ public final class InjectorBuilder {
         if (hasFailed) {
             return;
         }
-        dependencies().analyze(this);
+        dependencies().analyze();
 
         if (buildContext.isInstantiating()) {
             instantiate();
@@ -132,7 +132,7 @@ public final class InjectorBuilder {
     public ServiceDependencyManager dependencies() {
         ServiceDependencyManager d = dependencies;
         if (d == null) {
-            d = dependencies = new ServiceDependencyManager();
+            d = dependencies = new ServiceDependencyManager(this);
         }
         return d;
     }

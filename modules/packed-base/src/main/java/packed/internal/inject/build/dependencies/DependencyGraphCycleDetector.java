@@ -29,6 +29,36 @@ import packed.internal.inject.build.service.ComponentBuildEntry;
 final class DependencyGraphCycleDetector {
 
     /**
+     * Tries to find a dependency cycle.
+     *
+     * @throws InjectionException
+     *             if a dependency cycle was detected
+     */
+    static void dependencyCyclesDetect(ArrayList<BuildEntry<?>> detectCyclesFor) {
+        DependencyCycle c = dependencyCyclesFind(detectCyclesFor);
+        if (c != null) {
+            throw new InjectionException("Dependency cycle detected: " + c);
+        }
+    }
+
+    private static DependencyCycle dependencyCyclesFind(ArrayList<BuildEntry<?>> detectCyclesFor) {
+        if (detectCyclesFor == null) {
+            throw new IllegalStateException("Must resolve nodes before detecting cycles");
+        }
+        ArrayDeque<BuildEntry<?>> stack = new ArrayDeque<>();
+        ArrayDeque<BuildEntry<?>> dependencies = new ArrayDeque<>();
+        for (BuildEntry<?> node : detectCyclesFor) {
+            if (!node.detectCycleVisited) { // only process those nodes that have not been visited yet
+                DependencyCycle dc = DependencyGraphCycleDetector.detectCycle(node, stack, dependencies);
+                if (dc != null) {
+                    return dc;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Recursively invoked for each node.
      *
      * @param stack
@@ -41,7 +71,7 @@ final class DependencyGraphCycleDetector {
      * @throws InjectionException
      *             if there is a cycle in the graph
      */
-    static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
+    private static DependencyCycle detectCycle(BuildEntry<?> node, ArrayDeque<BuildEntry<?>> stack, ArrayDeque<BuildEntry<?>> dependencies) {
         stack.push(node);
         for (int i = 0; i < node.resolvedDependencies.length; i++) {
             ServiceEntry<?> dependency = node.resolvedDependencies[i];

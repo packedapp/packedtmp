@@ -15,6 +15,8 @@
  */
 package packed.internal.inject.build.dependencies;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 
 import app.packed.config.ConfigSite;
@@ -32,6 +34,9 @@ import packed.internal.inject.build.InjectorBuilder;
  * @see InjectionExtension#requireOptionally(Key)
  */
 public final class ServiceDependencyManager {
+
+    /** The injector builder this manager belongs to. */
+    private final InjectorBuilder builder;
 
     /**
      * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
@@ -51,7 +56,11 @@ public final class ServiceDependencyManager {
      */
     boolean manualRequirementsManagement;
 
-    public void analyze(InjectorBuilder builder) {
+    public ServiceDependencyManager(InjectorBuilder builder) {
+        this.builder = requireNonNull(builder);
+    }
+
+    public void analyze() {
         // It does not make sense to try and resolve
         graph = new DependencyGraph(builder);
         graph.analyze(builder.exporter);
