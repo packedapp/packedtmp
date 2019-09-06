@@ -27,7 +27,7 @@ import app.packed.inject.Injector;
 import app.packed.util.Key;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
-import packed.internal.inject.build.PackedUpstreamInjectionWirelet;
+import packed.internal.inject.build.wirelets.PackedUpstreamInjectionWirelet;
 import packed.internal.inject.run.AbstractInjector;
 
 /** Represents an injector that used via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */

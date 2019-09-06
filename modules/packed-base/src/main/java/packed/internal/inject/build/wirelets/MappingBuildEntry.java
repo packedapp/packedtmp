@@ -42,7 +42,7 @@ public class MappingBuildEntry<F, T> extends BuildEntry<T> {
         super(injectorBuilder, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
-        key = toKey;
+        this.key = toKey;
     }
 
     /** {@inheritDoc} */
@@ -54,8 +54,9 @@ public class MappingBuildEntry<F, T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     public T getInstance(ServiceRequest site) {
-        // TODO Auto-generated method stub
-        return null;
+        // Null check..
+        F instance = entryToMap.getInstance(site);
+        return function.apply(instance);
     }
 
     /** {@inheritDoc} */
@@ -75,5 +76,4 @@ public class MappingBuildEntry<F, T> extends BuildEntry<T> {
     protected RSE<T> newRuntimeNode() {
         return new MappingRunEntry<>(this, entryToMap, function);
     }
-
 }

@@ -21,13 +21,15 @@ import java.util.Optional;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 
 /** A node that represents a service at runtime. */
-public abstract class RSE<T> implements ServiceEntry<T> {
+// BuildEntry does not implements ServiceDescriptor because it is mutable
+public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
 
     /** The point where this node was registered. */
     private final ConfigSite configSite;

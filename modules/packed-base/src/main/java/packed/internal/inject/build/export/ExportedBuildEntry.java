@@ -108,7 +108,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     public boolean needsResolving() {
-        return (exportedEntry instanceof BuildEntry) ? ((BuildEntry<?>) exportedEntry).needsResolving() : null;
+        return exportedEntry.needsResolving();
     }
 
     /** {@inheritDoc} */

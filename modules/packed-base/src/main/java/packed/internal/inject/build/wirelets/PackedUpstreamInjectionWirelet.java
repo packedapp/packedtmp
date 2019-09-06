@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.build;
+package packed.internal.inject.build.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.config.ConfigSite;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
+import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.InjectionPipeline;
 import packed.internal.inject.build.service.ProvideAllFromInjector;
-import packed.internal.inject.build.wirelets.MappingBuildEntry;
+import packed.internal.inject.util.BuildEntryServiceDescriptionWrapper;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionPipeline> {
@@ -124,7 +124,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         @Override
         public void process(ProvideAllFromInjector ii) {
             for (BuildEntry<?> e : ii.entries.values()) {
-                action.accept(new ServiceConfigurationWrapper(e));
+                action.accept(new BuildEntryServiceDescriptionWrapper(e));
             }
         }
 
@@ -133,46 +133,5 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         protected void process(InjectionPipeline extension) {
             // TODO Auto-generated method stub
         }
-    }
-
-    /** A descriptor that wraps a service configuration. */
-    static class ServiceConfigurationWrapper implements ServiceDescriptor {
-
-        /** The configuration we read through to. */
-        private final BuildEntry<?> configuration;
-
-        /**
-         * Creates a new wrapper
-         * 
-         * @param configuration
-         *            the configuration to wrap
-         */
-        ServiceConfigurationWrapper(BuildEntry<?> configuration) {
-            this.configuration = requireNonNull(configuration, "configuration is null");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigSite configSite() {
-            return configuration.configSite();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<String> description() {
-            return Optional.ofNullable(configuration.getDescription());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Key<?> key() {
-            return configuration.getKey();
-        }
-        //
-        // /** {@inheritDoc} */
-        // @Override
-        // public Set<String> tags() {
-        // return Collections.unmodifiableSet(configuration.tags());
-        // }
     }
 }

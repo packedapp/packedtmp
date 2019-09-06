@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.inject.build.PackedUpstreamInjectionWirelet;
+import packed.internal.inject.build.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
  *

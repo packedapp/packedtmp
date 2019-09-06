@@ -15,11 +15,15 @@
  */
 package packed.internal.inject;
 
+import java.util.Optional;
+
 import app.packed.component.Component;
+import app.packed.config.ConfigSite;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.ServiceRequest;
+import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.run.RSE;
@@ -33,8 +37,30 @@ import packed.internal.util.KeyBuilder;
  * at runtime.
  */
 // BuildNode also implements Service, because it must available at some point???Tjah...
-public interface ServiceEntry<T> extends ServiceDescriptor {
+public interface ServiceEntry<T> {
 
+    /**
+     * Returns the configuration site of this service.
+     * 
+     * @return the configuration site of this service
+     */
+    ConfigSite configSite();
+
+    /**
+     * Returns the optional description of this service.
+     *
+     * @return the optional description of this service
+     * @see ComponentServiceConfiguration#setDescription(String)
+     */
+    Optional<String> description();
+
+    /**
+     * Returns the key that the service is registered with.
+     *
+     * @return the key that the service is registered with
+     * @see ComponentServiceConfiguration#as(Key)
+     */
+    Key<?> key();
     //
     // default Provider<T> createProvider(Injector injector, Container container, Component component, Key<T> key) {
     // InjectionSite site = InternalInjectionSite.of(injector, container, component, key);
