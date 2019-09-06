@@ -116,9 +116,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     }
 
     @Override
-    public final void checkConfigurable() {
+    public final void requireConfigurable() {
         if (state == State.FINAL) {
-            throw new IllegalStateException("This configuration can no longer be modified");
+            throw new IllegalStateException("This component can no longer be configured");
         }
     }
 
@@ -251,7 +251,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     @Override
     public AbstractComponentConfiguration setDescription(String description) {
         requireNonNull(description, "description is null");
-        checkConfigurable();
+        requireConfigurable();
         this.description = description;
         return this;
     }
@@ -264,7 +264,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
             initializeName(State.SET_NAME_INVOKED, name);
             return this;
         case FINAL:
-            checkConfigurable();
+            requireConfigurable();
         case GET_NAME_INVOKED:
             throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #getName()");
         case PATH_INVOKED:

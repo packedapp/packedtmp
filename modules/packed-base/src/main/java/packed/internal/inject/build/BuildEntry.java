@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
-import app.packed.inject.ServiceRequest;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
+import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -101,7 +101,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     @SuppressWarnings("unchecked")
     public void as(Key<? super T> key) {
         requireNonNull(key, "key is null");
-        // checkConfigurable();
+        // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
         this.key = (Key<T>) key;

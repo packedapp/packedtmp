@@ -30,7 +30,7 @@ import java.lang.reflect.Parameter;
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public abstract class ExecutableDescriptor extends AbstractAnnotatedElement implements MemberDescriptor {
+public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor implements MemberDescriptor {
 
     /** The executable */
     final Executable executable;

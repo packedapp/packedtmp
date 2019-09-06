@@ -31,6 +31,15 @@ public interface ExtensionContext {
     ArtifactBuildContext buildContext();
 
     /**
+     * Returns the config site of the container to which the extension is registered with.
+     * 
+     * @return the config site of the container to which the extension is registered with
+     */
+    ConfigSite containerConfigSite();
+
+    void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar);
+
+    /**
      * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer configurable after the extensions {@link Extension#onConfigured()} has been invoked by the
@@ -39,16 +48,7 @@ public interface ExtensionContext {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void checkConfigurable();
-
-    /**
-     * Returns the config site of the container to which the extension is registered with.
-     * 
-     * @return the config site of the container to which the extension is registered with
-     */
-    ConfigSite containerConfigSite();
-
-    void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar);
+    void requireConfigurable();
 
     /**
      * Returns an extension of the specified type.

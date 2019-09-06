@@ -117,7 +117,7 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
-        checkConfigurable();
+        requireConfigurable();
         return builder.exports().export(key, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
@@ -132,7 +132,7 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
-        checkConfigurable();
+        requireConfigurable();
         return builder.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
@@ -140,7 +140,7 @@ public final class InjectionExtension extends Extension {
      * 
      */
     public void exportAll() {
-        checkConfigurable();
+        requireConfigurable();
         builder.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
@@ -154,7 +154,7 @@ public final class InjectionExtension extends Extension {
     // Problemet er dem der f.eks. har metoder
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
-        checkConfigurable();
+        requireConfigurable();
         builder.dependencies().manualRequirementsManagement();
     }
 
@@ -273,7 +273,7 @@ public final class InjectionExtension extends Extension {
         if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
-        checkConfigurable();
+        requireConfigurable();
         builder.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
                 WireletList.of(wirelets));
     }
@@ -296,7 +296,7 @@ public final class InjectionExtension extends Extension {
      *            the key to add
      */
     public void require(Key<?> key) {
-        checkConfigurable();
+        requireConfigurable();
         builder.dependencies().require(ServiceDependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
@@ -313,7 +313,7 @@ public final class InjectionExtension extends Extension {
     // Should be have varargs???, or as a minimum support method chaining
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
-        checkConfigurable();
+        requireConfigurable();
         builder.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }

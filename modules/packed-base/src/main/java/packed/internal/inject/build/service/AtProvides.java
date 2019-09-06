@@ -23,10 +23,10 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.Provide;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
-import app.packed.inject.Provide;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 

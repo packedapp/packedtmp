@@ -73,7 +73,7 @@ public abstract class Bundle implements ContainerSource {
      * <pre>
      * {@code
      * public void setJMXEnabled(boolean enabled) {
-     *     checkConfigurable(); //will throw IllegalStateException if configure() has already been called
+     *     requireConfigurable(); //will throw IllegalStateException if configure() has already been called
      *     this.jmxEnabled = enabled;
      * }}
      * </pre>
@@ -81,8 +81,8 @@ public abstract class Bundle implements ContainerSource {
      * @throws IllegalStateException
      *             if the {@link #configure()} method has already been invoked once for this extension instance
      */
-    protected final void checkConfigurable() {
-        configuration().checkConfigurable();
+    protected final void requireConfigurable() {
+        configuration().requireConfigurable();
     }
 
     /**

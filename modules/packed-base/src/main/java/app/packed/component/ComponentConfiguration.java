@@ -16,9 +16,9 @@
 package app.packed.component;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.extension.feature.FeatureMap;
-import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 
@@ -45,7 +45,7 @@ public interface ComponentConfiguration {
      * @throws IllegalStateException
      *             if the component is no long configurable.
      */
-    void checkConfigurable();
+    void requireConfigurable();
 
     /**
      * Returns the configuration site that created this configuration.

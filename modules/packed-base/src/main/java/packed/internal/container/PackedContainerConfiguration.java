@@ -338,9 +338,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         // We do not use the computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
-
         if (pec == null) {
-            checkConfigurable(); // installing new extensions after configuration is done is not allowed
+            requireConfigurable(); // installing new extensions after configuration is done is not allowed
             pec = PackedExtensionContext.create(extensionType, this);
             extensions.put(extensionType, pec); // make sure it is installed before we call into user code Extension#onAdded
             SharedSecrets.extension().initializeExtension(pec);

@@ -21,8 +21,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.feature.FeatureMap;
-import app.packed.inject.InstantiationMode;
 import app.packed.inject.ComponentServiceConfiguration;
+import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
@@ -52,15 +52,15 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     /** {@inheritDoc} */
     @Override
     public ComponentServiceConfiguration<T> as(Key<? super T> key) {
-        component.checkConfigurable();
+        component.requireConfigurable();
         buildEntry.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void checkConfigurable() {
-        component.checkConfigurable();
+    public void requireConfigurable() {
+        component.requireConfigurable();
     }
 
     /** {@inheritDoc} */
@@ -105,7 +105,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     /** {@inheritDoc} */
     @Override
     public ComponentServiceConfiguration<T> lazy() {
-        component.checkConfigurable();
+        component.requireConfigurable();
         ((ComponentBuildEntry<T>) buildEntry).lazy();
         return this;
     }
@@ -119,7 +119,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     /** {@inheritDoc} */
     @Override
     public ComponentServiceConfiguration<T> prototype() {
-        component.checkConfigurable();
+        component.requireConfigurable();
         ((ComponentBuildEntry<T>) buildEntry).prototype();
         return this;
     }

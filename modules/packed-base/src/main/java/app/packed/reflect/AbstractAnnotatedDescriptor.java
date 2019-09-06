@@ -26,7 +26,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.util.QualifierHelper;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
-public abstract class AbstractAnnotatedElement implements AnnotatedElement {
+public abstract class AbstractAnnotatedDescriptor implements AnnotatedElement {
 
     /** The annotations present on the element */
     private final Annotation[] annotations;
@@ -49,7 +49,7 @@ public abstract class AbstractAnnotatedElement implements AnnotatedElement {
      * @param element
      *            the annotated element
      */
-    AbstractAnnotatedElement(AnnotatedElement element) {
+    AbstractAnnotatedDescriptor(AnnotatedElement element) {
         this.element = element;
         this.annotations = element.getAnnotations();
     }

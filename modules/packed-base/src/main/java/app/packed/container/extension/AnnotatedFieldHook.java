@@ -18,11 +18,10 @@ package app.packed.container.extension;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.UncheckedIllegalAccessException;
-
-import java.lang.invoke.VarHandle;
 
 /**
  * A hook representing a field annotated with a specific annotation.
