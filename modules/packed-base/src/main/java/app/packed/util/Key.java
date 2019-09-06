@@ -32,7 +32,6 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.InternalMethodDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
@@ -317,8 +316,8 @@ public abstract class Key<T> /* implements Comparable<Key<?>> */ {
 
     public static Key<?> fromMethodReturnType(MethodDescriptor method) {
         requireNonNull(method, "method is null");
-        if (method instanceof InternalMethodDescriptor) {
-            return ((InternalMethodDescriptor) method).fromMethodReturnType();
+        if (method instanceof MethodDescriptor) {
+            return method.fromMethodReturnType();
         }
         return fromMethodReturnType(method.newMethod());
     }

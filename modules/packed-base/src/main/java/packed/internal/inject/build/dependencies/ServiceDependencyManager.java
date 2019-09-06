@@ -29,9 +29,9 @@ import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InjectorContract;
 import app.packed.inject.ServiceDependency;
-import app.packed.reflect.InternalExecutableDescriptor;
-import app.packed.reflect.ParameterDescriptor;
+import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
+import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -213,8 +213,7 @@ public final class ServiceDependencyManager {
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
-                        InternalExecutableDescriptor ed = (InternalExecutableDescriptor) ((ParameterDescriptor) dependency.variable().get())
-                                .declaringExecutable();
+                        ExecutableDescriptor ed = ((ParameterDescriptor) dependency.variable().get()).declaringExecutable();
                         sb.append(ed.descriptorTypeName()).append(": ");
                         sb.append(ed.getDeclaringClass().getCanonicalName());
                         if (ed instanceof MethodDescriptor) {

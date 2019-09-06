@@ -37,7 +37,7 @@ import packed.internal.util.InternalErrorException;
 public final class ParameterDescriptor extends VariableDescriptor {
 
     /** The executable that declares the parameter. */
-    private final InternalExecutableDescriptor declaringExecutable;
+    private final ExecutableDescriptor declaringExecutable;
 
     /** The index of the parameter. */
     private final int index;
@@ -55,7 +55,7 @@ public final class ParameterDescriptor extends VariableDescriptor {
      * @param index
      *            the index of the parameter
      */
-    ParameterDescriptor(InternalExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
+    ParameterDescriptor(ExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
         super(parameter);
         this.declaringExecutable = declaringExecutable;
         this.parameter = parameter;
@@ -196,11 +196,11 @@ public final class ParameterDescriptor extends VariableDescriptor {
     public static ParameterDescriptor of(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
 
-        InternalExecutableDescriptor em;
+        ExecutableDescriptor em;
         if (parameter.getDeclaringExecutable() instanceof Constructor) {
-            em = InternalConstructorDescriptor.of(parameter.getDeclaringExecutable());
+            em = ConstructorDescriptor.of(parameter.getDeclaringExecutable());
         } else {
-            em = InternalMethodDescriptor.of((Method) parameter.getDeclaringExecutable());
+            em = MethodDescriptor.of((Method) parameter.getDeclaringExecutable());
         }
 
         // parameter.index is not visible, so we need to iterate through all parameters to find the right one

@@ -35,7 +35,6 @@ import java.util.OptionalLong;
 import app.packed.reflect.ConstructorDescriptor;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.InternalExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.reflect.VariableDescriptor;
@@ -295,8 +294,7 @@ public final class ServiceDependency {
         return fromExecutable(ExecutableDescriptor.of(executable));
     }
 
-    public static List<ServiceDependency> fromExecutable(ExecutableDescriptor executable) {
-        InternalExecutableDescriptor desc = InternalExecutableDescriptor.of(executable);
+    public static List<ServiceDependency> fromExecutable(ExecutableDescriptor desc) {
         ParameterDescriptor[] parameters = desc.getParametersUnsafe();
         switch (parameters.length) {
         case 0:

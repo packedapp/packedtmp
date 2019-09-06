@@ -16,23 +16,112 @@
 package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.format;
 import static packed.internal.util.StringFormatter.formatSimple;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+
+import app.packed.util.TypeLiteral;
+import packed.internal.util.InternalErrorException;
 
 /**
  * A constructor descriptor.
  * <p>
  * Unlike the {@link Constructor} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
+public final class ConstructorDescriptor<T> extends ExecutableDescriptor {
+
+    /** The constructor that is being mirrored. */
+    private final Constructor<?> constructor;
+
+    /**
+     * Creates a new InternalConstructorDescriptor from the specified constructor.
+     *
+     * @param constructor
+     *            the constructor to create a descriptor from
+     */
+    private ConstructorDescriptor(Constructor<?> constructor) {
+        super(requireNonNull(constructor, "constructor is null"));
+        this.constructor = constructor;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String descriptorTypeName() {
+        return "constructor";
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (obj instanceof ConstructorDescriptor) {
+            return ((ConstructorDescriptor<?>) obj).constructor.equals(constructor);
+        }
+        return false;
+    }
+
+    public String getName() {
+        return constructor.getName();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return constructor.hashCode();
+    }
 
     /**
      * Returns a new constructor.
      *
      * @return a new constructor
      */
-    Constructor<T> newConstructor();
+    @SuppressWarnings("unchecked")
+    public Constructor<T> newConstructor() {
+        Class<?> declaringClass = constructor.getDeclaringClass();
+        try {
+            return (Constructor<T>) declaringClass.getConstructor(parameterTypes);
+        } catch (NoSuchMethodException e) {
+            throw new InternalErrorException("constructor", constructor, e);// We should never get to here
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Executable newExecutable() {
+        return newConstructor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return format(constructor);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle unreflect(Lookup lookup) throws IllegalAccessException {
+        requireNonNull(lookup, "lookup is null");
+        return lookup.unreflectConstructor(constructor);
+    }
+
+    /**
+     * Creates a new descriptor from the specified constructor.
+     *
+     *
+     * @param <T>
+     *            the class in which the constructor is declared
+     * @param constructor
+     *            the constructor to wrap
+     * @return a new constructor descriptor
+     */
+    public static <T> ConstructorDescriptor<T> of(Constructor<T> constructor) {
+        return new ConstructorDescriptor<T>(constructor);
+    }
 
     /**
      * Creates a new descriptor by finding a constructor on the specified declaring class with the specified parameter
@@ -49,7 +138,7 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
      *             if a constructor with the specified parameter types does not exist on the specified type
      * @see Class#getDeclaredConstructor(Class...)
      */
-    static <T> ConstructorDescriptor<T> of(Class<T> declaringClass, Class<?>... parameterTypes) {
+    public static <T> ConstructorDescriptor<T> of(Class<T> declaringClass, Class<?>... parameterTypes) {
         requireNonNull(declaringClass, "declaringClass is null");
         Constructor<T> constructor;
         try {
@@ -61,17 +150,9 @@ public interface ConstructorDescriptor<T> extends ExecutableDescriptor {
         return of(constructor);
     }
 
-    /**
-     * Returns a descriptor from the specified constructor.
-     *
-     * @param <T>
-     *            the class in which the constructor is declared
-     * @param constructor
-     *            the constructor to return a descriptor for
-     * @return a descriptor from the specified constructor
-     */
-    static <T> ConstructorDescriptor<T> of(Constructor<T> constructor) {
-        return InternalConstructorDescriptor.of(constructor);
+    @SuppressWarnings("unchecked")
+    public static <T> ConstructorDescriptor<T> of(TypeLiteral<T> declaringClass, Class<?>... parameterTypes) {
+        requireNonNull(declaringClass, "declaringClass is null");
+        return (ConstructorDescriptor<T>) of(declaringClass.rawType(), parameterTypes);
     }
-
 }

@@ -26,7 +26,7 @@ import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.InternalMethodDescriptor;
+import app.packed.reflect.MethodDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
@@ -78,7 +78,7 @@ public final class AtProvidesGroup {
         }
 
         void onMethodProvide(AnnotatedMethodHook<Provide> methodHook) {
-            InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
+            MethodDescriptor method = methodHook.method();
 
             tryAdd0(methodHook.methodHandle(), method, Key.fromMethodReturnType(method.newMethod()), methodHook.annotation(),
                     ServiceDependency.fromExecutable(method));

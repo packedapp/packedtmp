@@ -25,7 +25,7 @@ import java.util.List;
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.InternalMethodDescriptor;
+import app.packed.reflect.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;
@@ -94,7 +94,7 @@ public final class OldAtInjectGroup {
         public OldAtInject createIfInjectable(Lookup lookup, Method method, Annotation[] annotations) {
             OldAtInject result = null;
             if (isInjectAnnotationPresent(annotations)) {
-                InternalMethodDescriptor descriptor = InternalMethodDescriptor.of(method);
+                MethodDescriptor descriptor = MethodDescriptor.of(method);
                 // static @Inject methods are treated like factory methods, and captured elsewhere
 
                 if (methods == null) {

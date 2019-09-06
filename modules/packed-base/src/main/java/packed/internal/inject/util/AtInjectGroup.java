@@ -24,7 +24,7 @@ import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.InternalMethodDescriptor;
+import app.packed.reflect.MethodDescriptor;
 
 /**
  *
@@ -68,7 +68,7 @@ public final class AtInjectGroup {
         }
 
         void onMethodProvide(AnnotatedMethodHook<Inject> methodHook) {
-            InternalMethodDescriptor method = InternalMethodDescriptor.of(methodHook.method());
+            MethodDescriptor method = methodHook.method();
             List<ServiceDependency> dependencies = ServiceDependency.fromExecutable(method);
             // TestNotStatic... Hmm kan ikke kalde hook.checkNotStatic mere...
             members.add(new AtInject(methodHook.methodHandle(), method, dependencies));

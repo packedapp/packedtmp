@@ -20,19 +20,63 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 
 /**
  * An executable descriptor.
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
-// implements MemberDescriptor
-public interface ExecutableDescriptor extends Member, AnnotatedElement {
+public abstract class ExecutableDescriptor extends AbstractAnnotatedElement implements MemberDescriptor {
+
+    /** The executable */
+    final Executable executable;
+
+    /** An array of the parameter descriptor for this executable */
+    private final ParameterDescriptor[] parameters;
+
+    /** The parameter types of the executable. */
+    final Class<?>[] parameterTypes;
+
+    /**
+     * Creates a new descriptor from the specified executable.
+     *
+     * @param executable
+     *            the executable to mirror
+     */
+    public ExecutableDescriptor(Executable executable) {
+        super(executable);
+        this.executable = executable;
+        Parameter[] javaParameters = executable.getParameters();
+        this.parameters = new ParameterDescriptor[javaParameters.length];
+        for (int i = 0; i < javaParameters.length; i++) {
+            this.parameters[i] = new ParameterDescriptor(this, javaParameters[i], i);
+        }
+        this.parameterTypes = executable.getParameterTypes();
+    }
+
+    /**
+     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
+     *
+     * @return the descriptor type
+     */
+    @Override
+    public abstract String descriptorTypeName();
+
+    /** {@inheritDoc} */
+    @Override
+    public final Class<?> getDeclaringClass() {
+        return executable.getDeclaringClass();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int getModifiers() {
+        return executable.getModifiers();
+    }
 
     /**
      * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
@@ -44,14 +88,23 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Method#getParameterCount()
      * @see Constructor#getParameterCount()
      */
-    int parameterCount();
+    public final int parameterCount() {
+        return parameters.length;
+    }
 
     /**
-     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
+     * Returns an array of parameter mirrors of the executable.
      *
-     * @return the descriptor type
+     * @return an array of parameter mirrors of the executable
      */
-    String descriptorTypeName();
+    public final ParameterDescriptor[] getParametersUnsafe() {
+        return parameters;
+    }
+
+    @Override
+    public final boolean isSynthetic() {
+        return executable.isSynthetic();
+    }
 
     /**
      * Returns true if the takes a variable number of arguments, otherwise false.
@@ -61,7 +114,16 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Method#isVarArgs()
      * @see Constructor#isVarArgs()
      */
-    boolean isVarArgs();
+    public final boolean isVarArgs() {
+        return executable.isVarArgs();
+    }
+
+    /**
+     * Creates a new Executable from this descriptor.
+     *
+     * @return a new Executable from this descriptor
+     */
+    public abstract Executable newExecutable();
 
     /**
      * Unreflects this executable.
@@ -74,18 +136,11 @@ public interface ExecutableDescriptor extends Member, AnnotatedElement {
      * @see Lookup#unreflect(Method)
      * @see Lookup#unreflectConstructor(Constructor)
      */
-    abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
-
-    /**
-     * Creates a new Executable from this descriptor.
-     *
-     * @return a new Executable from this descriptor
-     */
-    abstract Executable newExecutable();
+    public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static ExecutableDescriptor of(Executable executable) {
+    public static ExecutableDescriptor of(Executable executable) {
         requireNonNull(executable, "executable is null");
-        return executable instanceof Constructor ? ConstructorDescriptor.of((Constructor) executable) : MethodDescriptor.of((Method) executable);
+        return executable instanceof Constructor ? ConstructorDescriptor.of((Constructor) executable) : MethodDescriptor.of(executable);
     }
 }

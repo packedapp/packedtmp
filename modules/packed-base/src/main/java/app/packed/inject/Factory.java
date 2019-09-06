@@ -31,9 +31,8 @@ import java.util.function.Supplier;
 
 import app.packed.lifecycle.OnStart;
 import app.packed.reflect.ConstructorDescriptor;
-import app.packed.reflect.InternalConstructorDescriptor;
-import app.packed.reflect.InternalExecutableDescriptor;
-import app.packed.reflect.InternalMethodDescriptor;
+import app.packed.reflect.ExecutableDescriptor;
+import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.BaseSupport;
 import app.packed.util.InvalidDeclarationException;
@@ -416,18 +415,18 @@ public class Factory<T> {
 final class FactoryFindInjectableExecutable {
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
-        InternalExecutableDescriptor executable = findExecutable(implementation);
+        ExecutableDescriptor executable = findExecutable(implementation);
         return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
                 ServiceDependency.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        InternalExecutableDescriptor executable = findExecutable(implementation.rawType());
+        ExecutableDescriptor executable = findExecutable(implementation.rawType());
         return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), ServiceDependency.fromExecutable(executable));
     }
 
-    private static InternalExecutableDescriptor findExecutable(Class<?> type) {
+    private static ExecutableDescriptor findExecutable(Class<?> type) {
         if (type.isArray()) {
             throw new IllegalArgumentException("The specified type (" + format(type) + ") is an array");
         } else if (type.isAnnotation()) {
@@ -455,14 +454,14 @@ final class FactoryFindInjectableExecutable {
                 throw new IllegalArgumentException("Static method " + method + " annotated with @Inject cannot have an optional return type ("
                         + method.getReturnType().getSimpleName() + "). A valid instance needs to be provided by the method");
             }
-            return InternalMethodDescriptor.of(method);
+            return MethodDescriptor.of(method);
         }
 
         Constructor<?>[] constructors = type.getDeclaredConstructors();
 
         // If we only have 1 constructor, return it.
         if (constructors.length == 1) {
-            return InternalConstructorDescriptor.of(constructors[0]);
+            return ConstructorDescriptor.of(constructors[0]);
         }
 
         // See if we have a single constructor annotated with @Inject
@@ -479,7 +478,7 @@ final class FactoryFindInjectableExecutable {
             }
         }
         if (constructor != null) {
-            return InternalConstructorDescriptor.of(constructor);
+            return ConstructorDescriptor.of(constructor);
         }
 
         // Try and find one constructor with maximum number of parameters.
@@ -492,7 +491,7 @@ final class FactoryFindInjectableExecutable {
                 constructor = c;
             }
         }
-        return InternalConstructorDescriptor.of(constructor);
+        return ConstructorDescriptor.of(constructor);
     }
 }
 
