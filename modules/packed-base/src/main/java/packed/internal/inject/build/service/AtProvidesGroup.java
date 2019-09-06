@@ -23,28 +23,25 @@ import java.util.List;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
+import app.packed.inject.ServiceDependency;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.descriptor.InternalFieldDescriptor;
 import packed.internal.util.descriptor.InternalMethodDescriptor;
 
-/**
- * Information about fields and methods annotated with {@link Provide}, typically on a single class. Used for both
- * services, components, import and export stages.
- */
+/** Information about fields and methods annotated with {@link Provide}. */
 public final class AtProvidesGroup {
 
     /** Whether or not there are any non-static providing fields or methods. */
-    public final boolean hasInstanceMembers;
+    final boolean hasInstanceMembers;
 
     /** An immutable map of all providing members. */
-    public final List<AtProvides> members;
+    final List<AtProvides> members;
 
     /**
-     * Creates a new provides group
+     * Creates a new group.
      * 
      * @param builder
      *            the builder to create the group for

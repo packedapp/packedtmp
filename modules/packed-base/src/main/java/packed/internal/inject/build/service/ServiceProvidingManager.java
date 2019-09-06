@@ -30,12 +30,13 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.feature.FeatureKey;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
@@ -57,7 +58,9 @@ public final class ServiceProvidingManager {
     /** The injector builder. */
     private final InjectorBuilder builder;
 
-    private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateNodes;
+    /** A map of all providers */
+    @Nullable
+    private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateProviders;
 
     /** All provided nodes. */
     private final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
@@ -152,8 +155,8 @@ public final class ServiceProvidingManager {
         // Apply any wirelets to exports, and take
 
         // Add error messages if any nodes with the same key have been added multiple times
-        if (duplicateNodes != null) {
-            ErrorMessages.addDuplicateNodes(builder.context().buildContext(), duplicateNodes);
+        if (duplicateProviders != null) {
+            ErrorMessages.addDuplicateNodes(builder.context().buildContext(), duplicateProviders);
         }
         return resolvedServices;
     }
@@ -164,10 +167,10 @@ public final class ServiceProvidingManager {
             if (key != null) {
                 BuildEntry<?> existing = resolvedServices.putIfAbsent(key, entry);
                 if (existing != null) {
-                    if (duplicateNodes == null) {
-                        duplicateNodes = new LinkedHashMap<>();
+                    if (duplicateProviders == null) {
+                        duplicateProviders = new LinkedHashMap<>();
                     }
-                    LinkedHashSet<BuildEntry<?>> hs = duplicateNodes.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    LinkedHashSet<BuildEntry<?>> hs = duplicateProviders.computeIfAbsent(key, m -> new LinkedHashSet<>());
                     hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                     hs.add(entry);
                 }

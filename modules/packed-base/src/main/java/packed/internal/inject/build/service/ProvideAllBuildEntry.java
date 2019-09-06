@@ -32,7 +32,7 @@ import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
 /** A build node specifically used for {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
-public final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
+final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** The node in the 'imported' injector. */
     final ServiceEntry<T> entry;

@@ -47,7 +47,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     /** An empty object array. */
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
-    public boolean hasInstanceMembers;
+    boolean hasInstanceMembers;
 
     /** The singleton instance, not used for prototypes. */
     @Nullable
