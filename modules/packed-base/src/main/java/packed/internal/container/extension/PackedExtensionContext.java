@@ -28,29 +28,59 @@ import app.packed.container.extension.ExtensionContext;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 
-/**
- *
- */
-// Overvejer at lave ExtensionContext...
-// Er isaer nyttigt ved komplicered plugins, hvor noget af funktionaliteten
-// bliver lagt ud i support klasser, som ikke kan kalde protected metoder paa extension
+/** The default implementation of {@link ExtensionContext}. */
 public final class PackedExtensionContext implements ExtensionContext {
 
     /** The extension this context wraps. */
-    public final Extension extension;
+    private final Extension extension;
 
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
+    /** The configuration of the container the extension is registered in. */
     final PackedContainerConfiguration pcc;
 
+    /**
+     * @param pcc
+     *            the configuration of the container the extension is registered in
+     * @param extension
+     *            the extension to wrap
+     */
     private PackedExtensionContext(PackedContainerConfiguration pcc, Extension extension) {
         this.pcc = requireNonNull(pcc);
         this.extension = requireNonNull(extension);
     }
 
+    /** {@inheritDoc} */
+    @Override
     public ArtifactBuildContext buildContext() {
         return pcc.buildContext();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ConfigSite containerConfigSite() {
+        return pcc.configSite();
+    }
+
+    /**
+     * Returns the extension this context wraps.
+     * 
+     * @return the extension this context wraps
+     */
+    public Extension extension() {
+        return extension;
+    }
+
+    public void onConfigured() {
+        SharedSecrets.extension().onConfigured(extension);
+        isConfigurable = false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
+        context.put(pcc, sidecar);
     }
 
     /** {@inheritDoc} */
@@ -63,35 +93,26 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite containerConfigSite() {
-        return pcc.configSite();
-    }
-
-    /**
-     * 
-     */
-    public void onConfigured() {
-        SharedSecrets.extension().onConfigured(extension);
-        isConfigurable = false;
-    }
-
-    public void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
-        context.put(pcc, sidecar);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public <T extends Extension> T use(Class<T> extensionType) {
         return pcc.use(extensionType);
     }
 
+    @Override
     public WireletList wirelets() {
         return pcc.wirelets();
     }
 
-    public static PackedExtensionContext create(Class<? extends Extension> extensionType, PackedContainerConfiguration pcc) {
-        Extension e = ExtensionModel.newInstance(extensionType, pcc);
-        return new PackedExtensionContext(pcc, e);
+    /**
+     * Creates a new extension and its context.
+     * 
+     * @param pcc
+     *            the container the extension will be registered in
+     * @param extensionType
+     *            the type of extension to create
+     * @return the new context
+     */
+    public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
+        return new PackedExtensionContext(pcc, ExtensionModel.newInstance(extensionType, pcc));
     }
 
     static class DefCon {

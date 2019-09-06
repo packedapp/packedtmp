@@ -86,8 +86,8 @@ public abstract class Extension {
             /** {@inheritDoc} */
             @Override
             public void initializeExtension(PackedExtensionContext context) {
-                context.extension.context = context;
-                context.extension.onAdded();
+                context.extension().context = context;
+                context.extension().onAdded();
             }
 
             /** {@inheritDoc} */

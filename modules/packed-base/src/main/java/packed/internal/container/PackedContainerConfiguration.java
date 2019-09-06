@@ -63,7 +63,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     public ComponentLookup lookup; // Should be more private
 
-    /** A container model object, shared among sources of the same type. */
+    /** A container model object, shared among all container sources of the same type. */
     private final ContainerModel model;
 
     /** The source of the container configuration. */
@@ -117,7 +117,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            SharedSecrets.extension().buildBundle(e.extension, builder);
+            SharedSecrets.extension().buildBundle(e.extension(), builder);
         }
     }
 
@@ -178,7 +178,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         for (PackedExtensionContext e : extensions.values()) {
-            SharedSecrets.extension().onPrepareContainerInstantiation(e.extension, ic);
+            SharedSecrets.extension().onPrepareContainerInstantiation(e.extension(), ic);
         }
         super.extensionsPrepareInstantiation(ic);
     }
@@ -221,8 +221,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** {@inheritDoc} */
     @Override
     public boolean isTopContainer() {
-        // TODO change when we have hosts.
-        return parent == null;
+        return parent == null; // TODO change when we have hosts.
     }
 
     /** {@inheritDoc} */
@@ -326,7 +325,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public <T extends Extension> T getExtension(Class<T> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
-        return pec == null ? null : (T) pec.extension;
+        return pec == null ? null : (T) pec.extension();
     }
 
     /** {@inheritDoc} */
@@ -339,12 +338,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // We do not use the computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
-            requireConfigurable(); // installing new extensions after configuration is done is not allowed
-            pec = PackedExtensionContext.create(extensionType, this);
-            extensions.put(extensionType, pec); // make sure it is installed before we call into user code Extension#onAdded
+            requireConfigurable(); // only allow installing new extensions if configurable
+            extensions.put(extensionType, pec = PackedExtensionContext.create(this, extensionType));
             SharedSecrets.extension().initializeExtension(pec);
         }
-        return (T) pec.extension;
+        return (T) pec.extension();
     }
 
     /** {@inheritDoc} */
@@ -353,18 +351,3 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return wirelets;
     }
 }
-//
-/// **
-// * Returns an extension of the specified type if installed, otherwise null.
-// *
-// * @param <T>
-// * the type of extension to return
-// * @param extensionType
-// * the type of extension to return
-// * @return an extension of the specified type if installed, otherwise null
-// */
-// @SuppressWarnings("unchecked")
-// @Nullable
-// public <T extends Extension> T getExtension(Class<T> extensionType) {
-// return (T) extensions.get(extensionType);
-// }
