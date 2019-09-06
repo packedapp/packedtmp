@@ -37,7 +37,7 @@ public final class ServiceDependencyManager {
      * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
      * {@link InjectionExtension#requireOptionally(Key)}.
      */
-    final ArrayList<ExplicitRequirement> explicitRequirements = new ArrayList<>();
+    final ArrayList<Requirement> explicitRequirements = new ArrayList<>();
 
     DependencyGraph graph;
 
@@ -77,6 +77,8 @@ public final class ServiceDependencyManager {
     }
 
     /**
+     * Adds the specified dependency.
+     * 
      * @param dependency
      *            the service dependency
      * @param configSite
@@ -86,6 +88,6 @@ public final class ServiceDependencyManager {
      * @see InjectionExtension#requireOptionally(Key)
      */
     public void require(ServiceDependency dependency, ConfigSite configSite) {
-        explicitRequirements.add(new ExplicitRequirement(dependency, configSite));
+        explicitRequirements.add(new Requirement(dependency, configSite));
     }
 }

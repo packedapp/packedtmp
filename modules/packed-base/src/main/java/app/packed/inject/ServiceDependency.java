@@ -26,6 +26,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -139,6 +140,25 @@ public final class ServiceDependency {
             return null;
         }
         throw new UnsupportedOperationException("This dependency is not optional, dependency = " + this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj.getClass() != ServiceDependency.class) {
+            return false;
+        }
+        ServiceDependency other = (ServiceDependency) obj;
+        // Hmm hashcode and equals for optional????
+        return Objects.equals(key, other.key) && optionalType == other.optionalType && Objects.equals(variable, other.variable);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 31 + key.hashCode();
+        result = 31 * result + Objects.hashCode(optionalType);
+        return 31 * result + Objects.hashCode(variable);
     }
 
     /**

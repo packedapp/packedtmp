@@ -17,13 +17,11 @@ package packed.internal.inject.build.dependencies;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.StringJoiner;
 
 import app.packed.inject.InjectionException;
@@ -62,7 +60,7 @@ final class DependencyGraph {
     IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<Entry<BuildEntry<?>, ServiceDependency>> missingDependencies;
+    private ArrayList<Requirement> missingDependencies;
 
     /**
      * Creates a new dependency graph.
@@ -124,16 +122,16 @@ final class DependencyGraph {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> nn : ib.resolvedEntries) {
-            BuildEntry<?> node = (BuildEntry<?>) nn;
-            if (node.needsResolving()) {
-                detectCyclesFor.add(node);
-                List<ServiceDependency> dependencies = node.dependencies;
+        for (ServiceEntry<?> se : ib.resolvedEntries) {
+            BuildEntry<?> entry = (BuildEntry<?>) se;
+            if (entry.needsResolving()) {
+                detectCyclesFor.add(entry);
+                List<ServiceDependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
                     ServiceEntry<?> resolveTo = ib.resolvedEntries.getNode(dependency);
-                    recordResolvedDependency(node, dependency, resolveTo, false);
-                    node.resolvedDependencies[i] = resolveTo;
+                    recordResolvedDependency(entry, dependency, resolveTo, false);
+                    entry.resolvedDependencies[i] = resolveTo;
                 }
             }
         }
@@ -142,12 +140,7 @@ final class DependencyGraph {
 
     void buildContract(InjectorContract.Builder builder) {
         if (requiredOptionally != null) {
-            requiredOptionally.forEach(k -> {
-                // We remove all optional dependencies that are also mandatory.
-                if (required == null || !required.contains(k)) {
-                    builder.addOptional(k);
-                }
-            });
+            requiredOptionally.forEach(k -> builder.addOptional(k));
         }
         if (required != null) {
             required.forEach(k -> builder.addRequires(k));
@@ -166,11 +159,11 @@ final class DependencyGraph {
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<Entry<BuildEntry<?>, ServiceDependency>> m = missingDependencies;
+        ArrayList<Requirement> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }
-        m.add(new SimpleImmutableEntry<>(node, dependency));
+        m.add(new Requirement(dependency, node));
 
         if (ib.dependencies == null || !ib.dependencies.manualRequirementsManagement) {
             if (dependency.isOptional()) {
@@ -185,17 +178,17 @@ final class DependencyGraph {
         boolean manualRequirementsManagement = ib.dependencies != null && ib.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (Entry<BuildEntry<?>, ServiceDependency> e : missingDependencies) {
-                if (!e.getValue().isOptional() && manualRequirementsManagement) {
+            for (Requirement e : missingDependencies) {
+                if (!e.dependency.isOptional() && manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
                     sb.append("Cannot resolve dependency for ");
-                    List<ServiceDependency> dependencies = e.getKey().dependencies;
+                    List<ServiceDependency> dependencies = e.entry.dependencies;
 
                     if (dependencies.size() == 1) {
                         sb.append("single ");
                     }
-                    ServiceDependency dependency = e.getValue();
+                    ServiceDependency dependency = e.dependency;
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 

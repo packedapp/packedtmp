@@ -17,7 +17,7 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +58,7 @@ import app.packed.util.Key;
 public final class InjectorContract extends Contract {
 
     /** A service contract that has no requirements and provides no services. */
-    public static final InjectorContract EMPTY = new InjectorContract(new Builder());
+    public static final InjectorContract EMPTY = new InjectorContract(new Builder(), new HashSet<>());
 
     /** An immutable set of optional service keys. */
     private final Set<Key<?>> optional;
@@ -75,15 +75,15 @@ public final class InjectorContract extends Contract {
      * @param builder
      *            the builder to create a service contract from
      */
-    private InjectorContract(InjectorContract.Builder builder) {
+    private InjectorContract(InjectorContract.Builder builder, HashSet<Key<?>> optional) {
         HashSet<Key<?>> s = builder.requires;
-        requires = s == null ? Set.of() : Set.copyOf(s);
+        this.requires = s == null ? Set.of() : Set.copyOf(s);
 
-        s = builder.optional;
-        optional = s == null ? Set.of() : Set.copyOf(s);
+        s = optional;
+        this.optional = s == null ? Set.of() : Set.copyOf(s);
 
         s = builder.provides;
-        provides = s == null ? Set.of() : Set.copyOf(s);
+        this.provides = s == null ? Set.of() : Set.copyOf(s);
     }
 
     /** {@inheritDoc} */
@@ -302,23 +302,38 @@ public final class InjectorContract extends Contract {
 
         /**
          * Builds and returns a new service contract from this builder.
+         * <p>
+         * If there are keys that have both been added as a required and required optionally. The keys under required optionally
+         * will be removed.
          * 
          * @return the new service contract
          * @throws IllegalStateException
          *             if any keys have been registered both as optional and required
          */
         public InjectorContract build() {
-            // TODO keys that have both been added as optional and required???.
-            // Should we
-            if (optional != null && requires != null && !Collections.disjoint(optional, requires)) {
-                requires.retainAll(optional);
-                // TODO I think just automatically remove it...
-                throw new IllegalStateException("One or more keys have been registered as both optional and required: " + requires);
-            }
             if ((optional == null || optional.isEmpty()) && (requires == null || requires.isEmpty()) && (provides == null || provides.isEmpty())) {
                 return InjectorContract.EMPTY;
             }
-            return new InjectorContract(this);
+
+            // Remove optional keys that are also required.
+            HashSet<Key<?>> opt = optional;
+            if (optional != null && !optional.isEmpty() && requires != null && !requires.isEmpty()) {
+                ArrayList<Key<?>> duplicates = null;
+                for (Key<?> k : requires) {
+                    if (optional.contains(k)) {
+                        ArrayList<Key<?>> d = duplicates;
+                        if (d == null) {
+                            d = duplicates = new ArrayList<>(1);
+                        }
+                        d.add(k);
+                    }
+                }
+                if (duplicates != null) {
+                    opt = new HashSet<>(optional);
+                    opt.removeAll(duplicates);
+                }
+            }
+            return new InjectorContract(this, opt);
         }
 
         /**

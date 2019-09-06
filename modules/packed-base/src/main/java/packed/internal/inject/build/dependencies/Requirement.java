@@ -19,17 +19,30 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceDependency;
+import app.packed.util.Nullable;
+import packed.internal.inject.build.BuildEntry;
 
 /**
  *
  */
-class ExplicitRequirement {
+class Requirement {
+
     final ConfigSite configSite;
 
     final ServiceDependency dependency;
 
-    ExplicitRequirement(ServiceDependency dependency, ConfigSite configSite) {
-        this.dependency = requireNonNull(dependency, "key is null");
+    @Nullable
+    final BuildEntry<?> entry;
+
+    Requirement(ServiceDependency dependency, ConfigSite configSite) {
+        this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = requireNonNull(configSite);
+        this.entry = null;
+    }
+
+    Requirement(ServiceDependency dependency, BuildEntry<?> entry) {
+        this.dependency = requireNonNull(dependency, "dependency is null");
+        this.configSite = entry.configSite();
+        this.entry = entry;
     }
 }
