@@ -1,4 +1,4 @@
-package packed.internal.util.security;
+package packed.internal.util;
 
 import java.lang.reflect.Modifier;
 import java.security.AccessControlContext;

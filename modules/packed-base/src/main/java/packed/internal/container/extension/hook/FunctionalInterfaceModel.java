@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.UnaryOperator;
 
-import packed.internal.util.security.SecurityChecks;
+import packed.internal.util.SecurityChecks;
 
 /**
  *
