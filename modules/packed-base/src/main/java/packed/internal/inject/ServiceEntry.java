@@ -16,12 +16,10 @@
 package packed.internal.inject;
 
 import app.packed.component.Component;
-import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.ServiceRequest;
-import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.run.RSE;
@@ -43,15 +41,11 @@ public interface ServiceEntry<T> extends ServiceDescriptor {
     // return () -> getInstance(site);
     // }
 
-    default T getInstance(Injector injector, ServiceDependency dependency, @Nullable Component component) {
-        return getInstance(ServiceRequest.of(injector, dependency));
+    default T getInstance(ServiceDependency dependency, @Nullable Component component) {
+        return getInstance(ServiceRequest.of(dependency));
     }
 
     InstantiationMode instantiationMode();
-
-    default T getInstance(Injector injector, Key<T> key, @Nullable Component component) {
-        return getInstance(ServiceRequest.of(injector, key));
-    }
 
     T getInstance(ServiceRequest site);
 

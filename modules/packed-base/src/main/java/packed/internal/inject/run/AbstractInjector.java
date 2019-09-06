@@ -78,7 +78,7 @@ public abstract class AbstractInjector implements Injector {
         if (n == null) {
             return null;
         }
-        return n.getInstance(ServiceRequest.of(this, key));
+        return n.getInstance(ServiceRequest.of(key));
     }
 
     /** {@inheritDoc} */
@@ -101,7 +101,7 @@ public abstract class AbstractInjector implements Injector {
                 FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
                 ServiceEntry<?> node = findNode(dependency.key());
                 if (node != null) {
-                    Object value = node.getInstance(this, dependency, component);
+                    Object value = node.getInstance(dependency, component);
                     value = dependency.wrapIfOptional(value);
                     field.setOnInstance(instance, value);
                 } else if (dependency.isOptional()) {

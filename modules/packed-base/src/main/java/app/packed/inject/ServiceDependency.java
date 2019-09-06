@@ -75,7 +75,7 @@ public final class ServiceDependency {
             } else if (type == OptionalDouble.class) {
                 return new ServiceDependency(Key.of(Double.class), OptionalDouble.class, null);
             }
-            return of(Key.of(type));
+            return new ServiceDependency(Key.of(type), null, null);
         }
     };
 
@@ -93,7 +93,17 @@ public final class ServiceDependency {
     @Nullable
     private final InternalVariableDescriptor variable;
 
-    private ServiceDependency(Key<?> key, Class<?> optionalType, InternalVariableDescriptor variable) {
+    /**
+     * Creates a new dependency.
+     * 
+     * @param key
+     *            the key
+     * @param optionalType
+     *            the optional type
+     * @param variable
+     *            an optional field or parameter
+     */
+    private ServiceDependency(Key<?> key, @Nullable Class<?> optionalType, @Nullable InternalVariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionalType = optionalType;
         this.variable = variable;
@@ -129,19 +139,6 @@ public final class ServiceDependency {
             return null;
         }
         throw new UnsupportedOperationException("This dependency is not optional, dependency = " + this);
-    }
-
-    /**
-     * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble},
-     * {@link OptionalLong} or {@link Nullable}) that was used to create this dependency or {@code null} if this dependency
-     * is not optional.
-     *
-     * @return the optional container type
-     * @see #isOptional()
-     */
-    @Nullable
-    public Class<?> getOptionalContainerType() {
-        return optionalType;
     }
 
     /**
@@ -185,6 +182,19 @@ public final class ServiceDependency {
     }
 
     /**
+     * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble},
+     * {@link OptionalLong} or {@link Nullable}) that was used to create this dependency or {@code null} if this dependency
+     * is not optional.
+     *
+     * @return the optional container type
+     * @see #isOptional()
+     */
+    @Nullable
+    public Class<?> optionalContainerType() {
+        return optionalType;
+    }
+
+    /**
      * If this dependency represents a parameter to a constructor or method. This method will return the index of the
      * parameter, otherwise {@code -1}.
      * 
@@ -201,7 +211,7 @@ public final class ServiceDependency {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Dependency[");
+        sb.append("ServiceDependency[");
         if (optionalType == OptionalInt.class || optionalType == OptionalLong.class || optionalType == OptionalDouble.class) {
             sb.append(optionalType.getSimpleName());
         } else {

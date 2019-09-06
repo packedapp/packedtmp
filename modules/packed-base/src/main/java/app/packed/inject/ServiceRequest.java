@@ -29,8 +29,6 @@ import app.packed.util.Key;
 import app.packed.util.MethodDescriptor;
 import app.packed.util.ParameterDescriptor;
 import app.packed.util.VariableDescriptor;
-import packed.internal.inject.util.PackedServiceRequestForDependency;
-import packed.internal.inject.util.PackedServiceRequestForKey;
 
 /**
  * An instance of this class is available for any component method annotated with {@link Provide}.
@@ -213,12 +211,12 @@ public interface ServiceRequest /* extends ServiceDependency */ {
     // throw new UnsupportedOperationException();
     // }
 
-    static ServiceRequest of(Injector injector, ServiceDependency dependency) {
-        return new PackedServiceRequestForDependency(injector, dependency, null);
+    static ServiceRequest of(ServiceDependency dependency) {
+        return new ServiceRequestImpl(dependency, null);
     }
 
-    static ServiceRequest of(Injector injector, ServiceDependency dependency, Component componenent) {
-        return new PackedServiceRequestForDependency(injector, dependency, requireNonNull(componenent, "component is null"));
+    static ServiceRequest of(ServiceDependency dependency, Component componenent) {
+        return new ServiceRequestImpl(dependency, requireNonNull(componenent, "component is null"));
     }
 
     /**
@@ -226,14 +224,12 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      * <p>
      * This method is used to create injection site for methods such as {@link Injector#use(Key)}.
      * 
-     * @param injector
-     *            the injector from where injection is requested
      * @param key
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    static ServiceRequest of(Injector injector, Key<?> key) {
-        return new PackedServiceRequestForKey(injector, key, null);
+    static ServiceRequest of(Key<?> key) {
+        return new ServiceRequestImpl(ServiceDependency.of(key), null);
     }
 
     /**
@@ -242,17 +238,15 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      * This method is used to create injection site for methods such as {@link Injector#use(Key)} on
      * {@link ComponentContext#injector() component injectors}.
      * 
-     * @param injector
-     *            the injector from where injection is requested
      * @param key
      *            the for which injection is requested
      * @param component
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
-     * @see #of(Injector, ServiceDependency)
+     * @see #of(ServiceDependency)
      */
-    static ServiceRequest of(Injector injector, Key<?> key, Component component) {
-        return new PackedServiceRequestForKey(injector, key, requireNonNull(component, "component is null"));
+    static ServiceRequest of(Key<?> key, Component component) {
+        return new ServiceRequestImpl(ServiceDependency.of(key), requireNonNull(component, "component is null"));
     }
 
     // withTags();// A way to provide info to @Provides....ahh bare mere boebl

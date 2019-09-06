@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.util;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,8 +21,6 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.component.Component;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.VariableDescriptor;
@@ -31,21 +29,17 @@ import app.packed.util.VariableDescriptor;
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via
  * {@link Injector#use(Class)}.
  */
-public class PackedServiceRequestForKey implements ServiceRequest {
+final class ServiceRequestImpl implements ServiceRequest {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
     private final Component component;
 
-    /** The injector from where the service was requested. */
-    final Injector injector;
-
     /** The key of the service that was requested */
-    private final Key<?> key;
+    private final ServiceDependency dependency;
 
-    public PackedServiceRequestForKey(Injector injector, Key<?> key, @Nullable Component component) {
-        this.injector = requireNonNull(injector, "injector is null");
-        this.key = requireNonNull(key, "key is null");
+    public ServiceRequestImpl(ServiceDependency dependency, @Nullable Component component) {
+        this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }
 
@@ -58,30 +52,45 @@ public class PackedServiceRequestForKey implements ServiceRequest {
     /** {@inheritDoc} */
     @Override
     public int parameterIndex() {
-        return -1;
+        return dependency.parameterIndex();
     }
 
     /** {@inheritDoc} */
     @Override
     public Key<?> key() {
-        return key;
+        return dependency.key();
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<Member> member() {
-        return Optional.empty();
+        return dependency.member();
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<VariableDescriptor> variable() {
-        return Optional.empty();
+        return dependency.variable();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isOptional() {
-        return false;
+        return dependency.isOptional();
     }
+
+    // public static void main(String[] args) {
+    // new Factory1<InjectionSite, Logger>(
+    // site -> site.getComponent().isPresent() ? Logger.getLogger(site.getComponent().get().getPath().toString()) :
+    // Logger.getAnonymousLogger()) {};
+    // }
+    //
+    // @Provides
+    // public static Logger provideLogger(InjectionSite site) {
+    // if (site.getComponent().isPresent()) {
+    // return Logger.getLogger(site.getComponent().get().getPath().toString());
+    // } else {
+    // return Logger.getAnonymousLogger();
+    // }
+    // }
 }

@@ -20,6 +20,10 @@ package app.packed.inject;
  */
 // FactoryBuilder...
 //// kan man lave noget smart med MethodHandle????
+
+// Alternativ er at den ikke extender Factory....
+// Men at man koere
+// Factory.of(Class).bindable(). build()
 public final class BindableFactory<T> extends Factory<T> {
 
     /**

@@ -22,12 +22,12 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
+import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceDependency;
 import app.packed.inject.Provide;
+import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceRequest;
-import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
@@ -159,7 +159,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
             params = new Object[size];
             for (int i = 0; i < resolvedDependencies.length; i++) {
                 requireNonNull(resolvedDependencies[i]);
-                params[i] = resolvedDependencies[i].getInstance(injectorBuilder == null ? null : injectorBuilder.publicInjector, dependencies.get(i), null);
+                params[i] = resolvedDependencies[i].getInstance(dependencies.get(i), null);
             }
         }
         Object o;

@@ -52,7 +52,7 @@ public class KeyAssert extends AbstractAssert<KeyAssert, ServiceDependency> {
         if (!actual.isOptional()) {
             failWithMessage("\nExpecting Dependency to be optional");
         }
-        Class<?> actualOptionalType = actual.getOptionalContainerType();
+        Class<?> actualOptionalType = actual.optionalContainerType();
         if (actualOptionalType != optionalType) {
             failWithMessage("\nExpecting Optional Type of type '%s', but was %s", optionalType, actualOptionalType);
         }
@@ -65,7 +65,7 @@ public class KeyAssert extends AbstractAssert<KeyAssert, ServiceDependency> {
             failWithMessage("\nExpecting Dependency to be non-optional");
         }
 
-        Class<?> optionalType = actual.getOptionalContainerType();
+        Class<?> optionalType = actual.optionalContainerType();
         if (optionalType == null) {
             failWithMessage("\nExpecting Optional Type to be non-null, but was %s", optionalType);
         }
