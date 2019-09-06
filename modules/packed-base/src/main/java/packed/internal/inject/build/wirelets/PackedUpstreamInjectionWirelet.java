@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.inject.UpstreamServiceWirelets;
+import app.packed.inject.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectionPipeline;
@@ -65,13 +65,13 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
     // Transform/map -> Replaces
     // Extract -> does not remove existing item..
-    public static class ApplyFunction extends PackedUpstreamInjectionWirelet {
+    public static class ApplyFunctionUpstream extends PackedUpstreamInjectionWirelet {
 
         final Function<?, ?> function;
         final Key<?> frpm;
         final Key<?> to;
 
-        public ApplyFunction(Key<?> key, Key<?> to, Function<?, ?> function) {
+        public ApplyFunctionUpstream(Key<?> key, Key<?> to, Function<?, ?> function) {
             this.frpm = requireNonNull(key, "key is null");
             this.function = requireNonNull(function);
             this.to = requireNonNull(to);
@@ -103,8 +103,8 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         }
     }
 
-    /** A wirelet for {@link UpstreamServiceWirelets#peek(Consumer)}. */
-    public static class Peek extends PackedUpstreamInjectionWirelet {
+    /** A wirelet for {@link ServiceWirelets#peekUpstream(Consumer)}. */
+    public static class PeekUpstream extends PackedUpstreamInjectionWirelet {
 
         /** The peek action to execute. */
         private final Consumer<? super ServiceDescriptor> action;
@@ -115,7 +115,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
          * @param action
          *            the peek action to execute
          */
-        public Peek(Consumer<? super ServiceDescriptor> action) {
+        public PeekUpstream(Consumer<? super ServiceDescriptor> action) {
             this.action = requireNonNull(action, "action is null");
         }
 

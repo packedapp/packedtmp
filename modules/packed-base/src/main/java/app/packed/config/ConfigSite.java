@@ -24,8 +24,8 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.util.FieldDescriptor;
-import app.packed.util.MethodDescriptor;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.MethodDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;

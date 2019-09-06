@@ -24,9 +24,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 import app.packed.inject.ServiceDependency;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.ParameterDescriptor;
-import app.packed.util.VariableDescriptor;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.ParameterDescriptor;
+import app.packed.reflect.VariableDescriptor;
 
 /** The default abstract implementation of {@link VariableDescriptor}. */
 public abstract class InternalVariableDescriptor extends InternalAnnotatedElement implements VariableDescriptor {

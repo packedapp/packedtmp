@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import app.packed.app.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.inject.DownstreamServiceWirelets;
+import app.packed.inject.ServiceWirelets;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via
@@ -41,14 +41,14 @@ public final class LifecycleWirelets {
 
     /**
      * Creates a {@link StringArgs} from the specified arguments and returns a wirelet that provides it, via
-     * {@link DownstreamServiceWirelets#provide(Object)}, to the wired container.
+     * {@link ServiceWirelets#provide(Object)}, to the wired container.
      * 
      * @param args
      *            the arguments to inject
      * @return a wirelet that provides the specified arguments to the linked container
      */
     static Wirelet args(String... args) {
-        return DownstreamServiceWirelets.provide(StringArgs.of(args));
+        return ServiceWirelets.provide(StringArgs.of(args));
     }
 
     /**

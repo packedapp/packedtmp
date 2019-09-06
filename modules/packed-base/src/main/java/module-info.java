@@ -11,6 +11,7 @@ module app.packed.base {
     exports app.packed.host;
     exports app.packed.inject;
     exports app.packed.lifecycle;
+    exports app.packed.reflect;
     exports app.packed.util;
 
     // uses app.packed.util.ModuleEnv;

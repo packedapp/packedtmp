@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
 import app.packed.container.extension.Extension;
-import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -84,7 +84,7 @@ final class ExtensionModelWithCachedSupplier<T> {
             MethodHandle factory = site.getTarget();
             s = (Supplier<T>) factory.invoke();
         } catch (Throwable e) {
-            throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(type) + ", the module '"
                     + type.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
         }
 

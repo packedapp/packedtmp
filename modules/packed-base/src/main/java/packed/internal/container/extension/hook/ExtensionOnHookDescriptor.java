@@ -33,8 +33,8 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHook;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
@@ -157,7 +157,7 @@ final class ExtensionOnHookDescriptor {
                     lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
                     mh = lookup.unreflect(method);
                 } catch (IllegalAccessException | InaccessibleObjectException e) {
-                    throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
+                    throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
                             + extensionType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
                 }
 
@@ -201,7 +201,7 @@ final class ExtensionOnHookDescriptor {
                 lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
                 mh = lookup.unreflect(method);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
+                throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
                         + extensionType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
             }
 

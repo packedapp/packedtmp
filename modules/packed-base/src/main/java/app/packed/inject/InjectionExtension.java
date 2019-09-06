@@ -267,7 +267,7 @@ public final class InjectionExtension extends Extension {
      * @param wirelets
      *            any wirelets used to filter and transform the provided services
      * @throws IllegalArgumentException
-     *             if specifying wirelets that are not defined via {@link UpstreamServiceWirelets}
+     *             if specifying wirelets that are not defined via {@link ServiceWirelets}
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
         if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {

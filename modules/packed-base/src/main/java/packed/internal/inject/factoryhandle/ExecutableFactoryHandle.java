@@ -20,9 +20,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 
 import app.packed.inject.Factory;
-import app.packed.util.ExecutableDescriptor;
-import app.packed.util.IllegalAccessRuntimeException;
-import app.packed.util.MethodDescriptor;
+import app.packed.reflect.ExecutableDescriptor;
+import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.reflect.MethodDescriptor;
 import app.packed.util.TypeLiteral;
 
 /** The backing class of {@link Factory}. */
@@ -106,7 +106,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
             }
             handle = executable.unreflect(lookup);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException(
+            throw new UncheckedIllegalAccessException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
         return new ExecutableFactoryHandle<>(returnType(), executable, handle);

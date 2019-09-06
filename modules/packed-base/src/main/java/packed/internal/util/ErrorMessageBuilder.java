@@ -19,8 +19,8 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.AnnotatedElement;
 
-import app.packed.util.FieldDescriptor;
-import app.packed.util.VariableDescriptor;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.VariableDescriptor;
 
 /**
  *

@@ -22,7 +22,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-import app.packed.util.ExecutableDescriptor;
+import app.packed.reflect.ExecutableDescriptor;
 
 /** The default abstract implementation of {@link ExecutableDescriptor}. */
 public abstract class InternalExecutableDescriptor extends InternalAnnotatedElement implements ExecutableDescriptor, InternalMemberDescriptor {

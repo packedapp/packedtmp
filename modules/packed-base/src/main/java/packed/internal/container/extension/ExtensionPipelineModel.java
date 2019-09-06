@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionPipeline;
-import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeUtil;
@@ -93,7 +93,7 @@ public class ExtensionPipelineModel {
             String n = type.getModule().getName();
             String m = ExtensionModel.class.getModule().getName();
             String p = type.getPackageName();
-            throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
                     + type.getModule().getName() + "' must be open to '" + m + "'. This can be done either via\n -> open module " + n + "\n -> opens " + p
                     + "\n -> opens " + p + " to " + m);
         }
@@ -114,14 +114,14 @@ public class ExtensionPipelineModel {
                 // And we use our own lookup object which have Module access mode enabled.
 
                 // Maybe something with unnamed modules...
-                throw new IllegalAccessRuntimeException("This exception was not expected, please file a bug report with details", e);
+                throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
             }
         }
 
         try {
             this.constructor = lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("This exception was not expected, please file a bug report with details", e);
+            throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
         }
 
         NativeImage.registerConstructor(constructor);

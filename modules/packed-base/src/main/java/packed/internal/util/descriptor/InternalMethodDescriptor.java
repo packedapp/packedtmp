@@ -25,8 +25,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
+import app.packed.reflect.MethodDescriptor;
 import app.packed.util.Key;
-import app.packed.util.MethodDescriptor;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.util.InternalErrorException;

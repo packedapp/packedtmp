@@ -30,8 +30,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.Injector;
+import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.Nullable;
-import app.packed.util.ParameterDescriptor;
 import app.packed.util.TypeLiteral;
 
 /** Tests {@link InternalParameterDescriptor}. */

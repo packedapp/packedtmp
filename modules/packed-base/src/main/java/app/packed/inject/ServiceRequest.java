@@ -23,12 +23,12 @@ import java.util.Optional;
 import app.packed.app.App;
 import app.packed.component.Component;
 import app.packed.component.ComponentContext;
-import app.packed.util.ConstructorDescriptor;
-import app.packed.util.FieldDescriptor;
+import app.packed.reflect.ConstructorDescriptor;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.MethodDescriptor;
+import app.packed.reflect.ParameterDescriptor;
+import app.packed.reflect.VariableDescriptor;
 import app.packed.util.Key;
-import app.packed.util.MethodDescriptor;
-import app.packed.util.ParameterDescriptor;
-import app.packed.util.VariableDescriptor;
 
 /**
  * An instance of this class is available for any component method annotated with {@link Provide}.

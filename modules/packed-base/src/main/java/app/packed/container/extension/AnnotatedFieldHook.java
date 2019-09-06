@@ -18,10 +18,11 @@ package app.packed.container.extension;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 
-import app.packed.util.FieldDescriptor;
-import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.UncheckedIllegalAccessException;
+
+import java.lang.invoke.VarHandle;
 
 /**
  * A hook representing a field annotated with a specific annotation.
@@ -55,7 +56,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * @throws UnsupportedOperationException
      *             if the underlying field is not a static field. Or if the underlying field is final, and the operator
      *             needs write access
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if access checking failed when accessing the field
      */
     <E> E applyStatic(FieldOperator<E> operator);
@@ -73,7 +74,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
      * @return a method handle for the underlying field with read access
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if access checking fails
      * @see Lookup#unreflectGetter(java.lang.reflect.Field)
      */
@@ -85,7 +86,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * The returned method handle is never bound to a receiver, even if the underlying field is an instance field.
      * 
      * @return a method handle for the underlying field with write access
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if access checking fails
      * @throws UnsupportedOperationException
      *             if the field is final
@@ -97,7 +98,7 @@ public interface AnnotatedFieldHook<T extends Annotation> {
      * Returns a {@link VarHandle} for the underlying field.
      * 
      * @return a VarHandle for the underlying field
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if access checking fails
      * @see Lookup#unreflectVarHandle(java.lang.reflect.Field)
      */

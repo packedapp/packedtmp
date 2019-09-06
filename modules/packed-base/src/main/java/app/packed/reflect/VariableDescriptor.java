@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.reflect;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
+
+import app.packed.util.TypeLiteral;
 
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables

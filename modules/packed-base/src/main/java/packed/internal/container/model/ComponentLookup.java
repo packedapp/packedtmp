@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
@@ -48,7 +48,7 @@ public interface ComponentLookup {
             Lookup l = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup());
             return l.unreflect(method);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("stuff", e);
+            throw new UncheckedIllegalAccessException("stuff", e);
         }
     }
 
@@ -57,7 +57,7 @@ public interface ComponentLookup {
             Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
             return l.unreflectGetter(field);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
+            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
         }
     }
 
@@ -66,7 +66,7 @@ public interface ComponentLookup {
             Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
             return l.unreflectSetter(field);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Could not create a MethodHandle", e);
+            throw new UncheckedIllegalAccessException("Could not create a MethodHandle", e);
         }
     }
 
@@ -75,7 +75,7 @@ public interface ComponentLookup {
             Lookup l = MethodHandles.privateLookupIn(field.getDeclaringClass(), lookup());
             return l.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("Could not create a VarHandle", e);
+            throw new UncheckedIllegalAccessException("Could not create a VarHandle", e);
         }
     }
 

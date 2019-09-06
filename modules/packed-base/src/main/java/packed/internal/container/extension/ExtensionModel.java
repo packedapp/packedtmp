@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.extension.Extension;
-import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.StringFormatter;
@@ -100,7 +100,7 @@ final class ExtensionModel<T> {
             String n = type.getModule().getName();
             String m = ExtensionModel.class.getModule().getName();
             String p = type.getPackageName();
-            throw new IllegalAccessRuntimeException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
                     + type.getModule().getName() + "' must be open to '" + m + "'. This can be done either via\n -> open module " + n + "\n -> opens " + p
                     + "\n -> opens " + p + " to " + m);
         }
@@ -121,14 +121,14 @@ final class ExtensionModel<T> {
                 // And we use our own lookup object which have Module access mode enabled.
 
                 // Maybe something with unnamed modules...
-                throw new IllegalAccessRuntimeException("This exception was not expected, please file a bug report with details", e);
+                throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
             }
         }
 
         try {
             this.constructor = lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("This exception was not expected, please file a bug report with details", e);
+            throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
         }
 
         NativeImage.registerConstructor(constructor);

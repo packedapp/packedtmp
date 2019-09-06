@@ -19,8 +19,8 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.util.IllegalAccessRuntimeException;
-import app.packed.util.MethodDescriptor;
+import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.reflect.MethodDescriptor;
 
 /** A hook representing a method annotated with a specific type. */
 public interface AnnotatedMethodHook<T extends Annotation> {
@@ -44,7 +44,7 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * @return the result from applying the operator to the static method
      * @throws UnsupportedOperationException
      *             if the underlying method is not a static method
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if access checking failed while applying the operator
      */
     <E> E applyStatic(MethodOperator<E> operator);
@@ -62,7 +62,7 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * The returned method handle is never bound to a receiver, even if the underlying method is an instance method.
      * 
      * @return a MethodHandle to the underlying method
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if access checking fails
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */

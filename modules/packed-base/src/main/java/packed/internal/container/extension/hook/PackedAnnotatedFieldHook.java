@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.FieldOperator;
 import app.packed.container.extension.HookApplicator;
-import app.packed.util.FieldDescriptor;
+import app.packed.reflect.FieldDescriptor;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.util.StringFormatter;

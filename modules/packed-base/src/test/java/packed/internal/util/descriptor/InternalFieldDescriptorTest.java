@@ -22,7 +22,7 @@ import java.lang.reflect.Proxy;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.util.FieldDescriptor;
+import app.packed.reflect.FieldDescriptor;
 
 /** Tests {@link InternalFieldDescriptor}. */
 public class InternalFieldDescriptorTest extends AbstractDescriptorTest {

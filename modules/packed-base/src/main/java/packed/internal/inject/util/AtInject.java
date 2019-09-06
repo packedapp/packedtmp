@@ -22,9 +22,9 @@ import java.lang.reflect.Member;
 import java.util.List;
 
 import app.packed.inject.ServiceDependency;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.MethodDescriptor;
 import app.packed.inject.Provide;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.MethodDescriptor;
 
 /** A descriptor for a member annotated with {@link Provide}. */
 public final class AtInject {

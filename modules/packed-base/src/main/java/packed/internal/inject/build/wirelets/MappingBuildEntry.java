@@ -32,13 +32,13 @@ import packed.internal.inject.run.RSE;
 /**
  *
  */
-public class MappingBuildEntry<F, T> extends BuildEntry<T> {
+final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
     final ServiceEntry<F> entryToMap;
 
     private final Function<F, T> function;
 
-    public MappingBuildEntry(InjectorBuilder injectorBuilder, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function, ConfigSite configSite) {
+    MappingBuildEntry(InjectorBuilder injectorBuilder, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function, ConfigSite configSite) {
         super(injectorBuilder, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");

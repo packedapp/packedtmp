@@ -17,18 +17,22 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
+import packed.internal.inject.build.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.
  */
-public final class DownstreamServiceWirelets {
+public final class ServiceWirelets {
 
     /** No instantiation. */
-    private DownstreamServiceWirelets() {}
+    private ServiceWirelets() {}
 
     // restrict optional services going in (some contract????) Bare besvaereligt at lave negative contracter.
     // Med mindre vi arbejder med commotative, associative osv. kontrakter...
@@ -115,7 +119,53 @@ public final class DownstreamServiceWirelets {
         protected Mapper(Function<? super T, ? extends R> function) {
             throw new UnsupportedOperationException();
         }
+    }
 
+    static class Transformer<F, T> {
+        Key<F> from() {
+            throw new UnsupportedOperationException();
+        }
+
+        Key<F> to() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    // reject(Key... key)
+    // reject(Class<?>... key)
+    // reject(Predicate<? super Key|ServiceDescriptor>)
+
+    public static <F, T> Wirelet mapUpstream(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
+        return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper);
+    }
+
+    public static Wirelet removeUpstream(Class<?>... keys) {
+        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys).stream().map(e -> Key.of(e)).collect(Collectors.toSet()));
+    }
+
+    public static Wirelet removeUpstream(Key<?>... keys) {
+        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys));
+    }
+
+    /**
+     * This method exists mainly to support debugging, where you want to see which services are available at a particular
+     * place in a the pipeline: <pre>
+     * {@code 
+     * Injector injector = some injector to import;
+     *
+     * Injector.of(c -> {
+     *   c.importAll(injector, DownstreamServiceWirelets.peek(e -> System.out.println("Importing service " + e.getKey())));
+     * });}
+     * </pre>
+     * <p>
+     * This method is typically TODO before after import events
+     * 
+     * @param action
+     *            the action to perform for each service descriptor
+     * @return a peeking stage
+     */
+    public static Wirelet peekUpstream(Consumer<? super ServiceDescriptor> action) {
+        return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
     }
 }
 

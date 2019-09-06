@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.reflect.ParameterDescriptor;
 import packed.internal.util.descriptor.InternalParameterDescriptorTest;
 
 /** Tests {@link ParameterDescriptor}, most of the test are in {@link InternalParameterDescriptorTest}. */

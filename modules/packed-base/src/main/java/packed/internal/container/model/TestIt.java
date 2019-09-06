@@ -15,8 +15,8 @@
  */
 package packed.internal.container.model;
 
-import static app.packed.inject.UpstreamServiceWirelets.map;
-import static app.packed.inject.UpstreamServiceWirelets.peek;
+import static app.packed.inject.ServiceWirelets.mapUpstream;
+import static app.packed.inject.ServiceWirelets.peekUpstream;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
@@ -24,7 +24,6 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import app.packed.inject.Injector;
-import app.packed.inject.UpstreamServiceWirelets;
 import app.packed.util.Key;
 
 /**
@@ -44,8 +43,8 @@ public class TestIt extends AppBundle {
 
         Factory<Integer> ff = Factory.ofInstance("122323323").mapTo(e -> e.length(), Integer.class);
 
-        Wirelet w = map(Key.of(String.class), Key.of(Short.class), s -> (short) s.length());
-        provideAll(INJ, peek(e -> System.out.println("Adding " + e.key())), w, peek(e -> System.out.println("Importing " + e.key())));
+        Wirelet w = mapUpstream(Key.of(String.class), Key.of(Short.class), s -> (short) s.length());
+        provideAll(INJ, peekUpstream(e -> System.out.println("Adding " + e.key())), w, peekUpstream(e -> System.out.println("Importing " + e.key())));
 
         provide(Doo.class);
         provide(ff);
@@ -54,7 +53,7 @@ public class TestIt extends AppBundle {
 
     public static void main(String[] args) {
 
-        try (App a = App.of(new TestIt(), UpstreamServiceWirelets.peek(e -> {}))) {
+        try (App a = App.of(new TestIt(), peekUpstream(e -> {}))) {
             System.out.println("");
             a.injector().services().forEach(e -> System.out.println(e));
 

@@ -23,8 +23,8 @@ import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 
-import app.packed.util.FieldDescriptor;
-import app.packed.util.IllegalAccessRuntimeException;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 
@@ -113,7 +113,7 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
             }
             handle = field.unreflectVarHandle(lookup);
         } catch (IllegalAccessException e) {
-            throw new IllegalAccessRuntimeException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
+            throw new UncheckedIllegalAccessException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
         return new FieldFactoryHandle<>(returnType(), field, handle);
     }

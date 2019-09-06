@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.reflect;
 
 /** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
 
 // UncheckedIllegalAccessException...
 // AccessRestrictedException <- General one, could sound really securish, maybe have a name
 // which makes it clear it is relevant to reflection/method handlers
-public class IllegalAccessRuntimeException extends RuntimeException {
+public class UncheckedIllegalAccessException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -33,7 +33,7 @@ public class IllegalAccessRuntimeException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public IllegalAccessRuntimeException(String message) {
+    public UncheckedIllegalAccessException(String message) {
         super(message);
 
     }
@@ -48,7 +48,7 @@ public class IllegalAccessRuntimeException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public IllegalAccessRuntimeException(String message, Throwable cause) {
+    public UncheckedIllegalAccessException(String message, Throwable cause) {
         super(message, cause);
     }
 }

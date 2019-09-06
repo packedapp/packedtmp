@@ -30,9 +30,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.lifecycle.OnStart;
+import app.packed.reflect.ConstructorDescriptor;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.BaseSupport;
-import app.packed.util.ConstructorDescriptor;
-import app.packed.util.IllegalAccessRuntimeException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
@@ -309,7 +309,7 @@ public class Factory<T> {
      * @param lookup
      *            the lookup object
      * @return a new factory with uses the specified lookup object when accessing the underlying member
-     * @throws IllegalAccessRuntimeException
+     * @throws UncheckedIllegalAccessException
      *             if the specified lookup object does not give access to the underlying member
      * @throws UnsupportedOperationException
      *             if this factory was not created from either a field, constructor or method.

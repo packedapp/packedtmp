@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.util;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.formatSimple;
@@ -21,6 +21,7 @@ import static packed.internal.util.StringFormatter.formatSimple;
 import java.lang.reflect.Constructor;
 
 import app.packed.inject.Factory;
+import app.packed.util.TypeLiteral;
 import packed.internal.util.descriptor.InternalConstructorDescriptor;
 
 /**

@@ -21,9 +21,9 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.component.Component;
+import app.packed.reflect.VariableDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import app.packed.util.VariableDescriptor;
 
 /**
  * An implementation of injection site used, when requesting a service directly through an injector, for example, via

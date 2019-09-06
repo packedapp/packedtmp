@@ -22,9 +22,9 @@ import java.util.Set;
 import app.packed.component.Component;
 import app.packed.inject.ServiceDependency;
 import app.packed.inject.ServiceDescriptor;
-import app.packed.util.ConstructorDescriptor;
-import app.packed.util.FieldDescriptor;
-import app.packed.util.MethodDescriptor;
+import app.packed.reflect.ConstructorDescriptor;
+import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.MethodDescriptor;
 
 // RuntimeEnviroment != BuildEnvironment
 /**

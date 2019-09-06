@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.inject.InjectionException;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import support.stubs.Throwables.Exception1;
 
 /** Tests {@link InjectionException}. */
@@ -28,9 +29,9 @@ public class IllegalAccessRuntimeExceptionTest {
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new IllegalAccessRuntimeException("foo")).hasNoCause();
-        assertThat(new IllegalAccessRuntimeException("foo")).hasMessage("foo");
-        assertThat(new IllegalAccessRuntimeException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new IllegalAccessRuntimeException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new UncheckedIllegalAccessException("foo")).hasNoCause();
+        assertThat(new UncheckedIllegalAccessException("foo")).hasMessage("foo");
+        assertThat(new UncheckedIllegalAccessException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new UncheckedIllegalAccessException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

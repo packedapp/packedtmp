@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
-import app.packed.util.ConstructorDescriptor;
+import app.packed.reflect.ConstructorDescriptor;
 import packed.internal.util.InternalErrorException;
 
 /** The default implementation of {@link ConstructorDescriptor}. */
