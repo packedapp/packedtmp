@@ -18,7 +18,6 @@ package packed.internal.inject.build.export;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -66,14 +65,17 @@ public final class ServiceExporter {
      */
     private final ArrayList<ExportedBuildEntry<?>> exports = new ArrayList<>();
 
-    /** */
-    public final ServiceNodeMap oldResolvedExports = new ServiceNodeMap();
+    /** All resolved exports. Is null until {@link #resolve(InjectorBuilder, ArtifactBuildContext)} has been invoked. */
+    @Nullable
+    private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
 
-    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> resolvedExports = new LinkedHashMap<>();
+    /** */
+    @Nullable
+    private ServiceNodeMap resolvedServiceMap = new ServiceNodeMap();
 
     /** A map of all keyed exports where an entry matching the key could not be found. */
     @Nullable
-    private LinkedHashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
+    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
 
     /**
      * Creates a new service exporter.
@@ -85,8 +87,8 @@ public final class ServiceExporter {
         this.builder = requireNonNull(builder);
     }
 
-    public void buildDescriptor(InjectorContract.Builder builder) {
-        for (ServiceEntry<?> n : oldResolvedExports) {
+    public void buildContract(InjectorContract.Builder builder) {
+        for (ExportedBuildEntry<?> n : resolvedExports.values()) {
             builder.addProvides(n.key());
         }
     }
@@ -158,6 +160,7 @@ public final class ServiceExporter {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
 
+        LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
         for (ExportedBuildEntry<?> entry : exports) {
             // try and find a matching service entry for key'ed exports via
@@ -170,7 +173,7 @@ public final class ServiceExporter {
                     if (unresolvedKeyedExports == null) {
                         unresolvedKeyedExports = new LinkedHashMap<>();
                     }
-                    unresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new HashSet<>()).add(entry);
+                    unresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                     export = false;
                 } else {
                     entry.exportedEntry = (ServiceEntry) entryToExport;
@@ -178,7 +181,7 @@ public final class ServiceExporter {
             }
 
             if (export) {
-                ExportedBuildEntry<?> existing = (ExportedBuildEntry<?>) oldResolvedExports.putIfAbsent(entry);
+                ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key, entry);
                 if (existing != null) {
                     if (duplicateExports == null) {
                         duplicateExports = new LinkedHashMap<>();
@@ -200,11 +203,21 @@ public final class ServiceExporter {
         if (exportAll != null) {
             for (ServiceEntry<?> e : resolver.resolvedEntries) {
                 if (!e.isPrivate()) {
-                    if (!oldResolvedExports.containsKey(e.key())) {
-                        oldResolvedExports.put(new ExportedBuildEntry<>(builder, e, exportAll));
+                    if (!resolvedExports.containsKey(e.key())) {
+                        resolvedExports.put(e.key(), new ExportedBuildEntry<>(builder, e, exportAll));
                     }
                 }
             }
         }
+
+        this.resolvedExports = resolvedExports;
+    }
+
+    public ServiceNodeMap resolvedServiceMap() {
+        ServiceNodeMap r = resolvedServiceMap;
+        if (r == null) {
+            r = resolvedServiceMap = ServiceNodeMap.of(resolvedExports);
+        }
+        return r;
     }
 }

@@ -82,7 +82,7 @@ final class DependencyGraph {
         if (ib.context().buildContext().artifactType() == Injector.class) {
             ib.publicInjector = requireNonNull(ib.privateInjector);
         } else {
-            ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.oldResolvedExports;
+            ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
             ib.publicInjector = new DefaultInjector(ib.pcc, sm);
         }
 

@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -108,7 +109,7 @@ public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
         return nodes.toString();
     }
 
-    public ServiceNodeMap of(LinkedHashMap<Key<?>, ServiceEntry<?>> nodes) {
+    public static ServiceNodeMap of(Map<Key<?>, ? extends ServiceEntry<?>> nodes) {
         ServiceNodeMap m = new ServiceNodeMap();
         m.nodes.putAll(nodes);
         return m;

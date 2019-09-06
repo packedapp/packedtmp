@@ -118,7 +118,7 @@ public final class InjectorBuilder {
 
         builder.contracts.add(InjectorContract.of(c -> {
             if (exporter != null) {
-                exporter.buildDescriptor(c);
+                exporter.buildContract(c);
             }
             dependencies().buildDescriptor(c);
         }));
@@ -167,8 +167,8 @@ public final class InjectorBuilder {
         // Now inject all components...
 
         if (exporter != null) {
-            if (resolvedEntries != exporter.oldResolvedExports) {
-                exporter.oldResolvedExports.toRuntimeNodes();
+            if (resolvedEntries != exporter.resolvedServiceMap()) {
+                exporter.resolvedServiceMap().toRuntimeNodes();
             }
         }
     }

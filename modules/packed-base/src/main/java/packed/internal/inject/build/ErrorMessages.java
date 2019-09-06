@@ -17,7 +17,6 @@ package packed.internal.inject.build;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,7 +73,7 @@ public final class ErrorMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ArtifactBuildContext abc, HashMap<Key<?>, HashSet<ExportedBuildEntry<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> dublicateNodes) {
 
     }
 
