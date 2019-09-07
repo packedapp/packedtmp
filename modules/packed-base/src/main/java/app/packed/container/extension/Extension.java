@@ -72,7 +72,7 @@ import packed.internal.container.extension.PackedExtensionContext;
 public abstract class Extension {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
-    private static final StackWalker SW = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     static {
         SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
@@ -101,7 +101,7 @@ public abstract class Extension {
             }
 
             @Override
-            public <T extends ExtensionPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
+            public <T extends ExtensionWireletPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
             }
         });
@@ -153,7 +153,7 @@ public abstract class Extension {
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return ConfigSite.UNKNOWN;
         }
-        Optional<StackFrame> sf = SW.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
         return sf.isPresent() ? context().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 

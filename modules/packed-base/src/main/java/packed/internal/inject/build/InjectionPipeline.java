@@ -17,12 +17,12 @@ package packed.internal.inject.build;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 
 /**
  *
  */
-public final class InjectionPipeline extends ExtensionPipeline<InjectionPipeline> {
+public final class InjectionPipeline extends ExtensionWireletPipeline<InjectionPipeline> {
 
     /// ARGHHH... vi skal jo resolve foerst....
 

@@ -24,7 +24,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
@@ -41,7 +41,7 @@ public class ExtensionPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected ExtensionPipelineModel computeValue(Class<?> type) {
-            return new ExtensionPipelineModel((Class<? extends ExtensionPipeline<?>>) type);
+            return new ExtensionPipelineModel((Class<? extends ExtensionWireletPipeline<?>>) type);
         }
     };
 
@@ -49,7 +49,7 @@ public class ExtensionPipelineModel {
     final MethodHandle constructor;
 
     /** The type of extension. */
-    final Class<? extends ExtensionPipeline<?>> extensionPipelineType;
+    final Class<? extends ExtensionWireletPipeline<?>> extensionPipelineType;
 
     final Class<? extends Extension> extensionType;
 
@@ -60,7 +60,7 @@ public class ExtensionPipelineModel {
      *            the extension type
      */
     @SuppressWarnings("unchecked")
-    private ExtensionPipelineModel(Class<? extends ExtensionPipeline<?>> type) {
+    private ExtensionPipelineModel(Class<? extends ExtensionWireletPipeline<?>> type) {
         this.extensionPipelineType = requireNonNull(type);
 
         // We wrapper det her i en constructor finder...

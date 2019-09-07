@@ -27,7 +27,7 @@ import app.packed.util.Nullable;
 // Er en pipeline mere end en pipeline!!!
 // Er den ogsaa noden...???
 
-public abstract class ExtensionPipeline<T extends ExtensionPipeline<T>> {
+public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T>> {
 
     // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
     // Det betyder at man godt kan have en slags context... Idet vi kan have et index

@@ -15,12 +15,12 @@
  */
 package packed.internal.container.extension.stuff;
 
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 
 /**
  *
  */
 public interface PkdInstantiator {
 
-    public <T extends ExtensionPipeline<T>> T get(Class<T> t);
+    public <T extends ExtensionWireletPipeline<T>> T get(Class<T> t);
 }

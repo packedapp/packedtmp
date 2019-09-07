@@ -20,7 +20,7 @@ package packed.internal.reflect;
  */
 @SuppressWarnings("serial")
 public class PackedIllegalAccessException extends RuntimeException {
-    public PackedIllegalAccessException(IllegalAccessException e) {
+    PackedIllegalAccessException(IllegalAccessException e) {
         super(e);
     }
 }

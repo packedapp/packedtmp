@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.container.extension.ExtensionWirelet;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -64,10 +64,10 @@ public class ExtensionWireletModel {
         return CACHE.get(wireletType);
     }
 
-    public static ExtensionPipeline<?> newPipeline(Extension extension, Class<? extends Wirelet> wireletType) {
+    public static ExtensionWireletPipeline<?> newPipeline(Extension extension, Class<? extends Wirelet> wireletType) {
         ExtensionPipelineModel epm = ExtensionPipelineModel.CACHE.get(wireletType);
         try {
-            return (ExtensionPipeline<?>) epm.constructor.invoke(extension);
+            return (ExtensionWireletPipeline<?>) epm.constructor.invoke(extension);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }

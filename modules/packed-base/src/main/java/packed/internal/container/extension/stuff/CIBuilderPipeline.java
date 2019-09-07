@@ -15,12 +15,12 @@
  */
 package packed.internal.container.extension.stuff;
 
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 
 /**
  *
  */
-public class CIBuilderPipeline extends ExtensionPipeline<CIBuilderPipeline> implements CommonInterface {
+public class CIBuilderPipeline extends ExtensionWireletPipeline<CIBuilderPipeline> implements CommonInterface {
 
     /** {@inheritDoc} */
     @Override

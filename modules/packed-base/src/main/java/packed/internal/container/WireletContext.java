@@ -20,7 +20,7 @@ import java.util.IdentityHashMap;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.container.extension.ExtensionWirelet;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletModel;
@@ -69,7 +69,7 @@ public class WireletContext {
 
     ContainerWirelet.ComponentNameWirelet newName;
 
-    final IdentityHashMap<Class<? extends Extension>, ExtensionPipeline<?>> pipelines = new IdentityHashMap<>();
+    final IdentityHashMap<Class<? extends Extension>, ExtensionWireletPipeline<?>> pipelines = new IdentityHashMap<>();
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
@@ -78,7 +78,7 @@ public class WireletContext {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWirelet ew = (ExtensionWirelet) w;
                 Class<? extends Extension> cl = WIRELET_TO_EXTENSION.get(w.getClass());
-                ExtensionPipeline p = pipelines.computeIfAbsent(cl, k -> {
+                ExtensionWireletPipeline p = pipelines.computeIfAbsent(cl, k -> {
                     Extension e = pcc.getExtension(cl);
                     if (e == null) {
                         throw new IllegalStateException();// Extension was never instaleld

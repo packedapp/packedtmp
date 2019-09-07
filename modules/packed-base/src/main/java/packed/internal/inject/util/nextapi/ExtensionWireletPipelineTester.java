@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionPipeline;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.container.extension.ExtensionWirelet;
 
 /**
@@ -50,7 +50,7 @@ class MyExtensionWirelet extends ExtensionWirelet<MyExtensionWireletPipeline> {
 }
 
 //// Supportere aldrig mere end en type per extension.....
-class MyExtensionWireletPipeline extends ExtensionPipeline<MyExtensionWireletPipeline> {
+class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWireletPipeline> {
 
     String name;
     final MyExtension extension;
@@ -78,7 +78,7 @@ class MyExtensionWireletPipeline extends ExtensionPipeline<MyExtensionWireletPip
     }
 }
 
-abstract class EW<T extends ExtensionPipeline<?>> extends Wirelet {
+abstract class EW<T extends ExtensionWireletPipeline<?>> extends Wirelet {
 
 }
 
