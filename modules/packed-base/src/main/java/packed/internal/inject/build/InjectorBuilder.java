@@ -45,7 +45,7 @@ import packed.internal.inject.util.ServiceNodeMap;
 public final class InjectorBuilder {
 
     /** The extension context for {@link InjectionExtension}. */
-    private ExtensionContext context;
+    private final ExtensionContext context;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
@@ -85,6 +85,7 @@ public final class InjectorBuilder {
     }
 
     public void build(ArtifactBuildContext buildContext) {
+        System.out.println(provider);
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolveAndCheckForDublicates(buildContext);
         resolvedEntries.addAll(resolvedServices.values());
 
@@ -182,17 +183,12 @@ public final class InjectorBuilder {
      */
     public void onInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
         // new Exception().printStackTrace();
-
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
-
         // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.
-
         // Det skal ogsaa tilfoejes requires...
-
         // Delt op i 2 dele...
         // * Tilfoej det til requirements...
         // * Scheduler at groupen skal kaldes senere ved inject...
-
         for (AtInject ai : group.members) {
             System.out.println(ai);
         }
@@ -208,9 +204,5 @@ public final class InjectorBuilder {
             p = provider = new ServiceProvidingManager(this);
         }
         return p;
-    }
-
-    public void setContext(ExtensionContext context) {
-        this.context = requireNonNull(context);
     }
 }

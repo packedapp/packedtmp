@@ -60,6 +60,7 @@ public class Test2 {
 
         Injector i = Injector.of(b(), ServiceWirelets.provide(new Date()));
 
+        System.out.println(i);
         ArtifactImage ai = ArtifactImage.of(b());
 
         System.out.println(ServiceContract.of(ai));

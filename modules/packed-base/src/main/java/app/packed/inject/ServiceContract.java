@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -197,7 +198,8 @@ public final class ServiceContract extends Contract {
     }
 
     public static ServiceContract of(Bundle bundle) {
-        return BundleDescriptor.of(bundle).contracts().use(ServiceContract.class);
+        Optional<ServiceContract> o = Contract.get(BundleDescriptor.of(bundle).contracts(), ServiceContract.class);
+        return o.orElse(ServiceContract.EMPTY);
     }
 
     /**

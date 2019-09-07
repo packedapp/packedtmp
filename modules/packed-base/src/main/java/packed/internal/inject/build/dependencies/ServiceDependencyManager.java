@@ -114,7 +114,6 @@ public final class ServiceDependencyManager {
 
     /** Also used for descriptors. */
     public void analyze(ServiceExportManager exporter) {
-
         if (builder.context().buildContext().artifactType() == Injector.class) {
             builder.publicInjector = new DefaultInjector(builder.pcc, builder.resolvedEntries);
         } else {

@@ -159,6 +159,10 @@ public abstract class BaseBundle extends Bundle {
         return use(ComponentExtension.class);
     }
 
+    protected final ComponentConfiguration install(Class<?> implementation) {
+        return component().install(implementation);
+    }
+
     protected final ComponentConfiguration install(Object instance) {
         return component().install(instance);
     }
