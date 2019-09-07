@@ -129,15 +129,15 @@ public abstract class Extension {
         return c;
     }
 
-    protected ExtensionNode initialize(ExtensionContext context) {
-        throw new UnsupportedOperationException();
+    protected ExtensionNode extensionInitialize() {
+        return null;
     }
 
     protected void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on {@link Extension} or a subclass of it .
+     * not located on any subclasses of {@link Extension} or any class that implements {@link ContainerSource}.
      * <p>
      * Invoking this method typically takes in the order of 1-2 microseconds.
      * <p>
@@ -168,6 +168,8 @@ public abstract class Extension {
      */
     private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
         Class<?> c = frame.getDeclaringClass();
+        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+        // Syntes bare vi filtrer app.packed.base modulet fra...
         return Extension.class.isAssignableFrom(c)
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
     }

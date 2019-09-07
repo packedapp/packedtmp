@@ -44,7 +44,7 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.ErrorMessages;
-import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 
@@ -54,7 +54,7 @@ import packed.internal.inject.run.AbstractInjector;
 public final class ServiceProvidingManager {
 
     /** The injector builder. */
-    private final InjectorBuilder builder;
+    private final InjectionExtensionNode builder;
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
@@ -75,7 +75,7 @@ public final class ServiceProvidingManager {
      * @param builder
      *            the injector builder
      */
-    public ServiceProvidingManager(InjectorBuilder builder) {
+    public ServiceProvidingManager(InjectionExtensionNode builder) {
         this.builder = requireNonNull(builder);
     }
 

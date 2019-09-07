@@ -61,7 +61,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
 
     /** The injector builder this node belongs to. */
     @Nullable // Is nullable for stages for now
-    public final InjectorBuilder injectorBuilder;
+    public final InjectionExtensionNode injectorBuilder;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
@@ -77,11 +77,11 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     @Nullable
     private RSE<T> runtimeNode;
 
-    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite) {
+    public BuildEntry(InjectionExtensionNode injectorBuilder, ConfigSite configSite) {
         this(injectorBuilder, configSite, List.of());
     }
 
-    public BuildEntry(InjectorBuilder injectorBuilder, ConfigSite configSite, List<ServiceDependency> dependencies) {
+    public BuildEntry(InjectionExtensionNode injectorBuilder, ConfigSite configSite, List<ServiceDependency> dependencies) {
         this.injectorBuilder = injectorBuilder;
         this.configSite = requireNonNull(configSite);
         this.dependencies = requireNonNull(dependencies);

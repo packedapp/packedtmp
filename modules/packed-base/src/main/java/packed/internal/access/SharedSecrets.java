@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.inject.InjectionExtension;
+import app.packed.inject.Factory;
 import app.packed.lifecycle.RunState;
 import app.packed.util.TypeLiteral;
 
@@ -146,7 +146,7 @@ public final class SharedSecrets {
     private static class InjectSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedInjectAccess SINGLETON = singleton(AppPackedInjectAccess.class, InjectionExtension.class);
+        private static final AppPackedInjectAccess SINGLETON = singleton(AppPackedInjectAccess.class, Factory.class);
     }
 
     /** Holder of the {@link AppPackedLifecycleAccess} singleton. */

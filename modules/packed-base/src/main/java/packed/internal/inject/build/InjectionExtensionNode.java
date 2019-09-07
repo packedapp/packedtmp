@@ -42,7 +42,7 @@ import packed.internal.inject.util.AtInjectGroup;
 import packed.internal.inject.util.ServiceNodeMap;
 
 /** This class records all service related information for a single box. */
-public final class InjectorBuilder extends ExtensionNode {
+public final class InjectionExtensionNode extends ExtensionNode {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
@@ -71,7 +71,7 @@ public final class InjectorBuilder extends ExtensionNode {
      * @param context
      *            the extension context
      */
-    public InjectorBuilder(ExtensionContext context) {
+    public InjectionExtensionNode(ExtensionContext context) {
         super(context);
         this.pcc = requireNonNull((PackedExtensionContext) context).pcc;
     }

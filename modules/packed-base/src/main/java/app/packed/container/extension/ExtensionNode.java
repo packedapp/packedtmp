@@ -17,6 +17,7 @@ package app.packed.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.container.BundleDescriptor;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /**
@@ -29,6 +30,8 @@ public abstract class ExtensionNode {
     protected ExtensionNode(ExtensionContext context) {
         this.context = (PackedExtensionContext) requireNonNull(context, "context is null");
     }
+
+    public void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     public final ExtensionContext context() {
         return context;

@@ -32,7 +32,7 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.ErrorMessages;
-import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.build.service.PackedProvidedComponentConfiguration;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
@@ -48,7 +48,7 @@ import packed.internal.util.StringFormatter;
 public final class ServiceExportManager {
 
     /** The injector builder this exporter belongs to. */
-    private final InjectorBuilder builder;
+    private final InjectionExtensionNode builder;
 
     /** A map of multiple exports for the same key. */
     @Nullable
@@ -64,7 +64,7 @@ public final class ServiceExportManager {
     @Nullable
     private ConfigSite exportAll;
 
-    /** All resolved exports. Is null until {@link #resolve(InjectorBuilder, ArtifactBuildContext)} has been invoked. */
+    /** All resolved exports. Is null until {@link #resolve(InjectionExtensionNode, ArtifactBuildContext)} has been invoked. */
     @Nullable
     private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
 
@@ -82,7 +82,7 @@ public final class ServiceExportManager {
      * @param builder
      *            the builder this export manager belongs to
      */
-    public ServiceExportManager(InjectorBuilder builder) {
+    public ServiceExportManager(InjectionExtensionNode builder) {
         this.builder = requireNonNull(builder);
     }
 
@@ -167,7 +167,7 @@ public final class ServiceExportManager {
      * @param buildContext
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void resolve(InjectorBuilder resolver, ArtifactBuildContext buildContext) {
+    public void resolve(InjectionExtensionNode resolver, ArtifactBuildContext buildContext) {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
 

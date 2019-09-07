@@ -31,7 +31,7 @@ import app.packed.inject.ServiceRequest;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
-import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSESingleton;
 import packed.internal.inject.run.RSNLazy;
@@ -71,7 +71,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         this.description = atProvides.description;
     }
 
-    public ComponentBuildEntry(InjectorBuilder injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
+    public ComponentBuildEntry(InjectionExtensionNode injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
             List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.parent = null;
@@ -97,7 +97,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
      * @param instance
      *            the instance
      */
-    public ComponentBuildEntry(InjectorBuilder ib, ConfigSite configSite, T instance) {
+    public ComponentBuildEntry(InjectionExtensionNode ib, ConfigSite configSite, T instance) {
         super(ib, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;

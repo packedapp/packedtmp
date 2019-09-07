@@ -36,7 +36,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
-import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.ServiceNodeMap;
@@ -51,7 +51,7 @@ import packed.internal.inject.util.ServiceNodeMap;
 public final class ServiceDependencyManager {
 
     /** The injector builder this manager belongs to. */
-    private final InjectorBuilder builder;
+    private final InjectionExtensionNode builder;
 
     /**
      * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
@@ -84,7 +84,7 @@ public final class ServiceDependencyManager {
     /** A list of all dependencies that have not been resolved */
     private ArrayList<Requirement> missingDependencies;
 
-    public ServiceDependencyManager(InjectorBuilder builder) {
+    public ServiceDependencyManager(InjectionExtensionNode builder) {
         this.builder = requireNonNull(builder);
     }
 
@@ -123,7 +123,7 @@ public final class ServiceDependencyManager {
         } else {
             snm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
         }
-        builder.publicInjector = new DefaultInjector(builder.context().containerConfigSite(), builder.pcc.getDescription(), snm);
+        builder.publicInjector = new DefaultInjector(builder.context().containerConfigSite(), "Internal Descriptor", snm);
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies();

@@ -24,17 +24,13 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import packed.internal.access.AppPackedInjectAccess;
-import packed.internal.access.SharedSecrets;
 import packed.internal.inject.InjectConfigSiteOperations;
-import packed.internal.inject.build.InjectorBuilder;
+import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.build.service.AtProvidesGroup;
-import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtInjectGroup;
 
@@ -63,25 +59,8 @@ import packed.internal.inject.util.AtInjectGroup;
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 public final class InjectionExtension extends Extension {
 
-    static {
-        SharedSecrets.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public InjectorBuilder getBuilder(InjectionExtension extension) {
-                return extension.builder;
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
-                return factory.factory.function;
-            }
-        });
-    }
-
     /** The injector builder, initialized via {@link #onAdded()}. */
-    private InjectorBuilder builder;
+    private InjectionExtensionNode node;
 
     /** Should never be initialized by users. */
     InjectionExtension() {}
@@ -89,12 +68,13 @@ public final class InjectionExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     protected void buildDescriptor(BundleDescriptor.Builder descriptor) {
-        builder.buildDescriptor(descriptor);
+        node.buildDescriptor(descriptor);
     }
 
+    /** {@inheritDoc} */
     @Override
-    protected InjectorBuilder initialize(ExtensionContext context) {
-        return builder = new InjectorBuilder(context);
+    protected InjectionExtensionNode extensionInitialize() {
+        return node = new InjectionExtensionNode(context());
     }
 
     /**
@@ -123,7 +103,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
-        return builder.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        return node.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -153,7 +133,7 @@ public final class InjectionExtension extends Extension {
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return builder.exports().export(key, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        return node.exports().export(key, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -161,7 +141,7 @@ public final class InjectionExtension extends Extension {
      */
     public void exportAll() {
         checkConfigurable();
-        builder.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
+        node.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -175,19 +155,19 @@ public final class InjectionExtension extends Extension {
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
         checkConfigurable();
-        builder.dependencies().manualRequirementsManagement();
+        node.dependencies().manualRequirementsManagement();
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onAdded() {
-        builder = new InjectorBuilder(context());
+        node = new InjectionExtensionNode(context());
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onConfigured() {
-        builder.build(context().buildContext());
+        node.build(context().buildContext());
     }
 
     /**
@@ -200,7 +180,7 @@ public final class InjectionExtension extends Extension {
      */
     @OnHook(AtInjectGroup.Builder.class)
     void onHookAtInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
-        builder.onInjectGroup(cc, group);
+        node.onInjectGroup(cc, group);
     }
 
     /**
@@ -213,13 +193,13 @@ public final class InjectionExtension extends Extension {
      */
     @OnHook(AtProvidesGroup.Builder.class)
     void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
-        builder.provider().onProvidesGroup(cc, group);
+        node.provider().onProvidesGroup(cc, group);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        builder.onPrepareContainerInstantiation(context);
+        node.onPrepareContainerInstantiation(context);
     }
 
     /**
@@ -247,7 +227,7 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
         // configurability is checked by ComponentExtension
-        return builder.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
+        return node.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
     /**
@@ -265,7 +245,7 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ComponentServiceConfiguration<T> provide(T instance) {
         // configurability is checked by ComponentExtension
-        return builder.provider().provideInstance(use(ComponentExtension.class).install(instance), instance);
+        return node.provider().provideInstance(use(ComponentExtension.class).install(instance), instance);
     }
 
     /**
@@ -286,8 +266,7 @@ public final class InjectionExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
         checkConfigurable();
-        builder.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
-                WireletList.of(wirelets));
+        node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
     }
 
     /**
@@ -309,7 +288,7 @@ public final class InjectionExtension extends Extension {
      */
     public void require(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(ServiceDependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
+        node.dependencies().require(ServiceDependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
     /**
@@ -326,6 +305,6 @@ public final class InjectionExtension extends Extension {
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
-        builder.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+        node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }

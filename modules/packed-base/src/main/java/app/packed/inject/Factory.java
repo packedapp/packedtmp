@@ -38,6 +38,7 @@ import app.packed.util.BaseSupport;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
+import packed.internal.access.AppPackedInjectAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
@@ -76,6 +77,17 @@ import packed.internal.util.TypeVariableExtractorUtil;
 // Refereres fra InjectorDescriptor....
 // Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
 public class Factory<T> {
+
+    static {
+        SharedSecrets.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
+
+            /** {@inheritDoc} */
+            @Override
+            public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
+                return factory.factory.function;
+            }
+        });
+    }
 
     /** A cache of factories used by {@link #findInjectable(Class)}. */
     private static final ClassValue<Factory<?>> FIND_INJECTABLE_CACHE = new ClassValue<>() {
