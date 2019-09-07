@@ -188,7 +188,7 @@ public final class InjectorBuilder extends ExtensionNode {
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context.put(pcc, publicInjector); // Used by PackedContainer
+        context().putIntoInstantiationContext(context, publicInjector);
     }
 
     public ServiceProvidingManager provider() {
