@@ -54,9 +54,6 @@ final class ExtensionModel<T> {
     /** The method handle used to create a new instance of the extension. */
     private final MethodHandle constructor;
 
-    /** Whether or not the constructor needs an instanceof {@link PackedContainerConfiguration}. */
-    private final boolean needsPackedContainerConfiguration;
-
     /** The type of extension. */
     private final Class<? extends Extension> extensionType;
 
@@ -78,22 +75,12 @@ final class ExtensionModel<T> {
             throw new IllegalArgumentException("The specified type '" + StringFormatter.format(type) + "' cannot be an inner or local class");
         }
 
-        // We have a small hack where we allow PackedContainerConfiguration to be injected.
-        // This only works for modules where PackedContainerConfiguration is exported to
-        boolean needsPackedContainerConfiguration = false;
-
         Constructor<?> constructor;
         try {
             constructor = type.getDeclaredConstructor();
         } catch (NoSuchMethodException e) {
-            try {
-                constructor = type.getDeclaredConstructor(PackedContainerConfiguration.class);
-                needsPackedContainerConfiguration = true;
-            } catch (NoSuchMethodException ee) {
-                throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be used");
-            }
+            throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be used");
         }
-        this.needsPackedContainerConfiguration = needsPackedContainerConfiguration;
 
         // Check that the package the extension is located in, is open to app.packed.base
         if (!type.getModule().isOpen(type.getPackageName(), ExtensionModel.class.getModule())) {
@@ -151,11 +138,7 @@ final class ExtensionModel<T> {
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         ExtensionModel<T> model = (ExtensionModel<T>) CACHE.get(extensionType);
         try {
-            if (model.needsPackedContainerConfiguration) {
-                return (T) model.constructor.invoke(pcc);
-            } else {
-                return (T) model.constructor.invoke();
-            }
+            return (T) model.constructor.invoke();
         } catch (Throwable t) {
             ThrowableUtil.rethrowErrorOrRuntimeException(t);
             throw new UndeclaredThrowableException(t, "Could not instantiate extension '" + StringFormatter.format(model.extensionType) + "'");
