@@ -187,7 +187,7 @@ public final class InjectionExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     protected void onConfigured() {
-        builder.build(buildContext());
+        builder.build(context().buildContext());
     }
 
     /**

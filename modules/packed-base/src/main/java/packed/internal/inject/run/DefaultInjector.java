@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -50,10 +49,10 @@ public final class DefaultInjector extends AbstractInjector {
     /** All services that this injector provides. */
     private final ServiceNodeMap services;
 
-    public DefaultInjector(ContainerConfiguration containerConfiguration, ServiceNodeMap services) {
+    public DefaultInjector(ConfigSite configSite, @Nullable String description, ServiceNodeMap services) {
         this.parent = null;
-        this.configSite = requireNonNull(containerConfiguration.configSite());
-        this.description = containerConfiguration.getDescription();
+        this.configSite = requireNonNull(configSite);
+        this.description = description;
         this.services = requireNonNull(services);
     }
 

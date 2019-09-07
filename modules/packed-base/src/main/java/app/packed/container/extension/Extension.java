@@ -17,7 +17,6 @@ package app.packed.container.extension;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
@@ -152,8 +151,9 @@ public abstract class Extension {
      */
     // TODO add stuff about we also ignore non-concrete container sources...
     protected final ConfigSite captureStackFrame(String operation) {
-        // API-NOTE This method is not available on ExtensionContext to encourage capturing of any stack frame to be limited
+        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
         // to the extension class in order to simplify the filtering mechanism.
+
         if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
             return ConfigSite.UNKNOWN;
         }
@@ -161,8 +161,13 @@ public abstract class Extension {
         return sf.isPresent() ? context().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
-    final boolean captureStackFrameIgnoreFilter(StackFrame f) {
-        Class<?> c = f.getDeclaringClass();
+    /**
+     * @param frame
+     *            the frame to filter
+     * @return whether or not to filter the frame
+     */
+    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+        Class<?> c = frame.getDeclaringClass();
         return Extension.class.isAssignableFrom(c)
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
     }
@@ -193,23 +198,6 @@ public abstract class Extension {
                     "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization");
         }
         return c;
-    }
-
-    protected final void installInParentIfSameArtifact() {
-        // Alternativeet
-        // useInParent????
-    }
-
-    // Sidecards per extension???
-    // Det betyder jo ogsaa "endnu" mere magt til extensions..
-    protected final void installSidecar(Object instance) {
-        // These should work with images as well..
-
-        // I virkeligheden er det jo paa ContainerConfiguration vi installere den....
-        class SidecarConfiguration {
-
-        }
-        System.out.println(new SidecarConfiguration());
     }
 
     /**
@@ -253,17 +241,6 @@ public abstract class Extension {
         context().putIntoInstantiationContext(context, sidecar);
     }
 
-    final void runWithLookup(Lookup lookup, Runnable runnable) {
-        // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....
-        // D.v.s. vi laver en push, pop af et evt. eksisterende lookup object
-        // En install fra en extension skal jo naesten bruge denne..
-        // Faktisk, er der lidt sikkerhedshullumhej her.... Hvordan sikre vi os at extensions.
-        // Ikke goer noget sjovt her. Hmm, altsaa indvitere man en extension indenfor...
-
-        // Men vi vel helst have at de giver adgang via module-info...
-        // Eller via Factory.withLookup();
-    }
-
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -295,3 +272,29 @@ public abstract class Extension {
         return context().wirelets();
     }
 }
+//
+//// Sidecards per extension???
+//// Det betyder jo ogsaa "endnu" mere magt til extensions..
+// protected final void installSidecar(Object instance) {
+// // These should work with images as well..
+//
+// // I virkeligheden er det jo paa ContainerConfiguration vi installere den....
+// class SidecarConfiguration {
+//
+// }
+// System.out.println(new SidecarConfiguration());
+// }
+
+//
+// final void runWithLookup(Lookup lookup, Runnable runnable) {
+// // Extensions bliver bare noedt til at vaere aabne for
+//
+// // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....
+// // D.v.s. vi laver en push, pop af et evt. eksisterende lookup object
+// // En install fra en extension skal jo naesten bruge denne..
+// // Faktisk, er der lidt sikkerhedshullumhej her.... Hvordan sikre vi os at extensions.
+// // Ikke goer noget sjovt her. Hmm, altsaa indvitere man en extension indenfor...
+//
+// // Men vi vel helst have at de giver adgang via module-info...
+// // Eller via Factory.withLookup();
+// }

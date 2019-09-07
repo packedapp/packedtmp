@@ -114,12 +114,16 @@ public final class ServiceDependencyManager {
 
     /** Also used for descriptors. */
     public void analyze(ServiceExportManager exporter) {
+        // Injector kan baade vaere en artifact.
+        // Og en del af en artifact...
+
+        ServiceNodeMap snm;
         if (builder.context().buildContext().artifactType() == Injector.class) {
-            builder.publicInjector = new DefaultInjector(builder.pcc, builder.resolvedEntries);
+            snm = builder.resolvedEntries;
         } else {
-            ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
-            builder.publicInjector = new DefaultInjector(builder.pcc, sm);
+            snm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
         }
+        builder.publicInjector = new DefaultInjector(builder.context().containerConfigSite(), builder.pcc.getDescription(), snm);
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies();

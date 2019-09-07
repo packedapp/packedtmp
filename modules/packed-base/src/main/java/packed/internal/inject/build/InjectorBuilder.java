@@ -25,7 +25,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
@@ -43,10 +42,7 @@ import packed.internal.inject.util.AtInjectGroup;
 import packed.internal.inject.util.ServiceNodeMap;
 
 /** This class records all service related information for a single box. */
-public final class InjectorBuilder implements ExtensionNode {
-
-    /** The extension context for {@link InjectionExtension}. */
-    private final ExtensionContext context;
+public final class InjectorBuilder extends ExtensionNode {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
@@ -76,8 +72,8 @@ public final class InjectorBuilder implements ExtensionNode {
      *            the extension context
      */
     public InjectorBuilder(ExtensionContext context) {
+        super(context);
         this.pcc = requireNonNull((PackedExtensionContext) context).pcc;
-        this.context = context;
     }
 
     public void addErrorMessage() {
@@ -123,10 +119,6 @@ public final class InjectorBuilder implements ExtensionNode {
     public void checkExportConfigurable() {
         // when processing wirelets
         // We should make sure some stuff is no longer configurable...
-    }
-
-    public ExtensionContext context() {
-        return context;
     }
 
     /**

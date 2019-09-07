@@ -15,9 +15,22 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
+import packed.internal.container.extension.PackedExtensionContext;
+
 /**
  *
  */
-public interface ExtensionNode {
+public abstract class ExtensionNode {
 
+    private final PackedExtensionContext context;
+
+    protected ExtensionNode(ExtensionContext context) {
+        this.context = (PackedExtensionContext) requireNonNull(context, "context is null");
+    }
+
+    public final ExtensionContext context() {
+        return context;
+    }
 }

@@ -119,7 +119,7 @@ public final class LifecycleExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     protected void onConfigured() {
-        installInParentIfSameArtifact();
+        // installInParentIfSameArtifact();
     }
 }
 
