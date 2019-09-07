@@ -15,33 +15,58 @@
  */
 package packed.internal.container.model;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Date;
+
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.inject.InjectorContract;
+import app.packed.inject.Injector;
+import app.packed.inject.ServiceContract;
+import app.packed.util.Qualifier;
 
 /**
  *
  */
 public class Test2 {
 
+    static final Injector INJ1 = Injector.configure(c -> {
+        c.provide("foo123");
+    });
+
+    static final Injector INJ2 = Injector.configure(c -> {
+        c.provide(123L);
+    });
+
     static Bundle b() {
         return new BaseBundle() {
             @Override
             protected void configure() {
-                provide("foob");
-                provide(-123L);
-                provide((short) -123L);
-                exportAll();
+                // injector().manualRequirementsManagement();
+                export(provide(NeedsDate.class));
+                provide(new Date());
             }
         };
     }
 
     public static void main(String[] args) {
-        System.out.println(InjectorContract.of(b()));
+        System.out.println(ServiceContract.of(b()));
 
         ArtifactImage ai = ArtifactImage.of(b());
 
-        System.out.println(InjectorContract.of(ai));
+        System.out.println(ServiceContract.of(ai));
+        // System.out.println(InjectorContract.of(ai.));
     }
+
+    public static class NeedsDate {
+        public NeedsDate(Date date) {
+
+        }
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Qualifier
+    public @interface Doo {}
 }
+// It is stripped of any implementation details

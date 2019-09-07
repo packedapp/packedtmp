@@ -19,12 +19,10 @@ import app.packed.app.App;
 import app.packed.app.AppBundle;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorContract;
-import app.packed.inject.ServiceWirelets;
+import app.packed.inject.ServiceContract;
 
 /**
  *
@@ -51,7 +49,7 @@ public class TestIt extends AppBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        System.out.println(InjectorContract.of(b()));
+        System.out.println(ServiceContract.of(b()));
 
         exportAll(); // <- we don't want this config site.... Man this is annoying
 
@@ -59,7 +57,7 @@ public class TestIt extends AppBundle {
         provide(Doo.class);
         provide(ff);
 
-        Wirelet w1 = ServiceWirelets.extractUpstream(String.class, Short.class, s -> (short) s.length());
+        // Wirelet w1 = ServiceWirelets.extractUpstream(String.class, Short.class, s -> (short) s.length());
 
         // provideAll(INJ, peekUpstream(e -> System.out.println("Adding " + e.key())), w1, peekUpstream(e ->
         // System.out.println("Importing " + e.key())));

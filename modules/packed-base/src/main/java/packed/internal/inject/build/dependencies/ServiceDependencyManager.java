@@ -27,7 +27,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.InjectionException;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
-import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
@@ -154,12 +154,12 @@ public final class ServiceDependencyManager {
     }
 
     /**
-     * Helps build an {@link InjectorContract}.
+     * Helps build an {@link ServiceContract}.
      * 
      * @param builder
      *            the contract builder
      */
-    public void buildContract(InjectorContract.Builder builder) {
+    public void buildContract(ServiceContract.Builder builder) {
         if (requiredOptionally != null) {
             requiredOptionally.forEach(k -> builder.addOptional(k));
         }

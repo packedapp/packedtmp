@@ -21,7 +21,7 @@ import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /** A support class for calling package private methods in the app.packed.inject package. */
-public interface AppPackedInjectAccess {
+public interface AppPackedInjectAccess extends SecretAccess {
 
     /**
      * Extracts the internal factory from the specified factory

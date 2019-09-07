@@ -15,14 +15,14 @@
  */
 package app.packed.contract;
 
-import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceContract;
 
 /**
  *
  */
 public class ContractTests {
     public static void main(String[] args) {
-        InjectorContract ic = InjectorContract.of(c -> {
+        ServiceContract ic = ServiceContract.of(c -> {
             c.addProvides(String.class);
             c.addProvides(Long.class);
         });

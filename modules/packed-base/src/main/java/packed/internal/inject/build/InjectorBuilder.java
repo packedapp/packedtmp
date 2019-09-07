@@ -24,7 +24,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
-import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceContract;
 import app.packed.inject.InstantiationMode;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -116,7 +116,7 @@ public final class InjectorBuilder {
             }
         }
 
-        builder.addContract(InjectorContract.of(c -> {
+        builder.addContract(ServiceContract.of(c -> {
             if (exporter != null) {
                 exporter.buildContract(c);
             }

@@ -45,7 +45,7 @@ public interface ComponentConfiguration {
      * @throws IllegalStateException
      *             if the component is no long configurable.
      */
-    void requireConfigurable();
+    void checkConfigurable();
 
     /**
      * Returns the configuration site that created this configuration.

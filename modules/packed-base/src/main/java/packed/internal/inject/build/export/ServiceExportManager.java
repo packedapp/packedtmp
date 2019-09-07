@@ -25,7 +25,7 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InjectionExtension;
-import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -87,12 +87,12 @@ public final class ServiceExportManager {
     }
 
     /**
-     * Helps build an {@link InjectorContract}.
+     * Helps build an {@link ServiceContract}.
      * 
      * @param builder
      *            the contract builder
      */
-    public void buildContract(InjectorContract.Builder builder) {
+    public void buildContract(ServiceContract.Builder builder) {
         for (ExportedBuildEntry<?> n : resolvedExports.values()) {
             builder.addProvides(n.key());
         }

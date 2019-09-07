@@ -16,6 +16,6 @@
 package packed.internal.access;
 
 /** A support class for calling package private methods in the app.packed.lifecycle package. */
-public interface AppPackedLifecycleAccess {
+public interface AppPackedLifecycleAccess extends SecretAccess {
 
 }

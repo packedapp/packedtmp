@@ -23,7 +23,7 @@ import app.packed.container.extension.ExtensionWirelet;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
-public interface AppPackedExtensionAccess {
+public interface AppPackedExtensionAccess extends SecretAccess {
 
     /**
      * @param receiver

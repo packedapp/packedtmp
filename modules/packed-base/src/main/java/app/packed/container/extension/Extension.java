@@ -76,7 +76,7 @@ public abstract class Extension {
     private static final StackWalker SW = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     static {
-        SharedSecrets.zet(new AppPackedExtensionAccess() {
+        SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
 
             @Override
             public void buildBundle(Extension extension, Builder builder) {

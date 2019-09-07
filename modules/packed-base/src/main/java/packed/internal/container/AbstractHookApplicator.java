@@ -38,7 +38,7 @@ public abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
 
         // TODO check instance component if instance field...
         AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
-        pcc.requireConfigurable();
+        pcc.checkConfigurable();
         pcc.del.add(newAccessor(sidecarType, consumer));
     }
 

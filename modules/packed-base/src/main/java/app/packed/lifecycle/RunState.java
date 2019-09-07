@@ -101,6 +101,6 @@ public enum RunState {
     }
 
     static {
-        SharedSecrets.zet(new AppPackedLifecycleAccess() {});
+        SharedSecrets.initialize(AppPackedLifecycleAccess.class, new AppPackedLifecycleAccess() {});
     }
 }

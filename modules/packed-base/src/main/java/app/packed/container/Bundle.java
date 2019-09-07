@@ -81,8 +81,8 @@ public abstract class Bundle implements ContainerSource {
      * @throws IllegalStateException
      *             if the {@link #configure()} method has already been invoked once for this extension instance
      */
-    protected final void requireConfigurable() {
-        configuration().requireConfigurable();
+    protected final void checkConfigurable() {
+        configuration().checkConfigurable();
     }
 
     /**

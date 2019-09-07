@@ -106,7 +106,7 @@ public class Factory<T> {
     };
 
     static {
-        SharedSecrets.zet(new AppPackedInjectAccess() {
+        SharedSecrets.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
 
             @Override
             public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {

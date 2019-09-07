@@ -75,7 +75,7 @@ public class ContainerConfigurationTester {
 
     public ContainerConfigurationTester isConfigurable() {
         try {
-            cc.requireConfigurable();
+            cc.checkConfigurable();
             return this;
         } catch (IllegalStateException e) {
             throw new AssertionError("Expected to be configurable, but was not", e);
@@ -84,7 +84,7 @@ public class ContainerConfigurationTester {
 
     public ContainerConfigurationTester isNotConfigurable() {
         try {
-            cc.requireConfigurable();
+            cc.checkConfigurable();
             throw new AssertionError("Expected to be not configurable, but was");
         } catch (IllegalStateException e) {
             // Check name???

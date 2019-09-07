@@ -35,7 +35,7 @@ public final class WireletList extends Wirelet {
     final Wirelet[] wirelets;
 
     static {
-        SharedSecrets.zet(new AppPackedContainerAccess() {
+        SharedSecrets.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
 
             /** {@inheritDoc} */
             @Override

@@ -52,15 +52,15 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     /** {@inheritDoc} */
     @Override
     public ComponentServiceConfiguration<T> as(Key<? super T> key) {
-        component.requireConfigurable();
+        component.checkConfigurable();
         buildEntry.as(key);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void requireConfigurable() {
-        component.requireConfigurable();
+    public void checkConfigurable() {
+        component.checkConfigurable();
     }
 
     /** {@inheritDoc} */
@@ -105,7 +105,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     /** {@inheritDoc} */
     @Override
     public ComponentServiceConfiguration<T> lazy() {
-        component.requireConfigurable();
+        component.checkConfigurable();
         ((ComponentBuildEntry<T>) buildEntry).lazy();
         return this;
     }
@@ -119,7 +119,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     /** {@inheritDoc} */
     @Override
     public ComponentServiceConfiguration<T> prototype() {
-        component.requireConfigurable();
+        component.checkConfigurable();
         ((ComponentBuildEntry<T>) buildEntry).prototype();
         return this;
     }

@@ -15,8 +15,6 @@
  */
 package packed.internal.access;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.ArtifactImage;
@@ -34,21 +32,6 @@ public final class SharedSecrets {
 
     /** All secrets, we never remove them to make sure we never add anything twice. */
     private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> MAP = new ConcurrentHashMap<>();
-
-    /** A temporary instance of AppPackedContainerAccess, until ContainerSingletonHolder has been initialized. */
-    private static AppPackedContainerAccess TMP_CONTAINER_ACCESS;
-
-    /** A temporary instance of AppPackedExtensionAccess, until ExtensionSingletonHolder has been initialized. */
-    private static AppPackedExtensionAccess TMP_EXTENSION_ACCESS;
-
-    /** A temporary instance of AppPackedInjectAccess, until InjectSingletonHolder has been initialized. */
-    private static AppPackedInjectAccess TMP_INJECT_ACCESS;
-
-    /** A temporary instance of AppPackedLifecycleAccess, until LifecycleSingleHolder has been initialized. */
-    private static AppPackedLifecycleAccess TMP_LIFECYCLE_ACCESS;
-
-    /** A temporary instance of AppPackedUtilAccess, until UtilSingletonHolder has been initialized. */
-    private static AppPackedUtilAccess TMP_UTIL_ACCESS;
 
     /** Never instantiate */
     private SharedSecrets() {}
@@ -80,19 +63,6 @@ public final class SharedSecrets {
         return ExtensionSingletonHolder.SINGLETON;
     }
 
-    static <T extends SecretAccess> T get(Class<T> accessType, Class<?> initalizeClass) {
-        SecretAccess a = MAP.get(accessType);
-        if (a == null) {
-            throw new ExceptionInInitializerError("An instance of " + accessType + " has not been set");
-        }
-        try {
-            Class.forName(initalizeClass.getName(), true, initalizeClass.getClassLoader());
-        } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError(e); // Should not happen
-        }
-        return accessType.cast(a);
-    }
-
     public static <T extends SecretAccess> void initialize(Class<T> accessType, T access) {
         if (MAP.putIfAbsent(accessType, access) != null) {
             throw new ExceptionInInitializerError("An instance of " + accessType + " has already been set ");
@@ -117,6 +87,21 @@ public final class SharedSecrets {
         return LifecycleSingletonHolder.SINGLETON;
     }
 
+    private static <T extends SecretAccess> T singleton(Class<T> accessType, Class<?> initalizeClass) {
+        // Start by making sure the class is initialized
+        try {
+            Class.forName(initalizeClass.getName(), true, initalizeClass.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new ExceptionInInitializerError(e); // Should never happen
+        }
+
+        SecretAccess access = MAP.get(accessType);
+        if (access == null) {
+            throw new ExceptionInInitializerError("An instance of " + accessType + " has not been set");
+        }
+        return accessType.cast(access);
+    }
+
     /**
      * Returns an access object for app.packed.util.
      * 
@@ -126,136 +111,45 @@ public final class SharedSecrets {
         return UtilSingletonHolder.SINGLETON;
     }
 
-    /**
-     * Initializes {@link AppPackedContainerAccess} support.
-     * 
-     * @param access
-     *            the access object
-     */
-    public static void zet(AppPackedContainerAccess access) {
-        if (TMP_CONTAINER_ACCESS != null) {
-            throw new Error("Can only be initialized once");
-        }
-        TMP_CONTAINER_ACCESS = requireNonNull(access);
-    }
-
-    /**
-     * Initializes {@link AppPackedExtensionAccess} support.
-     * 
-     * @param access
-     *            the access object
-     */
-    public static void zet(AppPackedExtensionAccess access) {
-        if (TMP_EXTENSION_ACCESS != null) {
-            throw new Error("Can only be initialized once");
-        }
-        TMP_EXTENSION_ACCESS = requireNonNull(access);
-    }
-
-    /**
-     * Initializes {@link AppPackedInjectAccess} support.
-     * 
-     * @param access
-     *            the access object
-     */
-    public static void zet(AppPackedInjectAccess access) {
-        if (TMP_INJECT_ACCESS != null) {
-            throw new Error("Can only be initialized once");
-        }
-        TMP_INJECT_ACCESS = requireNonNull(access);
-    }
-
-    /**
-     * Initializes {@link AppPackedLifecycleAccess} support.
-     * 
-     * @param access
-     *            the access object
-     */
-    public static void zet(AppPackedLifecycleAccess access) {
-        if (TMP_LIFECYCLE_ACCESS != null) {
-            throw new Error("Can only be initialized once");
-        }
-        TMP_LIFECYCLE_ACCESS = requireNonNull(access);
-    }
-
-    /**
-     * Initializes {@link AppPackedUtilAccess} support.
-     * 
-     * @param access
-     *            the access object
-     */
-    public static void zet(AppPackedUtilAccess access) {
-        if (TMP_UTIL_ACCESS != null) {
-            throw new Error("Can only be initialized once");
-        }
-        TMP_UTIL_ACCESS = requireNonNull(access);
-    }
-
     /** Holder of the {@link AppPackedArtifactAccess} singleton. */
     private static class ArtifactSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedArtifactAccess SINGLETON = get(AppPackedArtifactAccess.class, ArtifactImage.class);
+        private static final AppPackedArtifactAccess SINGLETON = singleton(AppPackedArtifactAccess.class, ArtifactImage.class);
     }
 
     /** Holder of the {@link AppPackedContainerAccess} singleton. */
     private static class ContainerSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedContainerAccess SINGLETON;
-
-        static {
-            WireletList.of(); // Forces class initialization of WireletList which invokes zet()
-            SINGLETON = requireNonNull(SharedSecrets.TMP_CONTAINER_ACCESS, "internal error");
-        }
+        private static final AppPackedContainerAccess SINGLETON = singleton(AppPackedContainerAccess.class, WireletList.class);
     }
 
     /** Holder of the {@link AppPackedExtensionAccess} singleton. */
     private static class ExtensionSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedExtensionAccess SINGLETON;
-
-        static {
-            // TODO try an avoid constructing a new class
-            new Extension() {}; // Forces class initialization of Extension which invokes zet()
-            SINGLETON = requireNonNull(SharedSecrets.TMP_EXTENSION_ACCESS, "internal error");
-        }
+        private static final AppPackedExtensionAccess SINGLETON = singleton(AppPackedExtensionAccess.class, Extension.class);
     }
 
     /** Holder of the {@link AppPackedInjectAccess} singleton. */
     private static class InjectSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedInjectAccess SINGLETON;
-
-        static {
-            Factory.ofInstance("foo"); // Forces class initialization of Factory which invokes zet()
-            SINGLETON = requireNonNull(SharedSecrets.TMP_INJECT_ACCESS, "internal error");
-        }
+        private static final AppPackedInjectAccess SINGLETON = singleton(AppPackedInjectAccess.class, Factory.class);
     }
 
     /** Holder of the {@link AppPackedLifecycleAccess} singleton. */
     private static class LifecycleSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedLifecycleAccess SINGLETON;
-
-        static {
-            RunState.INITIALIZED.ordinal();// Forces class initialization of RunState which invokes zet()
-            SINGLETON = requireNonNull(SharedSecrets.TMP_LIFECYCLE_ACCESS, "internal error");
-        }
+        private static final AppPackedLifecycleAccess SINGLETON = singleton(AppPackedLifecycleAccess.class, RunState.class);
     }
 
     /** Holder of the {@link AppPackedUtilAccess} singleton. */
     private static class UtilSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedUtilAccess SINGLETON;
-
-        static {
-            TypeLiteral.of(Object.class); // Forces class initialization of TypeLiteral, which in turn will call zet()
-            SINGLETON = requireNonNull(SharedSecrets.TMP_UTIL_ACCESS, "internal error");
-        }
+        private static final AppPackedUtilAccess SINGLETON = singleton(AppPackedUtilAccess.class, TypeLiteral.class);
     }
 }

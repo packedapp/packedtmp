@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.Bundle;
@@ -58,10 +59,10 @@ import app.packed.util.Key;
 // InjectorContract.of(new Bundle());
 
 // ServiceContract
-public final class InjectorContract extends Contract {
+public final class ServiceContract extends Contract {
 
     /** A service contract that has no requirements and provides no services. */
-    public static final InjectorContract EMPTY = new InjectorContract(new Builder(), new HashSet<>());
+    public static final ServiceContract EMPTY = new ServiceContract(new Builder(), new HashSet<>());
 
     /** An immutable set of optional service keys. */
     private final Set<Key<?>> optional;
@@ -78,7 +79,7 @@ public final class InjectorContract extends Contract {
      * @param builder
      *            the builder to create a service contract from
      */
-    private InjectorContract(InjectorContract.Builder builder, HashSet<Key<?>> optional) {
+    private ServiceContract(ServiceContract.Builder builder, HashSet<Key<?>> optional) {
         HashSet<Key<?>> s = builder.requires;
         this.requires = s == null ? Set.of() : Set.copyOf(s);
 
@@ -92,7 +93,7 @@ public final class InjectorContract extends Contract {
     /** {@inheritDoc} */
     @Override
     protected boolean equalsTo(Contract other) {
-        InjectorContract sc = (InjectorContract) other;
+        ServiceContract sc = (ServiceContract) other;
         return optional.equals(sc.optional) && provides.equals(sc.provides) && requires.equals(sc.requires);
     }
 
@@ -115,7 +116,7 @@ public final class InjectorContract extends Contract {
      *            the older contract
      * @return whether or not this contract is fully backwards compatible with the other contract
      */
-    boolean isBackwardsCompatibleWith(InjectorContract other) {
+    boolean isBackwardsCompatibleWith(ServiceContract other) {
         requireNonNull(other, "other is null");
         if (!other.requires.containsAll(requires)) {
             return false;
@@ -156,29 +157,21 @@ public final class InjectorContract extends Contract {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("InjectorContract [");
-        boolean isFirst = true;
+        int count = (optional.isEmpty() ? 0 : 1) + (provides.isEmpty() ? 0 : 1) + (requires.isEmpty() ? 0 : 1);
+        if (count == 0) {
+            return "InjectorContract {}";
+        }
+        sb.append("InjectorContract {");
+        if (!requires.isEmpty()) {
+            sb.append("\n  requires : " + requires.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
+        }
         if (!optional.isEmpty()) {
-            sb.append("optional = ");
-            sb.append(optional);
-            isFirst = false;
+            sb.append("\n  requires optional: " + optional.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
         }
         if (!provides.isEmpty()) {
-            if (!isFirst) {
-                sb.append(", ");
-                isFirst = false;
-            }
-            sb.append("provides=");
-            sb.append(provides);
+            sb.append("\n  provides : " + provides.stream().map(e -> e.toString()).collect(Collectors.joining(", ")));
         }
-        if (!requires.isEmpty()) {
-            if (!isFirst) {
-                sb.append(", ");
-            }
-            sb.append("requires=");
-            sb.append(requires);
-        }
-        sb.append("]");
+        sb.append("\n}");
         return sb.toString();
     }
 
@@ -187,50 +180,50 @@ public final class InjectorContract extends Contract {
      * 
      * @return a new service contract builder
      */
-    public static InjectorContract.Builder builder() {
-        return new InjectorContract.Builder();
+    public static ServiceContract.Builder builder() {
+        return new ServiceContract.Builder();
     }
 
-    public static InjectorContract of(Bundle bundle) {
-        return BundleDescriptor.of(bundle).contracts().use(InjectorContract.class);
+    public static ServiceContract of(Bundle bundle) {
+        return BundleDescriptor.of(bundle).contracts().use(ServiceContract.class);
     }
 
-    public static InjectorContract of(ArtifactImage image) {
-        return BundleDescriptor.of(image).contracts().use(InjectorContract.class);
+    public static ServiceContract of(ArtifactImage image) {
+        return BundleDescriptor.of(image).contracts().use(ServiceContract.class);
     }
 
-    public static InjectorContract of(Consumer<? super InjectorContract.Builder> action) {
+    public static ServiceContract of(Consumer<? super ServiceContract.Builder> action) {
         requireNonNull(action, "action is null");
-        InjectorContract.Builder b = new InjectorContract.Builder();
+        ServiceContract.Builder b = new ServiceContract.Builder();
         action.accept(b);
         return b.build();
     }
 
-    static InjectorContract ofInjector(Injector injector) {
+    static ServiceContract ofInjector(Injector injector) {
         throw new UnsupportedOperationException();
     }
 
-    public static InjectorContract ofRequired(Class<?>... keys) {
+    public static ServiceContract ofRequired(Class<?>... keys) {
         return of(b -> List.of(keys).forEach(k -> b.addRequires(k)));
     }
 
-    public static InjectorContract ofRequired(Key<?>... keys) {
+    public static ServiceContract ofRequired(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }
 
-    public static InjectorContract ofServices(Class<?>... keys) {
+    public static ServiceContract ofServices(Class<?>... keys) {
         Builder b = builder();
         List.of(keys).forEach(k -> b.addProvides(k));
         return b.build();
     }
 
-    static InjectorContract ofServices(InjectorContract contract) {
+    static ServiceContract ofServices(ServiceContract contract) {
         // En contract, der kun inkludere provides services, men ikke requirements
         return contract;
     }
 
     /**
-     * A builder object used to create instances of {@link InjectorContract}.
+     * A builder object used to create instances of {@link ServiceContract}.
      * <p>
      * In addition to creating new contracts, this class also supports creating new contracts by transforming an existing
      * contracts using the xxx constructor.
@@ -258,7 +251,7 @@ public final class InjectorContract extends Contract {
          * @param contract
          *            the contract to create a contract builder builder from
          */
-        public Builder(InjectorContract contract) {
+        public Builder(ServiceContract contract) {
             requireNonNull(contract, "contract is null");
             requires = new HashSet<>(contract.requires);
         }
@@ -269,7 +262,7 @@ public final class InjectorContract extends Contract {
          *            the contract to remove
          * @return this builder
          */
-        public InjectorContract.Builder add(InjectorContract contract) {
+        public ServiceContract.Builder add(ServiceContract contract) {
             requireNonNull(contract, "contract is null");
             contract.optional.forEach(k -> addOptional(k));
             contract.provides.forEach(k -> addProvides(k));
@@ -277,7 +270,7 @@ public final class InjectorContract extends Contract {
             return this;
         }
 
-        public InjectorContract.Builder addOptional(Class<?> key) {
+        public ServiceContract.Builder addOptional(Class<?> key) {
             return addOptional(Key.of(key));
         }
 
@@ -288,7 +281,7 @@ public final class InjectorContract extends Contract {
          *            the key to add
          * @return this builder
          */
-        public InjectorContract.Builder addOptional(Key<?> key) {
+        public ServiceContract.Builder addOptional(Key<?> key) {
             requireNonNull(key, "key is null");
             HashSet<Key<?>> r = optional;
             if (r == null) {
@@ -298,11 +291,11 @@ public final class InjectorContract extends Contract {
             return this;
         }
 
-        public InjectorContract.Builder addProvides(Class<?> key) {
+        public ServiceContract.Builder addProvides(Class<?> key) {
             return addProvides(Key.of(key));
         }
 
-        public InjectorContract.Builder addProvides(Key<?> key) {
+        public ServiceContract.Builder addProvides(Key<?> key) {
             requireNonNull(key, "key is null");
             HashSet<Key<?>> r = provides;
             if (r == null) {
@@ -319,7 +312,7 @@ public final class InjectorContract extends Contract {
          *            the key to add
          * @return this builder
          */
-        public InjectorContract.Builder addRequires(Class<?> key) {
+        public ServiceContract.Builder addRequires(Class<?> key) {
             return addRequires(Key.of(key));
         }
 
@@ -330,7 +323,7 @@ public final class InjectorContract extends Contract {
          *            the key to add
          * @return this builder
          */
-        public InjectorContract.Builder addRequires(Key<?> key) {
+        public ServiceContract.Builder addRequires(Key<?> key) {
             requireNonNull(key, "key is null");
             HashSet<Key<?>> r = requires;
             if (r == null) {
@@ -350,9 +343,9 @@ public final class InjectorContract extends Contract {
          * @throws IllegalStateException
          *             if any keys have been registered both as optional and required
          */
-        public InjectorContract build() {
+        public ServiceContract build() {
             if ((optional == null || optional.isEmpty()) && (requires == null || requires.isEmpty()) && (provides == null || provides.isEmpty())) {
-                return InjectorContract.EMPTY;
+                return ServiceContract.EMPTY;
             }
 
             // Remove optional keys that are also required.
@@ -373,7 +366,7 @@ public final class InjectorContract extends Contract {
                     opt.removeAll(duplicates);
                 }
             }
-            return new InjectorContract(this, opt);
+            return new ServiceContract(this, opt);
         }
 
         /**
@@ -381,7 +374,7 @@ public final class InjectorContract extends Contract {
          *            the contract to remove
          * @return this builder
          */
-        public InjectorContract.Builder remove(InjectorContract contract) {
+        public ServiceContract.Builder remove(ServiceContract contract) {
             requireNonNull(contract, "contract is null");
             contract.optional.forEach(k -> removeOptional(k));
             contract.provides.forEach(k -> removeProvides(k));
@@ -389,7 +382,7 @@ public final class InjectorContract extends Contract {
             return this;
         }
 
-        public InjectorContract.Builder removeOptional(Class<?> key) {
+        public ServiceContract.Builder removeOptional(Class<?> key) {
             return removeOptional(Key.of(key));
         }
 
@@ -398,7 +391,7 @@ public final class InjectorContract extends Contract {
          *            the key to remove
          * @return this builder
          */
-        public InjectorContract.Builder removeOptional(Key<?> key) {
+        public ServiceContract.Builder removeOptional(Key<?> key) {
             requireNonNull(key, "key is null");
             if (optional != null) {
                 optional.remove(key);
@@ -406,7 +399,7 @@ public final class InjectorContract extends Contract {
             return this;
         }
 
-        public InjectorContract.Builder removeProvides(Class<?> key) {
+        public ServiceContract.Builder removeProvides(Class<?> key) {
             return removeProvides(Key.of(key));
         }
 
@@ -415,7 +408,7 @@ public final class InjectorContract extends Contract {
          *            the key to remove
          * @return this builder
          */
-        public InjectorContract.Builder removeProvides(Key<?> key) {
+        public ServiceContract.Builder removeProvides(Key<?> key) {
             requireNonNull(key, "key is null");
             if (provides != null) {
                 provides.remove(key);
@@ -423,7 +416,7 @@ public final class InjectorContract extends Contract {
             return this;
         }
 
-        public InjectorContract.Builder removeRequires(Class<?> key) {
+        public ServiceContract.Builder removeRequires(Class<?> key) {
             return removeRequires(Key.of(key));
         }
 
@@ -432,7 +425,7 @@ public final class InjectorContract extends Contract {
          *            the key to remove
          * @return this builder
          */
-        public InjectorContract.Builder removeRequires(Key<?> key) {
+        public ServiceContract.Builder removeRequires(Key<?> key) {
             requireNonNull(key, "key is null");
             if (requires != null) {
                 requires.remove(key);

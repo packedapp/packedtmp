@@ -22,7 +22,7 @@ import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
 
 /** A support class for calling package private methods in the app.packed.util package. */
-public interface AppPackedUtilAccess {
+public interface AppPackedUtilAccess extends SecretAccess {
 
     boolean isCanonicalized(TypeLiteral<?> typeLiteral);
 

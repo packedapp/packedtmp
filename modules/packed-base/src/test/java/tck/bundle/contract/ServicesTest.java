@@ -25,7 +25,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.contract.ContractSet;
 import app.packed.inject.InjectionExtension;
-import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
@@ -49,7 +49,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.use(InjectorContract.class);
+        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic).isNotNull();
         assertThat(ic).isSameAs(ic);
         assertThat(ic.services()).isEmpty();
@@ -70,7 +70,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.use(InjectorContract.class);
+        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.services()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.requires()).isEmpty();
@@ -88,7 +88,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.use(InjectorContract.class);
+        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.services()).isEmpty();
@@ -106,7 +106,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.use(InjectorContract.class);
+        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).isEmpty();
         assertThat(ic.services()).isEmpty();
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
@@ -126,7 +126,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.use(InjectorContract.class);
+        ServiceContract ic = c.use(ServiceContract.class);
         assertThat(ic.requires()).containsExactly(Key.of(A.class));
         assertThat(ic.optional()).isEmpty();
         assertThat(ic.services()).isEmpty();
@@ -145,7 +145,7 @@ public class ServicesTest {
             }
         });
 
-        InjectorContract ic = c.use(InjectorContract.class);
+        ServiceContract ic = c.use(ServiceContract.class);
 
         assertThat(ic.optional()).containsExactly(Key.of(A.class));
         assertThat(ic.requires()).containsExactly(Key.of(B.class));
