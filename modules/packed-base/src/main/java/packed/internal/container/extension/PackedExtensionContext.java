@@ -85,7 +85,7 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public void requireConfigurable() {
+    public void checkConfigurable() {
         if (!isConfigurable) {
             throw new IllegalStateException("This extension " + extension.getClass().getSimpleName() + " is no longer configurable");
         }

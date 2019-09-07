@@ -18,6 +18,7 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
@@ -142,6 +143,16 @@ class ComponentRule {
 
         // disableAnnotatedMethodHook(Main.class, String
         throw new UnsupportedOperationException();
+    }
+
+    protected final void disableMemberInjection(Class<? extends Member> memberType) {
+        //// Det burde vaere noget paa component....
+        // Ahh vi har instance of and types...
+        // architecture().disable(Inject.class)
+        // architecture().disable(Inject.class, Class<? extends Member> fieldOrMethod);
+        // // Field, Method, Member.class
+
+        // Kunne ogsaa lave en @Rules() man kunne smide paa bundles...
     }
 
     static ComponentRule disableAnnotatedMethodHook(Class<? extends Annotation> type, Object componentFilter) {

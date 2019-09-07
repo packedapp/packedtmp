@@ -17,8 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Member;
-
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
@@ -32,7 +30,6 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.access.AppPackedInjectAccess;
 import packed.internal.access.SharedSecrets;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.service.AtProvidesGroup;
@@ -85,7 +82,7 @@ public final class InjectionExtension extends Extension {
     /** The injector builder, initialized via {@link #onAdded()}. */
     private InjectorBuilder builder;
 
-    /** Should not be initialized by users. */
+    /** Should never be initialized by users. */
     InjectionExtension() {}
 
     /** {@inheritDoc} */
@@ -97,7 +94,6 @@ public final class InjectionExtension extends Extension {
     /**
      * Exports a service with the specified type.
      * 
-     * 
      * @param <T>
      *            the type of service to export
      * @param key
@@ -107,6 +103,21 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
+    }
+
+    /**
+     * @param <T>
+     *            the type of service the configuration creates
+     * @param configuration
+     *            the service to export
+     * @return a new service configuration object representing the exported service
+     * @throws IllegalArgumentException
+     *             if the specified configuration object was created by another injection extension instance .
+     */
+    public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
+        requireNonNull(configuration, "configuration is null");
+        checkConfigurable();
+        return builder.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -135,30 +146,15 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
-        requireConfigurable();
+        checkConfigurable();
         return builder.exports().export(key, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
-    }
-
-    /**
-     * @param <T>
-     *            the type of service the configuration creates
-     * @param configuration
-     *            the service to export
-     * @return a new service configuration object representing the exported service
-     * @throws IllegalArgumentException
-     *             if the specified configuration object was created by another injection extension instance .
-     */
-    public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
-        requireNonNull(configuration, "configuration is null");
-        requireConfigurable();
-        return builder.exports().export(configuration, captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
      * 
      */
     public void exportAll() {
-        requireConfigurable();
+        checkConfigurable();
         builder.exports().exportAll(captureStackFrame(InjectConfigSiteOperations.INJECTOR_EXPORT_SERVICE));
     }
 
@@ -172,25 +168,14 @@ public final class InjectionExtension extends Extension {
     // Problemet er dem der f.eks. har metoder
     public void manualRequirementsManagement() {
         // explicitRequirementsManagement
-        requireConfigurable();
+        checkConfigurable();
         builder.dependencies().manualRequirementsManagement();
-    }
-
-    protected final void disableMemberInjection(Class<? extends Member> memberType) {
-        //// Det burde vaere noget paa component....
-        // Ahh vi har instance of and types...
-        // architecture().disable(Inject.class)
-        // architecture().disable(Inject.class, Class<? extends Member> fieldOrMethod);
-        // // Field, Method, Member.class
-
-        // Kunne ogsaa lave en @Rules() man kunne smide paa bundles...
     }
 
     /** {@inheritDoc} */
     @Override
     protected void onAdded() {
-        builder = new InjectorBuilder(((PackedExtensionContext) context()).pcc);
-        builder.setContext(context());
+        builder = new InjectorBuilder(context());
     }
 
     /** {@inheritDoc} */
@@ -255,6 +240,7 @@ public final class InjectionExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
+        // configurability is checked by ComponentExtension
         return builder.provider().provideFactory(use(ComponentExtension.class).install(factory), factory, factory.factory.function);
     }
 
@@ -272,6 +258,7 @@ public final class InjectionExtension extends Extension {
      * @return a service configuration for the service
      */
     public <T> ComponentServiceConfiguration<T> provide(T instance) {
+        // configurability is checked by ComponentExtension
         return builder.provider().provideInstance(use(ComponentExtension.class).install(instance), instance);
     }
 
@@ -292,7 +279,7 @@ public final class InjectionExtension extends Extension {
         if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
             throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
         }
-        requireConfigurable();
+        checkConfigurable();
         builder.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL),
                 WireletList.of(wirelets));
     }
@@ -315,7 +302,7 @@ public final class InjectionExtension extends Extension {
      *            the key to add
      */
     public void require(Key<?> key) {
-        requireConfigurable();
+        checkConfigurable();
         builder.dependencies().require(ServiceDependency.of(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE));
     }
 
@@ -332,7 +319,7 @@ public final class InjectionExtension extends Extension {
     // Should be have varargs???, or as a minimum support method chaining
     // MethodChaining does not work with bundles...
     public void requireOptionally(Key<?> key) {
-        requireConfigurable();
+        checkConfigurable();
         builder.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 }

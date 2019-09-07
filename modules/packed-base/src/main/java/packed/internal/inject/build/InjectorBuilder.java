@@ -30,6 +30,7 @@ import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExportManager;
@@ -70,11 +71,12 @@ public final class InjectorBuilder {
     /**
      * Creates a new builder.
      * 
-     * @param pcc
-     *            the configuration of the container
+     * @param context
+     *            the extension context
      */
-    public InjectorBuilder(PackedContainerConfiguration pcc) {
-        this.pcc = requireNonNull(pcc);
+    public InjectorBuilder(ExtensionContext context) {
+        this.pcc = requireNonNull((PackedExtensionContext) context).pcc;
+        this.context = context;
     }
 
     public void addErrorMessage() {

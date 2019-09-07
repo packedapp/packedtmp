@@ -48,7 +48,7 @@ public interface ExtensionContext {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void requireConfigurable();
+    void checkConfigurable();
 
     /**
      * Returns an extension of the specified type.

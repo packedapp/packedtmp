@@ -54,7 +54,7 @@ public class BasicExtensionTest extends AbstractArtifactTest {
         public CallingMethodsFromTheConstructor() {
             String msg = "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization";
             assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
-            assertThatIllegalStateException().isThrownBy(() -> requireConfigurable()).withMessage(msg);
+            assertThatIllegalStateException().isThrownBy(() -> checkConfigurable()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.class)).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> wirelets()).withMessage(msg);
         }

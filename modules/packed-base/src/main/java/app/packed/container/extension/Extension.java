@@ -126,7 +126,7 @@ public abstract class Extension {
         // Any wirelets specified when initializing an image is not included...
         // Or is this controllable from ContainerConfiguration????
         ArtifactBuildContext c = context().buildContext();
-        requireConfigurable();
+        checkConfigurable();
         return c;
     }
 
@@ -161,6 +161,18 @@ public abstract class Extension {
         Class<?> c = f.getDeclaringClass();
         return Extension.class.isAssignableFrom(c)
                 || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && ContainerSource.class.isAssignableFrom(c));
+    }
+
+    /**
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * <p>
+     * This method delegates to {@link ExtensionContext#checkConfigurable()}.
+     * 
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
+     */
+    protected final void checkConfigurable() {
+        context().checkConfigurable();
     }
 
     /**
@@ -235,18 +247,6 @@ public abstract class Extension {
 
     protected final void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
         context().putIntoInstantiationContext(context, sidecar);
-    }
-
-    /**
-     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
-     * <p>
-     * This method delegates to {@link ExtensionContext#requireConfigurable()}.
-     * 
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
-     */
-    protected final void requireConfigurable() {
-        context().requireConfigurable();
     }
 
     final void runWithLookup(Lookup lookup, Runnable runnable) {
