@@ -21,7 +21,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionPipeline;
 import app.packed.container.extension.ExtensionWirelet;
-import packed.internal.inject.util.stuff.TypeVariableExtractor;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  *

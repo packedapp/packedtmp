@@ -25,7 +25,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Injector;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.inject.util.stuff.TypeVariableExtractor;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and

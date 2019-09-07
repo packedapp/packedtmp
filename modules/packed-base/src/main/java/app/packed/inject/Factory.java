@@ -44,8 +44,8 @@ import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
-import packed.internal.inject.util.stuff.TypeVariableExtractor;
 import packed.internal.util.TypeUtil;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * Factories are used for creating new instances of a particular type.

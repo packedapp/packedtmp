@@ -40,7 +40,7 @@ import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * An {@link OnHookAggregateBuilderModel} wraps
@@ -165,6 +165,9 @@ final class OnHookAggregateBuilderModel {
 
     private static class Builder {
 
+        /** An type variable extractor to extract the type of pipeline the extension wirelet needs. */
+        private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookAggregateBuilder.class);
+
         private final Class<? extends HookAggregateBuilder<?>> aggregatorType;
 
         final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
@@ -180,7 +183,7 @@ final class OnHookAggregateBuilderModel {
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookAggregateBuilder<?>> aggregatorType) {
             this.aggregatorType = requireNonNull(aggregatorType);
-            this.resultType = (Class) TypeVariableExtractorUtil.findTypeParameterFromInterface(aggregatorType, HookAggregateBuilder.class, 0);
+            this.resultType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(aggregatorType);
         }
 
         private void addHookMethod(Lookup lookup, Method method, Parameter p) {

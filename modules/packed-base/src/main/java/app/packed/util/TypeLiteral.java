@@ -32,7 +32,7 @@ import app.packed.reflect.ParameterDescriptor;
 import packed.internal.access.AppPackedUtilAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
@@ -293,7 +293,7 @@ public abstract class TypeLiteral<T> {
      *             if the extraction could not be performed for some other reason
      */
     public static <T> TypeLiteral<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        Type t = TypeVariableExtractorUtil.findTypeParameterUnsafe(subClass, superClass, parameterIndex);
+        Type t = TypeVariableExtractor.of(superClass, parameterIndex).extract(subClass);
         return new CanonicalizedTypeLiteral<>(t);
     }
 

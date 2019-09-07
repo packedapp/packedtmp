@@ -25,7 +25,7 @@ import app.packed.container.extension.ExtensionWirelet;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletModel;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  *
@@ -42,15 +42,18 @@ import packed.internal.util.TypeVariableExtractorUtil;
 // Should we copy info into new context.. Or check recursively
 public class WireletContext {
 
+    /** An type variable extractor to extract the type of pipeline the extension wirelet needs. */
+    private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.class);
+
     private static final ClassValue<Class<? extends Extension>> WIRELET_TO_EXTENSION = new ClassValue<>() {
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
         protected Class<? extends Extension> computeValue(Class<?> type) {
-            Type t = TypeVariableExtractorUtil.findTypeParameterUnsafe((Class) type, ExtensionWirelet.class, 0);
+            Type t = ARTIFACT_DRIVER_TV_EXTRACTOR.extract(type);
             if (!(t instanceof Class)) {
                 throw new IllegalStateException();
             }
+            @SuppressWarnings("unchecked")
             Class<? extends Extension> extensionType = (Class<? extends Extension>) t;
             if (extensionType.getModule() != type.getModule()) {
                 throw new IllegalArgumentException("The wirelet and the extension must be defined in the same module, however extension "

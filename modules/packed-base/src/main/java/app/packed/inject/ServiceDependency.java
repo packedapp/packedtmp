@@ -47,7 +47,7 @@ import packed.internal.inject.util.QualifierHelper;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
@@ -55,6 +55,7 @@ import packed.internal.util.TypeVariableExtractorUtil;
  * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
  * instance of {@link FieldDescriptor}. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
+// Declaring class for use with Type Variables???
 public final class ServiceDependency {
 
     /** A cache of service dependencies. */
@@ -329,7 +330,7 @@ public final class ServiceDependency {
     }
 
     public static <T> ServiceDependency fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
-        Type type = TypeVariableExtractorUtil.findTypeParameterUnsafe(actualClass, baseClass, baseClassTypeVariableIndex);
+        Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
