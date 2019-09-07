@@ -24,11 +24,11 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.FieldOperator;
 import app.packed.container.extension.HookAggregateBuilder;
 import app.packed.container.extension.HookApplicator;
-import app.packed.container.extension.MethodOperator;
 import app.packed.container.extension.OnHook;
+import app.packed.reflect.FieldOperator;
+import app.packed.reflect.MethodOperator;
 
 /**
  *

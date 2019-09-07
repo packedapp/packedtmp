@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Supplier;
 
-import app.packed.container.extension.FieldOperator;
+import app.packed.reflect.FieldOperator;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 

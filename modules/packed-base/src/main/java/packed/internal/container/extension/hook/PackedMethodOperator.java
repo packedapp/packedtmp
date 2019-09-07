@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import app.packed.container.extension.MethodOperator;
+import app.packed.reflect.MethodOperator;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 

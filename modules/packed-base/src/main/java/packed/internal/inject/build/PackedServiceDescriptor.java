@@ -77,6 +77,6 @@ final class PackedServiceDescriptor implements ServiceDescriptor {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "ServiceDescriptor[key=\" + key + \", configSite=" + configSite + ", description=" + description + "]";
+        return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + ", description=" + description + "]";
     }
 }

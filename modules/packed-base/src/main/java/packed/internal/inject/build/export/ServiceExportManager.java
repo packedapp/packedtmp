@@ -220,14 +220,13 @@ public final class ServiceExportManager {
                 }
             }
         }
-
         // Finally, make the resolved exports visible.
         this.resolvedExports = resolvedExports;
     }
 
     public ServiceNodeMap resolvedServiceMap() {
         ServiceNodeMap r = resolvedServiceMap;
-        if (r == null) {
+        if (r != null) {
             r = resolvedServiceMap = ServiceNodeMap.of(resolvedExports);
         }
         return r;

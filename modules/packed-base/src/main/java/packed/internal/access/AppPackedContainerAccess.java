@@ -20,6 +20,5 @@ import app.packed.container.ContainerConfiguration;
 
 /** A support class for calling package private methods in the app.packed.container package. */
 public interface AppPackedContainerAccess {
-
     void doConfigure(Bundle bundle, ContainerConfiguration configuration);
 }

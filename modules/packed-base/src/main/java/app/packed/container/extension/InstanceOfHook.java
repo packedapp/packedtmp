@@ -18,6 +18,8 @@ package app.packed.container.extension;
 /**
  * Represent an annotated field on a component instance.
  */
+// Det skal bruges som plugin arkitektur.
+// Hvordan virker det paa kryds af containere???
 public interface InstanceOfHook<T> {
 
     /**

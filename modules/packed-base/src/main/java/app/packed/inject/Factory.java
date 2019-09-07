@@ -208,14 +208,14 @@ public class Factory<T> {
      * 
      * @param <R>
      *            the type of result to map to
+     * @param key
+     *            the type of the mapped value
      * @param mapper
      *            the mapper used to map the result
-     * @param type
-     *            the type of the mapped value
      * @return a new mapped factory
      */
-    public final <R> Factory<R> mapTo(Function<? super T, R> mapper, Class<R> type) {
-        return mapTo(mapper, TypeLiteral.of(type));
+    public final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
+        return mapTo(TypeLiteral.of(key), mapper);
     }
 
     /**
@@ -223,13 +223,13 @@ public class Factory<T> {
      * 
      * @param <R>
      *            the type of result to map to
-     * @param mapper
-     *            the mapper used to map the result
      * @param type
      *            the type of the mapped value
+     * @param mapper
+     *            the mapper used to map the result
      * @return a new mapped factory
      */
-    public final <R> Factory<R> mapTo(Function<? super T, R> mapper, TypeLiteral<R> type) {
+    public final <R> Factory<R> mapTo(TypeLiteral<R> type, Function<? super T, ? extends R> mapper) {
         MappingFactoryHandle<T, R> f = new MappingFactoryHandle<>(type, factory.function, mapper);
         return new Factory<>(new FactorySupport<>(f, factory.dependencies));
     }

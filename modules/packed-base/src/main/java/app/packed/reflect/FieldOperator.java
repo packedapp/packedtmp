@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.reflect;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -33,6 +33,7 @@ import packed.internal.container.extension.hook.PackedFieldOperator;
  * This interface is not meant to be
  */
 // An operator that when applied ....
+// Should be an abstract class....
 public interface FieldOperator<T> {
 
     /**

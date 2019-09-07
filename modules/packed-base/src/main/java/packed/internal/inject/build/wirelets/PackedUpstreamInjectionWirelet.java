@@ -70,11 +70,13 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
         final Function<?, ?> function;
         final Key<?> frpm;
         final Key<?> to;
+        final boolean extract;
 
-        public ApplyFunctionUpstream(Key<?> key, Key<?> to, Function<?, ?> function) {
+        public ApplyFunctionUpstream(Key<?> key, Key<?> to, Function<?, ?> function, boolean extract) {
             this.frpm = requireNonNull(key, "key is null");
             this.function = requireNonNull(function);
             this.to = requireNonNull(to);
+            this.extract = extract;
         }
 
         /** {@inheritDoc} */
@@ -85,7 +87,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
                 throw new RuntimeException();
             }
             // We map, not alias...
-            BuildEntry<?> e = ii.entries.remove(frpm);
+            BuildEntry<?> e = extract ? ii.entries.get(frpm) : ii.entries.remove(frpm);
             if (e == null) {
                 // FAIL -> WireletProcessingException????
                 throw new RuntimeException();

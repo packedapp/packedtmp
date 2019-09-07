@@ -29,6 +29,73 @@ import java.util.StringJoiner;
  */
 public class TypeVariableExtractorUtil {
 
+    public static <T> Type findTypeParameterFromInterface(Class<? extends T> childClass, Class<T> interfaceClass, int typeVariableIndexOnBaseClass) {
+        // This method works by first recursively calling all the way down to the first class that extends baseClass.
+        // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
+
+        if (!interfaceClass.isAssignableFrom(childClass)) {
+            throw new IllegalArgumentException(StringFormatter.format(childClass) + " does not implement " + StringFormatter.format(interfaceClass));
+        }
+        for (Type t : childClass.getGenericInterfaces()) {
+            if (t instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) t;
+                if (pt.getRawType() == interfaceClass) {
+                    Type[] typeArguments = pt.getActualTypeArguments();
+                    return typeArguments[typeVariableIndexOnBaseClass];
+                }
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    // This class should be called from places where baseClass is a guaranteed super class of child class, and type variable
+    // index is guaranteed valid.
+    public static <T> Type findTypeParameterFromSuperClass(Class<? extends T> childClass, Class<T> baseClass, int typeVariableIndexOnBaseClass) {
+        // This method works by first recursively calling all the way down to the first class that extends baseClass.
+        // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
+
+        if (baseClass == childClass.getSuperclass()) {
+            return findTypeParameterFromSuperClass0(baseClass, childClass, typeVariableIndexOnBaseClass);
+        }
+        @SuppressWarnings("unchecked")
+        Type pp = findTypeParameterFromSuperClass((Class<? extends T>) childClass.getSuperclass(), baseClass, typeVariableIndexOnBaseClass);
+        if (pp instanceof TypeVariable) {
+            TypeVariable<?>[] tvs = childClass.getSuperclass().getTypeParameters();
+            for (int i = 0; i < tvs.length; i++) {
+                if (tvs[i].equals(pp)) {
+                    return findTypeParameterFromSuperClass0(baseClass, childClass, i);
+                }
+            }
+        }
+        return pp;
+    }
+
+    /**
+     * A helper method for {@link #findTypeParameterFromSuperClass(Class, Class, int)}.
+     * 
+     * @param baseClass
+     *            the child class
+     * @param superClass
+     *            the super class
+     * @param index
+     *            the index of type parameter in superClass
+     * @return the resolved type parameter
+     */
+    private static Type findTypeParameterFromSuperClass0(Class<?> baseClass, Class<?> superClass, int index) {
+        Type t = superClass.getGenericSuperclass();
+        if (!(t instanceof ParameterizedType)) {
+            String name = superClass.getSuperclass().getTypeParameters()[index].getName();
+            StringJoiner sj = new StringJoiner(", ", baseClass.getSimpleName() + "<", ">");
+            for (Type ty : baseClass.getTypeParameters()) {
+                sj.add(formatSimple(ty));
+            }
+            // TODO this is not for Factory0
+            throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
+        }
+        ParameterizedType pt = (ParameterizedType) t;
+        return pt.getActualTypeArguments()[index];
+    }
+
     public static <T> Type findTypeParameterUnsafe(Class<? extends T> childClass, Class<T> baseClass, int typeVariableIndexOnBaseClass) {
         requireNonNull(baseClass, "baseClass is null");
         requireNonNull(childClass, "childClass is null");
@@ -57,72 +124,5 @@ public class TypeVariableExtractorUtil {
         }
 
         return findTypeParameterFromSuperClass(childClass, baseClass, typeVariableIndexOnBaseClass);
-    }
-
-    // This class should be called from places where baseClass is a guaranteed super class of child class, and type variable
-    // index is guaranteed valid.
-    public static <T> Type findTypeParameterFromSuperClass(Class<? extends T> childClass, Class<T> baseClass, int typeVariableIndexOnBaseClass) {
-        // This method works by first recursively calling all the way down to the first class that extends baseClass.
-        // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
-
-        if (baseClass == childClass.getSuperclass()) {
-            return findTypeParameterFromSuperClass0(baseClass, childClass, typeVariableIndexOnBaseClass);
-        }
-        @SuppressWarnings("unchecked")
-        Type pp = findTypeParameterFromSuperClass((Class<? extends T>) childClass.getSuperclass(), baseClass, typeVariableIndexOnBaseClass);
-        if (pp instanceof TypeVariable) {
-            TypeVariable<?>[] tvs = childClass.getSuperclass().getTypeParameters();
-            for (int i = 0; i < tvs.length; i++) {
-                if (tvs[i].equals(pp)) {
-                    return findTypeParameterFromSuperClass0(baseClass, childClass, i);
-                }
-            }
-        }
-        return pp;
-    }
-
-    public static <T> Type findTypeParameterFromInterface(Class<? extends T> childClass, Class<T> interfaceClass, int typeVariableIndexOnBaseClass) {
-        // This method works by first recursively calling all the way down to the first class that extends baseClass.
-        // And then we keep going finding out which of the actual type parameters matches the super classes type parameters
-
-        if (!interfaceClass.isAssignableFrom(childClass)) {
-            throw new IllegalArgumentException(StringFormatter.format(childClass) + " does not implement " + StringFormatter.format(interfaceClass));
-        }
-        for (Type t : childClass.getGenericInterfaces()) {
-            if (t instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) t;
-                if (pt.getRawType() == interfaceClass) {
-                    Type[] typeArguments = pt.getActualTypeArguments();
-                    return typeArguments[typeVariableIndexOnBaseClass];
-                }
-            }
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * A helper method for {@link #findTypeParameterFromSuperClass(Class, Class, int)}.
-     * 
-     * @param baseClass
-     *            the child class
-     * @param superClass
-     *            the super class
-     * @param index
-     *            the index of type parameter in superClass
-     * @return the resolved type parameter
-     */
-    private static Type findTypeParameterFromSuperClass0(Class<?> baseClass, Class<?> superClass, int index) {
-        Type t = superClass.getGenericSuperclass();
-        if (!(t instanceof ParameterizedType)) {
-            String name = superClass.getSuperclass().getTypeParameters()[index].getName();
-            StringJoiner sj = new StringJoiner(", ", baseClass.getSimpleName() + "<", ">");
-            for (Type ty : baseClass.getTypeParameters()) {
-                sj.add(formatSimple(ty));
-            }
-            // TODO this is not for Factory0
-            throw new IllegalArgumentException("Cannot determine type variable <" + name + "> for " + sj.toString() + " on class " + format(superClass));
-        }
-        ParameterizedType pt = (ParameterizedType) t;
-        return pt.getActualTypeArguments()[index];
     }
 }

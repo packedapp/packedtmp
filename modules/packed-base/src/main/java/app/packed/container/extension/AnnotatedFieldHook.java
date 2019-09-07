@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
 import app.packed.reflect.FieldDescriptor;
+import app.packed.reflect.FieldOperator;
 import app.packed.reflect.UncheckedIllegalAccessException;
 
 /**

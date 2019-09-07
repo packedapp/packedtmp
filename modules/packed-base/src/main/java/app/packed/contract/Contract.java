@@ -73,7 +73,7 @@ public abstract class Contract {
     public static <T extends Contract> T use(Contract c, Class<T> contractType) {
         T t = c.get0(contractType);
         if (t == null) {
-            throw new Error();
+            throw new Error("Could not find contract, type = " + contractType);
         }
         return t;
     }

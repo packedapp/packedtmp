@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import app.packed.container.extension.FieldOperator;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.container.extension.hook.PackedFieldOperator;

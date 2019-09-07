@@ -33,6 +33,7 @@ import app.packed.contract.ContractSet;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.access.SharedSecrets;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -180,6 +181,12 @@ public class BundleDescriptor {
         System.out.println(toString());
     }
 
+    public String toJSON() {
+        // Kan maaske have noget funktionality til at lave diffs....
+        // Er nok mere vigtig paa contracts...
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public final String toString() {
@@ -209,6 +216,15 @@ public class BundleDescriptor {
         return descriptor == null ? Optional.empty() : descriptor.version();
     }
 
+    public static ContractSet constractOf(BaseBundle bundle) {
+        return BundleDescriptor.of(bundle).contracts();
+    }
+
+    // Or just have a descriptor() on ContainerImage();
+    public static BundleDescriptor of(ArtifactImage image) {
+        return of((ContainerSource) image);
+    }
+
     /**
      * Returns a bundle descriptor for the specified bundle.
      *
@@ -222,27 +238,26 @@ public class BundleDescriptor {
         return of((ContainerSource) bundle);
     }
 
-    public String toJSON() {
-        // Kan maaske have noget funktionality til at lave diffs....
-        // Er nok mere vigtig paa contracts...
-        throw new UnsupportedOperationException();
-    }
-
-    public static ContractSet constractOf(BaseBundle bundle) {
-        return BundleDescriptor.of(bundle).contracts();
-    }
-
-    // Or just have a descriptor() on ContainerImage();
-    public static BundleDescriptor of(ArtifactImage image) {
-        return of((ContainerSource) image);
-    }
-
+    @SuppressWarnings("unchecked")
     private static BundleDescriptor of(ContainerSource source) {
         requireNonNull(source, "source is null");
-        Bundle bundle = (Bundle) source;
         PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, source);
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
-        conf.buildDescriptor(builder);
+        Class<? extends Bundle> bundleType;
+        boolean isImage;
+        if (source instanceof Bundle) {
+            bundleType = (Class<? extends Bundle>) source.getClass();
+            isImage = false;
+            conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, source);
+        } else if (source instanceof ArtifactImage) {
+            ArtifactImage img = (ArtifactImage) source;
+            bundleType = img.sourceType();
+            isImage = true;
+            conf = SharedSecrets.artifact().getConfiguration(img);
+        } else {
+            throw new IllegalArgumentException();
+        }
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundleType);
+        conf.buildDescriptor(builder, isImage);
         return builder.build();
     }
     // /**
@@ -281,14 +296,21 @@ public class BundleDescriptor {
         /** The bundleType */
         private final Class<? extends Bundle> bundleType;
 
+        private IdentityHashMap<Class<? extends Contract>, Contract> contracts = new IdentityHashMap<>();
+
         private String name;
 
         private Map<Key<?>, ServiceDescriptor> services;
 
-        private IdentityHashMap<Class<? extends Contract>, Contract> contracts = new IdentityHashMap<>();
-
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");
+        }
+
+        public void addContract(Contract contract) {
+            requireNonNull(contract, "contract is null");
+            if (contracts.putIfAbsent(contract.getClass(), contract) != null) {
+                throw new IllegalStateException("A contract of the specified type has already been added, type " + contract.getClass());
+            }
         }
 
         public Builder addServiceDescriptor(ServiceDescriptor descriptor) {
@@ -299,13 +321,6 @@ public class BundleDescriptor {
             }
             s.put(descriptor.key(), descriptor); // Do we want a defensive copy???
             return this;
-        }
-
-        public void addContract(Contract contract) {
-            requireNonNull(contract, "contract is null");
-            if (contracts.putIfAbsent(contract.getClass(), contract) != null) {
-                throw new IllegalStateException("A contract of the specified type has already been added, type " + contract.getClass());
-            }
         }
 
         public BundleDescriptor build() {

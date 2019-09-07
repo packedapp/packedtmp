@@ -25,7 +25,13 @@ import packed.internal.container.extension.PackedExtensionContext;
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess {
 
-    void buildBundle(Extension extension, BundleDescriptor.Builder builder);
+    /**
+     * @param receiver
+     *            the extension on which
+     * @param builder
+     *            the builder
+     */
+    void buildBundle(Extension receiver, BundleDescriptor.Builder builder);
 
     /**
      * Initializes the extension.

@@ -35,12 +35,13 @@ public abstract class FieldAndMethodProcessor {
     private static final HashSet<Package> PKG = new HashSet<>();
 
     public final void process(Class<?> cl) {
-        // Step 1, find all public methods (including default methods)
-        HashMap<Key, HashSet<Package>> types = new HashMap<>();
+        // Step 1, find all public methods, this will include all default methods
+        HashMap<Entry, HashSet<Package>> types = new HashMap<>();
         for (Method m : cl.getMethods()) {
+            // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
-                processMethod(m);
-                types.put(new Key(m), PKG);
+                processMethod(m); // move this to step 2???
+                types.put(new Entry(m), PKG);
             }
         }
 
@@ -56,7 +57,7 @@ public abstract class FieldAndMethodProcessor {
                 if (Modifier.isStatic(mod)) {
                     if (c == cl && !Modifier.isPublic(mod)) { // we have already processed public static methods
                         // only include static methods in the top level class
-                        // We do this, because I'm it would be strange to include
+                        // We do this, because it would be strange to include
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
                         // if we do not include static methods on interfaces.
@@ -67,19 +68,19 @@ public abstract class FieldAndMethodProcessor {
                     case Modifier.PUBLIC:
                         continue; // we have already added the method in the first step
                     default: // default access
-                        HashSet<Package> pkg = types.computeIfAbsent(new Key(m), key -> new HashSet<>());
+                        HashSet<Package> pkg = types.computeIfAbsent(new Entry(m), key -> new HashSet<>());
                         if (pkg != PKG && pkg.add(c.getPackage())) {
                             break;
                         } else {
                             continue;
                         }
                     case Modifier.PROTECTED:
-                        if (types.putIfAbsent(new Key(m), PKG) != null) {
+                        if (types.putIfAbsent(new Entry(m), PKG) != null) {
                             continue;
                         }
                         // otherwise fall-through
                     case Modifier.PRIVATE:
-                        // Never overridden
+                        // Private methods are never overridden
                     }
                     processMethod(m);
                 }
@@ -87,16 +88,22 @@ public abstract class FieldAndMethodProcessor {
         }
     }
 
-    protected abstract void processField(Field f);
+    /**
+     * Processes a field.
+     * 
+     * @param field
+     *            the field to process
+     */
+    protected abstract void processField(Field field);
 
     protected abstract void processMethod(Method method);
 
-    private static final class Key {
+    private static final class Entry {
         private final Class<?>[] args;
         private final int hash;
         private final String name;
 
-        Key(Method m) {
+        Entry(Method m) {
             this.name = m.getName();
             this.args = m.getParameterTypes();
             this.hash = name.hashCode() ^ Arrays.hashCode(args);
@@ -105,9 +112,12 @@ public abstract class FieldAndMethodProcessor {
         /** {@inheritDoc} */
         @Override
         public boolean equals(Object obj) {
-            Key k = (Key) obj;
-            // name is always interned so just use ==
-            return name == k.name && Arrays.equals(args, k.args);
+            if (obj instanceof Entry) {
+                Entry k = (Entry) obj;
+                // name is always interned so just use ==
+                return name == k.name && Arrays.equals(args, k.args);
+            }
+            return false;
         }
 
         /** {@inheritDoc} */

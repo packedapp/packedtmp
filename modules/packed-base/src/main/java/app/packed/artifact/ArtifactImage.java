@@ -27,6 +27,8 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
+import packed.internal.access.AppPackedArtifactAccess;
+import packed.internal.access.SharedSecrets;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.container.NonInstantiatingArtifactDriver;
@@ -64,14 +66,25 @@ public final class ArtifactImage implements ContainerSource {
 
     WireletContext wl;
 
+    static {
+        SharedSecrets.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
+
+            /** {@inheritDoc} */
+            @Override
+            public PackedContainerConfiguration getConfiguration(ArtifactImage image) {
+                return image.containerConfiguration;
+            }
+        });
+    }
+
     /**
      * Creates a new image from the specified configuration.
      * 
      * @param containerConfiguration
      *            the configuration this image will wrap
      */
-    private ArtifactImage(PackedContainerConfiguration containerConfiguration) {
-        this(containerConfiguration, WireletList.of());
+    private ArtifactImage(PackedContainerConfiguration containerConfiguration, Class<? extends ContainerSource> containerSource) {
+        this(containerConfiguration, WireletList.of(), containerSource);
     }
 
     /**
@@ -82,9 +95,10 @@ public final class ArtifactImage implements ContainerSource {
      * @param wirelets
      *            any wirelets for the image configuration or artifact instantiation
      */
-    private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletList wirelets) {
+    private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletList wirelets, Class<? extends ContainerSource> containerSource) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
         this.wirelets = requireNonNull(wirelets);
+        this.sourceType = requireNonNull(containerSource);
     }
 
     /**
@@ -140,7 +154,7 @@ public final class ArtifactImage implements ContainerSource {
      */
     public ArtifactImage prefixWith(Wirelet... wirelets) {
         WireletList wl = this.wirelets.plus(wirelets);
-        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl);
+        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl, sourceType);
     }
 
     /**
@@ -152,8 +166,9 @@ public final class ArtifactImage implements ContainerSource {
      * @return the original source type of this image
      */
     // sourceType?? bundleType.. Igen kommer lidt an paa den DynamicContainerSource....
+    @SuppressWarnings("unchecked")
     public Class<? extends Bundle> sourceType() {
-        throw new UnsupportedOperationException();
+        return (Class<? extends Bundle>) sourceType;
     }
 
     public ComponentStream stream() {
@@ -178,8 +193,10 @@ public final class ArtifactImage implements ContainerSource {
         }
         // Wirelet are added to the container configuration, and not the image
         PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
-        return new ArtifactImage(c.doBuild());
+        return new ArtifactImage(c.doBuild(), source.getClass());
     }
+
+    private final Class<? extends ContainerSource> sourceType;
 }
 
 /** An dummy artifact driver for creating artifact images. */

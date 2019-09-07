@@ -24,8 +24,8 @@ import java.lang.reflect.Modifier;
 
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookApplicator;
-import app.packed.container.extension.MethodOperator;
 import app.packed.reflect.MethodDescriptor;
+import app.packed.reflect.MethodOperator;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentModel;
 

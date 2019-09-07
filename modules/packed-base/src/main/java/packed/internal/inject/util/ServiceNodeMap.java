@@ -36,7 +36,7 @@ import packed.internal.inject.ServiceEntry;
  */
 public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
 
-    private final LinkedHashMap<Key<?>, ServiceEntry<?>> nodes = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceEntry<?>> nodes = new LinkedHashMap<>();
 
     /** Any parent this node map might have */
     @Nullable

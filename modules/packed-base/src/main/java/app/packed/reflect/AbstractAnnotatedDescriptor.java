@@ -51,6 +51,7 @@ public abstract class AbstractAnnotatedDescriptor implements AnnotatedElement {
      */
     AbstractAnnotatedDescriptor(AnnotatedElement element) {
         this.element = element;
+        // I think we want to lazy initialize this....
         this.annotations = element.getAnnotations();
     }
 

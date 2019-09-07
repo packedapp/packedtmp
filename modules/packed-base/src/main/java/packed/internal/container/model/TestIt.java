@@ -15,21 +15,33 @@
  */
 package packed.internal.container.model;
 
-import static app.packed.inject.ServiceWirelets.mapUpstream;
-import static app.packed.inject.ServiceWirelets.peekUpstream;
-
 import app.packed.app.App;
 import app.packed.app.AppBundle;
+import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Inject;
 import app.packed.inject.Injector;
-import app.packed.util.Key;
+import app.packed.inject.InjectorContract;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
  */
 public class TestIt extends AppBundle {
+
+    static Bundle b() {
+        return new BaseBundle() {
+            @Override
+            protected void configure() {
+                provide("foob");
+                provide(-123L);
+                provide((short) -123L);
+                exportAll();
+            }
+        };
+    }
 
     static final Injector INJ = Injector.configure(c -> {
         c.provide("foo123");
@@ -39,26 +51,28 @@ public class TestIt extends AppBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        exportAll();
+        System.out.println(InjectorContract.of(b()));
 
-        Factory<Integer> ff = Factory.ofInstance("122323323").mapTo(e -> e.length(), Integer.class);
+        exportAll(); // <- we don't want this config site.... Man this is annoying
 
-        Wirelet w = mapUpstream(Key.of(String.class), Key.of(Short.class), s -> (short) s.length());
-        provideAll(INJ, peekUpstream(e -> System.out.println("Adding " + e.key())), w, peekUpstream(e -> System.out.println("Importing " + e.key())));
-
+        Factory<?> ff = Factory.ofInstance("122323323").mapTo(Integer.class, e -> e.length());
         provide(Doo.class);
         provide(ff);
+
+        Wirelet w1 = ServiceWirelets.extractUpstream(String.class, Short.class, s -> (short) s.length());
+
+        // provideAll(INJ, peekUpstream(e -> System.out.println("Adding " + e.key())), w1, peekUpstream(e ->
+        // System.out.println("Importing " + e.key())));
 
     }
 
     public static void main(String[] args) {
-
-        try (App a = App.of(new TestIt(), peekUpstream(e -> {}))) {
+        try (App a = App.of(new TestIt() /* , peekUpstream(e -> {})) */)) {
             System.out.println("");
+
             a.injector().services().forEach(e -> System.out.println(e));
 
-            System.out.println(a.injector().use(Short.class));
-
+            System.out.println("MAH");
             // System.out.println(a.use(Doo.class).foo);
         }
     }

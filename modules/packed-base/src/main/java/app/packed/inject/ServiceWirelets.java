@@ -37,12 +37,65 @@ public final class ServiceWirelets {
     // restrict optional services going in (some contract????) Bare besvaereligt at lave negative contracter.
     // Med mindre vi arbejder med commotative, associative osv. kontrakter...
 
-    public static <T> Wirelet provide(Factory0<T> factory) {
+    public static <F, T> Wirelet extractUpstream(Class<F> fromKey, Class<T> toKey, Function<? super F, ? extends T> mapper) {
+        return extractUpstream(Key.of(fromKey), Key.of(toKey), mapper);
+    }
+
+    public static <F, T> Wirelet extractUpstream(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
+        return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper, true);
+    }
+
+    public static void main(String[] args) {
+        provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
+
+        provideMapped(Long.class, Integer.class, e -> e.intValue());
+
+        provideMapped(Key.of(Long.class), Key.of(Integer.class), e -> e.intValue());
+    }
+
+    public static <F, T> Wirelet mapUpstream(Class<F> fromKey, Class<T> toKey, Function<? super F, ? extends T> mapper) {
+        return mapUpstream(Key.of(fromKey), Key.of(toKey), mapper);
+    }
+
+    public static <F, T> Wirelet mapUpstream(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
+        return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper, false);
+    }
+
+    public static Wirelet mapUpstream(Mapper<?, ?> mapper) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * This method exists mainly to support debugging, where you want to see which services are available at a particular
+     * place in a the pipeline: <pre>
+     * {@code 
+     * Injector injector = some injector to import;
+     *
+     * Injector.of(c -> {
+     *   c.importAll(injector, DownstreamServiceWirelets.peek(e -> System.out.println("Importing service " + e.getKey())));
+     * });}
+     * </pre>
+     * <p>
+     * This method is typically TODO before after import events
+     * 
+     * @param action
+     *            the action to perform for each service descriptor
+     * @return a peeking stage
+     */
+    public static Wirelet peekUpstream(Consumer<? super ServiceDescriptor> action) {
+        return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
     }
 
     public static <T> Wirelet provide(Class<T> key, T service) {
         return provide(Key.of(key), service);
+    }
+
+    // public static <T> Wirelet provideMapped(Factory<T> Key<T> type, T service) {
+    // throw new UnsupportedOperationException();
+    // }
+
+    public static <T> Wirelet provide(Factory0<T> factory) {
+        throw new UnsupportedOperationException();
     }
 
     public static <T> Wirelet provide(Key<T> key, T service) {
@@ -78,10 +131,9 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
-    // Problemet er at vi skal angive 2 noegler
-    public static Wirelet provideMapped(Mapper<?, ?> r) {
-        throw new UnsupportedOperationException();
-    }
+    // reject(Key... key)
+    // reject(Class<?>... key)
+    // reject(Predicate<? super Key|ServiceDescriptor>)
 
     public static <F, T> Wirelet provideMapped(Class<F> form, Class<T> to, Function<F, T> r) {
         throw new UnsupportedOperationException();
@@ -94,16 +146,9 @@ public final class ServiceWirelets {
     //// Multiplicity many or singleton???
     // Saa kan vi have vilkaerlige
 
-    // public static <T> Wirelet provideMapped(Factory<T> Key<T> type, T service) {
-    // throw new UnsupportedOperationException();
-    // }
-
-    public static void main(String[] args) {
-        provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
-
-        provideMapped(Long.class, Integer.class, e -> e.intValue());
-
-        provideMapped(Key.of(Long.class), Key.of(Integer.class), e -> e.intValue());
+    // Problemet er at vi skal angive 2 noegler
+    public static Wirelet provideMapped(Mapper<?, ?> r) {
+        throw new UnsupportedOperationException();
     }
 
     public static Wirelet provideOnly(Class<?>... keys) {
@@ -113,9 +158,17 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public static Wirelet removeUpstream(Class<?>... keys) {
+        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys).stream().map(e -> Key.of(e)).collect(Collectors.toSet()));
+    }
+
+    public static Wirelet removeUpstream(Key<?>... keys) {
+        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys));
+    }
+
     // Maybe have a generic mapper, not only for injection...
     // Transformer, maaske i .function package
-    static abstract class Mapper<T, R> {
+    public static abstract class Mapper<T, R> {
         protected Mapper(Function<? super T, ? extends R> function) {
             throw new UnsupportedOperationException();
         }
@@ -129,43 +182,6 @@ public final class ServiceWirelets {
         Key<F> to() {
             throw new UnsupportedOperationException();
         }
-    }
-
-    // reject(Key... key)
-    // reject(Class<?>... key)
-    // reject(Predicate<? super Key|ServiceDescriptor>)
-
-    public static <F, T> Wirelet mapUpstream(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
-        return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper);
-    }
-
-    public static Wirelet removeUpstream(Class<?>... keys) {
-        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys).stream().map(e -> Key.of(e)).collect(Collectors.toSet()));
-    }
-
-    public static Wirelet removeUpstream(Key<?>... keys) {
-        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys));
-    }
-
-    /**
-     * This method exists mainly to support debugging, where you want to see which services are available at a particular
-     * place in a the pipeline: <pre>
-     * {@code 
-     * Injector injector = some injector to import;
-     *
-     * Injector.of(c -> {
-     *   c.importAll(injector, DownstreamServiceWirelets.peek(e -> System.out.println("Importing service " + e.getKey())));
-     * });}
-     * </pre>
-     * <p>
-     * This method is typically TODO before after import events
-     * 
-     * @param action
-     *            the action to perform for each service descriptor
-     * @return a peeking stage
-     */
-    public static Wirelet peekUpstream(Consumer<? super ServiceDescriptor> action) {
-        return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
     }
 }
 

@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.artifact.ArtifactImage;
+import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.contract.Contract;
 import app.packed.util.Key;
 
@@ -133,15 +136,6 @@ public final class InjectorContract extends Contract {
     }
 
     /**
-     * Returns an immutable set of keys of all of the services the owning entity provides.
-     * 
-     * @return an immutable set of keys of all of the services the owning entity provides
-     */
-    public Set<Key<?>> services() {
-        return provides;
-    }
-
-    /**
      * Returns an immutable set of keys for which a service <b>must</b> be made by the owning entity.
      * 
      * @return an immutable set of all keys that <b>must</b> be made available to the entity
@@ -151,12 +145,58 @@ public final class InjectorContract extends Contract {
     }
 
     /**
+     * Returns an immutable set of keys of all of the services the owning entity provides.
+     * 
+     * @return an immutable set of keys of all of the services the owning entity provides
+     */
+    public Set<Key<?>> services() {
+        return provides;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("InjectorContract [");
+        boolean isFirst = true;
+        if (!optional.isEmpty()) {
+            sb.append("optional = ");
+            sb.append(optional);
+            isFirst = false;
+        }
+        if (!provides.isEmpty()) {
+            if (!isFirst) {
+                sb.append(", ");
+                isFirst = false;
+            }
+            sb.append("provides=");
+            sb.append(provides);
+        }
+        if (!requires.isEmpty()) {
+            if (!isFirst) {
+                sb.append(", ");
+            }
+            sb.append("requires=");
+            sb.append(requires);
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
+    /**
      * Returns a new service contract builder.
      * 
      * @return a new service contract builder
      */
     public static InjectorContract.Builder builder() {
         return new InjectorContract.Builder();
+    }
+
+    public static InjectorContract of(Bundle bundle) {
+        return BundleDescriptor.of(bundle).contracts().use(InjectorContract.class);
+    }
+
+    public static InjectorContract of(ArtifactImage image) {
+        return BundleDescriptor.of(image).contracts().use(InjectorContract.class);
     }
 
     public static InjectorContract of(Consumer<? super InjectorContract.Builder> action) {
@@ -170,9 +210,12 @@ public final class InjectorContract extends Contract {
         throw new UnsupportedOperationException();
     }
 
-    static InjectorContract ofServices(InjectorContract contract) {
-        // En contract, der kun inkludere provides services, men ikke requirements
-        return contract;
+    public static InjectorContract ofRequired(Class<?>... keys) {
+        return of(b -> List.of(keys).forEach(k -> b.addRequires(k)));
+    }
+
+    public static InjectorContract ofRequired(Key<?>... keys) {
+        throw new UnsupportedOperationException();
     }
 
     public static InjectorContract ofServices(Class<?>... keys) {
@@ -181,12 +224,9 @@ public final class InjectorContract extends Contract {
         return b.build();
     }
 
-    public static InjectorContract ofRequired(Class<?>... keys) {
-        return of(b -> List.of(keys).forEach(k -> b.addRequires(k)));
-    }
-
-    public static InjectorContract ofRequired(Key<?>... keys) {
-        throw new UnsupportedOperationException();
+    static InjectorContract ofServices(InjectorContract contract) {
+        // En contract, der kun inkludere provides services, men ikke requirements
+        return contract;
     }
 
     /**

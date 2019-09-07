@@ -31,9 +31,9 @@ public interface ExtensionContext {
     ArtifactBuildContext buildContext();
 
     /**
-     * Returns the config site of the container to which the extension is registered with.
+     * Returns the config site of the container in which the extension is registered in.
      * 
-     * @return the config site of the container to which the extension is registered with
+     * @return the config site of the container in which the extension is registered in
      */
     ConfigSite containerConfigSite();
 
@@ -42,8 +42,8 @@ public interface ExtensionContext {
     /**
      * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after the extensions {@link Extension#onConfigured()} has been invoked by the
-     * runtime.
+     * An extension is no longer configurable after the extension's {@link Extension#onConfigured()} method has been invoked
+     * by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension

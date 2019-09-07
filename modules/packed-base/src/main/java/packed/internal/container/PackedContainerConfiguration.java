@@ -112,11 +112,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return buildContext;
     }
 
-    public void buildDescriptor(BundleDescriptor.Builder builder) {
-        doBuild();
+    public void buildDescriptor(BundleDescriptor.Builder builder, boolean isImage) {
+        if (!isImage) {
+            doBuild();
+        }
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
+
             SharedSecrets.extension().buildBundle(e.extension(), builder);
         }
     }

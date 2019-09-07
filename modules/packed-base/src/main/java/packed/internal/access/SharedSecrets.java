@@ -17,6 +17,9 @@ package packed.internal.access;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
@@ -28,6 +31,9 @@ import app.packed.util.TypeLiteral;
  * without using reflection.
  */
 public final class SharedSecrets {
+
+    /** All secrets, we never remove them to make sure we never add anything twice. */
+    private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> MAP = new ConcurrentHashMap<>();
 
     /** A temporary instance of AppPackedContainerAccess, until ContainerSingletonHolder has been initialized. */
     private static AppPackedContainerAccess TMP_CONTAINER_ACCESS;
@@ -46,6 +52,79 @@ public final class SharedSecrets {
 
     /** Never instantiate */
     private SharedSecrets() {}
+
+    /**
+     * Returns an access object for app.packed.artifact.
+     * 
+     * @return an access object for app.packed.artifact
+     */
+    public static AppPackedArtifactAccess artifact() {
+        return ArtifactSingletonHolder.SINGLETON;
+    }
+
+    /**
+     * Returns an access object for app.packed.container.
+     * 
+     * @return an access object for app.packed.container
+     */
+    public static AppPackedContainerAccess container() {
+        return ContainerSingletonHolder.SINGLETON;
+    }
+
+    /**
+     * Returns an access object for app.packed.container.extension.
+     * 
+     * @return an access object for app.packed.container.extension
+     */
+    public static AppPackedExtensionAccess extension() {
+        return ExtensionSingletonHolder.SINGLETON;
+    }
+
+    static <T extends SecretAccess> T get(Class<T> accessType, Class<?> initalizeClass) {
+        SecretAccess a = MAP.get(accessType);
+        if (a == null) {
+            throw new ExceptionInInitializerError("An instance of " + accessType + " has not been set");
+        }
+        try {
+            Class.forName(initalizeClass.getName(), true, initalizeClass.getClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new ExceptionInInitializerError(e); // Should not happen
+        }
+        return accessType.cast(a);
+    }
+
+    public static <T extends SecretAccess> void initialize(Class<T> accessType, T access) {
+        if (MAP.putIfAbsent(accessType, access) != null) {
+            throw new ExceptionInInitializerError("An instance of " + accessType + " has already been set ");
+        }
+    }
+
+    /**
+     * Returns an access object for app.packed.inject.
+     * 
+     * @return an access object for app.packed.inject
+     */
+    public static AppPackedInjectAccess inject() {
+        return InjectSingletonHolder.SINGLETON;
+    }
+
+    /**
+     * Returns an access object for app.packed.lifecycle.
+     * 
+     * @return an access object for app.packed.lifecycle
+     */
+    public static AppPackedLifecycleAccess lifecycle() {
+        return LifecycleSingletonHolder.SINGLETON;
+    }
+
+    /**
+     * Returns an access object for app.packed.util.
+     * 
+     * @return an access object for app.packed.util
+     */
+    public static AppPackedUtilAccess util() {
+        return UtilSingletonHolder.SINGLETON;
+    }
 
     /**
      * Initializes {@link AppPackedContainerAccess} support.
@@ -112,49 +191,11 @@ public final class SharedSecrets {
         TMP_UTIL_ACCESS = requireNonNull(access);
     }
 
-    /**
-     * Returns an access object for app.packed.container.
-     * 
-     * @return an access object for app.packed.container
-     */
-    public static AppPackedContainerAccess container() {
-        return ContainerSingletonHolder.SINGLETON;
-    }
+    /** Holder of the {@link AppPackedArtifactAccess} singleton. */
+    private static class ArtifactSingletonHolder {
 
-    /**
-     * Returns an access object for app.packed.container.extension.
-     * 
-     * @return an access object for app.packed.container.extension
-     */
-    public static AppPackedExtensionAccess extension() {
-        return ExtensionSingletonHolder.SINGLETON;
-    }
-
-    /**
-     * Returns an access object for app.packed.inject.
-     * 
-     * @return an access object for app.packed.inject
-     */
-    public static AppPackedInjectAccess inject() {
-        return InjectSingletonHolder.SINGLETON;
-    }
-
-    /**
-     * Returns an access object for app.packed.lifecycle.
-     * 
-     * @return an access object for app.packed.lifecycle
-     */
-    public static AppPackedLifecycleAccess lifecycle() {
-        return LifecycleSingletonHolder.SINGLETON;
-    }
-
-    /**
-     * Returns an access object for app.packed.util.
-     * 
-     * @return an access object for app.packed.util
-     */
-    public static AppPackedUtilAccess util() {
-        return UtilSingletonHolder.SINGLETON;
+        /** The singleton instance. */
+        private static final AppPackedArtifactAccess SINGLETON = get(AppPackedArtifactAccess.class, ArtifactImage.class);
     }
 
     /** Holder of the {@link AppPackedContainerAccess} singleton. */

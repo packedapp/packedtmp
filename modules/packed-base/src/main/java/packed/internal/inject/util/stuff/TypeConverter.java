@@ -13,22 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook.test;
+package packed.internal.inject.util.stuff;
 
-import java.util.function.BiConsumer;
-
-import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.reflect.FieldOperator;
+import java.lang.reflect.Type;
 
 /**
  *
  */
-public class RuntimeAccessorList<T> {
-
-    public <S> void readyAll(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
-
-    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, FieldOperator<T> operator) {
-        return this;
-    }
+public abstract class TypeConverter<T> {
+    public static final TypeConverter<Type> IDENTITY = null;
+    
+    public static final TypeConverter<Class<?>> RAW = null;
+    
+    public abstract T convert(Type t);
 }

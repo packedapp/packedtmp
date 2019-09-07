@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook.test;
+package packed.internal.access;
 
-import java.util.function.BiConsumer;
+import app.packed.artifact.ArtifactImage;
+import packed.internal.container.PackedContainerConfiguration;
 
-import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.reflect.FieldOperator;
-
-/**
- *
- */
-public class RuntimeAccessorList<T> {
-
-    public <S> void readyAll(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
-
-    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, FieldOperator<T> operator) {
-        return this;
-    }
+/** A support class for calling package private methods in the app.packed.container package. */
+public interface AppPackedArtifactAccess extends SecretAccess {
+    PackedContainerConfiguration getConfiguration(ArtifactImage image);
 }

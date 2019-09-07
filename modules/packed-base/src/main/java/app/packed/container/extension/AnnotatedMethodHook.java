@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.reflect.MethodDescriptor;
+import app.packed.reflect.MethodOperator;
 import app.packed.reflect.UncheckedIllegalAccessException;
 
 /** A hook representing a method annotated with a specific type. */

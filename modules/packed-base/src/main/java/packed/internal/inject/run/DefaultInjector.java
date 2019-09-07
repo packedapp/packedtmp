@@ -29,6 +29,7 @@ import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
+import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.KeyBuilder;
 
@@ -102,6 +103,11 @@ public final class DefaultInjector extends AbstractInjector {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) services.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY));
+        return (Stream) services.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
+            if (e instanceof BuildEntry) {
+                return ((BuildEntry) e).toDescriptor();
+            }
+            return e;
+        });
     }
 }
