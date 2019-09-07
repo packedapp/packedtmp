@@ -21,11 +21,14 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionNode;
 import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -118,6 +121,21 @@ final class ExtensionModel<T> {
         }
 
         NativeImage.registerConstructor(constructor);
+
+        Method m = null;
+        try {
+            m = type.getDeclaredMethod("onAdded");
+        } catch (NoSuchMethodException ignore) {}
+
+        if (m != null) {
+            Class<?> nodeType = m.getReturnType();
+            if (nodeType != ExtensionNode.class) {
+                if (!Modifier.isFinal(nodeType.getModifiers())) {
+                    throw new InvalidDeclarationException(nodeType + " must be a final class");
+                }
+                System.out.println("YES");
+            }
+        }
     }
 
     /**

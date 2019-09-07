@@ -331,10 +331,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return pec == null ? null : (T) pec.extension();
     }
 
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends Extension> T use(Class<T> extensionType) {
+    public PackedExtensionContext useContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
 
@@ -345,7 +342,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             extensions.put(extensionType, pec = PackedExtensionContext.create(this, extensionType));
             SharedSecrets.extension().initializeExtension(pec);
         }
-        return (T) pec.extension();
+        return pec;
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Extension> T use(Class<T> extensionType) {
+        return (T) useContext(extensionType).extension();
     }
 
     /** {@inheritDoc} */

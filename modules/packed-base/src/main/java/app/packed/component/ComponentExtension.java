@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionNode;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import packed.internal.container.PackedContainerConfiguration;
@@ -103,8 +104,9 @@ public final class ComponentExtension extends Extension {
     }
 
     @Override
-    protected void onAdded() {
+    protected ExtensionNode onAdded() {
         this.configuration = ((PackedExtensionContext) context()).pcc;
+        return null;
     }
 
     /**

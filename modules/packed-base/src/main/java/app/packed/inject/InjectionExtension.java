@@ -59,7 +59,7 @@ import packed.internal.inject.util.AtInjectGroup;
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 public final class InjectionExtension extends Extension {
 
-    /** The injector builder, initialized via {@link #onAdded()}. */
+    /** The extension node, initialized via {@link #onAdded()}. */
     private InjectionExtensionNode node;
 
     /** Should never be initialized by users. */
@@ -69,12 +69,6 @@ public final class InjectionExtension extends Extension {
     @Override
     protected void buildDescriptor(BundleDescriptor.Builder descriptor) {
         node.buildDescriptor(descriptor);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected InjectionExtensionNode extensionInitialize() {
-        return node = new InjectionExtensionNode(context());
     }
 
     /**
@@ -160,8 +154,8 @@ public final class InjectionExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    protected void onAdded() {
-        node = new InjectionExtensionNode(context());
+    protected InjectionExtensionNode onAdded() {
+        return node = new InjectionExtensionNode(context());
     }
 
     /** {@inheritDoc} */

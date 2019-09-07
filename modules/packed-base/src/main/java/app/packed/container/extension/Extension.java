@@ -129,10 +129,6 @@ public abstract class Extension {
         return c;
     }
 
-    protected ExtensionNode extensionInitialize() {
-        return null;
-    }
-
     protected void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     /**
@@ -213,7 +209,9 @@ public abstract class Extension {
      * <p>
      * The default implementation of this method does nothing.
      */
-    protected void onAdded() {}
+    protected ExtensionNode onAdded() {
+        return null;
+    }
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically

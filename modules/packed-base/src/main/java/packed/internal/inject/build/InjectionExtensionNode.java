@@ -100,6 +100,7 @@ public final class InjectionExtensionNode extends ExtensionNode {
         }
     }
 
+    @Override
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
         for (ServiceEntry<?> n : resolvedEntries) {

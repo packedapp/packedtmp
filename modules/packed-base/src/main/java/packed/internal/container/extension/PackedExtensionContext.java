@@ -25,6 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
+import app.packed.container.extension.ExtensionNode;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -39,6 +40,8 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
+
+    public ExtensionNode node;
 
     /**
      * @param pcc

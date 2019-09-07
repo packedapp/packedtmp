@@ -54,9 +54,8 @@ public final class ExtensionHookPerComponentGroup {
         return callbacks.size();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void add(PackedContainerConfiguration container, ComponentConfiguration cc) {
-        Extension extension = container.use((Class) extensionType);
+        Extension extension = container.useContext(extensionType).extension();
 
         try {
             for (ExtensionCallback c : callbacks) {
