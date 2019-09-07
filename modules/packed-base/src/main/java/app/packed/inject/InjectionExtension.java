@@ -24,6 +24,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
@@ -89,6 +90,11 @@ public final class InjectionExtension extends Extension {
     @Override
     protected void buildDescriptor(BundleDescriptor.Builder descriptor) {
         builder.buildDescriptor(descriptor);
+    }
+
+    @Override
+    protected InjectorBuilder initialize(ExtensionContext context) {
+        return builder = new InjectorBuilder(context);
     }
 
     /**

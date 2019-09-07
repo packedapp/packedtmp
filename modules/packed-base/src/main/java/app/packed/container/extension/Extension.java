@@ -130,6 +130,10 @@ public abstract class Extension {
         return c;
     }
 
+    protected ExtensionNode initialize(ExtensionContext context) {
+        throw new UnsupportedOperationException();
+    }
+
     protected void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     /**

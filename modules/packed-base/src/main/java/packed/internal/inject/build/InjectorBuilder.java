@@ -24,6 +24,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
+import app.packed.container.extension.ExtensionNode;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceContract;
@@ -42,7 +43,7 @@ import packed.internal.inject.util.AtInjectGroup;
 import packed.internal.inject.util.ServiceNodeMap;
 
 /** This class records all service related information for a single box. */
-public final class InjectorBuilder {
+public final class InjectorBuilder implements ExtensionNode {
 
     /** The extension context for {@link InjectionExtension}. */
     private final ExtensionContext context;

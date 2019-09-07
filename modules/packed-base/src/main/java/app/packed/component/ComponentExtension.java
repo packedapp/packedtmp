@@ -24,6 +24,7 @@ import app.packed.container.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.InjectConfigSiteOperations;
 
 /**
@@ -32,12 +33,10 @@ import packed.internal.inject.InjectConfigSiteOperations;
 public final class ComponentExtension extends Extension {
 
     /** The configuration of the container. */
-    private final PackedContainerConfiguration configuration;
+    private PackedContainerConfiguration configuration;
 
-    /** Creates a new component extension. */
-    ComponentExtension(PackedContainerConfiguration configuration) {
-        this.configuration = requireNonNull(configuration);
-    }
+    /** Should never be initialized by users. */
+    ComponentExtension() {}
 
     // install
     // noget med Main, Entry points....
@@ -101,6 +100,11 @@ public final class ComponentExtension extends Extension {
     public ComponentConfiguration install(Object instance) {
         requireNonNull(instance, "instance is null");
         return configuration.installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+    }
+
+    @Override
+    protected void onAdded() {
+        this.configuration = ((PackedExtensionContext) context()).pcc;
     }
 
     /**
