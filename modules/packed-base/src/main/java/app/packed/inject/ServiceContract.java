@@ -184,14 +184,32 @@ public final class ServiceContract extends Contract {
         return new ServiceContract.Builder();
     }
 
-    public static ServiceContract of(Bundle bundle) {
-        return BundleDescriptor.of(bundle).contracts().use(ServiceContract.class);
-    }
-
+    /**
+     * Returns a service contract from the specified image. Or fails with {@link UnsupportedOperationException}. if the a
+     * contract
+     * 
+     * @param image
+     * @return the contract
+     */
+    // Or should I return an empty contract???? Hmmmmmmmmmmmm
     public static ServiceContract of(ArtifactImage image) {
         return BundleDescriptor.of(image).contracts().use(ServiceContract.class);
     }
 
+    public static ServiceContract of(Bundle bundle) {
+        return BundleDescriptor.of(bundle).contracts().use(ServiceContract.class);
+    }
+
+    /**
+     * Creates a new service contract by performing the specified action on a new {@link ServiceContract.Builder } instance.
+     * Usage:
+     * 
+     * which is equivalent to:
+     * 
+     * @param action
+     *            the build action to perform
+     * @return the new contract
+     */
     public static ServiceContract of(Consumer<? super ServiceContract.Builder> action) {
         requireNonNull(action, "action is null");
         ServiceContract.Builder b = new ServiceContract.Builder();
@@ -199,8 +217,15 @@ public final class ServiceContract extends Contract {
         return b.build();
     }
 
-    static ServiceContract ofInjector(Injector injector) {
-        throw new UnsupportedOperationException();
+    /**
+     * Since an injector has already been initialized it always has no requirements.
+     * 
+     * @param injector
+     *            the injector to return a contract for
+     * @return the service contract for an injector
+     */
+    public static ServiceContract ofInjector(Injector injector) {
+        return of(c -> injector.services().forEach(s -> c.addProvides(s.key())));
     }
 
     public static ServiceContract ofRequired(Class<?>... keys) {

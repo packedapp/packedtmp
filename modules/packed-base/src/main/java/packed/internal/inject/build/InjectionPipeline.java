@@ -26,14 +26,14 @@ public final class InjectionPipeline extends ExtensionPipeline<InjectionPipeline
 
     /// ARGHHH... vi skal jo resolve foerst....
 
-    final InjectorBuilder ib;
-
-    public InjectionPipeline(InjectorBuilder ib) {
-        this.ib = requireNonNull(ib);
-    }
+    public final InjectorBuilder ib;
 
     InjectionPipeline(InjectionPipeline previous) {
         this.ib = previous.ib;
+    }
+
+    public InjectionPipeline(InjectorBuilder ib) {
+        this.ib = requireNonNull(ib);
     }
 
     /** {@inheritDoc} */

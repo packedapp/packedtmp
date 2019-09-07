@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
+import packed.internal.inject.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.inject.build.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
@@ -98,8 +99,8 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Wirelet provide(Key<T> key, T service) {
-        throw new UnsupportedOperationException();
+    public static <T> Wirelet provide(Key<T> key, T constant) {
+        return new PackedDownstreamInjectionWirelet.ProvideConstantDownstream(key, constant);
     }
 
     /**
@@ -108,14 +109,14 @@ public final class ServiceWirelets {
      * <p>
      * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
      * 
-     * @param service
+     * @param constant
      *            the service to provide
      * @return a wirelet that will provide the specified service
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Wirelet provide(Object service) {
-        requireNonNull(service, "service is null");
-        return provide((Class) service.getClass(), service);
+    public static Wirelet provide(Object constant) {
+        requireNonNull(constant, "service is null");
+        return provide((Class) constant.getClass(), constant);
     }
 
     /**

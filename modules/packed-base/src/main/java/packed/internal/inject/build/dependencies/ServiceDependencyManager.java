@@ -38,10 +38,8 @@ import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.export.ServiceExportManager;
-import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.ServiceNodeMap;
-import packed.internal.util.KeyBuilder;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link InjectionExtension}.
@@ -115,15 +113,10 @@ public final class ServiceDependencyManager {
     }
 
     /** Also used for descriptors. */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void analyze(ServiceExportManager exporter) {
-        builder.privateInjector = new DefaultInjector(builder.pcc, builder.resolvedEntries);
-        ComponentBuildEntry d = new ComponentBuildEntry<>(builder, builder.context().containerConfigSite(), builder.privateInjector);
-        d.as(KeyBuilder.INJECTOR_KEY);
-        builder.resolvedEntries.put(d);
 
         if (builder.context().buildContext().artifactType() == Injector.class) {
-            builder.publicInjector = requireNonNull(builder.privateInjector);
+            builder.publicInjector = new DefaultInjector(builder.pcc, builder.resolvedEntries);
         } else {
             ServiceNodeMap sm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
             builder.publicInjector = new DefaultInjector(builder.pcc, sm);

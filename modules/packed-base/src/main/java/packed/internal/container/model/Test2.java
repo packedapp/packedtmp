@@ -22,8 +22,10 @@ import java.util.Date;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
+import app.packed.container.BundleDescriptor;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceContract;
+import app.packed.inject.ServiceWirelets;
 import app.packed.util.Qualifier;
 
 /**
@@ -45,13 +47,18 @@ public class Test2 {
             protected void configure() {
                 // injector().manualRequirementsManagement();
                 export(provide(NeedsDate.class));
-                provide(new Date());
+                // provide(new Date());
             }
         };
     }
 
     public static void main(String[] args) {
+        BundleDescriptor bd = BundleDescriptor.of(b());
+        System.out.println(bd.extensionsUsed());
+
         System.out.println(ServiceContract.of(b()));
+
+        Injector i = Injector.of(b(), ServiceWirelets.provide(new Date()));
 
         ArtifactImage ai = ArtifactImage.of(b());
 
@@ -61,7 +68,7 @@ public class Test2 {
 
     public static class NeedsDate {
         public NeedsDate(Date date) {
-
+            System.out.println(date);
         }
     }
 

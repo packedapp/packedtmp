@@ -44,12 +44,28 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
 
     /** {@inheritDoc} */
     @Override
+    public int hashCode() {
+        return contracts.values().hashCode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Iterator<Contract> iterator() {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return contracts.values().toString();
+    }
+
     public Set<Class<? extends Contract>> types() {
         throw new UnsupportedOperationException();
+    }
+
+    public <T extends Contract> T use(Class<T> contractType) {
+        return use(this, contractType);
     }
 
     public ContractSet with(Contract... contracts) {
@@ -79,9 +95,5 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
 
     public static ContractSet of(Iterable<? extends Contract> contracts) {
         return of(StreamSupport.stream(contracts.spliterator(), false).toArray(Contract[]::new));
-    }
-
-    public <T extends Contract> T use(Class<T> contractType) {
-        return use(this, contractType);
     }
 }

@@ -66,4 +66,22 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
             System.out.println(action);
         }
     }
+
+    public static class ProvideConstantDownstream extends PackedDownstreamInjectionWirelet {
+
+        final Object constant;
+
+        final Key<?> key;
+
+        public ProvideConstantDownstream(Key<?> key, Object constant) {
+            this.key = requireNonNull(key, "key is null");
+            this.constant = requireNonNull(constant, "constant is null");
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        protected void process(InjectionPipeline p) {
+            System.out.println("Nice builder " + p.ib);
+        }
+    }
 }

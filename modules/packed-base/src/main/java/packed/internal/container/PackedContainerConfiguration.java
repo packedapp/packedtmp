@@ -119,9 +119,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-
             SharedSecrets.extension().buildBundle(e.extension(), builder);
         }
+        builder.extensions.addAll(extensions.keySet());
     }
 
     /**

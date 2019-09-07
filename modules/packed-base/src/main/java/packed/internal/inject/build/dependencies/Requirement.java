@@ -34,6 +34,8 @@ class Requirement {
     @Nullable
     final BuildEntry<?> entry;
 
+    // Contract <- If requirement added via a contract
+
     Requirement(ServiceDependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = requireNonNull(configSite);

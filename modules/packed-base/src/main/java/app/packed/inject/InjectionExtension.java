@@ -30,10 +30,13 @@ import app.packed.container.extension.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.access.AppPackedInjectAccess;
+import packed.internal.access.SharedSecrets;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.build.service.AtProvidesGroup;
+import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 import packed.internal.inject.util.AtInjectGroup;
 
@@ -62,13 +65,28 @@ import packed.internal.inject.util.AtInjectGroup;
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 public final class InjectionExtension extends Extension {
 
-    /** The injector builder that does all the hard work. */
-    final InjectorBuilder builder;
+    static {
+        SharedSecrets.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
 
-    /** Creates a new injector extension. */
-    InjectionExtension(PackedContainerConfiguration configuration) {
-        this.builder = new InjectorBuilder(configuration);
+            /** {@inheritDoc} */
+            @Override
+            public InjectorBuilder getBuilder(InjectionExtension extension) {
+                return extension.builder;
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
+                return factory.factory.function;
+            }
+        });
     }
+
+    /** The injector builder, initialized via {@link #onAdded()}. */
+    private InjectorBuilder builder;
+
+    /** Should not be initialized by users. */
+    InjectionExtension() {}
 
     /** {@inheritDoc} */
     @Override
@@ -171,6 +189,7 @@ public final class InjectionExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     protected void onAdded() {
+        builder = new InjectorBuilder(((PackedExtensionContext) context()).pcc);
         builder.setContext(context());
     }
 

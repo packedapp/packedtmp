@@ -23,11 +23,14 @@ import java.lang.module.ModuleDescriptor;
 import java.lang.module.ModuleDescriptor.Version;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import app.packed.artifact.ArtifactImage;
+import app.packed.container.extension.Extension;
 import app.packed.contract.Contract;
 import app.packed.contract.ContractSet;
 import app.packed.inject.ServiceDescriptor;
@@ -104,6 +107,8 @@ public class BundleDescriptor {
 
     private final String name;
 
+    private final LinkedHashSet<Class<? extends Extension>> extensions;
+
     /**
      * Creates a new descriptor from the specified builder.
      * 
@@ -116,6 +121,7 @@ public class BundleDescriptor {
         this.bundleType = builder.bundleType();
         this.description = builder.getBundleDescription();
         this.name = builder.name == null ? "?" : builder.name;
+        this.extensions = builder.extensions;
     }
 
     /**
@@ -145,6 +151,8 @@ public class BundleDescriptor {
     // <T extends AnyBundleDescriptor> List<T> children(Class<T> descriptorType) {
     // Men hvem bestemmer hvilken descriptor type vi laver????
     // Hvis det er en tom skal, der tager en Builder???
+
+    // De er vel named.... Saa Map<String, Descriptor...
     public List<BundleDescriptor> children() {
         // Saa skal vi vel ogsaa have navne...
         // Maaske kan vi have Container? <- Indicating that it will be created with Container and then some postfix
@@ -218,6 +226,11 @@ public class BundleDescriptor {
 
     public static ContractSet constractOf(BaseBundle bundle) {
         return BundleDescriptor.of(bundle).contracts();
+    }
+
+    public Set<Class<? extends Extension>> extensionsUsed() {
+        // Do we want some kind of order???
+        return extensions;
     }
 
     // Or just have a descriptor() on ContainerImage();
@@ -301,6 +314,8 @@ public class BundleDescriptor {
         private String name;
 
         private Map<Key<?>, ServiceDescriptor> services;
+
+        public final LinkedHashSet<Class<? extends Extension>> extensions = new LinkedHashSet<>();
 
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");

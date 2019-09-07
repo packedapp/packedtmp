@@ -38,9 +38,7 @@ import app.packed.util.BaseSupport;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
-import packed.internal.access.AppPackedInjectAccess;
 import packed.internal.access.SharedSecrets;
-import packed.internal.inject.build.InjectorBuilder;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
@@ -105,27 +103,8 @@ public class Factory<T> {
         }
     };
 
-    static {
-        SharedSecrets.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
-
-            @Override
-            public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
-                return factory.factory.function;
-            }
-
-            @Override
-            public InjectorBuilder getBuilder(InjectionExtension ie) {
-                return ie.builder;
-            }
-        });
-    }
-
     /** The internal factory that all calls delegate to. */
     final FactorySupport<T> factory;
-
-    public final FactoryHandle<T> handle() {
-        return factory.function;
-    }
 
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot call {@link Object#getClass()} before calling a
@@ -174,19 +153,14 @@ public class Factory<T> {
     }
 
     /**
-     * The key under which If this factory is registered as a service with an {@link Injector}. This method returns the
-     * (default) key that will be used, for example, when regist Returns the (default) key to which this factory will bound
-     * to if using as If this factory is used to register a service, for example, via
-     * {@link InjectorConfigurator#provide(Factory)}. This method returns the key for which the factory
+     * Returns a new bindable factory.
      * 
-     * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
-     * {@link ComponentServiceConfiguration#as(Key)}.
-     *
-     * @return the key under which this factory will be registered unless
-     * @see #withKey(Key)
+     * @return a new bindable factory
      */
-    public final Key<T> key() {
-        return factory.defaultKey;
+    // What if already bindable?
+    // Create new or return same????
+    public final BindableFactory<T> bindable() {
+        return new BindableFactory<>(this);
     }
 
     /**
@@ -201,6 +175,26 @@ public class Factory<T> {
      */
     public final List<ServiceDependency> dependencies() {
         return factory.dependencies;
+    }
+
+    public final FactoryHandle<T> handle() {
+        return factory.function;
+    }
+
+    /**
+     * The key under which If this factory is registered as a service with an {@link Injector}. This method returns the
+     * (default) key that will be used, for example, when regist Returns the (default) key to which this factory will bound
+     * to if using as If this factory is used to register a service, for example, via
+     * {@link InjectorConfigurator#provide(Factory)}. This method returns the key for which the factory
+     * 
+     * Returns the key for which this factory will be registered, this can be overridden, for example, by calling
+     * {@link ComponentServiceConfiguration#as(Key)}.
+     *
+     * @return the key under which this factory will be registered unless
+     * @see #withKey(Key)
+     */
+    public final Key<T> key() {
+        return factory.defaultKey;
     }
 
     /**
@@ -264,15 +258,20 @@ public class Factory<T> {
         return factory.function.returnType();
     }
 
-    /**
-     * Returns a new bindable factory.
-     * 
-     * @return a new bindable factory
-     */
-    // What if already bindable?
-    // Create new or return same????
-    public final BindableFactory<T> bindable() {
-        return new BindableFactory<>(this);
+    public Factory<T> useExactType(Class<? extends T> type) {
+        // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
+
+        // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
+        // fulde info om implementation
+        // @Inject
+        // SomeService create();
+        // istedet for
+        // @Inject
+        // SomeServiceImpl create();
+
+        // H
+
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -325,22 +324,6 @@ public class Factory<T> {
         return new Factory<>(new FactorySupport<T>(factory.function.withLookup(lookup), factory.dependencies));
     }
 
-    public Factory<T> useExactType(Class<? extends T> type) {
-        // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
-
-        // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
-        // fulde info om implementation
-        // @Inject
-        // SomeService create();
-        // istedet for
-        // @Inject
-        // SomeServiceImpl create();
-
-        // H
-
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Tries to find a single injectable constructor or static method on the specified class using the following rules:
      * 
@@ -388,6 +371,11 @@ public class Factory<T> {
         }
     }
 
+    static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
+        // Be aware that annotations and generic information is stripped from MethodHandles.
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a factory that returns the specified instance every time a new instance is requested.
      * <p>
@@ -403,11 +391,6 @@ public class Factory<T> {
      */
     public static <T> Factory<T> ofInstance(T instance) {
         return new Factory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance), List.of()));
-    }
-
-    static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
-        // Be aware that annotations and generic information is stripped from MethodHandles.
-        throw new UnsupportedOperationException();
     }
 }
 

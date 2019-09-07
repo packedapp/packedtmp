@@ -24,8 +24,9 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
-import app.packed.inject.ServiceContract;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
@@ -42,6 +43,9 @@ import packed.internal.inject.util.ServiceNodeMap;
 /** This class records all service related information for a single box. */
 public final class InjectorBuilder {
 
+    /** The extension context for {@link InjectionExtension}. */
+    private ExtensionContext context;
+
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
 
@@ -49,10 +53,10 @@ public final class InjectorBuilder {
     @Nullable
     public ServiceExportManager exporter;
 
+    private boolean hasFailed;
+
     /** The configuration of the container to which this builder belongs to. */
     public final PackedContainerConfiguration pcc;
-
-    public DefaultInjector privateInjector;
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
@@ -72,18 +76,6 @@ public final class InjectorBuilder {
     public InjectorBuilder(PackedContainerConfiguration pcc) {
         this.pcc = requireNonNull(pcc);
     }
-
-    private ExtensionContext context;
-
-    public ExtensionContext context() {
-        return context;
-    }
-
-    public void setContext(ExtensionContext context) {
-        this.context = requireNonNull(context);
-    }
-
-    private boolean hasFailed;
 
     public void addErrorMessage() {
 
@@ -122,6 +114,15 @@ public final class InjectorBuilder {
             }
             dependencies().buildContract(c);
         }));
+    }
+
+    public void checkExportConfigurable() {
+        // when processing wirelets
+        // We should make sure some stuff is no longer configurable...
+    }
+
+    public ExtensionContext context() {
+        return context;
     }
 
     /**
@@ -207,8 +208,7 @@ public final class InjectorBuilder {
         return p;
     }
 
-    public void checkExportConfigurable() {
-        // when processing wirelets
-        // We should make sure some stuff is no longer configurable...
+    public void setContext(ExtensionContext context) {
+        this.context = requireNonNull(context);
     }
 }

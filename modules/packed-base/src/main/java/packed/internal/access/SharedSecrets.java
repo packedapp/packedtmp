@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.inject.Factory;
+import app.packed.inject.InjectionExtension;
 import app.packed.lifecycle.RunState;
 import app.packed.util.TypeLiteral;
 
@@ -31,7 +31,7 @@ import app.packed.util.TypeLiteral;
 public final class SharedSecrets {
 
     /** All secrets, we never remove them to make sure we never add anything twice. */
-    private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> MAP = new ConcurrentHashMap<>();
+    private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> TMP = new ConcurrentHashMap<>();
 
     /** Never instantiate */
     private SharedSecrets() {}
@@ -63,8 +63,18 @@ public final class SharedSecrets {
         return ExtensionSingletonHolder.SINGLETON;
     }
 
+    /**
+     * Initializes an access object.
+     * 
+     * @param <T>
+     *            the type of access
+     * @param accessType
+     *            the type of access
+     * @param access
+     *            the access object
+     */
     public static <T extends SecretAccess> void initialize(Class<T> accessType, T access) {
-        if (MAP.putIfAbsent(accessType, access) != null) {
+        if (TMP.putIfAbsent(accessType, access) != null) {
             throw new ExceptionInInitializerError("An instance of " + accessType + " has already been set ");
         }
     }
@@ -95,7 +105,7 @@ public final class SharedSecrets {
             throw new ExceptionInInitializerError(e); // Should never happen
         }
 
-        SecretAccess access = MAP.get(accessType);
+        SecretAccess access = TMP.get(accessType);
         if (access == null) {
             throw new ExceptionInInitializerError("An instance of " + accessType + " has not been set");
         }
@@ -136,7 +146,7 @@ public final class SharedSecrets {
     private static class InjectSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedInjectAccess SINGLETON = singleton(AppPackedInjectAccess.class, Factory.class);
+        private static final AppPackedInjectAccess SINGLETON = singleton(AppPackedInjectAccess.class, InjectionExtension.class);
     }
 
     /** Holder of the {@link AppPackedLifecycleAccess} singleton. */

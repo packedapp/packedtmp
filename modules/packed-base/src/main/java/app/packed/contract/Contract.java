@@ -43,10 +43,6 @@ public abstract class Contract {
     // Supported, compatible..
     protected abstract boolean equalsTo(Contract other);
 
-    public static final <T extends Contract> Optional<T> get(Contract c, Class<T> contractType) {
-        return Optional.ofNullable(c.get0(contractType));
-    }
-
     @SuppressWarnings("unchecked")
     @Nullable
     private final <T extends Contract> T get0(Class<T> contractType) {
@@ -61,6 +57,14 @@ public abstract class Contract {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public abstract int hashCode();
+
+    /** {@inheritDoc} */
+    @Override
+    public abstract String toString();
+
     public static final boolean contains(Contract c, Class<? extends Contract> contractType) {
         requireNonNull(contractType, "contractType is null");
         if (c instanceof ContractSet) {
@@ -68,6 +72,10 @@ public abstract class Contract {
         } else {
             return c.getClass() == contractType;
         }
+    }
+
+    public static final <T extends Contract> Optional<T> get(Contract c, Class<T> contractType) {
+        return Optional.ofNullable(c.get0(contractType));
     }
 
     public static <T extends Contract> T use(Contract c, Class<T> contractType) {
