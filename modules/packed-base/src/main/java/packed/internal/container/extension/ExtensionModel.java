@@ -27,7 +27,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.container.extension.Extension;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
-import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
@@ -128,12 +127,10 @@ final class ExtensionModel<T> {
      *            the type of extension
      * @param extensionType
      *            the type of extension
-     * @param pcc
-     *            the configuration of the container the extension is being added to
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> T newInstance(Class<T> extensionType, PackedContainerConfiguration pcc) {
+    static <T extends Extension> T newInstance(Class<T> extensionType) {
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         ExtensionModel<T> model = (ExtensionModel<T>) CACHE.get(extensionType);

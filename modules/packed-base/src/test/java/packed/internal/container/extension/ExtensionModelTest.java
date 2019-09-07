@@ -28,12 +28,12 @@ public class ExtensionModelTest {
 
     @Test
     public void normal() {
-        NormalExtension ne1 = ExtensionModel.newInstance(NormalExtension.class, null);
-        NormalExtension ne2 = ExtensionModel.newInstance(NormalExtension.class, null);
+        NormalExtension ne1 = ExtensionModel.newInstance(NormalExtension.class);
+        NormalExtension ne2 = ExtensionModel.newInstance(NormalExtension.class);
         assertThat(ne1).isNotNull();
         assertThat(ne1).isNotSameAs(ne2);
 
-        PrivateExtension priv = ExtensionModel.newInstance(PrivateExtension.class, null);
+        PrivateExtension priv = ExtensionModel.newInstance(PrivateExtension.class);
         assertThat(priv).isNotNull();
     }
 
@@ -41,22 +41,22 @@ public class ExtensionModelTest {
     @Test
     public void fails() {
         // abstract class
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.newInstance(AbstractExtension.class, null));
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.newInstance(AbstractExtension.class));
         a.isExactlyInstanceOf(IllegalArgumentException.class);
         // TODO test messages
 
         @SuppressWarnings("rawtypes")
         Class c = ExtensionModelTest.class;
         // Does not extend Extension
-        a = assertThatThrownBy(() -> ExtensionModel.newInstance(c, null));
+        a = assertThatThrownBy(() -> ExtensionModel.newInstance(c));
         a.isExactlyInstanceOf(IllegalArgumentException.class);
 
         // inner class
-        a = assertThatThrownBy(() -> ExtensionModel.newInstance(InnerClassExtension.class, null));
+        a = assertThatThrownBy(() -> ExtensionModel.newInstance(InnerClassExtension.class));
         a.isExactlyInstanceOf(IllegalArgumentException.class);
 
         // Takes parameter
-        a = assertThatThrownBy(() -> ExtensionModel.newInstance(TakesParameterExtension.class, null));
+        a = assertThatThrownBy(() -> ExtensionModel.newInstance(TakesParameterExtension.class));
         a.isExactlyInstanceOf(IllegalArgumentException.class);
     }
 

@@ -52,7 +52,7 @@ public class ExtensionMicro {
 
     @Benchmark
     public MyExtension newExtensionCachedMethodHandle() {
-        return ExtensionModel.newInstance(MyExtension.class, null);
+        return ExtensionModel.newInstance(MyExtension.class);
     }
 
     @Benchmark
