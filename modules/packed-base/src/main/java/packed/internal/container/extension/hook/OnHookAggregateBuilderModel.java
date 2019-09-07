@@ -37,10 +37,10 @@ import app.packed.container.extension.OnHook;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
+import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * An {@link OnHookAggregateBuilderModel} wraps

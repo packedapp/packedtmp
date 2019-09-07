@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.container.extension.hook.PackedFieldOperator;
+import packed.internal.reflect.PackedFieldOperator;
 import packed.internal.util.InternalErrorException;
 
 /**

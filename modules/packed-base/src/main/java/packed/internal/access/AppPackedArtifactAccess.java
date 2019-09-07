@@ -18,7 +18,15 @@ package packed.internal.access;
 import app.packed.artifact.ArtifactImage;
 import packed.internal.container.PackedContainerConfiguration;
 
-/** A support class for calling package private methods in the app.packed.container package. */
+/** An interface for calling non-accessible methods in the app.packed.artifact package. */
 public interface AppPackedArtifactAccess extends SecretAccess {
+
+    /**
+     * Extracts a container configuration from the specified image.
+     * 
+     * @param image
+     *            the image to return the configuration object for
+     * @return the configuration object
+     */
     PackedContainerConfiguration getConfiguration(ArtifactImage image);
 }

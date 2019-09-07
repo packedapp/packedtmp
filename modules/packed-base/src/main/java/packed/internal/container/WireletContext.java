@@ -24,8 +24,8 @@ import app.packed.container.extension.ExtensionPipeline;
 import app.packed.container.extension.ExtensionWirelet;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletModel;
+import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  *

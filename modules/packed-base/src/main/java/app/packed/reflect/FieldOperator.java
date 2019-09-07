@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.util.TypeLiteral;
-import packed.internal.container.extension.hook.PackedFieldOperator;
+import packed.internal.reflect.PackedFieldOperator;
 
 /**
  * <p>

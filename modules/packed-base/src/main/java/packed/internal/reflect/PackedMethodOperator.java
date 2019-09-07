@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.reflect.MethodOperator;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -31,7 +32,7 @@ import packed.internal.util.ThrowableUtil;
  */
 public abstract class PackedMethodOperator<T> implements MethodOperator<T> {
 
-    abstract T applyStaticHook(PackedAnnotatedMethodHook<?> packedAnnotatedMethodHook);
+    public abstract T applyStaticHook(AnnotatedMethodHook<?> packedAnnotatedMethodHook);
 
     public static <T> PackedMethodOperator<T> cast(MethodOperator<T> operator) {
         requireNonNull(operator, "operator is null");
@@ -60,7 +61,7 @@ public abstract class PackedMethodOperator<T> implements MethodOperator<T> {
 
         /** {@inheritDoc} */
         @Override
-        T applyStaticHook(PackedAnnotatedMethodHook<?> hook) {
+        public T applyStaticHook(AnnotatedMethodHook<?> hook) {
             return invoke(hook.methodHandle());
         }
 
@@ -103,7 +104,7 @@ public abstract class PackedMethodOperator<T> implements MethodOperator<T> {
 
         /** {@inheritDoc} */
         @Override
-        Runnable applyStaticHook(PackedAnnotatedMethodHook<?> hook) {
+        public Runnable applyStaticHook(AnnotatedMethodHook<?> hook) {
             return new StaticRunnable(hook.methodHandle());
         }
 

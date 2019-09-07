@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-/** Provides a mechanism for calling package private methods in public packages without using reflection. */
+/** Provides a mechanism for calling methods that are non-accessible in public packages without using reflection. */
 package packed.internal.access;

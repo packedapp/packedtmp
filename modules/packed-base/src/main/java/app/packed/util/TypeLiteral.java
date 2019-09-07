@@ -31,8 +31,8 @@ import java.util.Optional;
 import app.packed.reflect.ParameterDescriptor;
 import packed.internal.access.AppPackedUtilAccess;
 import packed.internal.access.SharedSecrets;
+import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does

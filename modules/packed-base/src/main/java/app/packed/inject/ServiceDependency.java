@@ -44,10 +44,10 @@ import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.access.SharedSecrets;
 import packed.internal.inject.util.QualifierHelper;
+import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.types.TypeVariableExtractor;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or

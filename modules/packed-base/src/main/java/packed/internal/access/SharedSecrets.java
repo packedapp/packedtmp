@@ -33,13 +33,13 @@ public final class SharedSecrets {
     /** All secrets, we never remove them to make sure we never add anything twice. */
     private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> TMP = new ConcurrentHashMap<>();
 
-    /** Never instantiate */
+    /** Never instantiate. */
     private SharedSecrets() {}
 
     /**
-     * Returns an access object for app.packed.artifact.
+     * Returns an access object that can access methods in app.packed.artifact.
      * 
-     * @return an access object for app.packed.artifact
+     * @return an access object that can access methods in app.packed.artifact
      */
     public static AppPackedArtifactAccess artifact() {
         return ArtifactSingletonHolder.SINGLETON;
@@ -121,7 +121,7 @@ public final class SharedSecrets {
         return UtilSingletonHolder.SINGLETON;
     }
 
-    /** Holder of the {@link AppPackedArtifactAccess} singleton. */
+    /** Singleton holder for {@link AppPackedArtifactAccess}. */
     private static class ArtifactSingletonHolder {
 
         /** The singleton instance. */

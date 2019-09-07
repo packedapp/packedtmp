@@ -28,6 +28,7 @@ import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.MethodOperator;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentModel;
+import packed.internal.reflect.PackedMethodOperator;
 
 /** The default implementation of {@link AnnotatedMethodHook}. */
 final class PackedAnnotatedMethodHook<T extends Annotation> implements AnnotatedMethodHook<T> {

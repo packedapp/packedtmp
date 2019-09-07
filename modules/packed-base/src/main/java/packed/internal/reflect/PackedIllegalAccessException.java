@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util.types;
-
-import java.lang.reflect.Type;
+package packed.internal.reflect;
 
 /**
  *
  */
-public abstract class TypeConverter<T> {
-    public static final TypeConverter<Type> IDENTITY = null;
-    
-    public static final TypeConverter<Class<?>> RAW = null;
-    
-    public abstract T convert(Type t);
+@SuppressWarnings("serial")
+public class PackedIllegalAccessException extends RuntimeException {
+    public PackedIllegalAccessException(IllegalAccessException e) {
+        super(e);
+    }
 }

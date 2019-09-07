@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 
-import packed.internal.container.extension.hook.PackedMethodOperator;
+import packed.internal.reflect.PackedMethodOperator;
 
 /**
  *

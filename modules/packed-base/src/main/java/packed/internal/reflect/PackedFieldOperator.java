@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Supplier;
 
+import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.reflect.FieldOperator;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -77,7 +78,7 @@ public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
 
     public abstract T invoke(MethodHandle mh);
 
-    public abstract T applyStaticHook(PackedAnnotatedFieldHook<?> hook);
+    public abstract T applyStaticHook(AnnotatedFieldHook<?> hook);
 
     // If its a getter we cache the method handle
     public abstract boolean isSimpleGetter();
@@ -104,7 +105,7 @@ public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
 
         /** {@inheritDoc} */
         @Override
-        public T applyStaticHook(PackedAnnotatedFieldHook<?> hook) {
+        public T applyStaticHook(AnnotatedFieldHook<?> hook) {
             return invoke(hook.getter());
         }
     }
@@ -149,7 +150,7 @@ public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
 
         /** {@inheritDoc} */
         @Override
-        public Supplier<T> applyStaticHook(PackedAnnotatedFieldHook<?> hook) {
+        public Supplier<T> applyStaticHook(AnnotatedFieldHook<?> hook) {
             return new StaticSup<T>(hook.getter());
         }
     }

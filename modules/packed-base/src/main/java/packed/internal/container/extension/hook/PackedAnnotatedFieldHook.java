@@ -29,6 +29,7 @@ import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.FieldOperator;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentModel;
+import packed.internal.reflect.PackedFieldOperator;
 import packed.internal.util.StringFormatter;
 
 /** The default implementation of {@link AnnotatedFieldHook}. */
