@@ -21,7 +21,8 @@ import app.packed.container.BundleDescriptor;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /**
- *
+ * Extension nodes enables communication across extension instances of the same. It also enables using wirelets if X
+ * interface is implemented. Finally it allows host to guest communication.
  */
 public abstract class ExtensionNode {
 
