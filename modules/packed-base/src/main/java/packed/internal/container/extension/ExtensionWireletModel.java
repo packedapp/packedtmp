@@ -16,13 +16,12 @@
 package packed.internal.container.extension;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionPipeline;
 import app.packed.container.extension.ExtensionWirelet;
-import packed.internal.util.TypeVariableExtractor;
+import packed.internal.inject.util.stuff.TypeVariableExtractor;
 
 /**
  *
@@ -40,7 +39,7 @@ public class ExtensionWireletModel {
         }
     };
 
-    static final TypeVariableExtractor<Type> EXTENSION_TYPE_EXTRACTOR = TypeVariableExtractor.rawClass(ExtensionWirelet.class);
+    static final TypeVariableExtractor EXTENSION_TYPE_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.class);
 
     public final Class<? extends Extension> extensionType;
 

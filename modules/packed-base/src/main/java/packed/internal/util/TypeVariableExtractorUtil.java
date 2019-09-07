@@ -27,6 +27,7 @@ import java.util.StringJoiner;
 /**
  * A utility class for extracting information about the type parameters of a class.
  */
+@Deprecated
 public class TypeVariableExtractorUtil {
 
     public static <T> Type findTypeParameterFromInterface(Class<? extends T> childClass, Class<T> interfaceClass, int typeVariableIndexOnBaseClass) {

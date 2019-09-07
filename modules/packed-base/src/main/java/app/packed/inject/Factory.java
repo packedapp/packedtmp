@@ -44,8 +44,8 @@ import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
 import packed.internal.inject.factoryhandle.MappingFactoryHandle;
+import packed.internal.inject.util.stuff.TypeVariableExtractor;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.TypeVariableExtractorUtil;
 
 /**
  * Factories are used for creating new instances of a particular type.
@@ -100,6 +100,8 @@ public class Factory<T> {
         }
     };
 
+    private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
+
     /**
      * A cache of factories used by {@link #findInjectable(TypeLiteral)}. This cache is only used by subclasses of
      * TypeLiteral, never literals that are manually constructed.
@@ -110,7 +112,7 @@ public class Factory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
-            Type t = TypeVariableExtractorUtil.findTypeParameterFromSuperClass((Class) implementation, TypeLiteral.class, 0);
+            Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
             return new Factory(FactoryFindInjectableExecutable.find(SharedSecrets.util().toTypeLiteral(t)));
         }
     };

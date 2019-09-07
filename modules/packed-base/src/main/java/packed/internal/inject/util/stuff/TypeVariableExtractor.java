@@ -24,15 +24,13 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.StringJoiner;
-import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import packed.internal.util.StringFormatter;
 
 /**
- *
+ * A small utility class that allows easy extraction of type variables.
  */
 //// Naeh hov.. det er bare ting der ogsaa skal bruge type converters...
 // Field
@@ -47,9 +45,16 @@ import packed.internal.util.StringFormatter;
 // extractAndConvert
 public final class TypeVariableExtractor {
 
-    final Class<?> baseType;
+    /** The base type where the type variables are located. */
+    private final Class<?> baseType;
+
+    /** The index that should be resolved. */
     private final int[] indexes;
+
+    /** Whether or not the base type is an interface. */
     final boolean isInterface;
+
+    /** The type variables, matchings the indexes. */
     final TypeVariable<?>[] typeVariables;
 
     TypeVariableExtractor(Class<?> baseType, TypeVariable<?>[] typeVariables, int[] indexes) {
@@ -77,7 +82,19 @@ public final class TypeVariableExtractor {
     }
 
     public Type[] extractAll(Class<?> from) {
-        return fromInterface(from);
+        if (!baseType.isAssignableFrom(from)) {
+            String op = Modifier.isInterface(from.getModifiers()) == isInterface ? "extend" : "implement";
+            throw new IllegalArgumentException(StringFormatter.format(from) + " does not " + op + " " + StringFormatter.format(baseType));
+        }
+        Type[] result = new Type[indexes.length];
+        if (isInterface) {
+            fromInterface0(from, result);
+        } else {
+            for (int i = 0; i < result.length; i++) {
+                result[i] = findTypeParameterFromSuperClass(from, indexes[i]);
+            }
+        }
+        return result;
     }
 
     public <T> Type findTypeParameterFromSuperClass(Class<? extends T> childClass, int typeVariableIndexOnBaseClass) {
@@ -130,16 +147,6 @@ public final class TypeVariableExtractor {
         throw new UnsupportedOperationException();
     }
 
-    Type[] fromInterface(Class<?> childType) {
-        if (!baseType.isAssignableFrom(childType)) {
-            String op = Modifier.isInterface(childType.getModifiers()) ? "extend" : "implement";
-            throw new IllegalArgumentException(StringFormatter.format(childType) + " does not " + op + " " + StringFormatter.format(baseType));
-        }
-        Type[] result = new Type[indexes.length];
-        fromInterface0(childType, result);
-        return result;
-    }
-
     boolean fromInterface0(Class<?> cc, Type[] result) {
         for (Type t : cc.getGenericInterfaces()) {
             if (t instanceof ParameterizedType) {
@@ -151,6 +158,11 @@ public final class TypeVariableExtractor {
                     }
                     return true;
                 }
+
+                for (Type tt : pt.getActualTypeArguments()) {
+                    // Ahh fuck skal lave noget ledt her ogsaa....
+                    System.out.println(tt);
+                }
             } else if (t instanceof Class) {
                 if (fromInterface0((Class<?>) t, result)) {
                     return true;
@@ -158,13 +170,6 @@ public final class TypeVariableExtractor {
             }
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        TypeVariableExtractor e = TypeVariableExtractor.of(Function.class, 1);
-
-        System.out.println(e.extract(Ddd.class));
-
     }
 
     // If no indexes specified, choose all..
@@ -186,8 +191,6 @@ public final class TypeVariableExtractor {
             return new TypeVariableExtractor(baseType, typeVariables, indexes);
         }
     }
-
-    interface Ddd extends Function<Function<String, String>, List<String>> {}
 }
 
 // public static <T> TypeVariableExtractor<T> of(Class<?> baseClass, TypeConverter<T> converter) {

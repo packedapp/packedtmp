@@ -25,7 +25,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.inject.Injector;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.util.TypeVariableExtractorUtil;
+import packed.internal.inject.util.stuff.TypeVariableExtractor;
 
 /**
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
@@ -49,10 +49,12 @@ public abstract class ArtifactDriver<T> {
     /** The type of artifact this driver produces. */
     private final Class<T> artifactType;
 
+    private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ArtifactDriver.class);
+
     /** Creates a new driver. */
     @SuppressWarnings("unchecked")
     protected ArtifactDriver() {
-        this.artifactType = (Class<T>) TypeVariableExtractorUtil.findTypeParameterUnsafe(getClass(), ArtifactDriver.class, 0);
+        this.artifactType = (Class<T>) ARTIFACT_DRIVER_TV_EXTRACTOR.extract(getClass());
 
         // Set tmp
         configure();

@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import packed.internal.inject.util.stuff.TypeVariableExtractor;
 import support.stubs.TypeStubs;
 
 /**
@@ -34,10 +35,10 @@ public class TypeVariableExtractorUtilTest {
         class X<T1, T2, T3, T4> {}
         class Y<T> extends X<String, int[], List<String>, T> {}
 
-        assertThat(TypeVariableExtractor.rawClass(X.class, 0).extract(Y.class)).isSameAs(String.class);
-        assertThat(TypeVariableExtractor.rawClass(X.class, 1).extract(Y.class)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractor.rawClass(X.class, 2).extract(Y.class)).isEqualTo(TypeStubs.LIST_STRING);
-        assertThat(TypeVariableExtractor.rawClass(X.class, 3).extract(Y.class)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(X.class, 0).extract(Y.class)).isSameAs(String.class);
+        assertThat(TypeVariableExtractor.of(X.class, 1).extract(Y.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.of(X.class, 2).extract(Y.class)).isEqualTo(TypeStubs.LIST_STRING);
+        assertThat(TypeVariableExtractor.of(X.class, 3).extract(Y.class)).isInstanceOf(TypeVariable.class);
     }
 
     @Test
@@ -46,10 +47,10 @@ public class TypeVariableExtractorUtilTest {
         class Y<S1, S2> extends X<S1, String, int[], S2> {}
         class Z<U1> extends Y<List<String>, U1> {}
 
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, X.class, 0)).isEqualTo(TypeStubs.LIST_STRING);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, X.class, 1)).isSameAs(String.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, X.class, 2)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, X.class, 3)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(X.class, 0).extract(Z.class)).isEqualTo(TypeStubs.LIST_STRING);
+        assertThat(TypeVariableExtractor.of(X.class, 1).extract(Z.class)).isSameAs(String.class);
+        assertThat(TypeVariableExtractor.of(X.class, 2).extract(Z.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.of(X.class, 3).extract(Z.class)).isInstanceOf(TypeVariable.class);
     }
 
     @Test
@@ -60,25 +61,25 @@ public class TypeVariableExtractorUtilTest {
         class Y<V1> extends X<String, V1> {}
         class Z extends Y<List<?>> {}
 
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(W.class, V.class, 0)).isInstanceOf(TypeVariable.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(W.class, V.class, 1)).isInstanceOf(TypeVariable.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(W.class, V.class, 2)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(W.class, V.class, 3)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(V.class, 0).extract(W.class)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(V.class, 1).extract(W.class)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(V.class, 2).extract(W.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.of(V.class, 3).extract(W.class)).isInstanceOf(TypeVariable.class);
 
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(X.class, V.class, 0)).isInstanceOf(TypeVariable.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(X.class, V.class, 1)).isEqualTo(TypeStubs.LIST_STRING);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(X.class, V.class, 2)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(X.class, V.class, 3)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(V.class, 0).extract(X.class)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(V.class, 1).extract(X.class)).isEqualTo(TypeStubs.LIST_STRING);
+        assertThat(TypeVariableExtractor.of(V.class, 2).extract(X.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.of(V.class, 3).extract(X.class)).isInstanceOf(TypeVariable.class);
 
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, V.class, 0)).isSameAs(String.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, V.class, 1)).isEqualTo(TypeStubs.LIST_STRING);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, V.class, 2)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Y.class, V.class, 3)).isInstanceOf(TypeVariable.class);
+        assertThat(TypeVariableExtractor.of(V.class, 0).extract(Y.class)).isSameAs(String.class);
+        assertThat(TypeVariableExtractor.of(V.class, 1).extract(Y.class)).isEqualTo(TypeStubs.LIST_STRING);
+        assertThat(TypeVariableExtractor.of(V.class, 2).extract(Y.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.of(V.class, 3).extract(Y.class)).isInstanceOf(TypeVariable.class);
 
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, V.class, 0)).isSameAs(String.class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, V.class, 1)).isEqualTo(TypeStubs.LIST_STRING);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, V.class, 2)).isSameAs(int[].class);
-        assertThat(TypeVariableExtractorUtil.findTypeParameterFromSuperClass(Z.class, V.class, 3)).isEqualTo(TypeStubs.LIST_WILDCARD);
+        assertThat(TypeVariableExtractor.of(V.class, 0).extract(Z.class)).isSameAs(String.class);
+        assertThat(TypeVariableExtractor.of(V.class, 1).extract(Z.class)).isEqualTo(TypeStubs.LIST_STRING);
+        assertThat(TypeVariableExtractor.of(V.class, 2).extract(Z.class)).isSameAs(int[].class);
+        assertThat(TypeVariableExtractor.of(V.class, 3).extract(Z.class)).isEqualTo(TypeStubs.LIST_WILDCARD);
 
     }
 }
