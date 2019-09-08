@@ -101,11 +101,13 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
         }
         // Let us see if it is annotated with @OnHookGroup
         OnHookGroup g = method.getAnnotation(OnHookGroup.class);
-        if (isGroupBuilder) {
-            throw new InvalidDeclarationException(
-                    "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
-        }
+        if (g != null) {
+            if (isGroupBuilder) {
+                throw new InvalidDeclarationException(
+                        "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
+            }
 
-        Class<? extends HookGroupBuilder<?>> builderType = g.value();// Find group
+            Class<? extends HookGroupBuilder<?>> builderType = g.value();// Find group
+        }
     }
 }

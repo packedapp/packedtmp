@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -33,12 +32,10 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
 import packed.internal.reflect.AbstractInstantiableModel;
-import packed.internal.reflect.MemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -156,27 +153,16 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
     }
 
     /** A builder object, that extract relevant methods from a hook group builder. */
-    private static class Builder extends MemberProcessor {
+    private static class Builder extends OnHookMemberProcessor {
 
         /** An type variable extractor to extract the type of hook group the builder produces. */
         private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
-
-        /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedFieldHook} as parameter. */
-        private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
-
-        /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedMethodHook} as parameter. */
-        private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedMethods = new IdentityHashMap<>();
-
-        /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
-        private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
         /** The type of hook group builder. */
         private final Class<? extends HookGroupBuilder<?>> builderType;
 
         /** The type of hook group the builder produces */
         private final Class<?> groupType;
-
-        Lookup lookup;
 
         /**
          * Creates a new builder for the specified hook group builder type.
@@ -186,7 +172,7 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
          */
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
-            super(HookGroupBuilder.class, builderType);
+            super(HookGroupBuilder.class, builderType, true);
             this.builderType = requireNonNull(builderType);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
 
@@ -199,7 +185,8 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
             }
         }
 
-        private void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
+        @Override
+        protected void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
                 IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
             // if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
             // throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
@@ -237,31 +224,5 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
             return new HookGroupBuilderModel(this);
         }
 
-        @Override
-        protected void processMethod(Method method) {
-            if (method.isAnnotationPresent(OnHookGroup.class)) {
-                throw new InvalidDeclarationException(
-                        "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
-            }
-            if (method.isAnnotationPresent(OnHook.class)) {
-                if (method.getParameterCount() == 1) {
-                    Parameter p = method.getParameters()[0];
-                    Class<?> pc = p.getType();
-                    if (pc == AnnotatedFieldHook.class) {
-                        addHookMethod(lookup, method, p, null, annotatedFields);
-                        return;
-                    } else if (pc == AnnotatedMethodHook.class) {
-                        addHookMethod(lookup, method, p, null, annotatedMethods);
-                        return;
-                    } else if (pc == AnnotatedTypeHook.class) {
-                        addHookMethod(lookup, method, p, null, annotatedTypes);
-                        return;
-                    }
-                }
-                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must have exactly one parameter of type "
-                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
-                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-            }
-        }
     }
 }
