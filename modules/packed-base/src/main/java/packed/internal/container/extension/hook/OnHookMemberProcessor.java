@@ -45,6 +45,8 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
 
     private final boolean isGroupBuilder;
 
+    final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
+
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedFieldHook} as parameter. */
     final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
@@ -140,7 +142,43 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
                         "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
             }
 
-            Class<? extends HookGroupBuilder<?>> builderType = g.value();// Find group
+            addHookMethod(method, g);
+            // Class<? extends HookGroupBuilder<?>> builderType = g.value();// Find group
         }
+    }
+
+    /**
+     * @param method
+     * @param oh
+     */
+    private void addHookMethod(Method method, OnHookGroup oh) {
+
+        if (method.getParameterCount() != 2) {
+            throw new InvalidDeclarationException(
+                    "Methods annotated with @OnHook on extensions must have exactly two parameter, method = " + StringFormatter.format(method));
+        }
+        if (method.getParameterTypes()[0] != ComponentConfiguration.class) {
+            throw new InvalidDeclarationException("OOPS");
+        }
+        Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
+
+        MethodHandle mh;
+        try {
+            mh = lookup.unreflect(method);
+        } catch (IllegalAccessException | InaccessibleObjectException e) {
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
+                    + actualType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
+        }
+
+        NativeImage.registerMethod(method);
+
+        groups.put(aggregateType, mh);
+        HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
+        annotatedFields.putAll(oha.annotatedFields);
+        annotatedMethods.putAll(oha.annotatedMethods);
+        annotatedTypes.putAll(oha.annotatedTypes);
+        // aggregators.p
+
+        // Do something
     }
 }

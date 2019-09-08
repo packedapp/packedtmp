@@ -17,20 +17,13 @@ package packed.internal.container.extension.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.InaccessibleObjectException;
-import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHookGroup;
-import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.NativeImage;
-import packed.internal.util.StringFormatter;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookXModel {
@@ -108,110 +101,14 @@ public final class OnHookXModel {
     /** A builder for {@link OnHookXModel}. */
     private static class Builder extends OnHookMemberProcessor {
 
-        final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
-
         private Builder(Class<? extends Extension> extensionType) {
             super(Extension.class, extensionType, false);
-        }
-
-        /**
-         * @param lookup
-         * @param method
-         * @param oh
-         */
-        private void addHookMethod(Method method, OnHookGroup oh) {
-
-            if (method.getParameterCount() != 2) {
-                throw new InvalidDeclarationException(
-                        "Methods annotated with @OnHook on extensions must have exactly two parameter, method = " + StringFormatter.format(method));
-            }
-            if (method.getParameterTypes()[0] != ComponentConfiguration.class) {
-                throw new InvalidDeclarationException("OOPS");
-            }
-            Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
-
-            MethodHandle mh;
-            try {
-                mh = lookup.unreflect(method);
-            } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
-                        + actualType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-            }
-
-            NativeImage.registerMethod(method);
-
-            groups.put(aggregateType, mh);
-            HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
-            annotatedFields.putAll(oha.annotatedFields);
-            annotatedMethods.putAll(oha.annotatedMethods);
-            annotatedTypes.putAll(oha.annotatedTypes);
-            // aggregators.p
-
-            // Do something
         }
 
         private OnHookXModel build() {
             findMethods();
             return new OnHookXModel(this);
         }
-
-        @Override
-        protected void processMethod(Method method) {
-            OnHookGroup oh = method.getAnnotation(OnHookGroup.class);
-            if (oh != null) {
-                addHookMethod(method, oh);
-            }
-        }
-
     }
 
 }
-/// ** A dummy type indicating that no aggregator should be used. */
-// public static abstract class NoAggregator implements Supplier<Void>, HookGroupBuilder<Void> {}
-
-// else if (cl == AnnotatedFieldHook.class) {
-// addHookMethod0(lookup, method, p, annotatedFields);
-// throw new Error();
-// } else if (cl == AnnotatedMethodHook.class) {
-// addHookMethod0(lookup, method, p, annotatedMethods);
-// throw new Error();
-// } else if (cl == AnnotatedTypeHook.class) {
-// addHookMethod0(lookup, method, p, annotatedTypes);
-// throw new Error();
-// } else {
-// if (true) {
-// throw new Error();
-// }
-// throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one
-// parameter of type "
-// + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
-// + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-// }
-// private void addHookMethod0(Lookup lookup, Method method, Parameter p, IdentityHashMap<Class<? extends Annotation>,
-// MethodHandle> annotations) {
-// ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-// @SuppressWarnings("unchecked")
-// Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
-//
-// if (annotations.containsKey(annotationType)) {
-// throw new InvalidDeclarationException("There are multiple methods annotated with @OnHook on "
-// + StringFormatter.format(method.getDeclaringClass()) + " that takes " + p.getParameterizedType());
-// }
-// // Check that we have not added another previously for the same annotation
-//
-// MethodHandle mh;
-// try {
-// method.setAccessible(true);
-// lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
-// mh = lookup.unreflect(method);
-// } catch (IllegalAccessException | InaccessibleObjectException e) {
-// throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(extensionType) +
-// ", the module '"
-// + extensionType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'",
-// e);
-// }
-//
-// NativeImage.registerMethod(method);
-//
-// annotations.put(annotationType, mh);
-// }
