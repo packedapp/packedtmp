@@ -20,8 +20,8 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHook;
-import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.OnHookGroup;
+import app.packed.container.extension.HookGroupBuilder;
 
 /**
  *
@@ -33,11 +33,11 @@ public class HookOnAggregatorActivationMicro {
 
     public static class HookActivateExtension extends Extension {
 
-        @OnHook(SomeAggegator.class)
+        @OnHookGroup(SomeAggegator.class)
         public void process(ComponentConfiguration cc, String s) {}
     }
 
-    public static class SomeAggegator implements HookAggregateBuilder<String> {
+    public static class SomeAggegator implements HookGroupBuilder<String> {
 
         /** {@inheritDoc} */
         @Override

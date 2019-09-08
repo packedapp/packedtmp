@@ -163,8 +163,8 @@ public abstract class BaseBundle extends Bundle {
         return component().install(implementation);
     }
 
-    protected final ComponentConfiguration install(Object instance) {
-        return component().install(instance);
+    protected final ComponentConfiguration installConstant(Object instance) {
+        return component().installConstant(instance);
     }
 
     protected final ComponentConfiguration installHelper(Class<?> implementation) {
@@ -204,8 +204,8 @@ public abstract class BaseBundle extends Bundle {
         return injector().provide(factory);
     }
 
-    protected final <T> ComponentServiceConfiguration<T> provide(T instance) {
-        return injector().provide(instance);
+    protected final <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
+        return injector().provideConstant(instance);
     }
 
     protected final void requireService(Class<?> key) {

@@ -15,24 +15,17 @@
  */
 package packed.internal.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.reflect.ConstructorExtractor;
 import app.packed.util.InvalidDeclarationException;
-import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
-import packed.internal.util.TypeUtil;
 
 /**
  * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
@@ -62,69 +55,18 @@ final class ExtensionModel<T> {
     /**
      * Creates a new extension model.
      * 
-     * @param type
+     * @param extensionType
      *            the extension type
      */
-    private ExtensionModel(Class<? extends Extension> type) {
-        this.extensionType = requireNonNull(type);
-
-        if (Modifier.isAbstract(type.getModifiers())) {
-            throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(type));
-        } else if (!Extension.class.isAssignableFrom(type)) {
-            throw new IllegalArgumentException(
-                    "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
-        } else if (TypeUtil.isInnerOrLocalClass(type)) {
-            throw new IllegalArgumentException("The specified type '" + StringFormatter.format(type) + "' cannot be an inner or local class");
+    private ExtensionModel(Class<? extends Extension> extensionType) {
+        if (!Modifier.isFinal(extensionType.getModifiers())) {
+            throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");
         }
-
-        Constructor<?> constructor;
-        try {
-            constructor = type.getDeclaredConstructor();
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be used");
-        }
-
-        // Check that the package the extension is located in, is open to app.packed.base
-        if (!type.getModule().isOpen(type.getPackageName(), ExtensionModel.class.getModule())) {
-            String n = type.getModule().getName();
-            String m = ExtensionModel.class.getModule().getName();
-            String p = type.getPackageName();
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
-                    + type.getModule().getName() + "' must be open to '" + m + "'. This can be done either via\n -> open module " + n + "\n -> opens " + p
-                    + "\n -> opens " + p + " to " + m);
-        }
-
-        // Make sure we can read the module where the extension is located.
-        if (!getClass().getModule().canRead(type.getModule())) {
-            getClass().getModule().addReads(type.getModule());
-        }
-
-        Lookup lookup = MethodHandles.lookup();
-
-        // See if need to use a private lookup
-        if (!Modifier.isPublic(type.getModifiers()) || !Modifier.isPublic(constructor.getModifiers())) {
-            try {
-                lookup = MethodHandles.privateLookupIn(type, lookup);
-            } catch (IllegalAccessException e) {
-                // This should never happen, because we have checked all preconditions
-                // And we use our own lookup object which have Module access mode enabled.
-
-                // Maybe something with unnamed modules...
-                throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
-            }
-        }
-
-        try {
-            this.constructor = lookup.unreflectConstructor(constructor);
-        } catch (IllegalAccessException e) {
-            throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
-        }
-
-        NativeImage.registerConstructor(constructor);
-
+        this.extensionType = extensionType;
+        this.constructor = ConstructorExtractor.extract(extensionType);
         Method m = null;
         try {
-            m = type.getDeclaredMethod("onAdded");
+            m = extensionType.getDeclaredMethod("onAdded");
         } catch (NoSuchMethodException ignore) {}
 
         if (m != null) {

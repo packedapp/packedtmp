@@ -79,7 +79,7 @@ public class InjectorMicro {
 
         @Override
         public void configure() {
-            export(provide("Hey"));
+            export(provideConstant("Hey"));
         }
     }
 }

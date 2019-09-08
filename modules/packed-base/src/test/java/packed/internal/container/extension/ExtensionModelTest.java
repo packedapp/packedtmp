@@ -70,13 +70,13 @@ public class ExtensionModelTest {
 
     public class InnerClassExtension extends Extension {}
 
-    public static class TakesParameterExtension extends Extension {
+    public static final class TakesParameterExtension extends Extension {
         public TakesParameterExtension(String s) {}
     }
 
-    public static class NormalExtension extends Extension {}
+    public static final class NormalExtension extends Extension {}
 
-    private static class PrivateExtension extends Extension {
+    private static final class PrivateExtension extends Extension {
         private PrivateExtension() {}
     }
 }

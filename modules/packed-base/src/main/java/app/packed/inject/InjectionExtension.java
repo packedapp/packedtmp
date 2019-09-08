@@ -24,7 +24,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.OnHookGroup;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -172,7 +172,7 @@ public final class InjectionExtension extends Extension {
      * @param group
      *            a inject group object
      */
-    @OnHook(AtInjectGroup.Builder.class)
+    @OnHookGroup(AtInjectGroup.Builder.class)
     void onHookAtInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
         node.onInjectGroup(cc, group);
     }
@@ -185,7 +185,7 @@ public final class InjectionExtension extends Extension {
      * @param group
      *            a provides group object
      */
-    @OnHook(AtProvidesGroup.Builder.class)
+    @OnHookGroup(AtProvidesGroup.Builder.class)
     void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
         node.provider().onProvidesGroup(cc, group);
     }
@@ -237,9 +237,9 @@ public final class InjectionExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provide(T instance) {
+    public <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
         // configurability is checked by ComponentExtension
-        return node.provider().provideInstance(use(ComponentExtension.class).install(instance), instance);
+        return node.provider().provideInstance(use(ComponentExtension.class).installConstant(instance), instance);
     }
 
     /**

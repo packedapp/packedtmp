@@ -22,8 +22,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.FieldOperator;
 import app.packed.reflect.MethodOperator;
 
@@ -32,7 +32,7 @@ import app.packed.reflect.MethodOperator;
  */
 public class MyExtension2 extends Extension {
 
-    @OnHook(Agg.class)
+    @OnHookGroup(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
         val.rars.readyAll(cc, MySidecar.class, (s, o) -> s.foo(o));
         System.out.println("Saa godt da");
@@ -54,7 +54,7 @@ public class MyExtension2 extends Extension {
         putIntoInstantiationContext(context, new MySidecar());
     }
 
-    public static class Agg implements HookAggregateBuilder<AXA> {
+    public static class Agg implements HookGroupBuilder<AXA> {
         private int sum;
 
         private final RuntimeAccessorList<Supplier<Object>> ral = new RuntimeAccessorList<>();

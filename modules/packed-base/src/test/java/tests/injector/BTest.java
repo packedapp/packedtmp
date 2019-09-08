@@ -63,7 +63,7 @@ public class BTest {
         @Override
         protected void configure() {
             lookup(MethodHandles.lookup());
-            provide(123L);
+            provideConstant(123L);
         }
     }
 

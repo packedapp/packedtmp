@@ -26,6 +26,7 @@ import packed.internal.container.extension.PackedExtensionContext;
  */
 public abstract class ExtensionNode {
 
+    // Or initialized, by the runtime....
     private final PackedExtensionContext context;
 
     protected ExtensionNode(ExtensionContext context) {

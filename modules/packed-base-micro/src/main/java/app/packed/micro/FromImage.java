@@ -38,8 +38,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHookGroup;
 
 /**
  *
@@ -66,13 +66,13 @@ public class FromImage {
     static final ArtifactImage INSTALL = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
-            install("foo");
+            installConstant("foo");
         }
     });
     static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new BaseBundle() {
         @Override
         public void configure() {
-            install(new MyStuff());
+            installConstant(new MyStuff());
         }
     });
 
@@ -104,7 +104,7 @@ public class FromImage {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(MyExtensionHookAggregator.class)
+        @OnHookGroup(MyExtensionHookAggregator.class)
         public void foo(ComponentConfiguration cc, String s) {}
     }
 
@@ -115,7 +115,7 @@ public class FromImage {
         String value();
     }
 
-    static class MyExtensionHookAggregator implements HookAggregateBuilder<String> {
+    static class MyExtensionHookAggregator implements HookGroupBuilder<String> {
         ActivateMyExtension e;
 
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {

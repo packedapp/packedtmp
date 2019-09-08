@@ -178,7 +178,7 @@ public final class InjectorConfigurator {
      * @return a service configuration for the service
      */
     public <T> ComponentServiceConfiguration<T> provide(T instance) {
-        return extension().provide(instance);
+        return extension().provideConstant(instance);
     }
 
     /**

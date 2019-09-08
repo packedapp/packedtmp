@@ -28,7 +28,7 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.hook.ExtensionHookPerComponentGroup;
-import packed.internal.util.FieldAndMethodProcessor;
+import packed.internal.reflect.MemberProcessor;
 
 /**
  *
@@ -89,7 +89,7 @@ public final class ComponentModel {
     }
 
     /** A builder object for a component class descriptor. */
-    public static final class Builder extends FieldAndMethodProcessor {
+    public static final class Builder extends MemberProcessor {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
@@ -178,4 +178,5 @@ public final class ComponentModel {
             }
         }
     }
+
 }

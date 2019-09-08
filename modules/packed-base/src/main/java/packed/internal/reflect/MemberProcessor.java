@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.reflect;
+
+import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -26,7 +28,7 @@ import java.util.HashSet;
  * Processes all fields and methods on selected classes.
  */
 // https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
-public abstract class FieldAndMethodProcessor {
+public abstract class MemberProcessor {
 
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
@@ -34,28 +36,44 @@ public abstract class FieldAndMethodProcessor {
     /** */
     private static final HashSet<Package> PKG = new HashSet<>();
 
-    public final void process(Class<?> cl) {
+    private final boolean processFields;
+    private final Class<?> baseClass;
+
+    public MemberProcessor() {
+        this(true, Object.class);
+    }
+
+    public MemberProcessor(boolean processFields, Class<?> baseClass) {
+        this.processFields = processFields;
+        this.baseClass = requireNonNull(baseClass);
+    }
+
+    public final void process(Class<?> type) {
+        requireNonNull(type, "type is null");
         // Step 1, find all public methods, this will include all default methods
-        HashMap<Entry, HashSet<Package>> types = new HashMap<>();
-        for (Method m : cl.getMethods()) {
+        HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
+        for (Method m : type.getMethods()) {
             // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
+                // Should also ignore methods on base class..
                 processMethod(m); // move this to step 2???
-                types.put(new Entry(m), PKG);
+                types.put(new MethodEntry(m), PKG);
             }
         }
 
         // Step 2 process all declared methods
-        for (Class<?> c = cl; c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
+        for (Class<?> c = type; c != baseClass && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
-            for (Field field : c.getDeclaredFields()) {
-                processField(field);
+            if (processFields) {
+                for (Field field : c.getDeclaredFields()) {
+                    processField(field);
+                }
             }
 
             for (Method m : c.getDeclaredMethods()) {
                 int mod = m.getModifiers();
                 if (Modifier.isStatic(mod)) {
-                    if (c == cl && !Modifier.isPublic(mod)) { // we have already processed public static methods
+                    if (c == type && !Modifier.isPublic(mod)) { // we have already processed public static methods
                         // only include static methods in the top level class
                         // We do this, because it would be strange to include
                         // static methods on any interfaces this class implements.
@@ -68,14 +86,14 @@ public abstract class FieldAndMethodProcessor {
                     case Modifier.PUBLIC:
                         continue; // we have already added the method in the first step
                     default: // default access
-                        HashSet<Package> pkg = types.computeIfAbsent(new Entry(m), key -> new HashSet<>());
+                        HashSet<Package> pkg = types.computeIfAbsent(new MethodEntry(m), key -> new HashSet<>());
                         if (pkg != PKG && pkg.add(c.getPackage())) {
                             break;
                         } else {
                             continue;
                         }
                     case Modifier.PROTECTED:
-                        if (types.putIfAbsent(new Entry(m), PKG) != null) {
+                        if (types.putIfAbsent(new MethodEntry(m), PKG) != null) {
                             continue;
                         }
                         // otherwise fall-through
@@ -94,28 +112,44 @@ public abstract class FieldAndMethodProcessor {
      * @param field
      *            the field to process
      */
-    protected abstract void processField(Field field);
+    protected void processField(Field field) {
+        throw new IllegalStateException("This method should be overridden, if field processing is enabled");
+    }
 
-    protected abstract void processMethod(Method method);
+    protected void processMethod(Method method) {
+        throw new IllegalStateException("This method should be overridden, if method processing is enabled");
+    }
 
-    private static final class Entry {
-        private final Class<?>[] args;
+    private static final class MethodEntry {
+
+        /** A hash. */
         private final int hash;
+
+        /** The name of the method */
         private final String name;
 
-        Entry(Method m) {
-            this.name = m.getName();
-            this.args = m.getParameterTypes();
-            this.hash = name.hashCode() ^ Arrays.hashCode(args);
+        /** The parameters of the method. */
+        private final Class<?>[] parameterTypes;
+
+        /**
+         * Creates a new entry for the specified method.
+         * 
+         * @param method
+         *            the method
+         */
+        private MethodEntry(Method method) {
+            this.name = method.getName();
+            this.parameterTypes = method.getParameterTypes();
+            this.hash = name.hashCode() ^ Arrays.hashCode(parameterTypes);
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean equals(Object obj) {
-            if (obj instanceof Entry) {
-                Entry k = (Entry) obj;
+            if (obj instanceof MethodEntry) {
+                MethodEntry e = (MethodEntry) obj;
                 // name is always interned so just use ==
-                return name == k.name && Arrays.equals(args, k.args);
+                return name == e.name && Arrays.equals(parameterTypes, e.parameterTypes);
             }
             return false;
         }

@@ -33,9 +33,9 @@ public class TestIt extends AppBundle {
         return new BaseBundle() {
             @Override
             protected void configure() {
-                provide("foob");
-                provide(-123L);
-                provide((short) -123L);
+                provideConstant("foob");
+                provideConstant(-123L);
+                provideConstant((short) -123L);
                 exportAll();
             }
         };

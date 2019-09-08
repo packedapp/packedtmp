@@ -32,14 +32,14 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 
-/** This class contains information about {@link OnHook} methods for an extension type. */
+/** This class contains information about {@link OnHookGroup} methods for an extension type. */
 final class ExtensionOnHookDescriptor {
 
     /** A cache of descriptors for a particular extension type. */
@@ -105,7 +105,7 @@ final class ExtensionOnHookDescriptor {
      *            the extension type to return a descriptor for
      * @return the descriptor
      * @throws InvalidDeclarationException
-     *             if the usage of {@link OnHook} on the extension does not adhere to contract
+     *             if the usage of {@link OnHookGroup} on the extension does not adhere to contract
      */
     static ExtensionOnHookDescriptor get(Class<? extends Extension> extensionType) {
         return CACHE.get(extensionType);
@@ -137,7 +137,7 @@ final class ExtensionOnHookDescriptor {
          * @param method
          * @param oh
          */
-        private void addHookMethod(Lookup lookup, Method method, OnHook oh) {
+        private void addHookMethod(Lookup lookup, Method method, OnHookGroup oh) {
 
             if (method.getParameterCount() != 2) {
                 throw new InvalidDeclarationException(
@@ -149,7 +149,7 @@ final class ExtensionOnHookDescriptor {
             Parameter p = method.getParameters()[1];
             Class<?> cl = p.getType();
 
-            Class<? extends HookAggregateBuilder<?>> aggregateType = oh.value();
+            Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
 
             if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
                 MethodHandle mh;
@@ -164,7 +164,7 @@ final class ExtensionOnHookDescriptor {
                 NativeImage.registerMethod(method);
 
                 aggregators.put(aggregateType, mh);
-                OnHookAggregateBuilderModel oha = OnHookAggregateBuilderModel.get(aggregateType);
+                HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
                 annotatedFields.putAll(oha.annotatedFields);
                 annotatedMethods.putAll(oha.annotatedMethods);
                 annotatedTypes.putAll(oha.annotatedTypes);
@@ -213,7 +213,7 @@ final class ExtensionOnHookDescriptor {
         private ExtensionOnHookDescriptor build() {
             for (Class<?> c = extensionType; c != Extension.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
-                    OnHook oh = method.getAnnotation(OnHook.class);
+                    OnHookGroup oh = method.getAnnotation(OnHookGroup.class);
                     if (oh != null) {
                         addHookMethod(MethodHandles.lookup(), method, oh);
                     }

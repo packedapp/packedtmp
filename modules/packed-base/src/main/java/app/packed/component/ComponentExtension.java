@@ -98,7 +98,7 @@ public final class ComponentExtension extends Extension {
         return configuration.install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
-    public ComponentConfiguration install(Object instance) {
+    public ComponentConfiguration installConstant(Object instance) {
         requireNonNull(instance, "instance is null");
         return configuration.installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }

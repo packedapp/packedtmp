@@ -38,10 +38,10 @@ public class MainTest2 extends AppBundle {
 
         @Override
         protected void configure() {
-            install(this);
+            installConstant(this);
             path();
-            install("foo").path();
-            install(334).path();
+            installConstant("foo").path();
+            installConstant(334).path();
         }
 
         @Main

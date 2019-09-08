@@ -46,7 +46,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    static class Ex1 extends Extension {
+    static final class Ex1 extends Extension {
         /** {@inheritDoc} */
         @Override
         protected ExtensionNode onAdded() {
@@ -56,7 +56,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     }
 
-    static class Ex2 extends Extension {
+    static final class Ex2 extends Extension {
         /** {@inheritDoc} */
         @Override
         protected ExtensionNode onAdded() {
@@ -65,7 +65,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
     }
 
-    static class Ex3 extends Extension {
+    static final class Ex3 extends Extension {
         /** {@inheritDoc} */
         @Override
         protected ExtensionNode onAdded() {
@@ -74,7 +74,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
     }
 
-    static class ExRecursive1 extends Extension {
+    static final class ExRecursive1 extends Extension {
         /** {@inheritDoc} */
         @Override
         protected ExtensionNode onAdded() {
@@ -83,7 +83,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
     }
 
-    static class ExRecursive2 extends Extension {
+    static final class ExRecursive2 extends Extension {
         /** {@inheritDoc} */
         @Override
         protected ExtensionNode onAdded() {

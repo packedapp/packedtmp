@@ -45,7 +45,7 @@ public class TestBundlex extends BaseBundle {
     protected void configure() {
         lookup(MethodHandles.lookup());
         provide(A.class);
-        provide(this);
+        provideConstant(this);
         export(A.class);
     }
 

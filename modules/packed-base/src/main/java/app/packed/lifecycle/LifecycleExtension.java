@@ -24,9 +24,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.HookApplicator;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.OnHookGroup;
 import app.packed.inject.InjectionExtension;
 import app.packed.reflect.MethodOperator;
 import app.packed.util.InvalidDeclarationException;
@@ -65,7 +65,7 @@ public final class LifecycleExtension extends Extension {
      * 
      * @param mh
      */
-    @OnHook(LifecycleHookAggregator.class)
+    @OnHookGroup(LifecycleHookAggregator.class)
     void addMain(ComponentConfiguration cc, LifecycleHookAggregator mh) {
         mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
         // TODO check that we do not have multiple @Main methods
@@ -127,7 +127,7 @@ class LifecycleSidecar {
 
 }
 
-final class LifecycleHookAggregator implements HookAggregateBuilder<LifecycleHookAggregator> {
+final class LifecycleHookAggregator implements HookGroupBuilder<LifecycleHookAggregator> {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
     HookApplicator<Runnable> applyDelayed;

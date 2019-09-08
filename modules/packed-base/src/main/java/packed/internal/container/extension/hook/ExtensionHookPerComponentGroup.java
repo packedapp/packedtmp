@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.HookGroupBuilder;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.util.ThrowableUtil;
@@ -75,7 +75,7 @@ public final class ExtensionHookPerComponentGroup {
 
         final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
 
-        final IdentityHashMap<Class<?>, HookAggregateBuilder<?>> mmm = new IdentityHashMap<>();
+        final IdentityHashMap<Class<?>, HookGroupBuilder<?>> mmm = new IdentityHashMap<>();
 
         /** The type of extension that will be activated. */
         final Class<? extends Extension> extensionType;
@@ -93,7 +93,7 @@ public final class ExtensionHookPerComponentGroup {
 
         public ExtensionHookPerComponentGroup build() {
             // Add all aggregates
-            for (Entry<Class<?>, HookAggregateBuilder<?>> m : mmm.entrySet()) {
+            for (Entry<Class<?>, HookGroupBuilder<?>> m : mmm.entrySet()) {
                 MethodHandle mh = con.aggregators.get(m.getKey());
                 callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
@@ -116,8 +116,8 @@ public final class ExtensionHookPerComponentGroup {
                 callbacks.add(new ExtensionCallback(mh, hook));
             } else {
                 // The method handle refers to an aggregator object.
-                OnHookAggregateBuilderModel a = OnHookAggregateBuilderModel.get((Class<? extends HookAggregateBuilder<?>>) owner);
-                HookAggregateBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newAggregatorInstance());
+                HookGroupBuilderModel a = HookGroupBuilderModel.of((Class<? extends HookGroupBuilder<?>>) owner);
+                HookGroupBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newHookGroupBuilder());
                 try {
                     mh.invoke(sup, hook);
                 } catch (Throwable e) {
@@ -129,5 +129,5 @@ public final class ExtensionHookPerComponentGroup {
     }
 
     /** A dummy type indicating that no aggregator should be used. */
-    public static abstract class NoAggregator implements Supplier<Void>, HookAggregateBuilder<Void> {}
+    public static abstract class NoAggregator implements Supplier<Void>, HookGroupBuilder<Void> {}
 }

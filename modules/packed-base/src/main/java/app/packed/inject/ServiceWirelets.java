@@ -132,6 +132,11 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public Wirelet rekey(Class<?> from, Class<?> to) {
+        // Changes the key of an entry (String -> @Left String
+        throw new UnsupportedOperationException();
+    }
+
     // reject(Key... key)
     // reject(Class<?>... key)
     // reject(Predicate<? super Key|ServiceDescriptor>)

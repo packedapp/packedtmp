@@ -37,8 +37,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHookGroup;
 
 /**
  *
@@ -76,7 +76,7 @@ public class ExtensionActivation {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
-                install("foo");
+                installConstant("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -88,7 +88,7 @@ public class ExtensionActivation {
             @Override
             public void configure() {
                 use(MyExtension.class);
-                install("foo");
+                installConstant("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -99,7 +99,7 @@ public class ExtensionActivation {
         BaseBundle b = new BaseBundle() {
             @Override
             public void configure() {
-                install(new MyStuff());
+                installConstant(new MyStuff());
             }
         };
         return ArtifactImage.of(b);
@@ -113,7 +113,7 @@ public class ExtensionActivation {
 
     public static class MyExtension extends Extension {
 
-        @OnHook(Builder.class)
+        @OnHookGroup(Builder.class)
         public void foo(ComponentConfiguration cc, String s) {}
     }
 
@@ -124,7 +124,7 @@ public class ExtensionActivation {
         String value();
     }
 
-    static class Builder implements HookAggregateBuilder<String> {
+    static class Builder implements HookGroupBuilder<String> {
         ActivateMyExtension e;
 
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {

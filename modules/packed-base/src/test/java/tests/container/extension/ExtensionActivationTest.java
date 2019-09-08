@@ -32,8 +32,8 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHookGroup;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
@@ -46,7 +46,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             public void configure() {
                 assertThat(extensions()).isEmpty();
                 WithMethodInstance.invoked = false;
-                install(new WithMethodInstance());
+                installConstant(new WithMethodInstance());
                 assertThat(WithMethodInstance.invoked).isTrue();
                 assertThat(extensions()).containsExactlyInAnyOrder(ComponentExtension.class, MyExtension.class);
             }
@@ -59,7 +59,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
-                install(new WithFieldStatic());
+                installConstant(new WithFieldStatic());
                 assertThat(extensions()).containsExactlyInAnyOrder(ComponentExtension.class, MyExtension.class);
             }
         });
@@ -71,7 +71,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             @Override
             public void configure() {
                 assertThat(extensions()).isEmpty();
-                install(new WithFieldInstance());
+                installConstant(new WithFieldInstance());
                 assertThat(extensions()).containsExactlyInAnyOrder(ComponentExtension.class, MyExtension.class);
             }
         });
@@ -84,7 +84,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             public void configure() {
                 assertThat(extensions()).isEmpty();
                 WithMethodStatic.invoked = false;
-                install(new WithMethodStatic());
+                installConstant(new WithMethodStatic());
                 assertThat(WithMethodStatic.invoked).isTrue();
                 assertThat(extensions()).containsExactlyInAnyOrder(ComponentExtension.class, MyExtension.class);
             }
@@ -98,7 +98,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         String value();
     }
 
-    static class Builder implements HookAggregateBuilder<String> {
+    static class Builder implements HookGroupBuilder<String> {
 
         /** {@inheritDoc} */
         @Override
@@ -133,9 +133,9 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         }
     }
 
-    public static class MyExtension extends Extension {
+    public static final class MyExtension extends Extension {
 
-        @OnHook(Builder.class)
+        @OnHookGroup(Builder.class)
         protected void set(ComponentConfiguration a, String s) {}
     }
 

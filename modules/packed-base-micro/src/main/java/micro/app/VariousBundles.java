@@ -41,7 +41,7 @@ public class VariousBundles {
 
             @Override
             public void configure() {
-                install("foo");
+                installConstant("foo");
             }
         };
     }
@@ -51,11 +51,11 @@ public class VariousBundles {
 
             @Override
             public void configure() {
-                install("foo").setName("1");
-                install("foo").setName("2");
-                install("foo").setName("3");
-                install("foo").setName("4");
-                install("foo").setName("5");
+                installConstant("foo").setName("1");
+                installConstant("foo").setName("2");
+                installConstant("foo").setName("3");
+                installConstant("foo").setName("4");
+                installConstant("foo").setName("5");
             }
         };
     }

@@ -22,7 +22,7 @@ import java.util.List;
 
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.HookGroupBuilder;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
@@ -52,7 +52,7 @@ public final class AtProvidesGroup {
     }
 
     /** A builder for {@link AtProvidesGroup}. */
-    public final static class Builder implements HookAggregateBuilder<AtProvidesGroup> {
+    public final static class Builder implements HookGroupBuilder<AtProvidesGroup> {
 
         /** Whether or not there are any non-static providing fields or methods. */
         private boolean hasInstanceMembers;

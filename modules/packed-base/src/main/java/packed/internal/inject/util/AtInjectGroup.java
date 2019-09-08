@@ -20,7 +20,7 @@ import java.util.List;
 
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.HookGroupBuilder;
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
@@ -47,7 +47,7 @@ public final class AtInjectGroup {
     }
 
     /** A builder for {@link AtInjectGroup}. */
-    public final static class Builder implements HookAggregateBuilder<AtInjectGroup> {
+    public final static class Builder implements HookGroupBuilder<AtInjectGroup> {
 
         /** A set of all keys for every provided service. */
         private final ArrayList<AtInject> members = new ArrayList<>();

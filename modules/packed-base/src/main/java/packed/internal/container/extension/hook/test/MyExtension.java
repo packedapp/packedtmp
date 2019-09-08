@@ -24,9 +24,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookAggregateBuilder;
+import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.HookApplicator;
-import app.packed.container.extension.OnHook;
+import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.FieldOperator;
 import app.packed.reflect.MethodOperator;
 
@@ -35,7 +35,7 @@ import app.packed.reflect.MethodOperator;
  */
 public class MyExtension extends Extension {
 
-    @OnHook(Agg.class)
+    @OnHookGroup(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
         for (HookApplicator<Supplier<Object>> ra : val.rars) {
             ra.onReady(cc, MySidecar.class, (s, o) -> s.foo(o));
@@ -57,7 +57,7 @@ public class MyExtension extends Extension {
         putIntoInstantiationContext(context, new MySidecar());
     }
 
-    public static class Agg implements HookAggregateBuilder<AXA> {
+    public static class Agg implements HookGroupBuilder<AXA> {
         private int sum;
         private final ArrayList<HookApplicator<Supplier<Object>>> rar = new ArrayList<>();
 

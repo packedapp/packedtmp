@@ -26,7 +26,7 @@ public class Ddd extends AppBundle {
 
     @Override
     public void configure() {
-        install(new Ssss());
+        installConstant(new Ssss());
         installHelper(MyComp.class);
 
         // injector().provideAll(injector, wirelets);

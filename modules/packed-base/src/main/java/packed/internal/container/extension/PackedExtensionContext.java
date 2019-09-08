@@ -29,7 +29,7 @@ import app.packed.container.extension.ExtensionNode;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 
-/** The default implementation of {@link ExtensionContext}. */
+/** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
 
     /** The extension this context wraps. */
@@ -38,10 +38,10 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
+    public ExtensionNode node;
+
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
-
-    public ExtensionNode node;
 
     /**
      * @param pcc
@@ -58,6 +58,14 @@ public final class PackedExtensionContext implements ExtensionContext {
     @Override
     public ArtifactBuildContext buildContext() {
         return pcc.buildContext();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void checkConfigurable() {
+        if (!isConfigurable) {
+            throw new IllegalStateException("This extension (" + extension.getClass().getSimpleName() + ") is no longer configurable");
+        }
     }
 
     /** {@inheritDoc} */
@@ -84,14 +92,6 @@ public final class PackedExtensionContext implements ExtensionContext {
     @Override
     public void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
         context.put(pcc, sidecar);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void checkConfigurable() {
-        if (!isConfigurable) {
-            throw new IllegalStateException("This extension (" + extension.getClass().getSimpleName() + ") is no longer configurable");
-        }
     }
 
     /** {@inheritDoc} */
