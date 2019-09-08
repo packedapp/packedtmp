@@ -21,13 +21,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
-import java.util.stream.Stream;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.extension.hook.ExtensionHookPerComponentGroup;
+import packed.internal.container.extension.hook.ComponentModelHookGroup;
 import packed.internal.reflect.MemberProcessor;
 
 /**
@@ -39,7 +38,7 @@ public final class ComponentModel {
     private final Class<?> componentType;
 
     /** An array of any extension groups defined by the component type. */
-    private final ExtensionHookPerComponentGroup[] extensionGroups;
+    private final ComponentModelHookGroup[] extensionGroups;
 
     /** The simple name of the component type. */
     private volatile String simpleName;
@@ -52,7 +51,14 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ExtensionHookPerComponentGroup[i]);
+        this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelHookGroup[i]);
+    }
+
+    public ComponentConfiguration addExtensions(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
+        for (ComponentModelHookGroup group : extensionGroups) {
+            group.addTo(containerConfiguration, componentConfiguration);
+        }
+        return componentConfiguration;
     }
 
     /**
@@ -66,26 +72,6 @@ public final class ComponentModel {
             s = simpleName = componentType.getSimpleName();
         }
         return s;
-    }
-
-    public ComponentConfiguration initialize(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
-        for (ExtensionHookPerComponentGroup c : extensionGroups) {
-            c.add(containerConfiguration, componentConfiguration);
-        }
-        return componentConfiguration;
-    }
-
-    public void print() {
-        System.out.println("ComponentType = " + componentType + ", callbacks = " + Stream.of(extensionGroups).mapToInt(e -> e.getNumberOfCallbacks()).sum());
-    }
-
-    /**
-     * Returns the type of component.
-     * 
-     * @return the type of component
-     */
-    public Class<?> type() {
-        return componentType;
     }
 
     /** A builder object for a component class descriptor. */
@@ -105,7 +91,7 @@ public final class ComponentModel {
         private final Class<?> componentType;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, ExtensionHookPerComponentGroup.Builder> extensionBuilders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends Extension>, ComponentModelHookGroup.Builder> extensionBuilders = new IdentityHashMap<>();
 
         private boolean isBuild;
 
@@ -160,7 +146,7 @@ public final class ComponentModel {
                 Class<? extends Extension>[] extensions = EXTENSION_ACTIVATORS.get(a.annotationType());
                 if (extensions != null) {
                     for (Class<? extends Extension> e : extensions) {
-                        extensionBuilders.computeIfAbsent(e, c -> new ExtensionHookPerComponentGroup.Builder(this, c)).onAnnotatedField(field, a);
+                        extensionBuilders.computeIfAbsent(e, c -> new ComponentModelHookGroup.Builder(this, c)).onAnnotatedField(field, a);
                     }
                 }
             }
@@ -173,7 +159,7 @@ public final class ComponentModel {
                 Class<? extends Extension>[] extensions = EXTENSION_ACTIVATORS.get(a.annotationType());
                 if (extensions != null) {
                     for (Class<? extends Extension> e : extensions) {
-                        extensionBuilders.computeIfAbsent(e, c -> new ExtensionHookPerComponentGroup.Builder(this, c)).onAnnotatedMethod(method, a);
+                        extensionBuilders.computeIfAbsent(e, c -> new ComponentModelHookGroup.Builder(this, c)).onAnnotatedMethod(method, a);
                     }
                 }
             }

@@ -26,6 +26,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
+import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
@@ -41,7 +42,7 @@ import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
-final class OnHookXModel {
+public final class OnHookXModel {
 
     /** A cache of descriptors for a particular extension type. */
     private static final ClassValue<OnHookXModel> CACHE = new ClassValue<>() {
@@ -108,7 +109,7 @@ final class OnHookXModel {
      * @throws InvalidDeclarationException
      *             if the usage of {@link OnHookGroup} on the extension does not adhere to contract
      */
-    static OnHookXModel get(Class<? extends Extension> extensionType) {
+    public static OnHookXModel get(Class<? extends Extension> extensionType) {
         return CACHE.get(extensionType);
     }
 
@@ -153,7 +154,7 @@ final class OnHookXModel {
 
             Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
 
-            if (aggregateType != ExtensionHookPerComponentGroup.NoAggregator.class) {
+            if (aggregateType != NoAggregator.class) {
                 MethodHandle mh;
                 try {
                     lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
@@ -213,15 +214,20 @@ final class OnHookXModel {
         }
 
         private OnHookXModel build() {
-            for (Class<?> c = extensionType; c != Extension.class; c = c.getSuperclass()) {
-                for (Method method : c.getDeclaredMethods()) {
-                    OnHookGroup oh = method.getAnnotation(OnHookGroup.class);
-                    if (oh != null) {
-                        addHookMethod(MethodHandles.lookup(), method, oh);
-                    }
-                }
-            }
+            findMethods();
             return new OnHookXModel(this);
         }
+
+        @Override
+        protected void processMethod(Method method) {
+            OnHookGroup oh = method.getAnnotation(OnHookGroup.class);
+            if (oh != null) {
+                addHookMethod(MethodHandles.lookup(), method, oh);
+            }
+        }
+
     }
+
+    /** A dummy type indicating that no aggregator should be used. */
+    public static abstract class NoAggregator implements Supplier<Void>, HookGroupBuilder<Void> {}
 }

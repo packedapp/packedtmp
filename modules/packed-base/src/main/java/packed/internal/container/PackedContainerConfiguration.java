@@ -189,19 +189,19 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public ComponentConfiguration install(Factory<?> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         installPrepare(State.INSTALL_INVOKED);
-        return model.initialize(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
+        return model.addExtensions(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
     }
 
     public ComponentConfiguration installStatic(Class<?> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
         installPrepare(State.INSTALL_INVOKED);
-        return descriptor.initialize(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
+        return descriptor.addExtensions(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
     }
 
     public ComponentConfiguration installInstance(Object instance, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         installPrepare(State.INSTALL_INVOKED);
-        return model.initialize(this, currentComponent = new InstantiatedComponentConfiguration(configSite, this, model, instance));
+        return model.addExtensions(this, currentComponent = new InstantiatedComponentConfiguration(configSite, this, model, instance));
     }
 
     private void installPrepare(State state) {

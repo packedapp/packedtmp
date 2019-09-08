@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
@@ -37,7 +36,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
-public final class ExtensionHookPerComponentGroup {
+public final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
     private final List<ExtensionCallback> callbacks;
@@ -45,21 +44,16 @@ public final class ExtensionHookPerComponentGroup {
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
 
-    private ExtensionHookPerComponentGroup(Builder b) {
+    private ComponentModelHookGroup(Builder b) {
         this.extensionType = requireNonNull(b.extensionType);
         this.callbacks = b.callbacks;
     }
 
-    public int getNumberOfCallbacks() {
-        return callbacks.size();
-    }
-
-    public void add(PackedContainerConfiguration container, ComponentConfiguration cc) {
+    public void addTo(PackedContainerConfiguration container, ComponentConfiguration component) {
         Extension extension = container.useContext(extensionType).extension();
-
         try {
             for (ExtensionCallback c : callbacks) {
-                c.mh.invoke(extension, cc, c.o);
+                c.mh.invoke(extension, component, c.o);
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
@@ -67,20 +61,24 @@ public final class ExtensionHookPerComponentGroup {
         }
     }
 
+    public int getNumberOfCallbacks() {
+        return callbacks.size();
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static class Builder {
+
+        final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
 
         /** The component type */
         final Class<?> componentType;
 
-        final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
-
-        final IdentityHashMap<Class<?>, HookGroupBuilder<?>> mmm = new IdentityHashMap<>();
+        final OnHookXModel con;
 
         /** The type of extension that will be activated. */
         final Class<? extends Extension> extensionType;
 
-        final OnHookXModel con;
+        final IdentityHashMap<Class<?>, HookGroupBuilder<?>> mmm = new IdentityHashMap<>();
 
         final ComponentModel.Builder modelBuilder;
 
@@ -91,13 +89,13 @@ public final class ExtensionHookPerComponentGroup {
             this.extensionType = requireNonNull(extensionType);
         }
 
-        public ExtensionHookPerComponentGroup build() {
+        public ComponentModelHookGroup build() {
             // Add all aggregates
             for (Entry<Class<?>, HookGroupBuilder<?>> m : mmm.entrySet()) {
                 MethodHandle mh = con.aggregators.get(m.getKey());
                 callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
-            return new ExtensionHookPerComponentGroup(this);
+            return new ComponentModelHookGroup(this);
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
@@ -128,6 +126,4 @@ public final class ExtensionHookPerComponentGroup {
         }
     }
 
-    /** A dummy type indicating that no aggregator should be used. */
-    public static abstract class NoAggregator implements Supplier<Void>, HookGroupBuilder<Void> {}
 }

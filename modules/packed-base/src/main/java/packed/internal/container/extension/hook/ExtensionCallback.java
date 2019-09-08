@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
  *
  */
 // Bruges til at kalde tilbage paa extensions
-final class ExtensionCallback {
-    final MethodHandle mh;
-    final Object o;
+public final class ExtensionCallback {
+    public final MethodHandle mh;
+    public final Object o;
 
     /**
      * @param mh
