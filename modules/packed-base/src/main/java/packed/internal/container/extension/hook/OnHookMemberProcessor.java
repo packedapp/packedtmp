@@ -153,13 +153,6 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
      */
     private void addHookMethod(Method method, OnHookGroup oh) {
 
-        if (method.getParameterCount() != 2) {
-            throw new InvalidDeclarationException(
-                    "Methods annotated with @OnHook on extensions must have exactly two parameter, method = " + StringFormatter.format(method));
-        }
-        if (method.getParameterTypes()[0] != ComponentConfiguration.class) {
-            throw new InvalidDeclarationException("OOPS");
-        }
         Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
 
         MethodHandle mh;
@@ -174,6 +167,9 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
 
         groups.put(aggregateType, mh);
         HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
+
+        // TODO we should check that the type matches....
+
         annotatedFields.putAll(oha.annotatedFields);
         annotatedMethods.putAll(oha.annotatedMethods);
         annotatedTypes.putAll(oha.annotatedTypes);

@@ -33,7 +33,7 @@ import packed.internal.util.StringFormatter;
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
-final class ExtensionModel<T extends Extension> extends AbstractInstantiableModel<T> {
+public final class ExtensionModel<T extends Extension> extends AbstractInstantiableModel<T> {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {

@@ -161,10 +161,10 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
             super(HookGroupBuilder.class, builderType, true);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
+            TypeUtil.checkClassIsInstantiable(builderType);
         }
 
         HookGroupBuilderModel build() {
-            TypeUtil.checkClassIsInstantiable(actualType);
             findMethods();
             if (annotatedFields.isEmpty() && annotatedMethods.isEmpty() && annotatedTypes.isEmpty()) {
                 throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(actualType)

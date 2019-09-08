@@ -15,29 +15,9 @@
  */
 package packed.internal.container.extension.hook;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.Extension;
-
 /**
  *
  */
-// Bruges til at kalde tilbage paa extensions
-public final class ExtensionCallback {
-    private final MethodHandle mh;
-    private final Object hookGroup;
+public class HookContainerModel {
 
-    /**
-     * @param mh
-     * @param hookGroup
-     */
-    public ExtensionCallback(MethodHandle mh, Object hookGroup) {
-        this.mh = mh;
-        this.hookGroup = hookGroup;
-    }
-
-    public void invoke(Extension e, ComponentConfiguration component) throws Throwable {
-        mh.invoke(e, component, hookGroup);
-    }
 }

@@ -31,6 +31,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.util.ThrowableUtil;
 
@@ -54,7 +55,7 @@ public final class ComponentModelHookGroup {
         Extension extension = container.use(extensionType); // should be ordered...s
         try {
             for (ExtensionCallback c : callbacks) {
-                c.mh.invoke(extension, component, c.hookGroup);
+                c.invoke(extension, component);
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
@@ -87,13 +88,14 @@ public final class ComponentModelHookGroup {
             this.modelBuilder = requireNonNull(modelBuilder);
             this.componentType = modelBuilder.componentType();
             this.con = OnHookXModel.get(extensionType);
+            ExtensionModel.of(extensionType);
             this.extensionType = requireNonNull(extensionType);
         }
 
         public ComponentModelHookGroup build() {
             // Add all aggregates
             for (Entry<Class<?>, HookGroupBuilder<?>> m : mmm.entrySet()) {
-                MethodHandle mh = con.aggregators.get(m.getKey());
+                MethodHandle mh = con.groups.get(m.getKey());
                 callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
             return new ComponentModelHookGroup(this);

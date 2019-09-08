@@ -39,7 +39,7 @@ public final class OnHookXModel {
     };
 
     /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
-    final IdentityHashMap<Class<?>, MethodHandle> aggregators;
+    final IdentityHashMap<Class<?>, MethodHandle> groups;
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
     private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields;
@@ -62,7 +62,7 @@ public final class OnHookXModel {
     @SuppressWarnings("unchecked")
     private OnHookXModel(Builder builder) {
         this.extensionType = (Class<? extends Extension>) builder.actualType;
-        this.aggregators = builder.groups;
+        this.groups = builder.groups;
         this.annotatedFields = builder.annotatedFields;
         this.annotatedMethods = builder.annotatedMethods;
         this.annotatedTypes = builder.annotatedTypes;
