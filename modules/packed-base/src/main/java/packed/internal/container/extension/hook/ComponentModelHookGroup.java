@@ -32,6 +32,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.util.ThrowableUtil;
 
@@ -48,23 +49,19 @@ public final class ComponentModelHookGroup {
 
     private ComponentModelHookGroup(Builder b) {
         this.extensionType = requireNonNull(b.extensionType);
-        this.callbacks = b.callbacks;
+        this.callbacks = List.copyOf(b.callbacks);
     }
 
     public void addTo(PackedContainerConfiguration container, ComponentConfiguration component) {
-        Extension extension = container.use(extensionType); // should be ordered...s
+        PackedExtensionContext context = container.useContext(extensionType); // should be ordered...s
         try {
             for (ExtensionCallback c : callbacks) {
-                c.invoke(extension, component);
+                c.invoke(context, component);
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
         }
-    }
-
-    public int getNumberOfCallbacks() {
-        return callbacks.size();
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

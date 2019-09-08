@@ -18,7 +18,7 @@ package packed.internal.container.extension.hook;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.Extension;
+import packed.internal.container.extension.PackedExtensionContext;
 
 /**
  *
@@ -37,7 +37,7 @@ public final class ExtensionCallback {
         this.hookGroup = hookGroup;
     }
 
-    public void invoke(Extension e, ComponentConfiguration component) throws Throwable {
-        mh.invoke(e, component, hookGroup);
+    public void invoke(PackedExtensionContext e, ComponentConfiguration component) throws Throwable {
+        mh.invoke(e.extension(), component, hookGroup);
     }
 }
