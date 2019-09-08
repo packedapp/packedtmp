@@ -32,7 +32,6 @@ import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
-import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
@@ -72,7 +71,7 @@ public final class OnHookXModel {
     @SuppressWarnings("unchecked")
     private OnHookXModel(Builder builder) {
         this.extensionType = (Class<? extends Extension>) builder.actualType;
-        this.aggregators = builder.aggregators;
+        this.aggregators = builder.groups;
         this.annotatedFields = builder.annotatedFields;
         this.annotatedMethods = builder.annotatedMethods;
         this.annotatedTypes = builder.annotatedTypes;
@@ -109,21 +108,12 @@ public final class OnHookXModel {
     }
 
     /** A builder for {@link OnHookXModel}. */
-    private static class Builder extends MemberProcessor {
+    private static class Builder extends OnHookMemberProcessor {
 
-        final IdentityHashMap<Class<?>, MethodHandle> aggregators = new IdentityHashMap<>();
-
-        /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
-        private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
-
-        /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
-        private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedMethods = new IdentityHashMap<>();
-
-        /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
-        private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
+        final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
 
         private Builder(Class<? extends Extension> extensionType) {
-            super(Extension.class, extensionType);
+            super(Extension.class, extensionType, false);
         }
 
         /**
@@ -153,7 +143,7 @@ public final class OnHookXModel {
 
             NativeImage.registerMethod(method);
 
-            aggregators.put(aggregateType, mh);
+            groups.put(aggregateType, mh);
             HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
             annotatedFields.putAll(oha.annotatedFields);
             annotatedMethods.putAll(oha.annotatedMethods);
