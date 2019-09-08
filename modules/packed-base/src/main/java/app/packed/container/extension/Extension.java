@@ -282,7 +282,6 @@ public abstract class Extension {
 // class SidecarConfiguration {
 //
 // }
-// System.out.println(new SidecarConfiguration());
 // }
 
 //

@@ -164,7 +164,6 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         }
         Object o;
         MethodHandle mh = toMethodHandle();
-        // System.out.println();
 
         // It would actually be nice with the receiver here as well...
         try {

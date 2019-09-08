@@ -56,7 +56,6 @@ class DefaultLayer implements ContainerLayer {
     /** {@inheritDoc} */
     @Override
     public <T extends Bundle> T link(T child, Wirelet... wirelets) {
-        System.out.println(container);
         return child;
     }
 
@@ -69,7 +68,6 @@ class DefaultLayer implements ContainerLayer {
     /** {@inheritDoc} */
     @Override
     public <T extends Bundle> T linkPrivate(T child, Wirelet... wirelets) {
-        System.out.println(container);
         return child;
     }
 }

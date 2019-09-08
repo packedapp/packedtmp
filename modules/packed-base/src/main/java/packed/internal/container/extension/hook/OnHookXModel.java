@@ -37,17 +37,18 @@ import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
+import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
-final class ExtensionOnHookDescriptor {
+final class OnHookXModel {
 
     /** A cache of descriptors for a particular extension type. */
-    private static final ClassValue<ExtensionOnHookDescriptor> CACHE = new ClassValue<>() {
+    private static final ClassValue<OnHookXModel> CACHE = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionOnHookDescriptor computeValue(Class<?> type) {
+        protected OnHookXModel computeValue(Class<?> type) {
             return new Builder((Class<? extends Extension>) type).build();
         }
     };
@@ -73,7 +74,7 @@ final class ExtensionOnHookDescriptor {
      * @param builder
      *            the builder to create the manager from
      */
-    private ExtensionOnHookDescriptor(Builder builder) {
+    private OnHookXModel(Builder builder) {
         this.extensionType = builder.extensionType;
         this.aggregators = builder.aggregators;
         this.annotatedFields = builder.annotatedFields;
@@ -107,12 +108,12 @@ final class ExtensionOnHookDescriptor {
      * @throws InvalidDeclarationException
      *             if the usage of {@link OnHookGroup} on the extension does not adhere to contract
      */
-    static ExtensionOnHookDescriptor get(Class<? extends Extension> extensionType) {
+    static OnHookXModel get(Class<? extends Extension> extensionType) {
         return CACHE.get(extensionType);
     }
 
-    /** A builder for {@link ExtensionOnHookDescriptor}. */
-    private static class Builder {
+    /** A builder for {@link OnHookXModel}. */
+    private static class Builder extends MemberProcessor {
 
         final IdentityHashMap<Class<?>, MethodHandle> aggregators = new IdentityHashMap<>();
 
@@ -129,6 +130,7 @@ final class ExtensionOnHookDescriptor {
         private final Class<? extends Extension> extensionType;
 
         private Builder(Class<? extends Extension> extensionType) {
+            super(Extension.class, extensionType);
             this.extensionType = requireNonNull(extensionType);
         }
 
@@ -210,7 +212,7 @@ final class ExtensionOnHookDescriptor {
             annotations.put(annotationType, mh);
         }
 
-        private ExtensionOnHookDescriptor build() {
+        private OnHookXModel build() {
             for (Class<?> c = extensionType; c != Extension.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
                     OnHookGroup oh = method.getAnnotation(OnHookGroup.class);
@@ -219,8 +221,7 @@ final class ExtensionOnHookDescriptor {
                     }
                 }
             }
-
-            return new ExtensionOnHookDescriptor(this);
+            return new OnHookXModel(this);
         }
     }
 }

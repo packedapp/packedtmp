@@ -24,6 +24,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 // Take all methods that starts with "on"
 
 // TODO Skal vi have en abstract klasse med hjaelpe metoder istedet for?????
+/**
+ *
+ * Must have at least one method annotated with {@link OnHook}.
+ */
 public interface HookGroupBuilder<G> {
 
     /** Builds and returns a hook group. */

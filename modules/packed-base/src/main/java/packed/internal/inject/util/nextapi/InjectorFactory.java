@@ -110,7 +110,6 @@ interface UserDefinedSpawner {
 // }
 
 // default void print() {
-// services().forEach(s -> System.out.println(s));
 // }
 /// **
 // * Creates a new injector builder with this injector with all the services available in this injector also be

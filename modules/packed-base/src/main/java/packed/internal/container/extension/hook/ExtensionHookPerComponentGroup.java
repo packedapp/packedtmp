@@ -80,14 +80,14 @@ public final class ExtensionHookPerComponentGroup {
         /** The type of extension that will be activated. */
         final Class<? extends Extension> extensionType;
 
-        final ExtensionOnHookDescriptor con;
+        final OnHookXModel con;
 
         final ComponentModel.Builder modelBuilder;
 
         public Builder(ComponentModel.Builder modelBuilder, Class<? extends Extension> extensionType) {
             this.modelBuilder = requireNonNull(modelBuilder);
             this.componentType = modelBuilder.componentType();
-            this.con = ExtensionOnHookDescriptor.get(extensionType);
+            this.con = OnHookXModel.get(extensionType);
             this.extensionType = requireNonNull(extensionType);
         }
 

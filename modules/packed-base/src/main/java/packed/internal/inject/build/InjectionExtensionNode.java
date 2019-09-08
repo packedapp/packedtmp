@@ -82,7 +82,6 @@ public final class InjectionExtensionNode extends ExtensionNode {
     }
 
     public void build(ArtifactBuildContext buildContext) {
-        System.out.println(provider);
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolveAndCheckForDublicates(buildContext);
         resolvedEntries.addAll(resolvedServices.values());
 

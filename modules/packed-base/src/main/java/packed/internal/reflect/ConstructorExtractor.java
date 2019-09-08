@@ -29,10 +29,10 @@ import packed.internal.util.TypeUtil;
 /**
  *
  */
-public final class ConstructorExtractor {
+final class ConstructorExtractor {
     private static final Module THIS_MODULE = ConstructorExtractor.class.getModule();
 
-    public static MethodHandle extract(Class<?> type) {
+    static MethodHandle extract(Class<?> type) {
         if (Modifier.isAbstract(type.getModifiers())) {
             throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(type));
         } else if (TypeUtil.isInnerOrLocalClass(type)) {

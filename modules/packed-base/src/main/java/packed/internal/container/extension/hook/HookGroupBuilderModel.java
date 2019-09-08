@@ -224,7 +224,6 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
             }
 
             NativeImage.registerMethod(method);
-
             annotations.put(annotationType, mh);
         }
 
@@ -259,7 +258,7 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
                         return;
                     }
                 }
-                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one parameter of type "
+                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must have exactly one parameter of type "
                         + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
                         + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
             }

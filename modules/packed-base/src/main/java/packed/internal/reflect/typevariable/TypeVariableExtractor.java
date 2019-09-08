@@ -161,7 +161,6 @@ public final class TypeVariableExtractor {
 
                 for (Type tt : pt.getActualTypeArguments()) {
                     // Ahh fuck skal lave noget ledt her ogsaa....
-                    System.out.println(tt);
                 }
             } else if (t instanceof Class) {
                 if (fromInterface0((Class<?>) t, result)) {

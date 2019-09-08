@@ -202,7 +202,6 @@ public abstract class Bundle implements ContainerSource {
      * @see ContainerConfiguration#lookup(Lookup)
      */
     protected final void lookup(Lookup lookup) {
-        // System.out.println("FOO " + lookup.lookupClass());
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         configuration().lookup(lookup);
     }

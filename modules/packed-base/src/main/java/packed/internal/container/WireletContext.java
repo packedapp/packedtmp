@@ -20,8 +20,8 @@ import java.util.IdentityHashMap;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletModel;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -73,7 +73,6 @@ public class WireletContext {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
-        System.out.println("WHAT");
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWirelet ew = (ExtensionWirelet) w;

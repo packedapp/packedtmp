@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.function.UnaryOperator;
 
 import packed.internal.util.SecurityChecks;
 
@@ -71,10 +70,6 @@ public final class FunctionalInterfaceModel {
 
     public static FunctionalInterfaceModel get(Class<?> interfaze) {
         return MODEL_CACHE.get(interfaze);
-    }
-
-    public static void main(String[] args) {
-        System.out.println(get(UnaryOperator.class).method);
     }
 
     private static Method findSingleMethod(Class<?> clazz) {
