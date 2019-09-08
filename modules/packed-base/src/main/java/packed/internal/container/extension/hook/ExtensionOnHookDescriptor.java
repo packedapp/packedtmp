@@ -79,7 +79,7 @@ final class ExtensionOnHookDescriptor {
         this.annotatedFields = builder.annotatedFields;
         this.annotatedMethods = builder.annotatedMethods;
         this.annotatedTypes = builder.annotatedTypes;
-    };
+    }
 
     MethodHandle findMethodHandleForAnnotatedField(PackedAnnotatedFieldHook<?> paf) {
         MethodHandle mh = annotatedFields.get(paf.annotation().annotationType());

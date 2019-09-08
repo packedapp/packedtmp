@@ -17,14 +17,13 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.reflect.ConstructorExtractor;
+import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -53,7 +52,7 @@ final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
      *            the builder for this model
      */
     private ExtensionModel(Builder builder) {
-        super(builder.methodHandle);
+        super(builder.findNoParameterConstructor());
     }
 
     /**
@@ -73,11 +72,11 @@ final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    private static class Builder {
+    private static class Builder extends MemberProcessor {
         private final Class<? extends Extension> extensionType;
-        private MethodHandle methodHandle;
 
         private Builder(Class<? extends Extension> extensionType) {
+            super(extensionType);
             this.extensionType = requireNonNull(extensionType);
             if (!Modifier.isFinal(extensionType.getModifiers())) {
                 throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");
@@ -85,7 +84,6 @@ final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
                 throw new IllegalArgumentException(
                         "The specified type '" + StringFormatter.format(extensionType) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
             }
-            methodHandle = ConstructorExtractor.extract(extensionType);
         }
 
         private ExtensionModel<?> build() {

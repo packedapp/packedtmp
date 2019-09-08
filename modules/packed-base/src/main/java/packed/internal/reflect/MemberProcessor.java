@@ -17,6 +17,7 @@ package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -36,19 +37,29 @@ public abstract class MemberProcessor {
     /** */
     private static final HashSet<Package> PKG = new HashSet<>();
 
-    private final boolean processFields;
     private final Class<?> baseClass;
 
     public MemberProcessor() {
-        this(true, Object.class);
+        this(Object.class);
     }
 
-    public MemberProcessor(boolean processFields, Class<?> baseClass) {
-        this.processFields = processFields;
+    public MemberProcessor(Class<?> baseClass) {
         this.baseClass = requireNonNull(baseClass);
     }
 
-    public final void process(Class<?> type) {
+    public MethodHandle findNoParameterConstructor() {
+        return ConstructorExtractor.extract(baseClass);
+    }
+
+    public final void findMethods(Class<?> type) {
+        find(type, false);
+    }
+
+    public final void findMethodsAndFields(Class<?> type) {
+        find(type, true);
+    }
+
+    private final void find(Class<?> type, boolean processFields) {
         requireNonNull(type, "type is null");
         // Step 1, find all public methods, this will include all default methods
         HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();

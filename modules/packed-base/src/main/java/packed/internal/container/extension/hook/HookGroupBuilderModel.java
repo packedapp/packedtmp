@@ -38,7 +38,7 @@ import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
 import packed.internal.container.extension.AbstractFoo;
-import packed.internal.reflect.ConstructorExtractor;
+import packed.internal.reflect.MemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -81,7 +81,7 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
      *            the builder to create a model from
      */
     private HookGroupBuilderModel(Builder builder) {
-        super(builder.constructor);
+        super(builder.findNoParameterConstructor());
         this.builderType = builder.builderType;
         this.groupType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.annotatedMethods);
@@ -156,7 +156,7 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
     }
 
     /** A builder object, that extract relevant methods from a hook group builder. */
-    private static class Builder {
+    private static class Builder extends MemberProcessor {
 
         /** An type variable extractor to extract the type of hook group the builder produces. */
         private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
@@ -173,9 +173,6 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
         /** The type of hook group builder. */
         private final Class<? extends HookGroupBuilder<?>> builderType;
 
-        /** A constructor used to create new hook group builders. */
-        private MethodHandle constructor;
-
         /** The type of hook group the builder produces */
         private final Class<?> groupType;
 
@@ -187,6 +184,7 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
          */
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
+            super(builderType);
             this.builderType = requireNonNull(builderType);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
         }
@@ -223,8 +221,6 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
 
         HookGroupBuilderModel build() {
             TypeUtil.checkClassIsInstantiable(builderType);
-
-            this.constructor = ConstructorExtractor.extract(builderType);
 
             Lookup lookup = MethodHandles.lookup();
             try {

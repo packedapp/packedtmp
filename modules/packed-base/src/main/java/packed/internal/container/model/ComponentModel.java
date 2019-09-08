@@ -127,7 +127,7 @@ public final class ComponentModel {
          * @return a new descriptor
          */
         ComponentModel build() {
-            process(componentType);
+            findMethodsAndFields(componentType);
             ComponentModel cm = new ComponentModel(this);
             isBuild = true;
             return cm;
