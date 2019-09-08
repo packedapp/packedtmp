@@ -176,6 +176,8 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
         /** The type of hook group the builder produces */
         private final Class<?> groupType;
 
+        Lookup lookup;
+
         /**
          * Creates a new builder for the specified hook group builder type.
          * 
@@ -184,9 +186,17 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
          */
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
-            super(builderType);
+            super(HookGroupBuilder.class, builderType);
             this.builderType = requireNonNull(builderType);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
+
+            lookup = MethodHandles.lookup();
+            try {
+                lookup = MethodHandles.privateLookupIn(builderType, lookup);
+            } catch (IllegalAccessException | InaccessibleObjectException e) {
+                throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(builderType) + ", the module '"
+                        + builderType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
+            }
         }
 
         private void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p,
@@ -207,7 +217,6 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
 
             MethodHandle mh;
             try {
-                lookup = MethodHandles.privateLookupIn(builderType, lookup);
                 mh = lookup.unreflect(method);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(builderType) + ", the module '"
@@ -221,46 +230,39 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
 
         HookGroupBuilderModel build() {
             TypeUtil.checkClassIsInstantiable(builderType);
-
-            Lookup lookup = MethodHandles.lookup();
-            try {
-                lookup = MethodHandles.privateLookupIn(builderType, lookup);
-            } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(builderType) + ", the module '"
-                        + builderType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
+            findMethods();
+            if (annotatedFields.isEmpty() && annotatedMethods.isEmpty() && annotatedTypes.isEmpty()) {
+                throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(builderType)
+                        + "' must define at least one method annotated with @" + OnHook.class.getSimpleName());
             }
+            return new HookGroupBuilderModel(this);
+        }
 
-            // Find all methods annotated with @OnHook
-            for (Class<?> c = builderType; c != Object.class; c = c.getSuperclass()) {
-                for (Method method : c.getDeclaredMethods()) {
-                    // Problemet er lidt hjaelpe metoder...
-                    if (method.isAnnotationPresent(OnHook.class)) {
-                        if (method.getParameterCount() != 1) {
-                            throw new InvalidDeclarationException("Methods annotated with @" + OnHook.class.getSimpleName()
-                                    + " on hook group builder must take exactly one parameter, method = " + StringFormatter.format(method));
-                        }
-                        Parameter p = method.getParameters()[0];
-                        Class<?> pc = p.getType();
-                        if (pc == AnnotatedFieldHook.class) {
-                            addHookMethod(lookup, method, p, annotatedFields);
-                        } else if (pc == AnnotatedMethodHook.class) {
-                            addHookMethod(lookup, method, p, annotatedMethods);
-                        } else if (pc == AnnotatedTypeHook.class) {
-                            addHookMethod(lookup, method, p, annotatedTypes);
-                        } else {
-                            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one parameter of type "
-                                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
-                                    + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-                        }
+        @Override
+        protected void processMethod(Method method) {
+            if (method.isAnnotationPresent(OnHookGroup.class)) {
+                throw new InvalidDeclarationException(
+                        "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
+            }
+            if (method.isAnnotationPresent(OnHook.class)) {
+                if (method.getParameterCount() == 1) {
+                    Parameter p = method.getParameters()[0];
+                    Class<?> pc = p.getType();
+                    if (pc == AnnotatedFieldHook.class) {
+                        addHookMethod(lookup, method, p, annotatedFields);
+                        return;
+                    } else if (pc == AnnotatedMethodHook.class) {
+                        addHookMethod(lookup, method, p, annotatedMethods);
+                        return;
+                    } else if (pc == AnnotatedTypeHook.class) {
+                        addHookMethod(lookup, method, p, annotatedTypes);
+                        return;
                     }
                 }
+                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one parameter of type "
+                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
+                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
             }
-            if (annotatedFields.isEmpty() && annotatedMethods.isEmpty() && annotatedTypes.isEmpty()) {
-                throw new IllegalArgumentException("Hook aggregator '" + StringFormatter.format(builderType)
-                        + "' must define at least one method annotated with @" + OnHookGroup.class.getSimpleName());
-            }
-
-            return new HookGroupBuilderModel(this);
         }
     }
 }

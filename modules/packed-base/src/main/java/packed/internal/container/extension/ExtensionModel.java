@@ -76,7 +76,7 @@ final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
         private final Class<? extends Extension> extensionType;
 
         private Builder(Class<? extends Extension> extensionType) {
-            super(extensionType);
+            super(Extension.class, extensionType);
             this.extensionType = requireNonNull(extensionType);
             if (!Modifier.isFinal(extensionType.getModifiers())) {
                 throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");

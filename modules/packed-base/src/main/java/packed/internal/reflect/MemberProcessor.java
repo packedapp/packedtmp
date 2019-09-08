@@ -37,33 +37,31 @@ public abstract class MemberProcessor {
     /** */
     private static final HashSet<Package> PKG = new HashSet<>();
 
-    private final Class<?> baseClass;
+    private final Class<?> baseType;
 
-    public MemberProcessor() {
-        this(Object.class);
-    }
+    private final Class<?> actualType;
 
-    public MemberProcessor(Class<?> baseClass) {
-        this.baseClass = requireNonNull(baseClass);
+    public MemberProcessor(Class<?> baseType, Class<?> actualType) {
+        this.baseType = requireNonNull(baseType);
+        this.actualType = requireNonNull(actualType);
     }
 
     public MethodHandle findNoParameterConstructor() {
-        return ConstructorExtractor.extract(baseClass);
+        return ConstructorExtractor.extract(actualType);
     }
 
-    public final void findMethods(Class<?> type) {
-        find(type, false);
+    public final void findMethods() {
+        find(false);
     }
 
-    public final void findMethodsAndFields(Class<?> type) {
-        find(type, true);
+    public final void findMethodsAndFields() {
+        find(true);
     }
 
-    private final void find(Class<?> type, boolean processFields) {
-        requireNonNull(type, "type is null");
+    private void find(boolean processFields) {
         // Step 1, find all public methods, this will include all default methods
         HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
-        for (Method m : type.getMethods()) {
+        for (Method m : actualType.getMethods()) {
             // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 // Should also ignore methods on base class..
@@ -73,7 +71,7 @@ public abstract class MemberProcessor {
         }
 
         // Step 2 process all declared methods
-        for (Class<?> c = type; c != baseClass && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
+        for (Class<?> c = actualType; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
             if (processFields) {
                 for (Field field : c.getDeclaredFields()) {
@@ -84,7 +82,7 @@ public abstract class MemberProcessor {
             for (Method m : c.getDeclaredMethods()) {
                 int mod = m.getModifiers();
                 if (Modifier.isStatic(mod)) {
-                    if (c == type && !Modifier.isPublic(mod)) { // we have already processed public static methods
+                    if (c == actualType && !Modifier.isPublic(mod)) { // we have already processed public static methods
                         // only include static methods in the top level class
                         // We do this, because it would be strange to include
                         // static methods on any interfaces this class implements.

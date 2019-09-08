@@ -117,6 +117,7 @@ public final class ComponentModel {
          * @param componentType
          */
         Builder(ComponentLookup lookup, Class<?> componentType) {
+            super(Object.class, componentType);
             this.lookup = requireNonNull(lookup);
             this.componentType = requireNonNull(componentType);
         }
@@ -127,7 +128,7 @@ public final class ComponentModel {
          * @return a new descriptor
          */
         ComponentModel build() {
-            findMethodsAndFields(componentType);
+            findMethodsAndFields();
             ComponentModel cm = new ComponentModel(this);
             isBuild = true;
             return cm;
