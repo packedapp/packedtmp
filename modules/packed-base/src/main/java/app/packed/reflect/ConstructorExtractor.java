@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 
-import app.packed.container.extension.Extension;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeUtil;
@@ -35,9 +34,6 @@ public final class ConstructorExtractor {
     public static MethodHandle extract(Class<?> type) {
         if (Modifier.isAbstract(type.getModifiers())) {
             throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(type));
-        } else if (!Extension.class.isAssignableFrom(type)) {
-            throw new IllegalArgumentException(
-                    "The specified type '" + StringFormatter.format(type) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
         } else if (TypeUtil.isInnerOrLocalClass(type)) {
             throw new IllegalArgumentException("The specified type '" + StringFormatter.format(type) + "' cannot be an inner or local class");
         }

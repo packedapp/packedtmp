@@ -61,6 +61,9 @@ final class ExtensionModel<T> {
     private ExtensionModel(Class<? extends Extension> extensionType) {
         if (!Modifier.isFinal(extensionType.getModifiers())) {
             throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");
+        } else if (!Extension.class.isAssignableFrom(extensionType)) {
+            throw new IllegalArgumentException(
+                    "The specified type '" + StringFormatter.format(extensionType) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
         }
         this.extensionType = extensionType;
         this.constructor = ConstructorExtractor.extract(extensionType);

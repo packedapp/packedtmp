@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -36,6 +35,7 @@ import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
+import app.packed.reflect.ConstructorExtractor;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
@@ -264,18 +264,11 @@ final class HookGroupBuilderModel {
         HookGroupBuilderModel build() {
             TypeUtil.checkClassIsInstantiable(builderType);
 
-            Constructor<?> constructor;
-            try {
-                constructor = builderType.getDeclaredConstructor();
-            } catch (NoSuchMethodException e) {
-                throw new IllegalArgumentException(
-                        "The extension " + StringFormatter.format(builderType) + " must have a no-argument constructor to be installed.");
-            }
+            this.constructor = ConstructorExtractor.extract(builderType);
 
             Lookup lookup = MethodHandles.lookup();
             try {
                 lookup = MethodHandles.privateLookupIn(builderType, lookup);
-                this.constructor = lookup.unreflectConstructor(constructor);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(builderType) + ", the module '"
                         + builderType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
@@ -307,9 +300,6 @@ final class HookGroupBuilderModel {
                 throw new IllegalArgumentException("Hook aggregator '" + StringFormatter.format(builderType)
                         + "' must define at least one method annotated with @" + OnHookGroup.class.getSimpleName());
             }
-
-            // Register the constructor if we are generating a native image
-            NativeImage.registerConstructor(constructor);
 
             return new HookGroupBuilderModel(this);
         }
