@@ -47,7 +47,7 @@ public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor i
      * @param executable
      *            the executable to mirror
      */
-    public ExecutableDescriptor(Executable executable) {
+    ExecutableDescriptor(Executable executable) {
         super(executable);
         this.executable = executable;
         Parameter[] javaParameters = executable.getParameters();

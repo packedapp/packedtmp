@@ -15,93 +15,95 @@
  */
 package packed.internal.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.reflect.ConstructorExtractor;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.reflect.ConstructorExtractor;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableUtil;
 
 /**
- * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.
+ * A model of an Extension. Is mainly used for instantiating new extension instances.
  */
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
-final class ExtensionModel<T> {
+final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @SuppressWarnings("unchecked")
         @Override
-        protected ExtensionModel<?> computeValue(Class<?> type) {
-            return new ExtensionModel(type);
+        protected ExtensionModel<? extends Extension> computeValue(Class<?> type) {
+            return new Builder((Class<? extends Extension>) type).build();
         }
     };
-
-    /** The method handle used to create a new instance of the extension. */
-    private final MethodHandle constructor;
-
-    /** The type of extension. */
-    private final Class<? extends Extension> extensionType;
 
     /**
      * Creates a new extension model.
      * 
-     * @param extensionType
-     *            the extension type
+     * @param builder
+     *            the builder for this model
      */
-    private ExtensionModel(Class<? extends Extension> extensionType) {
-        if (!Modifier.isFinal(extensionType.getModifiers())) {
-            throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");
-        } else if (!Extension.class.isAssignableFrom(extensionType)) {
-            throw new IllegalArgumentException(
-                    "The specified type '" + StringFormatter.format(extensionType) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
-        }
-        this.extensionType = extensionType;
-        this.constructor = ConstructorExtractor.extract(extensionType);
-        Method m = null;
-        try {
-            m = extensionType.getDeclaredMethod("onAdded");
-        } catch (NoSuchMethodException ignore) {}
-
-        if (m != null) {
-            Class<?> nodeType = m.getReturnType();
-            if (nodeType != ExtensionNode.class) {
-                if (!Modifier.isFinal(nodeType.getModifiers())) {
-                    throw new InvalidDeclarationException(nodeType + " must be a final class");
-                }
-                System.out.println("YES");
-            }
-        }
+    private ExtensionModel(Builder builder) {
+        super(builder.methodHandle);
     }
 
     /**
-     * Creates a new extension of the specified type.
+     * Returns an extension model for the specified extension type.
      * 
      * @param <T>
-     *            the type of extension
+     *            the type of extension to return a model for
      * @param extensionType
-     *            the type of extension
-     * @return a new instance of the extension
+     *            the type of extension to return a model for
+     * @return an extension model for the specified extension type
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> T newInstance(Class<T> extensionType) {
+    public static <T extends Extension> ExtensionModel<T> of(Class<T> extensionType) {
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
-        ExtensionModel<T> model = (ExtensionModel<T>) CACHE.get(extensionType);
-        try {
-            return (T) model.constructor.invoke();
-        } catch (Throwable t) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(t);
-            throw new UndeclaredThrowableException(t, "Could not instantiate extension '" + StringFormatter.format(model.extensionType) + "'");
+        return (ExtensionModel<T>) CACHE.get(extensionType);
+    }
+
+    /** A builder for {@link ExtensionModel}. */
+    private static class Builder {
+        private final Class<? extends Extension> extensionType;
+        private MethodHandle methodHandle;
+
+        private Builder(Class<? extends Extension> extensionType) {
+            this.extensionType = requireNonNull(extensionType);
+            if (!Modifier.isFinal(extensionType.getModifiers())) {
+                throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");
+            } else if (!Extension.class.isAssignableFrom(extensionType)) {
+                throw new IllegalArgumentException(
+                        "The specified type '" + StringFormatter.format(extensionType) + "' does not extend '" + StringFormatter.format(Extension.class) + "'");
+            }
+            methodHandle = ConstructorExtractor.extract(extensionType);
+        }
+
+        private ExtensionModel<?> build() {
+            Method m = null;
+            try {
+                m = extensionType.getDeclaredMethod("onAdded");
+            } catch (NoSuchMethodException ignore) {}
+
+            if (m != null) {
+                Class<?> nodeType = m.getReturnType();
+                if (nodeType != ExtensionNode.class) {
+                    if (!Modifier.isFinal(nodeType.getModifiers())) {
+                        throw new InvalidDeclarationException(nodeType + " must be a final class");
+                    }
+                    System.out.println("YES");
+                }
+            }
+            return new ExtensionModel<>(this);
         }
     }
 }

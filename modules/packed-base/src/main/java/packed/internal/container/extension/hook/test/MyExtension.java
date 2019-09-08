@@ -24,8 +24,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.HookApplicator;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.FieldOperator;
 import app.packed.reflect.MethodOperator;
@@ -63,6 +64,7 @@ public class MyExtension extends Extension {
 
         private final ArrayList<HookApplicator<Object>> methods = new ArrayList<>();
 
+        @OnHook
         public void foo(AnnotatedMethodHook<MyA> h) {
             sum += h.annotation().value();
             methods.add(h.applicator(MethodOperator.invokeOnce()));
@@ -74,6 +76,7 @@ public class MyExtension extends Extension {
             }
         }
 
+        @OnHook
         public void foo(AnnotatedFieldHook<MyA> h) throws Throwable {
             sum += h.annotation().value();
             if (h.field().isStatic()) {

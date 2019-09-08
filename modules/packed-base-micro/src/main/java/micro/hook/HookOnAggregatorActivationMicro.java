@@ -20,8 +20,9 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHookGroup;
 import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
+import app.packed.container.extension.OnHookGroup;
 
 /**
  *
@@ -45,8 +46,10 @@ public class HookOnAggregatorActivationMicro {
             return "ignore";
         }
 
+        @OnHook
         public void process(AnnotatedFieldHook<HookActivateAnnotation> hook) {}
 
+        @OnHook
         public void process(AnnotatedMethodHook<HookActivateAnnotation> hook) {}
     }
 }

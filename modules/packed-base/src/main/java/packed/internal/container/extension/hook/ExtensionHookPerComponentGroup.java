@@ -117,7 +117,7 @@ public final class ExtensionHookPerComponentGroup {
             } else {
                 // The method handle refers to an aggregator object.
                 HookGroupBuilderModel a = HookGroupBuilderModel.of((Class<? extends HookGroupBuilder<?>>) owner);
-                HookGroupBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newHookGroupBuilder());
+                HookGroupBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newInstance());
                 try {
                     mh.invoke(sup, hook);
                 } catch (Throwable e) {

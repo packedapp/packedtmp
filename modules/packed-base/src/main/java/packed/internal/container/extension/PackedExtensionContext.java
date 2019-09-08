@@ -115,7 +115,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @return the new context
      */
     public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
-        return new PackedExtensionContext(pcc, ExtensionModel.newInstance(extensionType));
+        return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType).newInstance());
     }
 
     static class DefCon {

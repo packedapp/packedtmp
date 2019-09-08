@@ -21,6 +21,7 @@ import java.util.List;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.inject.Inject;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
@@ -62,11 +63,13 @@ public final class AtInjectGroup {
             return new AtInjectGroup(this);
         }
 
+        @OnHook
         void onFieldInject(AnnotatedFieldHook<Inject> fieldHook) {
             FieldDescriptor field = fieldHook.field();
             members.add(new AtInject(fieldHook.setter(), field, List.of(ServiceDependency.fromField(field))));
         }
 
+        @OnHook
         void onMethodProvide(AnnotatedMethodHook<Inject> methodHook) {
             MethodDescriptor method = methodHook.method();
             List<ServiceDependency> dependencies = ServiceDependency.fromExecutable(method);

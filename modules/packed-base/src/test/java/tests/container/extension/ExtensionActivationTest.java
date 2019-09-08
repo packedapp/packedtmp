@@ -33,6 +33,7 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
 import support.testutil.AbstractArtifactTest;
 
@@ -106,6 +107,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             return "ffooo";
         }
 
+        @OnHook
         public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
             assertThat(h.annotation().value()).isEqualTo("Foo");
             assertThat(h.field().getName()).isEqualTo("foo");
@@ -119,6 +121,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             }
         }
 
+        @OnHook
         public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
             assertThat(h.annotation().value()).isEqualTo("Foo");
             assertThat(h.method().getName()).isEqualTo("foo");

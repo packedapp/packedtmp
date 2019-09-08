@@ -23,6 +23,7 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.FieldOperator;
 import app.packed.reflect.MethodOperator;
@@ -59,6 +60,7 @@ public class MyExtension2 extends Extension {
 
         private final RuntimeAccessorList<Supplier<Object>> ral = new RuntimeAccessorList<>();
 
+        @OnHook
         public void foo(AnnotatedMethodHook<MyA> h) {
             sum += h.annotation().value();
             if (h.method().isStatic()) {
@@ -67,6 +69,7 @@ public class MyExtension2 extends Extension {
             }
         }
 
+        @OnHook
         public void foo(AnnotatedFieldHook<MyA> h) throws Throwable {
             sum += h.annotation().value();
             if (h.field().isStatic()) {

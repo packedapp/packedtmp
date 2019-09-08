@@ -23,6 +23,7 @@ import java.util.List;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
@@ -70,6 +71,7 @@ public final class AtProvidesGroup {
             return new AtProvidesGroup(this);
         }
 
+        @OnHook
         void onFieldProvide(AnnotatedFieldHook<Provide> fieldHook) {
             FieldDescriptor field = fieldHook.field();
 
@@ -77,6 +79,7 @@ public final class AtProvidesGroup {
             tryAdd0(fieldHook.getter(), field, Key.fromField(field.unsafeField()), fieldHook.annotation(), List.of());
         }
 
+        @OnHook
         void onMethodProvide(AnnotatedMethodHook<Provide> methodHook) {
             MethodDescriptor method = methodHook.method();
 

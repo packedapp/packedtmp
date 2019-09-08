@@ -38,6 +38,7 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
 
 /**
@@ -127,6 +128,7 @@ public class ExtensionActivation {
     static class Builder implements HookGroupBuilder<String> {
         ActivateMyExtension e;
 
+        @OnHook
         public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
             e = h.annotation();
         }

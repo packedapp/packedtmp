@@ -25,7 +25,6 @@ import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -35,10 +34,11 @@ import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
-import app.packed.reflect.ConstructorExtractor;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
+import packed.internal.container.extension.AbstractFoo;
+import packed.internal.reflect.ConstructorExtractor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -47,7 +47,7 @@ import packed.internal.util.TypeUtil;
 /**
  * An {@link HookGroupBuilderModel} wraps
  */
-final class HookGroupBuilderModel {
+final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
 
     /** A cache of information for aggregator types. */
     private static final ClassValue<HookGroupBuilderModel> MODEL_CACHE = new ClassValue<>() {
@@ -71,9 +71,6 @@ final class HookGroupBuilderModel {
     /** The type of aggregator. */
     private final Class<?> builderType;
 
-    /** A constructor for creating new group builder instances. */
-    private final MethodHandle constructor;
-
     /** The type of result the aggregator produces. */
     private final Class<?> groupType;
 
@@ -84,7 +81,7 @@ final class HookGroupBuilderModel {
      *            the builder to create a model from
      */
     private HookGroupBuilderModel(Builder builder) {
-        this.constructor = requireNonNull(builder.constructor);
+        super(builder.constructor);
         this.builderType = builder.builderType;
         this.groupType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.annotatedMethods);
@@ -148,20 +145,6 @@ final class HookGroupBuilderModel {
     }
 
     /**
-     * Creates a new hook group builder.
-     * 
-     * @return a new hook group builder
-     */
-    HookGroupBuilder<?> newHookGroupBuilder() {
-        try {
-            return (HookGroupBuilder<?>) constructor.invoke();
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    /**
      * Returns a model for the specified hook group builder type.
      * 
      * @param type
@@ -178,9 +161,6 @@ final class HookGroupBuilderModel {
         /** An type variable extractor to extract the type of hook group the builder produces. */
         private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
 
-        /** The type of hook group builder. */
-        private final Class<? extends HookGroupBuilder<?>> builderType;
-
         /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedFieldHook} as parameter. */
         private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
@@ -189,6 +169,9 @@ final class HookGroupBuilderModel {
 
         /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
         private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
+
+        /** The type of hook group builder. */
+        private final Class<? extends HookGroupBuilder<?>> builderType;
 
         /** A constructor used to create new hook group builders. */
         private MethodHandle constructor;
@@ -208,30 +191,7 @@ final class HookGroupBuilderModel {
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
         }
 
-        private void addHookMethod(Lookup lookup, Method method, Parameter p) {
-            // if (method.getParameterCount() != 1) {
-            // throw new InvalidDeclarationException(
-            // "Methods annotated with @OnHook on hook aggregates must have exactly one parameter, method = " +
-            // StringFormatter.format(method));
-            // }
-            //
-            // Parameter p = method.getParameters()[0];
-            Class<?> cl = p.getType();
-
-            if (cl == AnnotatedFieldHook.class) {
-                addHookMethod0(lookup, method, p, annotatedFields);
-            } else if (cl == AnnotatedMethodHook.class) {
-                addHookMethod0(lookup, method, p, annotatedMethods);
-            } else if (cl == AnnotatedTypeHook.class) {
-                addHookMethod0(lookup, method, p, annotatedTypes);
-            } else {
-                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one parameter of type "
-                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
-                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-            }
-        }
-
-        private void addHookMethod0(MethodHandles.Lookup lookup, Method method, Parameter p,
+        private void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p,
                 IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
             // if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
             // throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
@@ -241,11 +201,11 @@ final class HookGroupBuilderModel {
             @SuppressWarnings("unchecked")
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
 
+            // Check that we have not added another previously for the same annotation
             if (annotations.containsKey(annotationType)) {
                 throw new InvalidDeclarationException("There are multiple methods annotated with @OnHook on "
                         + StringFormatter.format(method.getDeclaringClass()) + " that takes " + p.getParameterizedType());
             }
-            // Check that we have not added another previously for the same annotation
 
             MethodHandle mh;
             try {
@@ -278,21 +238,24 @@ final class HookGroupBuilderModel {
             for (Class<?> c = builderType; c != Object.class; c = c.getSuperclass()) {
                 for (Method method : c.getDeclaredMethods()) {
                     // Problemet er lidt hjaelpe metoder...
-                    Parameter hook = null;
-                    if (method.getParameterCount() > 0) {
-                        for (Parameter p : method.getParameters()) {
-                            Class<?> pc = p.getType();
-                            if (pc == AnnotatedFieldHook.class || pc == AnnotatedMethodHook.class || pc == AnnotatedTypeHook.class) {
-                                if (method.getParameterCount() != 1) {
-                                    throw new InvalidDeclarationException("Methods on " + builderType
-                                            + " that takes a hook class must have exactly one parameter, method = " + StringFormatter.format(method));
-                                }
-                                hook = p;
-                            }
+                    if (method.isAnnotationPresent(OnHook.class)) {
+                        if (method.getParameterCount() != 1) {
+                            throw new InvalidDeclarationException("Methods annotated with @" + OnHook.class.getSimpleName()
+                                    + " on hook group builder must take exactly one parameter, method = " + StringFormatter.format(method));
                         }
-                    }
-                    if (hook != null) {
-                        addHookMethod(lookup, method, hook);
+                        Parameter p = method.getParameters()[0];
+                        Class<?> pc = p.getType();
+                        if (pc == AnnotatedFieldHook.class) {
+                            addHookMethod(lookup, method, p, annotatedFields);
+                        } else if (pc == AnnotatedMethodHook.class) {
+                            addHookMethod(lookup, method, p, annotatedMethods);
+                        } else if (pc == AnnotatedTypeHook.class) {
+                            addHookMethod(lookup, method, p, annotatedTypes);
+                        } else {
+                            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one parameter of type "
+                                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
+                                    + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
+                        }
                     }
                 }
             }

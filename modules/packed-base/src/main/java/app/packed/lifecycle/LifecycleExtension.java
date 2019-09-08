@@ -24,8 +24,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.HookApplicator;
+import app.packed.container.extension.HookGroupBuilder;
+import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
 import app.packed.inject.InjectionExtension;
 import app.packed.reflect.MethodOperator;
@@ -132,6 +133,7 @@ final class LifecycleHookAggregator implements HookGroupBuilder<LifecycleHookAgg
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
     HookApplicator<Runnable> applyDelayed;
 
+    @OnHook
     void add(AnnotatedMethodHook<Main> hook) {
         hooks.add(hook);
     }

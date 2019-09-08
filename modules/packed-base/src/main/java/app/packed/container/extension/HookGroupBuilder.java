@@ -17,7 +17,6 @@ package app.packed.container.extension;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.util.function.Function;
 
 /**
  *
@@ -43,14 +42,12 @@ public interface HookGroupBuilder<G> {
      *            the builder type to instantiate
      * @param target
      *            the target class that should be processed
+     * @param targetAccessor
+     *            if the specified caller does not have open rights to the specified target. Additional lookup objects can
+     *            be specified
      * @return a new group
      */
-    static <G, B extends HookGroupBuilder<G>> G generate(Lookup caller, Class<B> builderType, Class<?> target) {
-        return generate(caller, builderType).apply(target);
-    }
-
-    // Will not cache generate value. You can put a ClassValue in front
-    static <G, B extends HookGroupBuilder<G>> Function<Class<?>, G> generate(Lookup caller, Class<B> builderType) {
+    static <G, B extends HookGroupBuilder<G>> G generate(Lookup caller, Class<B> builderType, Class<?> target, Lookup... targetAccessor) {
         throw new UnsupportedOperationException();
     }
 
@@ -74,6 +71,11 @@ class MyBuilder implements HookGroupBuilder<Ob> {
 class Ob {
 
 }
+//// Will not cache generate value. You can put a ClassValue in front
+//// Tror vi dropper denne...
+// static <G, B extends HookGroupBuilder<G>> Function<Class<?>, G> generate(Lookup caller, Class<B> builderType) {
+// throw new UnsupportedOperationException();
+// }
 
 /// **
 // * Is typically used during tests to verify
