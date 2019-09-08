@@ -17,8 +17,6 @@ package packed.internal.container.extension.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.InaccessibleObjectException;
 import java.util.Map;
 
 import app.packed.container.extension.AnnotatedFieldHook;
@@ -26,7 +24,6 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
-import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.reflect.AbstractInstantiableModel;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -164,14 +161,6 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
             super(HookGroupBuilder.class, builderType, true);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
-
-            lookup = MethodHandles.lookup();
-            try {
-                lookup = MethodHandles.privateLookupIn(builderType, lookup);
-            } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(builderType) + ", the module '"
-                        + builderType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
-            }
         }
 
         HookGroupBuilderModel build() {

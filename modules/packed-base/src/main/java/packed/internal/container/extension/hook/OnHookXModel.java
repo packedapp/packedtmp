@@ -17,8 +17,6 @@ package packed.internal.container.extension.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
@@ -121,7 +119,7 @@ public final class OnHookXModel {
          * @param method
          * @param oh
          */
-        private void addHookMethod(Lookup lookup, Method method, OnHookGroup oh) {
+        private void addHookMethod(Method method, OnHookGroup oh) {
 
             if (method.getParameterCount() != 2) {
                 throw new InvalidDeclarationException(
@@ -134,7 +132,6 @@ public final class OnHookXModel {
 
             MethodHandle mh;
             try {
-                lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
                 mh = lookup.unreflect(method);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
@@ -162,7 +159,7 @@ public final class OnHookXModel {
         protected void processMethod(Method method) {
             OnHookGroup oh = method.getAnnotation(OnHookGroup.class);
             if (oh != null) {
-                addHookMethod(MethodHandles.lookup(), method, oh);
+                addHookMethod(method, oh);
             }
         }
 

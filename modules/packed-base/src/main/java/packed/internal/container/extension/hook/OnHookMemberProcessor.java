@@ -63,6 +63,14 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
     public OnHookMemberProcessor(Class<?> baseType, Class<?> actualType, boolean isGroupBuilder) {
         super(baseType, actualType);
         this.isGroupBuilder = isGroupBuilder;
+
+        lookup = MethodHandles.lookup();
+        try {
+            lookup = MethodHandles.privateLookupIn(actualType, lookup);
+        } catch (IllegalAccessException | InaccessibleObjectException e) {
+            throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(actualType) + ", the module '"
+                    + actualType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
+        }
     }
 
     protected void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
