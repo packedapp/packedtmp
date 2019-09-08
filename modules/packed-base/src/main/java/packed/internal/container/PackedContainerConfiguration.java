@@ -67,7 +67,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private final ContainerModel model;
 
     /** The source of the container configuration. */
-    final ContainerSource source;
+    public final ContainerSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
     private final WireletList wirelets;

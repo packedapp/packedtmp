@@ -15,13 +15,18 @@
  */
 package packed.internal.container.extension;
 
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
-import packed.internal.reflect.MemberProcessor;
+import packed.internal.container.extension.hook.OnHookMemberProcessor;
+import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
  *
  */
 public class ExtensionNodeModel {
+
+    /** An extractor to find the extension the node is build upon. */
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNodeModel.class);
 
     /** A cache of values. */
     private static final ClassValue<ExtensionNodeModel> CACHE = new ClassValue<>() {
@@ -30,7 +35,8 @@ public class ExtensionNodeModel {
         @SuppressWarnings("unchecked")
         @Override
         protected ExtensionNodeModel computeValue(Class<?> type) {
-            return new Builder((Class<? extends ExtensionNode<?>>) type).build();
+            Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(type);
+            return ExtensionModel.of(extensionType).node;
         }
     };
 
@@ -54,16 +60,16 @@ public class ExtensionNodeModel {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    private static class Builder extends MemberProcessor {
+    static class Builder extends OnHookMemberProcessor {
 
         /**
          * @param actualType
          */
         private Builder(Class<? extends ExtensionNode<?>> actualType) {
-            super(ExtensionNode.class, actualType);
+            super(ExtensionNode.class, actualType, false);
         }
 
-        private ExtensionNodeModel build() {
+        ExtensionNodeModel build() {
             return new ExtensionNodeModel(this);
         }
     }

@@ -39,6 +39,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
+
 public final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
