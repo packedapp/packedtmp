@@ -35,7 +35,7 @@ public abstract class MemberProcessor {
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
     /** */
-    private static final HashSet<Package> PKG = new HashSet<>();
+    private final HashSet<Package> PKG = new HashSet<>();
 
     private final Class<?> baseType;
 
@@ -44,6 +44,7 @@ public abstract class MemberProcessor {
     public MemberProcessor(Class<?> baseType, Class<?> actualType) {
         this.baseType = requireNonNull(baseType);
         this.actualType = requireNonNull(actualType);
+        // TODO we should probably check that actual type is a super type
     }
 
     public MethodHandle findNoParameterConstructor() {

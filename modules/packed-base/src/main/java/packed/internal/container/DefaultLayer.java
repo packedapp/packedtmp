@@ -26,7 +26,7 @@ import app.packed.container.Wirelet;
 /** The default implementation of Layer. */
 class DefaultLayer implements ContainerLayer {
 
-    private final PackedContainerConfiguration container;
+    final PackedContainerConfiguration container;
 
     /** All the dependencies of this layer. */
     private final Set<ContainerLayer> dependencies;

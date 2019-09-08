@@ -23,6 +23,7 @@ import java.lang.reflect.Modifier;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.reflect.AbstractInstantiableModel;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
@@ -32,7 +33,7 @@ import packed.internal.util.StringFormatter;
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
-final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
+final class ExtensionModel<T extends Extension> extends AbstractInstantiableModel<T> {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
@@ -73,6 +74,7 @@ final class ExtensionModel<T extends Extension> extends AbstractFoo<T> {
 
     /** A builder for {@link ExtensionModel}. */
     private static class Builder extends MemberProcessor {
+
         private final Class<? extends Extension> extensionType;
 
         private Builder(Class<? extends Extension> extensionType) {

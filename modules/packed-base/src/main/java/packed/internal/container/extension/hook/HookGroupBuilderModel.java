@@ -37,7 +37,7 @@ import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
-import packed.internal.container.extension.AbstractFoo;
+import packed.internal.reflect.AbstractInstantiableModel;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
@@ -47,7 +47,7 @@ import packed.internal.util.TypeUtil;
 /**
  * An {@link HookGroupBuilderModel} wraps
  */
-final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
+final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBuilder<?>> {
 
     /** A cache of information for aggregator types. */
     private static final ClassValue<HookGroupBuilderModel> MODEL_CACHE = new ClassValue<>() {
@@ -199,20 +199,20 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
             }
         }
 
-        private void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p,
+        private void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
                 IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
             // if (ComponentClassDescriptor.Builder.METHOD_ANNOTATION_ACTIVATOR.get(annotationType) != type) {
             // throw new IllegalStateException("Annotation @" + annotationType.getSimpleName() + " must be annotated with @"
             // + Activate.class.getSimpleName() + "(" + extensionClass.getSimpleName() + ".class) to be used with this method");
             // }
-            ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
+            ParameterizedType pt = (ParameterizedType) p1.getParameterizedType();
             @SuppressWarnings("unchecked")
             Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
 
             // Check that we have not added another previously for the same annotation
             if (annotations.containsKey(annotationType)) {
                 throw new InvalidDeclarationException("There are multiple methods annotated with @OnHook on "
-                        + StringFormatter.format(method.getDeclaringClass()) + " that takes " + p.getParameterizedType());
+                        + StringFormatter.format(method.getDeclaringClass()) + " that takes " + p1.getParameterizedType());
             }
 
             MethodHandle mh;
@@ -248,13 +248,13 @@ final class HookGroupBuilderModel extends AbstractFoo<HookGroupBuilder<?>> {
                     Parameter p = method.getParameters()[0];
                     Class<?> pc = p.getType();
                     if (pc == AnnotatedFieldHook.class) {
-                        addHookMethod(lookup, method, p, annotatedFields);
+                        addHookMethod(lookup, method, p, null, annotatedFields);
                         return;
                     } else if (pc == AnnotatedMethodHook.class) {
-                        addHookMethod(lookup, method, p, annotatedMethods);
+                        addHookMethod(lookup, method, p, null, annotatedMethods);
                         return;
                     } else if (pc == AnnotatedTypeHook.class) {
-                        addHookMethod(lookup, method, p, annotatedTypes);
+                        addHookMethod(lookup, method, p, null, annotatedTypes);
                         return;
                     }
                 }

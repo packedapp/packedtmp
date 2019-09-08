@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -50,14 +51,14 @@ public final class ComponentModelHookGroup {
     }
 
     public void addTo(PackedContainerConfiguration container, ComponentConfiguration component) {
-        Extension extension = container.useContext(extensionType).extension();
+        Extension extension = container.use(extensionType); // should be ordered...s
         try {
             for (ExtensionCallback c : callbacks) {
-                c.mh.invoke(extension, component, c.o);
+                c.mh.invoke(extension, component, c.hookGroup);
             }
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new RuntimeException(e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 

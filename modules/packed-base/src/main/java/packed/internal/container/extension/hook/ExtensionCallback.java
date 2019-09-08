@@ -17,20 +17,26 @@ package packed.internal.container.extension.hook;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.container.extension.Extension;
+
 /**
  *
  */
 // Bruges til at kalde tilbage paa extensions
 public final class ExtensionCallback {
     public final MethodHandle mh;
-    public final Object o;
+    public final Object hookGroup;
 
     /**
      * @param mh
-     * @param o
+     * @param hookGroup
      */
-    public ExtensionCallback(MethodHandle mh, Object o) {
+    public ExtensionCallback(MethodHandle mh, Object hookGroup) {
         this.mh = mh;
-        this.o = o;
+        this.hookGroup = hookGroup;
+    }
+
+    public void invoke(Extension e) throws Throwable {
+        mh.invoke(hookGroup, e);
     }
 }

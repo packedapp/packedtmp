@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension;
+package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,15 +22,13 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import packed.internal.util.ThrowableUtil;
 
-/**
- *
- */
-public abstract class AbstractFoo<T> {
+/** An abstract model class that allows instantiation. */
+public abstract class AbstractInstantiableModel<T> {
 
     /** The method handle used to create a new instances. */
-    final MethodHandle constructor;
+    private final MethodHandle constructor;
 
-    protected AbstractFoo(MethodHandle constructor) {
+    protected AbstractInstantiableModel(MethodHandle constructor) {
         this.constructor = requireNonNull(constructor);
     }
 
