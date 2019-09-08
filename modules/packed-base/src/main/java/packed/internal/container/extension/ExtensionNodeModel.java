@@ -30,7 +30,7 @@ public class ExtensionNodeModel {
         @SuppressWarnings("unchecked")
         @Override
         protected ExtensionNodeModel computeValue(Class<?> type) {
-            return new Builder((Class<? extends ExtensionNode>) type).build();
+            return new Builder((Class<? extends ExtensionNode<?>>) type).build();
         }
     };
 
@@ -49,7 +49,7 @@ public class ExtensionNodeModel {
      *            the type of extension to return a model for
      * @return an extension model for the specified extension type
      */
-    public static ExtensionNodeModel of(Class<? extends ExtensionNode> nodeType) {
+    public static ExtensionNodeModel of(Class<? extends ExtensionNode<?>> nodeType) {
         return CACHE.get(nodeType);
     }
 
@@ -59,7 +59,7 @@ public class ExtensionNodeModel {
         /**
          * @param actualType
          */
-        private Builder(Class<? extends ExtensionNode> actualType) {
+        private Builder(Class<? extends ExtensionNode<?>> actualType) {
             super(ExtensionNode.class, actualType);
         }
 

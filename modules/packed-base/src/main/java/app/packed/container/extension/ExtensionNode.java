@@ -24,7 +24,7 @@ import packed.internal.container.extension.PackedExtensionContext;
  * Extension nodes enables communication across extension instances of the same. It also enables using wirelets if X
  * interface is implemented. Finally it allows host to guest communication.
  */
-public abstract class ExtensionNode {
+public abstract class ExtensionNode<T extends Extension> {
 
     // Or initialized, by the runtime....
     private final PackedExtensionContext context;
@@ -37,5 +37,10 @@ public abstract class ExtensionNode {
 
     public final ExtensionContext context() {
         return context;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final T extension() {
+        return (T) context.extension();
     }
 }

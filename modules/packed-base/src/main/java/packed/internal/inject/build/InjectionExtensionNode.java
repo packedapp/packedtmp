@@ -25,6 +25,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
@@ -42,7 +43,7 @@ import packed.internal.inject.util.AtInjectGroup;
 import packed.internal.inject.util.ServiceNodeMap;
 
 /** This class records all service related information for a single box. */
-public final class InjectionExtensionNode extends ExtensionNode {
+public final class InjectionExtensionNode extends ExtensionNode<InjectionExtension> {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;

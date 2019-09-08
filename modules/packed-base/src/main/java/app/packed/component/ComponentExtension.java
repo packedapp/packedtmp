@@ -104,7 +104,7 @@ public final class ComponentExtension extends Extension {
     }
 
     @Override
-    protected ExtensionNode onAdded() {
+    protected ExtensionNode<?> onAdded() {
         this.configuration = ((PackedExtensionContext) context()).pcc;
         return null;
     }

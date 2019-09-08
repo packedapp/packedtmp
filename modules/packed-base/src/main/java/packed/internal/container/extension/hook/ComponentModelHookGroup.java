@@ -69,9 +69,6 @@ public final class ComponentModelHookGroup {
 
         final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
 
-        /** The component type */
-        final Class<?> componentType;
-
         final OnHookXModel con;
 
         /** The type of extension that will be activated. */
@@ -79,11 +76,10 @@ public final class ComponentModelHookGroup {
 
         final IdentityHashMap<Class<?>, HookGroupBuilder<?>> mmm = new IdentityHashMap<>();
 
-        final ComponentModel.Builder modelBuilder;
+        private final ComponentModel.Builder componentModelBuilder;
 
-        public Builder(ComponentModel.Builder modelBuilder, Class<? extends Extension> extensionType) {
-            this.modelBuilder = requireNonNull(modelBuilder);
-            this.componentType = modelBuilder.componentType();
+        public Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
+            this.componentModelBuilder = requireNonNull(componentModelBuilder);
             this.con = OnHookXModel.get(extensionType);
             ExtensionModel.of(extensionType);
             this.extensionType = requireNonNull(extensionType);
@@ -99,12 +95,12 @@ public final class ComponentModelHookGroup {
         }
 
         public void onAnnotatedField(Field field, Annotation annotation) {
-            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(modelBuilder, field, annotation);
+            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(componentModelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         public void onAnnotatedMethod(Method method, Annotation annotation) {
-            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(modelBuilder, method, annotation);
+            PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(componentModelBuilder, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 

@@ -15,14 +15,13 @@
  */
 package packed.internal.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.Nullable;
 import packed.internal.reflect.AbstractInstantiableModel;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
@@ -46,6 +45,8 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         }
     };
 
+    ExtensionNodeModel node;
+
     /**
      * Creates a new extension model.
      * 
@@ -54,6 +55,11 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
      */
     private ExtensionModel(Builder builder) {
         super(builder.findNoParameterConstructor());
+    }
+
+    @Nullable
+    public ExtensionNodeModel node() {
+        return node;
     }
 
     /**
@@ -75,11 +81,8 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     /** A builder for {@link ExtensionModel}. */
     private static class Builder extends MemberProcessor {
 
-        private final Class<? extends Extension> extensionType;
-
         private Builder(Class<? extends Extension> extensionType) {
             super(Extension.class, extensionType);
-            this.extensionType = requireNonNull(extensionType);
             if (!Modifier.isFinal(extensionType.getModifiers())) {
                 throw new IllegalArgumentException("Extension of type " + extensionType + " must be declared final");
             } else if (!Extension.class.isAssignableFrom(extensionType)) {
@@ -89,13 +92,14 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         }
 
         private ExtensionModel<?> build() {
-            Method m = null;
-            try {
-                m = extensionType.getDeclaredMethod("onAdded");
-            } catch (NoSuchMethodException ignore) {}
+            findMethods();
+            return new ExtensionModel<>(this);
+        }
 
-            if (m != null) {
-                Class<?> nodeType = m.getReturnType();
+        @Override
+        protected void processMethod(Method method) {
+            if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {
+                Class<?> nodeType = method.getReturnType();
                 if (nodeType != ExtensionNode.class) {
                     if (!Modifier.isFinal(nodeType.getModifiers())) {
                         throw new InvalidDeclarationException(nodeType + " must be a final class");
@@ -103,7 +107,6 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
                     System.out.println("YES");
                 }
             }
-            return new ExtensionModel<>(this);
         }
     }
 }

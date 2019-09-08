@@ -209,7 +209,7 @@ public abstract class Extension {
      * <p>
      * The default implementation of this method does nothing.
      */
-    protected ExtensionNode onAdded() {
+    protected ExtensionNode<?> onAdded() {
         return null;
     }
 
