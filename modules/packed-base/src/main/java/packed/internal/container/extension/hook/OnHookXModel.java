@@ -15,23 +15,17 @@
  */
 package packed.internal.container.extension.hook;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHookGroup;
@@ -75,8 +69,9 @@ public final class OnHookXModel {
      * @param builder
      *            the builder to create the manager from
      */
+    @SuppressWarnings("unchecked")
     private OnHookXModel(Builder builder) {
-        this.extensionType = builder.extensionType;
+        this.extensionType = (Class<? extends Extension>) builder.actualType;
         this.aggregators = builder.aggregators;
         this.annotatedFields = builder.annotatedFields;
         this.annotatedMethods = builder.annotatedMethods;
@@ -127,12 +122,8 @@ public final class OnHookXModel {
         /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
         private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
-        /** The type of extension that will be activated. */
-        private final Class<? extends Extension> extensionType;
-
         private Builder(Class<? extends Extension> extensionType) {
             super(Extension.class, extensionType);
-            this.extensionType = requireNonNull(extensionType);
         }
 
         /**
@@ -149,68 +140,27 @@ public final class OnHookXModel {
             if (method.getParameterTypes()[0] != ComponentConfiguration.class) {
                 throw new InvalidDeclarationException("OOPS");
             }
-            Parameter p = method.getParameters()[1];
-            Class<?> cl = p.getType();
-
             Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
-
-            if (aggregateType != NoAggregator.class) {
-                MethodHandle mh;
-                try {
-                    lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
-                    mh = lookup.unreflect(method);
-                } catch (IllegalAccessException | InaccessibleObjectException e) {
-                    throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
-                            + extensionType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-                }
-
-                NativeImage.registerMethod(method);
-
-                aggregators.put(aggregateType, mh);
-                HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
-                annotatedFields.putAll(oha.annotatedFields);
-                annotatedMethods.putAll(oha.annotatedMethods);
-                annotatedTypes.putAll(oha.annotatedTypes);
-                // aggregators.p
-
-                // Do something
-            } else if (cl == AnnotatedFieldHook.class) {
-                addHookMethod0(lookup, method, p, annotatedFields);
-            } else if (cl == AnnotatedMethodHook.class) {
-                addHookMethod0(lookup, method, p, annotatedMethods);
-            } else if (cl == AnnotatedTypeHook.class) {
-                addHookMethod0(lookup, method, p, annotatedTypes);
-            } else {
-                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one parameter of type "
-                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
-                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-            }
-        }
-
-        private void addHookMethod0(Lookup lookup, Method method, Parameter p, IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
-            ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
-            @SuppressWarnings("unchecked")
-            Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
-
-            if (annotations.containsKey(annotationType)) {
-                throw new InvalidDeclarationException("There are multiple methods annotated with @OnHook on "
-                        + StringFormatter.format(method.getDeclaringClass()) + " that takes " + p.getParameterizedType());
-            }
-            // Check that we have not added another previously for the same annotation
 
             MethodHandle mh;
             try {
-                method.setAccessible(true);
                 lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
                 mh = lookup.unreflect(method);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(extensionType) + ", the module '"
-                        + extensionType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
+                throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
+                        + actualType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
             }
 
             NativeImage.registerMethod(method);
 
-            annotations.put(annotationType, mh);
+            aggregators.put(aggregateType, mh);
+            HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
+            annotatedFields.putAll(oha.annotatedFields);
+            annotatedMethods.putAll(oha.annotatedMethods);
+            annotatedTypes.putAll(oha.annotatedTypes);
+            // aggregators.p
+
+            // Do something
         }
 
         private OnHookXModel build() {
@@ -228,6 +178,53 @@ public final class OnHookXModel {
 
     }
 
-    /** A dummy type indicating that no aggregator should be used. */
-    public static abstract class NoAggregator implements Supplier<Void>, HookGroupBuilder<Void> {}
 }
+/// ** A dummy type indicating that no aggregator should be used. */
+// public static abstract class NoAggregator implements Supplier<Void>, HookGroupBuilder<Void> {}
+
+// else if (cl == AnnotatedFieldHook.class) {
+// addHookMethod0(lookup, method, p, annotatedFields);
+// throw new Error();
+// } else if (cl == AnnotatedMethodHook.class) {
+// addHookMethod0(lookup, method, p, annotatedMethods);
+// throw new Error();
+// } else if (cl == AnnotatedTypeHook.class) {
+// addHookMethod0(lookup, method, p, annotatedTypes);
+// throw new Error();
+// } else {
+// if (true) {
+// throw new Error();
+// }
+// throw new InvalidDeclarationException("Methods annotated with @OnHook on hook aggregates must have exactly one
+// parameter of type "
+// + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
+// + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
+// }
+// private void addHookMethod0(Lookup lookup, Method method, Parameter p, IdentityHashMap<Class<? extends Annotation>,
+// MethodHandle> annotations) {
+// ParameterizedType pt = (ParameterizedType) p.getParameterizedType();
+// @SuppressWarnings("unchecked")
+// Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
+//
+// if (annotations.containsKey(annotationType)) {
+// throw new InvalidDeclarationException("There are multiple methods annotated with @OnHook on "
+// + StringFormatter.format(method.getDeclaringClass()) + " that takes " + p.getParameterizedType());
+// }
+// // Check that we have not added another previously for the same annotation
+//
+// MethodHandle mh;
+// try {
+// method.setAccessible(true);
+// lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), lookup);
+// mh = lookup.unreflect(method);
+// } catch (IllegalAccessException | InaccessibleObjectException e) {
+// throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(extensionType) +
+// ", the module '"
+// + extensionType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'",
+// e);
+// }
+//
+// NativeImage.registerMethod(method);
+//
+// annotations.put(annotationType, mh);
+// }

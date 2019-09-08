@@ -19,8 +19,10 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
@@ -30,7 +32,9 @@ import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
+import app.packed.util.NativeImage;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
@@ -61,8 +65,29 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
         this.isGroupBuilder = isGroupBuilder;
     }
 
-    protected abstract void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
-            IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations);
+    protected void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
+            IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
+        ParameterizedType pt = (ParameterizedType) p1.getParameterizedType();
+        @SuppressWarnings("unchecked")
+        Class<? extends Annotation> annotationType = (Class<? extends Annotation>) pt.getActualTypeArguments()[0];
+
+        // Check that we have not added another previously for the same annotation
+        if (annotations.containsKey(annotationType)) {
+            throw new InvalidDeclarationException("There are multiple methods annotated with @OnHook on " + StringFormatter.format(method.getDeclaringClass())
+                    + " that takes " + p1.getParameterizedType());
+        }
+
+        MethodHandle mh;
+        try {
+            mh = lookup.unreflect(method);
+        } catch (IllegalAccessException | InaccessibleObjectException e) {
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
+                    + actualType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
+        }
+
+        NativeImage.registerMethod(method);
+        annotations.put(annotationType, mh);
+    }
 
     @Override
     protected void processMethod(Method method) {

@@ -39,7 +39,7 @@ public abstract class MemberProcessor {
 
     private final Class<?> baseType;
 
-    private final Class<?> actualType;
+    public final Class<?> actualType;
 
     public MemberProcessor(Class<?> baseType, Class<?> actualType) {
         this.baseType = requireNonNull(baseType);
