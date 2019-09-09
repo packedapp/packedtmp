@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.container;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import app.packed.app.AppBundle;
+import app.packed.component.Install;
 import app.packed.container.Wirelet;
 
 @Retention(CLASS)

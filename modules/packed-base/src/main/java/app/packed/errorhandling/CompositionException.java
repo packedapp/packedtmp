@@ -20,12 +20,12 @@ package app.packed.errorhandling;
  */
 // Build exception, creation exception, ...
 // Vi kan ogsaa have en Initialization exception...
-public class CompositionException extends RuntimeException {
+class CompositionException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
 
-    public CompositionException(String message) {
+    CompositionException(String message) {
         super(message);
     }
 

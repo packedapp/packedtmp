@@ -49,7 +49,7 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector injectorStringInstance() {
-        return Injector.configure(c -> c.provide("foo"));
+        return Injector.configure(c -> c.provideConstant("foo"));
     }
 
     @Benchmark
@@ -66,7 +66,7 @@ public class InjectorMicro {
     public Injector injectorServiceNeedingString() {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provide("foo");
+            c.provideConstant("foo");
             c.provide(NeedsString.class);
         });
     }

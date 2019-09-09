@@ -46,14 +46,6 @@ public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
         this.parent = null;
     }
 
-    public ServiceNodeMap(ServiceNodeMap parent) {
-        this.parent = requireNonNull(parent);
-    }
-
-    public boolean containsKey(Key<?> key) {
-        return nodes.containsKey(key);
-    }
-
     public List<ServiceEntry<?>> copyNodes() {
         return new ArrayList<>(nodes.values());
     }

@@ -48,7 +48,7 @@ public class ProvideTest {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
             ComponentServiceConfiguration<A> a = conf.provide(A.class);
             ComponentServiceConfiguration<B> b = conf.provide(Factory.findInjectable(B.class));
-            ComponentServiceConfiguration<C> c = conf.provide(C0);
+            ComponentServiceConfiguration<C> c = conf.provideConstant(C0);
             ComponentServiceConfiguration<E> e = conf.provide(E.class).lazy();
             ComponentServiceConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
             ComponentServiceConfiguration<H> h = conf.provide(H.class).prototype();
@@ -59,7 +59,7 @@ public class ProvideTest {
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            ComponentServiceConfiguration<A> sc = e.provide(A0);
+            ComponentServiceConfiguration<A> sc = e.provideConstant(A0);
             testConfiguration(sc, InstantiationMode.SINGLETON, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);

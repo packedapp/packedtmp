@@ -34,11 +34,11 @@ import app.packed.util.Qualifier;
 public class Test2 {
 
     static final Injector INJ1 = Injector.configure(c -> {
-        c.provide("foo123");
+        c.provideConstant("foo123");
     });
 
     static final Injector INJ2 = Injector.configure(c -> {
-        c.provide(123L);
+        c.provideConstant(123L);
     });
 
     static Bundle b() {

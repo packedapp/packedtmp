@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedMethodHook;
-import packed.internal.container.AbstractHookApplicator;
 import packed.internal.reflect.PackedMethodOperator;
 
 /**

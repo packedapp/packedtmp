@@ -108,6 +108,15 @@ public interface Injector {
     ConfigSite configSite();
 
     /**
+     * Returns the service contract of this injector.
+     * 
+     * @return the service contract of this injector
+     */
+    default ServiceContract contract() {
+        return ServiceContract.of(c -> services().forEach(s -> c.addProvides(s.key())));
+    }
+
+    /**
      * Returns true if the injector contains a service with the specified key.
      *
      * @param key
@@ -204,6 +213,14 @@ public interface Injector {
      */
     // services().service(s();
     Stream<ServiceDescriptor> services();
+
+    /**
+     * Creates a new injector by specifying the downstream wirelets. Transform
+     * 
+     * @param wirelets
+     * @return the new injector
+     */
+    Injector spawn(Wirelet... wirelets);
 
     /**
      * Returns a service of the specified type. Or throws an {@link UnsupportedOperationException} if this injector does not

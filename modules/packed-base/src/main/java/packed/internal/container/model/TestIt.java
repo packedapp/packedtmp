@@ -42,8 +42,8 @@ public class TestIt extends AppBundle {
     }
 
     static final Injector INJ = Injector.configure(c -> {
-        c.provide("foo123");
-        c.provide(123L);
+        c.provideConstant("foo123");
+        c.provideConstant(123L);
     });
 
     /** {@inheritDoc} */

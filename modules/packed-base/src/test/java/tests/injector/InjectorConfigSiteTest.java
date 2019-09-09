@@ -71,14 +71,14 @@ public class InjectorConfigSiteTest {
             conf.lookup(MethodHandles.lookup());// The letter classes are not exported
             binding0(conf.provide(A.class));
             binding0(conf.provide(Factory.findInjectable(B.class)));
-            binding0(conf.provide(C0));
-            binding0(conf.provide(TypeLiteral.of(D.class)));
+            binding0(conf.provideConstant(C0));
+            binding0(conf.provideConstant(TypeLiteral.of(D.class)));
             binding0(conf.provide(E.class).lazy());
             binding0(conf.provide(Factory.findInjectable(F.class)).lazy());
-            binding0(conf.provide(TypeLiteral.of(G.class)).lazy());
+            binding0(conf.provideConstant(TypeLiteral.of(G.class)).lazy());
             binding0(conf.provide(H.class).prototype());
             binding0(conf.provide(Factory.findInjectable(I.class)).prototype());
-            binding0(conf.provide(TypeLiteral.of(J.class)).prototype());
+            binding0(conf.provideConstant(TypeLiteral.of(J.class)).prototype());
         });
         for (Entry<Class<?>, ConfigSite> e : sites.entrySet()) {
             ConfigSite cs = inj.getDescriptor(e.getKey()).get().configSite();
@@ -107,7 +107,7 @@ public class InjectorConfigSiteTest {
     @Test
     public void importServiceFrom() {
         Injector i = Injector.configure(c -> {
-            c.provide(123);
+            c.provideConstant(123);
         });
 
         Injector i2 = Injector.configure(c -> {

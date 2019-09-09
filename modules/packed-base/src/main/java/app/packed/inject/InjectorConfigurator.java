@@ -57,7 +57,7 @@ public final class InjectorConfigurator {
      * 
      * @return the container configuration that was used to create this configurator
      */
-    protected ContainerConfiguration configuration() {
+    private ContainerConfiguration configuration() {
         return configuration;
     }
 
@@ -67,7 +67,7 @@ public final class InjectorConfigurator {
      * @return an instance of the injector extension
      */
     private InjectionExtension extension() {
-        return configuration.use(InjectionExtension.class);
+        return configuration().use(InjectionExtension.class);
     }
 
     /**
@@ -79,7 +79,7 @@ public final class InjectorConfigurator {
      */
     @Nullable
     public String getDescription() {
-        return configuration.getDescription();
+        return configuration().getDescription();
     }
 
     /**
@@ -89,7 +89,7 @@ public final class InjectorConfigurator {
      *            optional import/export wirelets
      */
     public void link(Bundle bundle, Wirelet... wirelets) {
-        configuration.link(bundle, wirelets);
+        configuration().link(bundle, wirelets);
     }
 
     /**
@@ -110,7 +110,7 @@ public final class InjectorConfigurator {
      *            the lookup object
      */
     public void lookup(Lookup lookup) {
-        configuration.lookup(lookup);
+        configuration().lookup(lookup);
     }
 
     /**
@@ -165,23 +165,6 @@ public final class InjectorConfigurator {
     }
 
     /**
-     * Binds the specified instance as a new service.
-     * <p>
-     * The default key for the service will be {@code instance.getClass()}. If the type returned by
-     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
-     * qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param instance
-     *            the instance to bind
-     * @return a service configuration for the service
-     */
-    public <T> ComponentServiceConfiguration<T> provide(T instance) {
-        return extension().provideConstant(instance);
-    }
-
-    /**
      * Binds all services from the specified injector.
      * <p>
      * A simple example, importing a singleton {@code String} service from one injector into another:
@@ -228,6 +211,23 @@ public final class InjectorConfigurator {
     }
 
     /**
+     * Binds the specified instance as a new service.
+     * <p>
+     * The default key for the service will be {@code instance.getClass()}. If the type returned by
+     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
+     * qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param instance
+     *            the instance to bind
+     * @return a service configuration for the service
+     */
+    public <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
+        return extension().provideConstant(instance);
+    }
+
+    /**
      * Sets the (nullable) description of the injector, the description can later be obtained via
      * {@link Injector#description()}.
      *
@@ -238,7 +238,7 @@ public final class InjectorConfigurator {
      * @see Injector#description()
      */
     public InjectorConfigurator setDescription(String description) {
-        configuration.setDescription(description);
+        configuration().setDescription(description);
         return this;
     }
 }

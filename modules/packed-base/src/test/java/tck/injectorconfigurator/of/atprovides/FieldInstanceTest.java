@@ -39,7 +39,7 @@ public class FieldInstanceTest {
     /** Tests default {@link Provide#instantionMode()} on instance fields. */
     @Test
     public void provide() {
-        MixedFields.test(c -> c.provide(new MixedFields()));
+        MixedFields.test(c -> c.provideConstant(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
         MixedFields.test(c -> c.provide(Factory.findInjectable(MixedFields.class)));
         MixedFields.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFields>() {})));
@@ -61,7 +61,7 @@ public class FieldInstanceTest {
     public void provideLazy2() {
         // Singleton
         Injector i = of(c -> {
-            c.provide(new AtomicBoolean(false));
+            c.provideConstant(new AtomicBoolean(false));
             c.provide(SingletonField.class).lazy();
         });
         assertThat(i.use(AtomicBoolean.class)).isTrue();
@@ -72,7 +72,7 @@ public class FieldInstanceTest {
 
         // Lazy
         i = of(c -> {
-            c.provide(new AtomicBoolean(false));
+            c.provideConstant(new AtomicBoolean(false));
             c.provide(LazyField.class).lazy();
         });
         assertThat(i.use(AtomicBoolean.class)).isFalse();
@@ -91,7 +91,7 @@ public class FieldInstanceTest {
     @Test
     public void xxx() {
         of(c -> {
-            c.provide(new AtomicBoolean());
+            c.provideConstant(new AtomicBoolean());
             c.provide(SingletonField.class);
         });
     }
@@ -100,14 +100,14 @@ public class FieldInstanceTest {
     @Test
     public void providePrototype() {
         AbstractThrowableAssert<?, ?> a = assertThatThrownBy(() -> of(c -> {
-            c.provide(new AtomicBoolean());
+            c.provideConstant(new AtomicBoolean());
             c.provide(SingletonField.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
 
         a = assertThatThrownBy(() -> of(c -> {
-            c.provide(new AtomicBoolean());
+            c.provideConstant(new AtomicBoolean());
             c.provide(LazyField.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -115,7 +115,7 @@ public class FieldInstanceTest {
 
         a = assertThatThrownBy(() -> Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
-            c.provide(new AtomicBoolean());
+            c.provideConstant(new AtomicBoolean());
             c.provide(PrototypeField.class).prototype();
         }));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();

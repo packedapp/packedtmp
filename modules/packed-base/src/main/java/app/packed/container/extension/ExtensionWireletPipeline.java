@@ -33,8 +33,13 @@ import app.packed.util.Nullable;
 
 // Vi skal mirror alle metoder paa node....
 
+// Kan only define one pipeline per extension...
+// Fordi, vi kalder build paa den...
+
+// ExtensionOrExtensionNode for T
 public abstract class ExtensionWireletPipeline<N extends ExtensionNode<?>> {
 
+    /** The extension node. */
     private final N node;
 
     protected ExtensionWireletPipeline(N node) {

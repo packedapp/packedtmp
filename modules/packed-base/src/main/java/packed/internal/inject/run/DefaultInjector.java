@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.Wirelet;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
@@ -108,5 +109,16 @@ public final class DefaultInjector extends AbstractInjector {
             }
             return e;
         });
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Injector spawn(Wirelet... wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+        if (wirelets.length == 0) {
+            return this;
+        }
+        // TODO Auto-generated method stub
+        return null;
     }
 }

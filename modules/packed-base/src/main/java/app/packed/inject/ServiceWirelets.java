@@ -157,7 +157,7 @@ public final class ServiceWirelets {
     // Saa kan vi have vilkaerlige
 
     // Problemet er at vi skal angive 2 noegler
-    public static Wirelet provideMapped(Mapper<?, ?> r) {
+    static Wirelet provideMapped(Mapper<?, ?> r) {
         throw new UnsupportedOperationException();
     }
 
@@ -178,7 +178,7 @@ public final class ServiceWirelets {
 
     // Maybe have a generic mapper, not only for injection...
     // Transformer, maaske i .function package
-    public static abstract class Mapper<T, R> {
+    static abstract class Mapper<T, R> {
         protected Mapper(Function<? super T, ? extends R> function) {
             throw new UnsupportedOperationException();
         }

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.container.extension.hook.other;
 
 import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.HookApplicator;
-import packed.internal.container.extension.hook.other.DelayedAccessor;
+import packed.internal.container.AbstractComponentConfiguration;
 
 /**
  *
