@@ -16,16 +16,18 @@
 package packed.internal.container.extension.stuff;
 
 import app.packed.container.extension.ExtensionWireletPipeline;
+import packed.internal.inject.build.InjectionExtensionNode;
 
 /**
  *
  */
-public class CIBuilderPipeline extends ExtensionWireletPipeline<CIBuilderPipeline> implements CommonInterface {
+public class CIBuilderPipeline extends ExtensionWireletPipeline<InjectionExtensionNode> implements CommonInterface {
 
-    /** {@inheritDoc} */
-    @Override
-    protected CIBuilderPipeline split() {
-        throw new UnsupportedOperationException();
+    /**
+     * @param previous
+     */
+    protected CIBuilderPipeline(InjectionExtensionNode previous) {
+        super(previous);
     }
 
 }

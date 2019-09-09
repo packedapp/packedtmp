@@ -87,6 +87,10 @@ public final class ServiceWirelets {
         return new PackedUpstreamInjectionWirelet.PeekUpstream(action);
     }
 
+    public static Wirelet peekDownstream(Consumer<? super ServiceDescriptor> action) {
+        return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
+    }
+
     public static <T> Wirelet provide(Class<T> key, T service) {
         return provide(Key.of(key), service);
     }

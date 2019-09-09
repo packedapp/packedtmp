@@ -21,10 +21,10 @@ package packed.internal.container.extension.stuff;
 public class SomeBuilder implements CommonInterface {
 
     public void instantiate(PkdInstantiator i) {
-        CommonInterface ci = i.get(CIBuilderPipeline.class);
-        if (ci == null) {
-            ci = this;
-        }
+        // CommonInterface ci = i.get(CIBuilderPipeline.class);
+        // if (ci == null) {
+        // ci = this;
+        // }
 
         // do stuff...
     }

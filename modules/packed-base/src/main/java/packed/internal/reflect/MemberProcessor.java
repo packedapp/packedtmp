@@ -47,6 +47,10 @@ public abstract class MemberProcessor {
         // TODO we should probably check that actual type is a super type
     }
 
+    public MethodHandle findConstructor(Class<?>... parameterTypes) {
+        return ConstructorExtractor.extract(actualType, parameterTypes);
+    }
+
     public MethodHandle findNoParameterConstructor() {
         return ConstructorExtractor.extract(actualType);
     }

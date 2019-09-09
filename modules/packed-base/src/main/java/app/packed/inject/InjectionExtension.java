@@ -195,24 +195,6 @@ public final class InjectionExtension extends Extension {
     }
 
     /**
-     * Binds the specified instance as a new service.
-     * <p>
-     * The default key for the service will be {@code instance.getClass()}. If the type returned by
-     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
-     * qualifier annotation added.
-     *
-     * @param <T>
-     *            the type of service to bind
-     * @param instance
-     *            the instance to bind
-     * @return a service configuration for the service
-     */
-    public <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
-        // configurability is checked by ComponentExtension
-        return node.provider().provideInstance(use(ComponentExtension.class).installConstant(instance), instance);
-    }
-
-    /**
      * Imports all the services from the specified injector and make each service available to other services in the
      * injector being build.
      * <p>
@@ -231,6 +213,24 @@ public final class InjectionExtension extends Extension {
         }
         checkConfigurable();
         node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
+    }
+
+    /**
+     * Binds the specified instance as a new service.
+     * <p>
+     * The default key for the service will be {@code instance.getClass()}. If the type returned by
+     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
+     * qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param instance
+     *            the instance to bind
+     * @return a service configuration for the service
+     */
+    public <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
+        // configurability is checked by ComponentExtension
+        return node.provider().provideInstance(use(ComponentExtension.class).installConstant(instance), instance);
     }
 
     /**

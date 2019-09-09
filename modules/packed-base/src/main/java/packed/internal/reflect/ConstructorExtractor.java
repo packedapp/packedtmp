@@ -32,7 +32,7 @@ import packed.internal.util.TypeUtil;
 final class ConstructorExtractor {
     private static final Module THIS_MODULE = ConstructorExtractor.class.getModule();
 
-    static MethodHandle extract(Class<?> type) {
+    static MethodHandle extract(Class<?> type, Class<?>... parameterTypes) {
         if (Modifier.isAbstract(type.getModifiers())) {
             throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(type));
         } else if (TypeUtil.isInnerOrLocalClass(type)) {
@@ -41,7 +41,7 @@ final class ConstructorExtractor {
 
         Constructor<?> constructor;
         try {
-            constructor = type.getDeclaredConstructor();
+            constructor = type.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be used");
         }

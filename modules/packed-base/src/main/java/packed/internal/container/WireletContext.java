@@ -15,16 +15,16 @@
  */
 package packed.internal.container;
 
-import java.lang.reflect.Type;
 import java.util.IdentityHashMap;
 
 import app.packed.container.Wirelet;
-import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletModel;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.container.extension.ExtensionWireletPipelineModel;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -42,48 +42,27 @@ import packed.internal.util.StringFormatter;
 // Should we copy info into new context.. Or check recursively
 public class WireletContext {
 
-    /** An type variable extractor to extract the type of pipeline the extension wirelet needs. */
-    private static final TypeVariableExtractor ARTIFACT_DRIVER_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.class);
-
-    private static final ClassValue<Class<? extends Extension>> WIRELET_TO_EXTENSION = new ClassValue<>() {
-
-        @Override
-        protected Class<? extends Extension> computeValue(Class<?> type) {
-            Type t = ARTIFACT_DRIVER_TV_EXTRACTOR.extract(type);
-            if (!(t instanceof Class)) {
-                throw new IllegalStateException();
-            }
-            @SuppressWarnings("unchecked")
-            Class<? extends Extension> extensionType = (Class<? extends Extension>) t;
-            if (extensionType.getModule() != type.getModule()) {
-                throw new IllegalArgumentException("The wirelet and the extension must be defined in the same module, however extension "
-                        + StringFormatter.format(extensionType) + " was defined in " + extensionType.getModule() + ", and this wirelet type "
-                        + StringFormatter.format(getClass()) + " was defined in module " + getClass().getModule());
-            }
-            return extensionType;
-        }
-    };
-
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
 
     ContainerWirelet.ComponentNameWirelet newName;
 
-    final IdentityHashMap<Class<? extends Extension>, ExtensionWireletPipeline<?>> pipelines = new IdentityHashMap<>();
+    final IdentityHashMap<ExtensionWireletPipelineModel, ExtensionWireletPipeline<?>> pipelines = new IdentityHashMap<>();
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWirelet ew = (ExtensionWirelet) w;
-                Class<? extends Extension> cl = WIRELET_TO_EXTENSION.get(w.getClass());
-                ExtensionWireletPipeline p = pipelines.computeIfAbsent(cl, k -> {
-                    Extension e = pcc.getExtension(cl);
+                ExtensionWireletPipelineModel pm = ExtensionWireletModel.of((Class<? extends ExtensionWirelet<?>>) ew.getClass()).pipeline;
+                ExtensionWireletPipeline p = pipelines.computeIfAbsent(pm, k -> {
+                    @Nullable
+                    PackedExtensionContext e = pcc.getContext(pm.node.extension.extensionType);
                     if (e == null) {
-                        throw new IllegalStateException();// Extension was never instaleld
+                        throw new IllegalStateException(
+                                "The wirelet " + w + " requires the extension " + pm.node.extension.extensionType.getSimpleName() + " to be installed.");
                     }
-                    return ExtensionWireletModel.newPipeline(e, ew.getClass());
-
+                    return pm.newPipeline(e.extensionNode());
                 });
                 SharedSecrets.extension().wireletProcess(p, ew);
             } else if (w instanceof ContainerWirelet) {

@@ -15,6 +15,8 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.util.Nullable;
 
 /**
@@ -27,7 +29,34 @@ import app.packed.util.Nullable;
 // Er en pipeline mere end en pipeline!!!
 // Er den ogsaa noden...???
 
-public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T>> {
+// Drop <T> + split()...
+
+// Vi skal mirror alle metoder paa node....
+
+public abstract class ExtensionWireletPipeline<N extends ExtensionNode<?>> {
+
+    private final N node;
+
+    protected ExtensionWireletPipeline(N node) {
+        this.node = requireNonNull(node, "node is null");
+    }
+
+    //
+    public void buildArtifact() {
+        // extension.buildBundle(null);
+    }
+
+    public void buildBundle() {}
+
+    boolean isDetailedStackCapturingEnable() {
+        return false;
+    }
+
+    boolean isStackCapturingEnable() {
+        return false;
+    }
+
+    // Kunne godt tage en boolean der sagde noget om hvordan den koerer...
 
     // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
     // Det betyder at man godt kan have en slags context... Idet vi kan have et index
@@ -37,25 +66,9 @@ public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipelin
         return false;
     }
 
-    boolean isStackCapturingEnable() {
-        return false;
+    public final N node() {
+        return node;
     }
-
-    boolean isDetailedStackCapturingEnable() {
-        return false;
-    }
-
-    // Kunne godt tage en boolean der sagde noget om hvordan den koerer...
-
-    /**
-     * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
-     * an artifact image. Or tries to create a new artifact image from an existing image.
-     * 
-     * @return a new pipeline
-     */
-    // Two strategies. Either clone all the contents.
-    // Or recursively call back into parent pipeline
-    protected abstract T split();
 
     /**
      * This is invoked by the runtime when all wirelets have been successfully processed.
@@ -67,15 +80,18 @@ public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipelin
 
     }
 
-    //
-    public void buildArtifact() {
-        // extension.buildBundle(null);
-    }
-
-    public void buildBundle() {}
-
     public void onParentConfigured(@Nullable Object extension) {
 
     }
+
+    /**
+     * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
+     * an artifact image. Or tries to create a new artifact image from an existing image.
+     * 
+     * @return a new pipeline
+     */
+    // Two strategies. Either clone all the contents.
+    // Or recursively call back into parent pipeline
+    // protected abstract T split();
 
 }

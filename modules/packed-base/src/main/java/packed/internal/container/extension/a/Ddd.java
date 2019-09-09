@@ -17,7 +17,7 @@ package packed.internal.container.extension.a;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
-import app.packed.artifact.ArtifactImage;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
@@ -26,12 +26,15 @@ public class Ddd extends AppBundle {
 
     @Override
     public void configure() {
+        export(provideConstant("Foo"));
+        export(provideConstant(23));
         installConstant(new Ssss());
     }
 
     public static void main(String[] args) {
-        ArtifactImage ai = newImage(new Ddd());
-        App.of(ai);
+        // ArtifactImage ai = newImage(new Ddd());
+        System.out.println();
+        App.of(new Ddd(), ServiceWirelets.peekDownstream(e -> System.out.println("Exporting " + e.key() + " via " + e.configSite())));
     }
 
     public static class Ssss {

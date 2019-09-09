@@ -92,6 +92,11 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     public void initialize() {
         node = SharedSecrets.extension().initializeExtension(this);
+        if (node == null) {
+            // Check that method definition _is not_ overridden but is ExtensionNode<?>
+        } else {
+            // Check that method definition _is overridden but is ExtensionNode<?>
+        }
     }
 
     public void onConfigured() {

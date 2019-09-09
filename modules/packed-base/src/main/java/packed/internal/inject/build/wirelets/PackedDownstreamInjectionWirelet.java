@@ -24,10 +24,10 @@ import app.packed.container.extension.ExtensionWirelet;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.ServiceWirelets;
 import app.packed.util.Key;
-import packed.internal.inject.build.InjectionPipeline;
+import packed.internal.inject.build.InjectionWireletPipeline;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<InjectionPipeline> {
+public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<InjectionWireletPipeline> {
 
     public static class FilterOnKey extends PackedDownstreamInjectionWirelet {
 
@@ -39,7 +39,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
 
         /** {@inheritDoc} */
         @Override
-        protected void process(InjectionPipeline p) {
+        protected void process(InjectionWireletPipeline p) {
 
         }
     }
@@ -62,8 +62,10 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
 
         /** {@inheritDoc} */
         @Override
-        protected void process(InjectionPipeline extension) {
-            System.out.println(action);
+        protected void process(InjectionWireletPipeline extension) {
+            for (var s : extension.node().exports().allExports()) {
+                action.accept(s.toDescriptor());
+            }
         }
     }
 
@@ -80,8 +82,8 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
 
         /** {@inheritDoc} */
         @Override
-        protected void process(InjectionPipeline p) {
-            System.out.println("Nice builder " + p.ib);
+        protected void process(InjectionWireletPipeline p) {
+            System.out.println("Nice builder " + p.node().extension());
         }
     }
 }

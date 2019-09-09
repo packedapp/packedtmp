@@ -46,6 +46,6 @@ public interface AppPackedExtensionAccess extends SecretAccess {
 
     void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
 
-    <T extends ExtensionWireletPipeline<T>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
+    <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 
 }

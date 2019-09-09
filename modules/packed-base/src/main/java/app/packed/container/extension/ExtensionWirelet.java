@@ -23,7 +23,12 @@ import app.packed.container.Wirelet;
  * Extension wirelets that uses the same extension pipeline type are processed in the order they are specified in. No
  * guarantees are made for extension wirelets that define for different extension pipeline types.
  */
-public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<T>> extends Wirelet {
+public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<?>> extends Wirelet {
+
+    // Ellers skal vi have stages'ene her
+    // processBefore()
+    // processAfter()
+    // ....
 
     /**
      * Process this wirelet.
@@ -32,4 +37,13 @@ public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<T>> ex
      *            the extensions pipeline
      */
     protected abstract void process(T pipeline);
+
+    // HVORFOR ikke bare en metode vi kan invoke fra extension'en?
+    // Det virker ikke naar vi image.with(some wirelets)....
+    // Fordi det kun er wirelets der bliver "koert".
+    // Vi koere ikke hver extension...
 }
+
+/// Maaske kan vi godt lave tmp bundles????
+/// Hvis vi bare stopper inde graf hullumhej...
+/// Det betyder dog ogsaa

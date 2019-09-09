@@ -17,6 +17,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -33,6 +34,10 @@ public final class WireletList extends Wirelet {
 
     /** The wirelets we are wrapping. */
     final Wirelet[] wirelets;
+
+    public Wirelet[] toArray() {
+        return Arrays.copyOf(wirelets, wirelets.length);
+    }
 
     static {
         SharedSecrets.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {

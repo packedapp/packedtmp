@@ -193,6 +193,9 @@ public final class ServiceContract extends Contract {
      * @return the contract
      */
     // Or should I return an empty contract???? Hmmmmmmmmmmmm
+    // Or an optional.. Technically the constract does not exist.
+    // Implications for other extension
+    // ofElseEmpty();
     public static ServiceContract of(ArtifactImage image) {
         return BundleDescriptor.of(image).contracts().use(ServiceContract.class);
     }

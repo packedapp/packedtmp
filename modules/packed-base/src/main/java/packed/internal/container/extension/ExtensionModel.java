@@ -49,7 +49,7 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     /** If the extension has a corresponding extension node */
     private final ExtensionNodeModel node;
 
-    final Class<? extends Extension> extensionType;
+    public final Class<? extends Extension> extensionType;
 
     final OnHookXModel onHoox;
 

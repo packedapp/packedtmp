@@ -15,12 +15,11 @@
  */
 package packed.internal.inject.util.nextapi;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.ExtensionContext;
+import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.extension.ExtensionWireletPipeline;
 
 /**
  *
@@ -37,6 +36,19 @@ class MyExtension extends Extension {
 
 }
 
+class MyExtensionNode extends ExtensionNode<MyExtension> {
+
+    final MyExtension extension;
+
+    /**
+     * @param context
+     */
+    protected MyExtensionNode(MyExtension extension, ExtensionContext context) {
+        super(context);
+        this.extension = extension;
+    }
+}
+
 // Wirelets must be immutable....
 class MyExtensionWirelet extends ExtensionWirelet<MyExtensionWireletPipeline> {
 
@@ -50,38 +62,24 @@ class MyExtensionWirelet extends ExtensionWirelet<MyExtensionWireletPipeline> {
 }
 
 //// Supportere aldrig mere end en type per extension.....
-class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWireletPipeline> {
+class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionNode> {
 
     String name;
-    final MyExtension extension;
 
     /**
      * @param extension
      */
-    protected MyExtensionWireletPipeline(MyExtension extension) {
-        this.extension = requireNonNull(extension);
+    MyExtensionWireletPipeline(MyExtensionNode extension) {
+        super(extension);
     }
 
-    protected MyExtensionWireletPipeline(MyExtension extension, String name) {
-        this.extension = requireNonNull(extension);
+    MyExtensionWireletPipeline(MyExtensionWireletPipeline previous) {
+        super(previous.node());
+        this.name = previous.name;
     }
 
     String getName() {
         String n = name;
-        return n == null ? extension.name : n;
+        return n == null ? node().extension.name : n;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected MyExtensionWireletPipeline split() {
-        return new MyExtensionWireletPipeline(extension, name);
-    }
-}
-
-abstract class EW<T extends ExtensionWireletPipeline<?>> extends Wirelet {
-
-}
-
-class W extends EW<MyExtensionWireletPipeline> {
-
 }

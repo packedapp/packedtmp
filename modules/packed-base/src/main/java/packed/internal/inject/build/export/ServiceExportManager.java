@@ -18,6 +18,7 @@ package packed.internal.inject.build.export;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -25,8 +26,8 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InjectionExtension;
-import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceConfiguration;
+import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -64,7 +65,9 @@ public final class ServiceExportManager {
     @Nullable
     private ConfigSite exportAll;
 
-    /** All resolved exports. Is null until {@link #resolve(InjectionExtensionNode, ArtifactBuildContext)} has been invoked. */
+    /**
+     * All resolved exports. Is null until {@link #resolve(InjectionExtensionNode, ArtifactBuildContext)} has been invoked.
+     */
     @Nullable
     private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
 
@@ -84,6 +87,10 @@ public final class ServiceExportManager {
      */
     public ServiceExportManager(InjectionExtensionNode builder) {
         this.builder = requireNonNull(builder);
+    }
+
+    public Collection<ExportedBuildEntry<?>> allExports() {
+        return resolvedExports.values();
     }
 
     /**

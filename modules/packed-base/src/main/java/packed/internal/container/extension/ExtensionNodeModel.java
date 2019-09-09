@@ -15,6 +15,8 @@
  */
 package packed.internal.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
@@ -32,9 +34,6 @@ import packed.internal.util.StringFormatter;
  */
 public final class ExtensionNodeModel {
 
-    /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNode.class);
-
     /** A cache of values. */
     private static final ClassValue<ExtensionNodeModel> CACHE = new ClassValue<>() {
 
@@ -47,13 +46,20 @@ public final class ExtensionNodeModel {
         }
     };
 
+    /** An extractor to find the extension the node is build upon. */
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNode.class);
+
     /**
      * Creates a new extension model.
      * 
      * @param builder
      *            the builder for this model
      */
-    private ExtensionNodeModel(ExtensionModel<?> extensionModel, Builder builder) {}
+    private ExtensionNodeModel(ExtensionModel<?> extensionModel, Builder builder) {
+        this.extension = requireNonNull(extensionModel);
+    }
+
+    public final ExtensionModel<?> extension;
 
     /**
      * Returns an extension node model for the specified extension node type.

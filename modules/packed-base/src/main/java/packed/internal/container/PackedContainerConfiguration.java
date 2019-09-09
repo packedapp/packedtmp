@@ -168,7 +168,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         installPrepare(State.GET_NAME_INVOKED);
         for (PackedExtensionContext e : extensions.values()) {
             e.onConfigured();
+            // Run ExtensionWirelets?
         }
+        WireletContext wc = new WireletContext();
+        wc.apply(this, wirelets.toArray());
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof PackedContainerConfiguration) {
@@ -323,12 +326,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
-    public <T extends Extension> T getExtension(Class<T> extensionType) {
+    public PackedExtensionContext getContext(Class<?> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        PackedExtensionContext pec = extensions.get(extensionType);
-        return pec == null ? null : (T) pec.extension();
+        return extensions.get(extensionType);
     }
 
     public PackedExtensionContext useContext(Class<? extends Extension> extensionType) {

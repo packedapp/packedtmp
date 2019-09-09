@@ -20,14 +20,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookGroup;
 import app.packed.inject.InjectionExtension;
 import app.packed.reflect.MethodOperator;
 import app.packed.util.InvalidDeclarationException;
@@ -61,15 +59,9 @@ import packed.internal.util.StringFormatter;
 
 public final class LifecycleExtension extends Extension {
 
-    /**
-     * This method once for each component method that is annotated with {@link Main}.
-     * 
-     * @param mh
-     */
-    @OnHookGroup(LifecycleHookAggregator.class)
-    void addMain(ComponentConfiguration cc, LifecycleHookAggregator mh) {
-        mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
-        // TODO check that we do not have multiple @Main methods
+    @Override
+    protected LifecycleExtensionNode onAdded() {
+        return new LifecycleExtensionNode(context());
     }
 
     public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {

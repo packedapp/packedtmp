@@ -22,5 +22,5 @@ import app.packed.container.extension.ExtensionWireletPipeline;
  */
 public interface PkdInstantiator {
 
-    public <T extends ExtensionWireletPipeline<T>> T get(Class<T> t);
+    public <T extends ExtensionWireletPipeline<?>> T get(Class<T> t);
 }
