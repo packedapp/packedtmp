@@ -33,17 +33,17 @@ public class TestIt extends AppBundle {
         return new BaseBundle() {
             @Override
             protected void configure() {
-                provideConstant("foob");
-                provideConstant(-123L);
-                provideConstant((short) -123L);
+                provideInstance("foob");
+                provideInstance(-123L);
+                provideInstance((short) -123L);
                 exportAll();
             }
         };
     }
 
     static final Injector INJ = Injector.configure(c -> {
-        c.provideConstant("foo123");
-        c.provideConstant(123L);
+        c.provideInstance("foo123");
+        c.provideInstance(123L);
     });
 
     /** {@inheritDoc} */

@@ -42,7 +42,7 @@ final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     ProvideAllBuildEntry(ProvideAllFromInjector fromInjector, ServiceEntry<T> entry) {
-        super(fromInjector.builder, fromInjector.configSite.withParent(entry.configSite()), List.of());
+        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), List.of());
         this.entry = requireNonNull(entry);
         this.fromInjector = requireNonNull(fromInjector);
         this.as((Key) entry.key());

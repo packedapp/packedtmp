@@ -223,8 +223,8 @@ public final class InjectorConfigurator {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
-        return extension().provideConstant(instance);
+    public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
+        return extension().provideInstance(instance);
     }
 
     /**

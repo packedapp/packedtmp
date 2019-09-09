@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentExtension;
-import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
@@ -60,12 +59,6 @@ public final class InjectionExtension extends Extension {
 
     /** Should never be initialized by users. */
     InjectionExtension() {}
-
-    /** {@inheritDoc} */
-    @Override
-    protected void buildDescriptor(BundleDescriptor.Builder descriptor) {
-        node.buildDescriptor(descriptor);
-    }
 
     /**
      * Exports a service with the specified type.
@@ -228,7 +221,7 @@ public final class InjectionExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
+    public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
         return node.provider().provideInstance(use(ComponentExtension.class).installConstant(instance), instance);
     }

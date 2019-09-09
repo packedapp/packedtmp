@@ -40,6 +40,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionNode;
 import app.packed.inject.Factory;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
@@ -119,7 +120,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            SharedSecrets.extension().buildBundle(e.extension(), builder);
+            ExtensionNode<?> n = e.extensionNode();
+            if (n != null) {
+                n.buildDescriptor(builder);
+            }
         }
         builder.extensions.addAll(extensions.keySet());
     }

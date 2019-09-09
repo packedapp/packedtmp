@@ -35,7 +35,7 @@ public class MembersProvideTest {
 
     @Test
     public void fieldsAndMethods() {
-        validate(of(c -> c.provideConstant(new VisibilityStatic())));
+        validate(of(c -> c.provideInstance(new VisibilityStatic())));
         validate(of(c -> c.provide(VisibilityStatic.class)));
         validate(of(c -> c.provide(VisibilityStatic.class).lazy()));
         validate(of(c -> c.provide(VisibilityStatic.class).prototype()));

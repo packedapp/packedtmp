@@ -38,7 +38,7 @@ public class FieldStaticTest {
     /** Tests default {@link Provide#instantionMode()} on static fields. */
     @Test
     public void provide() {
-        MixedFieldsInstantiable.test(c -> c.provideConstant(new MixedFieldsInstantiable()));
+        MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
         MixedFieldsInstantiable.test(c -> c.provide(MixedFieldsInstantiable.class));
         MixedFieldsInstantiable.test(c -> c.provide(Factory.findInjectable(MixedFieldsInstantiable.class)));
         MixedFieldsInstantiable.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedFieldsInstantiable>() {})));

@@ -39,7 +39,7 @@ public class BTest {
         i = Injector.configure(c -> {
             c.link(new MyBundle());
             c.link(new MyBundle4());
-            c.provideConstant("123");
+            c.provideInstance("123");
         });
         System.out.println("");
         for (ServiceDescriptor d : i.services().collect(Collectors.toList())) {
@@ -63,7 +63,7 @@ public class BTest {
         @Override
         protected void configure() {
             lookup(MethodHandles.lookup());
-            provideConstant(123L);
+            provideInstance(123L);
         }
     }
 

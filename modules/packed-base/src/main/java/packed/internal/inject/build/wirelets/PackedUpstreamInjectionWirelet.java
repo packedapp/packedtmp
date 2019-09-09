@@ -92,7 +92,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
                 // FAIL -> WireletProcessingException????
                 throw new RuntimeException();
             }
-            BuildEntry newE = new MappingBuildEntry(ii.builder, e, to, function, ii.configSite);
+            BuildEntry newE = new MappingBuildEntry(ii.node, e, to, function, ii.configSite);
             ii.entries.put(to, newE);
         }
 

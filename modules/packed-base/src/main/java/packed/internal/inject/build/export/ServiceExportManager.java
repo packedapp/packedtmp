@@ -67,9 +67,7 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
     /** The extension node this exporter is a part of. */
     private final InjectionExtensionNode node;
 
-    /**
-     * All resolved exports. Is null until {@link #resolve()} has been invoked.
-     */
+    /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
     private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
 

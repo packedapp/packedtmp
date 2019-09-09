@@ -35,7 +35,7 @@ public class MethodStaticTest {
     /** Tests default {@link Provide#instantionMode()} on static methods. */
     @Test
     public void provide() {
-        MixedMethodsInstantiable.test(c -> c.provideConstant(new MixedMethodsInstantiable()));
+        MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
         MixedMethodsInstantiable.test(c -> c.provide(Factory.findInjectable(MixedMethodsInstantiable.class)));
         MixedMethodsInstantiable.test(c -> c.provide(Factory.findInjectable(new TypeLiteral<MixedMethodsInstantiable>() {})));

@@ -32,6 +32,7 @@ import app.packed.util.Nullable;
  * @see InjectionExtension#export(Key)
  * @see InjectionExtension#export(ComponentServiceConfiguration)
  */
+// Move to ServiceExportManager
 final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** The entry that is exported. */
@@ -50,6 +51,8 @@ final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
     /** {@inheritDoc} */
     @Override
     public ServiceConfiguration<T> as(@Nullable Key<? super T> key) {
+        // TODO, maybe it gets disabled the minute we start analyzing exports???
+        // Nah, lige saa snart, vi begynder
         entry.injectorBuilder.checkExportConfigurable();
         entry.as(key);
         return this;

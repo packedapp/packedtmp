@@ -39,7 +39,6 @@ import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectionExtensionNode;
-import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.run.DefaultInjector;
 
 /**
@@ -114,7 +113,7 @@ public final class ServiceDependencyManager {
     }
 
     /** Also used for descriptors. */
-    public void analyze(ServiceExportManager exporter) {
+    public void analyze() {
         // Injector kan baade vaere en artifact.
         // Og en del af en artifact...
 

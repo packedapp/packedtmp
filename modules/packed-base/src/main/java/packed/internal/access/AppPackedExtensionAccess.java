@@ -20,26 +20,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.AnnotatedFieldHook;
+import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
-import app.packed.container.extension.AnnotatedMethodHook;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentModel;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {
-
-    /**
-     * @param receiver
-     *            the extension on which
-     * @param builder
-     *            the builder
-     */
-    void buildBundle(Extension receiver, BundleDescriptor.Builder builder);
 
     /**
      * Initializes the extension.

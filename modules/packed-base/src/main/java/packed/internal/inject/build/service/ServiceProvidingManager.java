@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
@@ -36,6 +35,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.Injector;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.Provide;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.CoreComponentConfiguration;
@@ -49,83 +49,89 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 
 /**
- * Manages all entities that provide a service.
+ * This class manages everything to do with providing services for an {@link InjectionExtension}.
+ *
+ * @see InjectionExtension#provide(Class)
+ * @see InjectionExtension#provide(Factory)
+ * @see InjectionExtension#provideAll(Injector, Wirelet...)
+ * @see InjectionExtension#provideInstance(Object)
+ * @see Provide
  */
 public final class ServiceProvidingManager {
 
-    /** The injector builder. */
-    private final InjectionExtensionNode builder;
+    /** A map used to cache build entries, connect stuff */
+    private final IdentityHashMap<ComponentConfiguration, ComponentBuildEntry<?>> componentConfigurationCache = new IdentityHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
     @Nullable
-    private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> duplicateProviders;
+    private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> failingDuplicateProviders;
 
-    /** A map used to connect stuff */
-    private final IdentityHashMap<ComponentConfiguration, ComponentBuildEntry<?>> en = new IdentityHashMap<>();
-
-    /** All explicit added build entries. */
-    private final ArrayList<BuildEntry<?>> entries = new ArrayList<>();
+    /** The extension node. */
+    private final InjectionExtensionNode node;
 
     /** All injectors added via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromInjector> provideAll;
 
+    /** All explicit added build entries. */
+    private final ArrayList<BuildEntry<?>> providingEntries = new ArrayList<>();
+
     /**
      * Creates a new manager.
      * 
-     * @param builder
-     *            the injector builder
+     * @param node
+     *            the extension node
      */
-    public ServiceProvidingManager(InjectionExtensionNode builder) {
-        this.builder = requireNonNull(builder);
+    public ServiceProvidingManager(InjectionExtensionNode node) {
+        this.node = requireNonNull(node);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void onProvidesGroup(ComponentConfiguration cc, AtProvidesGroup apg) {
+    public void addProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
         // The parent node is not added until #provideFactory or #provideInstance
         ComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;
-            parentNode = new ComponentBuildEntry(builder, cc.configSite(), instance);
+            parentNode = new ComponentBuildEntry(node, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            MethodHandle mh = builder.pcc.lookup.toMethodHandle(factory.handle());
-            parentNode = new ComponentBuildEntry<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            MethodHandle mh = node.pcc.lookup.toMethodHandle(factory.handle());
+            parentNode = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
         // If any of the @Provide methods are instance members the parent node needs special treatment.
         // As it needs to be constructed, before the field or method can provide services.
-        parentNode.hasInstanceMembers = apg.hasInstanceMembers;
+        parentNode.hasInstanceMembers = group.hasInstanceMembers;
 
         // Add each @Provide as children of the parent node
-        for (AtProvides atProvides : apg.members) {
+        for (AtProvides atProvides : group.members) {
             ConfigSite configSite = parentNode.configSite().thenAnnotatedMember(InjectConfigSiteOperations.INJECTOR_PROVIDE, atProvides.provides,
                     atProvides.member);
             ComponentBuildEntry<?> node = new ComponentBuildEntry<>(configSite, atProvides, atProvides.methodHandle, parentNode);
             node.as((Key) atProvides.key);
-            entries.add(node);
+            providingEntries.add(node);
         }
 
         // Set the parent node, so it can be found from provideFactory or provideInstance
-        en.put(cc, parentNode);
+        componentConfigurationCache.put(cc, parentNode);
     }
 
     public void provideAll(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+        ArrayList<ProvideAllFromInjector> p = provideAll;
         if (provideAll == null) {
-            provideAll = new ArrayList<>(1);
+            p = provideAll = new ArrayList<>(1);
         }
-        provideAll.add(new ProvideAllFromInjector(builder, configSite, injector, wirelets));
+        p.add(new ProvideAllFromInjector(node, configSite, injector, wirelets));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
-        ComponentBuildEntry<?> c = en.get(cc);
-        // ComponentBuildEntry<?> c = cc.features().get(FK);
+        ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
-            MethodHandle mh = builder.pcc.lookup.toMethodHandle(function);
-            c = new ComponentBuildEntry<>(builder, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
+            MethodHandle mh = node.pcc.lookup.toMethodHandle(function);
+            c = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());
-        entries.add(c);
+        providingEntries.add(c);
         return new PackedProvidedComponentConfiguration<>(cc, (ComponentBuildEntry) c);
     }
 
@@ -133,27 +139,26 @@ public final class ServiceProvidingManager {
     public <T> ComponentServiceConfiguration<T> provideInstance(ComponentConfiguration cc, T instance) {
         // First see if we have already installed the node. This happens in #set if the component container any members
         // annotated with @Provides
-        // ComponentBuildEntry<?> c = cc.features().get(FK);
-        ComponentBuildEntry<?> c = en.get(cc);
+        ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentBuildEntry<T>(builder, cc.configSite(), instance);
+            c = new ComponentBuildEntry<T>(node, cc.configSite(), instance);
         }
 
         c.as((Key) Key.of(instance.getClass()));
-        entries.add(c);
+        providingEntries.add(c);
         return new PackedProvidedComponentConfiguration<>((CoreComponentConfiguration) cc, (ComponentBuildEntry) c);
     }
 
-    public HashMap<Key<?>, BuildEntry<?>> resolveAndCheckForDublicates(ArtifactBuildContext buildContext) {
+    public HashMap<Key<?>, BuildEntry<?>> resolve() {
         LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices = new LinkedHashMap<>();
 
         // First process provided entries, then any entries added via provideAll
-        resolveAndCheckForDublicates0(resolvedServices, entries);
+        resolve0(resolvedServices, providingEntries);
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromInjector fromInjector : provideAll) {
-                resolveAndCheckForDublicates0(resolvedServices, fromInjector.entries.values());
+                resolve0(resolvedServices, fromInjector.entries.values());
             }
         }
 
@@ -161,22 +166,22 @@ public final class ServiceProvidingManager {
         // Apply any wirelets to exports, and take
 
         // Add error messages if any nodes with the same key have been added multiple times
-        if (duplicateProviders != null) {
-            ErrorMessages.addDuplicateNodes(builder.context().buildContext(), duplicateProviders);
+        if (failingDuplicateProviders != null) {
+            ErrorMessages.addDuplicateNodes(node.context().buildContext(), failingDuplicateProviders);
         }
         return resolvedServices;
     }
 
-    private void resolveAndCheckForDublicates0(LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices, Collection<? extends BuildEntry<?>> entries) {
+    private void resolve0(LinkedHashMap<Key<?>, BuildEntry<?>> resolvedServices, Collection<? extends BuildEntry<?>> entries) {
         for (BuildEntry<?> entry : entries) {
             Key<?> key = entry.key(); // whats the deal with null keys
             if (key != null) {
                 BuildEntry<?> existing = resolvedServices.putIfAbsent(key, entry);
                 if (existing != null) {
-                    if (duplicateProviders == null) {
-                        duplicateProviders = new LinkedHashMap<>();
+                    if (failingDuplicateProviders == null) {
+                        failingDuplicateProviders = new LinkedHashMap<>();
                     }
-                    LinkedHashSet<BuildEntry<?>> hs = duplicateProviders.computeIfAbsent(key, m -> new LinkedHashSet<>());
+                    LinkedHashSet<BuildEntry<?>> hs = failingDuplicateProviders.computeIfAbsent(key, m -> new LinkedHashSet<>());
                     hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                     hs.add(entry);
                 }

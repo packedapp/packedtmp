@@ -27,8 +27,6 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
-import app.packed.container.BundleDescriptor;
-import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.WireletList;
@@ -80,11 +78,6 @@ public abstract class Extension {
 
     static {
         SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
-
-            @Override
-            public void buildBundle(Extension extension, Builder builder) {
-                extension.buildDescriptor(builder);
-            }
 
             @Override
             public ExtensionNode<?> initializeExtension(PackedExtensionContext context) {
@@ -142,8 +135,6 @@ public abstract class Extension {
         checkConfigurable();
         return c;
     }
-
-    protected void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is

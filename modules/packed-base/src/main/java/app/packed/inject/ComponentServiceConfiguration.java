@@ -36,11 +36,11 @@ import app.packed.util.Nullable;
  * 
  * @see InjectionExtension#provide(Class)
  * @see InjectionExtension#provide(Factory)
- * @see InjectionExtension#provideConstant(Object)
+ * @see InjectionExtension#provideInstance(Object)
  *
  * @see BaseBundle#provide(Class)
  * @see BaseBundle#provide(Factory)
- * @see BaseBundle#provideConstant(Object)
+ * @see BaseBundle#provideInstance(Object)
  */
 // or maybe just ComponentServiceConfgiuration
 public interface ComponentServiceConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {

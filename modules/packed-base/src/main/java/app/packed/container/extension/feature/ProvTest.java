@@ -27,7 +27,7 @@ class ProvTest extends BaseBundle {
 
     @Override
     protected void configure() {
-        provideConstant(new Foo());
+        provideInstance(new Foo());
     }
 
     public static void main(String[] args) {

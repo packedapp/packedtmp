@@ -204,8 +204,8 @@ public abstract class BaseBundle extends Bundle {
         return injector().provide(factory);
     }
 
-    protected final <T> ComponentServiceConfiguration<T> provideConstant(T instance) {
-        return injector().provideConstant(instance);
+    protected final <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
+        return injector().provideInstance(instance);
     }
 
     protected final void requireService(Class<?> key) {

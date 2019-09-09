@@ -26,8 +26,8 @@ public class Ddd extends AppBundle {
 
     @Override
     public void configure() {
-        export(provideConstant("Foo"));
-        export(provideConstant(23));
+        export(provideInstance("Foo"));
+        export(provideInstance(23));
         installConstant(new Ssss());
     }
 

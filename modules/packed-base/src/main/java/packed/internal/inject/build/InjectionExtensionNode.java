@@ -88,7 +88,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     }
 
     public void build(ArtifactBuildContext buildContext) {
-        HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolveAndCheckForDublicates(buildContext);
+        HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolve();
 
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
@@ -99,7 +99,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
         if (hasFailed) {
             return;
         }
-        dependencies().analyze(exporter);
+        dependencies().analyze();
 
     }
 
@@ -209,7 +209,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
      */
     @OnHookGroup(AtProvidesGroup.Builder.class)
     void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
-        provider().onProvidesGroup(cc, group);
+        provider().addProvidesGroup(cc, group);
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {

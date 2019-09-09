@@ -46,7 +46,6 @@ import packed.internal.access.SharedSecrets;
 import packed.internal.inject.util.QualifierHelper;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ErrorMessageBuilder;
-import packed.internal.util.InternalErrorException;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -67,13 +66,13 @@ public final class ServiceDependency {
             if (type == Optional.class) {
                 throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
             } else if (type == OptionalInt.class) {
-                return new ServiceDependency(Key.of(Integer.class), OptionalInt.class, null);
+                return new ServiceDependency(Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
             } else if (type == OptionalLong.class) {
-                return new ServiceDependency(Key.of(Long.class), OptionalLong.class, null);
+                return new ServiceDependency(Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
             } else if (type == OptionalDouble.class) {
-                return new ServiceDependency(Key.of(Double.class), OptionalDouble.class, null);
+                return new ServiceDependency(Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
             }
-            return new ServiceDependency(Key.of(type), null, null);
+            return new ServiceDependency(Key.of(type), Optionality.REQUIRED, null);
         }
     };
 
@@ -84,8 +83,7 @@ public final class ServiceDependency {
      * Null if it is a required dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
      * {@link OptionalDouble} or {@link Nullable} annotation.
      */
-    @Nullable
-    private final Class<?> optionalType;
+    private final Optionality optionality;
 
     /** The variable of this dependency. */
     @Nullable
@@ -96,19 +94,19 @@ public final class ServiceDependency {
      * 
      * @param key
      *            the key
-     * @param optionalType
+     * @param optionality
      *            the optional type
      * @param variable
      *            an optional field or parameter
      */
-    private ServiceDependency(Key<?> key, @Nullable Class<?> optionalType, @Nullable VariableDescriptor variable) {
+    private ServiceDependency(Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
-        this.optionalType = optionalType;
+        this.optionality = requireNonNull(optionality);
         this.variable = variable;
     }
 
     /**
-     * Returns an object indicating that an optional dependency could not be fulfilled. For example, this method will return
+     * Returns an object representing an optional dependency could not be fulfilled. For example, this method will return
      * {@link OptionalInt#empty()} if a dependency was created from a field with a {@link OptionalInt} type. And
      * {@code null} if a parameter is annotated with {@link Nullable}.
      * <p>
@@ -125,18 +123,7 @@ public final class ServiceDependency {
      */
     @Nullable
     public Object emptyValue() {
-        if (optionalType == Optional.class) {
-            return Optional.empty();
-        } else if (optionalType == OptionalLong.class) {
-            return OptionalLong.empty();
-        } else if (optionalType == OptionalInt.class) {
-            return OptionalInt.empty();
-        } else if (optionalType == OptionalDouble.class) {
-            return OptionalDouble.empty();
-        } else if (optionalType == Nullable.class) {
-            return null;
-        }
-        throw new UnsupportedOperationException("This dependency is not optional, dependency = " + this);
+        return optionality.empty(this);
     }
 
     @Override
@@ -148,13 +135,13 @@ public final class ServiceDependency {
         }
         ServiceDependency other = (ServiceDependency) obj;
         // Hmm hashcode and equals for optional????
-        return Objects.equals(key, other.key) && optionalType == other.optionalType && Objects.equals(variable, other.variable);
+        return Objects.equals(key, other.key) && optionality == other.optionality && Objects.equals(variable, other.variable);
     }
 
     @Override
     public int hashCode() {
         int result = 31 + key.hashCode();
-        result = 31 * result + Objects.hashCode(optionalType);
+        result = 31 * result + optionality.ordinal();
         return 31 * result + Objects.hashCode(variable);
     }
 
@@ -164,7 +151,7 @@ public final class ServiceDependency {
      * @return whether or not this dependency is optional
      */
     public boolean isOptional() {
-        return optionalType != null;
+        return optionality != Optionality.REQUIRED;
     }
 
     /**
@@ -199,19 +186,6 @@ public final class ServiceDependency {
     }
 
     /**
-     * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble},
-     * {@link OptionalLong} or {@link Nullable}) that was used to create this dependency or {@code null} if this dependency
-     * is not optional.
-     *
-     * @return the optional container type
-     * @see #isOptional()
-     */
-    @Nullable
-    public Class<?> optionalContainerType() {
-        return optionalType;
-    }
-
-    /**
      * If this dependency represents a parameter to a constructor or method. This method will return the index of the
      * parameter, otherwise {@code -1}.
      * 
@@ -229,8 +203,8 @@ public final class ServiceDependency {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("ServiceDependency[");
-        if (optionalType == OptionalInt.class || optionalType == OptionalLong.class || optionalType == OptionalDouble.class) {
-            sb.append(optionalType.getSimpleName());
+        if (optionality == Optionality.OPTIONAL_INT || optionality == Optionality.OPTIONAL_LONG || optionality == Optionality.OPTIONAL_DOUBLE) {
+            sb.append(optionality.name());
         } else {
             sb.append(key);
         }
@@ -269,19 +243,7 @@ public final class ServiceDependency {
      *             if this dependency is an optional type and type of this dependency does not match the specified object.
      */
     public Object wrapIfOptional(Object object) {
-        requireNonNull(object, "object is null");
-        if (optionalType == null || optionalType == Nullable.class) {
-            return object;
-        } else if (optionalType == Optional.class) {
-            return Optional.of(object);
-        } else if (optionalType == OptionalLong.class) {
-            return OptionalLong.of((Long) object);
-        } else if (optionalType == OptionalInt.class) {
-            return OptionalInt.of((Integer) object);
-        } else if (optionalType == OptionalDouble.class) {
-            return OptionalDouble.of((Double) object);
-        }
-        throw new InternalErrorException("object", object);
+        return optionality.wrapIfOptional(requireNonNull(object, "object is null"));
     }
 
     /**
@@ -337,22 +299,25 @@ public final class ServiceDependency {
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
         Annotation qa = QualifierHelper.findQualifier(pta, annotations);
 
-        Class<?> optionalType = null;
+        Optionality optionalType = null;
         if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Optional.class) {
             type = ((ParameterizedType) type).getActualTypeArguments()[0];
             // TODO check that we do not have optional of OptionalX, also ServiceRequest can never be optionally
             // Also Provider cannot be optionally...
             // TODO include annotation
-            optionalType = Optional.class;
+            optionalType = Optionality.OPTIONAL;
         } else if (type == OptionalInt.class) {
-            optionalType = OptionalInt.class;
+            optionalType = Optionality.OPTIONAL_INT;
             type = Integer.class;
         } else if (type == OptionalLong.class) {
-            optionalType = OptionalLong.class;
+            optionalType = Optionality.OPTIONAL_LONG;
             type = Long.class;
         } else if (type == OptionalDouble.class) {
-            optionalType = OptionalDouble.class;
+            optionalType = Optionality.OPTIONAL_DOUBLE;
             type = Double.class;
+        }
+        if (optionalType == null) {
+            optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
         return new ServiceDependency(SharedSecrets.util().toKeyNullableQualifier(type, qa), optionalType, null);
@@ -374,57 +339,61 @@ public final class ServiceDependency {
 
         // Illegal
         // Optional<Optional*>
-        Class<?> optionalType = null;
+        Optionality optionallaity = null;
         Class<?> rawType = tl.rawType();
 
         if (rawType.isPrimitive()) {
             tl = tl.box();
         } else if (rawType == Optional.class) {
-            optionalType = Optional.class;
+            optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
             tl = SharedSecrets.util().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("have multiple layers of optionals such as " + cl));
             }
         } else if (rawType == OptionalLong.class) {
-            optionalType = OptionalLong.class;
+            optionallaity = Optionality.OPTIONAL_LONG;
             tl = TypeLiteral.of(Long.class);
         } else if (rawType == OptionalInt.class) {
-            optionalType = OptionalInt.class;
+            optionallaity = Optionality.OPTIONAL_INT;
             tl = TypeLiteral.of(Integer.class);
         } else if (rawType == OptionalDouble.class) {
-            optionalType = OptionalDouble.class;
+            optionallaity = Optionality.OPTIONAL_DOUBLE;
             tl = TypeLiteral.of(Double.class);
         }
 
         if (desc.isAnnotationPresent(Nullable.class)) {
-            if (optionalType != null) {
+            if (optionallaity != null) {
+                // TODO fix name() to something more readable
                 throw new InvalidDeclarationException(
-                        ErrorMessageBuilder.of(desc).cannot("both be of type " + optionalType.getSimpleName() + " and annotated with @Nullable")
+                        ErrorMessageBuilder.of(desc).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
                                 .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
             }
-            optionalType = Nullable.class;
+            optionallaity = Optionality.OPTIONAL_NULLABLE;
         }
 
+        if (optionallaity == null) {
+            optionallaity = Optionality.REQUIRED;
+        }
         // TL is free from Optional
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(desc, tl, qualifier);
 
-        return new ServiceDependency(key, optionalType, desc);
+        return new ServiceDependency(key, optionallaity, desc);
     }
 
     /**
-     * Returns a dependency on the specified class
+     * Returns a service dependency on the specified class.
      *
-     * @param type
+     * @param key
      *            the class to return a dependency for
-     * @return a dependency for the specified class
+     * @return a service dependency for the specified class
      */
-    public static ServiceDependency of(Class<?> type) {
-        requireNonNull(type, "type is null");
-        return CLASS_CACHE.get(type);
+    public static ServiceDependency of(Class<?> key) {
+        requireNonNull(key, "key is null");
+        return CLASS_CACHE.get(key);
     }
 
-    public static <T> ServiceDependency of(Key<?> key) {
+    public static ServiceDependency of(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifier()) {
             TypeLiteral<?> tl = key.typeLiteral();
@@ -432,10 +401,14 @@ public final class ServiceDependency {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new ServiceDependency(key, null, null);
+        return new ServiceDependency(key, Optionality.REQUIRED, null);
     }
 
-    public static <T> ServiceDependency ofOptional(Key<?> key) {
+    public static ServiceDependency ofOptional(Class<?> key) {
+        return ofOptional(Key.of(key));
+    }
+
+    public static ServiceDependency ofOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifier()) {
             TypeLiteral<?> tl = key.typeLiteral();
@@ -443,9 +416,89 @@ public final class ServiceDependency {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new ServiceDependency(key, Nullable.class, null);
+        return new ServiceDependency(key, Optionality.OPTIONAL_NULLABLE, null);
+    }
+
+    private enum Optionality {
+        REQUIRED {
+            @Override
+            public Object empty(ServiceDependency dependency) {
+                throw new UnsupportedOperationException("This dependency is not optional, dependency = " + dependency);
+            }
+        },
+        OPTIONAL {
+            @Override
+            public Object empty(ServiceDependency dependency) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Object wrapIfOptional(Object object) {
+                return Optional.of(object);
+            }
+        },
+        OPTIONAL_INT {
+            @Override
+            public Object empty(ServiceDependency dependency) {
+                return OptionalInt.empty();
+            }
+
+            @Override
+            public Object wrapIfOptional(Object object) {
+                return OptionalInt.of((Integer) object);
+            }
+        },
+        OPTIONAL_LONG {
+            @Override
+            public Object empty(ServiceDependency dependency) {
+                return OptionalLong.empty();
+            }
+
+            @Override
+            public Object wrapIfOptional(Object object) {
+                return OptionalLong.of((Long) object);
+            }
+        },
+        OPTIONAL_DOUBLE {
+            @Override
+            public Object empty(ServiceDependency dependency) {
+                return OptionalDouble.empty();
+            }
+
+            @Override
+            public Object wrapIfOptional(Object object) {
+                return OptionalDouble.of((Double) object);
+            }
+        },
+        OPTIONAL_NULLABLE {
+            @Override
+            public Object empty(ServiceDependency dependency) {
+                return null;
+            }
+        };
+
+        public abstract Object empty(ServiceDependency dependency);
+
+        public Object wrapIfOptional(Object object) {
+            return null;
+        }
     }
 }
+
+/// **
+// * Returns the optional container type ({@link Optional}, {@link OptionalInt}, {@link OptionalDouble},
+// * {@link OptionalLong} or {@link Nullable}) that was used to create this dependency or {@code null} if this
+/// dependency
+// * is not optional.
+// *
+// * @return the optional container type
+// * @see #isOptional()
+// */
+// @Nullable
+// public Class<?> optionalContainerType() {
+// return optionalType;
+// }
+
 // Flyt member, parameterIndex og Variable???? til ServiceRequest..
 // Vi goer det kun for at faa en paenere arkitk
 // Bliver brugt med factory, for at kunne se dens dependencies.....
