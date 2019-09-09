@@ -83,6 +83,17 @@ public final class PackedExtensionContext implements ExtensionContext {
         return extension;
     }
 
+    public ExtensionNode<?> extensionNode() {
+        return node;
+    }
+
+    /**
+     * 
+     */
+    public void initialize() {
+        node = SharedSecrets.extension().initializeExtension(this);
+    }
+
     public void onConfigured() {
         SharedSecrets.extension().onConfigured(extension);
         isConfigurable = false;

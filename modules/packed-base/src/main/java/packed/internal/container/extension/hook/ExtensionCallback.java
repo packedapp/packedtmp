@@ -18,6 +18,8 @@ package packed.internal.container.extension.hook;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionNode;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /**
@@ -38,6 +40,10 @@ public final class ExtensionCallback {
     }
 
     public void invoke(PackedExtensionContext e, ComponentConfiguration component) throws Throwable {
-        mh.invoke(e.extension(), component, hookGroup);
+        if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
+            mh.invoke(e.extension(), component, hookGroup);
+        } else if (ExtensionNode.class.isAssignableFrom(mh.type().parameterType(0))) {
+            mh.invoke(e.extension(), component, hookGroup);
+        }
     }
 }

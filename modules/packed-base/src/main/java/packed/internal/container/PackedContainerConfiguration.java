@@ -340,7 +340,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         if (pec == null) {
             checkConfigurable(); // only allow installing new extensions if configurable
             extensions.put(extensionType, pec = PackedExtensionContext.create(this, extensionType));
-            SharedSecrets.extension().initializeExtension(pec);
+            pec.initialize();
         }
         return pec;
     }

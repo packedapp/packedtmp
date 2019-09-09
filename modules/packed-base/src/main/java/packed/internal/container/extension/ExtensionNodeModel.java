@@ -36,7 +36,7 @@ public final class ExtensionNodeModel {
         @Override
         protected ExtensionNodeModel computeValue(Class<?> type) {
             Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(type);
-            return ExtensionModel.of(extensionType).node;
+            return ExtensionModel.of(extensionType).node();
         }
     };
 
@@ -46,7 +46,7 @@ public final class ExtensionNodeModel {
      * @param builder
      *            the builder for this model
      */
-    private ExtensionNodeModel(Builder builder) {}
+    private ExtensionNodeModel(ExtensionModel<?> extensionModel, Builder builder) {}
 
     /**
      * Returns an extension node model for the specified extension node type.
@@ -69,8 +69,8 @@ public final class ExtensionNodeModel {
             super(ExtensionNode.class, actualType, false);
         }
 
-        ExtensionNodeModel build() {
-            return new ExtensionNodeModel(this);
+        ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
+            return new ExtensionNodeModel(extensionModel, this);
         }
     }
 }

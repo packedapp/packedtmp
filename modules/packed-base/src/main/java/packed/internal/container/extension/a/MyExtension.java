@@ -29,7 +29,6 @@ import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
 import app.packed.reflect.FieldOperator;
 import app.packed.reflect.MethodOperator;
-import packed.internal.container.extension.hook.test.MyA;
 
 /**
  *
@@ -38,8 +37,12 @@ public final class MyExtension extends Extension {
 
     @OnHookGroup(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
-
         System.out.println("Saa godt da");
+    }
+
+    @Override
+    protected MyExtensionNode onAdded() {
+        return new MyExtensionNode(context());
     }
 
     public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyAnnotation> h) {
@@ -53,7 +56,7 @@ public final class MyExtension extends Extension {
         private final ArrayList<HookApplicator<Object>> methods = new ArrayList<>();
 
         @OnHook
-        public void foo(AnnotatedMethodHook<MyA> h) {
+        public void foo(AnnotatedMethodHook<MyAnnotation> h) {
             sum += h.annotation().value();
             methods.add(h.applicator(MethodOperator.invokeOnce()));
 
@@ -65,7 +68,7 @@ public final class MyExtension extends Extension {
         }
 
         @OnHook
-        public void foo(AnnotatedFieldHook<MyA> h) throws Throwable {
+        public void foo(AnnotatedFieldHook<MyAnnotation> h) throws Throwable {
             sum += h.annotation().value();
             if (h.field().isStatic()) {
                 Supplier<Object> val = h.applyStatic(FieldOperator.supplier());

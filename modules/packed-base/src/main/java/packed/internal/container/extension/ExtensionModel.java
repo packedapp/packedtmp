@@ -46,7 +46,8 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         }
     };
 
-    final ExtensionNodeModel node;
+    /** If the extension has a corresponding extension node */
+    private final ExtensionNodeModel node;
 
     private final Class<? extends Extension> extensionType;
 
@@ -60,7 +61,11 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     private ExtensionModel(Builder builder) {
         super(builder.findNoParameterConstructor());
         this.extensionType = (Class<? extends Extension>) builder.actualType;
-        this.node = builder.node;
+        if (builder.node == null) {
+            this.node = null;
+        } else {
+            this.node = builder.node.build(this);
+        }
     }
 
     @Nullable
@@ -83,15 +88,15 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
      */
     @SuppressWarnings("unchecked")
     public static <T extends Extension> ExtensionModel<T> of(Class<T> extensionType) {
-        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
-        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         return (ExtensionModel<T>) CACHE.get(extensionType);
     }
 
     /** A builder for {@link ExtensionModel}. */
     private static class Builder extends MemberProcessor {
 
-        ExtensionNodeModel node;
+        private ExtensionNodeModel.Builder node;
+
+        private Class<? extends ExtensionNode<?>> nodeType;
 
         private Builder(Class<? extends Extension> extensionType) {
             super(Extension.class, extensionType);
@@ -105,6 +110,9 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
 
         private ExtensionModel<?> build() {
             findMethods();
+            if (nodeType != null) {
+                node = new ExtensionNodeModel.Builder(nodeType);
+            }
             return new ExtensionModel<>(this);
         }
 
@@ -114,10 +122,12 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
             if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {
                 Class<?> nodeType = method.getReturnType();
                 if (nodeType != ExtensionNode.class) {
+                    this.nodeType = (Class<? extends ExtensionNode<?>>) nodeType;
+                    // Vi vil gerne have den final... Saa brugere ikke returnere end anden type
                     if (!Modifier.isFinal(nodeType.getModifiers())) {
-                        throw new InvalidDeclarationException(nodeType + " must be a final class");
+                        throw new InvalidDeclarationException(
+                                "The extension node returned by onAdded(), must be declareda final, node type = " + StringFormatter.format(nodeType));
                     }
-                    node = new ExtensionNodeModel.Builder((Class<? extends ExtensionNode<?>>) nodeType).build();
                 }
             }
         }

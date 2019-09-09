@@ -38,6 +38,8 @@ public abstract class AbstractInstantiableModel<T> {
      * @return a new instance
      */
     public final T newInstance() {
+        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
+        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
             return (T) constructor.invoke();
         } catch (Throwable e) {

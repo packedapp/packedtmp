@@ -82,11 +82,10 @@ public abstract class Extension {
                 extension.buildDescriptor(builder);
             }
 
-            /** {@inheritDoc} */
             @Override
-            public void initializeExtension(PackedExtensionContext context) {
+            public ExtensionNode<?> initializeExtension(PackedExtensionContext context) {
                 context.extension().context = context;
-                context.extension().onAdded();
+                return context.extension().onAdded();
             }
 
             /** {@inheritDoc} */
