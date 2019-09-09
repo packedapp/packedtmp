@@ -35,7 +35,6 @@ import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.ErrorMessages;
 import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.build.service.PackedProvidedComponentConfiguration;
-import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -48,22 +47,27 @@ import packed.internal.util.StringFormatter;
  */
 public final class ServiceExportManager {
 
-    /** The injector builder this exporter belongs to. */
-    private final InjectionExtensionNode builder;
-
-    /** A map of multiple exports for the same key. */
+    /** The config site, if we export all entries. */
     @Nullable
-    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> duplicateExports;
+    private ConfigSite exportAll;
 
     /**
      * An entry to this list is added every time the user calls {@link InjectionExtension#export(Class)},
      * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}.
      */
-    private final ArrayList<ExportedBuildEntry<?>> explicitExports = new ArrayList<>();
-
-    /** The config site, if we export all entries. */
     @Nullable
-    private ConfigSite exportAll;
+    private ArrayList<ExportedBuildEntry<?>> exportedEntries;
+
+    /** A map of multiple exports of the same key. */
+    @Nullable
+    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> failingDuplicateExports;
+
+    /** A map of all keyed exports where an entry matching the key could not be found. */
+    @Nullable
+    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> failingUnresolvedKeyedExports;
+
+    /** The extension node this exporter is a part of. */
+    private final InjectionExtensionNode node;
 
     /**
      * All resolved exports. Is null until {@link #resolve(InjectionExtensionNode, ArtifactBuildContext)} has been invoked.
@@ -73,20 +77,16 @@ public final class ServiceExportManager {
 
     /** */
     @Nullable
-    private ServiceNodeMap resolvedServiceMap = new ServiceNodeMap();
-
-    /** A map of all keyed exports where an entry matching the key could not be found. */
-    @Nullable
-    private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> unresolvedKeyedExports;
+    private LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedServiceMap = new LinkedHashMap<>();
 
     /**
      * Creates a new service export manager.
      * 
-     * @param builder
-     *            the builder this export manager belongs to
+     * @param node
+     *            the extension node this export manager belongs to
      */
-    public ServiceExportManager(InjectionExtensionNode builder) {
-        this.builder = requireNonNull(builder);
+    public ServiceExportManager(InjectionExtensionNode node) {
+        this.node = requireNonNull(node);
     }
 
     public Collection<ExportedBuildEntry<?>> allExports() {
@@ -123,12 +123,10 @@ public final class ServiceExportManager {
                     + " are not allowed, type = " + StringFormatter.format(configuration.getClass()));
         }
         BuildEntry<T> entryToExport = ((PackedProvidedComponentConfiguration<T>) configuration).buildEntry;
-        if (entryToExport.injectorBuilder != builder) {
+        if (entryToExport.injectorBuilder != node) {
             throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         }
-        ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, entryToExport, configSite);
-        explicitExports.add(e);
-        return new ExportedServiceConfiguration<>(e);
+        return export0(new ExportedBuildEntry<>(node, entryToExport, configSite));
     }
 
     /**
@@ -145,9 +143,16 @@ public final class ServiceExportManager {
      * @see InjectionExtension#export(Key)
      */
     public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        ExportedBuildEntry<T> e = new ExportedBuildEntry<>(builder, key, configSite);
-        explicitExports.add(e);
-        return new ExportedServiceConfiguration<>(e);
+        return export0(new ExportedBuildEntry<>(node, key, configSite));
+    }
+
+    private <T> ServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
+        ArrayList<ExportedBuildEntry<?>> e = exportedEntries;
+        if (e == null) {
+            e = exportedEntries = new ArrayList<>(5);
+        }
+        e.add(entry);
+        return new ExportedServiceConfiguration<>(entry);
     }
 
     /**
@@ -180,49 +185,51 @@ public final class ServiceExportManager {
 
         LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
-        for (ExportedBuildEntry<?> entry : explicitExports) {
-            // try and find a matching service entry for key'ed exports via
-            // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-            ServiceEntry<?> entryToExport = entry.exportedEntry;
-            boolean export = true;
-            if (entryToExport == null) {
-                entryToExport = resolver.resolvedEntries.nodes.get(entry.keyToExport);
+        if (exportedEntries != null) {
+            for (ExportedBuildEntry<?> entry : exportedEntries) {
+                // try and find a matching service entry for key'ed exports via
+                // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
+                ServiceEntry<?> entryToExport = entry.exportedEntry;
+                boolean export = true;
                 if (entryToExport == null) {
-                    if (unresolvedKeyedExports == null) {
-                        unresolvedKeyedExports = new LinkedHashMap<>();
+                    entryToExport = resolver.resolvedEntries.get(entry.keyToExport);
+                    if (entryToExport == null) {
+                        if (failingUnresolvedKeyedExports == null) {
+                            failingUnresolvedKeyedExports = new LinkedHashMap<>();
+                        }
+                        failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
+                        export = false;
+                    } else {
+                        entry.exportedEntry = (ServiceEntry) entryToExport;
                     }
-                    unresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
-                    export = false;
-                } else {
-                    entry.exportedEntry = (ServiceEntry) entryToExport;
                 }
-            }
 
-            if (export) {
-                ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key, entry);
-                if (existing != null) {
-                    if (duplicateExports == null) {
-                        duplicateExports = new LinkedHashMap<>();
+                if (export) {
+                    ExportedBuildEntry<?> existing = resolvedExports.putIfAbsent(entry.key, entry);
+                    if (existing != null) {
+                        if (failingDuplicateExports == null) {
+                            failingDuplicateExports = new LinkedHashMap<>();
+                        }
+                        LinkedHashSet<ExportedBuildEntry<?>> hs = failingDuplicateExports.computeIfAbsent(entry.key, m -> new LinkedHashSet<>());
+                        hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                        hs.add(entry);
                     }
-                    LinkedHashSet<ExportedBuildEntry<?>> hs = duplicateExports.computeIfAbsent(entry.key, m -> new LinkedHashSet<>());
-                    hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                    hs.add(entry);
                 }
             }
         }
 
-        if (unresolvedKeyedExports != null) {
-            ErrorMessages.addUnresolvedExports(buildContext, unresolvedKeyedExports);
+        if (failingUnresolvedKeyedExports != null) {
+            ErrorMessages.addUnresolvedExports(buildContext, failingUnresolvedKeyedExports);
         }
-        if (duplicateExports != null) {
+        if (failingDuplicateExports != null) {
             // TODO add error messages
         }
 
         if (exportAll != null) {
-            for (ServiceEntry<?> e : resolver.resolvedEntries.nodes.values()) {
+            for (ServiceEntry<?> e : resolver.resolvedEntries.values()) {
                 if (!e.isPrivate()) {
                     if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(e.key(), new ExportedBuildEntry<>(builder, e, exportAll));
+                        resolvedExports.put(e.key(), new ExportedBuildEntry<>(node, e, exportAll));
                     }
                 }
             }
@@ -231,11 +238,11 @@ public final class ServiceExportManager {
         this.resolvedExports = resolvedExports;
     }
 
-    public ServiceNodeMap resolvedServiceMap() {
-        ServiceNodeMap r = resolvedServiceMap;
+    public LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedServiceMap() {
+        LinkedHashMap<Key<?>, ServiceEntry<?>> r = resolvedServiceMap;
         if (r != null) {
-            ServiceNodeMap m = new ServiceNodeMap();
-            m.nodes.putAll(resolvedExports);
+            LinkedHashMap<Key<?>, ServiceEntry<?>> m = new LinkedHashMap<>();
+            m.putAll(resolvedExports);
             r = resolvedServiceMap = m;
         }
         return r;

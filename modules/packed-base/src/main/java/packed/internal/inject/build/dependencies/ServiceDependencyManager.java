@@ -20,7 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import app.packed.config.ConfigSite;
@@ -39,7 +41,6 @@ import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.run.DefaultInjector;
-import packed.internal.inject.util.ServiceNodeMap;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link InjectionExtension}.
@@ -117,11 +118,11 @@ public final class ServiceDependencyManager {
         // Injector kan baade vaere en artifact.
         // Og en del af en artifact...
 
-        ServiceNodeMap snm;
+        Map<Key<?>, ServiceEntry<?>> snm;
         if (builder.context().buildContext().artifactType() == Injector.class) {
             snm = builder.resolvedEntries;
         } else {
-            snm = exporter == null ? new ServiceNodeMap() : exporter.resolvedServiceMap();
+            snm = exporter == null ? new LinkedHashMap<>() : exporter.resolvedServiceMap();
         }
         builder.publicInjector = new DefaultInjector(builder.context().containerConfigSite(), "Internal Descriptor", snm);
 
@@ -133,14 +134,14 @@ public final class ServiceDependencyManager {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> se : builder.resolvedEntries.nodes.values()) {
+        for (ServiceEntry<?> se : builder.resolvedEntries.values()) {
             BuildEntry<?> entry = (BuildEntry<?>) se;
             if (entry.needsResolving()) {
                 detectCyclesFor.add(entry);
                 List<ServiceDependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = builder.resolvedEntries.nodes.get(dependency.key());
+                    ServiceEntry<?> resolveTo = builder.resolvedEntries.get(dependency.key());
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;
                 }

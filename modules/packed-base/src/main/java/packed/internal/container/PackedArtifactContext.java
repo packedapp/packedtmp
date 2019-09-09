@@ -15,13 +15,13 @@
  */
 package packed.internal.container;
 
+import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactRuntimeContext;
 import app.packed.inject.Injector;
 import app.packed.util.Nullable;
 import packed.internal.inject.run.DefaultInjector;
-import packed.internal.inject.util.ServiceNodeMap;
 
 /** The default implementation of Container. */
 // implements ContainerContext...
@@ -47,7 +47,7 @@ public final class PackedArtifactContext extends AbstractComponent implements Ar
         super(parent, configuration, instantiationContext);
         Injector i = instantiationContext.get(configuration, DefaultInjector.class);
         if (i == null) {
-            i = new DefaultInjector(configuration.configSite(), configuration.getDescription(), new ServiceNodeMap());
+            i = new DefaultInjector(configuration.configSite(), configuration.getDescription(), new LinkedHashMap<>());
         }
         this.injector = i;
         instantiationContext.put(configuration, this);

@@ -17,6 +17,7 @@ package packed.internal.inject.run;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -29,7 +30,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
-import packed.internal.inject.util.ServiceNodeMap;
 import packed.internal.util.KeyBuilder;
 
 /** The default implementation of {@link Injector}. */
@@ -47,9 +47,9 @@ public final class DefaultInjector extends AbstractInjector {
     final AbstractInjector parent;
 
     /** All services that this injector provides. */
-    private final ServiceNodeMap services;
+    private final Map<Key<?>, ServiceEntry<?>> services;
 
-    public DefaultInjector(ConfigSite configSite, @Nullable String description, ServiceNodeMap services) {
+    public DefaultInjector(ConfigSite configSite, @Nullable String description, Map<Key<?>, ServiceEntry<?>> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.description = description;
@@ -84,21 +84,20 @@ public final class DefaultInjector extends AbstractInjector {
     @Override
     @Nullable
     protected <T> ServiceEntry<T> findNode(Key<T> key) {
-        return (ServiceEntry<T>) services.nodes.get(key);
+        return (ServiceEntry<T>) services.get(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action) {
-        services.nodes.values().forEach(action);
-
+        services.values().forEach(action);
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) services.nodes.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
+        return (Stream) services.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
             if (e instanceof BuildEntry) {
                 return ((BuildEntry) e).toDescriptor();
             }

@@ -18,6 +18,7 @@ package packed.internal.inject.build;
 import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
@@ -44,7 +45,6 @@ import packed.internal.inject.build.service.ServiceProvidingManager;
 import packed.internal.inject.run.DefaultInjector;
 import packed.internal.inject.util.AtInject;
 import packed.internal.inject.util.AtInjectGroup;
-import packed.internal.inject.util.ServiceNodeMap;
 
 /** This class records all service related information for a single box. */
 public final class InjectionExtensionNode extends ExtensionNode<InjectionExtension> {
@@ -68,7 +68,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     public DefaultInjector publicInjector;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final ServiceNodeMap resolvedEntries = new ServiceNodeMap();
+    public final LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedEntries = new LinkedHashMap<>();
 
     /**
      * Creates a new builder.
@@ -89,7 +89,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     public void build(ArtifactBuildContext buildContext) {
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolveAndCheckForDublicates(buildContext);
 
-        resolvedServices.values().forEach(e -> resolvedEntries.nodes.put(requireNonNull(e.key()), e));
+        resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
             exporter.resolve(this, buildContext);
@@ -105,7 +105,8 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     @Override
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
-        for (ServiceEntry<?> n : resolvedEntries.nodes.values()) {
+        // TODO we should only have build entries here...
+        for (ServiceEntry<?> n : resolvedEntries.values()) {
             if (n instanceof BuildEntry) {
                 builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }
@@ -152,7 +153,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
 
     private void instantiate() {
         // Instantiate
-        for (ServiceEntry<?> node : resolvedEntries.nodes.values()) {
+        for (ServiceEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentBuildEntry) {
                 ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
@@ -162,13 +163,13 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
         }
 
         // Okay we are finished, convert all nodes to runtime nodes.
-        resolvedEntries.nodes.replaceAll((k, v) -> v.toRuntimeEntry());
+        resolvedEntries.replaceAll((k, v) -> v.toRuntimeEntry());
 
         // Now inject all components...
 
         if (exporter != null) {
             if (resolvedEntries != exporter.resolvedServiceMap()) {
-                exporter.resolvedServiceMap().nodes.replaceAll((k, v) -> v.toRuntimeEntry());
+                exporter.resolvedServiceMap().replaceAll((k, v) -> v.toRuntimeEntry());
             }
         }
     }
