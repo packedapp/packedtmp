@@ -56,7 +56,7 @@ public class OnHookMemberProcessor extends MemberProcessor {
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
     public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
-    Lookup lookup;
+    public Lookup lookup;
 
     /**
      * @param baseType

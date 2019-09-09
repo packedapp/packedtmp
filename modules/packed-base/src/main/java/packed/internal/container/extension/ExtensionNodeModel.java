@@ -15,12 +15,17 @@
  */
 package packed.internal.container.extension;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Method;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.reflect.UncheckedIllegalAccessException;
 import packed.internal.container.extension.hook.OnHookMemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.util.StringFormatter;
 
 /**
  *
@@ -65,6 +70,7 @@ public final class ExtensionNodeModel {
     static class Builder extends OnHookMemberProcessor {
 
         final ExtensionModel.Builder builder;
+        Lookup lookup = MethodHandles.lookup();
 
         /**
          * @param actualType
@@ -72,6 +78,13 @@ public final class ExtensionNodeModel {
         Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> actualType) {
             super(ExtensionNode.class, actualType, false);
             this.builder = builder;
+            lookup = MethodHandles.lookup();
+            try {
+                builder.onHooks.lookup = MethodHandles.privateLookupIn(actualType, lookup);
+            } catch (IllegalAccessException | InaccessibleObjectException e) {
+                throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(actualType) + ", the module '"
+                        + actualType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
+            }
         }
 
         ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
@@ -81,6 +94,8 @@ public final class ExtensionNodeModel {
 
         @Override
         public void processMethod(Method method) {
+            // Det her skal fikses. Basaltset er det fordi lok
+
             builder.onHooks.processMethod(method);
         }
     }

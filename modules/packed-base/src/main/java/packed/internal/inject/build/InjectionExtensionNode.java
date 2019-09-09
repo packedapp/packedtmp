@@ -25,8 +25,11 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OnHookGroup;
+import app.packed.inject.Inject;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.InstantiationMode;
+import app.packed.inject.Provide;
 import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -35,6 +38,7 @@ import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
 import packed.internal.inject.build.export.ServiceExportManager;
+import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.build.service.ServiceProvidingManager;
 import packed.internal.inject.run.DefaultInjector;
@@ -172,9 +176,14 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     }
 
     /**
+     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
+     * 
      * @param cc
+     *            the configuration of the annotated component
      * @param group
+     *            a inject group object
      */
+    @OnHookGroup(AtInjectGroup.Builder.class)
     public void onInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
         // new Exception().printStackTrace();
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
@@ -186,6 +195,19 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
         for (AtInject ai : group.members) {
             System.out.println(ai);
         }
+    }
+
+    /**
+     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
+     * 
+     * @param cc
+     *            the configuration of the annotated component
+     * @param group
+     *            a provides group object
+     */
+    @OnHookGroup(AtProvidesGroup.Builder.class)
+    void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
+        provider().onProvidesGroup(cc, group);
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {

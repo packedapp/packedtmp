@@ -18,21 +18,17 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHookGroup;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.InjectionExtensionNode;
-import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.run.AbstractInjector;
-import packed.internal.inject.util.AtInjectGroup;
 
 /**
  * This extension provides functionality for injection and service management.
@@ -162,32 +158,6 @@ public final class InjectionExtension extends Extension {
     @Override
     protected void onConfigured() {
         node.build(context().buildContext());
-    }
-
-    /**
-     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
-     * 
-     * @param cc
-     *            the configuration of the annotated component
-     * @param group
-     *            a inject group object
-     */
-    @OnHookGroup(AtInjectGroup.Builder.class)
-    void onHookAtInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
-        node.onInjectGroup(cc, group);
-    }
-
-    /**
-     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
-     * 
-     * @param cc
-     *            the configuration of the annotated component
-     * @param group
-     *            a provides group object
-     */
-    @OnHookGroup(AtProvidesGroup.Builder.class)
-    void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
-        node.provider().onProvidesGroup(cc, group);
     }
 
     /** {@inheritDoc} */
