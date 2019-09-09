@@ -27,15 +27,16 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookGroupBuilder;
+import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.OnHookXModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.extension.hook.ExtensionCallback;
 import packed.internal.container.extension.hook.HookGroupBuilderModel;
-import packed.internal.container.extension.hook.other.PackedAnnotatedFieldHook;
 import packed.internal.container.extension.hook.other.PackedAnnotatedMethodHook;
 import packed.internal.util.ThrowableUtil;
 
@@ -43,7 +44,7 @@ import packed.internal.util.ThrowableUtil;
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
 // One of these suckers is creates once for each component...
-final class ComponentModelExtensionUsage {
+final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
     private final List<ExtensionCallback> callbacks;
@@ -51,7 +52,7 @@ final class ComponentModelExtensionUsage {
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
 
-    private ComponentModelExtensionUsage(Builder builder) {
+    private ComponentModelHookGroup(Builder builder) {
         this.extensionType = requireNonNull(builder.extensionType);
         this.callbacks = List.copyOf(builder.callbacks);
     }
@@ -90,16 +91,16 @@ final class ComponentModelExtensionUsage {
             this.con = extensionModel.model();
         }
 
-        ComponentModelExtensionUsage build() {
+        ComponentModelHookGroup build() {
             for (Entry<Class<?>, HookGroupBuilder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
                 callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
-            return new ComponentModelExtensionUsage(this);
+            return new ComponentModelHookGroup(this);
         }
 
         void onAnnotatedField(Field field, Annotation annotation) {
-            PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(componentModelBuilder, field, annotation);
+            AnnotatedFieldHook<Annotation> hook = SharedSecrets.extension().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 

@@ -15,13 +15,18 @@
  */
 package packed.internal.access;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.container.model.ComponentModel;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {
@@ -48,4 +53,5 @@ public interface AppPackedExtensionAccess extends SecretAccess {
 
     <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 
+    <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation);
 }

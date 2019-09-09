@@ -33,10 +33,38 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
  */
 public interface ComponentLookup {
 
+    default MethodHandle acquireMethodHandle(Class<?> componentType, Constructor<?> constructor) {
+        throw new UnsupportedOperationException();
+    }
+
+    MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
+
+    default VarHandle acquireVarHandle(Class<?> componentType, Field field) {
+        throw new UnsupportedOperationException();
+    }
+
     // componentModel should probably check valid types.... Basically
     ComponentModel componentModelOf(Class<?> componentType);
 
-    MethodHandle acquireMethodHandle(Class<?> componentType, Method method);
+    Lookup lookup();
+
+    default <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+        // TODO needs to cached
+
+        // TODO add field...
+        if (factory instanceof ExecutableFactoryHandle) {
+            ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
+            if (!e.hasMethodHandle()) {
+                return e.withLookup(lookup());
+            }
+        }
+        return factory;
+    }
+    // Maybe method for acquire
+
+    default MethodHandle toMethodHandle(FactoryHandle<?> factory) {
+        return readable(factory).toMethodHandle();
+    }
 
     /**
      * @param method
@@ -78,32 +106,4 @@ public interface ComponentLookup {
             throw new UncheckedIllegalAccessException("Could not create a VarHandle", e);
         }
     }
-
-    default MethodHandle acquireMethodHandle(Class<?> componentType, Constructor<?> constructor) {
-        throw new UnsupportedOperationException();
-    }
-
-    default VarHandle acquireVarHandle(Class<?> componentType, Field field) {
-        throw new UnsupportedOperationException();
-    }
-
-    Lookup lookup();
-
-    default MethodHandle toMethodHandle(FactoryHandle<?> factory) {
-        return readable(factory).toMethodHandle();
-    }
-
-    default <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
-        // TODO needs to cached
-
-        // TODO add field...
-        if (factory instanceof ExecutableFactoryHandle) {
-            ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
-            if (!e.hasMethodHandle()) {
-                return e.withLookup(lookup());
-            }
-        }
-        return factory;
-    }
-    // Maybe method for acquire
 }

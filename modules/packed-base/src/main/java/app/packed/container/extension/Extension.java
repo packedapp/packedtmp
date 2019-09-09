@@ -17,6 +17,8 @@ package app.packed.container.extension;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
@@ -33,6 +35,7 @@ import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.container.model.ComponentModel;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -102,6 +105,11 @@ public abstract class Extension {
             @Override
             public <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
+            }
+
+            @Override
+            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
+                return new AnnotatedFieldHook<>(builder, field, annotation);
             }
         });
     }

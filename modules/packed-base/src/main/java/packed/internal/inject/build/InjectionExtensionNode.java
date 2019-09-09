@@ -99,9 +99,6 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
         }
         dependencies().analyze(exporter);
 
-        if (buildContext.isInstantiating()) {
-            instantiate();
-        }
     }
 
     @Override
@@ -211,6 +208,9 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+        if (context().buildContext().isInstantiating()) {
+            instantiate();
+        }
         context().putIntoInstantiationContext(context, publicInjector);
     }
 

@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.extension.AnnotatedFieldHook;
 import packed.internal.container.AbstractHookApplicator;
 import packed.internal.reflect.PackedFieldOperator;
 
@@ -37,13 +38,13 @@ public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T
     /** The operator to apply. */
     public final PackedFieldOperator<T> operator;
 
-    PackedFieldHookApplicator(PackedAnnotatedFieldHook<?> hook, PackedFieldOperator<T> operator) {
+    public PackedFieldHookApplicator(AnnotatedFieldHook<?> hook, PackedFieldOperator<T> operator, Field field) {
         if (operator.isSimpleGetter()) {
             mh = hook.getter();
         } else {
             mh = hook.setter();
         }
-        this.field = hook.field;
+        this.field = requireNonNull(field);
         this.operator = requireNonNull(operator);
     }
 

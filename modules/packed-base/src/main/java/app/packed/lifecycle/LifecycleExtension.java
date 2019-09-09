@@ -78,19 +78,6 @@ public final class LifecycleExtension extends Extension {
         // We call InjectionExtension.require(serviceKey) (Which backtraces stackwalker)
     }
 
-    // set
-    // @Override
-    // protected void onWireChild(@Nullable LifecycleExtension child, O link) {
-    //
-    // }
-    //
-    // @Override
-    // protected void onWireParent(@Nullable LifecycleExtension parent, BundleLink link) {
-    // if (parent == null) {
-    // throw new /* WiringException */ RuntimeException("Cannot wiring to a bundle that does not support lifecycle...");
-    // }
-    // }
-
     // protected void supporting
 
     // void addAlias(Class<?>
@@ -107,12 +94,6 @@ public final class LifecycleExtension extends Extension {
     @Override
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         putIntoInstantiationContext(context, new LifecycleSidecar());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void onConfigured() {
-        // installInParentIfSameArtifact();
     }
 }
 

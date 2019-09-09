@@ -20,6 +20,11 @@ package app.packed.container.extension;
  */
 // Det skal bruges som plugin arkitektur.
 // Hvordan virker det paa kryds af containere???
+// Hvordan virker det f.eks. med List<String>
+// Boer vel virke som en receiver. Hvis man levere
+// Det man kan bruge den som en parameter til en metode...
+// Virker aldrig med componennts der har TypeVariabels
+
 public interface InstanceOfHook<T> {
 
     /**
@@ -27,7 +32,7 @@ public interface InstanceOfHook<T> {
      * 
      * @return the type we are hooked on
      */
-    Class<T> hookType();
+    Class<T> hookType(); // <- TypeLiteral
 
     /**
      * Returns the instance.
@@ -35,7 +40,7 @@ public interface InstanceOfHook<T> {
      * @return the instance
      */
     // Den virker jo ikke.... Skal ogsaa have noget applicator noget.
-    T instance();
+    HookApplicator<T> applicator();
 
     /**
      * Returns the actual type (assignable to T).
