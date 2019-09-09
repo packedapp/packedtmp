@@ -13,11 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package app.packed.util;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  *
  */
-public class HookContainerModel {
+// Folk kommer til at have global state...
+// Saa vi kan ligesaa godt forberede os paa det
+// Ville maaske ogsaa vaere rar med en loesning. Hvor man kan opt in.
+// Uhh skal ogsaa noget class loaders here
+final class Global {
 
+    // WeakReference<Global> <- caller must hang on to it?
+    // Or call here every time???
+    // Maybe have both
+
+    // Support for cleaner
+    public static Global create(MethodHandles.Lookup caller) {
+        throw new UnsupportedOperationException();
+    }
 }

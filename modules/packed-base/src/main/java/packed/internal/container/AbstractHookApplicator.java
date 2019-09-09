@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.HookApplicator;
-import packed.internal.container.extension.hook.DelayedAccessor;
+import packed.internal.container.extension.hook.other.DelayedAccessor;
 
 /**
  *

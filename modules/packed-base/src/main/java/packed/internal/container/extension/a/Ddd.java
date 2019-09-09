@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook.test;
+package packed.internal.container.extension.a;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
@@ -27,9 +27,6 @@ public class Ddd extends AppBundle {
     @Override
     public void configure() {
         installConstant(new Ssss());
-        installHelper(MyComp.class);
-
-        // injector().provideAll(injector, wirelets);
     }
 
     public static void main(String[] args) {
@@ -39,10 +36,10 @@ public class Ddd extends AppBundle {
 
     public static class Ssss {
 
-        @MyA(2132)
+        @MyAnnotation(2132)
         public String ss = "ffdddf";
 
-        @MyA(1254)
+        @MyAnnotation(1254)
         public void foo() {
             System.out.println("INSTANCE FOO!");
         }

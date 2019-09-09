@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package packed.internal.container.extension.hook.other;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,7 +31,7 @@ import packed.internal.container.model.ComponentModel;
 import packed.internal.reflect.PackedMethodOperator;
 
 /** The default implementation of {@link AnnotatedMethodHook}. */
-final class PackedAnnotatedMethodHook<T extends Annotation> implements AnnotatedMethodHook<T> {
+public final class PackedAnnotatedMethodHook<T extends Annotation> implements AnnotatedMethodHook<T> {
 
     /** The annotation value. */
     private final T annotation;
@@ -60,7 +60,7 @@ final class PackedAnnotatedMethodHook<T extends Annotation> implements Annotated
      * @param annotation
      *            the annotation value
      */
-    PackedAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation) {
+    public PackedAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation) {
         this.builder = requireNonNull(builder);
         this.method = requireNonNull(method);
         this.annotation = requireNonNull(annotation);

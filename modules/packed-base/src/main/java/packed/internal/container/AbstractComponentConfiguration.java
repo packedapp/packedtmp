@@ -33,7 +33,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
-import packed.internal.container.extension.hook.DelayedAccessor;
+import packed.internal.container.extension.hook.other.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
 public abstract class AbstractComponentConfiguration implements ComponentHolder, ComponentConfiguration {

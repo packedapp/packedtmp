@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package packed.internal.container.extension.hook.other;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,7 +33,7 @@ import packed.internal.reflect.PackedFieldOperator;
 import packed.internal.util.StringFormatter;
 
 /** The default implementation of {@link AnnotatedFieldHook}. */
-final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedFieldHook<T> {
+public final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedFieldHook<T> {
 
     /** The annotation value. */
     private final T annotation;
@@ -70,7 +70,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
      * @param annotation
      *            the annotation value
      */
-    PackedAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
+    public PackedAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
         this.builder = requireNonNull(builder);
         this.field = requireNonNull(field);
         this.annotation = requireNonNull(annotation);
@@ -98,6 +98,7 @@ final class PackedAnnotatedFieldHook<T extends Annotation> implements AnnotatedF
             throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);
         }
         builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
+        // Should it be per hook group instead of container model?
         return o.applyStaticHook(this);
     }
 

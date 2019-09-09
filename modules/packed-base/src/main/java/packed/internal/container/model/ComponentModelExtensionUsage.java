@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.hook;
+package packed.internal.container.model;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -33,14 +32,18 @@ import app.packed.container.extension.HookGroupBuilder;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.container.model.ComponentModel;
+import packed.internal.container.extension.hook.ExtensionCallback;
+import packed.internal.container.extension.hook.HookGroupBuilderModel;
+import packed.internal.container.extension.hook.OnHookXModel;
+import packed.internal.container.extension.hook.other.PackedAnnotatedFieldHook;
+import packed.internal.container.extension.hook.other.PackedAnnotatedMethodHook;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
-
-public final class ComponentModelHookGroup {
+// One of these suckers is creates once for each component...
+final class ComponentModelExtensionUsage {
 
     /** A list of callbacks for the particular extension. */
     private final List<ExtensionCallback> callbacks;
@@ -48,59 +51,59 @@ public final class ComponentModelHookGroup {
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
 
-    private ComponentModelHookGroup(Builder b) {
-        this.extensionType = requireNonNull(b.extensionType);
-        this.callbacks = List.copyOf(b.callbacks);
+    private ComponentModelExtensionUsage(Builder builder) {
+        this.extensionType = requireNonNull(builder.extensionType);
+        this.callbacks = List.copyOf(builder.callbacks);
     }
 
-    public void addTo(PackedContainerConfiguration container, ComponentConfiguration component) {
+    void addTo(PackedContainerConfiguration container, ComponentConfiguration component) throws Throwable {
+        // There should probably be some order we call extensions in....
+        /// Other first, packed lasts?
+
         PackedExtensionContext context = container.useContext(extensionType); // should be ordered...s
-        try {
-            for (ExtensionCallback c : callbacks) {
-                c.invoke(context, component);
-            }
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
+        for (ExtensionCallback c : callbacks) {
+            c.invoke(context, component);
         }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static class Builder {
+    static class Builder {
 
-        final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
+        private final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
+
+        /** The component model builder that is creating this group. */
+        private final ComponentModel.Builder componentModelBuilder;
 
         final OnHookXModel con;
 
         /** The type of extension that will be activated. */
-        final Class<? extends Extension> extensionType;
+        private final Class<? extends Extension> extensionType;
 
-        final IdentityHashMap<Class<?>, HookGroupBuilder<?>> mmm = new IdentityHashMap<>();
+        final IdentityHashMap<Class<?>, HookGroupBuilder<?>> groupBuilders = new IdentityHashMap<>();
 
-        private final ComponentModel.Builder componentModelBuilder;
+        final ExtensionModel<?> extensionModel;
 
-        public Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
+        Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
             this.componentModelBuilder = requireNonNull(componentModelBuilder);
-            this.con = OnHookXModel.get(extensionType);
-            ExtensionModel.of(extensionType);
             this.extensionType = requireNonNull(extensionType);
+            this.extensionModel = ExtensionModel.of(extensionType);
+            this.con = extensionModel.model();
         }
 
-        public ComponentModelHookGroup build() {
-            // Add all aggregates
-            for (Entry<Class<?>, HookGroupBuilder<?>> m : mmm.entrySet()) {
+        ComponentModelExtensionUsage build() {
+            for (Entry<Class<?>, HookGroupBuilder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
                 callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
-            return new ComponentModelHookGroup(this);
+            return new ComponentModelExtensionUsage(this);
         }
 
-        public void onAnnotatedField(Field field, Annotation annotation) {
+        void onAnnotatedField(Field field, Annotation annotation) {
             PackedAnnotatedFieldHook hook = new PackedAnnotatedFieldHook(componentModelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
-        public void onAnnotatedMethod(Method method, Annotation annotation) {
+        void onAnnotatedMethod(Method method, Annotation annotation) {
             PackedAnnotatedMethodHook hook = new PackedAnnotatedMethodHook(componentModelBuilder, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
@@ -109,16 +112,19 @@ public final class ComponentModelHookGroup {
             Class<?> owner = mh.type().parameterType(0);
             if (owner == extensionType) {
                 callbacks.add(new ExtensionCallback(mh, hook));
+                throw new Error();
             } else {
-                // The method handle refers to an aggregator object.
-                HookGroupBuilderModel a = HookGroupBuilderModel.of((Class<? extends HookGroupBuilder<?>>) owner);
-                HookGroupBuilder<?> sup = mmm.computeIfAbsent(owner, k -> a.newInstance());
-                try {
-                    mh.invoke(sup, hook);
-                } catch (Throwable e) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                    throw new RuntimeException(e);
-                }
+                processBuilder(mh, (Class<? extends HookGroupBuilder<?>>) owner, hook);
+            }
+        }
+
+        private void processBuilder(MethodHandle mh, Class<? extends HookGroupBuilder<?>> builderType, Object hook) {
+            HookGroupBuilder<?> b = groupBuilders.computeIfAbsent(builderType, k -> HookGroupBuilderModel.newInstance(builderType));
+            try {
+                mh.invoke(b, hook);
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
     }

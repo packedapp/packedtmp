@@ -23,10 +23,10 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 /**
  *
  */
-public class ExtensionNodeModel {
+public final class ExtensionNodeModel {
 
     /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNodeModel.class);
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNode.class);
 
     /** A cache of values. */
     private static final ClassValue<ExtensionNodeModel> CACHE = new ClassValue<>() {
@@ -49,7 +49,7 @@ public class ExtensionNodeModel {
     private ExtensionNodeModel(Builder builder) {}
 
     /**
-     * Returns an extension model for the specified extension type.
+     * Returns an extension node model for the specified extension node type.
      * 
      * @param nodeType
      *            the type of extension to return a model for
@@ -59,13 +59,13 @@ public class ExtensionNodeModel {
         return CACHE.get(nodeType);
     }
 
-    /** A builder for {@link ExtensionModel}. */
+    /** A builder for {@link ExtensionModel}. This builder is used by ExtensionModel. */
     static class Builder extends OnHookMemberProcessor {
 
         /**
          * @param actualType
          */
-        private Builder(Class<? extends ExtensionNode<?>> actualType) {
+        Builder(Class<? extends ExtensionNode<?>> actualType) {
             super(ExtensionNode.class, actualType, false);
         }
 

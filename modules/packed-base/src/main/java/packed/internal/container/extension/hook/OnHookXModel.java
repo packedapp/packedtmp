@@ -24,6 +24,8 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHookGroup;
 import app.packed.util.InvalidDeclarationException;
+import packed.internal.container.extension.hook.other.PackedAnnotatedFieldHook;
+import packed.internal.container.extension.hook.other.PackedAnnotatedMethodHook;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookXModel {
@@ -39,7 +41,7 @@ public final class OnHookXModel {
     };
 
     /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
-    final IdentityHashMap<Class<?>, MethodHandle> groups;
+    public final IdentityHashMap<Class<?>, MethodHandle> groups;
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
     private final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields;
@@ -68,7 +70,7 @@ public final class OnHookXModel {
         this.annotatedTypes = builder.annotatedTypes;
     }
 
-    MethodHandle findMethodHandleForAnnotatedField(PackedAnnotatedFieldHook<?> paf) {
+    public MethodHandle findMethodHandleForAnnotatedField(PackedAnnotatedFieldHook<?> paf) {
         MethodHandle mh = annotatedFields.get(paf.annotation().annotationType());
         if (mh == null) {
             throw new UnsupportedOperationException(
@@ -77,7 +79,7 @@ public final class OnHookXModel {
         return mh;
     }
 
-    MethodHandle findMethodHandleForAnnotatedMethod(PackedAnnotatedMethodHook<?> paf) {
+    public MethodHandle findMethodHandleForAnnotatedMethod(PackedAnnotatedMethodHook<?> paf) {
         MethodHandle mh = annotatedMethods.get(paf.annotation().annotationType());
         if (mh == null) {
             throw new UnsupportedOperationException();

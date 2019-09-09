@@ -17,6 +17,7 @@ package packed.internal.container.extension.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 
 import app.packed.container.extension.AnnotatedFieldHook;
@@ -34,7 +35,7 @@ import packed.internal.util.TypeUtil;
 /**
  * An {@link HookGroupBuilderModel} wraps
  */
-final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBuilder<?>> {
+public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBuilder<?>> {
 
     /** A cache of information for aggregator types. */
     private static final ClassValue<HookGroupBuilderModel> MODEL_CACHE = new ClassValue<>() {
@@ -85,9 +86,9 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
         return groupType;
     }
 
-    void invokeOnHook(HookGroupBuilder<?> aggregator, AnnotatedFieldHook<?> hook) {
-        if (aggregator.getClass() != builderType) {
-            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + aggregator.getClass());
+    void invokeOnHook(HookGroupBuilder<?> groupBuilder, AnnotatedFieldHook<?> hook) {
+        if (groupBuilder.getClass() != builderType) {
+            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + groupBuilder.getClass());
         }
         Class<? extends Annotation> an = hook.annotation().annotationType();
 
@@ -98,16 +99,16 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
         }
 
         try {
-            om.invoke(aggregator, hook);
+            om.invoke(groupBuilder, hook);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new RuntimeException(e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 
-    void invokeOnHook(HookGroupBuilder<?> aggregator, AnnotatedMethodHook<?> hook) {
-        if (aggregator.getClass() != builderType) {
-            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + aggregator.getClass());
+    void invokeOnHook(HookGroupBuilder<?> hgb, AnnotatedMethodHook<?> hook) {
+        if (hgb.getClass() != builderType) {
+            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + hgb.getClass());
         }
         Class<? extends Annotation> an = hook.annotation().annotationType();
 
@@ -117,10 +118,10 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
         }
 
         try {
-            om.invoke(aggregator, hook);
+            om.invoke(hgb, hook);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new RuntimeException(e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 
@@ -140,6 +141,10 @@ final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBui
      */
     public static HookGroupBuilderModel of(Class<? extends HookGroupBuilder<?>> type) {
         return MODEL_CACHE.get(type);
+    }
+
+    public static HookGroupBuilder<?> newInstance(Class<? extends HookGroupBuilder<?>> type) {
+        return of(type).newInstance();
     }
 
     /** A builder object, that extract relevant methods from a hook group builder. */

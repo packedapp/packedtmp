@@ -49,6 +49,8 @@ public final class ContainerModel implements ComponentLookup {
         }
     };
 
+    ComponentLookup defaultLookup;
+
     /** The default prefix of the container, used if no name has been specified. */
     private volatile String defaultPrefix;
 
@@ -118,8 +120,6 @@ public final class ContainerModel implements ComponentLookup {
     public Class<?> sourceType() {
         return sourceType;
     }
-
-    ComponentLookup defaultLookup;
 
     public ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup

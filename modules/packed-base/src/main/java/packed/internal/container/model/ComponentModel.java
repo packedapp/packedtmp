@@ -20,14 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.extension.hook.ComponentModelHookGroup;
 import packed.internal.reflect.MemberProcessor;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -38,7 +39,7 @@ public final class ComponentModel {
     private final Class<?> componentType;
 
     /** An array of any extension groups defined by the component type. */
-    private final ComponentModelHookGroup[] extensionGroups;
+    private final ComponentModelExtensionUsage[] extensionGroups;
 
     /** The simple name of the component type. */
     private volatile String simpleName;
@@ -51,12 +52,17 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelHookGroup[i]);
+        this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelExtensionUsage[i]);
     }
 
     public ComponentConfiguration addExtensions(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
-        for (ComponentModelHookGroup group : extensionGroups) {
-            group.addTo(containerConfiguration, componentConfiguration);
+        try {
+            for (ComponentModelExtensionUsage group : extensionGroups) {
+                group.addTo(containerConfiguration, componentConfiguration);
+            }
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
         }
         return componentConfiguration;
     }
@@ -91,7 +97,7 @@ public final class ComponentModel {
         private final Class<?> componentType;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, ComponentModelHookGroup.Builder> extensionBuilders = new IdentityHashMap<>();
+        private final IdentityHashMap<Class<? extends Extension>, ComponentModelExtensionUsage.Builder> extensionBuilders = new IdentityHashMap<>();
 
         private boolean isBuild;
 
@@ -143,10 +149,10 @@ public final class ComponentModel {
         @Override
         protected void processField(Field field) {
             for (Annotation a : field.getAnnotations()) {
-                Class<? extends Extension>[] extensions = EXTENSION_ACTIVATORS.get(a.annotationType());
-                if (extensions != null) {
-                    for (Class<? extends Extension> e : extensions) {
-                        extensionBuilders.computeIfAbsent(e, c -> new ComponentModelHookGroup.Builder(this, c)).onAnnotatedField(field, a);
+                Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                if (extensionTypes != null) {
+                    for (Class<? extends Extension> eType : extensionTypes) {
+                        extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelExtensionUsage.Builder(this, k)).onAnnotatedField(field, a);
                     }
                 }
             }
@@ -156,10 +162,10 @@ public final class ComponentModel {
         @Override
         protected void processMethod(Method method) {
             for (Annotation a : method.getAnnotations()) {
-                Class<? extends Extension>[] extensions = EXTENSION_ACTIVATORS.get(a.annotationType());
-                if (extensions != null) {
-                    for (Class<? extends Extension> e : extensions) {
-                        extensionBuilders.computeIfAbsent(e, c -> new ComponentModelHookGroup.Builder(this, c)).onAnnotatedMethod(method, a);
+                Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                if (extensionTypes != null) {
+                    for (Class<? extends Extension> eType : extensionTypes) {
+                        extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelExtensionUsage.Builder(this, k)).onAnnotatedMethod(method, a);
                     }
                 }
             }
