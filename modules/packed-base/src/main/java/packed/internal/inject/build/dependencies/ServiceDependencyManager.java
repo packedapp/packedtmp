@@ -140,7 +140,7 @@ public final class ServiceDependencyManager {
                 List<ServiceDependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = builder.resolvedEntries.getNode(dependency);
+                    ServiceEntry<?> resolveTo = builder.resolvedEntries.getRecursive(dependency.key());
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;
                 }

@@ -26,9 +26,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.inject.ServiceDependency;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
 
 /**
@@ -37,14 +35,6 @@ import packed.internal.inject.ServiceEntry;
 public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
 
     public final LinkedHashMap<Key<?>, ServiceEntry<?>> nodes = new LinkedHashMap<>();
-
-    /** Any parent this node map might have */
-    @Nullable
-    public final ServiceNodeMap parent;
-
-    public ServiceNodeMap() {
-        this.parent = null;
-    }
 
     public List<ServiceEntry<?>> copyNodes() {
         return new ArrayList<>(nodes.values());
@@ -59,17 +49,9 @@ public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
         nodes.values().forEach(action);
     }
 
-    public ServiceEntry<?> getNode(ServiceDependency dependency) {
-        return getRecursive(dependency.key());
-    }
-
     @SuppressWarnings("unchecked")
     public <T> ServiceEntry<T> getRecursive(Key<T> type) {
-        ServiceEntry<T> node = (ServiceEntry<T>) nodes.get(type);
-        if (node == null && parent != null) {
-            return parent.getRecursive(type);
-        }
-        return node;
+        return (ServiceEntry<T>) nodes.get(type);
     }
 
     /** {@inheritDoc} */
