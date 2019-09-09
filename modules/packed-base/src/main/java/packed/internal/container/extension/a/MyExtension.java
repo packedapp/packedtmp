@@ -15,30 +15,14 @@
  */
 package packed.internal.container.extension.a;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookApplicator;
-import app.packed.container.extension.HookGroupBuilder;
-import app.packed.container.extension.OnHook;
-import app.packed.container.extension.OnHookGroup;
-import app.packed.reflect.FieldOperator;
-import app.packed.reflect.MethodOperator;
 
 /**
  *
  */
 public final class MyExtension extends Extension {
-
-    @OnHookGroup(Agg.class)
-    public void foo(ComponentConfiguration cc, AXA val) {
-        System.out.println("Saa godt da");
-    }
 
     @Override
     protected MyExtensionNode onAdded() {
@@ -47,55 +31,5 @@ public final class MyExtension extends Extension {
 
     public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyAnnotation> h) {
         // ignore
-    }
-
-    public static class Agg implements HookGroupBuilder<AXA> {
-        private int sum;
-        private final ArrayList<HookApplicator<Supplier<Object>>> rar = new ArrayList<>();
-
-        private final ArrayList<HookApplicator<Object>> methods = new ArrayList<>();
-
-        @OnHook
-        public void foo(AnnotatedMethodHook<MyAnnotation> h) {
-            sum += h.annotation().value();
-            methods.add(h.applicator(MethodOperator.invokeOnce()));
-
-            if (h.method().isStatic()) {
-                // System.out.println(h.applyStatic(MethodOperator.invokeOnce()));
-                // Runnable val = h.applyStatic(MethodOperator.runnable());
-                // val.run();
-            }
-        }
-
-        @OnHook
-        public void foo(AnnotatedFieldHook<MyAnnotation> h) throws Throwable {
-            sum += h.annotation().value();
-            if (h.field().isStatic()) {
-                Supplier<Object> val = h.applyStatic(FieldOperator.supplier());
-                System.out.println("VAL = " + val.get());
-                System.out.println("VAL = " + val.get());
-            }
-
-            HookApplicator<Supplier<Object>> ra = h.applicator(FieldOperator.supplier());
-            rar.add(ra);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public AXA build() {
-            return new AXA(this);
-        }
-    }
-
-    static class AXA {
-        final int val;
-        final List<HookApplicator<Supplier<Object>>> rars;
-        final List<HookApplicator<Object>> methods;
-
-        public AXA(Agg agg) {
-            this.val = agg.sum;
-            this.rars = agg.rar;
-            this.methods = agg.methods;
-        }
     }
 }

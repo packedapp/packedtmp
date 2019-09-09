@@ -15,6 +15,8 @@
  */
 package packed.internal.container.extension;
 
+import java.lang.reflect.Method;
+
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import packed.internal.container.extension.hook.OnHookMemberProcessor;
@@ -62,15 +64,24 @@ public final class ExtensionNodeModel {
     /** A builder for {@link ExtensionModel}. This builder is used by ExtensionModel. */
     static class Builder extends OnHookMemberProcessor {
 
+        final ExtensionModel.Builder builder;
+
         /**
          * @param actualType
          */
-        Builder(Class<? extends ExtensionNode<?>> actualType) {
+        Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> actualType) {
             super(ExtensionNode.class, actualType, false);
+            this.builder = builder;
         }
 
         ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
+            findMethods();
             return new ExtensionNodeModel(extensionModel, this);
+        }
+
+        @Override
+        public void processMethod(Method method) {
+            builder.onHooks.processMethod(method);
         }
     }
 }

@@ -38,7 +38,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
-    public ExtensionNode<?> node;
+    private ExtensionNode<?> node;
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;

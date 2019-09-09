@@ -15,8 +15,10 @@
  */
 package packed.internal.container.extension.a;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OnHookGroup;
 
 /**
  *
@@ -28,6 +30,11 @@ public final class MyExtensionNode extends ExtensionNode<MyExtension> {
      */
     protected MyExtensionNode(ExtensionContext context) {
         super(context);
+    }
+
+    @OnHookGroup(Agg.class)
+    public void foo(ComponentConfiguration cc, Integer val) {
+        System.out.println("Saa godt da");
     }
 
 }

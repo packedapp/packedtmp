@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2008 Kasper Nielsen.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package packed.internal.container.extension.hook;
+package packed.internal.container.extension;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -23,22 +8,12 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHookGroup;
-import app.packed.util.InvalidDeclarationException;
+import packed.internal.container.extension.hook.OnHookMemberProcessor;
 import packed.internal.container.extension.hook.other.PackedAnnotatedFieldHook;
 import packed.internal.container.extension.hook.other.PackedAnnotatedMethodHook;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookXModel {
-
-    /** A cache of descriptors for a particular extension type. */
-    private static final ClassValue<OnHookXModel> CACHE = new ClassValue<>() {
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected OnHookXModel computeValue(Class<?> type) {
-            return new Builder((Class<? extends Extension>) type).build();
-        }
-    };
 
     /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
     public final IdentityHashMap<Class<?>, MethodHandle> groups;
@@ -62,7 +37,7 @@ public final class OnHookXModel {
      *            the builder to create the manager from
      */
     @SuppressWarnings("unchecked")
-    private OnHookXModel(Builder builder) {
+    OnHookXModel(OnHookMemberProcessor builder) {
         this.extensionType = (Class<? extends Extension>) builder.actualType;
         this.groups = builder.groups;
         this.annotatedFields = builder.annotatedFields;
@@ -86,31 +61,4 @@ public final class OnHookXModel {
         }
         return mh;
     }
-
-    /**
-     * Returns a descriptor for the specified extensionType
-     * 
-     * @param extensionType
-     *            the extension type to return a descriptor for
-     * @return the descriptor
-     * @throws InvalidDeclarationException
-     *             if the usage of {@link OnHookGroup} on the extension does not adhere to contract
-     */
-    public static OnHookXModel get(Class<? extends Extension> extensionType) {
-        return CACHE.get(extensionType);
-    }
-
-    /** A builder for {@link OnHookXModel}. */
-    private static class Builder extends OnHookMemberProcessor {
-
-        private Builder(Class<? extends Extension> extensionType) {
-            super(Extension.class, extensionType, false);
-        }
-
-        private OnHookXModel build() {
-            findMethods();
-            return new OnHookXModel(this);
-        }
-    }
-
 }

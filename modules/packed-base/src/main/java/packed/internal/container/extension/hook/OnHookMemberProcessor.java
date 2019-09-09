@@ -41,20 +41,20 @@ import packed.internal.util.StringFormatter;
 /**
  *
  */
-public abstract class OnHookMemberProcessor extends MemberProcessor {
+public class OnHookMemberProcessor extends MemberProcessor {
 
     private final boolean isGroupBuilder;
 
-    final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
 
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedFieldHook} as parameter. */
-    final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
 
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedMethodHook} as parameter. */
-    final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedMethods = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedMethods = new IdentityHashMap<>();
 
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
-    final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
     Lookup lookup;
 
@@ -100,7 +100,7 @@ public abstract class OnHookMemberProcessor extends MemberProcessor {
     }
 
     @Override
-    protected void processMethod(Method method) {
+    public void processMethod(Method method) {
         // First see if the method is annotated with @OnHook
         if (method.isAnnotationPresent(OnHook.class)) {
             if (method.isAnnotationPresent(OnHookGroup.class)) {

@@ -43,7 +43,7 @@ public final class ExtensionCallback {
         if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
             mh.invoke(e.extension(), component, hookGroup);
         } else if (ExtensionNode.class.isAssignableFrom(mh.type().parameterType(0))) {
-            mh.invoke(e.extension(), component, hookGroup);
+            mh.invoke(e.extensionNode(), component, hookGroup);
         }
     }
 }

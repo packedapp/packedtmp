@@ -22,7 +22,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
-import packed.internal.container.extension.hook.OnHookXModel;
+import packed.internal.container.extension.hook.OnHookMemberProcessor;
 import packed.internal.reflect.AbstractInstantiableModel;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
@@ -49,7 +49,9 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     /** If the extension has a corresponding extension node */
     private final ExtensionNodeModel node;
 
-    private final Class<? extends Extension> extensionType;
+    final Class<? extends Extension> extensionType;
+
+    final OnHookXModel onHoox;
 
     /**
      * Creates a new extension model.
@@ -66,6 +68,7 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         } else {
             this.node = builder.node.build(this);
         }
+        this.onHoox = new OnHookXModel(builder.onHooks);
     }
 
     @Nullable
@@ -74,7 +77,7 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     }
 
     public OnHookXModel model() {
-        return OnHookXModel.get(extensionType);
+        return onHoox;
     }
 
     /**
@@ -92,14 +95,17 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     }
 
     /** A builder for {@link ExtensionModel}. */
-    private static class Builder extends MemberProcessor {
+    static class Builder extends MemberProcessor {
 
         private ExtensionNodeModel.Builder node;
 
         private Class<? extends ExtensionNode<?>> nodeType;
 
+        final OnHookMemberProcessor onHooks;
+
         private Builder(Class<? extends Extension> extensionType) {
             super(Extension.class, extensionType);
+            onHooks = new OnHookMemberProcessor(Extension.class, extensionType, false);
             if (!Modifier.isFinal(extensionType.getModifiers())) {
                 throw new IllegalArgumentException("The extension " + StringFormatter.format(extensionType) + " must be declared final");
             } else if (!Extension.class.isAssignableFrom(extensionType)) {
@@ -111,7 +117,7 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         private ExtensionModel<?> build() {
             findMethods();
             if (nodeType != null) {
-                node = new ExtensionNodeModel.Builder(nodeType);
+                node = new ExtensionNodeModel.Builder(this, nodeType);
             }
             return new ExtensionModel<>(this);
         }
@@ -119,6 +125,7 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         @SuppressWarnings("unchecked")
         @Override
         protected void processMethod(Method method) {
+            onHooks.processMethod(method);
             if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {
                 Class<?> nodeType = method.getReturnType();
                 if (nodeType != ExtensionNode.class) {
