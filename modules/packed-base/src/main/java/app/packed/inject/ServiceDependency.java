@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
@@ -79,10 +78,7 @@ public final class ServiceDependency {
     /** The key of this dependency. */
     private final Key<?> key;
 
-    /**
-     * Null if it is a required dependency, otherwise one of {@link Optional}, {@link OptionalInt}, {@link OptionalLong},
-     * {@link OptionalDouble} or {@link Nullable} annotation.
-     */
+    /** The optionality of this dependency. */
     private final Optionality optionality;
 
     /** The variable of this dependency. */
@@ -90,7 +86,7 @@ public final class ServiceDependency {
     private final VariableDescriptor variable;
 
     /**
-     * Creates a new dependency.
+     * Creates a new service dependency.
      * 
      * @param key
      *            the key
@@ -253,12 +249,8 @@ public final class ServiceDependency {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
-    public static List<ServiceDependency> fromExecutable(Executable executable) {
-        return fromExecutable(ExecutableDescriptor.of(executable));
-    }
-
-    public static List<ServiceDependency> fromExecutable(ExecutableDescriptor desc) {
-        ParameterDescriptor[] parameters = desc.getParametersUnsafe();
+    public static List<ServiceDependency> fromExecutable(ExecutableDescriptor executable) {
+        ParameterDescriptor[] parameters = executable.getParametersUnsafe();
         switch (parameters.length) {
         case 0:
             return List.of();
@@ -267,11 +259,11 @@ public final class ServiceDependency {
         case 2:
             return List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
         default:
-            ArrayList<ServiceDependency> list = new ArrayList<>(parameters.length);
-            for (int i = 0; i < parameters.length; i++) {
-                list.add(fromVariable(parameters[i]));
+            ServiceDependency[] sd = new ServiceDependency[parameters.length];
+            for (int i = 0; i < sd.length; i++) {
+                sd[i] = fromVariable(parameters[i]);
             }
-            return List.copyOf(list);
+            return List.of(sd);
         }
     }
 
@@ -283,10 +275,6 @@ public final class ServiceDependency {
      * @return the type literal for the field
      * @see Field#getGenericType()
      */
-    public static ServiceDependency fromField(Field field) {
-        return fromVariable(FieldDescriptor.of(field));
-    }
-
     public static ServiceDependency fromField(FieldDescriptor field) {
         return fromVariable(field);
     }
