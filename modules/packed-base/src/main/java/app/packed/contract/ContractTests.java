@@ -15,7 +15,9 @@
  */
 package app.packed.contract;
 
+import app.packed.inject.Injector;
 import app.packed.inject.ServiceContract;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
@@ -28,7 +30,19 @@ public class ContractTests {
         });
 
         System.out.println(ContractSet.of(ic));
+        System.out.println();
+        Injector i = Injector.configure(c -> {
+            c.provideInstance("Foo");
+            c.provideInstance(3L);
+        });
 
+        System.out.println(i.contract());
+
+        Injector i2 = i.spawn(ServiceWirelets.provide(4));
+        System.out.println();
+        System.out.println(i2.contract());
+
+        System.out.println(i2.use(Integer.class));
         // json
         // toString
     }

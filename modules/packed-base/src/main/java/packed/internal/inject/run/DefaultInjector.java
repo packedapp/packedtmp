@@ -17,6 +17,9 @@ package packed.internal.inject.run;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -24,16 +27,22 @@ import java.util.stream.Stream;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
+import app.packed.container.WireletList;
 import app.packed.inject.Injector;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
+import packed.internal.inject.build.wirelets.PackedDownstreamInjectionWirelet;
 import packed.internal.util.KeyBuilder;
 
 /** The default implementation of {@link Injector}. */
 public final class DefaultInjector extends AbstractInjector {
+
+    /** A stack walker used from {@link #spawn(Wirelet...)}. */
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** The configuration site of this injector. */
     private final ConfigSite configSite;
@@ -112,7 +121,16 @@ public final class DefaultInjector extends AbstractInjector {
         if (wirelets.length == 0) {
             return this;
         }
+        ConfigSite cs = ConfigSite.UNKNOWN;
+        if (!ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == DefaultInjector.class).findFirst());
+            cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
+        }
+        LinkedHashMap<Key<?>, ServiceEntry<?>> newServices = new LinkedHashMap<>(services);
+        WireletList wl = WireletList.of(wirelets);
+        ConfigSite ccs = cs;
+        wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub
-        return null;
+        return new DefaultInjector(cs, description, newServices);
     }
 }

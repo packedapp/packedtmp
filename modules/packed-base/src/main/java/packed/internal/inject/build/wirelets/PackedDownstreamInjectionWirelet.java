@@ -17,14 +17,19 @@ package packed.internal.inject.build.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import app.packed.config.ConfigSite;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.inject.ServiceDescriptor;
 import app.packed.inject.ServiceWirelets;
 import app.packed.util.Key;
+import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.InjectionWireletPipeline;
+import packed.internal.inject.run.RSE;
+import packed.internal.inject.run.RSESingleton;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<InjectionWireletPipeline> {
@@ -41,6 +46,12 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         @Override
         protected void process(InjectionWireletPipeline p) {
 
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
+            newServices.keySet().removeAll(set);
         }
     }
 
@@ -67,17 +78,25 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
                 action.accept(s.toDescriptor());
             }
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
+            for (var s : newServices.values()) {
+                action.accept((RSE<?>) s);
+            }
+        }
     }
 
     public static class ProvideConstantDownstream extends PackedDownstreamInjectionWirelet {
 
-        final Object constant;
+        final Object instance;
 
         final Key<?> key;
 
-        public ProvideConstantDownstream(Key<?> key, Object constant) {
+        public ProvideConstantDownstream(Key<?> key, Object instance) {
             this.key = requireNonNull(key, "key is null");
-            this.constant = requireNonNull(constant, "constant is null");
+            this.instance = requireNonNull(instance, "instance is null");
         }
 
         /** {@inheritDoc} */
@@ -85,5 +104,14 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         protected void process(InjectionWireletPipeline p) {
             System.out.println("Nice builder " + p.node().extension());
         }
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices) {
+            newServices.put(key, new RSESingleton(cs, key, null, instance));
+        }
     }
+
+    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, ServiceEntry<?>> newServices);
 }

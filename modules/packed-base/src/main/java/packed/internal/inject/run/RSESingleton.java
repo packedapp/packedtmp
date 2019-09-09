@@ -17,8 +17,11 @@ package packed.internal.inject.run;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.config.ConfigSite;
 import app.packed.inject.InstantiationMode;
 import app.packed.inject.ServiceRequest;
+import app.packed.util.Key;
+import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
 
 /**
@@ -35,6 +38,17 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
 
     /** The singleton instance. */
     private final T instance;
+
+    /**
+     * @param configSite
+     * @param key
+     * @param description
+     */
+    public RSESingleton(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
+        super(configSite, key, description);
+        this.instance = requireNonNull(instance);
+        this.instantionMode = InstantiationMode.SINGLETON;
+    }
 
     /**
      * Creates a new node.

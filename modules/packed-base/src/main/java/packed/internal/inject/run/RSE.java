@@ -41,6 +41,12 @@ public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
     /** The key under which the service is available. */
     private final Key<T> key;
 
+    RSE(ConfigSite configSite, Key<T> key, @Nullable String description) {
+        this.configSite = requireNonNull(configSite);
+        this.description = description;
+        this.key = requireNonNull(key);
+    }
+
     /**
      * Creates a new runtime node from a build node.
      *
