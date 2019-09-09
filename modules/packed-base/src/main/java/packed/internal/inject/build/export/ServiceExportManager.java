@@ -27,7 +27,6 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InjectionExtension;
 import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -75,10 +74,6 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
     @Nullable
     private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
 
-    /** */
-    @Nullable
-    private LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedServiceMap = new LinkedHashMap<>();
-
     /**
      * Creates a new service export manager.
      * 
@@ -87,18 +82,6 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
      */
     public ServiceExportManager(InjectionExtensionNode node) {
         this.node = requireNonNull(node);
-    }
-
-    /**
-     * Helps build an {@link ServiceContract}.
-     * 
-     * @param builder
-     *            the contract builder
-     */
-    public void buildContract(ServiceContract.Builder builder) {
-        for (ExportedBuildEntry<?> n : resolvedExports.values()) {
-            builder.addProvides(n.key());
-        }
     }
 
     /**
@@ -142,7 +125,16 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
         return export0(new ExportedBuildEntry<>(node, key, configSite));
     }
 
-    private <T> ServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
+    /**
+     * Registers the specified exported build entry object.
+     * 
+     * @param <T>
+     *            the type of service to export
+     * @param entry
+     *            the build entry to export
+     * @return a configuration object that can be exposed to the user
+     */
+    private <T> ExportedServiceConfiguration<T> export0(ExportedBuildEntry<T> entry) {
         ArrayList<ExportedBuildEntry<?>> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
@@ -164,6 +156,12 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
 
         // Export all entries except foo which should be export as Boo
         // exportAll(Predicate) <- takes key or service configuration???
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<ExportedBuildEntry<?>> iterator() {
+        return resolvedExports.values().iterator();
     }
 
     /**
@@ -232,22 +230,5 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
         }
         // Finally, make the resolved exports visible.
         this.resolvedExports = resolvedExports;
-    }
-
-    public LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedServiceMap() {
-        return resolvedServiceMap;
-        // LinkedHashMap<Key<?>, ServiceEntry<?>> r = resolvedServiceMap;
-        // if (r != null) {
-        // LinkedHashMap<Key<?>, ServiceEntry<?>> m = new LinkedHashMap<>();
-        // m.putAll(resolvedExports);
-        // r = resolvedServiceMap = m;
-        // }
-        // return r;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Iterator<ExportedBuildEntry<?>> iterator() {
-        return resolvedExports.values().iterator();
     }
 }

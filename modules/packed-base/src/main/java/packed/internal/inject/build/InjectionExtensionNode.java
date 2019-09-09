@@ -38,6 +38,7 @@ import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.dependencies.ServiceDependencyManager;
+import packed.internal.inject.build.export.ExportedBuildEntry;
 import packed.internal.inject.build.export.ServiceExportManager;
 import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.build.service.ComponentBuildEntry;
@@ -114,7 +115,9 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
 
         builder.addContract(ServiceContract.of(c -> {
             if (exporter != null) {
-                exporter.buildContract(c);
+                for (ExportedBuildEntry<?> n : exporter) {
+                    c.addProvides(n.key());
+                }
             }
             dependencies().buildContract(c);
         }));
@@ -167,11 +170,11 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
 
         // Now inject all components...
 
-        if (exporter != null) {
-            if (resolvedEntries != exporter.resolvedServiceMap()) {
-                exporter.resolvedServiceMap().replaceAll((k, v) -> v.toRuntimeEntry());
-            }
-        }
+        // if (exporter != null) {
+        // if (resolvedEntries != exporter.resolvedServiceMap()) {
+        // exporter.resolvedServiceMap().replaceAll((k, v) -> v.toRuntimeEntry());
+        // }
+        // }
     }
 
     /**

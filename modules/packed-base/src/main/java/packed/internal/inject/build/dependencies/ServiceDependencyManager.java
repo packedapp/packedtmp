@@ -122,7 +122,8 @@ public final class ServiceDependencyManager {
         if (builder.context().buildContext().artifactType() == Injector.class) {
             snm = builder.resolvedEntries;
         } else {
-            snm = exporter == null ? new LinkedHashMap<>() : exporter.resolvedServiceMap();
+            // snm = exporter == null ? new LinkedHashMap<>() : exporter.resolvedServiceMap();
+            snm = new LinkedHashMap<>();
         }
         builder.publicInjector = new DefaultInjector(builder.context().containerConfigSite(), "Internal Descriptor", snm);
 
