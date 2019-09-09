@@ -88,7 +88,8 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
 
     public void build(ArtifactBuildContext buildContext) {
         HashMap<Key<?>, BuildEntry<?>> resolvedServices = provider().resolveAndCheckForDublicates(buildContext);
-        resolvedEntries.addAll(resolvedServices.values());
+
+        resolvedServices.values().forEach(e -> resolvedEntries.nodes.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
             exporter.resolve(this, buildContext);
@@ -104,7 +105,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
     @Override
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
-        for (ServiceEntry<?> n : resolvedEntries) {
+        for (ServiceEntry<?> n : resolvedEntries.nodes.values()) {
             if (n instanceof BuildEntry) {
                 builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }
@@ -151,7 +152,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
 
     private void instantiate() {
         // Instantiate
-        for (ServiceEntry<?> node : resolvedEntries) {
+        for (ServiceEntry<?> node : resolvedEntries.nodes.values()) {
             if (node instanceof ComponentBuildEntry) {
                 ComponentBuildEntry<?> s = (ComponentBuildEntry<?>) node;
                 if (s.instantiationMode() == InstantiationMode.SINGLETON) {
@@ -161,13 +162,13 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
         }
 
         // Okay we are finished, convert all nodes to runtime nodes.
-        resolvedEntries.toRuntimeNodes();
+        resolvedEntries.nodes.replaceAll((k, v) -> v.toRuntimeEntry());
 
         // Now inject all components...
 
         if (exporter != null) {
             if (resolvedEntries != exporter.resolvedServiceMap()) {
-                exporter.resolvedServiceMap().toRuntimeNodes();
+                exporter.resolvedServiceMap().nodes.replaceAll((k, v) -> v.toRuntimeEntry());
             }
         }
     }

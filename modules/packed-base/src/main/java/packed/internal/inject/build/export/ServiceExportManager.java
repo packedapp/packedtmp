@@ -186,7 +186,7 @@ public final class ServiceExportManager {
             ServiceEntry<?> entryToExport = entry.exportedEntry;
             boolean export = true;
             if (entryToExport == null) {
-                entryToExport = resolver.resolvedEntries.getRecursive(entry.keyToExport);
+                entryToExport = resolver.resolvedEntries.nodes.get(entry.keyToExport);
                 if (entryToExport == null) {
                     if (unresolvedKeyedExports == null) {
                         unresolvedKeyedExports = new LinkedHashMap<>();
@@ -219,7 +219,7 @@ public final class ServiceExportManager {
         }
 
         if (exportAll != null) {
-            for (ServiceEntry<?> e : resolver.resolvedEntries) {
+            for (ServiceEntry<?> e : resolver.resolvedEntries.nodes.values()) {
                 if (!e.isPrivate()) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedBuildEntry<>(builder, e, exportAll));
@@ -234,7 +234,9 @@ public final class ServiceExportManager {
     public ServiceNodeMap resolvedServiceMap() {
         ServiceNodeMap r = resolvedServiceMap;
         if (r != null) {
-            r = resolvedServiceMap = ServiceNodeMap.of(resolvedExports);
+            ServiceNodeMap m = new ServiceNodeMap();
+            m.nodes.putAll(resolvedExports);
+            r = resolvedServiceMap = m;
         }
         return r;
     }

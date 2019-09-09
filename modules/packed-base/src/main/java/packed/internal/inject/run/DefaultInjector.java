@@ -17,7 +17,6 @@ package packed.internal.inject.run;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -63,11 +62,6 @@ public final class DefaultInjector extends AbstractInjector {
         return configSite;
     }
 
-    @Override
-    public List<ServiceEntry<?>> copyNodes() {
-        return services.copyNodes();
-    }
-
     /** {@inheritDoc} */
     @Override
     public Optional<String> description() {
@@ -86,16 +80,17 @@ public final class DefaultInjector extends AbstractInjector {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     @Nullable
     protected <T> ServiceEntry<T> findNode(Key<T> key) {
-        return services.getRecursive(key);
+        return (ServiceEntry<T>) services.nodes.get(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action) {
-        services.forEach(action);
+        services.nodes.values().forEach(action);
 
     }
 
@@ -103,7 +98,7 @@ public final class DefaultInjector extends AbstractInjector {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<ServiceDescriptor> services() {
-        return (Stream) services.stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
+        return (Stream) services.nodes.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> {
             if (e instanceof BuildEntry) {
                 return ((BuildEntry) e).toDescriptor();
             }

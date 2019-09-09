@@ -133,14 +133,14 @@ public final class ServiceDependencyManager {
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> se : builder.resolvedEntries) {
+        for (ServiceEntry<?> se : builder.resolvedEntries.nodes.values()) {
             BuildEntry<?> entry = (BuildEntry<?>) se;
             if (entry.needsResolving()) {
                 detectCyclesFor.add(entry);
                 List<ServiceDependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = builder.resolvedEntries.getRecursive(dependency.key());
+                    ServiceEntry<?> resolveTo = builder.resolvedEntries.nodes.get(dependency.key());
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;
                 }

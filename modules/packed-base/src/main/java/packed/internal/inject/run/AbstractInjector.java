@@ -16,7 +16,6 @@
 package packed.internal.inject.run;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -34,8 +33,6 @@ import packed.internal.inject.util.nextapi.OldAtInjectGroup;
 
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
-
-    public abstract List<ServiceEntry<?>> copyNodes();
 
     /**
      * Ideen er egentlig at vi kan lave en detaljeret fejlbesked, f.eks, vi har en X type, men den har en qualifier. Eller

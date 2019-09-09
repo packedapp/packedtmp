@@ -15,16 +15,7 @@
  */
 package packed.internal.inject.util;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import app.packed.util.Key;
 import packed.internal.inject.ServiceEntry;
@@ -32,62 +23,10 @@ import packed.internal.inject.ServiceEntry;
 /**
  *
  */
-public class ServiceNodeMap implements Iterable<ServiceEntry<?>> {
+public class ServiceNodeMap {
 
     public final LinkedHashMap<Key<?>, ServiceEntry<?>> nodes = new LinkedHashMap<>();
 
-    public List<ServiceEntry<?>> copyNodes() {
-        return new ArrayList<>(nodes.values());
-    }
-
-    public void addAll(Collection<? extends ServiceEntry<?>> col) {
-        col.forEach(c -> put(c));
-    }
-
-    @Override
-    public void forEach(Consumer<? super ServiceEntry<?>> action) {
-        nodes.values().forEach(action);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> ServiceEntry<T> getRecursive(Key<T> type) {
-        return (ServiceEntry<T>) nodes.get(type);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Iterator<ServiceEntry<?>> iterator() {
-        return nodes.values().iterator();
-    }
-
-    public void put(ServiceEntry<?> node) {
-        requireNonNull(node.key());
-        nodes.put(node.key(), node);
-    }
-
-    public ServiceEntry<?> putIfAbsent(ServiceEntry<?> node) {
-        requireNonNull(node.key());
-        return nodes.putIfAbsent(node.key(), node);
-    }
-
-    public Stream<ServiceEntry<?>> stream() {
-        return nodes.values().stream();
-    }
-
-    public void toRuntimeNodes() {
-        nodes.replaceAll((k, v) -> v.toRuntimeEntry());
-    }
-
-    @Override
-    public String toString() {
-        return nodes.toString();
-    }
-
-    public static ServiceNodeMap of(Map<Key<?>, ? extends ServiceEntry<?>> nodes) {
-        ServiceNodeMap m = new ServiceNodeMap();
-        m.nodes.putAll(nodes);
-        return m;
-    }
 }
 
 // Couple of ideas.
