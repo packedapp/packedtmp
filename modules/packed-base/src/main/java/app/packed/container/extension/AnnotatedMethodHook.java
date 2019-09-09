@@ -15,25 +15,72 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.MethodOperator;
 import app.packed.reflect.UncheckedIllegalAccessException;
+import app.packed.util.Nullable;
+import packed.internal.container.extension.hook.other.PackedMethodHookApplicator;
+import packed.internal.container.model.ComponentModel;
+import packed.internal.reflect.PackedMethodOperator;
 
 /** A hook representing a method annotated with a specific type. */
-public interface AnnotatedMethodHook<T extends Annotation> {
+public final class AnnotatedMethodHook<T extends Annotation> {
+
+    /** The annotation value. */
+    private final T annotation;
+
+    /** The builder for the component type. */
+    private final ComponentModel.Builder builder;
+
+    /** A method descriptor, is lazily created via {@link #method()}. */
+    @Nullable
+    private MethodDescriptor descriptor;
+
+    /** The annotated method. */
+    private final Method method;
+
+    /** A method handle setter, is lazily created via {@link #methodHandle()}. */
+    @Nullable
+    private MethodHandle methodHandle;
+
+    /**
+     * Creates a new hook instance.
+     * 
+     * @param builder
+     *            the builder for the component type
+     * @param method
+     *            the annotated method
+     * @param annotation
+     *            the annotation value
+     */
+    AnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation) {
+        this.builder = requireNonNull(builder);
+        this.method = requireNonNull(method);
+        this.annotation = requireNonNull(annotation);
+    }
 
     /**
      * Returns the annotation value.
      *
      * @return the annotation value
      */
-    T annotation();
+    public T annotation() {
+        return annotation;
+    }
 
-    <E> HookApplicator<E> applicator(MethodOperator<E> operator);
+    public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
+        PackedMethodOperator<E> o = PackedMethodOperator.cast(operator);
+        builder.checkActive();
+        return new PackedMethodHookApplicator<E>(this, o, method);
+    }
 
     /**
      * Applies the specified operator to the underlying method.
@@ -48,14 +95,27 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      * @throws UncheckedIllegalAccessException
      *             if access checking failed while applying the operator
      */
-    <E> E applyStatic(MethodOperator<E> operator);
+    public <E> E applyStatic(MethodOperator<E> operator) {
+        PackedMethodOperator<E> o = PackedMethodOperator.cast(operator);
+        if (!Modifier.isStatic(method.getModifiers())) {
+            throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
+        }
+        builder.checkActive();
+        return o.applyStaticHook(this);
+    }
 
     /**
      * Returns a descriptor for the underlying method.
      * 
      * @return a descriptor for the underlying method
      */
-    MethodDescriptor method();
+    public MethodDescriptor method() {
+        MethodDescriptor d = descriptor;
+        if (d == null) {
+            descriptor = d = MethodDescriptor.of(method);
+        }
+        return d;
+    }
 
     /**
      * Returns a {@link MethodHandle} for the underlying method.
@@ -67,14 +127,11 @@ public interface AnnotatedMethodHook<T extends Annotation> {
      *             if access checking fails
      * @see Lookup#unreflect(java.lang.reflect.Method)
      */
-    MethodHandle methodHandle();
+    public MethodHandle methodHandle() {
+        MethodHandle mh = methodHandle;
+        if (mh == null) {
+            methodHandle = mh = builder.lookup().unreflect(method);
+        }
+        return mh;
+    }
 }
-
-// checkNotOptional()
-// Er taenkt til en optional componenter.... f.eks. kan man ikke registere @Provide metoder, men gerne @Inject metoder
-// paa en optional component...
-// Problemet med den er hvis vi faar AOP saa kan folk smide filtre ind foran.... Ogsaa paa statisk???
-/// Vi kan vel bare wrappe MethodHandles....
-
-// disableAOP()
-// enableInjection()

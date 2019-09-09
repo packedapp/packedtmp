@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.extension.AnnotatedMethodHook;
 import packed.internal.container.AbstractHookApplicator;
 import packed.internal.reflect.PackedMethodOperator;
 
@@ -39,10 +40,10 @@ public final class PackedMethodHookApplicator<T> extends AbstractHookApplicator<
     /** The operator to apply. */
     public final PackedMethodOperator<T> operator;
 
-    PackedMethodHookApplicator(PackedAnnotatedMethodHook<?> hook, PackedMethodOperator<T> operator) {
+    public PackedMethodHookApplicator(AnnotatedMethodHook<?> hook, PackedMethodOperator<T> operator, Method method) {
         this.operator = requireNonNull(operator);
         this.mh = hook.methodHandle();
-        this.method = hook.method;
+        this.method = requireNonNull(method);
     }
 
     /** {@inheritDoc} */

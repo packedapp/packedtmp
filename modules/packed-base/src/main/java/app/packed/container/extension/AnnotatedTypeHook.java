@@ -19,19 +19,23 @@ import java.lang.annotation.Annotation;
 
 /** A hook representing a instance whose type is annotated with a specific annotation type. */
 // What about inheritance
-public interface AnnotatedTypeHook<T extends Annotation> {
+public final class AnnotatedTypeHook<T extends Annotation> {
 
     /**
      * Returns the annotation value.
      *
      * @return the annotation value
      */
-    T annotation();
+    public T annotation() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the type that is annotated.
      * 
      * @return the type that is annotated
      */
-    Class<?> type();
+    public Class<?> type() {
+        throw new UnsupportedOperationException();
+    }
 }

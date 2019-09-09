@@ -17,6 +17,7 @@ package packed.internal.access;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.BundleDescriptor;
@@ -25,6 +26,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.AnnotatedMethodHook;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentModel;
 
@@ -54,4 +56,6 @@ public interface AppPackedExtensionAccess extends SecretAccess {
     <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 
     <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation);
+
+    <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation);
 }

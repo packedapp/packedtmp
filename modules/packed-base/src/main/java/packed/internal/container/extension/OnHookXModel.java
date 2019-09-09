@@ -9,7 +9,6 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.OnHookGroup;
 import packed.internal.container.extension.hook.OnHookMemberProcessor;
-import packed.internal.container.extension.hook.other.PackedAnnotatedMethodHook;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookXModel {
@@ -53,7 +52,7 @@ public final class OnHookXModel {
         return mh;
     }
 
-    public MethodHandle findMethodHandleForAnnotatedMethod(PackedAnnotatedMethodHook<?> paf) {
+    public MethodHandle findMethodHandleForAnnotatedMethod(AnnotatedMethodHook<?> paf) {
         MethodHandle mh = annotatedMethods.get(paf.annotation().annotationType());
         if (mh == null) {
             throw new UnsupportedOperationException();

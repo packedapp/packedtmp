@@ -19,6 +19,7 @@ import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
@@ -110,6 +111,12 @@ public abstract class Extension {
             @Override
             public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
                 return new AnnotatedFieldHook<>(builder, field, annotation);
+            }
+
+            @Override
+            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.container.model.ComponentModel.Builder builder,
+                    Method method, T annotation) {
+                return new AnnotatedMethodHook<>(builder, method, annotation);
             }
         });
     }
