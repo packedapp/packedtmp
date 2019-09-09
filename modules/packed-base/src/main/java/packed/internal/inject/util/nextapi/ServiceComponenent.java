@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.util;
+package packed.internal.inject.util.nextapi;
 
 import java.util.Collection;
 
@@ -31,7 +31,7 @@ import app.packed.inject.ServiceDescriptor;
 // injector.descriptor();
 
 // Den var tiltaenkt til at vise alle services paa en component...
-// Alternativt, kan
+// Alternativt, ala features
 public interface ServiceComponenent {
 
     ConfigSite configSite();

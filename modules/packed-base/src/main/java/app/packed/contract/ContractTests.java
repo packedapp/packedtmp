@@ -38,11 +38,12 @@ public class ContractTests {
 
         System.out.println(i.contract());
 
-        Injector i2 = i.spawn(ServiceWirelets.provide(4));
+        Injector i2 = i.spawn(ServiceWirelets.provide(4), ServiceWirelets.provide(99L));
         System.out.println();
         System.out.println(i2.contract());
 
         System.out.println(i2.use(Integer.class));
+        System.out.println(i2.use(Long.class));
         // json
         // toString
     }

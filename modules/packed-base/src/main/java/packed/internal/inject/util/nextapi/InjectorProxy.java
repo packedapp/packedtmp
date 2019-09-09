@@ -13,11 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.stuff;
+package packed.internal.inject.util.nextapi;
+
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+
+import app.packed.artifact.ArtifactConfigurator;
+import app.packed.container.Wirelet;
+import app.packed.inject.Injector;
+import app.packed.inject.InjectorConfigurator;
 
 /**
  *
  */
-public interface CommonInterface {
+interface InjectorProxy {
 
+    Injector create(String s, List<String> list);
+
+    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
+            Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 }

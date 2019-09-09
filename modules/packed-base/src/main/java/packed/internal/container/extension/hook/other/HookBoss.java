@@ -27,6 +27,8 @@ import packed.internal.container.model.ComponentLookup;
 /**
  *
  */
+// Ideen er at wrappe ComponentLook og saa give den til PackedFieldAnnotated + MethodAnnotated
+
 public class HookBoss {
     private ComponentLookup lookup;
 

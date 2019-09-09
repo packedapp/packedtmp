@@ -37,9 +37,9 @@ import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.ServiceEntry;
-import packed.internal.inject.build.dependencies.ServiceDependencyManager;
+import packed.internal.inject.build.dependencies.DependencyManager;
 import packed.internal.inject.build.export.ExportedBuildEntry;
-import packed.internal.inject.build.export.ServiceExportManager;
+import packed.internal.inject.build.export.ExportManager;
 import packed.internal.inject.build.service.AtProvidesGroup;
 import packed.internal.inject.build.service.ComponentBuildEntry;
 import packed.internal.inject.build.service.ServiceProvidingManager;
@@ -51,11 +51,11 @@ import packed.internal.inject.util.AtInjectGroup;
 public final class InjectionExtensionNode extends ExtensionNode<InjectionExtension> {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceDependencyManager dependencies;
+    public DependencyManager dependencies;
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
-    public ServiceExportManager exporter;
+    public ExportManager exporter;
 
     private boolean hasFailed;
 
@@ -133,23 +133,23 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
      * 
      * @return the dependency manager for this builder
      */
-    public ServiceDependencyManager dependencies() {
-        ServiceDependencyManager d = dependencies;
+    public DependencyManager dependencies() {
+        DependencyManager d = dependencies;
         if (d == null) {
-            d = dependencies = new ServiceDependencyManager(this);
+            d = dependencies = new DependencyManager(this);
         }
         return d;
     }
 
     /**
-     * Returns the {@link ServiceExportManager} for this builder.
+     * Returns the {@link ExportManager} for this builder.
      * 
      * @return the service exporter for this builder
      */
-    public ServiceExportManager exports() {
-        ServiceExportManager e = exporter;
+    public ExportManager exports() {
+        ExportManager e = exporter;
         if (e == null) {
-            e = exporter = new ServiceExportManager(this);
+            e = exporter = new ExportManager(this);
         }
         return e;
     }

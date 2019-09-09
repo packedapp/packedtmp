@@ -48,10 +48,10 @@ import packed.internal.inject.run.DefaultInjector;
  * @see InjectionExtension#require(Key)
  * @see InjectionExtension#requireOptionally(Key)
  */
-public final class ServiceDependencyManager {
+public final class DependencyManager {
 
     /** The injector builder this manager belongs to. */
-    private final InjectionExtensionNode builder;
+    private final InjectionExtensionNode node;
 
     /**
      * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
@@ -84,8 +84,8 @@ public final class ServiceDependencyManager {
     /** A list of all dependencies that have not been resolved */
     private ArrayList<Requirement> missingDependencies;
 
-    public ServiceDependencyManager(InjectionExtensionNode builder) {
-        this.builder = requireNonNull(builder);
+    public DependencyManager(InjectionExtensionNode node) {
+        this.node = requireNonNull(node);
     }
 
     /**
@@ -118,30 +118,30 @@ public final class ServiceDependencyManager {
         // Og en del af en artifact...
 
         Map<Key<?>, ServiceEntry<?>> snm;
-        if (builder.context().buildContext().artifactType() == Injector.class) {
-            snm = builder.resolvedEntries;
+        if (node.context().buildContext().artifactType() == Injector.class) {
+            snm = node.resolvedEntries;
         } else {
             // snm = exporter == null ? new LinkedHashMap<>() : exporter.resolvedServiceMap();
             snm = new LinkedHashMap<>();
         }
-        builder.publicInjector = new DefaultInjector(builder.context().containerConfigSite(), "Internal Descriptor", snm);
+        node.publicInjector = new DefaultInjector(node.context().containerConfigSite(), "Internal Descriptor", snm);
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..
         resolveAllDependencies();
-        CycleDetector.dependencyCyclesDetect(detectCyclesFor);
+        DependencyCycleDetector.dependencyCyclesDetect(detectCyclesFor);
     }
 
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
-        for (ServiceEntry<?> se : builder.resolvedEntries.values()) {
+        for (ServiceEntry<?> se : node.resolvedEntries.values()) {
             BuildEntry<?> entry = (BuildEntry<?>) se;
             if (entry.needsResolving()) {
                 detectCyclesFor.add(entry);
                 List<ServiceDependency> dependencies = entry.dependencies;
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
-                    ServiceEntry<?> resolveTo = builder.resolvedEntries.get(dependency.key());
+                    ServiceEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;
                 }
@@ -168,11 +168,11 @@ public final class ServiceDependencyManager {
     /**
      * Record a dependency that could not be resolved
      * 
-     * @param node
+     * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(BuildEntry<?> node, ServiceDependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
-        requireNonNull(node);
+    public void recordResolvedDependency(BuildEntry<?> entry, ServiceDependency dependency, @Nullable ServiceEntry<?> resolvedTo, boolean fromParent) {
+        requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
@@ -181,9 +181,9 @@ public final class ServiceDependencyManager {
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }
-        m.add(new Requirement(dependency, node));
+        m.add(new Requirement(dependency, entry));
 
-        if (builder.dependencies == null || !builder.dependencies.manualRequirementsManagement) {
+        if (node.dependencies == null || !node.dependencies.manualRequirementsManagement) {
             if (dependency.isOptional()) {
                 requiredOptionally.add(dependency.key());
             } else {
@@ -193,7 +193,7 @@ public final class ServiceDependencyManager {
     }
 
     public void checkForMissingDependencies() {
-        boolean manualRequirementsManagement = builder.dependencies != null && builder.dependencies.manualRequirementsManagement;
+        boolean manualRequirementsManagement = node.dependencies != null && node.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (Requirement e : missingDependencies) {
@@ -242,7 +242,7 @@ public final class ServiceDependencyManager {
         }
     }
 
-    public void recordMissingDependency(BuildEntry<?> node, ServiceDependency dependency, boolean fromParent) {
+    public void recordMissingDependency(BuildEntry<?> entry, ServiceDependency dependency, boolean fromParent) {
 
     }
 }

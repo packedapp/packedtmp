@@ -32,7 +32,7 @@ import app.packed.util.Nullable;
  * @see InjectionExtension#export(Key)
  * @see InjectionExtension#export(ComponentServiceConfiguration)
  */
-// Move to ServiceExportManager
+// Move to ExportManager when we key + check configurable has been finalized
 final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {
 
     /** The entry that is exported. */

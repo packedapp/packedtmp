@@ -43,7 +43,7 @@ import packed.internal.util.StringFormatter;
  * @see InjectionExtension#export(ComponentServiceConfiguration)
  * @see InjectionExtension#exportAll()
  */
-public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?>> {
+public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
     /** The config site, if we export all entries. */
     @Nullable
@@ -72,12 +72,12 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
     private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
 
     /**
-     * Creates a new service export manager.
+     * Creates a new export manager.
      * 
      * @param node
      *            the extension node this export manager belongs to
      */
-    public ServiceExportManager(InjectionExtensionNode node) {
+    public ExportManager(InjectionExtensionNode node) {
         this.node = requireNonNull(node);
     }
 

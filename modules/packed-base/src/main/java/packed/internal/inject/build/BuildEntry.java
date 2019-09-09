@@ -184,7 +184,7 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
     // }
 
     public final ServiceDescriptor toDescriptor() {
-        return new PackedServiceDescriptor(key, configSite, description /* immutableCopyOfTags() */);
+        return new ExposedServiceDescriptor(key, configSite, description /* immutableCopyOfTags() */);
     }
 
     /** {@inheritDoc} */
@@ -193,4 +193,62 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
         RSE<T> runtime = this.runtimeNode;
         return runtime == null ? this.runtimeNode = newRuntimeNode() : runtime;
     }
+
+    /** The default implementation of {@link ServiceDescriptor}. */
+    // We might ditch the interface is future versions, and just have a class.
+    // However, for now I think we might like the flexibility of not having.
+    // ServiceDescriptor.of
+    static final class ExposedServiceDescriptor implements ServiceDescriptor {
+
+        /** The configuration site of the service. */
+        private final ConfigSite configSite;
+
+        /** An optional description of the service. */
+        @Nullable
+        private final String description;
+
+        /** The key of the service. */
+        private final Key<?> key;
+
+        /**
+         * Creates a new descriptor.
+         * 
+         * @param key
+         *            the key of the service
+         * @param configSite
+         *            the config site of the service
+         * @param description
+         *            the (optional) description of the service
+         */
+        ExposedServiceDescriptor(Key<?> key, ConfigSite configSite, String description) {
+            this.key = requireNonNull(key);
+            this.configSite = requireNonNull(configSite);
+            this.description = description;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ConfigSite configSite() {
+            return configSite;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<String> description() {
+            return Optional.ofNullable(description);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Key<?> key() {
+            return key;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public String toString() {
+            return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + ", description=" + description + "]";
+        }
+    }
+
 }

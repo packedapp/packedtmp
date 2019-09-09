@@ -13,25 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.util;
+package packed.internal.container.extension.a;
 
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-
-import app.packed.artifact.ArtifactConfigurator;
-import app.packed.container.Wirelet;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.app.App;
+import app.packed.app.AppBundle;
+import app.packed.inject.Provide;
 
 /**
  *
  */
-interface InjectorProxy {
+public class Hmm extends AppBundle {
 
-    Injector create(String s, List<String> list);
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        install(D.class);
+        install(E.class);
+    }
 
-    public static <T> T createProxy(MethodHandles.Lookup caller, Class<T> t, ArtifactConfigurator<? super InjectorConfigurator> configurator,
-            Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+    public static void main(String[] args) {
+        App.of(new Hmm());
+    }
+
+    public static class D {
+        @Provide
+        public String ss() {
+            return "fff";
+        }
+    }
+
+    public static class E {
+
+        @Provide
+        public Integer ss() {
+            return 3;
+        }
     }
 }
