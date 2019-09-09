@@ -63,7 +63,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         /** {@inheritDoc} */
         @Override
         protected void process(InjectionWireletPipeline extension) {
-            for (var s : extension.node().exports().allExports()) {
+            for (var s : extension.node().exports()) {
                 action.accept(s.toDescriptor());
             }
         }

@@ -18,7 +18,7 @@ package packed.internal.inject.build.export;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
@@ -45,7 +45,7 @@ import packed.internal.util.StringFormatter;
  * @see InjectionExtension#export(ComponentServiceConfiguration)
  * @see InjectionExtension#exportAll()
  */
-public final class ServiceExportManager {
+public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?>> {
 
     /** The config site, if we export all entries. */
     @Nullable
@@ -87,10 +87,6 @@ public final class ServiceExportManager {
      */
     public ServiceExportManager(InjectionExtensionNode node) {
         this.node = requireNonNull(node);
-    }
-
-    public Collection<ExportedBuildEntry<?>> allExports() {
-        return resolvedExports.values();
     }
 
     /**
@@ -239,12 +235,19 @@ public final class ServiceExportManager {
     }
 
     public LinkedHashMap<Key<?>, ServiceEntry<?>> resolvedServiceMap() {
-        LinkedHashMap<Key<?>, ServiceEntry<?>> r = resolvedServiceMap;
-        if (r != null) {
-            LinkedHashMap<Key<?>, ServiceEntry<?>> m = new LinkedHashMap<>();
-            m.putAll(resolvedExports);
-            r = resolvedServiceMap = m;
-        }
-        return r;
+        return resolvedServiceMap;
+        // LinkedHashMap<Key<?>, ServiceEntry<?>> r = resolvedServiceMap;
+        // if (r != null) {
+        // LinkedHashMap<Key<?>, ServiceEntry<?>> m = new LinkedHashMap<>();
+        // m.putAll(resolvedExports);
+        // r = resolvedServiceMap = m;
+        // }
+        // return r;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<ExportedBuildEntry<?>> iterator() {
+        return resolvedExports.values().iterator();
     }
 }
