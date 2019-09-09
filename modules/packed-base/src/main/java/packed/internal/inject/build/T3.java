@@ -19,6 +19,7 @@ import app.packed.app.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.inject.ServiceContract;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
@@ -29,7 +30,7 @@ public class T3 {
         return new BaseBundle() {
             @Override
             protected void configure() {
-                install(Foo.class);
+                provide(Foo.class);
             }
         };
     }
@@ -37,11 +38,11 @@ public class T3 {
     public static void main(String[] args) {
         System.out.println(ServiceContract.of(b()));
 
-        App.of(b());
+        App.of(b(), ServiceWirelets.provide("foo"));
     }
 
     public static class Foo {
-        public Foo() {
+        public Foo(String s) {
             System.out.println("Yes");
         }
     }
