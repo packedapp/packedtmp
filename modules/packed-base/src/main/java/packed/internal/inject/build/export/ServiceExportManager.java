@@ -22,7 +22,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ComponentServiceConfiguration;
 import app.packed.inject.InjectionExtension;
@@ -69,7 +68,7 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
     private final InjectionExtensionNode node;
 
     /**
-     * All resolved exports. Is null until {@link #resolve(InjectionExtensionNode, ArtifactBuildContext)} has been invoked.
+     * All resolved exports. Is null until {@link #resolve()} has been invoked.
      */
     @Nullable
     private LinkedHashMap<Key<?>, ExportedBuildEntry<?>> resolvedExports;
@@ -168,12 +167,9 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
      * This method tries to find matching entries for exports added via {@link InjectionExtension#export(Class)}and
      * {@link InjectionExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries
      * at any point, even before the
-     * 
-     * @param resolver
-     * @param buildContext
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void resolve(InjectionExtensionNode resolver, ArtifactBuildContext buildContext) {
+    public void resolve() {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
 
@@ -186,7 +182,7 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
                 ServiceEntry<?> entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
-                    entryToExport = resolver.resolvedEntries.get(entry.keyToExport);
+                    entryToExport = node.resolvedEntries.get(entry.keyToExport);
                     if (entryToExport == null) {
                         if (failingUnresolvedKeyedExports == null) {
                             failingUnresolvedKeyedExports = new LinkedHashMap<>();
@@ -213,14 +209,14 @@ public final class ServiceExportManager implements Iterable<ExportedBuildEntry<?
         }
 
         if (failingUnresolvedKeyedExports != null) {
-            ErrorMessages.addUnresolvedExports(buildContext, failingUnresolvedKeyedExports);
+            ErrorMessages.addUnresolvedExports(node, failingUnresolvedKeyedExports);
         }
         if (failingDuplicateExports != null) {
             // TODO add error messages
         }
 
         if (exportAll != null) {
-            for (ServiceEntry<?> e : resolver.resolvedEntries.values()) {
+            for (ServiceEntry<?> e : node.resolvedEntries.values()) {
                 if (!e.isPrivate()) {
                     if (!resolvedExports.containsKey(e.key())) {
                         resolvedExports.put(e.key(), new ExportedBuildEntry<>(node, e, exportAll));

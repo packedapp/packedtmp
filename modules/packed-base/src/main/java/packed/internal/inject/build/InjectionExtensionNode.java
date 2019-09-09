@@ -93,7 +93,7 @@ public final class InjectionExtensionNode extends ExtensionNode<InjectionExtensi
         resolvedServices.values().forEach(e -> resolvedEntries.put(requireNonNull(e.key()), e));
 
         if (exporter != null) {
-            exporter.resolve(this, buildContext);
+            exporter.resolve();
         }
 
         if (hasFailed) {
