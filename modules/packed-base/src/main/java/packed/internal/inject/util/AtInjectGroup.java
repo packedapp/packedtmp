@@ -22,10 +22,10 @@ import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
-import app.packed.inject.Inject;
-import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
+import app.packed.service.Inject;
+import app.packed.service.ServiceDependency;
 
 /**
  *

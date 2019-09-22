@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedMethodHook;
-import packed.internal.reflect.PackedMethodOperator;
+import app.packed.reflect.MethodOperator;
 
 /**
  *
@@ -37,9 +37,9 @@ public final class PackedMethodHookApplicator<T> extends AbstractHookApplicator<
     public final MethodHandle mh;
 
     /** The operator to apply. */
-    public final PackedMethodOperator<T> operator;
+    public final MethodOperator<T> operator;
 
-    public PackedMethodHookApplicator(AnnotatedMethodHook<?> hook, PackedMethodOperator<T> operator, Method method) {
+    public PackedMethodHookApplicator(AnnotatedMethodHook<?> hook, MethodOperator<T> operator, Method method) {
         this.operator = requireNonNull(operator);
         this.mh = hook.methodHandle();
         this.method = requireNonNull(method);

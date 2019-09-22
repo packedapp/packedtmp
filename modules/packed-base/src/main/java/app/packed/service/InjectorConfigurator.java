@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -66,8 +66,8 @@ public final class InjectorConfigurator {
      * 
      * @return an instance of the injector extension
      */
-    private InjectionExtension extension() {
-        return configuration().use(InjectionExtension.class);
+    private ServiceExtension extension() {
+        return configuration().use(ServiceExtension.class);
     }
 
     /**

@@ -29,7 +29,6 @@ import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.Nullable;
 import packed.internal.container.extension.hook.other.PackedMethodHookApplicator;
 import packed.internal.container.model.ComponentModel;
-import packed.internal.reflect.PackedMethodOperator;
 
 /** A hook representing a method annotated with a specific type. */
 public final class AnnotatedMethodHook<T extends Annotation> {
@@ -77,7 +76,7 @@ public final class AnnotatedMethodHook<T extends Annotation> {
     }
 
     public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
-        PackedMethodOperator<E> o = PackedMethodOperator.cast(operator);
+        MethodOperator<E> o = MethodOperator.cast(operator);
         builder.checkActive();
         return new PackedMethodHookApplicator<E>(this, o, method);
     }
@@ -96,7 +95,7 @@ public final class AnnotatedMethodHook<T extends Annotation> {
      *             if access checking failed while applying the operator
      */
     public <E> E applyStatic(MethodOperator<E> operator) {
-        PackedMethodOperator<E> o = PackedMethodOperator.cast(operator);
+        MethodOperator<E> o = MethodOperator.cast(operator);
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
         }

@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.inject.Factory;
+import app.packed.service.Factory;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 import support.assertj.app.packed.inject.FactoryAssert;
 import support.assertj.packed.inject.factory.InternalFunctionAssert;

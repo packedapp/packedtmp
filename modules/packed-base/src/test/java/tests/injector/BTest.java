@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceDescriptor;
+import app.packed.service.Injector;
+import app.packed.service.ServiceDescriptor;
 
 /**
  *

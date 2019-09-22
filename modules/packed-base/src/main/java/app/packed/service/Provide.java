@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -84,7 +84,7 @@ import app.packed.util.Key;
 
 // Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
 // Maaske hvis man eksplicit, siger its managed....
-@ActivateExtension(InjectionExtension.class /* extensionHook = AtProvidesGroup.Builder.class */)
+@ActivateExtension(ServiceExtension.class /* extensionHook = AtProvidesGroup.Builder.class */)
 public @interface Provide {
 
     boolean prototype() default false;

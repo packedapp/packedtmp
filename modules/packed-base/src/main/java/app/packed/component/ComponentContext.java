@@ -15,7 +15,7 @@
  */
 package app.packed.component;
 
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 
 /**
  * A component context can be injected into what every I call it...

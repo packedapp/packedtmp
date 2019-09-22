@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.concurrent.Semaphore;
 
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.util.ThrowableUtil;

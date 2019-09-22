@@ -22,15 +22,15 @@ import java.util.LinkedHashMap;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.Injector;
+import app.packed.service.ServiceExtension;
+import app.packed.service.Injector;
 import app.packed.util.Key;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.build.wirelets.PackedUpstreamInjectionWirelet;
 import packed.internal.inject.run.AbstractInjector;
 
-/** Represents an injector that used via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
+/** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 public final class ProvideAllFromInjector {
 
     /** The injector builder from where the service will be provided. */

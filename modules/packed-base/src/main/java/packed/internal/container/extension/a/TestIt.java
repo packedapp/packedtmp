@@ -19,10 +19,10 @@ import app.packed.app.App;
 import app.packed.app.AppBundle;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.inject.Factory;
-import app.packed.inject.Inject;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceContract;
+import app.packed.service.Factory;
+import app.packed.service.Inject;
+import app.packed.service.Injector;
+import app.packed.service.ServiceContract;
 
 /**
  *

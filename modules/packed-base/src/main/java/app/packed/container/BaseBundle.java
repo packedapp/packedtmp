@@ -17,21 +17,25 @@ package app.packed.container;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.Factory;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.Provide;
-import app.packed.inject.ServiceConfiguration;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.Factory;
+import app.packed.service.Injector;
+import app.packed.service.InjectorConfigurator;
+import app.packed.service.Provide;
+import app.packed.service.ServiceConfiguration;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 
 /**
- * Base bundles contains easy access to common functionality defined by the various extension in this module.
- * 
+ * A BaseBundle contains shortcut access to common functionality defined by the various extension available in this
+ * module.
+ * <p>
+ * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
+ * service().provide(Foo.class) or even just provide(Foo.class).
+ * <p>
  * 
  * With common functionality provide by app.packed.base
  * 
@@ -51,21 +55,21 @@ import app.packed.util.Qualifier;
  * <li><b>{@link BaseBundle}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
+ * 
+ * 
+ * @apiNote We never return, for example, Bundle or BaseBundle to allow for method chaining. As this would make
+ *          extending the class difficult unless we defined the methods as non-final.
  */
-
-// Descriptor does not freeze, Injector+Container freezes
-
-// explicitServiceRequirements(); <- You can put it in an environment to force it. No it would break encapsulation
-// AnyBundle...
-// Bundle + BaseBundle, or
-// AnyBundle + Bundle <- I think I like this better....
-
-// We never return, for example, Bundle or AnyBundle to allow for method chaining.
-// As this would make it deficult to extend
-
-// protected final Restrictions restrictions = null;
-
 public abstract class BaseBundle extends Bundle {
+
+    /**
+     * Returns a component extension instance, installing it if it has not already been installed.
+     * 
+     * @return a component extension instance
+     */
+    protected final ComponentExtension component() {
+        return use(ComponentExtension.class);
+    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -97,7 +101,11 @@ public abstract class BaseBundle extends Bundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Class<T> key) {
-        return injector().export(key);
+        return service().export(key);
+    }
+
+    protected final <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
+        return service().export(configuration);
     }
 
     /**
@@ -123,52 +131,44 @@ public abstract class BaseBundle extends Bundle {
      * @see #export(Key)
      */
     protected final <T> ServiceConfiguration<T> export(Key<T> key) {
-        return injector().export(key);
-    }
-
-    protected final <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
-        return injector().export(configuration);
+        return service().export(key);
     }
 
     protected final void exportAll() {
-        injector().exportAll();
-    }
-
-    protected final void provideAll(Injector injector, Wirelet... wirelets) {
-        injector().provideAll(injector, wirelets);
-    }
-
-    // protected final void exportHooks(Contract contract) {
-    // throw new UnsupportedOperationException();
-    // }
-
-    /**
-     * Returns an instance of the injector extension, installing it if it has not already been installed.
-     * 
-     * @return an instance of the injector extension
-     */
-    protected final InjectionExtension injector() {
-        return use(InjectionExtension.class);
-    }
-
-    protected final LifecycleExtension lifecycle() {
-        return use(LifecycleExtension.class);
-    }
-
-    protected final ComponentExtension component() {
-        return use(ComponentExtension.class);
+        service().exportAll();
     }
 
     protected final ComponentConfiguration install(Class<?> implementation) {
         return component().install(implementation);
     }
 
-    protected final ComponentConfiguration installConstant(Object instance) {
-        return component().installConstant(instance);
-    }
-
     protected final ComponentConfiguration installHelper(Class<?> implementation) {
         return component().installStatic(implementation);
+    }
+
+    /**
+     * Install the specified component instance.
+     * <p>
+     * If this install operation is the first install operation of the container. The component will be installed as the
+     * root component of the container. All subsequent install operations on this bundle will have have component as its
+     * parent. If you wish to have a specific component as a parent, the various install methods on
+     * {@link ComponentConfiguration} can be used to specify a specific parent.
+     *
+     * @param instance
+     *            the component instance to install
+     * @return this configuration
+     */
+    protected final ComponentConfiguration installInstance(Object instance) {
+        return component().installInstance(instance);
+    }
+
+    /**
+     * Returns a lifecycle extension instance, installing it if it has not already been installed.
+     * 
+     * @return a lifecycle extension instance
+     */
+    protected final LifecycleExtension lifecycle() {
+        return use(LifecycleExtension.class);
     }
 
     /**
@@ -186,7 +186,7 @@ public abstract class BaseBundle extends Bundle {
      * @see InjectorConfigurator#provide(Class)
      */
     protected final <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
-        return injector().provide(implementation);
+        return service().provide(implementation);
     }
 
     /**
@@ -201,23 +201,40 @@ public abstract class BaseBundle extends Bundle {
      * @return the configuration of the component that was installed
      */
     protected final <T> ComponentServiceConfiguration<T> provide(Factory<T> factory) {
-        return injector().provide(factory);
+        return service().provide(factory);
+    }
+
+    protected final void provideAll(Injector injector, Wirelet... wirelets) {
+        service().provideAll(injector, wirelets);
     }
 
     protected final <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
-        return injector().provideInstance(instance);
+        return service().provideInstance(instance);
     }
 
-    protected final void requireService(Class<?> key) {
-        injector().require(Key.of(key));
+    protected final void require(Class<?> key) {
+        service().require(Key.of(key));
     }
 
-    protected final void requireService(Key<?> key) {
-        injector().require(key);
+    protected final void require(Key<?> key) {
+        service().require(key);
     }
 
-    protected final void serviceManualRequirements() {
-        injector().manualRequirementsManagement();
+    protected final void requireOptionally(Class<?> key) {
+        service().requireOptionally(Key.of(key));
+    }
+
+    protected final void requireOptionally(Key<?> key) {
+        service().requireOptionally(key);
+    }
+
+    /**
+     * Returns a service extension instance, installing it if it has not already been installed.
+     * 
+     * @return a service extension instance
+     */
+    protected final ServiceExtension service() {
+        return use(ServiceExtension.class);
     }
 
     /**
@@ -233,63 +250,7 @@ public abstract class BaseBundle extends Bundle {
     protected static void printDescriptor(BaseBundle bundle) {
         BundleDescriptor.of(bundle).print();
     }
-
 }
-
-// /**
-// * Install the specified component instance.
-// * <p>
-// * If this install operation is the first install operation of the container. The component will be installed as the
-// * root component of the container. All subsequent install operations on this bundle will have have component as its
-// * parent. If you wish to have a specific component as a parent, the various install methods on
-// * {@link ComponentConfiguration} can be used to specify a specific parent.
-// *
-// * @param <T>
-// * the type of component to install
-// * @param instance
-// * the component instance to install
-// * @return this configuration
-// */
-// protected final <T> ComponentConfiguration<T> install(T instance) {
-// return containerBuilderX().install(instance);
-// }
-
-// protected final void wireContainer(Bundle bundle, WiringOperation... stages) {
-// containerBuilderX().wireContainer(bundle, stages);
-// }
-
-// protected final void wireInjector(Bundle bundle, WiringOperation... operations) {
-// injectorBuilder().wireInjector(bundle, operations);
-// }
-//
-// /**
-// * Imports the services that are available in the specified injector.
-// *
-// * @param injector
-// * the injector to import services from
-// * @param stages
-// * any number of filters that restricts the services that are imported. Or makes them available under
-// * different keys
-// * @see InjectorConfiguration#wireInjector(Injector, WiringOperation...)
-// * @throws IllegalArgumentException
-// * if the specified stages are not instance all instance of {@link UpstreamWiringOperation} or combinations
-// * (via {@link WiringOperation#andThen(WiringOperation)} thereof
-// */
-// protected final void wireInjector(Injector injector, WiringOperation... operations) {
-// injectorBuilder().wireInjector(injector, operations);
-// }
-
-// protected ComponentServiceConfiguration<?> installBundle() {
-// return containerBuilderX().installService(this);
-// }
-//
-// protected final void main(String methodName, Class<?>... arguments) {
-// throw new UnsupportedOperationException();
-// }
-
-// public interface Restrictions {
-// void service(Class<?> clazz);
-// }
 
 /// **
 // * @param builder

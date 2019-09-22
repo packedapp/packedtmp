@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.ServiceDescriptor;
+import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.InjectionWireletPipeline;

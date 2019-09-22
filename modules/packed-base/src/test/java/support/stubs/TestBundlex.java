@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 
 /**
  *

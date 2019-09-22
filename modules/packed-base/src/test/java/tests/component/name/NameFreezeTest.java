@@ -41,7 +41,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installConstant(1);
+                ComponentConfiguration ci = e.installInstance(1);
                 ci.getName();
                 ci.setName("foo");
             });
@@ -52,8 +52,8 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installConstant(1);
-                e.installConstant(1L);
+                ComponentConfiguration ci = e.installInstance(1);
+                e.installInstance(1L);
                 ci.setName("foo");
             });
         }, "Cannot call this method after installing new components in the container");
@@ -66,7 +66,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installConstant(1);
+                ComponentConfiguration ci = e.installInstance(1);
                 c.link(EMPTY_BUNDLE);
                 ci.setName("foo");
             });
@@ -77,7 +77,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installConstant(1);
+                ComponentConfiguration ci = e.installInstance(1);
                 ci.path();
                 ci.setName("foo");
             });
@@ -88,7 +88,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_setName() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installConstant(1);
+                ComponentConfiguration ci = e.installInstance(1);
                 ci.setName("foo");
                 ci.setName("foo");
             });
@@ -113,7 +113,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_install() {
-        checkThrowsISE(c -> c.use(ComponentExtension.class, e -> e.installConstant("Foo")).setName("Bar"),
+        checkThrowsISE(c -> c.use(ComponentExtension.class, e -> e.installInstance("Foo")).setName("Bar"),
                 "Cannot call this method after installing new components in the container");
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension

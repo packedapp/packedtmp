@@ -17,7 +17,7 @@ package app.packed.container.extension.feature;
 
 import java.util.Set;
 
-import app.packed.inject.ServiceDescriptor;
+import app.packed.service.ServiceDescriptor;
 
 /**
  *

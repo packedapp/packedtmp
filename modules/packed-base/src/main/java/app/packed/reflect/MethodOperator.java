@@ -15,11 +15,18 @@
  */
 package app.packed.reflect;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 
-import packed.internal.reflect.PackedMethodOperator;
+import app.packed.container.extension.AnnotatedMethodHook;
+import packed.internal.reflect.PackedIllegalAccessException;
+import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -29,20 +36,131 @@ import packed.internal.reflect.PackedMethodOperator;
 /// Men ja, mener helt at det er noget man goer i operatoren...
 /// Alt hvad der ikke skal tilpasses en runtime...
 
-// De skal explaines i henhold til MethodHandle + VarHandle
+public abstract class MethodOperator<T> {
 
-public interface MethodOperator<T> {
-
-    // Hmm vil vi give et lookup object til et interface?
-    T applyStatic(Lookup lookup, Method method);
-
-    T invoke(MethodHandle mh);
-
-    static <T> MethodOperator<Object> invokeOnce() {
-        return new PackedMethodOperator.InvokeOnce<>();
+    /**
+     * Applies this operator the specified static method.
+     * 
+     * @param caller
+     *            the caller
+     * @param method
+     *            the method to apply the operator on
+     * @return the result of applying the operator
+     * @throws IllegalArgumentException
+     *             if the method is not static, or if the operator cannot be applied on the method. For example, if the
+     *             operator requires two parameter, but the method only takes one
+     */
+    public final T applyStatic(Lookup caller, Method method) {
+        MethodHandle mh;
+        try {
+            mh = caller.unreflect(method);
+        } catch (IllegalAccessException e) {
+            throw new PackedIllegalAccessException(e);
+        }
+        return apply(mh);
     }
 
-    static MethodOperator<Runnable> runnable() {
-        return new PackedMethodOperator.RunnableInternalMethodOperation();
+    public abstract MethodType type();
+
+    public abstract T applyStaticHook(AnnotatedMethodHook<?> packedAnnotatedMethodHook);
+
+    public abstract T apply(MethodHandle mh);
+
+    public static <T> MethodOperator<T> cast(MethodOperator<T> operator) {
+        requireNonNull(operator, "operator is null");
+        if (!(operator instanceof MethodOperator)) {
+            throw new IllegalArgumentException("Custom implementations of " + MethodOperator.class.getSimpleName() + " are not supported, type = "
+                    + StringFormatter.format(operator.getClass()));
+        }
+        return operator;
     }
+
+    public static <T> MethodOperator<Object> invokeOnce() {
+        return new MethodOperator.InvokeOnce<>();
+    }
+
+    public static MethodOperator<Runnable> runnable() {
+        return new MethodOperator.RunnableInternalMethodOperation();
+    }
+
+    private static class InvokeOnce<T> extends MethodOperator<T> {
+
+        /** {@inheritDoc} */
+        @Override
+        public T applyStaticHook(AnnotatedMethodHook<?> hook) {
+            return apply(hook.methodHandle());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T apply(MethodHandle mh) {
+            try {
+                return (T) mh.invoke();
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType type() {
+            return MethodType.methodType(void.class);
+        }
+    }
+
+    static class RunnableInternalMethodOperation extends MethodOperator<Runnable> {
+
+        public Runnable apply(Lookup lookup, Method method, Object instance) {
+            MethodHandle mh;
+            try {
+                mh = lookup.unreflect(method);
+            } catch (IllegalAccessException e) {
+                throw new PackedIllegalAccessException(e);
+            }
+            mh = mh.bindTo(instance);
+            return new StaticRunnable(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Runnable applyStaticHook(AnnotatedMethodHook<?> hook) {
+            return new StaticRunnable(hook.methodHandle());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Runnable apply(MethodHandle mh) {
+            return new StaticRunnable(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public MethodType type() {
+            return MethodType.methodType(void.class);
+        }
+    }
+
+    private static class StaticRunnable implements Runnable {
+        private final MethodHandle mh;
+
+        /**
+         * @param mh
+         */
+        public StaticRunnable(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void run() {
+            try {
+                mh.invoke();
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+    }
+
 }

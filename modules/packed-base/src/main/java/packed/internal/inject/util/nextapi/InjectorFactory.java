@@ -19,9 +19,9 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.Set;
 
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.Injector;
-import app.packed.inject.Provide;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.Injector;
+import app.packed.service.Provide;
 import app.packed.util.Key;
 
 /**

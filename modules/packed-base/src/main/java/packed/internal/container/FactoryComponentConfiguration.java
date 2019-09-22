@@ -18,7 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.Factory;
+import app.packed.service.Factory;
 import packed.internal.container.model.ComponentModel;
 
 /**

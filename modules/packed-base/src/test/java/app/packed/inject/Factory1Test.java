@@ -20,6 +20,9 @@ import static support.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.service.Factory;
+import app.packed.service.Factory1;
+import app.packed.service.ServiceDependency;
 import app.packed.util.Key;
 
 /** Tests {@link Factory1}. */

@@ -17,8 +17,8 @@ package packed.internal.inject.util.nextapi;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Factory1;
+import app.packed.service.Factory;
+import app.packed.service.Factory1;
 import app.packed.util.TypeLiteral;
 
 /**

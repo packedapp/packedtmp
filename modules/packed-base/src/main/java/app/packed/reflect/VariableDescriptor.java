@@ -22,13 +22,14 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.inject.ServiceDependency;
+import app.packed.service.ServiceDependency;
 import app.packed.util.TypeLiteral;
 
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
  * (non-static {@link Field fields}) and {@link Parameter parameter} variables.
  */
+// VarDescriptor???
 public abstract class VariableDescriptor extends AbstractAnnotatedDescriptor {
 
     /**

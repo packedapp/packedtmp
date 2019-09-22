@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.service.Injector;
+import app.packed.service.InjectorConfigurator;
 
 // Wire vs link....
 

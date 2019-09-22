@@ -33,7 +33,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.container.extension.Extension;
 import app.packed.contract.Contract;
 import app.packed.contract.ContractSet;
-import app.packed.inject.ServiceDescriptor;
+import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;

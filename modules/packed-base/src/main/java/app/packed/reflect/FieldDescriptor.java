@@ -27,7 +27,6 @@ import java.lang.reflect.Type;
 
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.reflect.PackedFieldOperator;
 import packed.internal.util.InternalErrorException;
 
 /**
@@ -234,7 +233,7 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
         return new FieldDescriptor(field);
     }
 
-    public <T> T apply(Lookup caller, FieldOperator<T> operator, Object instance) {
+    public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
         requireNonNull(operator, "operator is null");
         return ((PackedFieldOperator<T>) operator).apply(caller, field, instance);
     }

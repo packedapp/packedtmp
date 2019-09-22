@@ -31,10 +31,10 @@ import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.inject.Injector;
 import app.packed.lifecycle.LifecycleOperations;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.RunState;
+import app.packed.service.Injector;
 
 /**
  * An App (application) is a type of artifact is a program.

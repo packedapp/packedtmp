@@ -23,10 +23,10 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Injector;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ComponentServiceConfiguration;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.Factory;
+import app.packed.service.Injector;
+import app.packed.service.InstantiationMode;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;

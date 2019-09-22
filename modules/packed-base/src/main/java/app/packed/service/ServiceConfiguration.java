@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
@@ -22,7 +22,7 @@ import app.packed.util.Nullable;
 
 /**
  * A configuration object for a service. An instance of this interface is usually obtained by calling the various
- * provide or export methods located on {@link InjectionExtension}, {@link InjectorConfigurator} or {@link BaseBundle}.
+ * provide or export methods located on {@link ServiceExtension}, {@link InjectorConfigurator} or {@link BaseBundle}.
  */
 public interface ServiceConfiguration<T> /* extends Taggable */ {
 

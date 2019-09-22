@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceDescriptor;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;

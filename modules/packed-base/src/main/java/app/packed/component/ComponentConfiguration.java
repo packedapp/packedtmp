@@ -19,7 +19,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.extension.feature.FeatureMap;
-import app.packed.inject.Factory;
+import app.packed.service.Factory;
 import app.packed.util.Nullable;
 
 // isConfigurable();

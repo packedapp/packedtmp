@@ -15,7 +15,7 @@
  */
 package packed.internal.access;
 
-import app.packed.inject.Factory;
+import app.packed.service.Factory;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /** A support class for calling package private methods in the app.packed.inject package. */

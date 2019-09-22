@@ -26,8 +26,8 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
-import app.packed.inject.InjectionExtension;
 import app.packed.reflect.MethodOperator;
+import app.packed.service.ServiceExtension;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import packed.internal.util.StringFormatter;
@@ -73,7 +73,7 @@ public final class LifecycleExtension extends Extension {
         // invocation multiple times??? Error?
         // What if we have a @Main method? override. What about the dependencies
         // from the @Main method???
-        use(InjectionExtension.class).require(serviceKey);
+        use(ServiceExtension.class).require(serviceKey);
         // How does this work implementation wise??
         // We call InjectionExtension.require(serviceKey) (Which backtraces stackwalker)
     }

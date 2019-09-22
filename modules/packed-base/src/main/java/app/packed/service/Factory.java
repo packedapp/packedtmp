@@ -13,7 +13,7 @@
  * See the License from the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;

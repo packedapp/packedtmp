@@ -17,7 +17,7 @@ package packed.internal.container.extension.a;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
-import app.packed.inject.Provide;
+import app.packed.service.Provide;
 
 /**
  *

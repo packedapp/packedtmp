@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.Provide;
-import app.packed.inject.ServiceConfiguration;
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceDescriptor;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.Provide;
+import app.packed.service.ServiceConfiguration;
+import app.packed.service.ServiceDependency;
+import app.packed.service.ServiceDescriptor;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;

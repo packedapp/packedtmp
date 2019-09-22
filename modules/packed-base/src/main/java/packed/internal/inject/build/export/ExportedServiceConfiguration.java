@@ -18,19 +18,19 @@ package packed.internal.inject.build.export;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceExtension;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 
 /**
  * An instance of {@link ServiceConfiguration} that is returned to the user when he exports a service
  * 
- * @see InjectionExtension#export(Class)
- * @see InjectionExtension#export(Key)
- * @see InjectionExtension#export(ComponentServiceConfiguration)
+ * @see ServiceExtension#export(Class)
+ * @see ServiceExtension#export(Key)
+ * @see ServiceExtension#export(ComponentServiceConfiguration)
  */
 // Move to ExportManager when we key + check configurable has been finalized
 final class ExportedServiceConfiguration<T> implements ServiceConfiguration<T> {

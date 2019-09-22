@@ -52,7 +52,7 @@ import packed.internal.container.WireletContext;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.app.App}, {@link app.packed.inject.Injector},
+ * An image can be used to create new instances of {@link app.packed.app.App}, {@link app.packed.service.Injector},
  * {@link BundleDescriptor} or other artifact images. It can not be used with {@link Bundle#link(Bundle, Wirelet...)}.
  */
 public final class ArtifactImage implements ContainerSource {

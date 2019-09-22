@@ -54,8 +54,8 @@ public class AppConfigSiteTest {
             @Override
             protected void configure() {
                 ar.set(ConfigSiteTestHelper.caller());
-                installConstant("foo").setName("foo");
-                installConstant("doo").setName("doo");
+                installInstance("foo").setName("foo");
+                installInstance("doo").setName("doo");
             }
         });
 
@@ -96,7 +96,7 @@ public class AppConfigSiteTest {
                     public void configure() {
                         setName("woo");
                         ar2.set(ConfigSiteTestHelper.caller());
-                        installConstant("foo").setName("foo");
+                        installInstance("foo").setName("foo");
                     }
                 });
             }

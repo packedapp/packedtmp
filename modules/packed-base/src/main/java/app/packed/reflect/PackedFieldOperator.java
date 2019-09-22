@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.reflect;
+package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,28 +24,22 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Supplier;
 
 import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.reflect.FieldOperator;
+import packed.internal.reflect.PackedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
-public abstract class PackedFieldOperator<T> implements FieldOperator<T> {
+public abstract class PackedFieldOperator<T> implements VarOperator<T> {
 
-    public static <T> PackedFieldOperator<T> cast(FieldOperator<T> operator) {
+    public static <T> PackedFieldOperator<T> cast(VarOperator<T> operator) {
         requireNonNull(operator, "operator is null");
         if (!(operator instanceof PackedFieldOperator)) {
-            throw new IllegalArgumentException("Custom implementations of " + FieldOperator.class.getSimpleName() + " are not supported, type = "
+            throw new IllegalArgumentException("Custom implementations of " + VarOperator.class.getSimpleName() + " are not supported, type = "
                     + StringFormatter.format(operator.getClass()));
         }
         return (PackedFieldOperator<T>) operator;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public FieldOperator<T> requireFinal() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

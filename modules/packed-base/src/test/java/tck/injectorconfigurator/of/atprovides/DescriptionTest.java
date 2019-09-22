@@ -22,9 +22,9 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.Provide;
+import app.packed.service.Injector;
+import app.packed.service.InjectorConfigurator;
+import app.packed.service.Provide;
 
 /** Tests {@link Provide#description()}. */
 public class DescriptionTest {

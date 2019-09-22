@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.container.BaseBundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.contract.ContractSet;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.ServiceContract;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceContract;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
@@ -45,7 +45,7 @@ public class ServicesTest {
 
             @Override
             protected void configure() {
-                use(InjectionExtension.class);
+                use(ServiceExtension.class);
             }
         });
 

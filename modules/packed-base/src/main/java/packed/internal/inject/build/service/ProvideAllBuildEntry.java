@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.Wirelet;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.Injector;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.ServiceExtension;
+import app.packed.service.Injector;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -31,7 +31,7 @@ import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.run.RSE;
 import packed.internal.inject.run.RSEDelegate;
 
-/** A build node specifically used for {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
+/** A build node specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 final class ProvideAllBuildEntry<T> extends BuildEntry<T> {
 
     /** The node in the 'imported' injector. */

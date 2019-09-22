@@ -23,9 +23,9 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.Injector;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceWirelets;
 import app.packed.util.Qualifier;
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,15 +24,19 @@ import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import packed.internal.inject.InjectConfigSiteOperations;
 import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.run.AbstractInjector;
 
 /**
- * This extension provides functionality for injection and service management.
+ * This extension provides functionality for service management and dependency injection.
+ * 
+ * <p>
+ * 
+ * 
  */
-
 // Functionality for
 // * Explicitly requiring services: require, requiOpt & Manual Requirements Management
 // * Exporting services: export, exportAll
@@ -48,20 +52,22 @@ import packed.internal.inject.run.AbstractInjector;
 // Hmm saa auto instantiere vi jo injector extensionen
 //// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
 // altid bruge Manual Requirements
+// contracts bliver installeret direkte paa ContainerConfiguration
 
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
-public final class InjectionExtension extends Extension {
+public final class ServiceExtension extends Extension {
 
     /** The extension node, initialized via {@link #onAdded()}. */
+    @Nullable
     private InjectionExtensionNode node;
 
     /** Should never be initialized by users. */
-    InjectionExtension() {}
+    ServiceExtension() {}
 
     /**
-     * Exports a service with the specified type.
+     * Exports a service of the specified type.
      * 
      * @param <T>
      *            the type of service to export
@@ -150,7 +156,7 @@ public final class InjectionExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     protected void onConfigured() {
-        node.build(context().buildContext());
+        node.build();
     }
 
     /** {@inheritDoc} */
@@ -223,7 +229,7 @@ public final class InjectionExtension extends Extension {
      */
     public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
-        return node.provider().provideInstance(use(ComponentExtension.class).installConstant(instance), instance);
+        return node.provider().provideInstance(use(ComponentExtension.class).installInstance(instance), instance);
     }
 
     /**

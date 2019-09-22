@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.inject.Factory;
+import app.packed.service.Factory;
 import app.packed.util.TypeLiteral;
 
 /** A function handle that takes no arguments and returns the same instance every time. */

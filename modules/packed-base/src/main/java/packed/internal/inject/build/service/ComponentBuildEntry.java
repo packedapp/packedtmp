@@ -22,12 +22,12 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.InjectionException;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provide;
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.InjectionException;
+import app.packed.service.InstantiationMode;
+import app.packed.service.Provide;
+import app.packed.service.ServiceDependency;
+import app.packed.service.ServiceRequest;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;

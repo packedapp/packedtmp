@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.inject.ServiceDependency;
+import app.packed.service.ServiceDependency;
 import packed.internal.inject.factoryhandle.FactoryHandle;
 
 /** A descriptor of an annotated member that has 0 or more service dependencies. */

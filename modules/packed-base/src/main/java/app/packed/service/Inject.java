@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -46,5 +46,5 @@ import app.packed.container.extension.ActivateExtension;
 
 // It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
 // invoked during the injection phase
-@ActivateExtension(InjectionExtension.class)
+@ActivateExtension(ServiceExtension.class)
 public @interface Inject {}

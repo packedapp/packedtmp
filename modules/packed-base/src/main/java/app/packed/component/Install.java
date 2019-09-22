@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.inject.InjectionException;
+import app.packed.service.InjectionException;
 
 /**
  * Typically used together with component scanning to indicate that a class should be installed.

@@ -22,10 +22,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.inject.Inject;
-import app.packed.inject.ServiceDependency;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
+import app.packed.service.Inject;
+import app.packed.service.ServiceDependency;
 import app.packed.util.Nullable;
 import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.inject.factoryhandle.FieldFactoryHandle;

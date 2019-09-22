@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import app.packed.app.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.ServiceWirelets;
 
 /**
  * Wirelets that can be used when creating an {@link App} instance. For example, via

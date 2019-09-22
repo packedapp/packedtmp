@@ -20,10 +20,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.component.Component;
-import app.packed.inject.InjectionException;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.InjectionException;
+import app.packed.service.Injector;
+import app.packed.service.ServiceDependency;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;

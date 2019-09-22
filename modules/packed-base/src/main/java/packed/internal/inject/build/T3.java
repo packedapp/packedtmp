@@ -18,8 +18,8 @@ package packed.internal.inject.build;
 import app.packed.app.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceWirelets;
 
 /**
  *

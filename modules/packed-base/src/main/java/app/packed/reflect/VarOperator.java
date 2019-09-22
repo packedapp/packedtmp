@@ -19,12 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.util.TypeLiteral;
-import packed.internal.reflect.PackedFieldOperator;
 
 /**
  * <p>
@@ -35,24 +33,12 @@ import packed.internal.reflect.PackedFieldOperator;
 // An operator that when applied ....
 // Should be an abstract class....
 
-// TODO Rename to VarOperator
-public interface FieldOperator<T> {
+// TODO Rename to VarOperator from FieldOperator....
 
-    /**
-     * Returns a new operator that will fail to work with non final-fields.
-     * 
-     * @return the new operator
-     * @see Modifier#isFinal(int)
-     */
-    FieldOperator<T> requireFinal();
-
-    default FieldOperator<T> requireNonFinal() {
-        return this;
-    }
-
-    default FieldOperator<T> requireNonStatic() {
-        return this;
-    }
+// The requireFinal... must be gone...
+// If we are called VarOperator, they better match FieldOperator
+// Also readsField + writeField must be renamed...
+public interface VarOperator<T> {
 
     T apply(MethodHandles.Lookup caller, Field field, Object instance);
 
@@ -74,7 +60,7 @@ public interface FieldOperator<T> {
      * 
      * @return whether or not the operator reads the field
      */
-    default boolean readsField() {
+    default boolean reads() {
         return false;
     }
 
@@ -83,18 +69,18 @@ public interface FieldOperator<T> {
      * 
      * @return whether or not the operator writes the field
      */
-    default boolean writesField() {
+    default boolean writes() {
         return false;
     }
 
     /**
      * @return stuff
      */
-    static FieldOperator<Consumer<Object>> consumer() {
+    static VarOperator<Consumer<Object>> consumer() {
         throw new UnsupportedOperationException();
     }
 
-    static <E> FieldOperator<Consumer<E>> consumer(Class<E> fieldType) {
+    static <E> VarOperator<Consumer<E>> consumer(Class<E> fieldType) {
         throw new UnsupportedOperationException();
     }
 
@@ -103,7 +89,7 @@ public interface FieldOperator<T> {
      * 
      * @return a field operator that reads a field once
      */
-    static FieldOperator<Object> getOnce() {
+    static VarOperator<Object> getOnce() {
         return new PackedFieldOperator.GetOnceInternalFieldOperation<>();
     }
 
@@ -121,8 +107,8 @@ public interface FieldOperator<T> {
     // Yeah, or throws ClassCastException..
     // Den er en lille smule ligegyldig here.
     // Da brugeren formentlig vil lave et cast lige bagefter
-    static <E> FieldOperator<E> getOnce(Class<E> fieldType) {
-        return (FieldOperator<E>) getOnce();
+    static <E> VarOperator<E> getOnce(Class<E> fieldType) {
+        return (VarOperator<E>) getOnce();
     }
 
     /**
@@ -135,8 +121,8 @@ public interface FieldOperator<T> {
      */
     @SuppressWarnings("unchecked")
     // We could theoretically check the signature of the field....
-    static <E> FieldOperator<E> getOnce(TypeLiteral<E> fieldType) {
-        return (FieldOperator<E>) getOnce(fieldType.rawType());
+    static <E> VarOperator<E> getOnce(TypeLiteral<E> fieldType) {
+        return (VarOperator<E>) getOnce(fieldType.rawType());
     }
 
     /**
@@ -146,12 +132,12 @@ public interface FieldOperator<T> {
      * @return a field operator that will create a getter
      * @see Lookup#unreflectGetter(Field)
      */
-    static FieldOperator<MethodHandle> getter() {
+    static VarOperator<MethodHandle> getter() {
         // Giver mening at kalde denne getter hvis AnnotatedFieldHook ogsaa skal hedde Getter
         throw new UnsupportedOperationException();
     }
 
-    static FieldOperator<MethodHandle> setter() {
+    static VarOperator<MethodHandle> setter() {
         throw new UnsupportedOperationException();
     }
     // getAndSetter... is that atomic??????
@@ -161,18 +147,33 @@ public interface FieldOperator<T> {
      * 
      * @return a field operator that creates a getter.
      */
-    static FieldOperator<Supplier<Object>> supplier() {
+    static VarOperator<Supplier<Object>> supplier() {
         return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 
-    static <E> FieldOperator<Supplier<E>> supplier(Class<E> fieldType) {
+    static <E> VarOperator<Supplier<E>> supplier(Class<E> fieldType) {
         return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 
-    static <E> FieldOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
+    static <E> VarOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
         return new PackedFieldOperator.SupplierInternalFieldOperation<>();
     }
 }
+/// **
+// * Returns a new operator that will fail to work with non final-fields.
+// *
+// * @return the new operator
+// * @see Modifier#isFinal(int)
+// */
+// VarOperator<T> requireFinal();
+//
+// default VarOperator<T> requireNonFinal() {
+// return this;
+// }
+//
+// default VarOperator<T> requireNonStatic() {
+// return this;
+// }
 
 //// Ellers ogsaa checker vi dette naar vi laver en en Supplier eller lignende...
 //// Move these to descriptor????

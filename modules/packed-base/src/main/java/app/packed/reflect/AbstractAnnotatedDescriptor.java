@@ -21,7 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.function.Consumer;
 
-import app.packed.inject.InjectionException;
+import app.packed.service.InjectionException;
 import app.packed.util.Nullable;
 import packed.internal.inject.util.QualifierHelper;
 

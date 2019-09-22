@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.reflect.FieldOperator;
+import app.packed.reflect.VarOperator;
 
 /**
  *
@@ -28,7 +28,7 @@ public class RuntimeAccessorList<T> {
 
     public <S> void readyAll(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
 
-    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, FieldOperator<T> operator) {
+    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, VarOperator<T> operator) {
         return this;
     }
 }

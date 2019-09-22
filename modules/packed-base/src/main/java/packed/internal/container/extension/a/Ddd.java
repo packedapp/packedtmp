@@ -17,7 +17,7 @@ package packed.internal.container.extension.a;
 
 import app.packed.app.App;
 import app.packed.app.AppBundle;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.ServiceWirelets;
 
 /**
  *
@@ -28,7 +28,7 @@ public class Ddd extends AppBundle {
     public void configure() {
         export(provideInstance("Foo"));
         export(provideInstance(23));
-        installConstant(new Ssss());
+        installInstance(new Ssss());
     }
 
     public static void main(String[] args) {

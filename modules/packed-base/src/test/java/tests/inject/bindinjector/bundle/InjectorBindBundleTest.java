@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
-import app.packed.inject.Factory0;
-import app.packed.inject.Injector;
+import app.packed.service.Factory0;
+import app.packed.service.Injector;
 
 /**
  *

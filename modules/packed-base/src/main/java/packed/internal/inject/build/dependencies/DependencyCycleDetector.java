@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import app.packed.inject.InjectionException;
+import app.packed.service.InjectionException;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 import packed.internal.inject.build.service.ComponentBuildEntry;

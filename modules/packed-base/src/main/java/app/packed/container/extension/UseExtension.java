@@ -19,10 +19,10 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 
 import app.packed.container.extension.UseExtension.Multiple;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.Provide;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
+import app.packed.service.ServiceExtension;
+import app.packed.service.Provide;
 
 /**
  *
@@ -42,7 +42,7 @@ import app.packed.lifecycle.OnStart;
     }
 }
 
-@UseExtension(annotatedFields = Provide.class, value = InjectionExtension.class)
+@UseExtension(annotatedFields = Provide.class, value = ServiceExtension.class)
 @UseExtension(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, value = LifecycleExtension.class)
 class MyBundle {}
 

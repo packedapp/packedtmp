@@ -26,14 +26,14 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.InjectionException;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceDependency;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
+import app.packed.service.InjectionException;
+import app.packed.service.ServiceExtension;
+import app.packed.service.Injector;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceDependency;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -42,11 +42,11 @@ import packed.internal.inject.build.InjectionExtensionNode;
 import packed.internal.inject.run.DefaultInjector;
 
 /**
- * This class manages everything to do with dependencies of components and service for an {@link InjectionExtension}.
+ * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
  * 
- * @see InjectionExtension#manualRequirementsManagement()
- * @see InjectionExtension#require(Key)
- * @see InjectionExtension#requireOptionally(Key)
+ * @see ServiceExtension#manualRequirementsManagement()
+ * @see ServiceExtension#require(Key)
+ * @see ServiceExtension#requireOptionally(Key)
  */
 public final class DependencyManager {
 
@@ -54,14 +54,14 @@ public final class DependencyManager {
     private final InjectionExtensionNode node;
 
     /**
-     * Explicit requirements, typically added via {@link InjectionExtension#require(Key)} or
-     * {@link InjectionExtension#requireOptionally(Key)}.
+     * Explicit requirements, typically added via {@link ServiceExtension#require(Key)} or
+     * {@link ServiceExtension#requireOptionally(Key)}.
      */
     final ArrayList<Requirement> explicitRequirements = new ArrayList<>();
 
     /**
-     * Whether or not the user must explicitly specify all required services. Via {@link InjectionExtension#require(Key)},
-     * {@link InjectionExtension#requireOptionally(Key)} and add contract.
+     * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key)},
+     * {@link ServiceExtension#requireOptionally(Key)} and add contract.
      * <p>
      * In previous versions we kept this information on a per node basis. However, it does not work properly with "foreign"
      * hook methods that make use of injection. Because they may not be processed until the bitter end, so it was only
@@ -91,7 +91,7 @@ public final class DependencyManager {
     /**
      * Enables manual requirements management.
      * 
-     * @see InjectionExtension#manualRequirementsManagement()
+     * @see ServiceExtension#manualRequirementsManagement()
      */
     public void manualRequirementsManagement() {
         manualRequirementsManagement = true;
@@ -105,8 +105,8 @@ public final class DependencyManager {
      * @param configSite
      *            the config site
      * 
-     * @see InjectionExtension#require(Key)
-     * @see InjectionExtension#requireOptionally(Key)
+     * @see ServiceExtension#require(Key)
+     * @see ServiceExtension#requireOptionally(Key)
      */
     public void require(ServiceDependency dependency, ConfigSite configSite) {
         explicitRequirements.add(new Requirement(dependency, configSite));

@@ -20,8 +20,8 @@ import java.util.List;
 
 import app.packed.artifact.ArtifactConfigurator;
 import app.packed.container.Wirelet;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
+import app.packed.service.Injector;
+import app.packed.service.InjectorConfigurator;
 
 /**
  *

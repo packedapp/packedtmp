@@ -20,8 +20,8 @@ import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.inject.ServiceWirelets;
 import app.packed.lifecycle.StringArgs;
+import app.packed.service.ServiceWirelets;
 
 /**
  * A specialized version of {@link BaseBundle} that provide various utility methods for instantiating {@link App apps}

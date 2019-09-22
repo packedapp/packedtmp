@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 import app.packed.util.Key;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;

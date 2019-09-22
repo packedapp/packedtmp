@@ -22,11 +22,11 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Factory;
-import app.packed.inject.Injector;
-import app.packed.inject.InjectorConfigurator;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provide;
+import app.packed.service.Factory;
+import app.packed.service.Injector;
+import app.packed.service.InjectorConfigurator;
+import app.packed.service.InstantiationMode;
+import app.packed.service.Provide;
 import app.packed.util.TypeLiteral;
 
 /**

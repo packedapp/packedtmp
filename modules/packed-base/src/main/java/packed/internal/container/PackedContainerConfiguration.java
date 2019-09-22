@@ -41,7 +41,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.inject.Factory;
+import app.packed.service.Factory;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.PackedExtensionContext;
@@ -293,7 +293,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                                 InstantiatedComponentConfiguration icc = ((InstantiatedComponentConfiguration) cc);
                                 mh = mh.bindTo(icc.instance);
                             }
-                            ig = sda.pra.operator.invoke(mh);
+                            ig = sda.pra.operator.apply(mh);
                         }
                         ((BiConsumer) da.consumer).accept(sidecar, ig);
                     }

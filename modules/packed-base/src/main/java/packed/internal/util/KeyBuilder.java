@@ -16,8 +16,8 @@
 package packed.internal.util;
 
 import app.packed.component.Component;
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.Injector;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 
 /** A builder of keys, mainly useful for creating proper error messages. */

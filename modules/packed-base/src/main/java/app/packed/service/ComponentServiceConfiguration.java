@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -34,9 +34,9 @@ import app.packed.util.Nullable;
  * {@link ComponentServiceConfiguration} or {@link BaseBundle} at configuration time. Or one of the install methods on
  * {@link Component} at runtime.
  * 
- * @see InjectionExtension#provide(Class)
- * @see InjectionExtension#provide(Factory)
- * @see InjectionExtension#provideInstance(Object)
+ * @see ServiceExtension#provide(Class)
+ * @see ServiceExtension#provide(Factory)
+ * @see ServiceExtension#provideInstance(Object)
  *
  * @see BaseBundle#provide(Class)
  * @see BaseBundle#provide(Factory)

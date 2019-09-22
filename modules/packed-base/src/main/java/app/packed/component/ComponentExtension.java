@@ -22,8 +22,8 @@ import java.lang.reflect.Member;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.inject.Factory;
-import app.packed.inject.InjectionExtension;
+import app.packed.service.Factory;
+import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.inject.InjectConfigSiteOperations;
@@ -74,7 +74,7 @@ public final class ComponentExtension extends Extension {
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * <p>
-     * This method uses the {@link InjectionExtension}.
+     * This method uses the {@link ServiceExtension}.
      * 
      * @param implementation
      *            the type of instantiate and use as the component instance
@@ -87,7 +87,7 @@ public final class ComponentExtension extends Extension {
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
-     * This method uses the {@link InjectionExtension}.
+     * This method uses the {@link ServiceExtension}.
      * 
      * @param factory
      *            the factory to install
@@ -98,7 +98,7 @@ public final class ComponentExtension extends Extension {
         return configuration.install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
-    public ComponentConfiguration installConstant(Object instance) {
+    public ComponentConfiguration installInstance(Object instance) {
         requireNonNull(instance, "instance is null");
         return configuration.installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
@@ -112,7 +112,7 @@ public final class ComponentExtension extends Extension {
     /**
      * Installs a component that does not have any instance representing it.
      * <p>
-     * This method uses the {@link InjectionExtension}.
+     * This method uses the {@link ServiceExtension}.
      * 
      * @param implementation
      *            the type of instantiate and use as the component instance

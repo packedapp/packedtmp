@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.util.nextapi;
 
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 
 /**
  *

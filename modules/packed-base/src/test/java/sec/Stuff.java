@@ -17,7 +17,7 @@ package sec;
 
 import java.lang.reflect.Modifier;
 
-import app.packed.inject.Inject;
+import app.packed.service.Inject;
 import packed.internal.thirdparty.asm.ClassWriter;
 import packed.internal.thirdparty.asm.MethodVisitor;
 import packed.internal.thirdparty.asm.Opcodes;

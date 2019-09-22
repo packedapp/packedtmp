@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import app.packed.inject.Inject;
+import app.packed.service.Inject;
 import support.stubs.Injectables.InjectA;
 import support.stubs.Letters.A;
 

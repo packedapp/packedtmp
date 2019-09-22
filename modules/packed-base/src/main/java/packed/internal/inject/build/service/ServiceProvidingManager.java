@@ -30,12 +30,12 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.Factory;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.Injector;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.Provide;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.Factory;
+import app.packed.service.ServiceExtension;
+import app.packed.service.Injector;
+import app.packed.service.InstantiationMode;
+import app.packed.service.Provide;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.CoreComponentConfiguration;
@@ -49,12 +49,12 @@ import packed.internal.inject.factoryhandle.FactoryHandle;
 import packed.internal.inject.run.AbstractInjector;
 
 /**
- * This class manages everything to do with providing services for an {@link InjectionExtension}.
+ * This class manages everything to do with providing services for an {@link ServiceExtension}.
  *
- * @see InjectionExtension#provide(Class)
- * @see InjectionExtension#provide(Factory)
- * @see InjectionExtension#provideAll(Injector, Wirelet...)
- * @see InjectionExtension#provideInstance(Object)
+ * @see ServiceExtension#provide(Class)
+ * @see ServiceExtension#provide(Factory)
+ * @see ServiceExtension#provideAll(Injector, Wirelet...)
+ * @see ServiceExtension#provideInstance(Object)
  * @see Provide
  */
 public final class ServiceProvidingManager {
@@ -69,7 +69,7 @@ public final class ServiceProvidingManager {
     /** The extension node. */
     private final InjectionExtensionNode node;
 
-    /** All injectors added via {@link InjectionExtension#provideAll(Injector, Wirelet...)}. */
+    /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromInjector> provideAll;
 
     /** All explicit added build entries. */

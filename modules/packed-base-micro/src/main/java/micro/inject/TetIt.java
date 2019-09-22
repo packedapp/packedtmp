@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.container.BaseBundle;
-import app.packed.inject.Factory;
-import app.packed.inject.Injector;
+import app.packed.service.Factory;
+import app.packed.service.Injector;
 
 /**
  *

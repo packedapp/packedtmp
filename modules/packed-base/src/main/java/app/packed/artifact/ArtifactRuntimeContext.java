@@ -18,7 +18,7 @@ package app.packed.artifact;
 import app.packed.app.App;
 import app.packed.component.Component;
 import app.packed.component.ComponentContext;
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 
 /**
  * An artifact runtime context provides precise control over a single (top level) container. Instances of this interface

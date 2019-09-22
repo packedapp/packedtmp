@@ -9,7 +9,7 @@ module app.packed.base {
     exports app.packed.container.extension.feature;
     exports app.packed.errorhandling;
     exports app.packed.host;
-    exports app.packed.inject;
+    exports app.packed.service;
     exports app.packed.lifecycle;
     exports app.packed.reflect;
     exports app.packed.util;

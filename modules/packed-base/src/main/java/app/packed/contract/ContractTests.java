@@ -15,9 +15,9 @@
  */
 package app.packed.contract;
 
-import app.packed.inject.Injector;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.Injector;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceWirelets;
 
 /**
  *

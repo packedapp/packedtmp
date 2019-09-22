@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 
 /** Tests that we can inject varargs as ordinary arrays. */
 public class VarArgsInjectionTest {

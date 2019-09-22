@@ -32,6 +32,7 @@ import java.util.OptionalLong;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import app.packed.service.ServiceDependency;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import app.packed.util.TypeLiteral;

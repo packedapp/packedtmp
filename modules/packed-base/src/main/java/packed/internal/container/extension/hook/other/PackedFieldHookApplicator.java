@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.AnnotatedFieldHook;
-import packed.internal.reflect.PackedFieldOperator;
+import app.packed.reflect.PackedFieldOperator;
 
 /** A hook applicator for a field */
 public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T> {

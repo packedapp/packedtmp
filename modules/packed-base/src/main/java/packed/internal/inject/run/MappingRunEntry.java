@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceRequest;
 import packed.internal.inject.ServiceEntry;
 import packed.internal.inject.build.BuildEntry;
 

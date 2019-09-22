@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Kasper Nielsen.
+w * Copyright (c) 2008 Kasper Nielsen.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ public final class MethodDescriptor extends ExecutableDescriptor {
         return method.getGenericReturnType();
     }
 
+    @Override
     public String getName() {
         return method.getName();
     }

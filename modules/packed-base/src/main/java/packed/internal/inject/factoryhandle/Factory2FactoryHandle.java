@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.function.BiFunction;
 
-import app.packed.inject.Factory2;
+import app.packed.service.Factory2;
 import app.packed.util.TypeLiteral;
 import packed.internal.util.MethodHandleUtil;
 

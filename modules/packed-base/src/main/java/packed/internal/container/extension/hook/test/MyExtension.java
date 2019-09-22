@@ -28,7 +28,7 @@ import app.packed.container.extension.HookApplicator;
 import app.packed.container.extension.HookGroupBuilder;
 import app.packed.container.extension.OnHook;
 import app.packed.container.extension.OnHookGroup;
-import app.packed.reflect.FieldOperator;
+import app.packed.reflect.VarOperator;
 import app.packed.reflect.MethodOperator;
 
 /**
@@ -80,12 +80,12 @@ public class MyExtension extends Extension {
         public void foo(AnnotatedFieldHook<MyA> h) throws Throwable {
             sum += h.annotation().value();
             if (h.field().isStatic()) {
-                Supplier<Object> val = h.applyStatic(FieldOperator.supplier());
+                Supplier<Object> val = h.applyStatic(VarOperator.supplier());
                 System.out.println("VAL = " + val.get());
                 System.out.println("VAL = " + val.get());
             }
 
-            HookApplicator<Supplier<Object>> ra = h.applicator(FieldOperator.supplier());
+            HookApplicator<Supplier<Object>> ra = h.applicator(VarOperator.supplier());
             rar.add(ra);
         }
 

@@ -23,7 +23,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 

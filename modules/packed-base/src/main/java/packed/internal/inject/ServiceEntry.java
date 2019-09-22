@@ -19,10 +19,10 @@ import java.util.Optional;
 
 import app.packed.component.Component;
 import app.packed.config.ConfigSite;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceDependency;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.build.BuildEntry;

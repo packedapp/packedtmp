@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.Set;
 
 import app.packed.component.Component;
-import app.packed.inject.ServiceDependency;
-import app.packed.inject.ServiceDescriptor;
 import app.packed.reflect.ConstructorDescriptor;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
+import app.packed.service.ServiceDependency;
+import app.packed.service.ServiceDescriptor;
 
 // RuntimeEnviroment != BuildEnvironment
 /**

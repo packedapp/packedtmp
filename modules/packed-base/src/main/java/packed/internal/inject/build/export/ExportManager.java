@@ -23,9 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceConfiguration;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -36,12 +36,12 @@ import packed.internal.inject.build.service.PackedProvidedComponentConfiguration
 import packed.internal.util.StringFormatter;
 
 /**
- * This class manages everything to do with exporting of entries for an {@link InjectionExtension}.
+ * This class manages everything to do with exporting of entries for an {@link ServiceExtension}.
  *
- * @see InjectionExtension#export(Class)
- * @see InjectionExtension#export(Key)
- * @see InjectionExtension#export(ComponentServiceConfiguration)
- * @see InjectionExtension#exportAll()
+ * @see ServiceExtension#export(Class)
+ * @see ServiceExtension#export(Key)
+ * @see ServiceExtension#export(ComponentServiceConfiguration)
+ * @see ServiceExtension#exportAll()
  */
 public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
@@ -50,8 +50,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     private ConfigSite exportAll;
 
     /**
-     * An entry to this list is added every time the user calls {@link InjectionExtension#export(Class)},
-     * {@link InjectionExtension#export(Key)} or {@link InjectionExtension#export(ComponentServiceConfiguration)}.
+     * An entry to this list is added every time the user calls {@link ServiceExtension#export(Class)},
+     * {@link ServiceExtension#export(Key)} or {@link ServiceExtension#export(ComponentServiceConfiguration)}.
      */
     @Nullable
     private ArrayList<ExportedBuildEntry<?>> exportedEntries;
@@ -91,7 +91,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @param configSite
      *            the config site of the export
      * @return stuff
-     * @see InjectionExtension#export(ComponentServiceConfiguration)
+     * @see ServiceExtension#export(ComponentServiceConfiguration)
      */
     public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration, ConfigSite configSite) {
         if (!(configuration instanceof PackedProvidedComponentConfiguration)) {
@@ -115,8 +115,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @param configSite
      *            the config site of the export
      * @return a service configuration that can be returned to the user
-     * @see InjectionExtension#export(Class)
-     * @see InjectionExtension#export(Key)
+     * @see ServiceExtension#export(Class)
+     * @see ServiceExtension#export(Key)
      */
     public <T> ServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
         return export0(new ExportedBuildEntry<>(node, key, configSite));
@@ -162,8 +162,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     }
 
     /**
-     * This method tries to find matching entries for exports added via {@link InjectionExtension#export(Class)}and
-     * {@link InjectionExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries
+     * This method tries to find matching entries for exports added via {@link ServiceExtension#export(Class)}and
+     * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries
      * at any point, even before the
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })

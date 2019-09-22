@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import app.packed.inject.Inject;
+import app.packed.service.Inject;
 import support.stubs.Letters.A;
 
 /**

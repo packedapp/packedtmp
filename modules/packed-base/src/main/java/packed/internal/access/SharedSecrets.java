@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.inject.Factory;
 import app.packed.lifecycle.RunState;
+import app.packed.service.Factory;
 import app.packed.util.TypeLiteral;
 
 /**

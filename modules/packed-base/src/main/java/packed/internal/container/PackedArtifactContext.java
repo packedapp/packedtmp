@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 
 import app.packed.artifact.ArtifactRuntimeContext;
-import app.packed.inject.Injector;
+import app.packed.service.Injector;
 import app.packed.util.Nullable;
 import packed.internal.inject.run.DefaultInjector;
 

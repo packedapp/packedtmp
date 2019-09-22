@@ -18,7 +18,7 @@ package packed.internal.inject.util.nextapi;
 import java.util.Collection;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ServiceDescriptor;
+import app.packed.service.ServiceDescriptor;
 
 /**
  *

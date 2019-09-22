@@ -25,12 +25,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.FieldOperator;
+import app.packed.reflect.PackedFieldOperator;
+import app.packed.reflect.VarOperator;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.Nullable;
 import packed.internal.container.extension.hook.other.PackedFieldHookApplicator;
 import packed.internal.container.model.ComponentModel;
-import packed.internal.reflect.PackedFieldOperator;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -96,7 +96,7 @@ public final class AnnotatedFieldHook<T extends Annotation> {
         return annotation;
     }
 
-    public <E> HookApplicator<E> applicator(FieldOperator<E> operator) {
+    public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
         PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         return new PackedFieldHookApplicator<E>(this, o, field);
@@ -117,7 +117,7 @@ public final class AnnotatedFieldHook<T extends Annotation> {
      *             if access checking failed when accessing the field
      */
 
-    public <E> E applyStatic(FieldOperator<E> operator) {
+    public <E> E applyStatic(VarOperator<E> operator) {
         PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);

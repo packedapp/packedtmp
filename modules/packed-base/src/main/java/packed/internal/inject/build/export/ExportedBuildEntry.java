@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.config.ConfigSite;
-import app.packed.inject.ComponentServiceConfiguration;
-import app.packed.inject.InjectionExtension;
-import app.packed.inject.InstantiationMode;
-import app.packed.inject.ServiceRequest;
+import app.packed.service.ComponentServiceConfiguration;
+import app.packed.service.ServiceExtension;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.inject.ServiceEntry;
@@ -50,8 +50,8 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the injector configuration this node is being added to
      * @param configSite
      *            the configuration site of the exposure
-     * @see InjectionExtension#export(Class)
-     * @see InjectionExtension#export(Key)
+     * @see ServiceExtension#export(Class)
+     * @see ServiceExtension#export(Key)
      */
     ExportedBuildEntry(InjectionExtensionNode builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite, List.of());
@@ -66,8 +66,8 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      *            the entry to export
      * @param configSite
      *            the config site of the export
-     * @see InjectionExtension#export(ComponentServiceConfiguration)
-     * @see InjectionExtension#exportAll()
+     * @see ServiceExtension#export(ComponentServiceConfiguration)
+     * @see ServiceExtension#exportAll()
      */
     @SuppressWarnings("unchecked")
     ExportedBuildEntry(InjectionExtensionNode builder, ServiceEntry<T> entryToExport, ConfigSite configSite) {
