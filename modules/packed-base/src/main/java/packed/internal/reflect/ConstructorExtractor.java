@@ -30,6 +30,7 @@ import packed.internal.util.TypeUtil;
  *
  */
 final class ConstructorExtractor {
+
     private static final Module THIS_MODULE = ConstructorExtractor.class.getModule();
 
     static MethodHandle extract(Class<?> type, Class<?>... parameterTypes) {

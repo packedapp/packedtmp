@@ -34,6 +34,8 @@ import packed.internal.reflect.PackedFieldOperator;
  */
 // An operator that when applied ....
 // Should be an abstract class....
+
+// TODO Rename to VarOperator
 public interface FieldOperator<T> {
 
     /**

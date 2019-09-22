@@ -220,6 +220,9 @@ public interface Injector {
      * @param wirelets
      * @return the new injector
      */
+    // Skal vi tage en Consumer<?>???? Saa faar vi en klasse med som kan sige noget om man er..
+    // Det er taenkt paa en maade paa at alle Artifacts har et module de høre til...
+    // Alternativet, er at man overtager
     Injector spawn(Wirelet... wirelets);
 
     /**

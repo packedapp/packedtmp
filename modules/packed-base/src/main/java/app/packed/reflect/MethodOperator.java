@@ -28,6 +28,9 @@ import packed.internal.reflect.PackedMethodOperator;
 // Styring af exceptions???? Version 2
 /// Men ja, mener helt at det er noget man goer i operatoren...
 /// Alt hvad der ikke skal tilpasses en runtime...
+
+// De skal explaines i henhold til MethodHandle + VarHandle
+
 public interface MethodOperator<T> {
 
     // Hmm vil vi give et lookup object til et interface?
