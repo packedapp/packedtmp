@@ -26,7 +26,7 @@ import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.inject.InjectConfigSiteOperations;
+import packed.internal.service.InjectConfigSiteOperations;
 
 /**
  * An extension that provides basic functionality for installing components in a container.

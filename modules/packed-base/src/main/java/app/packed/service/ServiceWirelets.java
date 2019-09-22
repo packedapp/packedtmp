@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 
 import app.packed.container.Wirelet;
 import app.packed.util.Key;
-import packed.internal.inject.build.wirelets.PackedDownstreamInjectionWirelet;
-import packed.internal.inject.build.wirelets.PackedUpstreamInjectionWirelet;
+import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;
+import packed.internal.service.build.wirelets.PackedUpstreamInjectionWirelet;
 
 /**
  * Various wirelets that can be used to transform and filter services being pull and pushed into containers.

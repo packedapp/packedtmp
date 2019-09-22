@@ -40,11 +40,11 @@ import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
 import packed.internal.access.AppPackedInjectAccess;
 import packed.internal.access.SharedSecrets;
-import packed.internal.inject.factoryhandle.ExecutableFactoryHandle;
-import packed.internal.inject.factoryhandle.FactoryHandle;
-import packed.internal.inject.factoryhandle.InstanceFactoryHandle;
-import packed.internal.inject.factoryhandle.MappingFactoryHandle;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.service.factoryhandle.ExecutableFactoryHandle;
+import packed.internal.service.factoryhandle.FactoryHandle;
+import packed.internal.service.factoryhandle.InstanceFactoryHandle;
+import packed.internal.service.factoryhandle.MappingFactoryHandle;
 import packed.internal.util.TypeUtil;
 
 /**

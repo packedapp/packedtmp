@@ -35,7 +35,7 @@ import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.util.TypeLiteral.CanonicalizedTypeLiteral;
-import packed.internal.inject.util.QualifierHelper;
+import packed.internal.service.util.QualifierHelper;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.TypeUtil;
 

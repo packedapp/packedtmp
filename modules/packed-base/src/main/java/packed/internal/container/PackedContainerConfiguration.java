@@ -51,7 +51,7 @@ import packed.internal.container.extension.hook.other.DelayedAccessor.SidecarMet
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerModel;
-import packed.internal.inject.InjectConfigSiteOperations;
+import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {

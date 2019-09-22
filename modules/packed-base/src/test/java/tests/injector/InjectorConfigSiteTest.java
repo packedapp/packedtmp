@@ -31,7 +31,7 @@ import app.packed.service.ComponentServiceConfiguration;
 import app.packed.service.Factory;
 import app.packed.service.Injector;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.InjectConfigSiteOperations;
+import packed.internal.service.InjectConfigSiteOperations;
 import support.stubs.Letters.A;
 import support.stubs.Letters.B;
 import support.stubs.Letters.D;

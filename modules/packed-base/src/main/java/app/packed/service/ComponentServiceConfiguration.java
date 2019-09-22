@@ -25,8 +25,6 @@ import app.packed.util.Nullable;
 /**
  * This configuration represents an entity that is both being registered as a component and as a service at the same
  * time.
- * 
- * 
  * <p>
  * All the methods in this interface is solely added to allow
  * 

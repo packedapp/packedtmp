@@ -42,8 +42,8 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
 import packed.internal.access.SharedSecrets;
-import packed.internal.inject.util.QualifierHelper;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
+import packed.internal.service.util.QualifierHelper;
 import packed.internal.util.ErrorMessageBuilder;
 import packed.internal.util.TypeUtil;
 

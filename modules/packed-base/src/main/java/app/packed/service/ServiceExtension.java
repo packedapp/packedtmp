@@ -26,9 +26,9 @@ import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
-import packed.internal.inject.InjectConfigSiteOperations;
-import packed.internal.inject.build.InjectionExtensionNode;
-import packed.internal.inject.run.AbstractInjector;
+import packed.internal.service.InjectConfigSiteOperations;
+import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.run.AbstractInjector;
 
 /**
  * This extension provides functionality for service management and dependency injection.

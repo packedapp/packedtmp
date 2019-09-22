@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.factoryhandle.Factory0FactoryHandle;
+import packed.internal.service.factoryhandle.Factory0FactoryHandle;
 
 /**
  * A special {@link Factory} type that uses the supplied value from a {@link Supplier} to dynamically provide new

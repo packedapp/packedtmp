@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import app.packed.artifact.ArtifactRuntimeContext;
 import app.packed.service.Injector;
 import app.packed.util.Nullable;
-import packed.internal.inject.run.DefaultInjector;
+import packed.internal.service.run.DefaultInjector;
 
 /** The default implementation of Container. */
 // implements ContainerContext...

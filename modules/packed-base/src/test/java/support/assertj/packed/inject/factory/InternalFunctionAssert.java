@@ -19,7 +19,7 @@ import org.assertj.core.api.AbstractAssert;
 
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
-import packed.internal.inject.factoryhandle.FactoryHandle;
+import packed.internal.service.factoryhandle.FactoryHandle;
 
 /**
  *

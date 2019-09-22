@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.service.InjectionException;
 import app.packed.util.Nullable;
-import packed.internal.inject.util.QualifierHelper;
+import packed.internal.service.util.QualifierHelper;
 
 /** The default abstract implementation of a {@link AnnotatedElement}. */
 public abstract class AbstractAnnotatedDescriptor implements AnnotatedElement {
