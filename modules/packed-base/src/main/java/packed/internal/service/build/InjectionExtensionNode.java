@@ -25,7 +25,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.container.extension.OnHookGroup;
+import app.packed.hook.OnHookGroup;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
@@ -77,6 +77,7 @@ public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension
      *            the extension context
      */
     public InjectionExtensionNode(ExtensionContext context) {
+        // Kunne vi ikke bare tage en extension her????? istedet for en context
         super(context);
         this.pcc = requireNonNull((PackedExtensionContext) context).pcc;
     }

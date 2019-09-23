@@ -22,17 +22,12 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.Nullable;
-import packed.internal.container.extension.hook.OnHookMemberProcessor;
+import packed.internal.hook.OnHookMemberProcessor;
 import packed.internal.reflect.AbstractInstantiableModel;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
-/**
- * A model of an Extension.
- */
-// Raekkefoelge af installeret extensions....
-// Maaske bliver vi noedt til at have @UsesExtension..
-// Saa vi kan sige X extension skal koeres foerend Y extension
+/** A model of an Extension. */
 public final class ExtensionModel<T extends Extension> extends AbstractInstantiableModel<T> {
 
     /** A cache of values. */
@@ -151,3 +146,6 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         }
     }
 }
+// Raekkefoelge af installeret extensions....
+// Maaske bliver vi noedt til at have @UsesExtension..
+// Saa vi kan sige X extension skal koeres foerend Y extension

@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.reflect.UncheckedIllegalAccessException;
-import packed.internal.container.extension.hook.OnHookMemberProcessor;
+import packed.internal.hook.OnHookMemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 

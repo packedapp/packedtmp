@@ -8,6 +8,7 @@ module app.packed.base {
     exports app.packed.container.extension;
     exports app.packed.container.extension.feature;
     exports app.packed.errorhandling;
+    exports app.packed.hook;
     exports app.packed.host;
     exports app.packed.service;
     exports app.packed.lifecycle;

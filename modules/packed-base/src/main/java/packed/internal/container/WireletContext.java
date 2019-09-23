@@ -22,7 +22,6 @@ import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
-import packed.internal.container.extension.ExtensionWireletModel;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.util.StringFormatter;
@@ -53,8 +52,7 @@ public class WireletContext {
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
-                ExtensionWirelet ew = (ExtensionWirelet) w;
-                ExtensionWireletPipelineModel pm = ExtensionWireletModel.of((Class<? extends ExtensionWirelet<?>>) ew.getClass()).pipeline;
+                ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) w.getClass());
                 ExtensionWireletPipeline p = pipelines.computeIfAbsent(pm, k -> {
                     @Nullable
                     PackedExtensionContext e = pcc.getContext(pm.node.extension.extensionType);
@@ -64,7 +62,7 @@ public class WireletContext {
                     }
                     return pm.newPipeline(e.extensionNode());
                 });
-                SharedSecrets.extension().wireletProcess(p, ew);
+                SharedSecrets.extension().wireletProcess(p, (ExtensionWirelet) w);
             } else if (w instanceof ContainerWirelet) {
                 ((ContainerWirelet) w).process(this);
             } else {

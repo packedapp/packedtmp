@@ -27,17 +27,16 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.AnnotatedFieldHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookGroupBuilder;
-import app.packed.container.extension.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.HookGroupBuilder;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.OnHookGroupModel;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.container.extension.hook.ExtensionCallback;
-import packed.internal.container.extension.hook.HookGroupBuilderModel;
+import packed.internal.hook.HookGroupBuilderModel;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -100,12 +99,12 @@ final class ComponentModelHookGroup {
         }
 
         void onAnnotatedField(Field field, Annotation annotation) {
-            AnnotatedFieldHook<Annotation> hook = SharedSecrets.extension().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
+            AnnotatedFieldHook<Annotation> hook = SharedSecrets.hook().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         void onAnnotatedMethod(Method method, Annotation annotation) {
-            AnnotatedMethodHook hook = SharedSecrets.extension().newAnnotatedMethodHook(componentModelBuilder, method, annotation);
+            AnnotatedMethodHook hook = SharedSecrets.hook().newAnnotatedMethodHook(componentModelBuilder, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 

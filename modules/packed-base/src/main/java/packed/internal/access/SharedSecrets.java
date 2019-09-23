@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.hook.AnnotatedFieldHook;
 import app.packed.lifecycle.RunState;
 import app.packed.service.Factory;
 import app.packed.util.TypeLiteral;
@@ -52,6 +53,15 @@ public final class SharedSecrets {
      */
     public static AppPackedContainerAccess container() {
         return ContainerSingletonHolder.SINGLETON;
+    }
+
+    /**
+     * Returns an access object for app.packed.container.
+     * 
+     * @return an access object for app.packed.container
+     */
+    public static AppPackedHookAccess hook() {
+        return HookSingletonHolder.SINGLETON;
     }
 
     /**
@@ -133,6 +143,13 @@ public final class SharedSecrets {
 
         /** The singleton instance. */
         private static final AppPackedContainerAccess SINGLETON = singleton(AppPackedContainerAccess.class, WireletList.class);
+    }
+
+    /** Holder of the {@link AppPackedHookAccess} singleton. */
+    private static class HookSingletonHolder {
+
+        /** The singleton instance. */
+        private static final AppPackedHookAccess SINGLETON = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
     }
 
     /** Holder of the {@link AppPackedExtensionAccess} singleton. */

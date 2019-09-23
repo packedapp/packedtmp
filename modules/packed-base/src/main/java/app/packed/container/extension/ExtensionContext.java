@@ -22,9 +22,9 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 
 /**
- * A instance of this interface from an extension via {@link Extension#context()}. Since the extension itself defines
- * all methods in this interface via protected methods. This interface is typically used to be able to delegate. For
- * example, if the extension is to complex to be contained in a single class.
+ * A instance of this interface is available to an extension via {@link Extension#context()}. Since the extension itself
+ * defines all methods in this interface via protected methods. This interface is typically used to be able to delegate.
+ * For example, if the extension is to complex to be contained in a single class.
  */
 public interface ExtensionContext {
 

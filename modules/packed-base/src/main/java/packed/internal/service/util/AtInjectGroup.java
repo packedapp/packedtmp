@@ -18,10 +18,10 @@ package packed.internal.service.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.HookGroupBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.OnHook;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.service.Inject;

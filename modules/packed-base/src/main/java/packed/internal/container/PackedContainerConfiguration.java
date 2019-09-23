@@ -45,12 +45,12 @@ import app.packed.service.Factory;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.container.extension.hook.other.DelayedAccessor;
-import packed.internal.container.extension.hook.other.DelayedAccessor.SidecarFieldDelayerAccessor;
-import packed.internal.container.extension.hook.other.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerSourceModel;
+import packed.internal.hook.DelayedAccessor;
+import packed.internal.hook.DelayedAccessor.SidecarFieldDelayerAccessor;
+import packed.internal.hook.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */

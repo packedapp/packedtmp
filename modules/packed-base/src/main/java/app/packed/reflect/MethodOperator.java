@@ -23,7 +23,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 
-import app.packed.container.extension.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedMethodHook;
 import packed.internal.reflect.PackedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;

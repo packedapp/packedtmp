@@ -21,11 +21,11 @@ import java.util.function.Consumer;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.AnnotatedMethodHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.HookApplicator;
-import app.packed.container.extension.HookGroupBuilder;
-import app.packed.container.extension.OnHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.HookApplicator;
+import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.OnHook;
 import app.packed.reflect.MethodOperator;
 import app.packed.service.ServiceExtension;
 import app.packed.util.InvalidDeclarationException;

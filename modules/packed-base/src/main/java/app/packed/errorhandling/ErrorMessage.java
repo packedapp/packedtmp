@@ -36,5 +36,4 @@ public class ErrorMessage {
     public String toString() {
         return message;
     }
-
 }

@@ -18,7 +18,7 @@ package app.packed.lifecycle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.container.extension.OnHookGroup;
+import app.packed.hook.OnHookGroup;
 
 /**
  *

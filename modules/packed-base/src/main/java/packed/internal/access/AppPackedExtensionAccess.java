@@ -15,20 +15,12 @@
  */
 package packed.internal.access;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import app.packed.artifact.ArtifactInstantiationContext;
-import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.container.model.ComponentModel;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
 public interface AppPackedExtensionAccess extends SecretAccess {
@@ -40,25 +32,6 @@ public interface AppPackedExtensionAccess extends SecretAccess {
      *            the extension context containing the extension
      */
     ExtensionNode<?> initializeExtension(PackedExtensionContext context);
-
-    <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation);
-
-    <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation);
-
-    /**
-     * Creates a new instance of {@link AnnotatedTypeHook}.
-     * 
-     * @param <T>
-     *            the type of annotation
-     * @param builder
-     *            the component model builder
-     * @param type
-     *            the annotated type
-     * @param annotation
-     *            the annotation value
-     * @return the new annotated type hook
-     */
-    <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(ComponentModel.Builder builder, Class<?> type, T annotation);
 
     void onConfigured(Extension extension);
 

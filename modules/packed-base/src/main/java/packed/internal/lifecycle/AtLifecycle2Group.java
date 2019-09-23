@@ -17,8 +17,8 @@ package packed.internal.lifecycle;
 
 import java.util.List;
 
-import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.container.extension.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
 import app.packed.lifecycle.OnStart;
 
 /**

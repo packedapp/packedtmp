@@ -4,12 +4,12 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.IdentityHashMap;
 
-import app.packed.container.extension.AnnotatedFieldHook;
-import app.packed.container.extension.AnnotatedMethodHook;
-import app.packed.container.extension.AnnotatedTypeHook;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OnHookGroup;
-import packed.internal.container.extension.hook.OnHookMemberProcessor;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
+import app.packed.hook.OnHookGroup;
+import packed.internal.hook.OnHookMemberProcessor;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookGroupModel {

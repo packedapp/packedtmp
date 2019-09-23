@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Supplier;
 
-import app.packed.container.extension.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedFieldHook;
 import packed.internal.reflect.PackedIllegalAccessException;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;

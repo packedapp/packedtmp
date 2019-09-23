@@ -17,9 +17,6 @@ package app.packed.container.extension;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
@@ -34,8 +31,6 @@ import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.container.model.ComponentModel;
-import packed.internal.container.model.ComponentModel.Builder;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -72,6 +67,9 @@ import packed.internal.container.model.ComponentModel.Builder;
 
 // Disallow registering extensions as a service??? Actually together with a lot of other types...
 // ContainerExtension vs ContainerPlugin
+
+// Think we need a @ExtensionProps(node = FooNode.class)
+// Alternative ComposableExtension<T extends ExtensionNode, TR extends ExtensionTree>
 public abstract class Extension {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
@@ -100,22 +98,6 @@ public abstract class Extension {
             @Override
             public <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
-            }
-
-            @Override
-            public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
-                return new AnnotatedFieldHook<>(builder, field, annotation);
-            }
-
-            @Override
-            public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.container.model.ComponentModel.Builder builder,
-                    Method method, T annotation) {
-                return new AnnotatedMethodHook<>(builder, method, annotation);
-            }
-
-            @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(Builder builder, Class<?> type, T annotation) {
-                return new AnnotatedTypeHook<>(builder, type, annotation);
             }
         });
     }
