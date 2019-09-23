@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
- * Processes all fields and methods on selected classes.
+ * Processes all fields and methods on a specified class.
  */
 // https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
 public abstract class MemberProcessor {
@@ -55,6 +55,7 @@ public abstract class MemberProcessor {
         return ConstructorExtractor.extract(actualType);
     }
 
+    /** Finds all relevant methods and invokes {@link #processMethod(Method)}. */
     public final void findMethods() {
         find(false);
     }
@@ -64,12 +65,13 @@ public abstract class MemberProcessor {
     }
 
     private void find(boolean processFields) {
-        // Step 1, find all public methods, this will include all default methods
+        // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
+        // getDeclaredMethods() later.
         HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
         for (Method m : actualType.getMethods()) {
             // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
-                // Should also ignore methods on base class..
+                // Should we also ignore methods on base class????
                 processMethod(m); // move this to step 2???
                 types.put(new MethodEntry(m), PKG);
             }
@@ -136,7 +138,7 @@ public abstract class MemberProcessor {
 
     private static final class MethodEntry {
 
-        /** A hash. */
+        /** A pre calculated hash. */
         private final int hash;
 
         /** The name of the method */

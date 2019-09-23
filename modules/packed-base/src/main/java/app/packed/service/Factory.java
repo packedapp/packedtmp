@@ -50,7 +50,7 @@ import packed.internal.util.TypeUtil;
 /**
  * Factories are used for creating new instances of a particular type.
  * <p>
- * This class does not currently expose any methods that actually creates new instances. This is all hidden in the
+ * This class does not currently expose any methods that actually create new instances. This is all hidden in the
  * internals of Packed. This might change in the future, but for now factories are created by the user and only the
  * internals of Packed can use them to create new object instances.
  */

@@ -18,6 +18,7 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.artifact.ArtifactInstantiationContext;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
@@ -81,6 +82,17 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
+     * Exports a service represented by the specified service configuration. Is typically used together with
+     * {@link #provide(Class)} to export and: <pre>
+     * {@code  
+     * export(provide(Service.class));
+     * }
+     * </pre> or <pre>
+     * {@code  
+     * export(provide(InternalClass.class)).as(ExternalInterface.class);
+     * }
+     * </pre>
+     * 
      * @param <T>
      *            the type of service the configuration creates
      * @param configuration
@@ -89,6 +101,7 @@ public final class ServiceExtension extends Extension {
      * @throws IllegalArgumentException
      *             if the specified configuration object was created by another injection extension instance .
      */
+    // TODO provide(Foo.class).export instead????
     public <T> ServiceConfiguration<T> export(ComponentServiceConfiguration<T> configuration) {
         requireNonNull(configuration, "configuration is null");
         checkConfigurable();
@@ -208,7 +221,8 @@ public final class ServiceExtension extends Extension {
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
         if (!(requireNonNull(injector, "injector is null") instanceof AbstractInjector)) {
-            throw new IllegalArgumentException("Custom implementations of Injector are currently not supported, injector type = " + injector.getClass());
+            throw new IllegalArgumentException(
+                    "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
         node.provider().provideAll((AbstractInjector) injector, captureStackFrame(InjectConfigSiteOperations.INJECTOR_PROVIDE_ALL), WireletList.of(wirelets));
@@ -229,7 +243,8 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
-        return node.provider().provideInstance(use(ComponentExtension.class).installInstance(instance), instance);
+        ComponentConfiguration cc = use(ComponentExtension.class).installInstance(instance);
+        return node.provider().provideInstance(cc, instance);
     }
 
     /**

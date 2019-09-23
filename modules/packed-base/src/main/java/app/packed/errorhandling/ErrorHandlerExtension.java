@@ -16,12 +16,37 @@
 package app.packed.errorhandling;
 
 import app.packed.container.extension.Extension;
+import app.packed.util.Nullable;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  *
  */
 // Build time errors, Construction errors, Initialization errors
 // Start errors, Runtime errors, Shutdown errors.
-public class ErrorHandlerExtension extends Extension {
 
+// Restart or not... Coupled with LifecycleExtension
+
+// Child error handling hiarchies.
+
+// How does it relate to LoggingExtension, LifecycleExtension, Other extensions
+public final class ErrorHandlerExtension extends Extension {
+
+    /** The configuration of the container. */
+    @Nullable
+    PackedContainerConfiguration pcc;
+
+    /** Should never be initialized by users. */
+    ErrorHandlerExtension() {}
+
+    void addErrorHandle() {
+        // The top one in the container....
+    }
+
+    // Er vel kun restartable hvis vi har lifecycle extension installeret.
+    // Og vi er deployet som et image...
+    // Can only restart images....
+
+    // RestartContext...
+    // Data vi kan koere videre med
 }

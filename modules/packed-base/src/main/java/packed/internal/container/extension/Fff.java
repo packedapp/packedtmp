@@ -13,21 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package packed.internal.container.extension;
 
-import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import app.packed.app.App;
+import app.packed.container.BaseBundle;
+import app.packed.container.extension.Extension;
 
-/** A support class for calling package private methods in the app.packed.container package. */
-public interface AppPackedContainerAccess extends SecretAccess {
+/**
+ *
+ */
+public class Fff extends BaseBundle {
 
-    /**
-     * Calls the doConfigure method in {@link Bundle}.
-     * 
-     * @param bundle
-     *            the bundle to configure
-     * @param configuration
-     *            the configuration of the container
-     */
-    void doConfigure(Bundle bundle, ContainerConfiguration configuration);
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        use(DDDd.class);
+    }
+
+    public static void main(String[] args) {
+        App.of(new Fff());
+    }
+
+    public final class DDDd extends Extension {
+
+    }
 }

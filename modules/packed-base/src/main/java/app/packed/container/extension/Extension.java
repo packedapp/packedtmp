@@ -35,6 +35,7 @@ import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentModel;
+import packed.internal.container.model.ComponentModel.Builder;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -110,6 +111,11 @@ public abstract class Extension {
             public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.container.model.ComponentModel.Builder builder,
                     Method method, T annotation) {
                 return new AnnotatedMethodHook<>(builder, method, annotation);
+            }
+
+            @Override
+            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(Builder builder, Class<?> type, T annotation) {
+                return new AnnotatedTypeHook<>(builder, type, annotation);
             }
         });
     }

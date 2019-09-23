@@ -16,11 +16,28 @@
 package app.packed.container.extension;
 
 /**
- *
+ * An extension thrown to indicate that an a given extension has not been properly implemented according to the
+ * extension requirements in packed. As a user of the extension there is normally nothing else you can do, but report
+ * the error to the developer of the extension.
  */
 public class ExtensionDeclarationException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     */
+    public ExtensionDeclarationException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public ExtensionDeclarationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

@@ -31,17 +31,18 @@ import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.ThrowableUtil;
 
 /**
- *
+ * A model of a container, an instance of this class can only be acquired via
+ * {@link ContainerSourceModel#componentModelOf(Class)}.
  */
 public final class ComponentModel {
 
     /** The component type. */
     private final Class<?> componentType;
 
-    /** An array of any extension groups defined by the component type. */
-    private final ComponentModelHookGroup[] extensionGroups;
+    /** An array of any hook groups defined by the component type. */
+    private final ComponentModelHookGroup[] hookGroups;
 
-    /** The simple name of the component type. */
+    /** The simple name of the component type, typically used for lazy generating a component name. */
     private volatile String simpleName;
 
     /**
@@ -52,12 +53,12 @@ public final class ComponentModel {
      */
     private ComponentModel(ComponentModel.Builder builder) {
         this.componentType = requireNonNull(builder.componentType);
-        this.extensionGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelHookGroup[i]);
+        this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelHookGroup[i]);
     }
 
-    public ComponentConfiguration addExtensions(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
+    public ComponentConfiguration addExtensionsToContainer(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
         try {
-            for (ComponentModelHookGroup group : extensionGroups) {
+            for (ComponentModelHookGroup group : hookGroups) {
                 group.addTo(containerConfiguration, componentConfiguration);
             }
         } catch (Throwable e) {
@@ -80,7 +81,7 @@ public final class ComponentModel {
         return s;
     }
 
-    /** A builder object for a component class descriptor. */
+    /** A builder object for a component model. */
     public static final class Builder extends MemberProcessor {
 
         /** A cache of any extensions a particular annotation activates. */

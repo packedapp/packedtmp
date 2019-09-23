@@ -1,5 +1,5 @@
 * All components have a name.
-* All components with the same parent have distinct names.
+* All components with the same parent must have distinct names.
 * All Alpha numeric characters plus '_', '-' are valid characters.!!!!!!!!!!
 * If the user does not set a name when configuring the component
      the runtime will automatically generate a name for the component

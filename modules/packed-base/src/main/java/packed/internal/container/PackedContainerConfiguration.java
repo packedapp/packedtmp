@@ -50,7 +50,7 @@ import packed.internal.container.extension.hook.other.DelayedAccessor.SidecarFie
 import packed.internal.container.extension.hook.other.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
-import packed.internal.container.model.ContainerModel;
+import packed.internal.container.model.ContainerSourceModel;
 import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
@@ -65,7 +65,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public ComponentLookup lookup; // Should be more private
 
     /** A container model object, shared among all container sources of the same type. */
-    private final ContainerModel model;
+    private final ContainerSourceModel model;
 
     /** The source of the container configuration. */
     public final ContainerSource source;
@@ -86,7 +86,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public PackedContainerConfiguration(ArtifactDriver<?> artifactDriver, ContainerSource source, Wirelet... wirelets) {
         super(ConfigSite.captureStack(InjectConfigSiteOperations.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
-        this.lookup = this.model = ContainerModel.from(source.getClass());
+        this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
     }
 
@@ -103,7 +103,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     private PackedContainerConfiguration(PackedContainerConfiguration parent, Bundle bundle, WireletList wirelets) {
         super(parent.configSite().thenCaptureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
-        this.lookup = this.model = ContainerModel.from(bundle.getClass());
+        this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
     }
 
@@ -196,19 +196,19 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public ComponentConfiguration install(Factory<?> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         installPrepare(State.INSTALL_INVOKED);
-        return model.addExtensions(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
+        return model.addExtensionsToContainer(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
     }
 
     public ComponentConfiguration installStatic(Class<?> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
         installPrepare(State.INSTALL_INVOKED);
-        return descriptor.addExtensions(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
+        return descriptor.addExtensionsToContainer(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
     }
 
     public ComponentConfiguration installInstance(Object instance, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         installPrepare(State.INSTALL_INVOKED);
-        return model.addExtensions(this, currentComponent = new InstantiatedComponentConfiguration(configSite, this, model, instance));
+        return model.addExtensionsToContainer(this, currentComponent = new InstantiatedComponentConfiguration(configSite, this, model, instance));
     }
 
     private void installPrepare(State state) {

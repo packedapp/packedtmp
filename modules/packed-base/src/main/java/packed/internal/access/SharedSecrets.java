@@ -105,7 +105,7 @@ public final class SharedSecrets {
             throw new ExceptionInInitializerError(e); // Should never happen
         }
 
-        SecretAccess access = TMP.get(accessType);
+        SecretAccess access = TMP.remove(accessType);
         if (access == null) {
             throw new ExceptionInInitializerError("An instance of " + accessType + " has not been set");
         }

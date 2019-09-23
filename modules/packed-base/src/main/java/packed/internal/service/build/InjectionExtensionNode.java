@@ -54,7 +54,7 @@ public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
-    public ExportManager exporter;
+    private ExportManager exporter;
 
     private boolean hasFailed;
 
@@ -177,6 +177,19 @@ public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension
     }
 
     /**
+     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
+     * 
+     * @param cc
+     *            the configuration of the annotated component
+     * @param group
+     *            a provides group object
+     */
+    @OnHookGroup(AtProvidesGroup.Builder.class)
+    void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
+        provider().addProvidesGroup(cc, group);
+    }
+
+    /**
      * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Inject}.
      * 
      * @param cc
@@ -196,19 +209,6 @@ public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension
         for (AtInject ai : group.members) {
             System.out.println(ai);
         }
-    }
-
-    /**
-     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
-     * 
-     * @param cc
-     *            the configuration of the annotated component
-     * @param group
-     *            a provides group object
-     */
-    @OnHookGroup(AtProvidesGroup.Builder.class)
-    void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
-        provider().addProvidesGroup(cc, group);
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {

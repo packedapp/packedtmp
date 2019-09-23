@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 /**
- *
+ * A helper class for creating native images.
  */
 // Ideen er at folk faar en NativeImageSupport instance til at kalde ting...
 // Det er f.eks. extensions der kan faa det...
@@ -28,34 +28,39 @@ import java.lang.reflect.Method;
 // NativeImageHelper, NativeImageSupport
 public final class NativeImage {
 
+    public void saveMethod(Method m) {}
+
     protected static void checkNotNative(String message) {
         // for example
         // checkNotNative("Cannot change the JDBC driver, when running in native mode, was " + driver);
         // check grall
     }
 
-    public void saveMethod(Method m) {}
-
     public static Mode mode() {
-        return Mode.NORMAL;
+        return Mode.NO_IMAGE;
     }
-
-    public static void registerMethod(Method m) {}
 
     public static void registerConstructor(Constructor<?> c) {}
 
-    // Saa der er jo 3 modes..
-
-    // Om vi koere i native
-    // Om vi bygger til native
-    // Alm
+    public static void registerMethod(Method m) {}
 
     // Problemet er lidt. Hvordan kan vi lave de statements
     // der kalder Buildint_NATIVE som noops naar man er native?
-    public enum Mode {
-        BUILDING_NATIVE, NATIVE, NORMAL;
-    }
     // public static void support(AnyBundle b) {
     //
     // }
+
+    public enum Mode {
+
+        /** A mode indicating that we are building are native image. */
+        IMAGE_GENERATION,
+
+        /** A mode indicating that we are running with a native image. */
+        IMAGE_RUN,
+
+        /** A mode indicating that we neither building or running a native image. */
+        NO_IMAGE;
+    }
+
+    // IMAGE_GENERATE
 }

@@ -43,57 +43,6 @@ import app.packed.util.Nullable;
 // or maybe just ComponentServiceConfgiuration
 public interface ComponentServiceConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {
 
-    // /**
-    // * @param implementation
-    // * the mixin implementation to add
-    // * @return this configuration
-    // * @throws IllegalArgumentException
-    // * if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
-    // * interfaces)
-    // * @see #addMixin(Factory)
-    // * @see #addMixin(Object)
-    // */
-    // @Override
-    // default ProvidedComponentConfiguration<T> addMixin(Class<?> implementation) {
-    // throw new UnsupportedOperationException();
-    // }
-    //
-    // /**
-    // * Adds the specified mixin to the list of mixins for the component.
-    // *
-    // * @param factory
-    // * the mixin (factory) to add
-    // * @return this configuration
-    // * @throws IllegalArgumentException
-    // * if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
-    // * more interfaces)
-    // * @see #addMixin(Class)
-    // * @see #addMixin(Object)
-    // */
-    // @Override
-    // default ProvidedComponentConfiguration<T> addMixin(Factory<?> factory) {
-    // throw new UnsupportedOperationException();
-    // }
-    //
-    // /**
-    // * Adds the specified mixin instance to this component. The mixin can either be a class in which case it will be
-    // * instantiated and injected according to same rules as the component instance. Or an instance in which case it will
-    // * only be injected.
-    // *
-    // * @param instance
-    // * the mixin instance to add
-    // * @return this configuration
-    // * @throws IllegalArgumentException
-    // * if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
-    // * interfaces)
-    // * @see #addMixin(Class)
-    // * @see #addMixin(Factory)
-    // */
-    // @Override
-    // default ProvidedComponentConfiguration<T> addMixin(Object instance) {
-    // throw new UnsupportedOperationException();
-    // }
-
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -198,12 +147,62 @@ public interface ComponentServiceConfiguration<T> extends ComponentConfiguration
      */
     @Override
     ComponentServiceConfiguration<T> setName(String name);
-
-    // default ContainerActionable on(LifecycleState... states) {
-    // throw new UnsupportedOperationException();
-    // }
 }
 
+// /**
+// * @param implementation
+// * the mixin implementation to add
+// * @return this configuration
+// * @throws IllegalArgumentException
+// * if the class is not a proper mixin class ({@code super != Object.class } or implements one or more
+// * interfaces)
+// * @see #addMixin(Factory)
+// * @see #addMixin(Object)
+// */
+// @Override
+// default ProvidedComponentConfiguration<T> addMixin(Class<?> implementation) {
+// throw new UnsupportedOperationException();
+// }
+//
+// /**
+// * Adds the specified mixin to the list of mixins for the component.
+// *
+// * @param factory
+// * the mixin (factory) to add
+// * @return this configuration
+// * @throws IllegalArgumentException
+// * if the factory does not produce a proper mixin class ({@code super != Object.class } or implements one or
+// * more interfaces)
+// * @see #addMixin(Class)
+// * @see #addMixin(Object)
+// */
+// @Override
+// default ProvidedComponentConfiguration<T> addMixin(Factory<?> factory) {
+// throw new UnsupportedOperationException();
+// }
+//
+// /**
+// * Adds the specified mixin instance to this component. The mixin can either be a class in which case it will be
+// * instantiated and injected according to same rules as the component instance. Or an instance in which case it will
+// * only be injected.
+// *
+// * @param instance
+// * the mixin instance to add
+// * @return this configuration
+// * @throws IllegalArgumentException
+// * if the instance is not a proper mixin class ({@code super != Object.class } or implements one or more
+// * interfaces)
+// * @see #addMixin(Class)
+// * @see #addMixin(Factory)
+// */
+// @Override
+// default ProvidedComponentConfiguration<T> addMixin(Object instance) {
+// throw new UnsupportedOperationException();
+// }
+
+// default ContainerActionable on(LifecycleState... states) {
+// throw new UnsupportedOperationException();
+// }
 /// **
 // * Prohibits the component for being available as a dependency to other services/components.
 // *

@@ -34,6 +34,18 @@ import packed.internal.service.util.nextapi.OldAtInjectGroup;
 /** An abstract implementation of an injector. */
 public abstract class AbstractInjector implements Injector {
 
+    /** {@inheritDoc} */
+    @Override
+    public final boolean contains(Class<?> key) {
+        return findNode(key) != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean contains(Key<?> key) {
+        return findNode(key) != null;
+    }
+
     /**
      * Ideen er egentlig at vi kan lave en detaljeret fejlbesked, f.eks, vi har en X type, men den har en qualifier. Eller
      * vi har en qualifier med navnet DDooo og du skrev PDooo
@@ -42,8 +54,6 @@ public abstract class AbstractInjector implements Injector {
      */
     protected void failedGet(Key<?> key) {}
 
-    public abstract void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action);
-
     @Nullable
     protected <T> ServiceEntry<T> findNode(Class<T> key) {
         return findNode(Key.of(key));
@@ -51,6 +61,8 @@ public abstract class AbstractInjector implements Injector {
 
     @Nullable
     protected abstract <T> ServiceEntry<T> findNode(Key<T> key);
+
+    public abstract void forEachServiceEntry(Consumer<? super ServiceEntry<?>> action);
 
     /** {@inheritDoc} */
     @Override
@@ -76,18 +88,6 @@ public abstract class AbstractInjector implements Injector {
             return null;
         }
         return n.getInstance(ServiceRequest.of(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean contains(Class<?> key) {
-        return findNode(key) != null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean contains(Key<?> key) {
-        return findNode(key) != null;
     }
 
     protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
@@ -145,7 +145,7 @@ public abstract class AbstractInjector implements Injector {
             return t;
         }
         failedGet(Key.of(key));
-        throw new UnsupportedOperationException("No service with the specified key could  be found, key = " + key);
+        throw new UnsupportedOperationException("No service with the specified key could be found, key = " + key);
     }
 
     /** {@inheritDoc} */
@@ -153,7 +153,7 @@ public abstract class AbstractInjector implements Injector {
     public final <T> T use(Key<T> key) {
         T t = getInstanceOrNull(key);
         if (t == null) {
-            throw new UnsupportedOperationException("No service with the specified key could  be found, key = " + key);
+            throw new UnsupportedOperationException("No service with the specified key could be found, key = " + key);
         }
         return t;
     }

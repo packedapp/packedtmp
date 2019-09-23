@@ -26,29 +26,31 @@ import app.packed.container.Bundle;
 import app.packed.container.ContainerSource;
 import packed.internal.util.LookupValue;
 
-/** A model of a container. Each source points to a */
-public final class ContainerModel implements ComponentLookup {
+/** A model of a container source, typically a subclass of {@link Bundle}. */
+public final class ContainerSourceModel implements ComponentLookup {
 
     /** A cache of model. */
-    private static final ClassValue<ContainerModel> MODEL_CACHE = new ClassValue<>() {
+    private static final ClassValue<ContainerSourceModel> MODEL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        protected ContainerModel computeValue(Class<?> type) {
-            return new ContainerModel((Class<? extends ContainerSource>) type);
+        protected ContainerSourceModel computeValue(Class<?> type) {
+            return new ContainerSourceModel((Class<? extends ContainerSource>) type);
         }
     };
 
-    /** A cache of component models that have been access without a lookup object. */
+    /** A cache of component models that have been accessed without a lookup object. */
+    // most likely they will have the same class loader as the container source
     private final ClassValue<ComponentModel> componentsNoLookup = new ClassValue<>() {
 
         @Override
         protected ComponentModel computeValue(Class<?> type) {
-            return new ComponentModel.Builder(ContainerModel.this, type).build();
+            return new ComponentModel.Builder(ContainerSourceModel.this, type).build();
         }
     };
 
+    /** The default lookup object, when the user has specified no Lookup value */
     ComponentLookup defaultLookup;
 
     /** The default prefix of the container, used if no name has been specified. */
@@ -59,20 +61,20 @@ public final class ContainerModel implements ComponentLookup {
 
         @Override
         protected PerLookup computeValue(Lookup lookup) {
-            return new PerLookup(ContainerModel.this, lookup);
+            return new PerLookup(ContainerSourceModel.this, lookup);
         }
     };
 
-    /** The type of container source. For example, a subclass of {@link Bundle}. */
+    /** The type of container source. Typically, a subclass of {@link Bundle}. */
     private final Class<? extends ContainerSource> sourceType;
 
     /**
-     * Creates a new container model.
+     * Creates a new container source model.
      * 
      * @param sourceType
      *            the source type
      */
-    private ContainerModel(Class<? extends ContainerSource> sourceType) {
+    private ContainerSourceModel(Class<? extends ContainerSource> sourceType) {
         this.sourceType = requireNonNull(sourceType);
     }
 
@@ -114,18 +116,14 @@ public final class ContainerModel implements ComponentLookup {
         return MethodHandles.lookup();
     }
 
-    /**
-     * @return the configuratorType
-     */
-    public Class<?> sourceType() {
-        return sourceType;
-    }
-
     public ComponentLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
+
+        // We need to check this in a separate class. Because from Java 13.
+        // There are two classes in a lookup object.
         if (lookup == null) {
             return this;
-        } else if (lookup.lookupClass() == sourceType() && lookup.lookupModes() == 3) {
+        } else if (lookup.lookupClass() == sourceType && lookup.lookupModes() == 3) {
             ComponentLookup cl = defaultLookup;
             if (cl != null) {
                 return cl;
@@ -136,13 +134,13 @@ public final class ContainerModel implements ComponentLookup {
     }
 
     /**
-     * Returns a container model for the specified container source type
+     * Returns a container source model for the specified type
      * 
      * @param sourceType
      *            the container source type
-     * @return a container model for the specified container source type
+     * @return a container source model for the specified type
      */
-    public static ContainerModel from(Class<? extends ContainerSource> sourceType) {
+    public static ContainerSourceModel of(Class<? extends ContainerSource> sourceType) {
         return MODEL_CACHE.get(sourceType);
     }
 
@@ -160,9 +158,9 @@ public final class ContainerModel implements ComponentLookup {
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        final ContainerModel parent;
+        final ContainerSourceModel parent;
 
-        public PerLookup(ContainerModel parent, Lookup lookup) {
+        public PerLookup(ContainerSourceModel parent, Lookup lookup) {
             this.parent = requireNonNull(parent);
             this.lookup = requireNonNull(lookup);
         }

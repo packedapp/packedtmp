@@ -24,6 +24,7 @@ import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceRequest;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.util.Provider;
 import packed.internal.util.ThrowableUtil;
 
 /** A lazy runtime node if the service was not requested at configuration time. */

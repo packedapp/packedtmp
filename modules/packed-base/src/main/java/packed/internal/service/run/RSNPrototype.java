@@ -23,6 +23,7 @@ import app.packed.service.InjectionException;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceRequest;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.util.Provider;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */

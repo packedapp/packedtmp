@@ -30,7 +30,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 
 /**
- *
+ * A runtime model of an {@link ExtensionNode} implementation.
  */
 public final class ExtensionNodeModel {
 
@@ -46,8 +46,11 @@ public final class ExtensionNodeModel {
         }
     };
 
-    /** An extractor to find the extension the node is build upon. */
+    /** An type extractor to find the extension type the node belongs to. */
     private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNode.class);
+
+    /** The extension the node belongs to. */
+    public final ExtensionModel<?> extension;
 
     /**
      * Creates a new extension model.
@@ -55,11 +58,9 @@ public final class ExtensionNodeModel {
      * @param builder
      *            the builder for this model
      */
-    private ExtensionNodeModel(ExtensionModel<?> extensionModel, Builder builder) {
-        this.extension = requireNonNull(extensionModel);
+    private ExtensionNodeModel(ExtensionModel<?> extension, Builder builder) {
+        this.extension = requireNonNull(extension);
     }
-
-    public final ExtensionModel<?> extension;
 
     /**
      * Returns an extension node model for the specified extension node type.
@@ -75,7 +76,9 @@ public final class ExtensionNodeModel {
     /** A builder for {@link ExtensionModel}. This builder is used by ExtensionModel. */
     static class Builder extends OnHookMemberProcessor {
 
+        /** The builder for the corresponding extension model. */
         final ExtensionModel.Builder builder;
+
         Lookup lookup = MethodHandles.lookup();
 
         /**

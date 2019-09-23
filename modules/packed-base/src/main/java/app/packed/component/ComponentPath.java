@@ -24,7 +24,8 @@ import packed.internal.container.PackedComponentPath;
  * A component path points to a single component in a hierarchy of components (component system) expressed as a string
  * of characters in which path parts, separated by the delimiting character "/", represent each unique component.
  * <p>
- * Implementations of this interface are always immutable and safe for use by multiple concurrent threads.
+ * Implementations of this interface are, unless otherwise specified, immutable and safe for use by multiple concurrent
+ * threads.
  * <p>
  * Two component paths are equal if their string representation are identical. The hash code of a component path is
  * identical to the hash code of its string representation.
@@ -38,8 +39,7 @@ public interface ComponentPath extends Comparable<ComponentPath>, /* , Iterable<
     static final ComponentPath ROOT = PackedComponentPath.ROOT;
 
     /**
-     * Returns the number of elements in this path. This is not a constant time operation as we might need to traverse
-     * through all parents of this component, but it is usually really fast.
+     * Returns the number of elements in this path.
      *
      * @return the number of elements in the path, or {@code 0} if this path represents a root component
      */

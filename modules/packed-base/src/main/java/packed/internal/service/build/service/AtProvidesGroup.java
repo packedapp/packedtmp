@@ -71,14 +71,27 @@ public final class AtProvidesGroup {
             return new AtProvidesGroup(this);
         }
 
+        /**
+         * Invoked by the runtime whenever it encounters a field annotated with {@link Provide}.
+         * 
+         * @param fieldHook
+         *            the field hook
+         */
         @OnHook
         void onFieldProvide(AnnotatedFieldHook<Provide> fieldHook) {
             FieldDescriptor field = fieldHook.field();
 
             // Generation of Key, I think we might want to do something that produces a good error message.
+            // Maybe just hard code it in key.
             tryAdd0(fieldHook.getter(), field, Key.fromField(field.unsafeField()), fieldHook.annotation(), List.of());
         }
 
+        /**
+         * Invoked by the runtime whenever it encounters a method annotated with {@link Provide}.
+         * 
+         * @param methodHook
+         *            the method hook
+         */
         @OnHook
         void onMethodProvide(AnnotatedMethodHook<Provide> methodHook) {
             MethodDescriptor method = methodHook.method();

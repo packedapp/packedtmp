@@ -38,7 +38,7 @@ final class ServiceRequestImpl implements ServiceRequest {
     /** The key of the service that was requested */
     private final ServiceDependency dependency;
 
-    public ServiceRequestImpl(ServiceDependency dependency, @Nullable Component component) {
+    ServiceRequestImpl(ServiceDependency dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }

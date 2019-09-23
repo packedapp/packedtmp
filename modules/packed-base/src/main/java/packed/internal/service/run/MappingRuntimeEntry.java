@@ -25,14 +25,16 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
 /**
- *
+ * A runtime entry that that takes an existing entry and uses a {@link Function} to map the service provided by the
+ * entry.
  */
-public class MappingRunEntry<F, T> extends RSE<T> {
+public final class MappingRuntimeEntry<F, T> extends RSE<T> {
 
-    /** The runtime node to delegate to. */
+    /** The runtime node whose service should mapped. */
     private final RSE<F> delegate;
 
-    private final Function<F, T> function;
+    /** The function that maps the service. */
+    private final Function<? super F, ? extends T> function;
 
     /**
      * Creates a new runtime alias node.
@@ -40,7 +42,7 @@ public class MappingRunEntry<F, T> extends RSE<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingRunEntry(BuildEntry<T> buildNode, ServiceEntry<F> delegate, Function<F, T> function) {
+    public MappingRuntimeEntry(BuildEntry<T> buildNode, ServiceEntry<F> delegate, Function<? super F, ? extends T> function) {
         super(buildNode);
         this.delegate = requireNonNull(delegate.toRuntimeEntry());
         this.function = requireNonNull(function);
@@ -48,17 +50,20 @@ public class MappingRunEntry<F, T> extends RSE<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return delegate.instantiationMode();
+    public T getInstance(ServiceRequest site) {
+        F f = delegate.getInstance(site);
+        T t = function.apply(f);
+        // TODO Check Type, and not null
+        // Throw Provision Exception????
+        // Every node
+        // Vi bliver vel ogsaa noedt til at checke det for en build entry....
+        return t;
     }
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest site) {
-        F f = delegate.getInstance(site);
-        T t = function.apply(f);
-        // Check Type, and not null
-        return t;
+    public InstantiationMode instantiationMode() {
+        return delegate.instantiationMode();
     }
 
     /** {@inheritDoc} */

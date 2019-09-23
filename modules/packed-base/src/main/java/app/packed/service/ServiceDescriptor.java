@@ -32,6 +32,10 @@ public interface ServiceDescriptor /* extends Taggable */ {
      */
     Key<?> key();
 }
+// Det er jo en slags feature provided af en Component, saa maaske
+// extends ServiceFeature
+
+// Som saa ville have en ConfigSite + ComponentPath....
 
 // ComponentPath() <- The path to the component that defines the service...
 //// What if we use wirelets????

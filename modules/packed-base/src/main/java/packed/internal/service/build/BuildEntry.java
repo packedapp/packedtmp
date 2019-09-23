@@ -250,5 +250,4 @@ public abstract class BuildEntry<T> implements ServiceEntry<T> {
             return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + ", description=" + description + "]";
         }
     }
-
 }

@@ -23,6 +23,7 @@ import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.util.Provider;
 
 /**
  * An runtime service node holding {@link InstantiationMode#SINGLETON} instances. This node also holds
@@ -30,25 +31,14 @@ import packed.internal.service.build.BuildEntry;
  */
 public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
 
+    /** The singleton instance. */
+    private final T instance;
+
     /**
      * The binding mode, we save it to distinguish between lazy and non-lazy services. Even if the lazy service was
      * initialized while building the injector.
      */
     private final InstantiationMode instantionMode;
-
-    /** The singleton instance. */
-    private final T instance;
-
-    /**
-     * @param configSite
-     * @param key
-     * @param description
-     */
-    public RSESingleton(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
-        super(configSite, key, description);
-        this.instance = requireNonNull(instance);
-        this.instantionMode = InstantiationMode.SINGLETON;
-    }
 
     /**
      * Creates a new node.
@@ -64,6 +54,17 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
         this.instantionMode = buildNode.instantiationMode();
     }
 
+    /**
+     * @param configSite
+     * @param key
+     * @param description
+     */
+    public RSESingleton(ConfigSite configSite, Key<T> key, @Nullable String description, T instance) {
+        super(configSite, key, description);
+        this.instance = requireNonNull(instance);
+        this.instantionMode = InstantiationMode.SINGLETON;
+    }
+
     /** {@inheritDoc} */
     @Override
     public T get() {
@@ -72,14 +73,14 @@ public final class RSESingleton<T> extends RSE<T> implements Provider<T> {
 
     /** {@inheritDoc} */
     @Override
-    public InstantiationMode instantiationMode() {
-        return instantionMode;
+    public T getInstance(ServiceRequest ignore) {
+        return instance;
     }
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ServiceRequest ignore) {
-        return instance;
+    public InstantiationMode instantiationMode() {
+        return instantionMode;
     }
 
     /** {@inheritDoc} */

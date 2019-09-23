@@ -24,6 +24,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
+import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.InjectConfigSiteOperations;
@@ -34,41 +35,16 @@ import packed.internal.service.InjectConfigSiteOperations;
 public final class ComponentExtension extends Extension {
 
     /** The configuration of the container. */
-    private PackedContainerConfiguration configuration;
+    @Nullable
+    private PackedContainerConfiguration pcc;
 
     /** Should never be initialized by users. */
     ComponentExtension() {}
 
-    // install
-    // noget med Main, Entry points....
-    // Man kan f.eks. disable et Main.... EntryPointExtension....
+    void addRule(ComponentRule rule) {
 
-    // @Main skal jo pege et paa en eller anden extension...
+    }
 
-    // Selvfoelelig er det hele komponenter... Ogsaa scoped
-    // Vi skal ikke til at have flere scans...
-
-    // AllowRuntimeInstallationOfComponents();
-
-    // @Scoped
-    // @Install()
-
-    // Why export, Need to export
-
-    // /**
-    // * Creates a link to another container represented by a bundle.
-    // * <p>
-    // * All links made using this method are permanent. If you need dynamic stuff you can use hosts and applications.
-    // *
-    // * @param bundle
-    // * a bundle representing the child
-    // * @param wirelets
-    // * optional wirelets
-    // */
-    // public void link(Bundle bundle, Wirelet... wirelets) {
-    // // I think I want to move this back to ContainerConfiguration
-    // configuration.link(bundle, wirelets);
-    // }
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -81,7 +57,8 @@ public final class ComponentExtension extends Extension {
      * @return the configuration of the component
      */
     public ComponentConfiguration install(Class<?> implementation) {
-        return install(Factory.findInjectable(implementation));
+        requireNonNull(implementation, "implementation is null");
+        return pcc.install(Factory.findInjectable(implementation), captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     /**
@@ -95,18 +72,12 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration install(Factory<?> factory) {
         requireNonNull(factory, "factory is null");
-        return configuration.install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+        return pcc.install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     public ComponentConfiguration installInstance(Object instance) {
         requireNonNull(instance, "instance is null");
-        return configuration.installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
-    }
-
-    @Override
-    protected ExtensionNode<?> onAdded() {
-        this.configuration = ((PackedExtensionContext) context()).pcc;
-        return null;
+        return pcc.installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     /**
@@ -120,7 +91,14 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration installStatic(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return configuration.installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+        return pcc.installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ExtensionNode<?> onAdded() {
+        this.pcc = ((PackedExtensionContext) context()).pcc;
+        return super.onAdded();
     }
 
     // Scans this package...
@@ -130,26 +108,28 @@ public final class ComponentExtension extends Extension {
 
     // Alternative to ComponentScan
     public void scanForInstall(Class<?>... classesInPackages) {}
-
-    void addRule(ComponentRule rule) {
-
-    }
 }
 
+// install
+// noget med Main, Entry points....
+// Man kan f.eks. disable et Main.... EntryPointExtension....
+
+// @Main skal jo pege et paa en eller anden extension...
+
+// Selvfoelelig er det hele komponenter... Ogsaa scoped
+// Vi skal ikke til at have flere scans...
+
+// AllowRuntimeInstallationOfComponents();
+
+// @Scoped
+// @Install()
+
+// Why export, Need to export
 class ComponentRule {
 
     // What to disable
     // Where (which components)to Disable it?
     // What todo... warn. fail, ...
-
-    static ComponentRule disableAnnotatedMethodHook(Class<? extends Annotation> type, Class<?>... scannable) {
-        // Fungere daarlig med hook groups....
-        // Vi bliver noedt til at lave en ny...
-        // Og det bliver nok ikke superlet at cache den...
-
-        // disableAnnotatedMethodHook(Main.class, String
-        throw new UnsupportedOperationException();
-    }
 
     protected final void disableMemberInjection(Class<? extends Member> memberType) {
         //// Det burde vaere noget paa component....
@@ -159,6 +139,15 @@ class ComponentRule {
         // // Field, Method, Member.class
 
         // Kunne ogsaa lave en @Rules() man kunne smide paa bundles...
+    }
+
+    static ComponentRule disableAnnotatedMethodHook(Class<? extends Annotation> type, Class<?>... scannable) {
+        // Fungere daarlig med hook groups....
+        // Vi bliver noedt til at lave en ny...
+        // Og det bliver nok ikke superlet at cache den...
+
+        // disableAnnotatedMethodHook(Main.class, String
+        throw new UnsupportedOperationException();
     }
 
     static ComponentRule disableAnnotatedMethodHook(Class<? extends Annotation> type, Object componentFilter) {

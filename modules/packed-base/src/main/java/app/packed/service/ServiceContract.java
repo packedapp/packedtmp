@@ -62,7 +62,7 @@ import app.packed.util.Key;
 // ServiceContract
 public final class ServiceContract extends Contract {
 
-    /** A service contract that has no requirements and provides no services. */
+    /** A contract with no requirements and providing no services. */
     public static final ServiceContract EMPTY = new ServiceContract(new Builder(), new HashSet<>());
 
     /** An immutable set of optional service keys. */

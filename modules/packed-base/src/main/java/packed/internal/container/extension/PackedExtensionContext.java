@@ -26,28 +26,33 @@ import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 
 /** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
 
-    /** The extension this context wraps. */
+    /** The extension instance this context wraps. */
     private final Extension extension;
 
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
+    /** Any extension node the extension might have. */
+    @Nullable
     private ExtensionNode<?> node;
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
 
     /**
+     * Creates a new extension context.
+     * 
      * @param pcc
      *            the configuration of the container the extension is registered in
      * @param extension
-     *            the extension to wrap
+     *            the extension instance to wrap
      */
     private PackedExtensionContext(PackedContainerConfiguration pcc, Extension extension) {
         this.pcc = requireNonNull(pcc);
@@ -75,14 +80,15 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     /**
-     * Returns the extension this context wraps.
+     * Returns the extension instance this context wraps.
      * 
-     * @return the extension this context wraps
+     * @return the extension instance this context wraps
      */
     public Extension extension() {
         return extension;
     }
 
+    @Nullable
     public ExtensionNode<?> extensionNode() {
         return node;
     }
@@ -116,19 +122,20 @@ public final class PackedExtensionContext implements ExtensionContext {
         return pcc.use(extensionType);
     }
 
+    /** {@inheritDoc} */
     @Override
     public WireletList wirelets() {
         return pcc.wirelets();
     }
 
     /**
-     * Creates a new extension and its context.
+     * Creates a new context and instantiates the extension.
      * 
      * @param pcc
      *            the container the extension will be registered in
      * @param extensionType
-     *            the type of extension to create
-     * @return the new context
+     *            the type of extension to instantiate
+     * @return the new extension context
      */
     public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
         return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType).newInstance());

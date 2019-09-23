@@ -22,6 +22,7 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionDeclarationException;
 
 /** Tests {@link ExtensionModel}. */
 public class ExtensionModelTest {
@@ -42,18 +43,18 @@ public class ExtensionModelTest {
     public void fails() {
         // abstract class
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> ExtensionModel.of(AbstractExtension.class).newInstance());
-        a.isExactlyInstanceOf(IllegalArgumentException.class);
+        a.isExactlyInstanceOf(ExtensionDeclarationException.class);
         // TODO test messages
 
         @SuppressWarnings("rawtypes")
         Class c = ExtensionModelTest.class;
-        // Does not extend Extension
+        // Does not extend Extension, this is
         a = assertThatThrownBy(() -> ExtensionModel.of(c).newInstance());
         a.isExactlyInstanceOf(IllegalArgumentException.class);
 
         // inner class
         a = assertThatThrownBy(() -> ExtensionModel.of(InnerClassExtension.class).newInstance());
-        a.isExactlyInstanceOf(IllegalArgumentException.class);
+        a.isExactlyInstanceOf(ExtensionDeclarationException.class);
 
         // Takes parameter
         a = assertThatThrownBy(() -> ExtensionModel.of(TakesParameterExtension.class).newInstance());

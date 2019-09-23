@@ -26,17 +26,19 @@ import app.packed.util.Key;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.InjectionExtensionNode;
-import packed.internal.service.run.MappingRunEntry;
+import packed.internal.service.run.MappingRuntimeEntry;
 import packed.internal.service.run.RSE;
 
 /**
- *
+ * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
  */
 final class MappingBuildEntry<F, T> extends BuildEntry<T> {
 
+    /** The entry that should be mapped. */
     final ServiceEntry<F> entryToMap;
 
-    private final Function<F, T> function;
+    /** The function to apply on the */
+    private final Function<? super F, T> function;
 
     MappingBuildEntry(InjectionExtensionNode injectorBuilder, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function, ConfigSite configSite) {
         super(injectorBuilder, configSite);
@@ -74,6 +76,6 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     /** {@inheritDoc} */
     @Override
     protected RSE<T> newRuntimeNode() {
-        return new MappingRunEntry<>(this, entryToMap, function);
+        return new MappingRuntimeEntry<>(this, entryToMap, function);
     }
 }

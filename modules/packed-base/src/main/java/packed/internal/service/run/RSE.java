@@ -27,11 +27,11 @@ import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 
-/** A node that represents a service at runtime. */
+/** An entry that represents a service at runtime. */
 // BuildEntry does not implements ServiceDescriptor because it is mutable
 public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
 
-    /** The point where this node was registered. */
+    /** The point where this entry was registered. */
     private final ConfigSite configSite;
 
     /** An (optionally) description of the service. */
@@ -48,7 +48,7 @@ public abstract class RSE<T> implements ServiceEntry<T>, ServiceDescriptor {
     }
 
     /**
-     * Creates a new runtime node from a build node.
+     * Creates a new runtime node from a build entry.
      *
      * @param buildEntry
      *            the build node to create the runtime node from

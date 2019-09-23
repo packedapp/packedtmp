@@ -249,6 +249,5 @@ public interface ServiceRequest /* extends ServiceDependency */ {
         return new ServiceRequestImpl(ServiceDependency.of(key), requireNonNull(component, "component is null"));
     }
 
-    // withTags();// A way to provide info to @Provides....ahh bare mere boebl
     // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt
 }

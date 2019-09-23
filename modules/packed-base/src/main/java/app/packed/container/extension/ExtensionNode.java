@@ -29,6 +29,12 @@ public abstract class ExtensionNode<T extends Extension> {
     // Or initialized, by the runtime....
     private final PackedExtensionContext context;
 
+    /**
+     * Creates a new extension node.
+     * 
+     * @param context
+     *            the extension node provided by the Packed runtime via {@link Extension#context()}.
+     */
     protected ExtensionNode(ExtensionContext context) {
         this.context = (PackedExtensionContext) requireNonNull(context, "context is null");
     }

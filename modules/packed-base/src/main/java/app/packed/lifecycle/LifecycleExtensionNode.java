@@ -42,5 +42,4 @@ public final class LifecycleExtensionNode extends ExtensionNode<LifecycleExtensi
         mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
         // TODO check that we do not have multiple @Main methods
     }
-
 }

@@ -26,8 +26,7 @@ import app.packed.container.extension.ActivateExtension;
 import app.packed.util.Key;
 
 /**
- * An annotation indicating that the annotated type, method or field provides a service of some kind. A field
- * 
+ * An annotation indicating that an annotated type, method or field provides a service of some kind. A field
  * 
  * Or a final field.
  * 
@@ -126,8 +125,8 @@ public @interface Provide {
      * to.... to avoid having to export it from the bundle.
      * 
      * <p>
-     * The service is always exported out under the same key as it is registered under internally in the bundle. If you wish
-     * to export it out under another you key you can use {@link #exportAs()}. If you need to export the service out under a
+     * The service is always exported using the same key as it is registered under internally in a container. If you wish to
+     * export it out under another you key you can use {@link #exportAs()}. If you need to export the service out under a
      * key that uses a qualifier or a generic type. There is no way out of having to it manually
      * 
      * to use another key, the service must be explicitly exported, for example, using Bundle#exportService().
@@ -151,12 +150,12 @@ public @interface Provide {
      */
     InstantiationMode instantionMode() default InstantiationMode.SINGLETON;
 
-    /**
-     * Returns the tags of the service.
-     * 
-     * @return the tags of the service
-     */
-    String[] tags() default {};
+    // /**
+    // * Returns the tags of the service.
+    // *
+    // * @return the tags of the service
+    // */
+    // String[] tags() default {};
 
     // exportedKey = Class<? Supplier<Key>>??? ///
 }

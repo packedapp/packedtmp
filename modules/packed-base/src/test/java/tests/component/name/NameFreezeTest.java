@@ -37,6 +37,10 @@ import support.testutil.ContainerConfigurationTester;
  */
 public class NameFreezeTest extends AbstractArtifactTest {
 
+    /**
+     * Tests that we cannot call {@link ComponentConfiguration#setName(String)}. After
+     * {@link ComponentConfiguration#getName()}.
+     */
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {

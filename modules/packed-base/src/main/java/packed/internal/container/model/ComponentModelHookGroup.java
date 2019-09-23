@@ -34,7 +34,7 @@ import app.packed.container.extension.AnnotatedMethodHook;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.container.extension.OnHookXModel;
+import packed.internal.container.extension.OnHookGroupModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.extension.hook.ExtensionCallback;
 import packed.internal.container.extension.hook.HookGroupBuilderModel;
@@ -75,7 +75,7 @@ final class ComponentModelHookGroup {
         /** The component model builder that is creating this group. */
         private final ComponentModel.Builder componentModelBuilder;
 
-        final OnHookXModel con;
+        final OnHookGroupModel con;
 
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;

@@ -28,6 +28,7 @@ import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.InjectionWireletPipeline;
+import packed.internal.service.build.export.ExportedBuildEntry;
 import packed.internal.service.run.RSE;
 import packed.internal.service.run.RSESingleton;
 
@@ -74,8 +75,8 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         /** {@inheritDoc} */
         @Override
         protected void process(InjectionWireletPipeline extension) {
-            for (var s : extension.node().exports()) {
-                action.accept(s.toDescriptor());
+            for (ExportedBuildEntry<?> e : extension.node().exports()) {
+                action.accept(e.toDescriptor());
             }
         }
 

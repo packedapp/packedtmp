@@ -36,7 +36,6 @@ import packed.internal.util.KeyBuilder;
  * The reason for for separating them into two interfaces to avoid retaining any information that is not strictly needed
  * at runtime.
  */
-// BuildNode also implements Service, because it must available at some point???Tjah...
 public interface ServiceEntry<T> {
 
     /**

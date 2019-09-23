@@ -15,11 +15,41 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 
+import packed.internal.container.model.ComponentModel;
+
 /** A hook representing a instance whose type is annotated with a specific annotation type. */
-// What about inheritance
+// Kan f.eks. bruges til @Provide, hvor vi i saa fald skal have adgang til en instans.......
+// Hvilket foerst kan ske paa runtime.... Ligesom AnnotatedMethods + Annotated Fields...
 public final class AnnotatedTypeHook<T extends Annotation> {
+
+    /** The annotation value. */
+    private final T annotation;
+
+    /** The builder for the component type. */
+    final ComponentModel.Builder builder;
+
+    /** The annotated type. */
+    private final Class<?> type;
+
+    /**
+     * Creates a new hook instance.
+     * 
+     * @param builder
+     *            the builder for the component type
+     * @param type
+     *            the annotated type
+     * @param annotation
+     *            the annotation value
+     */
+    AnnotatedTypeHook(ComponentModel.Builder builder, Class<?> type, T annotation) {
+        this.builder = requireNonNull(builder);
+        this.type = requireNonNull(type);
+        this.annotation = requireNonNull(annotation);
+    }
 
     /**
      * Returns the annotation value.
@@ -27,15 +57,15 @@ public final class AnnotatedTypeHook<T extends Annotation> {
      * @return the annotation value
      */
     public T annotation() {
-        throw new UnsupportedOperationException();
+        return annotation;
     }
 
     /**
-     * Returns the type that is annotated.
+     * Returns the annotated type.
      * 
-     * @return the type that is annotated
+     * @return the annotated type
      */
     public Class<?> type() {
-        throw new UnsupportedOperationException();
+        return type;
     }
 }
