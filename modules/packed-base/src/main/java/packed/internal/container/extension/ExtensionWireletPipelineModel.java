@@ -15,6 +15,8 @@
  */
 package packed.internal.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 
@@ -22,7 +24,6 @@ import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.reflect.ConstructorFinder;
-import packed.internal.reflect.MemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ThrowableUtil;
 
@@ -62,7 +63,7 @@ public final class ExtensionWireletPipelineModel {
         Class<? extends ExtensionNode<?>> nodeModel = (Class<? extends ExtensionNode<?>>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);
         this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
-        this.pipelineClass = (Class<? extends ExtensionWireletPipeline<?>>) builder.actualType;
+        this.pipelineClass = builder.actualType;
         this.node = ExtensionNodeModel.of(nodeModel);
     }
 
@@ -97,13 +98,15 @@ public final class ExtensionWireletPipelineModel {
         return ExtensionWireletModel.CACHE.get(wireletType).pipeline;
     }
 
-    private static class Builder extends MemberProcessor {
+    private static class Builder {
+
+        private final Class<? extends ExtensionWireletPipeline<?>> actualType;
 
         /**
          * @param type
          */
         private Builder(Class<? extends ExtensionWireletPipeline<?>> type) {
-            super(ExtensionWireletPipeline.class, type);
+            actualType = requireNonNull(type);
         }
 
         ExtensionWireletPipelineModel build() {
