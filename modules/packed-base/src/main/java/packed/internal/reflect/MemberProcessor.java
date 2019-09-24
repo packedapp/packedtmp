@@ -17,13 +17,13 @@ package packed.internal.reflect;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 /**
  * Processes all fields and methods on a specified class.
@@ -33,9 +33,6 @@ public abstract class MemberProcessor {
 
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
-
-    /** */
-    private final HashSet<Package> PKG = new HashSet<>();
 
     private final Class<?> baseType;
 
@@ -47,13 +44,25 @@ public abstract class MemberProcessor {
         // TODO we should probably check that actual type is a super type
     }
 
-    public MethodHandle findConstructor(Class<?>... parameterTypes) {
-        return ConstructorFinder.extract(actualType, parameterTypes);
-    }
-
     /** Finds all relevant methods and invokes {@link #processMethod(Method)}. */
     public final void findMethods() {
         find(false);
+    }
+
+    public static void processMethodsAndFields(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer,
+            Consumer<? super Field> fieldConsumer) {
+        new MemberProcessor(baseType, actualType) {
+
+            @Override
+            protected void processField(Field field) {
+                fieldConsumer.accept(field);
+            }
+
+            @Override
+            protected void processMethod(Method method) {
+                methodConsumer.accept(method);
+            }
+        }.findMethodsAndFields();
     }
 
     public final void findMethodsAndFields() {
@@ -61,6 +70,7 @@ public abstract class MemberProcessor {
     }
 
     private void find(boolean processFields) {
+        HashSet<Package> PKG = new HashSet<>();
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
         HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();

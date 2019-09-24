@@ -21,6 +21,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.ThrowableUtil;
@@ -59,8 +60,8 @@ public final class ExtensionWireletPipelineModel {
     @SuppressWarnings("unchecked")
     private ExtensionWireletPipelineModel(Builder builder) {
         Class<? extends ExtensionNode<?>> nodeModel = (Class<? extends ExtensionNode<?>>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
-        this.constructorNode = builder.findConstructor(nodeModel);
-        this.constructorPipeline = builder.findConstructor(builder.actualType);
+        this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);
+        this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
         this.pipelineClass = (Class<? extends ExtensionWireletPipeline<?>>) builder.actualType;
         this.node = ExtensionNodeModel.of(nodeModel);
     }

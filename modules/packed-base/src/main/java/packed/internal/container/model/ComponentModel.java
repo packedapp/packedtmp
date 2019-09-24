@@ -18,8 +18,6 @@ package packed.internal.container.model;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
@@ -69,9 +67,9 @@ public final class ComponentModel {
     }
 
     /**
-     * Returns the default prefix for the container, if no name is explicitly set.
+     * Returns the default prefix for the component, if no name is explicitly set by the user.
      * 
-     * @return the default prefix for the container, if no name is explicitly set
+     * @return the default prefix for the component, if no name is explicitly set by the user
      */
     public String defaultPrefix() {
         String s = simpleName;
@@ -82,7 +80,7 @@ public final class ComponentModel {
     }
 
     /** A builder object for a component model. */
-    public static final class Builder extends MemberProcessor {
+    public static final class Builder {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<Class<? extends Extension>[]> EXTENSION_ACTIVATORS = new ClassValue<>() {
@@ -100,77 +98,63 @@ public final class ComponentModel {
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, ComponentModelHookGroup.Builder> extensionBuilders = new IdentityHashMap<>();
 
-        private boolean isBuild;
+        private boolean isFinished;
 
         /** A lookup object for the component. */
         private final ComponentLookup lookup;
 
         /**
+         * Creates a new component model builder
+         * 
          * @param lookup
+         *            the component lookup
          * @param componentType
+         *            the type of component
          */
         Builder(ComponentLookup lookup, Class<?> componentType) {
-            super(Object.class, componentType);
             this.lookup = requireNonNull(lookup);
             this.componentType = requireNonNull(componentType);
         }
 
         /**
-         * Builds and returns a new descriptor.
+         * Builds and returns a new model.
          * 
-         * @return a new descriptor
+         * @return a new model
          */
         ComponentModel build() {
-            findMethodsAndFields();
+            // Runs through every interesting field and method.
+            MemberProcessor.processMethodsAndFields(Object.class, componentType, method -> {
+                for (Annotation a : method.getAnnotations()) {
+                    Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                    if (extensionTypes != null) {
+                        for (Class<? extends Extension> eType : extensionTypes) {
+                            extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelHookGroup.Builder(this, k)).onAnnotatedMethod(method, a);
+                        }
+                    }
+                }
+            }, field -> {
+                for (Annotation a : field.getAnnotations()) {
+                    Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                    if (extensionTypes != null) {
+                        for (Class<? extends Extension> eType : extensionTypes) {
+                            extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelHookGroup.Builder(this, k)).onAnnotatedField(field, a);
+                        }
+                    }
+                }
+            });
             ComponentModel cm = new ComponentModel(this);
-            isBuild = true;
+            isFinished = true;
             return cm;
         }
 
         public void checkActive() {
-            if (isBuild) {
-                throw new IllegalStateException();
+            if (isFinished) {
+                throw new IllegalStateException("This method cannot be called after the component type has processed");
             }
-        }
-
-        /**
-         * Returns the type of component we are building a model for.
-         * 
-         * @return the type of component we are building a model for
-         */
-        public Class<?> componentType() {
-            return componentType;
         }
 
         public ComponentLookup lookup() {
             return lookup;
         }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void processField(Field field) {
-            for (Annotation a : field.getAnnotations()) {
-                Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                if (extensionTypes != null) {
-                    for (Class<? extends Extension> eType : extensionTypes) {
-                        extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelHookGroup.Builder(this, k)).onAnnotatedField(field, a);
-                    }
-                }
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void processMethod(Method method) {
-            for (Annotation a : method.getAnnotations()) {
-                Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
-                if (extensionTypes != null) {
-                    for (Class<? extends Extension> eType : extensionTypes) {
-                        extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelHookGroup.Builder(this, k)).onAnnotatedMethod(method, a);
-                    }
-                }
-            }
-        }
     }
-
 }

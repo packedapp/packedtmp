@@ -67,7 +67,7 @@ final class ComponentModelHookGroup {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static class Builder {
+    static final class Builder {
 
         private final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
 

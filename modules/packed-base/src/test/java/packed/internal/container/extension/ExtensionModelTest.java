@@ -48,7 +48,8 @@ public class ExtensionModelTest {
 
         @SuppressWarnings("rawtypes")
         Class c = ExtensionModelTest.class;
-        // Does not extend Extension, this is
+        // Does not extend Extension, this is only relevant if some user calls
+        // ComponentConfiguration.use((Class) someNonExtensionClass.class);
         a = assertThatThrownBy(() -> ExtensionModel.of(c).newInstance());
         a.isExactlyInstanceOf(IllegalArgumentException.class);
 
@@ -58,7 +59,7 @@ public class ExtensionModelTest {
 
         // Takes parameter
         a = assertThatThrownBy(() -> ExtensionModel.of(TakesParameterExtension.class).newInstance());
-        a.isExactlyInstanceOf(IllegalArgumentException.class);
+        a.isExactlyInstanceOf(ExtensionDeclarationException.class);
     }
 
     @Test

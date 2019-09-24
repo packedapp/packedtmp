@@ -15,20 +15,23 @@
  */
 package packed.internal.container.extension;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.Nullable;
 import packed.internal.hook.OnHookMemberProcessor;
-import packed.internal.reflect.AbstractInstantiableModel;
+import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
-public final class ExtensionModel<T extends Extension> extends AbstractInstantiableModel<T> {
+public final class ExtensionModel<T extends Extension> {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionModel<?>> CACHE = new ClassValue<>() {
@@ -49,12 +52,15 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         }
     };
 
-    /** If the extension has a corresponding extension node */
-    @Nullable
-    private final ExtensionNodeModel node;
+    /** The method handle used to create a new instances. */
+    private final MethodHandle constructor;
 
     /** The type of the extension this model covers. */
     public final Class<? extends Extension> extensionType;
+
+    /** If the extension has a corresponding extension node */
+    @Nullable
+    private final ExtensionNodeModel node;
 
     final OnHookGroupModel onHoox;
 
@@ -66,10 +72,30 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
      */
     @SuppressWarnings("unchecked")
     private ExtensionModel(Builder builder) {
-        super(builder.findConstructor());
+        constructor = builder.constructor;
         this.extensionType = (Class<? extends Extension>) builder.actualType;
         this.node = builder.node == null ? null : builder.node.build(this);
         this.onHoox = new OnHookGroupModel(builder.onHooks);
+    }
+
+    public OnHookGroupModel model() {
+        return onHoox;
+    }
+
+    /**
+     * Creates a new instance.
+     * 
+     * @return a new instance
+     */
+    public final T newInstance() {
+        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
+        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
+        try {
+            return (T) constructor.invoke();
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     /**
@@ -80,10 +106,6 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     @Nullable
     public ExtensionNodeModel node() {
         return node;
-    }
-
-    public OnHookGroupModel model() {
-        return onHoox;
     }
 
     /**
@@ -101,7 +123,10 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
     }
 
     /** A builder for {@link ExtensionModel}. */
-    static class Builder extends MemberProcessor {
+    static final class Builder extends MemberProcessor {
+
+        /** The constructor used to create a new extension instance. */
+        private final MethodHandle constructor;
 
         @Nullable
         private ExtensionNodeModel.Builder node;
@@ -114,8 +139,9 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
         private Builder(Class<? extends Extension> extensionType) {
             super(Extension.class, extensionType);
             if (!Modifier.isFinal(extensionType.getModifiers())) {
-                throw new ExtensionDeclarationException("The extension " + StringFormatter.format(extensionType) + " must be declared final");
+                throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be declared final");
             }
+            constructor = ConstructorFinder.find(extensionType);
             this.onHooks = new OnHookMemberProcessor(Extension.class, extensionType, false);
         }
 

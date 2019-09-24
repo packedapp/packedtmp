@@ -26,7 +26,7 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.util.InvalidDeclarationException;
-import packed.internal.reflect.AbstractInstantiableModel;
+import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -35,7 +35,7 @@ import packed.internal.util.TypeUtil;
 /**
  * An {@link HookGroupBuilderModel} wraps
  */
-public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookGroupBuilder<?>> {
+public final class HookGroupBuilderModel {
 
     /** A cache of information for aggregator types. */
     private static final ClassValue<HookGroupBuilderModel> MODEL_CACHE = new ClassValue<>() {
@@ -59,6 +59,9 @@ public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookG
     /** The type of aggregator. */
     private final Class<?> builderType;
 
+    /** The method handle used to create a new instances. */
+    private final MethodHandle constructor;
+
     /** The type of result the aggregator produces. */
     private final Class<?> groupType;
 
@@ -69,7 +72,7 @@ public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookG
      *            the builder to create a model from
      */
     private HookGroupBuilderModel(Builder builder) {
-        super(builder.findConstructor());
+        this.constructor = ConstructorFinder.find(builder.actualType);
         this.builderType = builder.actualType;
         this.groupType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.annotatedMethods);
@@ -133,6 +136,26 @@ public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookG
     }
 
     /**
+     * Creates a new instance.
+     * 
+     * @return a new instance
+     */
+    public final HookGroupBuilder<?> newInstance() {
+        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
+        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
+        try {
+            return (HookGroupBuilder<?>) constructor.invoke();
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
+        }
+    }
+
+    public static HookGroupBuilder<?> newInstance(Class<? extends HookGroupBuilder<?>> type) {
+        return of(type).newInstance();
+    }
+
+    /**
      * Returns a model for the specified hook group builder type.
      * 
      * @param type
@@ -141,10 +164,6 @@ public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookG
      */
     public static HookGroupBuilderModel of(Class<? extends HookGroupBuilder<?>> type) {
         return MODEL_CACHE.get(type);
-    }
-
-    public static HookGroupBuilder<?> newInstance(Class<? extends HookGroupBuilder<?>> type) {
-        return of(type).newInstance();
     }
 
     /** A builder object, that extract relevant methods from a hook group builder. */
