@@ -25,7 +25,6 @@ import app.packed.container.WireletList;
 import app.packed.container.extension.ComposableExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
-import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -61,8 +60,7 @@ import packed.internal.service.run.AbstractInjector;
 public final class ServiceExtension extends ComposableExtension<ServiceExtensionNode> {
 
     /** The extension node, initialized via {@link #onAdded()}. */
-    @Nullable
-    private ServiceExtensionNode node;
+    private final ServiceExtensionNode node = new ServiceExtensionNode(this);
 
     /** Should never be initialized by users. */
     ServiceExtension() {}
@@ -158,12 +156,6 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         // explicitRequirementsManagement
         checkConfigurable();
         node.dependencies().manualRequirementsManagement();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ServiceExtensionNode onAdded() {
-        return node = new ServiceExtensionNode(context());
     }
 
     /** {@inheritDoc} */

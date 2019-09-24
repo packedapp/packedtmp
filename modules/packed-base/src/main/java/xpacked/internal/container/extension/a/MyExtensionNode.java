@@ -16,7 +16,6 @@
 package xpacked.internal.container.extension.a;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.hook.OnHookGroup;
 
@@ -25,11 +24,8 @@ import app.packed.hook.OnHookGroup;
  */
 public final class MyExtensionNode extends ExtensionNode<MyExtension> {
 
-    /**
-     * @param context
-     */
-    protected MyExtensionNode(ExtensionContext context) {
-        super(context);
+    protected MyExtensionNode(MyExtension extension) {
+        super(extension);
     }
 
     @OnHookGroup(Agg.class)

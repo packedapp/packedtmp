@@ -16,7 +16,6 @@
 package app.packed.lifecycle;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.hook.OnHookGroup;
 
@@ -25,11 +24,8 @@ import app.packed.hook.OnHookGroup;
  */
 public final class LifecycleExtensionNode extends ExtensionNode<LifecycleExtension> {
 
-    /**
-     * @param context
-     */
-    protected LifecycleExtensionNode(ExtensionContext context) {
-        super(context);
+    protected LifecycleExtensionNode(LifecycleExtension extension) {
+        super(extension);
     }
 
     /**

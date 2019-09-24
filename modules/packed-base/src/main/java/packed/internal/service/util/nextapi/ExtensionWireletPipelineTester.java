@@ -38,14 +38,11 @@ class MyExtension extends Extension {
 
 class MyExtensionNode extends ExtensionNode<MyExtension> {
 
-    final MyExtension extension;
-
     /**
      * @param context
      */
     protected MyExtensionNode(MyExtension extension, ExtensionContext context) {
-        super(context);
-        this.extension = extension;
+        super(extension);
     }
 }
 
@@ -80,6 +77,6 @@ class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionNod
 
     String getName() {
         String n = name;
-        return n == null ? node().extension.name : n;
+        return n == null ? node().extension().name : n;
     }
 }

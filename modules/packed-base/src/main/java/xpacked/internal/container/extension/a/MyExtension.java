@@ -24,11 +24,6 @@ import app.packed.hook.AnnotatedMethodHook;
  */
 public final class MyExtension extends Extension {
 
-    @Override
-    protected MyExtensionNode onAdded() {
-        return new MyExtensionNode(context());
-    }
-
     public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyAnnotation> h) {
         // ignore
     }

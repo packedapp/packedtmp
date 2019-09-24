@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionNode;
 import support.testutil.AbstractArtifactTest;
 
 /**
@@ -49,9 +48,8 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     static final class Ex1 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected ExtensionNode<?> onAdded() {
+        protected void onAdded() {
             use(Ex2.class);
-            return null;
         }
 
     }
@@ -59,36 +57,32 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     static final class Ex2 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected ExtensionNode<?> onAdded() {
+        protected void onAdded() {
             use(Ex3.class);
-            return null;
         }
     }
 
     static final class Ex3 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected ExtensionNode<?> onAdded() {
+        protected void onAdded() {
             // use(Ex2.class);
-            return null;
         }
     }
 
     static final class ExRecursive1 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected ExtensionNode<?> onAdded() {
+        protected void onAdded() {
             use(ExRecursive2.class);
-            return null;
         }
     }
 
     static final class ExRecursive2 extends Extension {
         /** {@inheritDoc} */
         @Override
-        protected ExtensionNode<?> onAdded() {
+        protected void onAdded() {
             use(ExRecursive1.class);
-            return null;
         }
     }
 }

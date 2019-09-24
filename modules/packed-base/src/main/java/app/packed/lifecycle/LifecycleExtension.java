@@ -59,10 +59,7 @@ import packed.internal.util.StringFormatter;
 
 public final class LifecycleExtension extends Extension {
 
-    @Override
-    protected LifecycleExtensionNode onAdded() {
-        return new LifecycleExtensionNode(context());
-    }
+    final LifecycleExtensionNode node = new LifecycleExtensionNode(this);
 
     public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
         main(Key.of(serviceKey), consumer);

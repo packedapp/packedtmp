@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.hook.OnHookGroup;
 import app.packed.service.Inject;
@@ -75,12 +74,11 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
     /**
      * Creates a new builder.
      * 
-     * @param context
-     *            the extension context
+     * @param extension
+     *            the service extension
      */
-    public ServiceExtensionNode(ExtensionContext context) {
-        // Kunne vi ikke bare tage en extension her????? istedet for en context
-        super(context);
+    public ServiceExtensionNode(ServiceExtension extension) {
+        super(extension);
     }
 
     public void addErrorMessage() {

@@ -18,7 +18,6 @@ package app.packed.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.BundleDescriptor;
-import packed.internal.container.extension.PackedExtensionContext;
 
 /**
  * Extension nodes enables communication across extension instances of the same. It also enables using wirelets if X
@@ -27,27 +26,25 @@ import packed.internal.container.extension.PackedExtensionContext;
 public abstract class ExtensionNode<T extends Extension> {
 
     // Or initialized, by the runtime....
-    private final PackedExtensionContext context;
+    private final T extension;
 
     /**
      * Creates a new extension node.
      * 
-     * @param context
-     *            the extension node provided by the Packed runtime via {@link Extension#context()}.
+     * @param extension
+     *            the extension this node belongs to
      */
-    protected ExtensionNode(ExtensionContext context) {
-
-        this.context = (PackedExtensionContext) requireNonNull(context, "context is null");
+    protected ExtensionNode(T extension) {
+        this.extension = requireNonNull(extension, "context is null");
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {}
 
     public final ExtensionContext context() {
-        return context;
+        return extension.context();
     }
 
-    @SuppressWarnings("unchecked")
     public final T extension() {
-        return (T) context.extension();
+        return extension;
     }
 }

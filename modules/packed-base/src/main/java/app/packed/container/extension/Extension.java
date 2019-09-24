@@ -81,7 +81,11 @@ public abstract class Extension {
             @Override
             public ExtensionNode<?> initializeExtension(PackedExtensionContext context) {
                 context.extension().context = context;
-                return context.extension().onAdded();
+                context.extension().onAdded();
+                if (context.extension() instanceof ComposableExtension<?>) {
+                    return ((ComposableExtension<?>) context.extension()).node();
+                }
+                return null;
             }
 
             /** {@inheritDoc} */
@@ -202,9 +206,7 @@ public abstract class Extension {
      * <p>
      * The default implementation of this method does nothing.
      */
-    protected ExtensionNode<?> onAdded() {
-        return null;
-    }
+    protected void onAdded() {}
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically

@@ -21,7 +21,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionNode;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Nullable;
@@ -96,9 +95,8 @@ public final class ComponentExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensionNode<?> onAdded() {
+    protected void onAdded() {
         this.pcc = ((PackedExtensionContext) context()).pcc;
-        return super.onAdded();
     }
 
     // Scans this package...
