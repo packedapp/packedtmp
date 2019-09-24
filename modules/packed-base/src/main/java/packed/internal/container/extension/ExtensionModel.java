@@ -16,7 +16,6 @@
 package packed.internal.container.extension;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 
@@ -70,10 +69,9 @@ public final class ExtensionModel<T extends Extension> {
      * @param builder
      *            the builder for this model
      */
-    @SuppressWarnings("unchecked")
     private ExtensionModel(Builder builder) {
         constructor = builder.constructor;
-        this.extensionType = (Class<? extends Extension>) builder.actualType;
+        this.extensionType = builder.extensionType;
         this.node = builder.node == null ? null : builder.node.build(this);
         this.onHoox = new OnHookGroupModel(builder.onHooks);
     }
@@ -123,7 +121,7 @@ public final class ExtensionModel<T extends Extension> {
     }
 
     /** A builder for {@link ExtensionModel}. */
-    static final class Builder extends MemberProcessor {
+    static final class Builder {
 
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
@@ -136,8 +134,10 @@ public final class ExtensionModel<T extends Extension> {
 
         final OnHookMemberProcessor onHooks;
 
+        final Class<? extends Extension> extensionType;
+
         private Builder(Class<? extends Extension> extensionType) {
-            super(Extension.class, extensionType);
+            this.extensionType = extensionType;
             if (!Modifier.isFinal(extensionType.getModifiers())) {
                 throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be declared final");
             }
@@ -145,30 +145,27 @@ public final class ExtensionModel<T extends Extension> {
             this.onHooks = new OnHookMemberProcessor(Extension.class, extensionType, false);
         }
 
+        @SuppressWarnings("unchecked")
         private ExtensionModel<?> build() {
-            findMethods();
+            MemberProcessor.processMethods(Extension.class, extensionType, method -> {
+                onHooks.processMethod(method);
+
+                if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {
+                    Class<?> nodeType = method.getReturnType();
+                    if (nodeType != ExtensionNode.class) {
+                        this.nodeType = (Class<? extends ExtensionNode<?>>) nodeType;
+                        // Vi vil gerne have den final... Saa brugere ikke returnere end anden type
+                        if (!Modifier.isFinal(nodeType.getModifiers())) {
+                            throw new ExtensionDeclarationException(
+                                    "The extension node returned by onAdded(), must be declareda final, node type = " + StringFormatter.format(nodeType));
+                        }
+                    }
+                }
+            });
             if (nodeType != null) {
                 node = new ExtensionNodeModel.Builder(this, nodeType);
             }
             return new ExtensionModel<>(this);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        protected void processMethod(Method method) {
-            onHooks.processMethod(method);
-
-            if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {
-                Class<?> nodeType = method.getReturnType();
-                if (nodeType != ExtensionNode.class) {
-                    this.nodeType = (Class<? extends ExtensionNode<?>>) nodeType;
-                    // Vi vil gerne have den final... Saa brugere ikke returnere end anden type
-                    if (!Modifier.isFinal(nodeType.getModifiers())) {
-                        throw new ExtensionDeclarationException(
-                                "The extension node returned by onAdded(), must be declareda final, node type = " + StringFormatter.format(nodeType));
-                    }
-                }
-            }
         }
     }
 }

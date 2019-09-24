@@ -49,6 +49,16 @@ public abstract class MemberProcessor {
         find(false);
     }
 
+    public static void processMethods(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer) {
+        new MemberProcessor(baseType, actualType) {
+
+            @Override
+            protected void processMethod(Method method) {
+                methodConsumer.accept(method);
+            }
+        }.findMethods();
+    }
+
     public static void processMethodsAndFields(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer,
             Consumer<? super Field> fieldConsumer) {
         new MemberProcessor(baseType, actualType) {
