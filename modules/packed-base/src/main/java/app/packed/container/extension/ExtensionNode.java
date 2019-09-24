@@ -25,25 +25,37 @@ import app.packed.container.BundleDescriptor;
  */
 public abstract class ExtensionNode<T extends Extension> {
 
-    // Or initialized, by the runtime....
+    /** The extension the node is a part of */
     private final T extension;
 
     /**
      * Creates a new extension node.
      * 
      * @param extension
-     *            the extension this node belongs to
+     *            the extension this node is a part of
      */
     protected ExtensionNode(T extension) {
-        this.extension = requireNonNull(extension, "context is null");
+        this.extension = requireNonNull(extension, "extension is null");
     }
 
     public void buildDescriptor(BundleDescriptor.Builder builder) {}
 
+    /**
+     * Returns the extension context.
+     * 
+     * @return the extension context
+     * @throws IllegalStateException
+     *             if called from within the constructor of the extension.
+     */
     public final ExtensionContext context() {
         return extension.context();
     }
 
+    /**
+     * Returns the extension the node is a part of.
+     * 
+     * @return the extension the node is a part of
+     */
     public final T extension() {
         return extension;
     }

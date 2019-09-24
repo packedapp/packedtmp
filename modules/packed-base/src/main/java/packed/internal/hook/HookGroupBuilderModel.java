@@ -141,19 +141,14 @@ public final class HookGroupBuilderModel {
      * 
      * @return a new instance
      */
-    public final HookGroupBuilder<?> newInstance() {
-        // Time goes from around 1000 ns to 12 ns when we cache the method handle.
-        // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
+    public static HookGroupBuilder<?> newInstance(Class<? extends HookGroupBuilder<?>> type) {
+        HookGroupBuilderModel m = of(type);
         try {
-            return (HookGroupBuilder<?>) constructor.invoke();
+            return (HookGroupBuilder<?>) m.constructor.invoke();
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
         }
-    }
-
-    public static HookGroupBuilder<?> newInstance(Class<? extends HookGroupBuilder<?>> type) {
-        return of(type).newInstance();
     }
 
     /**
@@ -176,7 +171,7 @@ public final class HookGroupBuilderModel {
         /** The type of hook group the builder produces. */
         private final Class<?> groupType;
 
-        final OnHookMemberBuilder p;
+        final HookClassBuilder p;
 
         /**
          * Creates a new builder for the specified hook group builder type.
@@ -186,7 +181,7 @@ public final class HookGroupBuilderModel {
          */
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
-            p = new OnHookMemberBuilder(HookGroupBuilder.class, builderType, true);
+            p = new HookClassBuilder(builderType, true);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
             TypeUtil.checkClassIsInstantiable(builderType);
         }

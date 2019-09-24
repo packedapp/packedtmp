@@ -24,8 +24,8 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.Nullable;
+import packed.internal.hook.HookClassBuilder;
 import packed.internal.hook.OnHookGroupModel;
-import packed.internal.hook.OnHookMemberBuilder;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -76,7 +76,7 @@ public final class ExtensionModel<T extends Extension> {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
         this.node = builder.node == null ? null : builder.node.build(this);
-        this.hooks = new OnHookGroupModel(builder.onHooks);
+        this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
     }
 
     public OnHookGroupModel hooks() {
@@ -137,10 +137,7 @@ public final class ExtensionModel<T extends Extension> {
         @Nullable
         private ExtensionNodeModel.Builder node;
 
-        @Nullable
-        private Class<? extends ExtensionNode<?>> nodeType;
-
-        final OnHookMemberBuilder onHooks;
+        final HookClassBuilder hooks;
 
         @SuppressWarnings("unchecked")
         private Builder(Class<? extends Extension> extensionType) {
@@ -149,10 +146,10 @@ public final class ExtensionModel<T extends Extension> {
                 throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be declared final");
             }
             constructor = ConstructorFinder.find(extensionType);
-            this.onHooks = new OnHookMemberBuilder(Extension.class, extensionType, false);
+            this.hooks = new HookClassBuilder(extensionType, false);
 
             if (ComposableExtension.class.isAssignableFrom(extensionType)) {
-                this.nodeType = (Class<? extends ExtensionNode<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
+                Class<? extends ExtensionNode<?>> nodeType = (Class<? extends ExtensionNode<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
                 if (!Modifier.isFinal(nodeType.getModifiers())) {
                     throw new ExtensionDeclarationException(
                             "The extension node returned by onAdded(), must be declareda final, node type = " + StringFormatter.format(nodeType));
@@ -162,10 +159,7 @@ public final class ExtensionModel<T extends Extension> {
         }
 
         private ExtensionModel<?> build() {
-            MemberFinder.findMethods(Extension.class, extensionType, method -> {
-                onHooks.processMethod(method);
-
-            });
+            MemberFinder.findMethods(Extension.class, extensionType, method -> hooks.processMethod(method));
             return new ExtensionModel<>(this);
         }
     }

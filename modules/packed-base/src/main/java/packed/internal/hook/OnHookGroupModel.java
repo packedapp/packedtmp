@@ -1,5 +1,7 @@
 package packed.internal.hook;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.util.IdentityHashMap;
@@ -34,9 +36,8 @@ public final class OnHookGroupModel {
      * @param builder
      *            the builder to create the model from
      */
-    @SuppressWarnings("unchecked")
-    public OnHookGroupModel(OnHookMemberBuilder builder) {
-        this.extensionType = (Class<? extends Extension>) builder.actualType;
+    public OnHookGroupModel(HookClassBuilder builder, Class<? extends Extension> extensionType) {
+        this.extensionType = requireNonNull(extensionType);
         this.groups = builder.groups;
         this.annotatedFields = builder.annotatedFields;
         this.annotatedMethods = builder.annotatedMethods;

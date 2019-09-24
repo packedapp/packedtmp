@@ -24,7 +24,7 @@ import java.lang.reflect.InaccessibleObjectException;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.reflect.UncheckedIllegalAccessException;
-import packed.internal.hook.OnHookMemberBuilder;
+import packed.internal.hook.HookClassBuilder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
@@ -84,7 +84,7 @@ public final class ExtensionNodeModel {
 
         Lookup lookup = MethodHandles.lookup();
 
-        final OnHookMemberBuilder p;
+        final HookClassBuilder p;
 
         final Class<? extends ExtensionNode<?>> type;
 
@@ -92,12 +92,12 @@ public final class ExtensionNodeModel {
          * @param type
          */
         Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> type) {
-            p = new OnHookMemberBuilder(ExtensionNode.class, type, false);
+            p = new HookClassBuilder(type, false);
             this.type = type;
             this.builder = builder;
             lookup = MethodHandles.lookup();
             try {
-                builder.onHooks.lookup = MethodHandles.privateLookupIn(type, lookup);
+                builder.hooks.lookup = MethodHandles.privateLookupIn(type, lookup);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
                 throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(type) + ", the module '"
                         + type.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
@@ -106,8 +106,7 @@ public final class ExtensionNodeModel {
 
         ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
             MemberFinder.findMethods(ExtensionNode.class, type, method -> {
-                // Det her skal fikses. Basaltset er det fordi lok
-                builder.onHooks.processMethod(method);
+                builder.hooks.processMethod(method);
             });
             return new ExtensionNodeModel(extensionModel, this);
         }
