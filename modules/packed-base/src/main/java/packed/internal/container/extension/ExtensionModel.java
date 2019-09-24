@@ -60,11 +60,11 @@ public final class ExtensionModel<T extends Extension> {
     /** The type of the extension this model covers. */
     public final Class<? extends Extension> extensionType;
 
+    final OnHookGroupModel hooks;
+
     /** If the extension has a corresponding extension node */
     @Nullable
     private final ExtensionNodeModel node;
-
-    final OnHookGroupModel hooks;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -126,6 +126,9 @@ public final class ExtensionModel<T extends Extension> {
     /** A builder for {@link ExtensionModel}. */
     static final class Builder {
 
+        /** An type extractor to find the extension type the node belongs to. */
+        private static final TypeVariableExtractor COMPOSABLE_EXTENSION_TV_EXTRACTOR = TypeVariableExtractor.of(ComposableExtension.class);
+
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
 
@@ -138,9 +141,6 @@ public final class ExtensionModel<T extends Extension> {
         private Class<? extends ExtensionNode<?>> nodeType;
 
         final OnHookMemberBuilder onHooks;
-
-        /** An type extractor to find the extension type the node belongs to. */
-        private static final TypeVariableExtractor COMPOSABLE_EXTENSION_TV_EXTRACTOR = TypeVariableExtractor.of(ComposableExtension.class);
 
         @SuppressWarnings("unchecked")
         private Builder(Class<? extends Extension> extensionType) {
@@ -164,23 +164,8 @@ public final class ExtensionModel<T extends Extension> {
         private ExtensionModel<?> build() {
             MemberFinder.findMethods(Extension.class, extensionType, method -> {
                 onHooks.processMethod(method);
-                //
-                // if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {
-                // Class<?> nodeType = method.getReturnType();
-                // if (nodeType != ExtensionNode.class) {
-                // this.nodeType = (Class<? extends ExtensionNode<?>>) nodeType;
-                // // Vi vil gerne have den final... Saa brugere ikke returnere end anden type
-                // if (!Modifier.isFinal(nodeType.getModifiers())) {
-                // throw new ExtensionDeclarationException(
-                // "The extension node returned by onAdded(), must be declareda final, node type = " +
-                // StringFormatter.format(nodeType));
-                // }
-                // }
-                // }
+
             });
-            // if (nodeType != null) {
-            // node = new ExtensionNodeModel.Builder(this, nodeType);
-            // }
             return new ExtensionModel<>(this);
         }
     }

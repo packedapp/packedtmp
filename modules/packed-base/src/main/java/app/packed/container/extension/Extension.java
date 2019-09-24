@@ -30,7 +30,9 @@ import app.packed.container.WireletList;
 import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
+import packed.internal.container.extension.ExtensionNodeModel;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.util.StringFormatter;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -80,12 +82,22 @@ public abstract class Extension {
 
             @Override
             public ExtensionNode<?> initializeExtension(PackedExtensionContext context) {
-                context.extension().context = context;
-                context.extension().onAdded();
-                if (context.extension() instanceof ComposableExtension<?>) {
-                    return ((ComposableExtension<?>) context.extension()).node();
+                Extension e = context.extension();
+                e.context = context;
+                e.onAdded();
+
+                ExtensionNodeModel node = context.model.node();
+                ExtensionNode<?> en = null;
+                if (node != null) {
+                    en = ((ComposableExtension<?>) e).node();
+                    if (en == null) {
+                        throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must not return null");
+                    } else if (en.getClass() != node.type) {
+                        throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must return an (exact) instance of "
+                                + StringFormatter.format(node.type) + ", but returned an instance of " + StringFormatter.format(en.getClass()));
+                    }
                 }
-                return null;
+                return en;
             }
 
             /** {@inheritDoc} */

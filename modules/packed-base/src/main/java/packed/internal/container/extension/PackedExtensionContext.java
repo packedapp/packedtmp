@@ -46,17 +46,20 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
 
+    public final ExtensionModel<?> model;
+
     /**
      * Creates a new extension context.
      * 
      * @param pcc
      *            the configuration of the container the extension is registered in
-     * @param extension
-     *            the extension instance to wrap
+     * @param model
+     *            the extension model
      */
-    private PackedExtensionContext(PackedContainerConfiguration pcc, Extension extension) {
+    private PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> model) {
         this.pcc = requireNonNull(pcc);
-        this.extension = requireNonNull(extension);
+        this.model = model;
+        this.extension = requireNonNull(model.newInstance());
     }
 
     /** {@inheritDoc} */
@@ -138,7 +141,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @return the new extension context
      */
     public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
-        return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType).newInstance());
+        return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType));
     }
 
     static class DefCon {

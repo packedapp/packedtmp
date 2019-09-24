@@ -32,7 +32,7 @@ import packed.internal.util.StringFormatter;
 /**
  * A runtime model of an {@link ExtensionNode} implementation.
  */
-final class ExtensionNodeModel {
+public final class ExtensionNodeModel {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionNodeModel> CACHE = new ClassValue<>() {
@@ -52,6 +52,8 @@ final class ExtensionNodeModel {
     /** The extension the node belongs to. */
     public final ExtensionModel<?> extension;
 
+    public final Class<? extends ExtensionNode<?>> type;
+
     /**
      * Creates a new extension model.
      * 
@@ -60,6 +62,7 @@ final class ExtensionNodeModel {
      */
     private ExtensionNodeModel(ExtensionModel<?> extension, Builder builder) {
         this.extension = requireNonNull(extension);
+        this.type = builder.type;
     }
 
     /**
@@ -83,26 +86,26 @@ final class ExtensionNodeModel {
 
         final OnHookMemberBuilder p;
 
-        final Class<? extends ExtensionNode<?>> actualType;
+        final Class<? extends ExtensionNode<?>> type;
 
         /**
-         * @param actualType
+         * @param type
          */
-        Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> actualType) {
-            p = new OnHookMemberBuilder(ExtensionNode.class, actualType, false);
-            this.actualType = actualType;
+        Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> type) {
+            p = new OnHookMemberBuilder(ExtensionNode.class, type, false);
+            this.type = type;
             this.builder = builder;
             lookup = MethodHandles.lookup();
             try {
-                builder.onHooks.lookup = MethodHandles.privateLookupIn(actualType, lookup);
+                builder.onHooks.lookup = MethodHandles.privateLookupIn(type, lookup);
             } catch (IllegalAccessException | InaccessibleObjectException e) {
-                throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(actualType) + ", the module '"
-                        + actualType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
+                throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(type) + ", the module '"
+                        + type.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
             }
         }
 
         ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
-            MemberFinder.findMethods(ExtensionNode.class, actualType, method -> {
+            MemberFinder.findMethods(ExtensionNode.class, type, method -> {
                 // Det her skal fikses. Basaltset er det fordi lok
                 builder.onHooks.processMethod(method);
             });

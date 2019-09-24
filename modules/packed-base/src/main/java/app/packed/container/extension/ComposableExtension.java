@@ -21,8 +21,8 @@ package app.packed.container.extension;
 public abstract class ComposableExtension<T extends ExtensionNode<?>> extends Extension {
 
     /**
-     * Returns the extension's extension node. This method will be invoked exactly once by the runtime and must not return
-     * null.
+     * Returns the extension's extension node. This method will be invoked exactly once by the runtime and must return a
+     * non-null value of the exact same type as the single type parameter to ComposableExtension.
      * 
      * @return the extension's extension node
      */
