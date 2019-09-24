@@ -66,7 +66,7 @@ public final class ExtensionModel<T extends Extension> extends AbstractInstantia
      */
     @SuppressWarnings("unchecked")
     private ExtensionModel(Builder builder) {
-        super(builder.findNoParameterConstructor());
+        super(builder.findConstructor());
         this.extensionType = (Class<? extends Extension>) builder.actualType;
         this.node = builder.node == null ? null : builder.node.build(this);
         this.onHoox = new OnHookGroupModel(builder.onHooks);

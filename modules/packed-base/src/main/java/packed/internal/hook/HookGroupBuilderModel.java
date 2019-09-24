@@ -69,7 +69,7 @@ public final class HookGroupBuilderModel extends AbstractInstantiableModel<HookG
      *            the builder to create a model from
      */
     private HookGroupBuilderModel(Builder builder) {
-        super(builder.findNoParameterConstructor());
+        super(builder.findConstructor());
         this.builderType = builder.actualType;
         this.groupType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.annotatedMethods);

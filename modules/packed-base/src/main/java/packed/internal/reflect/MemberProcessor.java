@@ -48,11 +48,7 @@ public abstract class MemberProcessor {
     }
 
     public MethodHandle findConstructor(Class<?>... parameterTypes) {
-        return ConstructorExtractor.extract(actualType, parameterTypes);
-    }
-
-    public MethodHandle findNoParameterConstructor() {
-        return ConstructorExtractor.extract(actualType);
+        return ConstructorFinder.extract(actualType, parameterTypes);
     }
 
     /** Finds all relevant methods and invokes {@link #processMethod(Method)}. */

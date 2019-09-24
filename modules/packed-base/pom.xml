@@ -40,18 +40,7 @@
       <version>${assertj.version}</version>
       <scope>test</scope>
     </dependency>
-    
-    <!--
-    <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-    <version>5.1.5.RELEASE</version>
-</dependency>
--->
   </dependencies>
-  
-  
-  
  <profiles>
  <!-- https://stackoverflow.com/questions/44910155/maven-invoker-plugin-not-detecting-failed-test --> 
    <profile>

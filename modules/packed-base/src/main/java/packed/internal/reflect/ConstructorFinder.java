@@ -29,45 +29,48 @@ import packed.internal.util.TypeUtil;
 /**
  *
  */
-final class ConstructorExtractor {
+final class ConstructorFinder {
 
-    private static final Module THIS_MODULE = ConstructorExtractor.class.getModule();
+    /** The app.packed.base module. */
+    private static final Module THIS_MODULE = ConstructorFinder.class.getModule();
 
-    static MethodHandle extract(Class<?> type, Class<?>... parameterTypes) {
-        if (Modifier.isAbstract(type.getModifiers())) {
-            throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(type));
-        } else if (TypeUtil.isInnerOrLocalClass(type)) {
-            throw new IllegalArgumentException("The specified type '" + StringFormatter.format(type) + "' cannot be an inner or local class");
+    static MethodHandle extract(Class<?> onType, Class<?>... parameterTypes) {
+        if (Modifier.isAbstract(onType.getModifiers())) {
+            throw new IllegalArgumentException("The specified extension is an abstract class, type = " + StringFormatter.format(onType));
+        } else if (TypeUtil.isInnerOrLocalClass(onType)) {
+            throw new IllegalArgumentException("The specified type '" + StringFormatter.format(onType) + "' cannot be an inner or local class");
         }
 
+        // First check that we have a constructor with specified parameters.
+        // We could use Lookup.findSpecial, but we need to register the constructor if we are generating a native image.
         Constructor<?> constructor;
         try {
-            constructor = type.getDeclaredConstructor(parameterTypes);
+            constructor = onType.getDeclaredConstructor(parameterTypes);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("The extension " + StringFormatter.format(type) + " must have a no-argument constructor to be used");
+            throw new IllegalArgumentException("The extension " + StringFormatter.format(onType) + " must have a no-argument constructor to be used");
         }
 
-        // Check that the package the extension is located in, is open to app.packed.base
-        if (!type.getModule().isOpen(type.getPackageName(), THIS_MODULE)) {
-            String n = type.getModule().getName();
-            String m = ConstructorExtractor.class.getModule().getName();
-            String p = type.getPackageName();
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(type) + ", the extension's module '"
-                    + type.getModule().getName() + "' must be open to '" + m + "'. This can be done either via\n -> open module " + n + "\n -> opens " + p
+        // Check that the package the class is in, is open to app.packed.base
+        if (!onType.getModule().isOpen(onType.getPackageName(), THIS_MODULE)) {
+            String n = onType.getModule().getName();
+            String m = ConstructorFinder.class.getModule().getName();
+            String p = onType.getPackageName();
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(onType) + ", the extension's module '"
+                    + onType.getModule().getName() + "' must be open to '" + m + "'. This can be done either via\n -> open module " + n + "\n -> opens " + p
                     + "\n -> opens " + p + " to " + m);
         }
 
         // Make sure we can read the module where the extension is located.
-        if (!THIS_MODULE.canRead(type.getModule())) {
-            THIS_MODULE.addReads(type.getModule());
+        if (!THIS_MODULE.canRead(onType.getModule())) {
+            THIS_MODULE.addReads(onType.getModule());
         }
 
         Lookup lookup = MethodHandles.lookup();
 
-        // See if need to use a private lookup
-        if (!Modifier.isPublic(type.getModifiers()) || !Modifier.isPublic(constructor.getModifiers())) {
+        // Check to see, if we need to use a private lookup
+        if (!Modifier.isPublic(onType.getModifiers()) || !Modifier.isPublic(constructor.getModifiers())) {
             try {
-                lookup = MethodHandles.privateLookupIn(type, lookup);
+                lookup = MethodHandles.privateLookupIn(onType, lookup);
             } catch (IllegalAccessException e) {
                 // This should never happen, because we have checked all preconditions
                 // And we use our own lookup object which have Module access mode enabled.
@@ -83,7 +86,6 @@ final class ConstructorExtractor {
         } catch (IllegalAccessException e) {
             throw new UncheckedIllegalAccessException("This exception was not expected, please file a bug report with details", e);
         }
-
         NativeImage.registerConstructor(constructor);
         return methodHandle;
     }

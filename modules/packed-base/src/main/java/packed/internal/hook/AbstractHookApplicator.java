@@ -24,7 +24,7 @@ import packed.internal.container.AbstractComponentConfiguration;
 /**
  *
  */
-public abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
+abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
 
     /** {@inheritDoc} */
     @Override

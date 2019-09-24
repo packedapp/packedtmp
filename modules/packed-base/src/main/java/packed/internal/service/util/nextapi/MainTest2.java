@@ -28,10 +28,13 @@ public class MainTest2 extends AppBundle {
     @Override
     protected void configure() {
         link(new MyMainX());
+        System.out.println(installInstance("foo").path());
     }
 
     public static void main(String[] args) {
-        App.of(new MainTest2());
+        App a = App.of(new MainTest2());
+        System.out.println();
+        a.stream().forEach(e -> System.out.println(e.path()));
     }
 
     static class MyMainX extends BaseBundle {
@@ -39,9 +42,9 @@ public class MainTest2 extends AppBundle {
         @Override
         protected void configure() {
             installInstance(this);
-            path();
-            installInstance("foo").path();
-            installInstance(334).path();
+            System.out.println(path());
+            System.out.println(installInstance("foo").path());
+            System.out.println(installInstance(334).path());
         }
 
         @Main
