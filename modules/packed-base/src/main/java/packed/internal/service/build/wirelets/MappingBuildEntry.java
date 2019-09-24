@@ -25,7 +25,7 @@ import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.MappingRuntimeEntry;
 import packed.internal.service.run.RSE;
 
@@ -40,7 +40,7 @@ final class MappingBuildEntry<F, T> extends BuildEntry<T> {
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingBuildEntry(InjectionExtensionNode injectorBuilder, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function, ConfigSite configSite) {
+    MappingBuildEntry(ServiceExtensionNode injectorBuilder, ServiceEntry<F> entryToMap, Key<T> toKey, Function<F, T> function, ConfigSite configSite) {
         super(injectorBuilder, configSite);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");

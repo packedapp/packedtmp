@@ -18,7 +18,7 @@ package packed.internal.service.build;
 import app.packed.container.extension.ExtensionWireletPipeline;
 
 /** The default wirelet pipeline for */
-public final class InjectionWireletPipeline extends ExtensionWireletPipeline<InjectionExtensionNode> {
+public final class ServiceWireletPipeline extends ExtensionWireletPipeline<ServiceExtensionNode> {
 
     /**
      * Creates a new pipeline.
@@ -26,7 +26,7 @@ public final class InjectionWireletPipeline extends ExtensionWireletPipeline<Inj
      * @param node
      *            the node to create the pipeline from
      */
-    InjectionWireletPipeline(InjectionExtensionNode node) {
+    ServiceWireletPipeline(ServiceExtensionNode node) {
         super(node);
     }
 
@@ -36,7 +36,7 @@ public final class InjectionWireletPipeline extends ExtensionWireletPipeline<Inj
      * @param previous
      *            the previous pipeline to spawn from
      */
-    InjectionWireletPipeline(InjectionWireletPipeline previous) {
+    ServiceWireletPipeline(ServiceWireletPipeline previous) {
         super(previous.node());
     }
 }

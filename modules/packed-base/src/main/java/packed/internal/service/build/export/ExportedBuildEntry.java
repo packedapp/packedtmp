@@ -28,7 +28,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.RSE;
 import packed.internal.service.run.RSEDelegate;
 
@@ -53,7 +53,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    ExportedBuildEntry(InjectionExtensionNode builder, Key<T> key, ConfigSite configSite) {
+    ExportedBuildEntry(ServiceExtensionNode builder, Key<T> key, ConfigSite configSite) {
         super(builder, configSite, List.of());
         this.keyToExport = requireNonNull(key);
         as(key);
@@ -70,7 +70,7 @@ public final class ExportedBuildEntry<T> extends BuildEntry<T> {
      * @see ServiceExtension#exportAll()
      */
     @SuppressWarnings("unchecked")
-    ExportedBuildEntry(InjectionExtensionNode builder, ServiceEntry<T> entryToExport, ConfigSite configSite) {
+    ExportedBuildEntry(ServiceExtensionNode builder, ServiceEntry<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite, List.of());
         this.exportedEntry = entryToExport;
         this.keyToExport = null;

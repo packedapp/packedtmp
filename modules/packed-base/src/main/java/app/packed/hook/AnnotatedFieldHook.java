@@ -34,7 +34,7 @@ import packed.internal.access.AppPackedHookAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ComponentModel.Builder;
-import packed.internal.hook.PackedFieldHookApplicator;
+import packed.internal.hook.applicator.PackedFieldHookApplicator;
 import packed.internal.util.StringFormatter;
 
 /**

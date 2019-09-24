@@ -26,11 +26,11 @@ import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.InjectionWireletPipeline;
+import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.service.ProvideAllFromInjector;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<InjectionWireletPipeline> {
+public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<ServiceWireletPipeline> {
 
     /**
      * Processes an imported injector.
@@ -58,7 +58,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        protected void process(InjectionWireletPipeline p) {
+        protected void process(ServiceWireletPipeline p) {
 
         }
     }
@@ -98,7 +98,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        protected void process(InjectionWireletPipeline p) {
+        protected void process(ServiceWireletPipeline p) {
             // Kan vi smide ProvideAllFromInjector in i pipelinen???
 
             throw new UnsupportedOperationException();
@@ -131,7 +131,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ExtensionWirelet<In
 
         /** {@inheritDoc} */
         @Override
-        protected void process(InjectionWireletPipeline extension) {
+        protected void process(ServiceWireletPipeline extension) {
             // TODO Auto-generated method stub
         }
     }

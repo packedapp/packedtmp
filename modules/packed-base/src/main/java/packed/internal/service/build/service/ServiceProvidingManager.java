@@ -32,10 +32,10 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.service.ComponentServiceConfiguration;
 import app.packed.service.Factory;
-import app.packed.service.ServiceExtension;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.CoreComponentConfiguration;
@@ -44,7 +44,7 @@ import packed.internal.container.InstantiatedComponentConfiguration;
 import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
-import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.factoryhandle.FactoryHandle;
 import packed.internal.service.run.AbstractInjector;
 
@@ -67,7 +67,7 @@ public final class ServiceProvidingManager {
     private LinkedHashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> failingDuplicateProviders;
 
     /** The extension node. */
-    private final InjectionExtensionNode node;
+    private final ServiceExtensionNode node;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromInjector> provideAll;
@@ -81,7 +81,7 @@ public final class ServiceProvidingManager {
      * @param node
      *            the extension node
      */
-    public ServiceProvidingManager(InjectionExtensionNode node) {
+    public ServiceProvidingManager(ServiceExtensionNode node) {
         this.node = requireNonNull(node);
     }
 
@@ -94,7 +94,7 @@ public final class ServiceProvidingManager {
             parentNode = new ComponentBuildEntry(node, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            MethodHandle mh = node.pcc.lookup.toMethodHandle(factory.handle());
+            MethodHandle mh = node.pcc().lookup.toMethodHandle(factory.handle());
             parentNode = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
@@ -127,7 +127,7 @@ public final class ServiceProvidingManager {
     public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
-            MethodHandle mh = node.pcc.lookup.toMethodHandle(function);
+            MethodHandle mh = node.pcc().lookup.toMethodHandle(function);
             c = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());

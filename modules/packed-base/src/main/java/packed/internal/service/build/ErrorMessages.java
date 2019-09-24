@@ -73,7 +73,7 @@ public final class ErrorMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(InjectionExtensionNode node, HashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceExtensionNode node, HashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> dublicateNodes) {
         ArtifactBuildContext abc = node.context().buildContext();
         System.out.println(abc);
     }

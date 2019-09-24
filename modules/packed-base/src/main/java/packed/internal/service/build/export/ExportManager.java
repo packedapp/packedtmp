@@ -31,7 +31,7 @@ import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
-import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.service.PackedProvidedComponentConfiguration;
 import packed.internal.util.StringFormatter;
 
@@ -65,7 +65,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
     private LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildEntry<?>>> failingUnresolvedKeyedExports;
 
     /** The extension node this exporter is a part of. */
-    private final InjectionExtensionNode node;
+    private final ServiceExtensionNode node;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
@@ -77,7 +77,7 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
      * @param node
      *            the extension node this export manager belongs to
      */
-    public ExportManager(InjectionExtensionNode node) {
+    public ExportManager(ServiceExtensionNode node) {
         this.node = requireNonNull(node);
     }
 

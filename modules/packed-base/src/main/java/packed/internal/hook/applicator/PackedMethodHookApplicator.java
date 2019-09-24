@@ -13,49 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.hook.applicator;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.reflect.PackedFieldOperator;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.reflect.MethodOperator;
 
-/** A hook applicator for a field */
-public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T> {
+/**
+ *
+ */
+public final class PackedMethodHookApplicator<T> extends AbstractHookApplicator<T> {
 
-    /** The field we want to apply the operator on. */
-    public final Field field;
+    /** The method we want to apply the operator on. */
+    public final Method method;
 
     public final MethodHandle mh;
 
     /** The operator to apply. */
-    public final PackedFieldOperator<T> operator;
+    public final MethodOperator<T> operator;
 
-    public PackedFieldHookApplicator(AnnotatedFieldHook<?> hook, PackedFieldOperator<T> operator, Field field) {
-        if (operator.isSimpleGetter()) {
-            mh = hook.getter();
-        } else {
-            mh = hook.setter();
-        }
-        this.field = requireNonNull(field);
+    public PackedMethodHookApplicator(AnnotatedMethodHook<?> hook, MethodOperator<T> operator, Method method) {
         this.operator = requireNonNull(operator);
+        this.mh = hook.methodHandle();
+        this.method = requireNonNull(method);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer) {
+        return new DelayedAccessor.SidecarMethodDelayerAccessor(this, sidecarType, consumer);
     }
 
     /** {@inheritDoc} */
     @Override
     public void onReady(ComponentConfiguration cc, Consumer<T> consumer) {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected <S> DelayedAccessor newAccessor(Class<S> sidecarType, BiConsumer<S, T> consumer) {
-        return new DelayedAccessor.SidecarFieldDelayerAccessor(this, sidecarType, consumer);
     }
 }

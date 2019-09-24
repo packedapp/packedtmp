@@ -15,6 +15,8 @@
  */
 package packed.internal.hook;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -35,17 +37,14 @@ import app.packed.hook.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;
-import packed.internal.reflect.MemberProcessor;
 import packed.internal.util.StringFormatter;
 
 /**
  *
  */
-public class OnHookMemberProcessor extends MemberProcessor {
+public final class OnHookMemberBuilder {
 
-    private final boolean isGroupBuilder;
-
-    public final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
+    public final Class<?> actualType;
 
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedFieldHook} as parameter. */
     public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedFields = new IdentityHashMap<>();
@@ -56,8 +55,14 @@ public class OnHookMemberProcessor extends MemberProcessor {
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
     public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
+    public final Class<?> baseType;
+
+    public final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
+
     /** Components that are of a specific type. */
     public final IdentityHashMap<Class<?>, MethodHandle> instanceOfs = new IdentityHashMap<>();
+
+    private final boolean isGroupBuilder;
 
     public Lookup lookup;
 
@@ -65,8 +70,9 @@ public class OnHookMemberProcessor extends MemberProcessor {
      * @param baseType
      * @param actualType
      */
-    public OnHookMemberProcessor(Class<?> baseType, Class<?> actualType, boolean isGroupBuilder) {
-        super(baseType, actualType);
+    public OnHookMemberBuilder(Class<?> baseType, Class<?> actualType, boolean isGroupBuilder) {
+        this.baseType = requireNonNull(baseType);
+        this.actualType = requireNonNull(actualType);
         this.isGroupBuilder = isGroupBuilder;
         this.lookup = MethodHandles.lookup();
         try {
@@ -75,6 +81,36 @@ public class OnHookMemberProcessor extends MemberProcessor {
             throw new UncheckedIllegalAccessException("In order to use the hook aggregate " + StringFormatter.format(actualType) + ", the module '"
                     + actualType.getModule().getName() + "' in which the class is located must be 'open' to 'app.packed.base'", e);
         }
+    }
+
+    /**
+     * @param method
+     * @param oh
+     */
+    private void addHookMethod(Method method, OnHookGroup oh) {
+        Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
+
+        MethodHandle mh;
+        try {
+            mh = lookup.unreflect(method);
+        } catch (IllegalAccessException | InaccessibleObjectException e) {
+            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
+                    + actualType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
+        }
+
+        NativeImage.registerMethod(method);
+
+        groups.put(aggregateType, mh);
+        HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
+
+        // TODO we should check that the type matches....
+
+        annotatedFields.putAll(oha.annotatedFields);
+        annotatedMethods.putAll(oha.annotatedMethods);
+        annotatedTypes.putAll(oha.annotatedTypes);
+        // aggregators.p
+
+        // Do something
     }
 
     protected void addHookMethod(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
@@ -101,7 +137,6 @@ public class OnHookMemberProcessor extends MemberProcessor {
         annotations.put(annotationType, mh);
     }
 
-    @Override
     public void processMethod(Method method) {
         // First see if the method is annotated with @OnHook
         if (method.isAnnotationPresent(OnHook.class)) {
@@ -147,36 +182,5 @@ public class OnHookMemberProcessor extends MemberProcessor {
             addHookMethod(method, g);
             // Class<? extends HookGroupBuilder<?>> builderType = g.value();// Find group
         }
-    }
-
-    /**
-     * @param method
-     * @param oh
-     */
-    private void addHookMethod(Method method, OnHookGroup oh) {
-
-        Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
-
-        MethodHandle mh;
-        try {
-            mh = lookup.unreflect(method);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(actualType) + ", the module '"
-                    + actualType.getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-        }
-
-        NativeImage.registerMethod(method);
-
-        groups.put(aggregateType, mh);
-        HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
-
-        // TODO we should check that the type matches....
-
-        annotatedFields.putAll(oha.annotatedFields);
-        annotatedMethods.putAll(oha.annotatedMethods);
-        annotatedTypes.putAll(oha.annotatedTypes);
-        // aggregators.p
-
-        // Do something
     }
 }

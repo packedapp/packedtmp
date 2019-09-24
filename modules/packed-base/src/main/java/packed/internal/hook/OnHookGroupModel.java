@@ -1,4 +1,4 @@
-package packed.internal.container.extension;
+package packed.internal.hook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -9,7 +9,6 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.OnHookGroup;
-import packed.internal.hook.OnHookMemberProcessor;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookGroupModel {
@@ -36,7 +35,7 @@ public final class OnHookGroupModel {
      *            the builder to create the model from
      */
     @SuppressWarnings("unchecked")
-    OnHookGroupModel(OnHookMemberProcessor builder) {
+    public OnHookGroupModel(OnHookMemberBuilder builder) {
         this.extensionType = (Class<? extends Extension>) builder.actualType;
         this.groups = builder.groups;
         this.annotatedFields = builder.annotatedFields;

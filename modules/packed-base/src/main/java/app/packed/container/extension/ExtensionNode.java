@@ -36,6 +36,7 @@ public abstract class ExtensionNode<T extends Extension> {
      *            the extension node provided by the Packed runtime via {@link Extension#context()}.
      */
     protected ExtensionNode(ExtensionContext context) {
+
         this.context = (PackedExtensionContext) requireNonNull(context, "context is null");
     }
 

@@ -25,7 +25,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.reflect.MemberProcessor;
+import packed.internal.reflect.MemberFinder;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -123,7 +123,7 @@ public final class ComponentModel {
          */
         ComponentModel build() {
             // Runs through every interesting field and method.
-            MemberProcessor.processMethodsAndFields(Object.class, componentType, method -> {
+            MemberFinder.findMethodsAndFields(Object.class, componentType, method -> {
                 for (Annotation a : method.getAnnotations()) {
                     Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
                     if (extensionTypes != null) {

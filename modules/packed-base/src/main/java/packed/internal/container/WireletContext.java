@@ -55,10 +55,10 @@ public class WireletContext {
                 ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) w.getClass());
                 ExtensionWireletPipeline p = pipelines.computeIfAbsent(pm, k -> {
                     @Nullable
-                    PackedExtensionContext e = pcc.getContext(pm.node.extension.extensionType);
+                    PackedExtensionContext e = pcc.getContext(pm.node.extensionType);
                     if (e == null) {
                         throw new IllegalStateException(
-                                "The wirelet " + w + " requires the extension " + pm.node.extension.extensionType.getSimpleName() + " to be installed.");
+                                "The wirelet " + w + " requires the extension " + pm.node.extensionType.getSimpleName() + " to be installed.");
                     }
                     return pm.newPipeline(e.extensionNode());
                 });

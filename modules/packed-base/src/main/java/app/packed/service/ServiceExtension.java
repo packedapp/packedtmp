@@ -22,13 +22,13 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.container.extension.Extension;
+import app.packed.container.extension.ComposableExtension;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import packed.internal.service.InjectConfigSiteOperations;
-import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -58,11 +58,11 @@ import packed.internal.service.run.AbstractInjector;
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
-public final class ServiceExtension extends Extension {
+public final class ServiceExtension extends ComposableExtension<ServiceExtensionNode> {
 
     /** The extension node, initialized via {@link #onAdded()}. */
     @Nullable
-    private InjectionExtensionNode node;
+    private ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
     ServiceExtension() {}
@@ -162,8 +162,8 @@ public final class ServiceExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    protected InjectionExtensionNode onAdded() {
-        return node = new InjectionExtensionNode(context());
+    protected ServiceExtensionNode onAdded() {
+        return node = new ServiceExtensionNode(context());
     }
 
     /** {@inheritDoc} */
@@ -284,5 +284,11 @@ public final class ServiceExtension extends Extension {
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
         node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ServiceExtensionNode node() {
+        return node;
     }
 }

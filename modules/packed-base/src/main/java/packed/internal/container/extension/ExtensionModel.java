@@ -23,9 +23,10 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.util.Nullable;
-import packed.internal.hook.OnHookMemberProcessor;
+import packed.internal.hook.OnHookGroupModel;
+import packed.internal.hook.OnHookMemberBuilder;
 import packed.internal.reflect.ConstructorFinder;
-import packed.internal.reflect.MemberProcessor;
+import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
@@ -61,7 +62,7 @@ public final class ExtensionModel<T extends Extension> {
     @Nullable
     private final ExtensionNodeModel node;
 
-    final OnHookGroupModel onHoox;
+    final OnHookGroupModel hooks;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -70,22 +71,22 @@ public final class ExtensionModel<T extends Extension> {
      *            the builder for this model
      */
     private ExtensionModel(Builder builder) {
-        constructor = builder.constructor;
+        this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
         this.node = builder.node == null ? null : builder.node.build(this);
-        this.onHoox = new OnHookGroupModel(builder.onHooks);
+        this.hooks = new OnHookGroupModel(builder.onHooks);
     }
 
-    public OnHookGroupModel model() {
-        return onHoox;
+    public OnHookGroupModel hooks() {
+        return hooks;
     }
 
     /**
-     * Creates a new instance.
+     * Creates a new instance of the extension.
      * 
-     * @return a new instance
+     * @return a new instance of the extension
      */
-    public final T newInstance() {
+    public T newInstance() {
         // Time goes from around 1000 ns to 12 ns when we cache the method handle.
         // With LambdaMetafactory wrapped in a supplier we can get down to 6 ns
         try {
@@ -126,15 +127,15 @@ public final class ExtensionModel<T extends Extension> {
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
 
+        final Class<? extends Extension> extensionType;
+
         @Nullable
         private ExtensionNodeModel.Builder node;
 
         @Nullable
         private Class<? extends ExtensionNode<?>> nodeType;
 
-        final OnHookMemberProcessor onHooks;
-
-        final Class<? extends Extension> extensionType;
+        final OnHookMemberBuilder onHooks;
 
         private Builder(Class<? extends Extension> extensionType) {
             this.extensionType = extensionType;
@@ -142,12 +143,12 @@ public final class ExtensionModel<T extends Extension> {
                 throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be declared final");
             }
             constructor = ConstructorFinder.find(extensionType);
-            this.onHooks = new OnHookMemberProcessor(Extension.class, extensionType, false);
+            this.onHooks = new OnHookMemberBuilder(Extension.class, extensionType, false);
         }
 
         @SuppressWarnings("unchecked")
         private ExtensionModel<?> build() {
-            MemberProcessor.processMethods(Extension.class, extensionType, method -> {
+            MemberFinder.findMethods(Extension.class, extensionType, method -> {
                 onHooks.processMethod(method);
 
                 if (method.getParameterCount() == 0 && method.getName().equals("onAdded")) {

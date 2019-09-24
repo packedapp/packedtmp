@@ -38,7 +38,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
-import packed.internal.service.build.InjectionExtensionNode;
+import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.DefaultInjector;
 
 /**
@@ -51,7 +51,7 @@ import packed.internal.service.run.DefaultInjector;
 public final class DependencyManager {
 
     /** The injector builder this manager belongs to. */
-    private final InjectionExtensionNode node;
+    private final ServiceExtensionNode node;
 
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key)} or
@@ -84,7 +84,7 @@ public final class DependencyManager {
     /** A list of all dependencies that have not been resolved */
     private ArrayList<Requirement> missingDependencies;
 
-    public DependencyManager(InjectionExtensionNode node) {
+    public DependencyManager(ServiceExtensionNode node) {
         this.node = requireNonNull(node);
     }
 

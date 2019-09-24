@@ -18,6 +18,6 @@ package packed.internal.service.build;
 /**
  *
  */
-final class InjectionExtensionTree {
+final class ServiceExtensionTree {
 
 }

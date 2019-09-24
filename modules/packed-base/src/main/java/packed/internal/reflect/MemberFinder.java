@@ -15,8 +15,6 @@
  */
 package packed.internal.reflect;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -29,57 +27,12 @@ import java.util.function.Consumer;
  * Processes all fields and methods on a specified class.
  */
 // https://stackoverflow.com/questions/28400408/what-is-the-new-way-of-getting-all-methods-of-a-class-including-inherited-defau
-public abstract class MemberProcessor {
+public final class MemberFinder {
 
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
-    private final Class<?> baseType;
-
-    public final Class<?> actualType;
-
-    public MemberProcessor(Class<?> baseType, Class<?> actualType) {
-        this.baseType = requireNonNull(baseType);
-        this.actualType = requireNonNull(actualType);
-        // TODO we should probably check that actual type is a super type
-    }
-
-    /** Finds all relevant methods and invokes {@link #processMethod(Method)}. */
-    public final void findMethods() {
-        find(false);
-    }
-
-    public static void processMethods(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer) {
-        new MemberProcessor(baseType, actualType) {
-
-            @Override
-            protected void processMethod(Method method) {
-                methodConsumer.accept(method);
-            }
-        }.findMethods();
-    }
-
-    public static void processMethodsAndFields(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer,
-            Consumer<? super Field> fieldConsumer) {
-        new MemberProcessor(baseType, actualType) {
-
-            @Override
-            protected void processField(Field field) {
-                fieldConsumer.accept(field);
-            }
-
-            @Override
-            protected void processMethod(Method method) {
-                methodConsumer.accept(method);
-            }
-        }.findMethodsAndFields();
-    }
-
-    public final void findMethodsAndFields() {
-        find(true);
-    }
-
-    private void find(boolean processFields) {
+    private static void find(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
         HashSet<Package> PKG = new HashSet<>();
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
@@ -88,7 +41,7 @@ public abstract class MemberProcessor {
             // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 // Should we also ignore methods on base class????
-                processMethod(m); // move this to step 2???
+                methodConsumer.accept(m);// move this to step 2???
                 types.put(new MethodEntry(m), PKG);
             }
         }
@@ -96,9 +49,9 @@ public abstract class MemberProcessor {
         // Step 2 process all declared methods
         for (Class<?> c = actualType; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
-            if (processFields) {
+            if (fieldConsumer != null) {
                 for (Field field : c.getDeclaredFields()) {
-                    processField(field);
+                    fieldConsumer.accept(field);
                 }
             }
 
@@ -111,7 +64,7 @@ public abstract class MemberProcessor {
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
                         // if we do not include static methods on interfaces.
-                        processMethod(m);
+                        methodConsumer.accept(m);
                     }
                 } else if (!m.isBridge()) {
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
@@ -132,24 +85,19 @@ public abstract class MemberProcessor {
                     case Modifier.PRIVATE:
                         // Private methods are never overridden
                     }
-                    processMethod(m);
+                    methodConsumer.accept(m);
                 }
             }
         }
     }
 
-    /**
-     * Processes a field.
-     * 
-     * @param field
-     *            the field to process
-     */
-    protected void processField(Field field) {
-        throw new IllegalStateException("This method should be overridden, if field processing is enabled");
+    public static void findMethods(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer) {
+        find(baseType, actualType, methodConsumer, null);
     }
 
-    protected void processMethod(Method method) {
-        throw new IllegalStateException("This method should be overridden, if method processing is enabled");
+    public static void findMethodsAndFields(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer,
+            Consumer<? super Field> fieldConsumer) {
+        find(baseType, actualType, methodConsumer, fieldConsumer);
     }
 
     private static final class MethodEntry {

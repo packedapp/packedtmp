@@ -51,7 +51,7 @@ public final class ExtensionWireletPipelineModel {
 
     private final MethodHandle constructorPipeline;
 
-    public final ExtensionNodeModel node;
+    public final ExtensionModel<?> node;
 
     final Class<? extends ExtensionWireletPipeline<?>> pipelineClass;
 
@@ -64,7 +64,7 @@ public final class ExtensionWireletPipelineModel {
         this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);
         this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
         this.pipelineClass = builder.actualType;
-        this.node = ExtensionNodeModel.of(nodeModel);
+        this.node = ExtensionNodeModel.of(nodeModel).extension;
     }
 
     /**
@@ -118,6 +118,9 @@ public final class ExtensionWireletPipelineModel {
      * A model for a class extending {@link ExtensionWirelet}. Is currently only used to extract the type variable from the
      * wirelet. Which points to the pipeline it is a part of.
      */
+    // Right now this is just a static class, because I'm unsure whether or not we will cache other information than the
+    // type parameter
+    // to ExtensionWirelet
     private static class ExtensionWireletModel {
 
         /** A cache of values. */
@@ -131,7 +134,8 @@ public final class ExtensionWireletPipelineModel {
             }
         };
 
-        static final TypeVariableExtractor EXTENSION_TYPE_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.class);
+        /** A type variable extractor to extract what kind of pipeline an extension wirelet belongs to. */
+        private static final TypeVariableExtractor EXTENSION_TYPE_EXTRACTOR = TypeVariableExtractor.of(ExtensionWirelet.class);
 
         private final ExtensionWireletPipelineModel pipeline;
 

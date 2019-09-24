@@ -48,9 +48,9 @@ import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ContainerSourceModel;
-import packed.internal.hook.DelayedAccessor;
-import packed.internal.hook.DelayedAccessor.SidecarFieldDelayerAccessor;
-import packed.internal.hook.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.hook.applicator.DelayedAccessor;
+import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
+import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
 import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */

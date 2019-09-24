@@ -47,7 +47,7 @@ import packed.internal.service.util.AtInject;
 import packed.internal.service.util.AtInjectGroup;
 
 /** This class records all service related information for a single box. */
-public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension> {
+public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -59,7 +59,9 @@ public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension
     private boolean hasFailed;
 
     /** The configuration of the container to which this builder belongs to. */
-    public final PackedContainerConfiguration pcc;
+    public PackedContainerConfiguration pcc() {
+        return ((PackedExtensionContext) context()).pcc;
+    }
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
@@ -76,10 +78,9 @@ public final class InjectionExtensionNode extends ExtensionNode<ServiceExtension
      * @param context
      *            the extension context
      */
-    public InjectionExtensionNode(ExtensionContext context) {
+    public ServiceExtensionNode(ExtensionContext context) {
         // Kunne vi ikke bare tage en extension her????? istedet for en context
         super(context);
-        this.pcc = requireNonNull((PackedExtensionContext) context).pcc;
     }
 
     public void addErrorMessage() {

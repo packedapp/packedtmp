@@ -20,19 +20,19 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
-import java.lang.reflect.Method;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.reflect.UncheckedIllegalAccessException;
-import packed.internal.hook.OnHookMemberProcessor;
+import packed.internal.hook.OnHookMemberBuilder;
+import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 
 /**
  * A runtime model of an {@link ExtensionNode} implementation.
  */
-public final class ExtensionNodeModel {
+final class ExtensionNodeModel {
 
     /** A cache of values. */
     private static final ClassValue<ExtensionNodeModel> CACHE = new ClassValue<>() {
@@ -74,18 +74,23 @@ public final class ExtensionNodeModel {
     }
 
     /** A builder for {@link ExtensionModel}. This builder is used by ExtensionModel. */
-    static class Builder extends OnHookMemberProcessor {
+    static class Builder {
 
         /** The builder for the corresponding extension model. */
         final ExtensionModel.Builder builder;
 
         Lookup lookup = MethodHandles.lookup();
 
+        final OnHookMemberBuilder p;
+
+        final Class<? extends ExtensionNode<?>> actualType;
+
         /**
          * @param actualType
          */
         Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> actualType) {
-            super(ExtensionNode.class, actualType, false);
+            p = new OnHookMemberBuilder(ExtensionNode.class, actualType, false);
+            this.actualType = actualType;
             this.builder = builder;
             lookup = MethodHandles.lookup();
             try {
@@ -97,15 +102,11 @@ public final class ExtensionNodeModel {
         }
 
         ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
-            findMethods();
+            MemberFinder.findMethods(ExtensionNode.class, actualType, method -> {
+                // Det her skal fikses. Basaltset er det fordi lok
+                builder.onHooks.processMethod(method);
+            });
             return new ExtensionNodeModel(extensionModel, this);
-        }
-
-        @Override
-        public void processMethod(Method method) {
-            // Det her skal fikses. Basaltset er det fordi lok
-
-            builder.onHooks.processMethod(method);
         }
     }
 }

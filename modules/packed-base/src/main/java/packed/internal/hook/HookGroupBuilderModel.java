@@ -27,6 +27,7 @@ import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.reflect.ConstructorFinder;
+import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
@@ -72,12 +73,12 @@ public final class HookGroupBuilderModel {
      *            the builder to create a model from
      */
     private HookGroupBuilderModel(Builder builder) {
-        this.constructor = ConstructorFinder.find(builder.actualType);
-        this.builderType = builder.actualType;
+        this.constructor = ConstructorFinder.find(builder.p.actualType);
+        this.builderType = builder.p.actualType;
         this.groupType = builder.groupType;
-        this.annotatedMethods = Map.copyOf(builder.annotatedMethods);
-        this.annotatedFields = Map.copyOf(builder.annotatedFields);
-        this.annotatedTypes = Map.copyOf(builder.annotatedTypes);
+        this.annotatedMethods = Map.copyOf(builder.p.annotatedMethods);
+        this.annotatedFields = Map.copyOf(builder.p.annotatedFields);
+        this.annotatedTypes = Map.copyOf(builder.p.annotatedTypes);
     }
 
     /**
@@ -167,13 +168,15 @@ public final class HookGroupBuilderModel {
     }
 
     /** A builder object, that extract relevant methods from a hook group builder. */
-    private static class Builder extends OnHookMemberProcessor {
+    private static class Builder {
 
         /** An type variable extractor to extract the type of hook group the builder produces. */
         private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
 
         /** The type of hook group the builder produces. */
         private final Class<?> groupType;
+
+        final OnHookMemberBuilder p;
 
         /**
          * Creates a new builder for the specified hook group builder type.
@@ -183,15 +186,15 @@ public final class HookGroupBuilderModel {
          */
         @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
-            super(HookGroupBuilder.class, builderType, true);
+            p = new OnHookMemberBuilder(HookGroupBuilder.class, builderType, true);
             this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
             TypeUtil.checkClassIsInstantiable(builderType);
         }
 
         HookGroupBuilderModel build() {
-            findMethods();
-            if (annotatedFields.isEmpty() && annotatedMethods.isEmpty() && annotatedTypes.isEmpty()) {
-                throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(actualType)
+            MemberFinder.findMethods(HookGroupBuilder.class, p.actualType, m -> p.processMethod(m));
+            if (p.annotatedFields.isEmpty() && p.annotatedMethods.isEmpty() && p.annotatedTypes.isEmpty()) {
+                throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(p.actualType)
                         + "' must define at least one method annotated with @" + OnHook.class.getSimpleName());
             }
             return new HookGroupBuilderModel(this);

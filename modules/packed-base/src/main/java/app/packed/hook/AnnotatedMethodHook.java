@@ -28,7 +28,7 @@ import app.packed.reflect.MethodOperator;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.Nullable;
 import packed.internal.container.model.ComponentModel;
-import packed.internal.hook.PackedMethodHookApplicator;
+import packed.internal.hook.applicator.PackedMethodHookApplicator;
 
 /** A hook representing a method annotated with a specific type. */
 public final class AnnotatedMethodHook<T extends Annotation> {

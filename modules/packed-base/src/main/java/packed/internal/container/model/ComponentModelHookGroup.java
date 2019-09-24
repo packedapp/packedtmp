@@ -34,9 +34,9 @@ import app.packed.hook.HookGroupBuilder;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.container.extension.OnHookGroupModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.HookGroupBuilderModel;
+import packed.internal.hook.OnHookGroupModel;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -87,7 +87,7 @@ final class ComponentModelHookGroup {
             this.componentModelBuilder = requireNonNull(componentModelBuilder);
             this.extensionType = requireNonNull(extensionType);
             this.extensionModel = ExtensionModel.of(extensionType);
-            this.con = extensionModel.model();
+            this.con = extensionModel.hooks();
         }
 
         ComponentModelHookGroup build() {
