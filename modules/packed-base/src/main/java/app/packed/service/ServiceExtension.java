@@ -160,6 +160,12 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
 
     /** {@inheritDoc} */
     @Override
+    protected ServiceExtensionNode node() {
+        return node;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected void onConfigured() {
         node.build();
     }
@@ -276,11 +282,5 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
         node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ServiceExtensionNode node() {
-        return node;
     }
 }

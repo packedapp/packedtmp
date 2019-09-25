@@ -79,7 +79,42 @@ public final class HookClassBuilder {
         }
     }
 
-    protected void onHook(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
+    private void onHook(Method method) {
+        if (method.isAnnotationPresent(OnHookGroup.class)) {
+            throw new InvalidDeclarationException("Cannot use both @" + OnHookGroup.class.getSimpleName() + " and @" + OnHookGroup.class.getSimpleName()
+                    + "on a method, method = " + StringFormatter.format(method));
+        }
+        // @OnHook on a non-group takes (ContainerConfiguration + XHook) or just (XHook
+        // @OnHook on a group takes exactly 1 parameter -> XHook
+        if (method.getParameterCount() > 0 && method.getParameterCount() <= (isHookGroupBuilder ? 1 : 2)) {
+            Parameter[] parameters = method.getParameters();
+            Parameter p1 = parameters[0];
+            Class<?> p1Type = p1.getType();
+            Parameter p2 = null;
+            if (isHookGroupBuilder || (method.getParameterCount() == 2 && (p2 = parameters[1]).getType() == ComponentConfiguration.class)) {
+                if (p1Type == AnnotatedFieldHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedFields);
+                    return;
+                } else if (p1Type == AnnotatedMethodHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedMethods);
+                    return;
+                } else if (p1Type == AnnotatedTypeHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedTypes);
+                    return;
+                }
+            }
+        }
+
+        if (isHookGroupBuilder) {
+            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must have exactly one parameter of type "
+                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
+                    + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
+        } else {
+            throw new InvalidDeclarationException("stuff");
+        }
+    }
+
+    private void onHook(MethodHandles.Lookup lookup, Method method, Parameter p1, Parameter p2,
             IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotations) {
         ParameterizedType pt = (ParameterizedType) p1.getParameterizedType();
         @SuppressWarnings("unchecked")
@@ -138,44 +173,14 @@ public final class HookClassBuilder {
     }
 
     public void processMethod(Method method) {
-        // First see if the method is annotated with @OnHook
         if (method.isAnnotationPresent(OnHook.class)) {
-            if (method.isAnnotationPresent(OnHookGroup.class)) {
-                throw new InvalidDeclarationException("Cannot use both @" + OnHookGroup.class.getSimpleName() + " and @" + OnHookGroup.class.getSimpleName()
-                        + "on a method, method = " + StringFormatter.format(method));
+            onHook(method); // will fail if also annotated with OnHookGroup
+        } else {
+            // Let us see if it is annotated with @OnHookGroup
+            OnHookGroup g = method.getAnnotation(OnHookGroup.class);
+            if (g != null) {
+                onHookGroup(method, g);
             }
-            if (method.getParameterCount() > 0 && method.getParameterCount() <= (isHookGroupBuilder ? 1 : 2)) {
-                Parameter[] parameters = method.getParameters();
-                Parameter p1 = parameters[0];
-                Class<?> p1Type = p1.getType();
-                Parameter p2 = null;
-                if (isHookGroupBuilder || (method.getParameterCount() == 2 && (p2 = parameters[1]).getType() == ComponentConfiguration.class)) {
-                    if (p1Type == AnnotatedFieldHook.class) {
-                        onHook(lookup, method, p1, p2, annotatedFields);
-                        return;
-                    } else if (p1Type == AnnotatedMethodHook.class) {
-                        onHook(lookup, method, p1, p2, annotatedMethods);
-                        return;
-                    } else if (p1Type == AnnotatedTypeHook.class) {
-                        onHook(lookup, method, p1, p2, annotatedTypes);
-                        return;
-                    }
-                }
-            }
-
-            if (isHookGroupBuilder) {
-                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must have exactly one parameter of type "
-                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
-                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-            } else {
-                throw new InvalidDeclarationException("stuff");
-            }
-        }
-
-        // Next, let us see if it is annotated with @OnHookGroup
-        OnHookGroup g = method.getAnnotation(OnHookGroup.class);
-        if (g != null) {
-            onHookGroup(method, g);
         }
     }
 }
