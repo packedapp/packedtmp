@@ -17,15 +17,12 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.UndeclaredThrowableException;
+import java.util.function.Function;
 
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
-import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
-import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -44,16 +41,18 @@ public final class ExtensionWireletPipelineModel {
     };
 
     /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWireletPipeline.class);
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWireletPipeline.class, 1);
 
-    /** The method handle used to create a new instance of the extension. */
-    private final MethodHandle constructorNode;
+    // /** The method handle used to create a new instance of the extension. */
+    // private final MethodHandle constructorNode;
 
-    private final MethodHandle constructorPipeline;
+    // private final MethodHandle constructorPipeline;
 
     public final ExtensionModel<?> node;
 
     final Class<? extends ExtensionWireletPipeline<?, ?>> pipelineClass;
+
+    final Function<?, ?> f;
 
     /**
      * @param builder
@@ -61,10 +60,13 @@ public final class ExtensionWireletPipelineModel {
     @SuppressWarnings("unchecked")
     private ExtensionWireletPipelineModel(Builder builder) {
         Class<? extends ExtensionNode<?>> nodeModel = (Class<? extends ExtensionNode<?>>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
-        this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);
-        this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
+        // this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
         this.pipelineClass = builder.actualType;
         this.node = ExtensionNodeModel.of(nodeModel).extension;
+
+        f = requireNonNull(node.pipelines.get(pipelineClass));
+        // this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);
+
     }
 
     /**
@@ -72,23 +74,25 @@ public final class ExtensionWireletPipelineModel {
      * 
      * @return a new instance
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionNode<?> node) {
-        try {
-            return (ExtensionWireletPipeline<?, ?>) constructorNode.invoke(node);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
+        return (ExtensionWireletPipeline<?, ?>) ((Function) f).apply(node.extension());
+        // try {
+        // return (ExtensionWireletPipeline<?, ?>) constructorNode.invoke(node);
+        // } catch (Throwable e) {
+        // ThrowableUtil.rethrowErrorOrRuntimeException(e);
+        // throw new UndeclaredThrowableException(e);
+        // }
     }
 
-    public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionWireletPipeline<?, ?> previous) {
-        try {
-            return (ExtensionWireletPipeline<?, ?>) constructorPipeline.invoke(previous);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
+    // public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionWireletPipeline<?, ?> previous) {
+    // try {
+    // return (ExtensionWireletPipeline<?, ?>) constructorPipeline.invoke(previous);
+    // } catch (Throwable e) {
+    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
+    // throw new UndeclaredThrowableException(e);
+    // }
+    // }
 
     private static ExtensionWireletPipelineModel of(Class<?> type) {
         return CACHE.get(type);

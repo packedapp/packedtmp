@@ -77,4 +77,11 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
         context().nodeType = nodeType;
         context().nodeFactory = nodeFactory;
     }
+
+    protected final <E extends ExtensionWireletPipeline<E, ?>> void addPipeline(Class<E> pipelineType, Function<T, E> pipelineFactory) {
+        requireNonNull(pipelineType, "pipelineType is null");
+        requireNonNull(pipelineFactory, "pipelineFactory is null");
+        // Validation??? Pipeline model...
+        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+    }
 }

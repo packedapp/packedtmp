@@ -70,7 +70,7 @@ class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWir
         super(extension);
     }
 
-    MyExtensionWireletPipeline(MyExtensionWireletPipeline previous) {
+    private MyExtensionWireletPipeline(MyExtensionWireletPipeline previous) {
         super(previous.node());
         this.name = previous.name;
     }
@@ -83,6 +83,6 @@ class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWir
     /** {@inheritDoc} */
     @Override
     public MyExtensionWireletPipeline spawn() {
-        return new MyExtensionWireletPipeline(node());
+        return new MyExtensionWireletPipeline(this);
     }
 }

@@ -26,18 +26,8 @@ public final class ServiceWireletPipeline extends ExtensionWireletPipeline<Servi
      * @param node
      *            the node to create the pipeline from
      */
-    ServiceWireletPipeline(ServiceExtensionNode node) {
+    public ServiceWireletPipeline(ServiceExtensionNode node) {
         super(node);
-    }
-
-    /**
-     * Creates a new pipeline.
-     * 
-     * @param previous
-     *            the previous pipeline to spawn from
-     */
-    ServiceWireletPipeline(ServiceWireletPipeline previous) {
-        super(previous.node());
     }
 
     /** {@inheritDoc} */

@@ -15,10 +15,12 @@
  */
 package packed.internal.container.extension;
 
+import java.util.IdentityHashMap;
 import java.util.function.Function;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.ExtensionWireletPipeline;
 
 /**
  *
@@ -28,4 +30,7 @@ public final class ExtensionPropsContext {
     public Class<? extends ExtensionNode<?>> nodeType;
 
     public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
+
+    public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
+
 }

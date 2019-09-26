@@ -29,6 +29,7 @@ import app.packed.util.Key;
 import app.packed.util.Qualifier;
 import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -285,6 +286,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         @Override
         protected void configure() {
             useNode(ServiceExtensionNode.class, e -> e.node);
+            addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
         }
     }
 }

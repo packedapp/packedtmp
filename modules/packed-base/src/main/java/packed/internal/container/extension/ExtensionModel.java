@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Map;
 import java.util.function.Function;
 
 import app.packed.container.extension.ComposableExtension;
@@ -27,6 +28,7 @@ import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionProps;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.hook.HookClassBuilder;
@@ -73,6 +75,8 @@ public final class ExtensionModel<T extends Extension> {
     @Nullable
     private final ExtensionNodeModel node;
 
+    final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -85,6 +89,7 @@ public final class ExtensionModel<T extends Extension> {
         this.node = builder.node == null ? null : builder.node.build(this);
         this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
         this.nodeFactory = builder.epc.nodeFactory;
+        this.pipelines = Map.copyOf(builder.epc.pipelines);
     }
 
     public OnHookGroupModel hooks() {
@@ -165,8 +170,9 @@ public final class ExtensionModel<T extends Extension> {
                 // StringFormatter.format(nodeType));
                 // }
                 ExtensionProps<?> ep = null;
+                MethodHandle mh = ConstructorFinder.find(propsType);
                 try {
-                    ep = (ExtensionProps<?>) ConstructorFinder.find(propsType).invoke();
+                    ep = (ExtensionProps<?>) mh.invoke();
                 } catch (Throwable e) {
                     ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new UndeclaredThrowableException(e);
