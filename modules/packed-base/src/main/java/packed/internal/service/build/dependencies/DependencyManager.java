@@ -57,7 +57,7 @@ public final class DependencyManager {
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key)} or
      * {@link ServiceExtension#requireOptionally(Key)}.
      */
-    final ArrayList<Requirement> explicitRequirements = new ArrayList<>();
+    final ArrayList<DependencyRequirement> explicitRequirements = new ArrayList<>();
 
     /**
      * Whether or not the user must explicitly specify all required services. Via {@link ServiceExtension#require(Key)},
@@ -82,7 +82,7 @@ public final class DependencyManager {
     IdentityHashMap<BuildEntry<?>, List<ServiceDependency>> unresolvedDependencies;
 
     /** A list of all dependencies that have not been resolved */
-    private ArrayList<Requirement> missingDependencies;
+    private ArrayList<DependencyRequirement> missingDependencies;
 
     public DependencyManager(ServiceExtensionNode node) {
         this.node = requireNonNull(node);
@@ -109,7 +109,7 @@ public final class DependencyManager {
      * @see ServiceExtension#requireOptionally(Key)
      */
     public void require(ServiceDependency dependency, ConfigSite configSite) {
-        explicitRequirements.add(new Requirement(dependency, configSite));
+        explicitRequirements.add(new DependencyRequirement(dependency, configSite));
     }
 
     /** Also used for descriptors. */
@@ -177,11 +177,11 @@ public final class DependencyManager {
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<Requirement> m = missingDependencies;
+        ArrayList<DependencyRequirement> m = missingDependencies;
         if (m == null) {
             m = missingDependencies = new ArrayList<>();
         }
-        m.add(new Requirement(dependency, entry));
+        m.add(new DependencyRequirement(dependency, entry));
 
         if (node.dependencies == null || !node.dependencies.manualRequirementsManagement) {
             if (dependency.isOptional()) {
@@ -196,7 +196,7 @@ public final class DependencyManager {
         boolean manualRequirementsManagement = node.dependencies != null && node.dependencies.manualRequirementsManagement;
         if (missingDependencies != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (Requirement e : missingDependencies) {
+            for (DependencyRequirement e : missingDependencies) {
                 if (!e.dependency.isOptional() && manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();

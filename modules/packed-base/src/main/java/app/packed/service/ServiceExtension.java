@@ -30,6 +30,7 @@ import app.packed.util.Qualifier;
 import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
+import packed.internal.service.build.service.AtProvidesGroup;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -289,8 +290,8 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
 
             // Descriptors and contracts
-            buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
             addContract(ServiceContract.class, e -> e.node.newServiceContract());
+            buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
 
             // Runtime stuff
 
@@ -300,6 +301,9 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             // f.eks. InstantionContext til instantiate
             // WithPipelines to buildDescriptor()
             // o.s.v.
+
+            // Needs TriConsumer....
+            addHookGroup(AtProvidesGroup.Builder.class, (e, g) -> e.node.provider().addProvidesGroup(null, g));
         }
     }
 }

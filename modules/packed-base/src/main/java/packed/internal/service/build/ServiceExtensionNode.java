@@ -82,7 +82,6 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
     }
 
     public void addErrorMessage() {
-
         hasFailed = true;
     }
 

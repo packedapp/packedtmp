@@ -24,6 +24,7 @@ import java.util.function.Function;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.contract.Contract;
+import app.packed.hook.HookGroupBuilder;
 import packed.internal.container.extension.ExtensionPropsContext;
 import packed.internal.util.StringFormatter;
 
@@ -46,6 +47,11 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+    }
+
+    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, BiConsumer<T, G> groupConsumer) {
+        // OnHookGroup
+
     }
 
     @SuppressWarnings("unchecked")

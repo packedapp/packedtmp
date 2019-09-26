@@ -25,7 +25,7 @@ import packed.internal.service.build.BuildEntry;
 /**
  *
  */
-class Requirement {
+class DependencyRequirement {
 
     final ConfigSite configSite;
 
@@ -36,13 +36,13 @@ class Requirement {
 
     // Contract <- If requirement added via a contract
 
-    Requirement(ServiceDependency dependency, ConfigSite configSite) {
+    DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = requireNonNull(configSite);
         this.entry = null;
     }
 
-    Requirement(ServiceDependency dependency, BuildEntry<?> entry) {
+    DependencyRequirement(ServiceDependency dependency, BuildEntry<?> entry) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = entry.configSite();
         this.entry = entry;
