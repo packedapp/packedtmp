@@ -15,8 +15,6 @@
  */
 package app.packed.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.util.Nullable;
 
 /**
@@ -40,14 +38,7 @@ import app.packed.util.Nullable;
 // Vi bliver noedt til at have en tilknyttning til en extension....
 // Fordi vi skal vide hvilken extension vi skal kigge i for at finde
 // en WireletPipelineFactory....
-public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, N>, N extends ExtensionNode<?>> {
-
-    /** The extension node. */
-    private final N node;
-
-    protected ExtensionWireletPipeline(N node) {
-        this.node = requireNonNull(node, "node is null");
-    }
+public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, N>, N extends Extension> {
 
     //
     public void buildArtifact() {
@@ -73,10 +64,6 @@ public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipelin
     // F.eks.
     boolean logAll() {
         return false;
-    }
-
-    public final N node() {
-        return node;
     }
 
     /**

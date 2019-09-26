@@ -15,10 +15,15 @@
  */
 package packed.internal.service.build;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.service.ServiceExtension;
 
 /** The default wirelet pipeline for */
-public final class ServiceWireletPipeline extends ExtensionWireletPipeline<ServiceWireletPipeline, ServiceExtensionNode> {
+public final class ServiceWireletPipeline extends ExtensionWireletPipeline<ServiceWireletPipeline, ServiceExtension> {
+
+    public final ServiceExtensionNode node;
 
     /**
      * Creates a new pipeline.
@@ -27,12 +32,12 @@ public final class ServiceWireletPipeline extends ExtensionWireletPipeline<Servi
      *            the node to create the pipeline from
      */
     public ServiceWireletPipeline(ServiceExtensionNode node) {
-        super(node);
+        this.node = requireNonNull(node);
     }
 
     /** {@inheritDoc} */
     @Override
     public ServiceWireletPipeline spawn() {
-        return new ServiceWireletPipeline(node());
+        return new ServiceWireletPipeline(node);
     }
 }

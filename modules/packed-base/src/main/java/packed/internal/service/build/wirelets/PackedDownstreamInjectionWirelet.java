@@ -75,7 +75,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceWireletPipeline extension) {
-            for (ExportedBuildEntry<?> e : extension.node().exports()) {
+            for (ExportedBuildEntry<?> e : extension.node.exports()) {
                 action.accept(e.toDescriptor());
             }
         }
@@ -103,7 +103,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceWireletPipeline p) {
-            System.out.println("Nice builder " + p.node().extension());
+            System.out.println("Nice builder " + p.node.extension());
         }
 
         /** {@inheritDoc} */

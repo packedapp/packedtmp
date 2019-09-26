@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
@@ -59,10 +60,10 @@ public final class ExtensionWireletPipelineModel {
      */
     @SuppressWarnings("unchecked")
     private ExtensionWireletPipelineModel(Builder builder) {
-        Class<? extends ExtensionNode<?>> nodeModel = (Class<? extends ExtensionNode<?>>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
+        Class<? extends Extension> nodeModel = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         // this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
         this.pipelineClass = builder.actualType;
-        this.node = ExtensionNodeModel.of(nodeModel).extension;
+        this.node = ExtensionModel.of(nodeModel);
 
         f = requireNonNull(node.pipelines.get(pipelineClass));
         // this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);

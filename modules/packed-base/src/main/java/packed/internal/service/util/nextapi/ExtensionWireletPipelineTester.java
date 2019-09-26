@@ -15,6 +15,8 @@
  */
 package packed.internal.service.util.nextapi;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
@@ -59,25 +61,27 @@ class MyExtensionWirelet extends ExtensionWirelet<MyExtensionWireletPipeline> {
 }
 
 //// Supportere aldrig mere end en type per extension.....
-class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWireletPipeline, MyExtensionNode> {
+class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWireletPipeline, MyExtension> {
 
     String name;
+
+    final MyExtensionNode node;
 
     /**
      * @param extension
      */
     MyExtensionWireletPipeline(MyExtensionNode extension) {
-        super(extension);
+        this.node = requireNonNull(extension);
     }
 
     private MyExtensionWireletPipeline(MyExtensionWireletPipeline previous) {
-        super(previous.node());
+        this(previous.node);
         this.name = previous.name;
     }
 
     String getName() {
         String n = name;
-        return n == null ? node().extension().name : n;
+        return n == null ? node.extension().name : n;
     }
 
     /** {@inheritDoc} */
