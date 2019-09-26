@@ -17,16 +17,20 @@ package app.packed.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Set;
+
+import app.packed.contract.Contract;
 import packed.internal.container.extension.ExtensionModel;
 
 /**
- * Ideen er egentlig at man kan tage en extension klasse som parameter.. og finde ud af dens properties....
+ * An extension descriptor.
+ * 
+ * <p>
+ * A extension descriptor describes an extension and defines methods to obtain each of its components.
  */
-
-/// Maaske man altid skal define hookOnAnnotatedFields... og saa lade @ActivateExtension vaere som den er...
 public final class ExtensionDescriptor {
 
-    /** The extension model for this descriptor. */
+    /** The extension model we wrap. */
     private final ExtensionModel<?> model;
 
     /** Never instantiate. */
@@ -34,12 +38,14 @@ public final class ExtensionDescriptor {
         this.model = requireNonNull(model);
     }
 
-    // Hook Annotations
-    //// Field | Method | Activating (Although you can see that on the Annotation)
-
-    //// Other Extension
-
-    //// Sidecars
+    /**
+     * Returns all the different types of contract types the extension provides.
+     * 
+     * @return all the different types of contract types the extension provides
+     */
+    public Set<Class<? extends Contract>> contractTypes() {
+        return model.constracts.keySet();
+    }
 
     /**
      * Returns the extension type this descriptor describes.
@@ -58,7 +64,15 @@ public final class ExtensionDescriptor {
      * @return a new extension descriptor for the specified type
      */
     public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+        // Maybe just create one descriptor for each model and keep it
         requireNonNull(extensionType, "extensionType is null");
         return new ExtensionDescriptor(ExtensionModel.of(extensionType));
     }
 }
+
+// Hook Annotations
+//// Field | Method | Activating (Although you can see that on the Annotation)
+
+//// Other Extension
+
+//// Sidecars

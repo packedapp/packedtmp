@@ -97,7 +97,7 @@ public final class ExtensionModel<T extends Extension> {
         this.nodeFactory = builder.epc.nodeFactory;
         this.pipelines = Map.copyOf(builder.epc.pipelines);
         this.bundleBuilder = builder.epc.builder;
-        this.constracts = builder.epc.contracts;
+        this.constracts = Map.copyOf(builder.epc.contracts);
     }
 
     public OnHookGroupModel hooks() {
