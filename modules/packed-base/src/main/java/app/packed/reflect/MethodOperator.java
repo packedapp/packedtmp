@@ -25,7 +25,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 
 import app.packed.hook.AnnotatedMethodHook;
 import packed.internal.reflect.PackedIllegalAccessException;
-import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -65,15 +64,6 @@ public abstract class MethodOperator<T> {
     public abstract T applyStaticHook(AnnotatedMethodHook<?> packedAnnotatedMethodHook);
 
     public abstract T apply(MethodHandle mh);
-
-    public static <T> MethodOperator<T> cast(MethodOperator<T> operator) {
-        requireNonNull(operator, "operator is null");
-        if (!(operator instanceof MethodOperator)) {
-            throw new IllegalArgumentException("Custom implementations of " + MethodOperator.class.getSimpleName() + " are not supported, type = "
-                    + StringFormatter.format(operator.getClass()));
-        }
-        return operator;
-    }
 
     public static <T> MethodOperator<Object> invokeOnce() {
         return new MethodOperator.InvokeOnce<>();

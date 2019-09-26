@@ -76,9 +76,8 @@ public final class AnnotatedMethodHook<T extends Annotation> {
     }
 
     public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
-        MethodOperator<E> o = MethodOperator.cast(operator);
         builder.checkActive();
-        return new PackedMethodHookApplicator<E>(this, o, method);
+        return new PackedMethodHookApplicator<E>(this, operator, method);
     }
 
     /**
@@ -95,12 +94,11 @@ public final class AnnotatedMethodHook<T extends Annotation> {
      *             if access checking failed while applying the operator
      */
     public <E> E applyStatic(MethodOperator<E> operator) {
-        MethodOperator<E> o = MethodOperator.cast(operator);
         if (!Modifier.isStatic(method.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static method, method = " + method);
         }
         builder.checkActive();
-        return o.applyStaticHook(this);
+        return operator.applyStaticHook(this);
     }
 
     /**

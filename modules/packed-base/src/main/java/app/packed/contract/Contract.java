@@ -35,13 +35,7 @@ public abstract class Contract {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean equals(Object obj) {
-        return obj != null && getClass() == obj.getClass() && equalsTo((Contract) obj);
-    }
-
-    // Vi skal have noget andet end equals...
-    // Supported, compatible..
-    protected abstract boolean equalsTo(Contract other);
+    public abstract boolean equals(Object obj);
 
     @SuppressWarnings("unchecked")
     @Nullable
