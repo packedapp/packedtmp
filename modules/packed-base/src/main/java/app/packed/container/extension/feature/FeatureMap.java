@@ -24,6 +24,7 @@ import java.util.Set;
  *
  */
 public final class FeatureMap {
+
     private final IdentityHashMap<FeatureKey<?>, Object> features = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")

@@ -30,6 +30,7 @@ import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionProps;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.hook.HookClassBuilder;
@@ -78,6 +79,8 @@ public final class ExtensionModel<T extends Extension> {
 
     final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
+    public final Map<Class<? extends Contract>, Function<?, ?>> constracts;
+
     public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
 
     /**
@@ -94,6 +97,7 @@ public final class ExtensionModel<T extends Extension> {
         this.nodeFactory = builder.epc.nodeFactory;
         this.pipelines = Map.copyOf(builder.epc.pipelines);
         this.bundleBuilder = builder.epc.builder;
+        this.constracts = builder.epc.contracts;
     }
 
     public OnHookGroupModel hooks() {

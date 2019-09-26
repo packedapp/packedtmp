@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
@@ -41,6 +42,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
@@ -113,6 +115,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return buildContext;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void buildDescriptor(BundleDescriptor.Builder builder, boolean isImage) {
         if (!isImage) {
             doBuild();
@@ -123,6 +126,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             BiConsumer<? super Extension, ? super Builder> c = e.model.bundleBuilder;
             if (c != null) {
                 c.accept(e.extension(), builder);
+            }
+            for (Function<?, ?> s : e.model.constracts.values()) {
+                Contract con = (Contract) ((Function) s).apply(e.extension());
+                requireNonNull(con);
+                builder.addContract(con);
             }
         }
         builder.extensions.addAll(extensions.keySet());

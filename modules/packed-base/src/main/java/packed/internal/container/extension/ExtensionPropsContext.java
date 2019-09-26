@@ -23,6 +23,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.contract.Contract;
 
 /**
  *
@@ -34,6 +35,8 @@ public final class ExtensionPropsContext {
     public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
 
     public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
+
+    public final IdentityHashMap<Class<? extends Contract>, Function<?, ?>> contracts = new IdentityHashMap<>();
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 }

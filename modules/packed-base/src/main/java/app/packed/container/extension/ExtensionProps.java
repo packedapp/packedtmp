@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
+import app.packed.contract.Contract;
 import packed.internal.container.extension.ExtensionPropsContext;
 import packed.internal.util.StringFormatter;
 
@@ -31,7 +32,14 @@ import packed.internal.util.StringFormatter;
  */
 public abstract class ExtensionProps<T extends ComposableExtension<?>> {
 
-    ExtensionPropsContext context;
+    private ExtensionPropsContext context;
+
+    protected final <E extends Contract> void addContract(Class<E> contractType, Function<T, E> contractFactory) {
+        // -> BiFunction(Extension, DescriptorContextWithPipelines)
+        requireNonNull(contractType, "contractType is null");
+        requireNonNull(contractFactory, "contractFactory is null");
+        context().contracts.putIfAbsent(contractType, contractFactory);
+    }
 
     protected final <E extends ExtensionWireletPipeline<E, ?>> void addPipeline(Class<E> pipelineType, Function<T, E> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");

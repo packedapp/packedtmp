@@ -110,15 +110,17 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
                 builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }
         }
+    }
 
-        builder.addContract(ServiceContract.of(c -> {
+    public ServiceContract newServiceContract() {
+        return ServiceContract.of(c -> {
             if (exporter != null) {
                 for (ExportedBuildEntry<?> n : exporter) {
                     c.addProvides(n.key());
                 }
             }
             dependencies().buildContract(c);
-        }));
+        });
     }
 
     public void checkExportConfigurable() {
