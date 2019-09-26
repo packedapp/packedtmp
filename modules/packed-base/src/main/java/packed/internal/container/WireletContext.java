@@ -60,7 +60,7 @@ public class WireletContext {
                         throw new IllegalStateException(
                                 "The wirelet " + w + " requires the extension " + pm.node.extensionType.getSimpleName() + " to be installed.");
                     }
-                    return pm.newPipeline(e.extensionNode());
+                    return pm.newPipeline(e.extension());
                 });
                 SharedSecrets.extension().wireletProcess(p, (ExtensionWirelet) w);
             } else if (w instanceof ContainerWirelet) {

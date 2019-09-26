@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -76,8 +75,8 @@ public final class ExtensionWireletPipelineModel {
      * @return a new instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionNode<?> node) {
-        return (ExtensionWireletPipeline<?, ?>) ((Function) f).apply(node.extension());
+    public ExtensionWireletPipeline<?, ?> newPipeline(Extension node) {
+        return (ExtensionWireletPipeline<?, ?>) ((Function) f).apply(node);
         // try {
         // return (ExtensionWireletPipeline<?, ?>) constructorNode.invoke(node);
         // } catch (Throwable e) {
