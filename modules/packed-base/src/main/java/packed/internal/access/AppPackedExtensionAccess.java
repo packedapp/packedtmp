@@ -17,9 +17,10 @@ package packed.internal.access;
 
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.ExtensionProps;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import packed.internal.container.extension.ExtensionPropsContext;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /** A support class for calling package private methods in the app.packed.extension package. */
@@ -31,7 +32,9 @@ public interface AppPackedExtensionAccess extends SecretAccess {
      * @param context
      *            the extension context containing the extension
      */
-    ExtensionNode<?> initializeExtension(PackedExtensionContext context);
+    void initializeExtension(PackedExtensionContext context);
+
+    void configureProps(ExtensionProps<?> props, ExtensionPropsContext context);
 
     void onConfigured(Extension extension);
 

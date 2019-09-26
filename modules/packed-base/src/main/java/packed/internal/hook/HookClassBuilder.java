@@ -26,12 +26,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.util.IdentityHashMap;
+import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.InstanceOfHook;
 import app.packed.hook.OnHook;
 import app.packed.hook.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
@@ -43,6 +45,9 @@ import packed.internal.util.StringFormatter;
  *
  */
 public final class HookClassBuilder {
+
+    /** The different types of hooks we allow. */
+    static final Set<Class<?>> HOOK_TYPES = Set.of(AnnotatedFieldHook.class, AnnotatedMethodHook.class, AnnotatedTypeHook.class, InstanceOfHook.class);
 
     public final Class<?> actualType;
 
@@ -84,30 +89,30 @@ public final class HookClassBuilder {
             throw new InvalidDeclarationException("Cannot use both @" + OnHookGroup.class.getSimpleName() + " and @" + OnHookGroup.class.getSimpleName()
                     + "on a method, method = " + StringFormatter.format(method));
         }
-        // @OnHook on a non-group takes (ContainerConfiguration + XHook) or just (XHook
-        // @OnHook on a group takes exactly 1 parameter -> XHook
-        if (method.getParameterCount() > 0 && method.getParameterCount() <= (isHookGroupBuilder ? 1 : 2)) {
-            Parameter[] parameters = method.getParameters();
+
+        Parameter[] parameters = method.getParameters();
+        if (parameters.length == 1 || (parameters.length == 2 && !isHookGroupBuilder && parameters[1].getType() == ComponentConfiguration.class)) {
             Parameter p1 = parameters[0];
-            Class<?> p1Type = p1.getType();
-            Parameter p2 = null;
-            if (isHookGroupBuilder || (method.getParameterCount() == 2 && (p2 = parameters[1]).getType() == ComponentConfiguration.class)) {
-                if (p1Type == AnnotatedFieldHook.class) {
-                    onHook(lookup, method, p1, p2, annotatedFields);
-                    return;
-                } else if (p1Type == AnnotatedMethodHook.class) {
-                    onHook(lookup, method, p1, p2, annotatedMethods);
-                    return;
-                } else if (p1Type == AnnotatedTypeHook.class) {
-                    onHook(lookup, method, p1, p2, annotatedTypes);
-                    return;
-                }
+            Class<?> hookType = p1.getType();
+            Parameter p2 = parameters.length == 2 ? parameters[1] : null;
+
+            if (hookType == AnnotatedFieldHook.class) {
+                onHook(lookup, method, p1, p2, annotatedFields);
+                return;
+            } else if (hookType == AnnotatedMethodHook.class) {
+                onHook(lookup, method, p1, p2, annotatedMethods);
+                return;
+            } else if (hookType == AnnotatedTypeHook.class) {
+                onHook(lookup, method, p1, p2, annotatedTypes);
+                return;
+            } else if (hookType == InstanceOfHook.class) {
+                throw new UnsupportedOperationException();
             }
         }
 
         if (isHookGroupBuilder) {
-            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must have exactly one parameter of type "
-                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or"
+            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must take exactly one parameter of type "
+                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or "
                     + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
         } else {
             throw new InvalidDeclarationException("stuff");
@@ -147,7 +152,8 @@ public final class HookClassBuilder {
             throw new InvalidDeclarationException(
                     "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
         }
-        Class<? extends HookGroupBuilder<?>> aggregateType = oh.value();
+
+        Class<? extends HookGroupBuilder<?>> groupType = oh.value();
 
         MethodHandle mh;
         try {
@@ -159,8 +165,8 @@ public final class HookClassBuilder {
 
         NativeImage.registerMethod(method);
 
-        groups.put(aggregateType, mh);
-        HookGroupBuilderModel oha = HookGroupBuilderModel.of(aggregateType);
+        groups.put(groupType, mh);
+        HookGroupBuilderModel oha = HookGroupBuilderModel.of(groupType);
 
         // TODO we should check that the type matches....
 

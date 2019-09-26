@@ -30,9 +30,8 @@ import app.packed.container.WireletList;
 import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.extension.ExtensionNodeModel;
+import packed.internal.container.extension.ExtensionPropsContext;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.util.StringFormatter;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -81,23 +80,10 @@ public abstract class Extension {
         SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
 
             @Override
-            public ExtensionNode<?> initializeExtension(PackedExtensionContext context) {
+            public void initializeExtension(PackedExtensionContext context) {
                 Extension e = context.extension();
                 e.context = context;
                 e.onAdded();
-
-                ExtensionNodeModel node = context.model.node();
-                ExtensionNode<?> en = null;
-                if (node != null) {
-                    en = ((ComposableExtension<?>) e).node();
-                    if (en == null) {
-                        throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must not return null");
-                    } else if (en.getClass() != node.type) {
-                        throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must return an (exact) instance of "
-                                + StringFormatter.format(node.type) + ", but returned an instance of " + StringFormatter.format(en.getClass()));
-                    }
-                }
-                return en;
             }
 
             /** {@inheritDoc} */
@@ -114,6 +100,11 @@ public abstract class Extension {
             @Override
             public <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
+            }
+
+            @Override
+            public void configureProps(ExtensionProps<?> props, ExtensionPropsContext context) {
+                props.doConfigure(context);
             }
         });
     }

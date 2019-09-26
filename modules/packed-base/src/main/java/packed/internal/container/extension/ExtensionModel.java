@@ -15,15 +15,20 @@
  */
 package packed.internal.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.function.Function;
 
 import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.ExtensionProps;
 import app.packed.util.Nullable;
+import packed.internal.access.SharedSecrets;
 import packed.internal.hook.HookClassBuilder;
 import packed.internal.hook.OnHookGroupModel;
 import packed.internal.reflect.ConstructorFinder;
@@ -62,6 +67,8 @@ public final class ExtensionModel<T extends Extension> {
 
     final OnHookGroupModel hooks;
 
+    final Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
+
     /** If the extension has a corresponding extension node */
     @Nullable
     private final ExtensionNodeModel node;
@@ -77,6 +84,7 @@ public final class ExtensionModel<T extends Extension> {
         this.extensionType = builder.extensionType;
         this.node = builder.node == null ? null : builder.node.build(this);
         this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
+        this.nodeFactory = builder.epc.nodeFactory;
     }
 
     public OnHookGroupModel hooks() {
@@ -138,6 +146,7 @@ public final class ExtensionModel<T extends Extension> {
         private ExtensionNodeModel.Builder node;
 
         final HookClassBuilder hooks;
+        ExtensionPropsContext epc = new ExtensionPropsContext();
 
         @SuppressWarnings("unchecked")
         private Builder(Class<? extends Extension> extensionType) {
@@ -149,12 +158,23 @@ public final class ExtensionModel<T extends Extension> {
             this.hooks = new HookClassBuilder(extensionType, false);
 
             if (ComposableExtension.class.isAssignableFrom(extensionType)) {
-                Class<? extends ExtensionNode<?>> nodeType = (Class<? extends ExtensionNode<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
-                if (!Modifier.isFinal(nodeType.getModifiers())) {
-                    throw new ExtensionDeclarationException(
-                            "The extension node returned by onAdded(), must be declareda final, node type = " + StringFormatter.format(nodeType));
+                Class<? extends ExtensionProps<?>> propsType = (Class<? extends ExtensionProps<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
+                // if (!Modifier.isFinal(nodeType.getModifiers())) {
+                // throw new ExtensionDeclarationException(
+                // "The extension node returned by onAdded(), must be declareda final, node type = " +
+                // StringFormatter.format(nodeType));
+                // }
+                ExtensionProps<?> ep = null;
+                try {
+                    ep = (ExtensionProps<?>) ConstructorFinder.find(propsType).invoke();
+                } catch (Throwable e) {
+                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                    throw new UndeclaredThrowableException(e);
                 }
-                node = new ExtensionNodeModel.Builder(this, nodeType);
+
+                SharedSecrets.extension().configureProps(ep, epc);
+                requireNonNull(epc.nodeType);
+                node = new ExtensionNodeModel.Builder(this, epc.nodeType);
             }
         }
 

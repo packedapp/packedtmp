@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package packed.internal.container.extension;
+
+import java.util.function.Function;
+
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionNode;
 
 /**
- * A composable extension is a specific type of extension that allows extensions to communicate across of containers.
+ *
  */
-public abstract class ComposableExtension<T extends ExtensionProps<?>> extends Extension {
+public final class ExtensionPropsContext {
 
+    public Class<? extends ExtensionNode<?>> nodeType;
+
+    public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
 }

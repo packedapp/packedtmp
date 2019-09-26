@@ -18,6 +18,7 @@ package packed.internal.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
+import java.util.function.Function;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
@@ -99,8 +100,26 @@ public final class PackedExtensionContext implements ExtensionContext {
     /**
      * 
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void initialize() {
-        node = SharedSecrets.extension().initializeExtension(this);
+        SharedSecrets.extension().initializeExtension(this);
+        if (model.nodeFactory != null) {
+            node = (ExtensionNode<?>) ((Function) model.nodeFactory).apply(extension);
+
+            // Need to do checks
+            // ExtensionNodeModel node = context.model.node();
+            // ExtensionNode<?> en = null;
+            // if (node != null) {
+            // en = ((ComposableExtension<?>) e).node();
+            // if (en == null) {
+            // throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must not return null");
+            // } else if (en.getClass() != node.type) {
+            // throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must return an (exact)
+            // instance of "
+            // + StringFormatter.format(node.type) + ", but returned an instance of " + StringFormatter.format(en.getClass()));
+            // }
+            // }
+        }
         if (node == null) {
             // Check that method definition _is not_ overridden but is ExtensionNode<?>
         } else {
