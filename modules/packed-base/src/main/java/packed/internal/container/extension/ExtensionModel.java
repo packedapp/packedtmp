@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import app.packed.container.extension.ComposableExtension;
@@ -77,6 +78,8 @@ public final class ExtensionModel<T extends Extension> {
 
     final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
+    public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -90,6 +93,7 @@ public final class ExtensionModel<T extends Extension> {
         this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
         this.nodeFactory = builder.epc.nodeFactory;
         this.pipelines = Map.copyOf(builder.epc.pipelines);
+        this.bundleBuilder = builder.epc.builder;
     }
 
     public OnHookGroupModel hooks() {
@@ -110,16 +114,6 @@ public final class ExtensionModel<T extends Extension> {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
         }
-    }
-
-    /**
-     * Return a model of any extension node this extension has.
-     * 
-     * @return a model of any extension node this extension has
-     */
-    @Nullable
-    public ExtensionNodeModel node() {
-        return node;
     }
 
     /**

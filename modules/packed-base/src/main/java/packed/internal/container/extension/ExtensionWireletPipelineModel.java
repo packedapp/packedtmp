@@ -48,25 +48,21 @@ public final class ExtensionWireletPipelineModel {
 
     // private final MethodHandle constructorPipeline;
 
-    public final ExtensionModel<?> node;
+    public final ExtensionModel<?> extension;
 
     final Class<? extends ExtensionWireletPipeline<?, ?>> pipelineClass;
 
-    final Function<?, ?> f;
+    final Function<?, ?> factory;
 
     /**
      * @param builder
      */
     @SuppressWarnings("unchecked")
     private ExtensionWireletPipelineModel(Builder builder) {
-        Class<? extends Extension> nodeModel = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
-        // this.constructorPipeline = ConstructorFinder.find(builder.actualType, builder.actualType);
+        Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
         this.pipelineClass = builder.actualType;
-        this.node = ExtensionModel.of(nodeModel);
-
-        f = requireNonNull(node.pipelines.get(pipelineClass));
-        // this.constructorNode = ConstructorFinder.find(builder.actualType, nodeModel);
-
+        this.extension = ExtensionModel.of(extensionType);
+        factory = requireNonNull(extension.pipelines.get(pipelineClass));
     }
 
     /**
@@ -76,23 +72,8 @@ public final class ExtensionWireletPipelineModel {
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ExtensionWireletPipeline<?, ?> newPipeline(Extension node) {
-        return (ExtensionWireletPipeline<?, ?>) ((Function) f).apply(node);
-        // try {
-        // return (ExtensionWireletPipeline<?, ?>) constructorNode.invoke(node);
-        // } catch (Throwable e) {
-        // ThrowableUtil.rethrowErrorOrRuntimeException(e);
-        // throw new UndeclaredThrowableException(e);
-        // }
+        return (ExtensionWireletPipeline<?, ?>) ((Function) factory).apply(node);
     }
-
-    // public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionWireletPipeline<?, ?> previous) {
-    // try {
-    // return (ExtensionWireletPipeline<?, ?>) constructorPipeline.invoke(previous);
-    // } catch (Throwable e) {
-    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
-    // throw new UndeclaredThrowableException(e);
-    // }
-    // }
 
     private static ExtensionWireletPipelineModel of(Class<?> type) {
         return CACHE.get(type);

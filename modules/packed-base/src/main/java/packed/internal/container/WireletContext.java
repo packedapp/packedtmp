@@ -20,7 +20,6 @@ import java.util.IdentityHashMap;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
-import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
@@ -53,15 +52,16 @@ public class WireletContext {
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) w.getClass());
+
                 ExtensionWireletPipeline p = pipelines.computeIfAbsent(pm, k -> {
-                    @Nullable
-                    PackedExtensionContext e = pcc.getContext(pm.node.extensionType);
+                    PackedExtensionContext e = pcc.getContext(pm.extension.extensionType);
                     if (e == null) {
                         throw new IllegalStateException(
-                                "The wirelet " + w + " requires the extension " + pm.node.extensionType.getSimpleName() + " to be installed.");
+                                "The wirelet " + w + " requires the extension " + pm.extension.extensionType.getSimpleName() + " to be installed.");
                     }
                     return pm.newPipeline(e.extension());
                 });
+
                 SharedSecrets.extension().wireletProcess(p, (ExtensionWirelet) w);
             } else if (w instanceof ContainerWirelet) {
                 ((ContainerWirelet) w).process(this);

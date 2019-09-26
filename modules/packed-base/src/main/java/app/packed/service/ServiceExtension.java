@@ -287,6 +287,14 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         protected void configure() {
             useNode(ServiceExtensionNode.class, e -> e.node);
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
+            buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
+
+            // Vi kan faktisk have flere graph modeller nu....
+            // Vi kan understoette build, instantiate, osv.
+            // ved at give den rigtige context med til hvert kald.
+            // f.eks. InstantionContext til instantiate
+            // WithPipelines to buildDescriptor()
+            // o.s.v.
         }
     }
 }

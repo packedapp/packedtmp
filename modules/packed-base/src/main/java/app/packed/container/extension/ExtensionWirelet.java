@@ -25,12 +25,6 @@ import app.packed.container.Wirelet;
  */
 public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<T, ?>> extends Wirelet {
 
-    // Ellers skal vi have stages'ene her
-    // processBefore()
-    // processAfter()
-    // ....
-    // Vel ikke hvis det er pipelinen der bestemmer....
-
     /**
      * Process this wirelet.
      * 
@@ -38,13 +32,18 @@ public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<T, ?>>
      *            the extensions pipeline
      */
     protected abstract void process(T pipeline);
-
-    // HVORFOR ikke bare en metode vi kan invoke fra extension'en?
-    // Det virker ikke naar vi image.with(some wirelets)....
-    // Fordi det kun er wirelets der bliver "koert".
-    // Vi koere ikke hver extension...
 }
 
+// Ellers skal vi have stages'ene her
+// processBefore()
+// processAfter()
+// ....
+// Vel ikke hvis det er pipelinen der bestemmer....
+
+// HVORFOR ikke bare en metode vi kan invoke fra extension'en?
+// Det virker ikke naar vi image.with(some wirelets)....
+// Fordi det kun er wirelets der bliver "koert".
+// Vi koere ikke hver extension...
 /// Maaske kan vi godt lave tmp bundles????
 /// Hvis vi bare stopper inde graf hullumhej...
 /// Det betyder dog ogsaa

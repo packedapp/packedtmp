@@ -16,8 +16,10 @@
 package packed.internal.container.extension;
 
 import java.util.IdentityHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
@@ -33,4 +35,5 @@ public final class ExtensionPropsContext {
 
     public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
 
+    public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 }

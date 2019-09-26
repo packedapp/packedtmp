@@ -34,13 +34,13 @@ import app.packed.component.Install;
 import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionNode;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
@@ -120,9 +120,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
-            ExtensionNode<?> n = e.extensionNode();
-            if (n != null) {
-                n.buildDescriptor(builder);
+            BiConsumer<? super Extension, ? super Builder> c = e.model.bundleBuilder;
+            if (c != null) {
+                c.accept(e.extension(), builder);
             }
         }
         builder.extensions.addAll(extensions.keySet());

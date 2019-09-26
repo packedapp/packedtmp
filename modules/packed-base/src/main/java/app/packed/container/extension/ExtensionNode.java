@@ -17,8 +17,6 @@ package app.packed.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.BundleDescriptor;
-
 /**
  * Extension nodes enables communication across extension instances of the same. It also enables using wirelets if X
  * interface is implemented. Finally it allows host to guest communication.
@@ -38,8 +36,6 @@ public abstract class ExtensionNode<T extends Extension> {
         this.extension = requireNonNull(extension, "extension is null");
     }
 
-    public void buildDescriptor(BundleDescriptor.Builder builder) {}
-
     /**
      * Returns the extension context.
      * 
@@ -47,6 +43,8 @@ public abstract class ExtensionNode<T extends Extension> {
      * @throws IllegalStateException
      *             if called from within the constructor of the extension.
      */
+    // Would like to remove all this code on the node, but nice that we can get
+    // the context...
     public final ExtensionContext context() {
         return extension.context();
     }

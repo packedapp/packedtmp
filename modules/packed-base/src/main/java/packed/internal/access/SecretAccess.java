@@ -16,4 +16,4 @@
 package packed.internal.access;
 
 /** A marker interface for access. */
-public interface SecretAccess {}
+interface SecretAccess {}

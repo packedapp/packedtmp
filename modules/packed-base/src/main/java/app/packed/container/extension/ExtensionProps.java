@@ -18,8 +18,11 @@ package app.packed.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Modifier;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import app.packed.container.BundleDescriptor;
+import app.packed.container.BundleDescriptor.Builder;
 import packed.internal.container.extension.ExtensionPropsContext;
 import packed.internal.util.StringFormatter;
 
@@ -30,8 +33,26 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
 
     ExtensionPropsContext context;
 
+    protected final <E extends ExtensionWireletPipeline<E, ?>> void addPipeline(Class<E> pipelineType, Function<T, E> pipelineFactory) {
+        requireNonNull(pipelineType, "pipelineType is null");
+        requireNonNull(pipelineFactory, "pipelineFactory is null");
+        // Validation??? Pipeline model...
+        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final void buildBundleDescriptor(BiConsumer<? super T, ? super BundleDescriptor.Builder> builder) {
+        context().builder = (BiConsumer<? super Extension, ? super Builder>) requireNonNull(builder, "builder is null");
+    }
+
     protected abstract void configure();
 
+    // /**
+    // * Returns the extension's extension node. This method will be invoked exactly once by the runtime and must return a
+    // * non-null value of the exact same type as the single type parameter to ComposableExtension.
+    // *
+    // * @return the extension's extension node
+    // */
     private ExtensionPropsContext context() {
         ExtensionPropsContext c = context;
         if (c == null) {
@@ -60,13 +81,6 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
         }
     }
 
-    // /**
-    // * Returns the extension's extension node. This method will be invoked exactly once by the runtime and must return a
-    // * non-null value of the exact same type as the single type parameter to ComposableExtension.
-    // *
-    // * @return the extension's extension node
-    // */
-
     // addNode??
     protected final <E extends ExtensionNode<T>> void useNode(Class<E> nodeType, Function<T, E> nodeFactory) {
         requireNonNull(nodeType, "nodeType is null");
@@ -76,12 +90,5 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
         }
         context().nodeType = nodeType;
         context().nodeFactory = nodeFactory;
-    }
-
-    protected final <E extends ExtensionWireletPipeline<E, ?>> void addPipeline(Class<E> pipelineType, Function<T, E> pipelineFactory) {
-        requireNonNull(pipelineType, "pipelineType is null");
-        requireNonNull(pipelineFactory, "pipelineFactory is null");
-        // Validation??? Pipeline model...
-        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 }

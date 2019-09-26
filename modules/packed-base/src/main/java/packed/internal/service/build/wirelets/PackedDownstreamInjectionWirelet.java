@@ -103,7 +103,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceWireletPipeline p) {
-            System.out.println("Nice builder " + p.node.extension());
+            System.out.println("Nice builder " + p.node);
         }
 
         /** {@inheritDoc} */

@@ -46,10 +46,13 @@ public final class ConfigSiteJoiner {
 
     @Nullable
     String first;
+
     @Nullable
     private String indent;
+
     @Nullable
     String intermediate;
+
     @Nullable
     String last;
 

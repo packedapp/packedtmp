@@ -102,7 +102,6 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
 
     }
 
-    @Override
     public void buildDescriptor(BundleDescriptor.Builder builder) {
         // need to have resolved successfully
         // TODO we should only have build entries here...

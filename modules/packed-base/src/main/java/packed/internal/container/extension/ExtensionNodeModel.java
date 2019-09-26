@@ -15,42 +15,20 @@
  */
 package packed.internal.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
 
-import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import packed.internal.hook.HookClassBuilder;
 import packed.internal.reflect.MemberFinder;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 
 /**
  * A runtime model of an {@link ExtensionNode} implementation.
  */
 public final class ExtensionNodeModel {
-
-    /** A cache of values. */
-    private static final ClassValue<ExtensionNodeModel> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        protected ExtensionNodeModel computeValue(Class<?> type) {
-            Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(type);
-            return ExtensionModel.of(extensionType).node();
-        }
-    };
-
-    /** An type extractor to find the extension type the node belongs to. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionNode.class);
-
-    /** The extension the node belongs to. */
-    public final ExtensionModel<?> extension;
 
     public final Class<? extends ExtensionNode<?>> type;
 
@@ -61,19 +39,8 @@ public final class ExtensionNodeModel {
      *            the builder for this model
      */
     private ExtensionNodeModel(ExtensionModel<?> extension, Builder builder) {
-        this.extension = requireNonNull(extension);
+        // this.extension = requireNonNull(extension);
         this.type = builder.type;
-    }
-
-    /**
-     * Returns an extension node model for the specified extension node type.
-     * 
-     * @param nodeType
-     *            the type of extension to return a model for
-     * @return an extension model for the specified extension type
-     */
-    public static ExtensionNodeModel of(Class<? extends ExtensionNode<?>> nodeType) {
-        return CACHE.get(nodeType);
     }
 
     /** A builder for {@link ExtensionModel}. This builder is used by ExtensionModel. */
