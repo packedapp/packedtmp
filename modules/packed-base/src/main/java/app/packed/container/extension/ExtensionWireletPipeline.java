@@ -35,9 +35,12 @@ import app.packed.util.Nullable;
 
 // Kan only define one pipeline per extension...
 // Fordi, vi kalder build paa den...
-
 // ExtensionOrExtensionNode for T
-public abstract class ExtensionWireletPipeline<N extends ExtensionNode<?>> {
+
+// Vi bliver noedt til at have en tilknyttning til en extension....
+// Fordi vi skal vide hvilken extension vi skal kigge i for at finde
+// en WireletPipelineFactory....
+public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, N>, N extends ExtensionNode<?>> {
 
     /** The extension node. */
     private final N node;
@@ -61,6 +64,7 @@ public abstract class ExtensionWireletPipeline<N extends ExtensionNode<?>> {
         return false;
     }
 
+    public abstract T spawn();
     // Kunne godt tage en boolean der sagde noget om hvordan den koerer...
 
     // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
@@ -92,11 +96,19 @@ public abstract class ExtensionWireletPipeline<N extends ExtensionNode<?>> {
     /**
      * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
      * an artifact image. Or tries to create a new artifact image from an existing image.
-     * 
-     * @return a new pipeline
      */
+    // Pipelines maa vaere registreret i et Map.... Som man saa kan traekke paaa..
+    // F.eks. i forbindelse med BuildContract...
+
     // Two strategies. Either clone all the contents.
     // Or recursively call back into parent pipeline
     // protected abstract T split();
 
+    // Ideen er lidt at tage en props.addPipeline(MyPipeline.class, e-> new MyPip(e.mode), Order.SECOND);
+    // Vi skal ihvertfald draenes af alle annoteringer. Kun paa selve wireletten...
+    // Alternativet, hvis vi kun har 2-3 vaerdier bare at have 3 metoder i props
+    // addPipelineLast, addPipelineFirst, ...
+    public enum Order {
+        FIRST, SECOND, LAST;
+    }
 }

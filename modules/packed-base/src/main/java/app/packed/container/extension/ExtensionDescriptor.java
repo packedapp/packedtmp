@@ -15,12 +15,24 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
+import packed.internal.container.extension.ExtensionModel;
+
 /**
  * Ideen er egentlig at man kan tage en extension klasse som parameter.. og finde ud af dens properties....
  */
 
 /// Maaske man altid skal define hookOnAnnotatedFields... og saa lade @ActivateExtension vaere som den er...
-class ExtensionDescriptor {
+public final class ExtensionDescriptor {
+
+    /** The extension model for this descriptor. */
+    private final ExtensionModel<?> model;
+
+    /** Never instantiate. */
+    private ExtensionDescriptor(ExtensionModel<?> model) {
+        this.model = requireNonNull(model);
+    }
 
     // Hook Annotations
     //// Field | Method | Activating (Although you can see that on the Annotation)
@@ -29,12 +41,24 @@ class ExtensionDescriptor {
 
     //// Sidecars
 
-    public static ExtensionDescriptor of(Class<? extends Extension> ed) {
-        throw new UnsupportedOperationException();
+    /**
+     * Returns the extension type this descriptor describes.
+     * 
+     * @return the extension type this descriptor describes
+     */
+    public Class<? extends Extension> extensionType() {
+        return model.extensionType;
     }
 
-    // Et muligt design er at tage en ExtensionConfiguration klasse som parameter til
-    // Extension(Class<? extends ExtensionConfiguration>)
-
-    // static final ExtensionConfig EC = initialize(new InjectionExtensionConfig());
+    /**
+     * Returns a new extension descriptor for the specified type.
+     * 
+     * @param extensionType
+     *            the extension type to return a descriptor for
+     * @return a new extension descriptor for the specified type
+     */
+    public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return new ExtensionDescriptor(ExtensionModel.of(extensionType));
+    }
 }

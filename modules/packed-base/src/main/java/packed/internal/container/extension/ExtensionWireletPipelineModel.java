@@ -39,7 +39,7 @@ public final class ExtensionWireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected ExtensionWireletPipelineModel computeValue(Class<?> type) {
-            return new ExtensionWireletPipelineModel.Builder((Class<? extends ExtensionWireletPipeline<?>>) type).build();
+            return new ExtensionWireletPipelineModel.Builder((Class<? extends ExtensionWireletPipeline<?, ?>>) type).build();
         }
     };
 
@@ -53,7 +53,7 @@ public final class ExtensionWireletPipelineModel {
 
     public final ExtensionModel<?> node;
 
-    final Class<? extends ExtensionWireletPipeline<?>> pipelineClass;
+    final Class<? extends ExtensionWireletPipeline<?, ?>> pipelineClass;
 
     /**
      * @param builder
@@ -72,18 +72,18 @@ public final class ExtensionWireletPipelineModel {
      * 
      * @return a new instance
      */
-    public ExtensionWireletPipeline<?> newPipeline(ExtensionNode<?> node) {
+    public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionNode<?> node) {
         try {
-            return (ExtensionWireletPipeline<?>) constructorNode.invoke(node);
+            return (ExtensionWireletPipeline<?, ?>) constructorNode.invoke(node);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
         }
     }
 
-    public ExtensionWireletPipeline<?> newPipeline(ExtensionWireletPipeline<?> previous) {
+    public ExtensionWireletPipeline<?, ?> newPipeline(ExtensionWireletPipeline<?, ?> previous) {
         try {
-            return (ExtensionWireletPipeline<?>) constructorPipeline.invoke(previous);
+            return (ExtensionWireletPipeline<?, ?>) constructorPipeline.invoke(previous);
         } catch (Throwable e) {
             ThrowableUtil.rethrowErrorOrRuntimeException(e);
             throw new UndeclaredThrowableException(e);
@@ -100,12 +100,12 @@ public final class ExtensionWireletPipelineModel {
 
     private static class Builder {
 
-        private final Class<? extends ExtensionWireletPipeline<?>> actualType;
+        private final Class<? extends ExtensionWireletPipeline<?, ?>> actualType;
 
         /**
          * @param type
          */
-        private Builder(Class<? extends ExtensionWireletPipeline<?>> type) {
+        private Builder(Class<? extends ExtensionWireletPipeline<?, ?>> type) {
             actualType = requireNonNull(type);
         }
 
@@ -144,7 +144,8 @@ public final class ExtensionWireletPipelineModel {
          */
         @SuppressWarnings("unchecked")
         private ExtensionWireletModel(Class<? extends ExtensionWirelet<?>> type) {
-            Class<? extends ExtensionWireletPipeline<?>> extensionType = (Class<? extends ExtensionWireletPipeline<?>>) EXTENSION_TYPE_EXTRACTOR.extract(type);
+            Class<? extends ExtensionWireletPipeline<?, ?>> extensionType = (Class<? extends ExtensionWireletPipeline<?, ?>>) EXTENSION_TYPE_EXTRACTOR
+                    .extract(type);
             this.pipeline = ExtensionWireletPipelineModel.of(extensionType);
         }
     }

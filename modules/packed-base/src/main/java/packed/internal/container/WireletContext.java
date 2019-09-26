@@ -46,7 +46,7 @@ public class WireletContext {
 
     ContainerWirelet.ComponentNameWirelet newName;
 
-    final IdentityHashMap<ExtensionWireletPipelineModel, ExtensionWireletPipeline<?>> pipelines = new IdentityHashMap<>();
+    final IdentityHashMap<ExtensionWireletPipelineModel, ExtensionWireletPipeline<?, ?>> pipelines = new IdentityHashMap<>();
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {

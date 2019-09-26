@@ -171,7 +171,6 @@ public final class ExtensionModel<T extends Extension> {
                     ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new UndeclaredThrowableException(e);
                 }
-
                 SharedSecrets.extension().configureProps(ep, epc);
                 requireNonNull(epc.nodeType);
                 node = new ExtensionNodeModel.Builder(this, epc.nodeType);

@@ -59,7 +59,7 @@ class MyExtensionWirelet extends ExtensionWirelet<MyExtensionWireletPipeline> {
 }
 
 //// Supportere aldrig mere end en type per extension.....
-class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionNode> {
+class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionWireletPipeline, MyExtensionNode> {
 
     String name;
 
@@ -78,5 +78,11 @@ class MyExtensionWireletPipeline extends ExtensionWireletPipeline<MyExtensionNod
     String getName() {
         String n = name;
         return n == null ? node().extension().name : n;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MyExtensionWireletPipeline spawn() {
+        return new MyExtensionWireletPipeline(node());
     }
 }

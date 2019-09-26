@@ -98,7 +98,7 @@ public abstract class Extension {
             }
 
             @Override
-            public <T extends ExtensionWireletPipeline<?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
+            public <T extends ExtensionWireletPipeline<?, ?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
             }
 
