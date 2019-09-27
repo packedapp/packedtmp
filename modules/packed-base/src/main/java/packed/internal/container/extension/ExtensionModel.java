@@ -90,6 +90,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final Consumer<? super Extension> onAdd;
 
+    public final Consumer<? super Extension> onConfigured;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -105,7 +107,8 @@ public final class ExtensionModel<T extends Extension> {
         this.pipelines = Map.copyOf(builder.epc.pipelines);
         this.bundleBuilder = builder.epc.builder;
         this.contracts = Map.copyOf(builder.epc.contracts);
-        this.onAdd = builder.epc.onAdd;
+        this.onAdd = builder.epc.onAddAction;
+        this.onConfigured = builder.epc.onConfiguredAction;
     }
 
     public OnHookGroupModel hooks() {
@@ -185,7 +188,7 @@ public final class ExtensionModel<T extends Extension> {
                     ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new UndeclaredThrowableException(e);
                 }
-                SharedSecrets.extension().configureProps(ep, epc);
+                SharedSecrets.extension().configureComposer(ep, epc);
                 if (epc.nodeType != null) {
                     node = new ExtensionNodeModel.Builder(this, epc.nodeType);
                 }

@@ -41,8 +41,7 @@ public interface ExtensionContext {
     /**
      * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after the extension's {@link Extension#onConfigured()} method has been invoked
-     * by the runtime.
+     * An extension is no longer configurable after the extension's onconfigured method has been invoked by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension

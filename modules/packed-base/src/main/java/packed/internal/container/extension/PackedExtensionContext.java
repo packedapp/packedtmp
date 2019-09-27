@@ -101,9 +101,10 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void initialize() {
-        SharedSecrets.extension().setExtensionContext(this);
+        // Sets Extension.context = this
+        SharedSecrets.extension().setExtensionContext(extension, this);
 
-        // Run any onAdd actions.
+        // Run any onAdd action that has set via ExtensionComposer#onAdd().
         if (model.onAdd != null) {
             model.onAdd.accept(extension);
         }
@@ -133,7 +134,10 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     public void onConfigured() {
-        SharedSecrets.extension().onConfigured(extension);
+        if (model.onConfigured != null) {
+            model.onConfigured.accept(extension);
+        }
+
         isConfigurable = false;
     }
 

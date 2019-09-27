@@ -27,21 +27,28 @@ import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionPipelineContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
+import app.packed.util.Nullable;
 
 /**
  *
  */
 public final class ExtensionComposerContext {
 
-    public Consumer<? super Extension> onAdd;
-
-    public Class<? extends ExtensionNode<?>> nodeType;
-
-    public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
-
-    public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
+    public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> contracts = new IdentityHashMap<>();
 
-    public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
+    public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
+
+    public Class<? extends ExtensionNode<?>> nodeType;
+
+    /** An action that should be run immediately after an extension has been instantiated. */
+    @Nullable
+    public Consumer<? super Extension> onAddAction;
+
+    /** An action that should be run immediately after an extension has been configured. */
+    @Nullable
+    public Consumer<? super Extension> onConfiguredAction;
+
+    public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
 }

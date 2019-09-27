@@ -23,14 +23,12 @@ import java.util.Optional;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
-import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.ExtensionComposerContext;
-import packed.internal.container.extension.PackedExtensionContext;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -78,36 +76,34 @@ public abstract class Extension {
     static {
         SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
 
+            /** {@inheritDoc} */
             @Override
-            public void setExtensionContext(PackedExtensionContext context) {
-                context.extension().context = context;
+            public void configureComposer(ExtensionComposer<?> props, ExtensionComposerContext context) {
+                props.doConfigure(context);
             }
 
             /** {@inheritDoc} */
-            @Override
-            public void onConfigured(Extension extension) {
-                extension.onConfigured();
-            }
-
             @Override
             public void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context) {
                 extension.onPrepareContainerInstantiation(context);
             }
 
+            /** {@inheritDoc} */
+            @Override
+            public void setExtensionContext(Extension extension, ExtensionContext context) {
+                extension.context = context;
+            }
+
+            /** {@inheritDoc} */
             @Override
             public <T extends ExtensionWireletPipeline<T, ?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
                 wirelet.process(pipeline);
-            }
-
-            @Override
-            public void configureProps(ExtensionComposer<?> props, ExtensionComposerContext context) {
-                props.doConfigure(context);
             }
         });
     }
 
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
-    private PackedExtensionContext context;
+    private ExtensionContext context;
 
     /**
      * Returns the build context of the artifact which this extension is a part of.
@@ -189,25 +185,13 @@ public abstract class Extension {
      */
     protected final ExtensionContext context() {
         // When calling this method remember to add test to BasicExtensionTest
-        PackedExtensionContext c = context;
+        ExtensionContext c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension."
                     + " As an alternative ExtensionComposer.onAdd(action) can used to perform initialization");
         }
         return c;
     }
-
-    /**
-     * A callback method that is invoked immediately after a container has been successfully configured. This is typically
-     * after {@link Bundle#configure()} has returned.
-     * <p>
-     * <p>
-     * The default implementation of this method does nothing.
-     */
-    // If the container contains multiple extensions. They are invoked in reverse order. If E2 has a dependency on E1.
-    // E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform
-    // additional configuration on other extension after user code has been executed
-    protected void onConfigured() {} // afterConfigure,
 
     /**
      * Invoked whenever the container is being instantiated. In case of a container image this means that method might be

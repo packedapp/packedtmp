@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
@@ -135,8 +136,25 @@ public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final void onAdd(Consumer<? super T> action) {
         requireNonNull(action, "action is null");
-        Consumer<? super T> a = context().onAdd;
-        context().onAdd = a == null ? (Consumer) action : a.andThen((Consumer) action);
+        Consumer<? super T> a = context().onAddAction;
+        context().onAddAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
+    }
+
+    /**
+     * A callback method that is invoked immediately after a container has been successfully configured. This is typically
+     * after {@link Bundle#configure()} has returned.
+     * <p>
+     * <p>
+     * The default implementation of this method does nothing.
+     */
+    // If the container contains multiple extensions. They are invoked in reverse order. If E2 has a dependency on E1.
+    // E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform
+    // additional configuration on other extension after user code has been executed
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void onConfigured(Consumer<? super T> action) {
+        requireNonNull(action, "action is null");
+        Consumer<? super T> a = context().onConfiguredAction;
+        context().onConfiguredAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
     }
 
     // addNode??

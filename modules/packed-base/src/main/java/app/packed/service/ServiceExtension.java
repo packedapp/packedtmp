@@ -163,12 +163,6 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
 
     /** {@inheritDoc} */
     @Override
-    protected void onConfigured() {
-        node.build();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
         node.onPrepareContainerInstantiation(context);
     }
@@ -288,6 +282,8 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         @Override
         protected void configure() {
             addDependencies(ComponentExtension.class);
+
+            onConfigured(e -> e.node.build());
 
             useNode(ServiceExtensionNode.class, e -> e.node);
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
