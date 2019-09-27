@@ -24,9 +24,9 @@ import packed.internal.container.extension.ExtensionModel;
 
 /**
  * An extension descriptor.
- * 
  * <p>
- * A extension descriptor describes an extension and defines methods to obtain each of its components.
+ * A extension descriptor describes an extension and defines various methods to obtain information about the extension.
+ * An instance is normally acquired by calling {@link #of(Class)}.
  */
 public final class ExtensionDescriptor {
 
@@ -66,11 +66,11 @@ public final class ExtensionDescriptor {
     }
 
     /**
-     * Returns a new extension descriptor for the specified type.
+     * Returns an extension descriptor for the specified extension type.
      * 
      * @param extensionType
      *            the extension type to return a descriptor for
-     * @return a new extension descriptor for the specified type
+     * @return an extension descriptor for the specified extension type
      */
     public static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         // Maybe just create one descriptor for each model and keep it

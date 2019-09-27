@@ -57,15 +57,6 @@ import packed.internal.container.WireletContext;
  */
 public final class ArtifactImage implements ContainerSource {
 
-    /** The configuration of the root container of the artifact. */
-    private final PackedContainerConfiguration containerConfiguration;
-
-    /** Additional wirelets. */
-    // Vi evaluere them naar
-    private final WireletList wirelets;
-
-    WireletContext wl;
-
     static {
         SharedSecrets.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
 
@@ -76,6 +67,17 @@ public final class ArtifactImage implements ContainerSource {
             }
         });
     }
+
+    /** The configuration of the root container of the artifact. */
+    private final PackedContainerConfiguration containerConfiguration;
+
+    private final Class<? extends ContainerSource> sourceType;
+
+    /** Additional wirelets. */
+    // Vi evaluere them naar
+    private final WireletList wirelets;
+
+    WireletContext wl;
 
     /**
      * Creates a new image from the specified configuration.
@@ -111,7 +113,7 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Returns any description that has been set for the image. *
+     * Returns any description that has been set for the image.
      * <p>
      * The returned description is always identical to the description of the artifact's root container.
      * 
@@ -144,20 +146,6 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
-     * Returns a new artifact image.
-     * <p>
-     * The specified wirelets are never evaluated until the new image is used to create a new artifact or bundle descriptor.
-     * 
-     * @param wirelets
-     *            the wirelets to prefix
-     * @return a new image
-     */
-    public ArtifactImage prefixWith(Wirelet... wirelets) {
-        WireletList wl = this.wirelets.plus(wirelets);
-        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl, sourceType);
-    }
-
-    /**
      * Returns the type of bundle that was used to create this image.
      * <p>
      * If this image was created from an existing image, the new image image will retain the original image source bundle
@@ -176,6 +164,21 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
+     * Returns a new artifact image.
+     * <p>
+     * The specified wirelets are never evaluated until the new image is used to create a new artifact or bundle descriptor.
+     * 
+     * @param wirelets
+     *            the wirelets to prefix
+     * @return a new image
+     */
+    // If we use pipeline, the wirelets will be evaluated
+    public ArtifactImage with(Wirelet... wirelets) {
+        WireletList wl = this.wirelets.plus(wirelets);
+        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl, sourceType);
+    }
+
+    /**
      * Creates a new image from the specified source.
      *
      * @param source
@@ -189,14 +192,13 @@ public final class ArtifactImage implements ContainerSource {
      */
     public static ArtifactImage of(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
-            throw new UnsupportedOperationException("Cannot create a new image, from an existing image");
+            return ((ArtifactImage) source).with(wirelets);
+            // throw new UnsupportedOperationException("Cannot create a new image, from an existing image");
         }
         // Wirelet are added to the container configuration, and not the image
         PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
         return new ArtifactImage(c.doBuild(), source.getClass());
     }
-
-    private final Class<? extends ContainerSource> sourceType;
 }
 
 /** An dummy artifact driver for creating artifact images. */

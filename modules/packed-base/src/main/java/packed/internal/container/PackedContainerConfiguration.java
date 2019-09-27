@@ -316,7 +316,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void methodHandlePassing0(AbstractComponent ac, ArtifactInstantiationContext ic) {
+    private void methodHandlePassing0(AbstractComponent ac, PackedArtifactInstantiationContext ic) {
         if (children != null) {
             for (AbstractComponentConfiguration cc : children.values()) {
                 AbstractComponent child = ac.children.get(cc.name);

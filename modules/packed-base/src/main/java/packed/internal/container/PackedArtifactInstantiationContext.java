@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
+import app.packed.artifact.ArtifactBuildContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 import app.packed.util.Nullable;
@@ -29,7 +30,22 @@ import app.packed.util.Nullable;
  * <strong>Note that this implementation is not synchronized.</strong>
  */
 // ArtifactInstantiationContext
-final class PackedArtifactInstantiationContext implements ArtifactInstantiationContext {
+
+/**
+ * An artifact instantiation context is created every time an artifact is being instantiated.
+ * <p>
+ * Describes which phases it is available from
+ * <p>
+ * The main difference from {@link ArtifactBuildContext} is when using an artifact image
+ * <p>
+ * <strong>Note that this implementation is not synchronized.</strong> Hmmm what about if use them at startup???
+ */
+// ArtifactInstantiationContext or ContainerInstantionationContext
+// Per Artifact or PerContainer???
+
+// Per container, er sgu for besvaergeligt med de der get stuff...
+// Altsaa med mindre vi har behov for at access dem fra andet sted fra
+final class PackedArtifactInstantiationContext {
 
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
@@ -45,12 +61,10 @@ final class PackedArtifactInstantiationContext implements ArtifactInstantiationC
      * 
      * @return the type of artifact the build process produces
      */
-    @Override
     public Class<?> artifactType() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     @Nullable
     public <T> T get(ContainerConfiguration configuration, Class<T> type) {
@@ -60,14 +74,12 @@ final class PackedArtifactInstantiationContext implements ArtifactInstantiationC
         return e == null ? null : (T) e.get(type);
     }
 
-    @Override
     public void put(ContainerConfiguration configuration, Object obj) {
         requireNonNull(configuration, "configuration is null");
         requireNonNull(obj, "obj is null");
         map.computeIfAbsent(configuration, e -> new IdentityHashMap<>()).put(obj.getClass(), obj);
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T use(ContainerConfiguration configuration, Class<T> type) {
         requireNonNull(configuration, "configuration is null");
