@@ -18,7 +18,6 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
-import app.packed.app.App;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
@@ -56,9 +55,9 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     ArtifactBuildContext buildContext();
 
     /**
-     * Returns an unmodifiable view of all of the extension types that are used by this configuration.
+     * Returns an unmodifiable view of all of the extension types that are currently used by this configuration.
      * 
-     * @return an unmodifiable view of all of the extension types that are used by this configuration
+     * @return an unmodifiable view of all of the extension types that are currently used by this configuration
      */
     Set<Class<? extends Extension>> extensions();
 
@@ -70,6 +69,8 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     boolean isTopContainer();
 
     /**
+     * Links the specified bundle statically.
+     * 
      * @param bundle
      *            the bundle to link
      * @param wirelets
@@ -125,21 +126,22 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @see Extension#use(Class)
      */
     <T extends Extension> T use(Class<T> extensionType);
-
-    /**
-     * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example, via
-     * {@link App#of(ContainerSource, Wirelet...)} or {@link ContainerConfiguration#link(Bundle, Wirelet...)}.
-     * 
-     * @return a wirelet list containing any wirelets that was specified when creating this configuration
-     */
-    // hmm vs build wirelet context, vs instantiation wirelet context.
-    // Maaske skal vi helt droppe den... Saa man altid skal tage stilling.
-    // Saa hvis man har en wirelet der kan klare image(), saa brug instantiation.
-
-    // Mht til navn saa kan vi cache NamingWirelet instance paa image creation time.
-    // Leder efter den paa build time, og saa se om de er same ==
-    // Hvis nej, applier vi nyt navn. Ellers beholder vi det gamle.
-
-    // Build Contexts tager kun top container wirelets....
-    WireletList wirelets();
 }
+//
+/// **
+// * Returns a wirelet list containing any wirelets that was specified when creating this configuration. For example,
+// via
+// * {@link App#of(ContainerSource, Wirelet...)} or {@link ContainerConfiguration#link(Bundle, Wirelet...)}.
+// *
+// * @return a wirelet list containing any wirelets that was specified when creating this configuration
+// */
+//// hmm vs build wirelet context, vs instantiation wirelet context.
+//// Maaske skal vi helt droppe den... Saa man altid skal tage stilling.
+//// Saa hvis man har en wirelet der kan klare image(), saa brug instantiation.
+//
+//// Mht til navn saa kan vi cache NamingWirelet instance paa image creation time.
+//// Leder efter den paa build time, og saa se om de er same ==
+//// Hvis nej, applier vi nyt navn. Ellers beholder vi det gamle.
+//
+//// Build Contexts tager kun top container wirelets....
+// WireletList wirelets();

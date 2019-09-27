@@ -32,8 +32,6 @@ import app.packed.service.ServiceDependency;
  */
 public final class AtInjectGroup {
 
-    // static final FieldOperator<MethodHandle> FIELD_OP = FieldOperator.setter().requireNonFinal().requireNonStatic();
-
     /** An immutable map of all providing members. */
     public final List<AtInject> members;
 
@@ -64,17 +62,23 @@ public final class AtInjectGroup {
         }
 
         @OnHook
-        void onFieldInject(AnnotatedFieldHook<Inject> fieldHook) {
-            FieldDescriptor field = fieldHook.field();
-            members.add(new AtInject(fieldHook.setter(), field, List.of(ServiceDependency.fromField(field))));
+        void onFieldInject(AnnotatedFieldHook<Inject> hook) {
+            hook.checkNotFinal().checkNotStatic();
+            FieldDescriptor field = hook.field();
+            members.add(new AtInject(hook.setter(), field, List.of(ServiceDependency.fromField(field))));
         }
 
         @OnHook
-        void onMethodProvide(AnnotatedMethodHook<Inject> methodHook) {
-            MethodDescriptor method = methodHook.method();
+        void onMethodProvide(AnnotatedMethodHook<Inject> hook) {
+            MethodDescriptor method = hook.method();
             List<ServiceDependency> dependencies = ServiceDependency.fromExecutable(method);
+
             // TestNotStatic... Hmm kan ikke kalde hook.checkNotStatic mere...
-            members.add(new AtInject(methodHook.methodHandle(), method, dependencies));
+
+            // We have static @Inject methods that constructs
+            if (!hook.method().isStatic()) {
+                members.add(new AtInject(hook.methodHandle(), method, dependencies));
+            }
         }
     }
 

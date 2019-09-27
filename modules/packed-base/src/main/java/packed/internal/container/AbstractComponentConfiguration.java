@@ -178,7 +178,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         }
         n = setName;
         if (this instanceof PackedContainerConfiguration) {
-            Optional<ComponentNameWirelet> o = ((PackedContainerConfiguration) this).wirelets().findLast(ComponentNameWirelet.class);
+            Optional<ComponentNameWirelet> o = ((PackedContainerConfiguration) this).wirelets.findLast(ComponentNameWirelet.class);
             if (o.isPresent()) {
                 n = o.get().name;
             }

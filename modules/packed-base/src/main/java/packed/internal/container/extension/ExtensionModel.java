@@ -15,22 +15,21 @@
  */
 package packed.internal.container.extension;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionPipelineContext;
-import app.packed.container.extension.ExtensionProps;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
@@ -65,10 +64,10 @@ public final class ExtensionModel<T extends Extension> {
         }
     };
 
-    /** The method handle used to create a new instances. */
+    /** The method handle used to create a new extension instance. */
     private final MethodHandle constructor;
 
-    /** The type of the extension this model covers. */
+    /** The type of the extension this model describes. */
     public final Class<? extends Extension> extensionType;
 
     final OnHookGroupModel hooks;
@@ -81,9 +80,15 @@ public final class ExtensionModel<T extends Extension> {
 
     final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
-    public final Map<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> constracts;
+    /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */
+    // Can 2 extensions define the same contract???? Don't think so
+    // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
+    // Contract>);
+    public final Map<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> contracts;
 
     public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
+
+    public final Consumer<? super Extension> onAdd;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -99,7 +104,8 @@ public final class ExtensionModel<T extends Extension> {
         this.nodeFactory = builder.epc.nodeFactory;
         this.pipelines = Map.copyOf(builder.epc.pipelines);
         this.bundleBuilder = builder.epc.builder;
-        this.constracts = Map.copyOf(builder.epc.contracts);
+        this.contracts = Map.copyOf(builder.epc.contracts);
+        this.onAdd = builder.epc.onAdd;
     }
 
     public OnHookGroupModel hooks() {
@@ -151,7 +157,8 @@ public final class ExtensionModel<T extends Extension> {
         private ExtensionNodeModel.Builder node;
 
         final HookClassBuilder hooks;
-        ExtensionPropsContext epc = new ExtensionPropsContext();
+
+        ExtensionComposerContext epc = new ExtensionComposerContext();
 
         @SuppressWarnings("unchecked")
         private Builder(Class<? extends Extension> extensionType) {
@@ -163,23 +170,25 @@ public final class ExtensionModel<T extends Extension> {
             this.hooks = new HookClassBuilder(extensionType, false);
 
             if (ComposableExtension.class.isAssignableFrom(extensionType)) {
-                Class<? extends ExtensionProps<?>> propsType = (Class<? extends ExtensionProps<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
+                Class<? extends ExtensionComposer<?>> composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR
+                        .extract(extensionType);
                 // if (!Modifier.isFinal(nodeType.getModifiers())) {
                 // throw new ExtensionDeclarationException(
                 // "The extension node returned by onAdded(), must be declareda final, node type = " +
                 // StringFormatter.format(nodeType));
                 // }
-                ExtensionProps<?> ep = null;
-                MethodHandle mh = ConstructorFinder.find(propsType);
+                ExtensionComposer<?> ep = null;
+                MethodHandle mh = ConstructorFinder.find(composerType);
                 try {
-                    ep = (ExtensionProps<?>) mh.invoke();
+                    ep = (ExtensionComposer<?>) mh.invoke();
                 } catch (Throwable e) {
                     ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new UndeclaredThrowableException(e);
                 }
                 SharedSecrets.extension().configureProps(ep, epc);
-                requireNonNull(epc.nodeType);
-                node = new ExtensionNodeModel.Builder(this, epc.nodeType);
+                if (epc.nodeType != null) {
+                    node = new ExtensionNodeModel.Builder(this, epc.nodeType);
+                }
             }
         }
 

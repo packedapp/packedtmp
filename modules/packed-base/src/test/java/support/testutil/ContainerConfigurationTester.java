@@ -29,7 +29,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 
 /**
@@ -118,9 +117,5 @@ public class ContainerConfigurationTester {
     public <T extends Extension> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
         consumer.accept(cc.use(extensionType));
         return this;
-    }
-
-    public WireletList wirelets() {
-        return cc.wirelets();
     }
 }

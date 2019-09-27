@@ -21,6 +21,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.ServiceDependency;
 import app.packed.util.Nullable;
 import packed.internal.service.build.BuildEntry;
+import packed.internal.service.util.AtInject;
 
 /**
  *
@@ -34,6 +35,7 @@ class DependencyRequirement {
     @Nullable
     final BuildEntry<?> entry;
 
+    AtInject atInject;
     // Contract <- If requirement added via a contract
 
     DependencyRequirement(ServiceDependency dependency, ConfigSite configSite) {
@@ -46,5 +48,12 @@ class DependencyRequirement {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = entry.configSite();
         this.entry = entry;
+    }
+
+    DependencyRequirement(ServiceDependency dependency, BuildEntry<?> entry, AtInject atInject) {
+        this.dependency = requireNonNull(dependency, "dependency is null");
+        this.configSite = entry.configSite();
+        this.entry = entry;
+        this.atInject = requireNonNull(atInject);
     }
 }

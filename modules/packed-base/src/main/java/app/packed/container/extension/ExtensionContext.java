@@ -19,7 +19,6 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.WireletList;
 
 /**
  * A instance of this interface is available to an extension via {@link Extension#context()}. Since the extension itself
@@ -67,6 +66,4 @@ public interface ExtensionContext {
      *             already been installed
      */
     <E extends Extension> E use(Class<E> extensionType);
-
-    WireletList wirelets();
 }

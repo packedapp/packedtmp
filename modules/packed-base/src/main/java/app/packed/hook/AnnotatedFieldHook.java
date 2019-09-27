@@ -154,6 +154,8 @@ public final class AnnotatedFieldHook<T extends Annotation> {
     }
 
     public AnnotatedFieldHook<T> checkExactType(Class<?> type) {
+        // Jeg tror vi blev enige om at gøre det her...
+        // og ikke i Operatoteren
         throw new UnsupportedOperationException();
     }
 

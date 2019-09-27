@@ -74,7 +74,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public final ContainerSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
-    private final WireletList wirelets;
+    final WireletList wirelets;
 
     /**
      * Creates a new container configuration.
@@ -130,7 +130,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (BiFunction<?, ExtensionPipelineContext, ?> s : e.model.constracts.values()) {
+            for (BiFunction<?, ExtensionPipelineContext, ?> s : e.model.contracts.values()) {
                 // TODO need a context
 
                 Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);
@@ -374,11 +374,5 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
         return (T) useContext(extensionType).extension();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public WireletList wirelets() {
-        return wirelets;
     }
 }

@@ -32,8 +32,9 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-// TODO do as MethodOperator
 public abstract class VarOperator<T> {
+
+    VarOperator() {}
 
     /**
      * Applies this operator to the specified static field.
@@ -219,9 +220,9 @@ public abstract class VarOperator<T> {
     // getAndSetter... is that atomic??????
 
     /**
-     * Returns a field operator that creates a Supplier getter (Supplier).
+     * Returns a var operator that creates a Supplier getter (Supplier).
      * 
-     * @return a field operator that creates a getter.
+     * @return a var operator that creates a getter.
      */
     public static VarOperator<Supplier<Object>> supplier() {
         return new SupplierInternalFieldOperation<>();

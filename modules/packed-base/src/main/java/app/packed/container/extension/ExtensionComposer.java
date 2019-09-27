@@ -20,27 +20,53 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Modifier;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
+import app.packed.container.ContainerConfiguration;
 import app.packed.contract.Contract;
 import app.packed.hook.HookGroupBuilder;
-import packed.internal.container.extension.ExtensionPropsContext;
+import packed.internal.container.extension.ExtensionComposerContext;
 import packed.internal.util.StringFormatter;
 
 /**
  *
  */
-public abstract class ExtensionProps<T extends ComposableExtension<?>> {
+public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
 
-    private ExtensionPropsContext context;
+    /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
+    private ExtensionComposerContext context;
 
     protected final <E extends Contract> void addContract(Class<E> contractType, BiFunction<T, ExtensionPipelineContext, E> contractFactory) {
         // -> BiFunction(Extension, DescriptorContextWithPipelines)
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");
         context().contracts.putIfAbsent(contractType, contractFactory);
+    }
+
+    /**
+     * Adds the specified extension types to the set of extensions that this extension depends on.
+     * 
+     * 
+     * This is done in order
+     * 
+     * @param extensionTypes
+     *            the types of extension the extension uses.
+     */
+    @SafeVarargs
+    protected final void addDependencies(Class<? extends Extension>... extensionTypes) {
+
+    }
+
+    final void addDependencies(String... extensionTypes) {
+        // The names will be resolved when composer is created
+
+    }
+
+    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, BiConsumer<T, G> groupConsumer) {
+        // OnHookGroup
     }
 
     protected final <E extends ExtensionWireletPipeline<E, ?>> void addPipeline(Class<E> pipelineType, Function<T, E> pipelineFactory) {
@@ -50,16 +76,12 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 
-    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, BiConsumer<T, G> groupConsumer) {
-        // OnHookGroup
-
-    }
-
     @SuppressWarnings("unchecked")
     protected final void buildBundleDescriptor(BiConsumer<? super T, ? super BundleDescriptor.Builder> builder) {
         context().builder = (BiConsumer<? super Extension, ? super Builder>) requireNonNull(builder, "builder is null");
     }
 
+    /** Configures the composer. */
     protected abstract void configure();
 
     // /**
@@ -68,8 +90,8 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
     // *
     // * @return the extension's extension node
     // */
-    private ExtensionPropsContext context() {
-        ExtensionPropsContext c = context;
+    private ExtensionComposerContext context() {
+        ExtensionComposerContext c = context;
         if (c == null) {
             throw new IllegalStateException(
                     "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
@@ -83,7 +105,7 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
      * @param context
      *            the context to wrap
      */
-    final void doConfigure(ExtensionPropsContext context) {
+    final void doConfigure(ExtensionComposerContext context) {
         this.context = context;
         // Im not sure we want to null it out...
         // We should have some way to mark it failed????
@@ -94,6 +116,27 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
         } finally {
             this.context = null;
         }
+    }
+
+    /**
+     * Registers a (callback) action that is invoked (by the runtime) immediately after an extension has been instantiated
+     * and added to the configuration of the container, but before it is returned to the user. This method is typically
+     * invoked as the result of a user calling {@link ContainerConfiguration#use(Class)}.
+     * <p>
+     * This method is useful in situations where ...
+     * <p>
+     * The newly instantiated extension is returned to the user immediately after the specified action completes.
+     * <p>
+     * Subsequent invocations of this method will schedule each action in order of invocation.
+     * 
+     * @param action
+     *            The action to be performed after the extension has been added
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void onAdd(Consumer<? super T> action) {
+        requireNonNull(action, "action is null");
+        Consumer<? super T> a = context().onAdd;
+        context().onAdd = a == null ? (Consumer) action : a.andThen((Consumer) action);
     }
 
     // addNode??

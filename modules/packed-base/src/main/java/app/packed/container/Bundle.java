@@ -273,8 +273,4 @@ public abstract class Bundle implements ContainerSource {
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
-
-    protected final WireletList wirelets() {
-        return configuration.wirelets();
-    }
 }

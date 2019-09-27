@@ -23,7 +23,6 @@ import java.util.function.Function;
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
-import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionNode;
@@ -102,7 +101,13 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void initialize() {
-        SharedSecrets.extension().initializeExtension(this);
+        SharedSecrets.extension().setExtensionContext(this);
+
+        // Run any onAdd actions.
+        if (model.onAdd != null) {
+            model.onAdd.accept(extension);
+        }
+
         if (model.nodeFactory != null) {
             node = (ExtensionNode<?>) ((Function) model.nodeFactory).apply(extension);
 
@@ -142,12 +147,6 @@ public final class PackedExtensionContext implements ExtensionContext {
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
         return pcc.use(extensionType);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public WireletList wirelets() {
-        return pcc.wirelets();
     }
 
     /**

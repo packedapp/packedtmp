@@ -57,7 +57,7 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration install(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return pcc.install(Factory.findInjectable(implementation), captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+        return pcc().install(Factory.findInjectable(implementation), captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     /**
@@ -71,12 +71,12 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration install(Factory<?> factory) {
         requireNonNull(factory, "factory is null");
-        return pcc.install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+        return pcc().install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     public ComponentConfiguration installInstance(Object instance) {
         requireNonNull(instance, "instance is null");
-        return pcc.installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+        return pcc().installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
     /**
@@ -90,13 +90,15 @@ public final class ComponentExtension extends Extension {
      */
     public ComponentConfiguration installStatic(Class<?> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return pcc.installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
+        return pcc().installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onAdded() {
-        this.pcc = ((PackedExtensionContext) context()).pcc;
+    private PackedContainerConfiguration pcc() {
+        PackedContainerConfiguration p = pcc;
+        if (p == null) {
+            p = pcc = ((PackedExtensionContext) context()).pcc;
+        }
+        return p;
     }
 
     // Scans this package...

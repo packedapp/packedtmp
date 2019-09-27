@@ -19,7 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionComposer;
 import support.testutil.AbstractArtifactTest;
 
 /**
@@ -27,7 +29,7 @@ import support.testutil.AbstractArtifactTest;
  */
 public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
-    /** Test that we can depend on an uninstalled extension via {@link Extension#onAdded}. */
+    /** Test that we can depend on an uninstalled extension via. */
     @Test
     public void testCanCallUseFromOnExtensionAdded() {
         appOf(c -> {
@@ -45,44 +47,54 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    static final class Ex1 extends Extension {
-        /** {@inheritDoc} */
-        @Override
-        protected void onAdded() {
-            use(Ex2.class);
-        }
+    static final class Ex1 extends ComposableExtension<Ex1.Composer> {
 
+        static class Composer extends ExtensionComposer<Ex1> {
+
+            /** {@inheritDoc} */
+            @Override
+            protected void configure() {
+                onAdd(e -> e.use(Ex2.class));
+            }
+        }
     }
 
-    static final class Ex2 extends Extension {
-        /** {@inheritDoc} */
-        @Override
-        protected void onAdded() {
-            use(Ex3.class);
+    static final class Ex2 extends ComposableExtension<Ex2.Composer> {
+
+        static class Composer extends ExtensionComposer<Ex2> {
+
+            /** {@inheritDoc} */
+            @Override
+            protected void configure() {
+                onAdd(e -> e.use(Ex3.class));
+            }
         }
     }
 
     static final class Ex3 extends Extension {
-        /** {@inheritDoc} */
-        @Override
-        protected void onAdded() {
-            // use(Ex2.class);
+
+    }
+
+    static final class ExRecursive1 extends ComposableExtension<ExRecursive1.Composer> {
+
+        static class Composer extends ExtensionComposer<ExRecursive1> {
+
+            /** {@inheritDoc} */
+            @Override
+            protected void configure() {
+                onAdd(e -> e.use(ExRecursive2.class));
+            }
         }
     }
 
-    static final class ExRecursive1 extends Extension {
-        /** {@inheritDoc} */
-        @Override
-        protected void onAdded() {
-            use(ExRecursive2.class);
-        }
-    }
+    static final class ExRecursive2 extends ComposableExtension<ExRecursive2.Composer> {
+        static class Composer extends ExtensionComposer<ExRecursive2> {
 
-    static final class ExRecursive2 extends Extension {
-        /** {@inheritDoc} */
-        @Override
-        protected void onAdded() {
-            use(ExRecursive1.class);
+            /** {@inheritDoc} */
+            @Override
+            protected void configure() {
+                onAdd(e -> e.use(ExRecursive1.class));
+            }
         }
     }
 }

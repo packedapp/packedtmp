@@ -37,6 +37,8 @@ import packed.internal.util.ThrowableUtil;
 
 public abstract class MethodOperator<T> {
 
+    MethodOperator() {}
+
     /**
      * Applies this operator the specified static method.
      * 

@@ -44,7 +44,16 @@ public final class ExtensionDescriptor {
      * @return all the different types of contract types the extension provides
      */
     public Set<Class<? extends Contract>> contractTypes() {
-        return model.constracts.keySet();
+        return model.contracts.keySet();
+    }
+
+    /**
+     * Returns any other extensions this extension depends on.
+     * 
+     * @return any other extensions this extension depends on
+     */
+    public Set<Class<? extends Extension>> dependencies() {
+        return Set.of();
     }
 
     /**
@@ -52,7 +61,7 @@ public final class ExtensionDescriptor {
      * 
      * @return the extension type this descriptor describes
      */
-    public Class<? extends Extension> extensionType() {
+    public Class<? extends Extension> type() {
         return model.extensionType;
     }
 

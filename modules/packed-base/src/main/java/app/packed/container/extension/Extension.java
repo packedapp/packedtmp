@@ -26,11 +26,10 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
-import app.packed.container.WireletList;
 import packed.internal.access.AppPackedExtensionAccess;
 import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.extension.ExtensionPropsContext;
+import packed.internal.container.extension.ExtensionComposerContext;
 import packed.internal.container.extension.PackedExtensionContext;
 
 /**
@@ -80,10 +79,8 @@ public abstract class Extension {
         SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
 
             @Override
-            public void initializeExtension(PackedExtensionContext context) {
-                Extension e = context.extension();
-                e.context = context;
-                e.onAdded();
+            public void setExtensionContext(PackedExtensionContext context) {
+                context.extension().context = context;
             }
 
             /** {@inheritDoc} */
@@ -103,7 +100,7 @@ public abstract class Extension {
             }
 
             @Override
-            public void configureProps(ExtensionProps<?> props, ExtensionPropsContext context) {
+            public void configureProps(ExtensionComposer<?> props, ExtensionComposerContext context) {
                 props.doConfigure(context);
             }
         });
@@ -186,30 +183,19 @@ public abstract class Extension {
      * Returns this extension's context. Or fails with {@link IllegalStateException} if invoked from the constructor of the
      * extension.
      * 
+     * @throws IllegalArgumentException
+     *             if invoked from the constructor of the extension
      * @return the configuration of the container
      */
     protected final ExtensionContext context() {
         // When calling this method remember to add test to BasicExtensionTest
         PackedExtensionContext c = context;
         if (c == null) {
-            throw new IllegalStateException(
-                    "This operation cannot be called from the constructor of the extension, #onAdd() can be overridden, as an alternative, to perform initialization");
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension."
+                    + " As an alternative ExtensionComposer.onAdd(action) can used to perform initialization");
         }
         return c;
     }
-
-    /**
-     * This callback method is invoked (by the runtime) immediately after this extension has been instantiated and added to
-     * the configuration of the container, but before the extension instance has been returned to the user. This method is
-     * typically invoked as the result of a user calling {@link ContainerConfiguration#use(Class)}.
-     * <p>
-     * The newly instantiated extension is returned to the user immediately after this method returns.
-     * <p>
-     * Unless any errors occur, {@link #onConfigured()} is the next callback method that is invoked by the runtime.
-     * <p>
-     * The default implementation of this method does nothing.
-     */
-    protected void onAdded() {}
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically
@@ -260,18 +246,18 @@ public abstract class Extension {
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);
     }
-
-    /**
-     * Returns a list of any wirelets that was used to configure the container.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code configuration().wirelets()}.
-     * 
-     * @return a list of any wirelets that was used to configure the container
-     */
-    protected final WireletList wirelets() {
-        return context().wirelets();
-    }
 }
+//
+/// **
+// * Returns a list of any wirelets that was used to configure the container.
+// * <p>
+// * Invoking this method is equivalent to invoking {@code configuration().wirelets()}.
+// *
+// * @return a list of any wirelets that was used to configure the container
+// */
+// protected final WireletList wirelets() {
+// return ((PackedExtensionContext) context()).wirelets();
+// }
 //
 //// Sidecards per extension???
 //// Det betyder jo ogsaa "endnu" mere magt til extensions..

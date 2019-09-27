@@ -68,6 +68,7 @@ public interface ArtifactBuildContext {
      * @return the source of the top level container
      */
     Class<? extends ContainerSource> sourceType();
+
 }
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.

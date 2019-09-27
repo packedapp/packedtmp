@@ -23,7 +23,7 @@ import app.packed.component.ComponentExtension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.ComposableExtension;
-import app.packed.container.extension.ExtensionProps;
+import app.packed.container.extension.ExtensionComposer;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Qualifier;
@@ -60,7 +60,7 @@ import packed.internal.service.run.AbstractInjector;
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
-public final class ServiceExtension extends ComposableExtension<ServiceExtension.Props> {
+public final class ServiceExtension extends ComposableExtension<ServiceExtension.Composer> {
 
     /** The extension node. */
     private final ServiceExtensionNode node = new ServiceExtensionNode(this);
@@ -281,11 +281,14 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 
-    static final class Props extends ExtensionProps<ServiceExtension> {
+    /** The composer for the service extension. */
+    static final class Composer extends ExtensionComposer<ServiceExtension> {
 
         /** {@inheritDoc} */
         @Override
         protected void configure() {
+            addDependencies(ComponentExtension.class);
+
             useNode(ServiceExtensionNode.class, e -> e.node);
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
 

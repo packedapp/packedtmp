@@ -18,6 +18,7 @@ package packed.internal.container.extension;
 import java.util.IdentityHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
@@ -30,7 +31,9 @@ import app.packed.contract.Contract;
 /**
  *
  */
-public final class ExtensionPropsContext {
+public final class ExtensionComposerContext {
+
+    public Consumer<? super Extension> onAdd;
 
     public Class<? extends ExtensionNode<?>> nodeType;
 
