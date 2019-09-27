@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 import app.packed.app.App;
 import app.packed.artifact.ArtifactConfigurator;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactRuntimeContext;
+import app.packed.artifact.ArtifactContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
@@ -343,7 +343,7 @@ final class InjectorArtifactDriver extends ArtifactDriver<Injector> {
 
     /** {@inheritDoc} */
     @Override
-    public Injector instantiate(ArtifactRuntimeContext container) {
+    public Injector instantiate(ArtifactContext container) {
         return container.injector();
     }
 }

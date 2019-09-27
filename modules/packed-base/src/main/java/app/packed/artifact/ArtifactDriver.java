@@ -30,7 +30,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 /**
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
  * {@link Injector} are not sufficient. In fact both {@link App} and {@link Injector} are both just a thin facade that
- * delegates all calls to {@link ArtifactRuntimeContext}.
+ * delegates all calls to {@link ArtifactContext}.
  * 
  * An artifact driver is used to create artifact instances such as {@link App} and {@link Injector}. Taking care of
  * initializing internal classes and handling artifact images.
@@ -105,7 +105,7 @@ public abstract class ArtifactDriver<T> {
      *            the runtime context to wrap
      * @return the new artifact
      */
-    protected abstract T instantiate(ArtifactRuntimeContext context);
+    protected abstract T instantiate(ArtifactContext context);
 
     public boolean isInstantiating() {
         return !(artifactType() == ArtifactImage.class || artifactType() == BundleDescriptor.class);
@@ -117,7 +117,7 @@ public abstract class ArtifactDriver<T> {
     /**
      * Creates a new artifact using the specified source.
      * <p>
-     * This method will invoke {@link #instantiate(ArtifactRuntimeContext)} to create the actual artifact.
+     * This method will invoke {@link #instantiate(ArtifactContext)} to create the actual artifact.
      * 
      * @param source
      *            the source of the top-level container

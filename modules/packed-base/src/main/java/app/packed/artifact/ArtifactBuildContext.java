@@ -68,6 +68,14 @@ public interface ArtifactBuildContext {
     Class<? extends ContainerSource> sourceType();
 }
 
+/**
+ * The action is mainly used.
+ * 
+ * For example, for image to clean up ressources that are not after stuff has been resolved...
+ * 
+ * Introspect, Stuff that is not needed if we know we are never going to instantiate anything... (for example, method
+ * handles)
+ */
 enum Action {
     IMAGE_GENERATE, INTROSPECT, INSTANTIATE_ARTIFACT;
 }

@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutorService;
 
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.ArtifactRuntimeContext;
+import app.packed.artifact.ArtifactContext;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -269,7 +269,7 @@ final class AppArtifactDriver extends ArtifactDriver<App> {
 
     /** {@inheritDoc} */
     @Override
-    public App instantiate(ArtifactRuntimeContext container) {
+    public App instantiate(ArtifactContext container) {
         return new PackedApp(container);
     }
 }
@@ -278,7 +278,7 @@ final class AppArtifactDriver extends ArtifactDriver<App> {
 final class PackedApp implements App {
 
     /** The artifact context we are wrapping. */
-    private final ArtifactRuntimeContext context;
+    private final ArtifactContext context;
 
     /**
      * Creates a new app.
@@ -286,7 +286,7 @@ final class PackedApp implements App {
      * @param context
      *            the artifact runtime context we are wrapping
      */
-    PackedApp(ArtifactRuntimeContext context) {
+    PackedApp(ArtifactContext context) {
         this.context = requireNonNull(context);
     }
 

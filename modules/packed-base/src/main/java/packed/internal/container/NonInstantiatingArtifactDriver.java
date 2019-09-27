@@ -16,7 +16,7 @@
 package packed.internal.container;
 
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactRuntimeContext;
+import app.packed.artifact.ArtifactContext;
 
 /**
  *
@@ -38,7 +38,7 @@ public class NonInstantiatingArtifactDriver<T> extends ArtifactDriver<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected final T instantiate(ArtifactRuntimeContext context) {
+    protected final T instantiate(ArtifactContext context) {
         throw new UnsupportedOperationException();
     }
 }
