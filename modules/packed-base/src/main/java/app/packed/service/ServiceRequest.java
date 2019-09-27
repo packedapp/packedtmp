@@ -27,7 +27,7 @@ import app.packed.reflect.ConstructorDescriptor;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
-import app.packed.reflect.VariableDescriptor;
+import app.packed.reflect.VarDescriptor;
 import app.packed.util.Key;
 
 /**
@@ -183,7 +183,7 @@ public interface ServiceRequest /* extends ServiceDependency */ {
      *         variable.
      * @see #member()
      */
-    Optional<VariableDescriptor> variable();
+    Optional<VarDescriptor> variable();
 
     /**
      * If this helper class is created as the result of needing dependency injection. This method returns an empty optional

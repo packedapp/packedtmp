@@ -21,7 +21,7 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.component.Component;
-import app.packed.reflect.VariableDescriptor;
+import app.packed.reflect.VarDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 
@@ -69,7 +69,7 @@ final class ServiceRequestImpl implements ServiceRequest {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> variable() {
+    public Optional<VarDescriptor> variable() {
         return dependency.variable();
     }
 

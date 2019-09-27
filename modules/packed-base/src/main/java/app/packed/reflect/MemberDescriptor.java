@@ -22,3 +22,4 @@ import java.lang.reflect.Member;
  *
  */
 public interface MemberDescriptor extends Member, AnnotatedElement {}
+// See if there are more to add, other ditch this interface

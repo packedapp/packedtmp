@@ -17,6 +17,7 @@ package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -30,7 +31,7 @@ import java.lang.reflect.Parameter;
  * <p>
  * Unlike the {@link Executable} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor implements MemberDescriptor {
+public abstract class ExecutableDescriptor implements MemberDescriptor {
 
     /** The executable */
     final Executable executable;
@@ -48,7 +49,6 @@ public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor i
      *            the executable to mirror
      */
     ExecutableDescriptor(Executable executable) {
-        super(executable);
         this.executable = executable;
         Parameter[] javaParameters = executable.getParameters();
         this.parameters = new ParameterDescriptor[javaParameters.length];
@@ -63,8 +63,44 @@ public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor i
      *
      * @return the descriptor type
      */
-    @Override
     public abstract String descriptorTypeName();
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return executable.getAnnotation(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getAnnotations() {
+        return executable.getAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return executable.getAnnotationsByType(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return executable.getDeclaredAnnotation(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getDeclaredAnnotations() {
+        return executable.getDeclaredAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return executable.getDeclaredAnnotationsByType(annotationClass);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -79,26 +115,18 @@ public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor i
     }
 
     /**
-     * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
-     * underlying executable.
-     *
-     * @return The number of formal parameters for the method this object represents
-     *
-     * @see Executable#getParameterCount()
-     * @see Method#getParameterCount()
-     * @see Constructor#getParameterCount()
-     */
-    public final int parameterCount() {
-        return parameters.length;
-    }
-
-    /**
      * Returns an array of parameter mirrors of the executable.
      *
      * @return an array of parameter mirrors of the executable
      */
     public final ParameterDescriptor[] getParametersUnsafe() {
         return parameters;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return executable.isAnnotationPresent(annotationClass);
     }
 
     @Override
@@ -124,6 +152,20 @@ public abstract class ExecutableDescriptor extends AbstractAnnotatedDescriptor i
      * @return a new Executable from this descriptor
      */
     public abstract Executable newExecutable();
+
+    /**
+     * Returns the number of formal parameters (whether explicitly declared or implicitly declared or neither) for the
+     * underlying executable.
+     *
+     * @return The number of formal parameters for the method this object represents
+     *
+     * @see Executable#getParameterCount()
+     * @see Method#getParameterCount()
+     * @see Constructor#getParameterCount()
+     */
+    public final int parameterCount() {
+        return parameters.length;
+    }
 
     /**
      * Unreflects this executable.

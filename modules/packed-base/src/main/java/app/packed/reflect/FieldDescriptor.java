@@ -18,6 +18,7 @@ package app.packed.reflect;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
@@ -34,7 +35,7 @@ import packed.internal.util.InternalErrorException;
  * <p>
  * Unlike the {@link Field} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public final class FieldDescriptor extends VariableDescriptor implements MemberDescriptor {
+public final class FieldDescriptor extends VarDescriptor implements MemberDescriptor {
 
     /** The field that is being wrapped. */
     private final Field field;
@@ -46,8 +47,12 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
      *            the field to create a descriptor for
      */
     private FieldDescriptor(Field field) {
-        super(requireNonNull(field, "field is null"));
-        this.field = field;
+        this.field = requireNonNull(field, "field is null");
+    }
+
+    public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
+        requireNonNull(operator, "operator is null");
+        return operator.apply(caller, field, instance);
     }
 
     /** {@inheritDoc} */
@@ -69,14 +74,44 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> getDeclaringClass() {
-        return field.getDeclaringClass();
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return field.getAnnotation(annotationClass);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int index() {
-        return 0;
+    public Annotation[] getAnnotations() {
+        return field.getAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return field.getAnnotationsByType(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return field.getDeclaredAnnotation(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getDeclaredAnnotations() {
+        return field.getDeclaredAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return field.getDeclaredAnnotationsByType(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> getDeclaringClass() {
+        return field.getDeclaringClass();
     }
 
     /** {@inheritDoc} */
@@ -113,6 +148,28 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
     @Override
     public int hashCode() {
         return field.hashCode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int index() {
+        return 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return field.isAnnotationPresent(annotationClass);
+    }
+
+    /**
+     * Returns whether or not this field is a final field.
+     *
+     * @return whether or not this field is a final field
+     * @see Modifier#isFinal(int)
+     */
+    public final boolean isFinal() {
+        return Modifier.isFinal(getModifiers());
     }
 
     /** {@inheritDoc} */
@@ -154,29 +211,10 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
         }
     }
 
-    /**
-     * Returns the field that this descriptor wraps.
-     * 
-     * @return the field that this descriptor wraps
-     */
-    public Field unsafeField() {
-        return field;
-    }
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return format(field);
-    }
-
-    /**
-     * Returns whether or not this field is a final field.
-     *
-     * @return whether or not this field is a final field
-     * @see Modifier#isFinal(int)
-     */
-    public final boolean isFinal() {
-        return Modifier.isFinal(getModifiers());
     }
 
     public MethodHandle unreflectGetter(Lookup lookup) throws IllegalAccessException {
@@ -200,6 +238,15 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
     public VarHandle unreflectVarHandle(Lookup lookup) throws IllegalAccessException {
         requireNonNull(lookup, "lookup is null");
         return lookup.unreflectVarHandle(field);
+    }
+
+    /**
+     * Returns the field that this descriptor wraps.
+     * 
+     * @return the field that this descriptor wraps
+     */
+    public Field unsafeField() {
+        return field;
     }
 
     /**
@@ -231,10 +278,5 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
      */
     public static FieldDescriptor of(Field field) {
         return new FieldDescriptor(field);
-    }
-
-    public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
-        requireNonNull(operator, "operator is null");
-        return ((VarOperator<T>) operator).apply(caller, field, instance);
     }
 }

@@ -30,35 +30,19 @@ import app.packed.util.TypeLiteral;
  * (non-static {@link Field fields}) and {@link Parameter parameter} variables.
  */
 // VarDescriptor???
-public abstract class VariableDescriptor extends AbstractAnnotatedDescriptor {
+public abstract class VarDescriptor implements AnnotatedElement {
 
     /**
      * Creates a new descriptor.
-     *
-     * @param fieldOrParameter
-     *            the field or parameter object
      */
-    VariableDescriptor(AnnotatedElement fieldOrParameter) {
-        super(fieldOrParameter);
-    }
+    VarDescriptor() {}
 
     /**
-     * The index of the variable, used when creating {@link ServiceDependency} instances.
-     * <p>
-     * If this variable is a field, this method returns {@code 0}.
+     * Returns the type of element, is typically used for error messages.
      *
-     * @return index of the variable.
+     * @return the type of element
      */
-    public abstract int index();
-
-    /**
-     * Returns the parameterizedType of the variable
-     *
-     * @return the parameterizedType of the variable
-     * @see Field#getGenericType()
-     * @see Parameter#getParameterizedType()
-     */
-    public abstract Type getParameterizedType();
+    public abstract String descriptorTypeName();
 
     /**
      * Returns the {@code Class} object representing the class or interface that declares the variable.
@@ -94,6 +78,15 @@ public abstract class VariableDescriptor extends AbstractAnnotatedDescriptor {
     public abstract String getName();
 
     /**
+     * Returns the parameterizedType of the variable
+     *
+     * @return the parameterizedType of the variable
+     * @see Field#getGenericType()
+     * @see Parameter#getParameterizedType()
+     */
+    public abstract Type getParameterizedType();
+
+    /**
      * Returns a class that identifies the type of the variable.
      *
      * @return a class that identifies the type of the variable
@@ -112,6 +105,15 @@ public abstract class VariableDescriptor extends AbstractAnnotatedDescriptor {
      */
     // TODO rename typeLiteral
     public abstract TypeLiteral<?> getTypeLiteral();
+
+    /**
+     * The index of the variable, used when creating {@link ServiceDependency} instances.
+     * <p>
+     * If this variable is a field, this method returns {@code 0}.
+     *
+     * @return index of the variable.
+     */
+    public abstract int index();
 
     /**
      * Returns true if the variable has a name.

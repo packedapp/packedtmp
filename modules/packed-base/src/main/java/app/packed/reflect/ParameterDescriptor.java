@@ -17,6 +17,7 @@ package app.packed.reflect;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -34,7 +35,7 @@ import packed.internal.util.InternalErrorException;
  * <p>
  * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
  */
-public final class ParameterDescriptor extends VariableDescriptor {
+public final class ParameterDescriptor extends VarDescriptor {
 
     /** The executable that declares the parameter. */
     private final ExecutableDescriptor declaringExecutable;
@@ -44,6 +45,48 @@ public final class ParameterDescriptor extends VariableDescriptor {
 
     /** The actual parameter this instance is an descriptor for. */
     private final Parameter parameter;
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return parameter.getAnnotation(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return parameter.getAnnotationsByType(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getDeclaredAnnotations() {
+        return parameter.getDeclaredAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return parameter.getDeclaredAnnotation(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return parameter.getDeclaredAnnotationsByType(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Annotation[] getAnnotations() {
+        return parameter.getAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return parameter.isAnnotationPresent(annotationClass);
+    }
 
     /**
      * Creates a new descriptor
@@ -56,7 +99,6 @@ public final class ParameterDescriptor extends VariableDescriptor {
      *            the index of the parameter
      */
     ParameterDescriptor(ExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
-        super(parameter);
         this.declaringExecutable = declaringExecutable;
         this.parameter = parameter;
         this.index = index;

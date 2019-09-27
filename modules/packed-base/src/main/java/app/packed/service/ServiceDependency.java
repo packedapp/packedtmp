@@ -36,7 +36,7 @@ import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
-import app.packed.reflect.VariableDescriptor;
+import app.packed.reflect.VarDescriptor;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -83,7 +83,7 @@ public final class ServiceDependency {
 
     /** The variable of this dependency. */
     @Nullable
-    private final VariableDescriptor variable;
+    private final VarDescriptor variable;
 
     /**
      * Creates a new service dependency.
@@ -95,7 +95,7 @@ public final class ServiceDependency {
      * @param variable
      *            an optional field or parameter
      */
-    private ServiceDependency(Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
+    private ServiceDependency(Key<?> key, Optionality optionality, @Nullable VarDescriptor variable) {
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
         this.variable = variable;
@@ -223,7 +223,7 @@ public final class ServiceDependency {
      *         variable.
      * @see #member()
      */
-    public Optional<VariableDescriptor> variable() {
+    public Optional<VarDescriptor> variable() {
         return Optional.ofNullable(variable);
     }
 
@@ -319,11 +319,11 @@ public final class ServiceDependency {
         return List.copyOf(result);
     }
 
-    public static <T> ServiceDependency fromVariable(VariableDescriptor desc) {
+    public static <T> ServiceDependency fromVariable(VarDescriptor desc) {
         requireNonNull(desc, "variable is null");
         TypeLiteral<?> tl = desc.getTypeLiteral();
 
-        Annotation qualifier = desc.findQualifiedAnnotation();
+        Annotation qualifier = QualifierHelper.findQualifier(desc, desc.getAnnotations());
 
         // Illegal
         // Optional<Optional*>
