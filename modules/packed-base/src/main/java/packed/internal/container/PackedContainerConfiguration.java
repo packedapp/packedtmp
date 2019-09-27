@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
@@ -42,6 +42,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionPipelineContext;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
@@ -117,9 +118,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void buildDescriptor(BundleDescriptor.Builder builder, boolean isImage) {
+        // If we are an image we have already been built.
         if (!isImage) {
             doBuild();
         }
+
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
@@ -127,8 +130,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (Function<?, ?> s : e.model.constracts.values()) {
-                Contract con = (Contract) ((Function) s).apply(e.extension());
+            for (BiFunction<?, ExtensionPipelineContext, ?> s : e.model.constracts.values()) {
+                // TODO need a context
+
+                Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);
                 requireNonNull(con);
                 builder.addContract(con);
             }
@@ -177,13 +182,18 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     void extensionsContainerConfigured() {
+        // Extensions are not processed until the whole artifact has been configured.
+        // Mainly because some wirelets needs the parent container to be fully configured
+        // before they can be used. For example, downstream service wirelets
+
         installPrepare(State.GET_NAME_INVOKED);
         for (PackedExtensionContext e : extensions.values()) {
             e.onConfigured();
-            // Run ExtensionWirelets?
         }
+
         WireletContext wc = new WireletContext();
         wc.apply(this, wirelets.toArray());
+
         if (children != null) {
             for (AbstractComponentConfiguration acc : children.values()) {
                 if (acc instanceof PackedContainerConfiguration) {
@@ -248,6 +258,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         requireNonNull(bundle, "bundle is null");
         WireletList wl = WireletList.of(wirelets);
 
+        // finalize name of this container
         initializeName(State.LINK_INVOKED, null);
         installPrepare(State.LINK_INVOKED);
 

@@ -94,7 +94,9 @@ public final class ServiceContract extends Contract {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
-        if (other instanceof ServiceContract) {
+        if (other == this) {
+            return true;
+        } else if (other instanceof ServiceContract) {
             ServiceContract sc = (ServiceContract) other;
             return optional.equals(sc.optional) && provides.equals(sc.provides) && requires.equals(sc.requires);
         }

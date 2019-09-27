@@ -290,7 +290,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
 
             // Descriptors and contracts
-            addContract(ServiceContract.class, e -> e.node.newServiceContract());
+            addContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
             buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
 
             // Runtime stuff

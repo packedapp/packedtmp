@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.extension;
 
 /**
  *
  */
-// Component.java
-// Optional<Wiring> <- is removed, for example, when undeployed...
+public interface ExtensionPipelineContext {
 
-interface Wiring {
-    boolean isRemoveable();// or isStatic
+    boolean hasPipelines();
+
+    <T extends ExtensionWireletPipeline<?, ?>> T get(Class<T> pipelineType);
 }
-
-// WiredContainer/LinkedBundle
-// UnwirableContainer extends WiredContainer

@@ -17,11 +17,13 @@ package packed.internal.container.extension;
 
 import java.util.IdentityHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.ExtensionPipelineContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 
@@ -36,7 +38,7 @@ public final class ExtensionPropsContext {
 
     public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
 
-    public final IdentityHashMap<Class<? extends Contract>, Function<?, ?>> contracts = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> contracts = new IdentityHashMap<>();
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 }

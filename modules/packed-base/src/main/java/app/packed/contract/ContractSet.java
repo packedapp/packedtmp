@@ -39,7 +39,9 @@ public final class ContractSet extends Contract implements Iterable<Contract> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
-        if (other instanceof ContractSet) {
+        if (other == this) {
+            return true;
+        } else if (other instanceof ContractSet) {
             return contracts.equals(((ContractSet) other).contracts);
         }
         return false;

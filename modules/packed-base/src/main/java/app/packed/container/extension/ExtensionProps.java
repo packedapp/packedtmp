@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Modifier;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
@@ -35,7 +36,7 @@ public abstract class ExtensionProps<T extends ComposableExtension<?>> {
 
     private ExtensionPropsContext context;
 
-    protected final <E extends Contract> void addContract(Class<E> contractType, Function<T, E> contractFactory) {
+    protected final <E extends Contract> void addContract(Class<E> contractType, BiFunction<T, ExtensionPipelineContext, E> contractFactory) {
         // -> BiFunction(Extension, DescriptorContextWithPipelines)
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");

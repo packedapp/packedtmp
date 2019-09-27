@@ -37,8 +37,8 @@ import packed.internal.container.WireletContext;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
- * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. Artifact
- * images are reusable, so you can create multiple artifacts from a single image.
+ * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. In
+ * addition to this, artifact images are reusable, so you can create multiple artifacts from a single image.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.

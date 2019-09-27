@@ -254,6 +254,8 @@ public abstract class Extension {
      * @throws IllegalStateException
      *             if the underlying container is no longer configurable and an extension of the specified type has not
      *             already been installed
+     * @throws UnsupportedOperationException
+     *             if the specified extension type is not among this extensions dependencies
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);

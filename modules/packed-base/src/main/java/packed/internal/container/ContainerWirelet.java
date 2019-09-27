@@ -22,6 +22,8 @@ import app.packed.container.Wirelet;
 /**
  *
  */
+// Maybe its just component wirelets....
+// And then we only have Extension wirelets????
 public abstract class ContainerWirelet extends Wirelet {
 
     abstract void process(WireletContext c);

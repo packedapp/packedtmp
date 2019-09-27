@@ -40,7 +40,6 @@ import app.packed.util.Nullable;
 // en WireletPipelineFactory....
 public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, N>, N extends Extension> {
 
-    //
     public void buildArtifact() {
         // extension.buildBundle(null);
     }

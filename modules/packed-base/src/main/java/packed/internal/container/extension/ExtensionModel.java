@@ -22,12 +22,14 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.ExtensionPipelineContext;
 import app.packed.container.extension.ExtensionProps;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
@@ -79,7 +81,7 @@ public final class ExtensionModel<T extends Extension> {
 
     final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
-    public final Map<Class<? extends Contract>, Function<?, ?>> constracts;
+    public final Map<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> constracts;
 
     public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
 

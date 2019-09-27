@@ -34,6 +34,26 @@ public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<T, ?>>
     protected abstract void process(T pipeline);
 }
 
+// Grunden til vi gerne lave callback paa denne maade.
+// Er at vi saa kan eksekvere dem i total order...
+// Dvs f.eks. Wirelet.println("fooooBar").. Eller ting der skal saettes i andre extensions... f.eks.
+// disableStackCapturing(), Service.provide(Stuff), enabledStackCapturing()...
+
+//
+
+// Vi bliver noedt til at lave noget sen-validering af en evt. parent extension
+
+// Alternativt, skulle vi forbyde installering af extension, efter link()
+// -> mere eller mindre alle metoder...
+
+// Men nu har vi lige pludselig virale extensions...
+// Det ville vi jo ikke kunne have...
+
+// Ydermere kan en dependency, f.eks. vaere fra et andet bundle...
+// Og dependency transformer vi endda.
+// Som foerst bliver linket senere... Dvs vi kan ikke validere, foerend alle links er faerdige.
+// Summasumarum vi maa validere til sidst.
+
 // Ellers skal vi have stages'ene her
 // processBefore()
 // processAfter()
