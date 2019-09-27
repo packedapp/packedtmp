@@ -35,13 +35,21 @@ import packed.internal.util.StringFormatter;
 /**
  *
  */
-public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
+public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
 
-    protected final <E extends Contract> void addContract(Class<E> contractType, BiFunction<T, ExtensionPipelineContext, E> contractFactory) {
-        // -> BiFunction(Extension, DescriptorContextWithPipelines)
+    /**
+     * @param <C>
+     *            the type of contract
+     * @param contractType
+     *            the type of contract the factory creates
+     * @param contractFactory
+     *            a factory for creating the contract
+     */
+    protected final <C extends Contract> void addContract(Class<C> contractType,
+            BiFunction<? super E, ? super ExtensionIntrospectionContext, C> contractFactory) {
         requireNonNull(contractType, "contractType is null");
         requireNonNull(contractFactory, "contractFactory is null");
         context().contracts.putIfAbsent(contractType, contractFactory);
@@ -66,11 +74,11 @@ public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
 
     }
 
-    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, BiConsumer<T, G> groupConsumer) {
+    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, BiConsumer<E, G> groupConsumer) {
         // OnHookGroup
     }
 
-    protected final <E extends ExtensionWireletPipeline<E, ?>> void addPipeline(Class<E> pipelineType, Function<T, E> pipelineFactory) {
+    protected final <P extends ExtensionWireletPipeline<P, ?>> void addPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...
@@ -78,7 +86,7 @@ public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    protected final void buildBundleDescriptor(BiConsumer<? super T, ? super BundleDescriptor.Builder> builder) {
+    protected final void buildBundleDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
         context().builder = (BiConsumer<? super Extension, ? super Builder>) requireNonNull(builder, "builder is null");
     }
 
@@ -134,9 +142,9 @@ public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
      *            The action to be performed after the extension has been added
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void onAdd(Consumer<? super T> action) {
+    protected final void onAdd(Consumer<? super E> action) {
         requireNonNull(action, "action is null");
-        Consumer<? super T> a = context().onAddAction;
+        Consumer<? super E> a = context().onAddAction;
         context().onAddAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
     }
 
@@ -151,14 +159,14 @@ public abstract class ExtensionComposer<T extends ComposableExtension<?>> {
     // E2.onConfigured() will be invoked before E1.onConfigure(). This is done in order to allow extensions to perform
     // additional configuration on other extension after user code has been executed
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void onConfigured(Consumer<? super T> action) {
+    protected final void onConfigured(Consumer<? super E> action) {
         requireNonNull(action, "action is null");
-        Consumer<? super T> a = context().onConfiguredAction;
+        Consumer<? super E> a = context().onConfiguredAction;
         context().onConfiguredAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
     }
 
     // addNode??
-    protected final <E extends ExtensionNode<T>> void useNode(Class<E> nodeType, Function<T, E> nodeFactory) {
+    protected final <N extends ExtensionNode<E>> void useNode(Class<N> nodeType, Function<E, N> nodeFactory) {
         requireNonNull(nodeType, "nodeType is null");
         requireNonNull(nodeFactory, "nodeFactory is null");
         if (!Modifier.isFinal(nodeType.getModifiers())) {

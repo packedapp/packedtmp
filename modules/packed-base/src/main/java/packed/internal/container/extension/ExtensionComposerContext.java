@@ -23,8 +23,8 @@ import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.container.extension.ExtensionPipelineContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
@@ -36,7 +36,7 @@ public final class ExtensionComposerContext {
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
-    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> contracts = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
 
     public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
 

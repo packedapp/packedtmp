@@ -28,8 +28,8 @@ import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.container.extension.ExtensionPipelineContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
@@ -84,7 +84,7 @@ public final class ExtensionModel<T extends Extension> {
     // Can 2 extensions define the same contract???? Don't think so
     // If not we could have a Contract.class->ContractFactory Map and a Contract.of(ContainerSource, Class<T extends
     // Contract>);
-    public final Map<Class<? extends Contract>, BiFunction<?, ExtensionPipelineContext, ?>> contracts;
+    public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts;
 
     public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
 

@@ -24,7 +24,7 @@ import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.container.extension.ExtensionPipelineContext;
+import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.hook.OnHookGroup;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
@@ -112,7 +112,7 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
         }
     }
 
-    public ServiceContract newServiceContract(ExtensionPipelineContext context) {
+    public ServiceContract newServiceContract(ExtensionIntrospectionContext context) {
         // requireNonNull(context);
         return ServiceContract.of(c -> {
             if (exporter != null) {

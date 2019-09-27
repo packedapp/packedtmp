@@ -42,7 +42,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionPipelineContext;
+import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
@@ -130,7 +130,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             if (c != null) {
                 c.accept(e.extension(), builder);
             }
-            for (BiFunction<?, ExtensionPipelineContext, ?> s : e.model.contracts.values()) {
+            for (BiFunction<?, ? super ExtensionIntrospectionContext, ?> s : e.model.contracts.values()) {
                 // TODO need a context
 
                 Contract con = (Contract) ((BiFunction) s).apply(e.extension(), null);

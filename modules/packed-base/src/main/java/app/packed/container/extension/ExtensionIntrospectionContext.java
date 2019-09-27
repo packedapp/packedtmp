@@ -18,7 +18,7 @@ package app.packed.container.extension;
 /**
  *
  */
-public interface ExtensionPipelineContext {
+public interface ExtensionIntrospectionContext {
 
     boolean hasPipelines();
 
