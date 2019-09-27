@@ -20,8 +20,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.artifact.ArtifactBuildContext;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.extension.Extension;
 import support.testutil.AbstractArtifactTest;
 
@@ -31,10 +29,10 @@ public class BasicExtensionTest extends AbstractArtifactTest {
     /**
      * Checks that {@link Extension#buildContext()} is identical to {@link ContainerConfiguration#buildContext()}.
      */
-    @Test
-    public void buildContext() {
-        appOf(c -> assertThat(c.use(TestExtension.class).publicBuildContext()).isSameAs(c.buildContext()));
-    }
+    // @Test
+    // public void buildContext() {
+    // appOf(c -> assertThat(c.use(TestExtension.class).publicBuildContext()).isSameAs(c.buildContext()));
+    // }
 
     /** Checks that we cannot call certain methods from the constructor of an extension. */
     @Test
@@ -46,7 +44,7 @@ public class BasicExtensionTest extends AbstractArtifactTest {
     public static final class CallingMethodsFromTheConstructor extends Extension {
         public CallingMethodsFromTheConstructor() {
             String msg = "This operation cannot be invoked from the constructor of the extension. As an alternative ExtensionComposer.onAdd(action) can used to perform initialization";
-            assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
+            // assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> checkConfigurable()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.class)).withMessage(msg);
         }
@@ -56,9 +54,9 @@ public class BasicExtensionTest extends AbstractArtifactTest {
 
     public static final class TestExtension extends Extension {
 
-        public ArtifactBuildContext publicBuildContext() {
-            return buildContext();
-        }
+        // public ArtifactBuildContext publicBuildContext() {
+        // return buildContext();
+        // }
 
     }
 }

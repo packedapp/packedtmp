@@ -167,7 +167,7 @@ public final class ServiceProvidingManager {
 
         // Add error messages if any nodes with the same key have been added multiple times
         if (failingDuplicateProviders != null) {
-            ErrorMessages.addDuplicateNodes(node.context().buildContext(), failingDuplicateProviders);
+            ErrorMessages.addDuplicateNodes(failingDuplicateProviders);
         }
         return resolvedServices;
     }

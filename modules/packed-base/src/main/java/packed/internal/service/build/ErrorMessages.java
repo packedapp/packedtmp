@@ -21,7 +21,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
 import app.packed.reflect.MethodDescriptor;
@@ -39,7 +38,7 @@ import packed.internal.util.StringFormatter;
 
 public final class ErrorMessages {
 
-    public static void addDuplicateNodes(ArtifactBuildContext abc, HashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> dublicateNodes) {
+    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<BuildEntry<?>>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
 
         csj.prefix("    ", "  & ", "  & ");
@@ -53,7 +52,7 @@ public final class ErrorMessages {
         StringBuilder sb = new StringBuilder();
 
         // create an instance sounds like something that should not be used in the build phase...
-        sb.append("Failed to create an instance of " + abc.artifactType().getSimpleName() + " from bundle: " + abc.sourceType().getCanonicalName());
+        sb.append("ServiceExtension failed");
         int nn = 1;
         for (Map.Entry<Key<?>, LinkedHashSet<BuildEntry<?>>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");

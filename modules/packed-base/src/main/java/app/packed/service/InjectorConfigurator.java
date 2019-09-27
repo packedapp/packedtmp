@@ -42,6 +42,8 @@ public final class InjectorConfigurator {
     /** The configuration we delegate all calls to. */
     private final ContainerConfiguration configuration;
 
+    private boolean initialized;
+
     /**
      * Creates a new configurator
      * 
@@ -67,7 +69,12 @@ public final class InjectorConfigurator {
      * @return an instance of the injector extension
      */
     private ServiceExtension extension() {
-        return configuration().use(ServiceExtension.class);
+        ServiceExtension se = configuration().use(ServiceExtension.class);
+        if (!initialized) {
+            se.exportAll();
+            initialized = true;
+        }
+        return se;
     }
 
     /**

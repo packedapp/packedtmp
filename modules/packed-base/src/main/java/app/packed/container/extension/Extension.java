@@ -20,7 +20,6 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
@@ -104,25 +103,25 @@ public abstract class Extension {
 
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
     private ExtensionContext context;
-
-    /**
-     * Returns the build context of the artifact which this extension is a part of.
-     * <p>
-     * Im thinking about throwing ISE on instantiation....
-     * 
-     * @throws IllegalStateException
-     *             if invoked from constructor or {@link #onPrepareContainerInstantiation(ArtifactInstantiationContext)}.
-     * @return the build context
-     */
-    protected final ArtifactBuildContext buildContext() {
-        // The thing i'm worried about here is wirelets...
-        // Because this should not be used on instantiation time because
-        // Any wirelets specified when initializing an image is not included...
-        // Or is this controllable from ContainerConfiguration????
-        ArtifactBuildContext c = context().buildContext();
-        checkConfigurable();
-        return c;
-    }
+    //
+    // /**
+    // * Returns the build context of the artifact which this extension is a part of.
+    // * <p>
+    // * Im thinking about throwing ISE on instantiation....
+    // *
+    // * @throws IllegalStateException
+    // * if invoked from constructor or {@link #onPrepareContainerInstantiation(ArtifactInstantiationContext)}.
+    // * @return the build context
+    // */
+    // protected final ArtifactBuildContext buildContext() {
+    // // The thing i'm worried about here is wirelets...
+    // // Because this should not be used on instantiation time because
+    // // Any wirelets specified when initializing an image is not included...
+    // // Or is this controllable from ContainerConfiguration????
+    // ArtifactBuildContext c = context().buildContext();
+    // checkConfigurable();
+    // return c;
+    // }
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is

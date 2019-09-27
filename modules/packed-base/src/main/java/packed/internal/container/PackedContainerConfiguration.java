@@ -211,16 +211,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super.extensionsPrepareInstantiation(ic);
     }
 
+    @Nullable
+    public PackedExtensionContext getContext(Class<?> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return extensions.get(extensionType);
+    }
+
     public ComponentConfiguration install(Factory<?> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         installPrepare(State.INSTALL_INVOKED);
         return model.addExtensionsToContainer(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
-    }
-
-    public ComponentConfiguration installStatic(Class<?> implementation, ConfigSite configSite) {
-        ComponentModel descriptor = lookup.componentModelOf(implementation);
-        installPrepare(State.INSTALL_INVOKED);
-        return descriptor.addExtensionsToContainer(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
     }
 
     public ComponentConfiguration installInstance(Object instance, ConfigSite configSite) {
@@ -238,6 +238,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             // This look strange...
             initializeName(State.INSTALL_INVOKED, null);
         }
+    }
+
+    public ComponentConfiguration installStatic(Class<?> implementation, ConfigSite configSite) {
+        ComponentModel descriptor = lookup.componentModelOf(implementation);
+        installPrepare(State.INSTALL_INVOKED);
+        return descriptor.addExtensionsToContainer(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
     }
 
     /** {@inheritDoc} */
@@ -349,10 +355,11 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    @Nullable
-    public PackedExtensionContext getContext(Class<?> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        return extensions.get(extensionType);
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Extension> T use(Class<T> extensionType) {
+        return (T) useContext(extensionType).extension();
     }
 
     public PackedExtensionContext useContext(Class<? extends Extension> extensionType) {
@@ -367,12 +374,5 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             pec.initialize();
         }
         return pec;
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends Extension> T use(Class<T> extensionType) {
-        return (T) useContext(extensionType).extension();
     }
 }

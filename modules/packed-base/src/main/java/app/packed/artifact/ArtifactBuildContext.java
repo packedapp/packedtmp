@@ -17,12 +17,10 @@ package app.packed.artifact;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
-import app.packed.container.extension.Extension;
 import app.packed.errorhandling.ErrorMessage;
 
 /**
- * An artifact build context is created every time an build context is create . The context is shared among all
- * extension of every container configuration for the artifact via {@link Extension#buildContext()}.
+ * An artifact build context is created every time an build context is create .
  * 
  * A build context is never available when we build something from an image. Or is it???
  */
