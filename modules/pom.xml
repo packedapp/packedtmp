@@ -26,7 +26,7 @@
         <configuration>
           <source>11</source>
           <target>11</target>
-          <!--
+         <!--
           <compilerArgs>
             <arg>-XDcompilePolicy=simple</arg>
             <arg>-Xplugin:ErrorProne</arg>
@@ -35,21 +35,24 @@
             <path>
               <groupId>com.google.errorprone</groupId>
               <artifactId>error_prone_core</artifactId>
-              <version>2.3.2</version>
+              <version>2.3.3</version>
             </path>
           </annotationProcessorPaths>
-          -->
+         -->
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
-        <!-- Surefire does not pickup static test classes, unless we have these excludes, see https://github.com/junit-team/junit5/issues/1377 -->
+        <version>2.22.2</version>
+        <!-- Surefire does not pickup static test classes, unless we have these excludes, see https://github.com/junit-team/junit5/issues/1377 
         <configuration>
           <excludes>
             <exclude/>
           </excludes>
         </configuration>
+        
+        Should be fixed with 2.22.2
+        -->
       </plugin>
     
       <plugin>
@@ -64,11 +67,11 @@
               </dependency>
             </dependencies>
       </plugin>
-        <!--
+      <!--
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.2</version>
+        <version>0.8.4</version>
         <configuration>
           <excludes>
             <exclude>packed/internal/thirdparty/**/*</exclude>
@@ -118,7 +121,7 @@
     <!-- Locate the root directory of the multi-module build -->
     <root.dir>${project.basedir}/..</root.dir>
     <!-- Versions -->
-    <assertj.version>3.12.2</assertj.version>
-    <junit.version>5.4.2</junit.version>
+    <assertj.version>3.13.2</assertj.version>
+    <junit.version>5.5.2</junit.version>
   </properties>
 </project>

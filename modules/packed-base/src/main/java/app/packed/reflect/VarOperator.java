@@ -15,32 +15,25 @@
  */
 package app.packed.reflect;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import app.packed.hook.AnnotatedFieldHook;
 import app.packed.util.TypeLiteral;
+import packed.internal.reflect.PackedIllegalAccessException;
+import packed.internal.util.ThrowableUtil;
 
 /**
- * <p>
- * Operators are typically created once and stored in a static field.
- * <p>
- * This interface is not meant to be
+ *
  */
-// An operator that when applied ....
-// Should be an abstract class....
-
-// TODO Rename to VarOperator from FieldOperator....
-
-// The requireFinal... must be gone...
-// If we are called VarOperator, they better match FieldOperator
-// Also readsField + writeField must be renamed...
-public interface VarOperator<T> {
-
-    T apply(MethodHandles.Lookup caller, Field field, Object instance);
+// TODO do as MethodOperator
+public abstract class VarOperator<T> {
 
     /**
      * Applies this operator to the specified static field.
@@ -53,24 +46,107 @@ public interface VarOperator<T> {
      * @throws IllegalArgumentException
      *             if the specified field is not static
      */
-    T applyStatic(MethodHandles.Lookup caller, Field field);
+    public final T applyStatic(Lookup caller, Field field) {
+        MethodHandle mh;
+        try {
+            mh = caller.unreflectGetter(field);
+        } catch (IllegalAccessException e) {
+            throw new PackedIllegalAccessException(e);
+        }
+        // Den her method handle burde jo kunne caches...
 
-    /**
-     * Returns whether or not the operator reads the field.
-     * 
-     * @return whether or not the operator reads the field
-     */
-    default boolean reads() {
-        return false;
+        return invoke(mh);
     }
 
-    /**
-     * Returns whether or not the operator writes the field.
-     * 
-     * @return whether or not the operator writes the field
-     */
-    default boolean writes() {
-        return false;
+    public final T apply(Lookup lookup, Field field, Object instance) {
+        MethodHandle mh;
+        try {
+            mh = lookup.unreflectGetter(field);
+        } catch (IllegalAccessException e) {
+            throw new PackedIllegalAccessException(e);
+        }
+        mh = mh.bindTo(instance);
+        // Den her method handle burde jo kunne caches...
+        return invoke(mh);
+    }
+
+    public abstract T invoke(MethodHandle mh);
+
+    public abstract T applyStaticHook(AnnotatedFieldHook<?> hook);
+
+    // If its a getter we cache the method handle
+    public abstract boolean isSimpleGetter();
+
+    static class GetOnceInternalFieldOperation<T> extends VarOperator<T> {
+        Class<?> fieldType;
+
+        /** {@inheritDoc} */
+        @Override
+        public T invoke(MethodHandle mh) {
+            try {
+                return (T) mh.invoke();
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isSimpleGetter() {
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T applyStaticHook(AnnotatedFieldHook<?> hook) {
+            return invoke(hook.getter());
+        }
+    }
+
+    static class StaticSup<T> implements Supplier<T> {
+
+        private final MethodHandle mh;
+
+        /**
+         * @param mh
+         */
+        public StaticSup(MethodHandle mh) {
+            this.mh = requireNonNull(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public T get() {
+            try {
+                return (T) mh.invoke();
+            } catch (Throwable e) {
+                ThrowableUtil.rethrowErrorOrRuntimeException(e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
+    }
+
+    static class SupplierInternalFieldOperation<T> extends VarOperator<Supplier<T>> {
+        Class<?> fieldType;
+
+        /** {@inheritDoc} */
+        @Override
+        public Supplier<T> invoke(MethodHandle mh) {
+            return new StaticSup<T>(mh);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isSimpleGetter() {
+            return true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Supplier<T> applyStaticHook(AnnotatedFieldHook<?> hook) {
+            return new StaticSup<T>(hook.getter());
+        }
     }
 
     /**
@@ -90,7 +166,7 @@ public interface VarOperator<T> {
      * @return a field operator that reads a field once
      */
     static VarOperator<Object> getOnce() {
-        return new PackedFieldOperator.GetOnceInternalFieldOperation<>();
+        return new GetOnceInternalFieldOperation<>();
     }
 
     /**
@@ -147,18 +223,50 @@ public interface VarOperator<T> {
      * 
      * @return a field operator that creates a getter.
      */
-    static VarOperator<Supplier<Object>> supplier() {
-        return new PackedFieldOperator.SupplierInternalFieldOperation<>();
+    public static VarOperator<Supplier<Object>> supplier() {
+        return new SupplierInternalFieldOperation<>();
     }
 
     static <E> VarOperator<Supplier<E>> supplier(Class<E> fieldType) {
-        return new PackedFieldOperator.SupplierInternalFieldOperation<>();
+        return new SupplierInternalFieldOperation<>();
     }
 
     static <E> VarOperator<Supplier<E>> supplier(TypeLiteral<E> fieldType) {
-        return new PackedFieldOperator.SupplierInternalFieldOperation<>();
+        return new SupplierInternalFieldOperation<>();
+    }
+
+    /**
+     * Returns whether or not the operator reads the field.
+     * 
+     * @return whether or not the operator reads the field
+     */
+    public boolean reads() {
+        return false;
+    }
+
+    /**
+     * Returns whether or not the operator writes the field.
+     * 
+     * @return whether or not the operator writes the field
+     */
+    public boolean writes() {
+        return false;
     }
 }
+/**
+ * <p>
+ * Operators are typically created once and stored in a static field.
+ * <p>
+ * This interface is not meant to be
+ */
+// An operator that when applied ....
+// Should be an abstract class....
+
+// TODO Rename to VarOperator from FieldOperator....
+
+// The requireFinal... must be gone...
+// If we are called VarOperator, they better match FieldOperator
+// Also readsField + writeField must be renamed...
 /// **
 // * Returns a new operator that will fail to work with non final-fields.
 // *

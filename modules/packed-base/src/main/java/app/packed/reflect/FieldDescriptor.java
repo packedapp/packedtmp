@@ -235,6 +235,6 @@ public final class FieldDescriptor extends VariableDescriptor implements MemberD
 
     public <T> T apply(Lookup caller, VarOperator<T> operator, Object instance) {
         requireNonNull(operator, "operator is null");
-        return ((PackedFieldOperator<T>) operator).apply(caller, field, instance);
+        return ((VarOperator<T>) operator).apply(caller, field, instance);
     }
 }

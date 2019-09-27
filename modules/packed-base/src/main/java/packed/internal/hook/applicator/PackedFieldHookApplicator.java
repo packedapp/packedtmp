@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.hook.AnnotatedFieldHook;
-import app.packed.reflect.PackedFieldOperator;
+import app.packed.reflect.VarOperator;
 
 /** A hook applicator for a field */
 public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T> {
@@ -35,9 +35,9 @@ public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T
     public final MethodHandle mh;
 
     /** The operator to apply. */
-    public final PackedFieldOperator<T> operator;
+    public final VarOperator<T> operator;
 
-    public PackedFieldHookApplicator(AnnotatedFieldHook<?> hook, PackedFieldOperator<T> operator, Field field) {
+    public PackedFieldHookApplicator(AnnotatedFieldHook<?> hook, VarOperator<T> operator, Field field) {
         if (operator.isSimpleGetter()) {
             mh = hook.getter();
         } else {

@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.reflect.FieldDescriptor;
-import app.packed.reflect.PackedFieldOperator;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.reflect.VarOperator;
 import app.packed.util.Nullable;
@@ -122,9 +121,8 @@ public final class AnnotatedFieldHook<T extends Annotation> {
     }
 
     public <E> HookApplicator<E> applicator(VarOperator<E> operator) {
-        PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
-        return new PackedFieldHookApplicator<E>(this, o, field);
+        return new PackedFieldHookApplicator<E>(this, operator, field);
     }
 
     /**
@@ -143,13 +141,12 @@ public final class AnnotatedFieldHook<T extends Annotation> {
      */
 
     public <E> E applyStatic(VarOperator<E> operator) {
-        PackedFieldOperator<E> o = PackedFieldOperator.cast(operator);
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalArgumentException("Cannot invoke this method on a non-static field " + field);
         }
         builder.checkActive(); // we do not want people to invoke this method, after the aggregate has been built
         // Should it be per hook group instead of container model?
-        return o.applyStaticHook(this);
+        return operator.applyStaticHook(this);
     }
 
     public AnnotatedFieldHook<T> checkAssignableTo(Class<?> type) {
