@@ -29,7 +29,6 @@ import java.util.function.BiFunction;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
 import app.packed.config.ConfigSite;
@@ -42,6 +41,7 @@ import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
@@ -206,7 +206,31 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @Override
     void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         for (PackedExtensionContext e : extensions.values()) {
-            SharedSecrets.extension().onPrepareContainerInstantiation(e.extension(), ic);
+            if (e.model.onInstantiation != null) {
+                e.model.onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
+
+                    @Override
+                    public <T> T use(Class<T> type) {
+                        return ic.use(PackedContainerConfiguration.this, type);
+                    }
+
+                    @Override
+                    public void put(Object obj) {
+                        ic.put(PackedContainerConfiguration.this, obj);
+                    }
+
+                    @Override
+                    public <T> @Nullable T get(Class<T> type) {
+                        return ic.get(PackedContainerConfiguration.this, type);
+                    }
+
+                    @Override
+                    public Class<?> artifactType() {
+                        return ic.artifactType();
+                    }
+                });
+            }
+
         }
         super.extensionsPrepareInstantiation(ic);
     }

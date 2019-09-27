@@ -28,6 +28,7 @@ import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
@@ -92,6 +93,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final Consumer<? super Extension> onConfigured;
 
+    public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -109,6 +112,7 @@ public final class ExtensionModel<T extends Extension> {
         this.contracts = Map.copyOf(builder.epc.contracts);
         this.onAdd = builder.epc.onAddAction;
         this.onConfigured = builder.epc.onConfiguredAction;
+        this.onInstantiation = builder.epc.onInstantiation;
     }
 
     public OnHookGroupModel hooks() {

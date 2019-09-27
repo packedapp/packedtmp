@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
@@ -49,6 +50,8 @@ public final class ExtensionComposerContext {
     /** An action that should be run immediately after an extension has been configured. */
     @Nullable
     public Consumer<? super Extension> onConfiguredAction;
+
+    public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
     public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
 }

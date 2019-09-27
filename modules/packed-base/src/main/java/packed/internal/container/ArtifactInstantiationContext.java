@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package packed.internal.container;
 
+import app.packed.artifact.ArtifactBuildContext;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.ContainerConfiguration;
 import app.packed.util.Nullable;
 

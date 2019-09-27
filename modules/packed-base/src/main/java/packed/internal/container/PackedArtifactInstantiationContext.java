@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.WireletList;
 import app.packed.util.Nullable;

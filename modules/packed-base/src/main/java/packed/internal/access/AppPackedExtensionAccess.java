@@ -15,7 +15,6 @@
  */
 package packed.internal.access;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionContext;
@@ -35,8 +34,6 @@ public interface AppPackedExtensionAccess extends SecretAccess {
     void setExtensionContext(Extension extension, ExtensionContext context);
 
     void configureComposer(ExtensionComposer<?> props, ExtensionComposerContext context);
-
-    void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context);
 
     <T extends ExtensionWireletPipeline<T, ?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 }

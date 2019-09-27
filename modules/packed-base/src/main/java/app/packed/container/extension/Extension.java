@@ -20,7 +20,6 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
@@ -79,12 +78,6 @@ public abstract class Extension {
             @Override
             public void configureComposer(ExtensionComposer<?> props, ExtensionComposerContext context) {
                 props.doConfigure(context);
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public void onPrepareContainerInstantiation(Extension extension, ArtifactInstantiationContext context) {
-                extension.onPrepareContainerInstantiation(context);
             }
 
             /** {@inheritDoc} */
@@ -191,18 +184,6 @@ public abstract class Extension {
         }
         return c;
     }
-
-    /**
-     * Invoked whenever the container is being instantiated. In case of a container image this means that method might be
-     * invoked multiple times. Even by multiple threads
-     * 
-     * @param context
-     *            an instantiation context object
-     */
-    // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
-    // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
-    // har extension communication
-    protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
 
     /**
      * Returns an extension of the specified type.

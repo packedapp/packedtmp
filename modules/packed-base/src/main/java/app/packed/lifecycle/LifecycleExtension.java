@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.Extension;
+import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.HookApplicator;
 import app.packed.hook.HookGroupBuilder;
@@ -57,7 +57,7 @@ import packed.internal.util.StringFormatter;
 
 // Smide denne ind under LifecycleExtension
 
-public final class LifecycleExtension extends Extension {
+public final class LifecycleExtension extends ComposableExtension<LifecycleExtension.Composer> {
 
     final LifecycleExtensionNode node = new LifecycleExtensionNode(this);
 
@@ -87,10 +87,13 @@ public final class LifecycleExtension extends Extension {
 
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context().putIntoInstantiationContext(context, new LifecycleSidecar());
+    static class Composer extends ExtensionComposer<LifecycleExtension> {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void configure() {
+            onInstantiation((e, c) -> c.put(new LifecycleSidecar()));
+        }
     }
 }
 

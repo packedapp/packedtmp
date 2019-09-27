@@ -17,7 +17,6 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Wirelet;
@@ -161,12 +160,6 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         node.dependencies().manualRequirementsManagement();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        node.onPrepareContainerInstantiation(context);
-    }
-
     /**
      * @param <T>
      *            the type of service to provide
@@ -284,6 +277,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             addDependencies(ComponentExtension.class);
 
             onConfigured(e -> e.node.build());
+            onInstantiation((e, c) -> e.node.onInstantiate(c));
 
             useNode(ServiceExtensionNode.class, e -> e.node);
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));

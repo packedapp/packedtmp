@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
@@ -52,11 +51,11 @@ public class MyExtension extends Extension {
         // ignore
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        context().putIntoInstantiationContext(context, new MySidecar());
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+    // context().putIntoInstantiationContext(context, new MySidecar());
+    // }
 
     public static class Agg implements HookGroupBuilder<AXA> {
         private int sum;

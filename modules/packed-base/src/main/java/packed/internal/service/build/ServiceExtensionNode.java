@@ -20,11 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
+import app.packed.container.extension.ExtensionNode;
 import app.packed.hook.OnHookGroup;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
@@ -155,7 +155,7 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
         return e;
     }
 
-    private void instantiate() {
+    public void instantiate() {
         // Instantiate
         for (ServiceEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentBuildEntry) {
@@ -213,9 +213,9 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
         }
     }
 
-    public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
+    public void onInstantiate(ExtensionInstantiationContext c) {
         instantiate();
-        context().putIntoInstantiationContext(context, publicInjector);
+        c.put(publicInjector);
     }
 
     public ServiceProvidingManager provider() {

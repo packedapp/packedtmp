@@ -21,7 +21,6 @@ import java.util.IdentityHashMap;
 import java.util.function.Function;
 
 import app.packed.artifact.ArtifactBuildContext;
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
@@ -139,12 +138,6 @@ public final class PackedExtensionContext implements ExtensionContext {
         }
 
         isConfigurable = false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
-        context.put(pcc, sidecar);
     }
 
     /** {@inheritDoc} */

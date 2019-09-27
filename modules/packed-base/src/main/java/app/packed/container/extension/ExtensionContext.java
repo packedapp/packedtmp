@@ -16,7 +16,6 @@
 package app.packed.container.extension;
 
 import app.packed.artifact.ArtifactBuildContext;
-import app.packed.artifact.ArtifactInstantiationContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 
@@ -35,8 +34,6 @@ public interface ExtensionContext {
      * @return the config site of the container in which the extension is registered in
      */
     ConfigSite containerConfigSite();
-
-    void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar);
 
     /**
      * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
