@@ -28,8 +28,8 @@ import app.packed.hook.HookApplicator;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.hook.OnHookGroup;
-import app.packed.reflect.VarOperator;
 import app.packed.reflect.MethodOperator;
+import app.packed.reflect.VarOperator;
 
 /**
  *
@@ -55,7 +55,7 @@ public class MyExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        putIntoInstantiationContext(context, new MySidecar());
+        context().putIntoInstantiationContext(context, new MySidecar());
     }
 
     public static class Agg implements HookGroupBuilder<AXA> {

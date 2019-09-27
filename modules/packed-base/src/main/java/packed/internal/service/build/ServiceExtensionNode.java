@@ -214,9 +214,7 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
     }
 
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        if (context().buildContext().isInstantiating()) {
-            instantiate();
-        }
+        instantiate();
         context().putIntoInstantiationContext(context, publicInjector);
     }
 

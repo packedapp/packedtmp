@@ -21,7 +21,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -56,15 +55,15 @@ public abstract class Bundle implements ContainerSource {
     /** The configuration of the container. */
     private ContainerConfiguration configuration;
 
-    /**
-     * Returns the build context. A single build context object is shared among all containers for the same artifact.
-     * 
-     * @return the build context
-     * @see ContainerConfiguration#buildContext()
-     */
-    protected final ArtifactBuildContext buildContext() {
-        return configuration.buildContext();
-    }
+    // /**
+    // * Returns the build context. A single build context object is shared among all containers for the same artifact.
+    // *
+    // * @return the build context
+    // * @see ContainerConfiguration#buildContext()
+    // */
+    // protected final ArtifactBuildContext buildContext() {
+    // return configuration.buildContext();
+    // }
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that

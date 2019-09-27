@@ -205,10 +205,6 @@ public abstract class Extension {
     // har extension communication
     protected void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {}
 
-    protected final void putIntoInstantiationContext(ArtifactInstantiationContext context, Object sidecar) {
-        context().putIntoInstantiationContext(context, sidecar);
-    }
-
     /**
      * Returns an extension of the specified type.
      * <p>

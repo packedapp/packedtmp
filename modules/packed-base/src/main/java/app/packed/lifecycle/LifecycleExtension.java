@@ -90,7 +90,7 @@ public final class LifecycleExtension extends Extension {
     /** {@inheritDoc} */
     @Override
     public void onPrepareContainerInstantiation(ArtifactInstantiationContext context) {
-        putIntoInstantiationContext(context, new LifecycleSidecar());
+        context().putIntoInstantiationContext(context, new LifecycleSidecar());
     }
 }
 
