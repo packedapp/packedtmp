@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.AFeature;
 import app.packed.container.extension.feature.FeatureMap;
 
@@ -27,6 +28,11 @@ import app.packed.container.extension.feature.FeatureMap;
  * derivatives. In packed everything is a component.
  */
 public interface Component {
+
+    default Optional<Class<? extends Extension>> extension() {
+        // Ideen er lidt at vi kan kan se om en component tilhoere en given extension...
+        throw new UnsupportedOperationException();
+    }
 
     default ComponentPath artifactPath() {
         // also on

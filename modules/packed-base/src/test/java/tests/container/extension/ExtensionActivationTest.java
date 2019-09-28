@@ -34,7 +34,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookGroup;
+import packed.internal.hook.OnHookGroup;
 import support.testutil.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */

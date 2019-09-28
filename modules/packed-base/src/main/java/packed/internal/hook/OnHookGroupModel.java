@@ -10,7 +10,6 @@ import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
-import app.packed.hook.OnHookGroup;
 
 /** This class contains information about {@link OnHookGroup} methods for an extension type. */
 public final class OnHookGroupModel {

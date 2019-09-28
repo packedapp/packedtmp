@@ -22,6 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
@@ -29,6 +30,7 @@ import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.contract.Contract;
 import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.HookGroupProcessor;
 import packed.internal.container.extension.ExtensionComposerContext;
 import packed.internal.util.StringFormatter;
 
@@ -40,41 +42,18 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
 
-    /**
-     * @param <C>
-     *            the type of contract
-     * @param contractType
-     *            the type of contract the factory creates
-     * @param contractFactory
-     *            a factory for creating the contract
-     */
-    protected final <C extends Contract> void addContract(Class<C> contractType,
-            BiFunction<? super E, ? super ExtensionIntrospectionContext, C> contractFactory) {
-        requireNonNull(contractType, "contractType is null");
-        requireNonNull(contractFactory, "contractFactory is null");
-        context().contracts.putIfAbsent(contractType, contractFactory);
-    }
+    // protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B>
+    // builderFactory,
+    // BiConsumer<E, HookGroupEntry<G>> consumer) {}
 
-    /**
-     * Adds the specified extension types to the set of extensions that this extension depends on.
-     * 
-     * 
-     * This is done in order
-     * 
-     * @param extensionTypes
-     *            the types of extension the extension uses.
-     */
-    @SafeVarargs
-    protected final void addDependencies(Class<? extends Extension>... extensionTypes) {
-
-    }
-
-    final void addDependencies(String... extensionTypes) {
-        // The names will be resolved when composer is created
-
-    }
-
-    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, BiConsumer<E, G> groupConsumer) {
+    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
+            HookGroupProcessor<E, G> groupProcessor) {
+        requireNonNull(builderType, "builderType is null");
+        requireNonNull(builderFactory, "builderFactory is null");// ??? Or do we want it...
+        if (!HookGroupBuilder.class.isAssignableFrom(builderType)) {
+            // CheckNotInter, CheckNotAbstractClass, ...
+            throw new IllegalArgumentException("The specified builderType does not implement " + HookGroupBuilder.class.getSimpleName());
+        }
         // OnHookGroup
     }
 
@@ -109,6 +88,29 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     }
 
     /**
+     * Adds the specified extension types to the set of extensions that this extension depends on.
+     * 
+     * 
+     * This is done in order
+     * 
+     * @param extensionTypes
+     *            the types of extension the extension uses.
+     */
+    // dependOn????
+    @SafeVarargs
+    protected final void dependOn(Class<? extends Extension>... extensionTypes) {
+
+    }
+
+    final void dependOn(String... extensionTypes) {
+        // The names will be resolved when composer is created
+
+        // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
+        // Hvis den givne extension var der.
+        // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
+    }
+
+    /**
      * Invoked by the runtime to start the configuration process.
      * 
      * @param context
@@ -125,6 +127,22 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         } finally {
             this.context = null;
         }
+    }
+
+    /**
+     * @param <C>
+     *            the type of contract
+     * @param contractType
+     *            the type of contract the factory creates
+     * @param contractFactory
+     *            a factory for creating the contract
+     */
+    // exposeDescripitor, exposeFeature, ....
+    protected final <C extends Contract> void exposeContract(Class<C> contractType,
+            BiFunction<? super E, ? super ExtensionIntrospectionContext, C> contractFactory) {
+        requireNonNull(contractType, "contractType is null");
+        requireNonNull(contractFactory, "contractFactory is null");
+        context().contracts.putIfAbsent(contractType, contractFactory);
     }
 
     /**

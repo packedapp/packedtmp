@@ -13,27 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package app.packed.hook;
 
-import app.packed.container.ContainerSource;
+import app.packed.component.ComponentConfiguration;
 
 /**
  *
  */
-// Ideen er egentlig at de her configurators ogsaa er sources....
-//
-// Saa kan vi nemlig have <? extends ContainerSource>
-
-// Eneste lidt irriterende er at Vi har en Configurator der tager en configutaro?
-
 @FunctionalInterface
-public interface ArtifactConfigurator<T> extends ContainerSource {
+public interface HookGroupProcessor<P, G> {
 
-    /**
-     * Configure the artifact
-     * 
-     * @param configurator
-     *            the configurator used to configure the artifact
-     */
-    void configure(T configurator);
+    void process(P processor, ComponentConfiguration cc, G group);
 }

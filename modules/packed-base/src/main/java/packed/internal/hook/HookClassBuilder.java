@@ -35,7 +35,6 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.InstanceOfHook;
 import app.packed.hook.OnHook;
-import app.packed.hook.OnHookGroup;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.NativeImage;

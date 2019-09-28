@@ -22,6 +22,7 @@ import app.packed.util.Nullable;
  *
  */
 public interface ExtensionInstantiationContext {
+
     /**
      * Returns the type of artifact that is being instantiated.
      * 

@@ -39,5 +39,4 @@ public class ExtensionDeclarationException extends RuntimeException {
     public ExtensionDeclarationException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

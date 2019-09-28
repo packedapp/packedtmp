@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -21,6 +21,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
+import app.packed.hook.HookGroupBuilder;
+import app.packed.hook.InstanceOfHook;
 
 /**
  * Hooks are used for callbacks. Methods annotated with this method must have exactly one parameter which is an instance

@@ -274,7 +274,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            addDependencies(ComponentExtension.class);
+            dependOn(ComponentExtension.class);
 
             onConfigured(e -> e.node.build());
             onInstantiation((e, c) -> e.node.onInstantiate(c));
@@ -283,7 +283,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
 
             // Descriptors and contracts
-            addContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
+            exposeContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
             buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
 
             // Runtime stuff
@@ -295,8 +295,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             // WithPipelines to buildDescriptor()
             // o.s.v.
 
-            // Needs TriConsumer....
-            addHookGroup(AtProvidesGroup.Builder.class, (e, g) -> e.node.provider().addProvidesGroup(null, g));
+            addHookGroup(AtProvidesGroup.Builder.class, () -> new AtProvidesGroup.Builder(), (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
         }
     }
 }

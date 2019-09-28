@@ -26,6 +26,9 @@ import app.packed.errorhandling.ErrorMessage;
  */
 // Hmm, Naar vi laver et image eller en descriptor, syntes jeg egentlig ikke vi laver en Artifact
 // Saa burde vi jo heller ikke have en build context....
+
+// Der hvor den ikke fungere er f.eks. artifactType....
+// Det er ikke til at vide foerend paa instantierings tidspunkt...
 public interface ArtifactBuildContext {
 
     void addError(ErrorMessage message);
@@ -45,17 +48,8 @@ public interface ArtifactBuildContext {
     ConfigSite configSite();
 
     /**
-     * Returns whether or not an artifact image is being built.
-     * 
-     * @return whether or not an artifact image is being built
-     */
-    default boolean isImage() {
-        return artifactType() == ArtifactImage.class;
-    }
-
-    /**
      * Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.
-     * 
+     *
      * @return whether or not we are instantiating an actual artifact
      */
     boolean isInstantiating();
@@ -79,6 +73,16 @@ public interface ArtifactBuildContext {
 enum Action {
     IMAGE_GENERATE, INTROSPECT, INSTANTIATE_ARTIFACT;
 }
+
+/// **
+// * Returns whether or not an artifact image is being built.
+// *
+// * @return whether or not an artifact image is being built
+// */
+// default boolean isImage() {
+// return artifactType() == ArtifactImage.class;
+// }
+//
 
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.

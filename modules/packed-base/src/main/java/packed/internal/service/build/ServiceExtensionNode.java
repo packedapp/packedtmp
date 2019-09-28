@@ -25,7 +25,6 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionNode;
-import app.packed.hook.OnHookGroup;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
@@ -35,6 +34,7 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.hook.OnHookGroup;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
@@ -156,6 +156,9 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
     }
 
     public void instantiate() {
+        //// Hmmm, det er jo altsaa lidt anderledes
+        // Hvis vi vil lave et image...
+
         // Instantiate
         for (ServiceEntry<?> node : resolvedEntries.values()) {
             if (node instanceof ComponentBuildEntry) {
