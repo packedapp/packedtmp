@@ -114,7 +114,6 @@ public class FromImage {
             protected void configure() {
                 addHookGroup(MyExtensionHookAggregator.class, MyExtensionHookAggregator::new, (e, cc, g) -> e.foo(cc, g));
             }
-
         }
     }
 

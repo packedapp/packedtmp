@@ -35,11 +35,11 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
-import app.packed.container.extension.Extension;
+import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
-import packed.internal.hook.OnHookGroup;
 
 /**
  *
@@ -112,10 +112,19 @@ public class ExtensionActivation {
         public void foo() {}
     }
 
-    public static class MyExtension extends Extension {
+    public static class MyExtension extends ComposableExtension<MyExtension.Composer> {
 
-        @OnHookGroup(Builder.class)
         public void foo(ComponentConfiguration cc, String s) {}
+
+        static class Composer extends ExtensionComposer<MyExtension> {
+
+            /** {@inheritDoc} */
+            @Override
+            protected void configure() {
+                addHookGroup(Builder.class, Builder::new, (e, cc, g) -> e.foo(cc, g));
+            }
+        }
+
     }
 
     @Retention(RetentionPolicy.RUNTIME)

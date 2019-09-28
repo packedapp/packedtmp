@@ -17,7 +17,6 @@ package app.packed.lifecycle;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ExtensionNode;
-import packed.internal.hook.OnHookGroup;
 
 /**
  *
@@ -33,7 +32,6 @@ public final class LifecycleExtensionNode extends ExtensionNode<LifecycleExtensi
      * 
      * @param mh
      */
-    @OnHookGroup(LifecycleHookAggregator.class)
     void addMain(ComponentConfiguration cc, LifecycleHookAggregator mh) {
         mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
         // TODO check that we do not have multiple @Main methods

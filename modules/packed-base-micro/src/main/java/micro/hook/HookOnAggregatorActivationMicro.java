@@ -17,12 +17,12 @@ package micro.hook;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ActivateExtension;
-import app.packed.container.extension.Extension;
+import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
-import packed.internal.hook.OnHookGroup;
 
 /**
  *
@@ -32,10 +32,18 @@ public class HookOnAggregatorActivationMicro {
     @ActivateExtension(HookActivateExtension.class)
     public @interface HookActivateAnnotation {}
 
-    public static class HookActivateExtension extends Extension {
+    public static class HookActivateExtension extends ComposableExtension<HookActivateExtension.Composer> {
 
-        @OnHookGroup(SomeAggegator.class)
         public void process(ComponentConfiguration cc, String s) {}
+
+        static class Composer extends ExtensionComposer<HookActivateExtension> {
+
+            /** {@inheritDoc} */
+            @Override
+            protected void configure() {
+                addHookGroup(SomeAggegator.class, SomeAggegator::new, (e, cc, g) -> e.process(cc, g));
+            }
+        }
     }
 
     public static class SomeAggegator implements HookGroupBuilder<String> {

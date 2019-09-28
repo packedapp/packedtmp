@@ -93,6 +93,7 @@ public final class LifecycleExtension extends ComposableExtension<LifecycleExten
         @Override
         protected void configure() {
             onInstantiation((e, c) -> c.put(new LifecycleSidecar()));
+            addHookGroup(LifecycleHookAggregator.class, LifecycleHookAggregator::new, (e, cc, g) -> e.node.addMain(cc, g));
         }
     }
 }
