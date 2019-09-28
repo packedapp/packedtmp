@@ -36,6 +36,7 @@ import app.packed.hook.InstanceOfHook;
 @Target(ElementType.METHOD)
 @Retention(RUNTIME)
 @Documented
+@Deprecated
 public @interface OnHookGroup {
 
     /**

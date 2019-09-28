@@ -28,14 +28,12 @@ import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.MethodOperator;
 import app.packed.reflect.VarOperator;
-import packed.internal.hook.OnHookGroup;
 
 /**
  *
  */
 public class MyExtension extends Extension {
 
-    @OnHookGroup(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
         for (HookApplicator<Supplier<Object>> ra : val.rars) {
             ra.onReady(cc, MySidecar.class, (s, o) -> s.foo(o));

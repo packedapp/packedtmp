@@ -295,7 +295,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             // WithPipelines to buildDescriptor()
             // o.s.v.
 
-            addHookGroup(AtProvidesGroup.Builder.class, () -> new AtProvidesGroup.Builder(), (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
+            addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
         }
     }
 }

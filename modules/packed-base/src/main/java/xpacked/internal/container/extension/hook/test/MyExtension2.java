@@ -25,14 +25,12 @@ import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.MethodOperator;
 import app.packed.reflect.VarOperator;
-import packed.internal.hook.OnHookGroup;
 
 /**
  *
  */
 public class MyExtension2 extends Extension {
 
-    @OnHookGroup(Agg.class)
     public void foo(ComponentConfiguration cc, AXA val) {
         val.rars.readyAll(cc, MySidecar.class, (s, o) -> s.foo(o));
         System.out.println("Saa godt da");
