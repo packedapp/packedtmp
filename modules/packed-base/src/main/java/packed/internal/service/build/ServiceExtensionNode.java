@@ -22,13 +22,12 @@ import java.util.LinkedHashMap;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
+import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.OldExtensionNode;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
-import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
@@ -44,7 +43,7 @@ import packed.internal.service.util.AtInject;
 import packed.internal.service.util.AtInjectGroup;
 
 /** This class records all service related information for a single box. */
-public final class ServiceExtensionNode extends OldExtensionNode<ServiceExtension> {
+public final class ServiceExtensionNode {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -67,11 +66,17 @@ public final class ServiceExtensionNode extends OldExtensionNode<ServiceExtensio
     /**
      * Creates a new builder.
      * 
-     * @param extension
-     *            the service extension
+     * @param context
+     *            the context
      */
-    public ServiceExtensionNode(ServiceExtension extension) {
-        super(extension);
+    public ServiceExtensionNode(ExtensionContext context) {
+        this.context = requireNonNull(context, "context is null");
+    }
+
+    private final ExtensionContext context;
+
+    public final ExtensionContext context() {
+        return context;
     }
 
     public void addErrorMessage() {

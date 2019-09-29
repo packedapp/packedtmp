@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.ExtensionComposer;
@@ -59,8 +60,6 @@ import packed.internal.util.StringFormatter;
 
 public final class LifecycleExtension extends ComposableExtension<LifecycleExtension.Composer> {
 
-    final LifecycleExtensionNode node = new LifecycleExtensionNode(this);
-
     public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
         main(Key.of(serviceKey), consumer);
     }
@@ -87,13 +86,23 @@ public final class LifecycleExtension extends ComposableExtension<LifecycleExten
 
     }
 
+    /**
+     * This method once for each component method that is annotated with {@link Main}.
+     * 
+     * @param mh
+     */
+    void addMain(ComponentConfiguration cc, LifecycleHookAggregator mh) {
+        mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
+        // TODO check that we do not have multiple @Main methods
+    }
+
     static class Composer extends ExtensionComposer<LifecycleExtension> {
 
         /** {@inheritDoc} */
         @Override
         protected void configure() {
             onInstantiation((e, c) -> c.put(new LifecycleSidecar()));
-            addHookGroup(LifecycleHookAggregator.class, LifecycleHookAggregator::new, (e, cc, g) -> e.node.addMain(cc, g));
+            addHookGroup(LifecycleHookAggregator.class, LifecycleHookAggregator::new, (e, cc, g) -> e.addMain(cc, g));
         }
     }
 }

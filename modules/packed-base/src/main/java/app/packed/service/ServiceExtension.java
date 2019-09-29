@@ -62,7 +62,7 @@ import packed.internal.service.run.AbstractInjector;
 public final class ServiceExtension extends ComposableExtension<ServiceExtension.Composer> {
 
     /** The extension node. */
-    private final ServiceExtensionNode node = new ServiceExtensionNode(this);
+    private ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
     ServiceExtension() {}
@@ -276,6 +276,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         protected void configure() {
             dependOn(ComponentExtension.class);
 
+            onExtensionInstantiated(e -> e.node = new ServiceExtensionNode(e.context()));
             onConfigured(e -> e.node.build());
             onInstantiation((e, c) -> e.node.onInstantiate(c));
 
