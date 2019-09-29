@@ -32,9 +32,7 @@ import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
-import app.packed.container.extension.OldExtensionNode;
 import app.packed.contract.Contract;
-import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.hook.HGBModel;
 import packed.internal.hook.HookClassBuilder;
@@ -75,12 +73,6 @@ public final class ExtensionModel<T extends Extension> {
 
     final OnHookGroupModel hooks;
 
-    final Function<? extends Extension, ? extends OldExtensionNode<?>> nodeFactory;
-
-    /** If the extension has a corresponding extension node */
-    @Nullable
-    private final ExtensionNodeModel node;
-
     final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
     /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */
@@ -108,9 +100,7 @@ public final class ExtensionModel<T extends Extension> {
     private ExtensionModel(Builder builder) {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
-        this.node = builder.node == null ? null : builder.node.build(this);
         this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
-        this.nodeFactory = builder.epc.nodeFactory;
         this.pipelines = Map.copyOf(builder.epc.pipelines);
         this.bundleBuilder = builder.epc.builder;
         this.contracts = Map.copyOf(builder.epc.contracts);
@@ -165,9 +155,6 @@ public final class ExtensionModel<T extends Extension> {
 
         final Class<? extends Extension> extensionType;
 
-        @Nullable
-        private ExtensionNodeModel.Builder node;
-
         final HookClassBuilder hooks;
 
         ExtensionComposerContext epc = new ExtensionComposerContext();
@@ -198,9 +185,6 @@ public final class ExtensionModel<T extends Extension> {
                     throw new UndeclaredThrowableException(e);
                 }
                 SharedSecrets.extension().configureComposer(ep, epc);
-                if (epc.nodeType != null) {
-                    node = new ExtensionNodeModel.Builder(this, epc.nodeType);
-                }
 
                 for (HGBModel g : epc.hgbs) {
                     hooks.onHookGroup(g);

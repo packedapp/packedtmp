@@ -27,7 +27,6 @@ import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.OldExtensionNode;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
-import app.packed.service.Provide;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
@@ -38,7 +37,6 @@ import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
 import packed.internal.service.build.export.ExportedBuildEntry;
-import packed.internal.service.build.service.AtProvidesGroup;
 import packed.internal.service.build.service.ComponentBuildEntry;
 import packed.internal.service.build.service.ServiceProvidingManager;
 import packed.internal.service.run.DefaultInjector;
@@ -173,18 +171,6 @@ public final class ServiceExtensionNode extends OldExtensionNode<ServiceExtensio
             }
             dependencies().buildContract(c);
         });
-    }
-
-    /**
-     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
-     * 
-     * @param cc
-     *            the configuration of the annotated component
-     * @param group
-     *            a provides group object
-     */
-    void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
-        provider().addProvidesGroup(cc, group);
     }
 
     /**

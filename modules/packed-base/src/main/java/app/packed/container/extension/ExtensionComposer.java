@@ -17,7 +17,6 @@ package app.packed.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Modifier;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -35,7 +34,6 @@ import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.HookGroupProcessor;
 import packed.internal.container.extension.ExtensionComposerContext;
 import packed.internal.hook.HGBModel;
-import packed.internal.util.StringFormatter;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -204,18 +202,5 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         requireNonNull(action, "action is null");
         BiConsumer<? super E, ? super ExtensionInstantiationContext> a = context().onInstantiation;
         context().onInstantiation = a == null ? (BiConsumer) action : a.andThen((BiConsumer) action);
-    }
-
-    // addNode??
-
-    // Tror vi draeber den, naar vi ikke har onHookGroup mere...
-    protected final <N extends OldExtensionNode<E>> void useNode(Class<N> nodeType, Function<E, N> nodeFactory) {
-        requireNonNull(nodeType, "nodeType is null");
-        requireNonNull(nodeFactory, "nodeFactory is null");
-        if (!Modifier.isFinal(nodeType.getModifiers())) {
-            throw new ExtensionDeclarationException("The extension node type must be declared final, node type = " + StringFormatter.format(nodeType));
-        }
-        context().nodeType = nodeType;
-        context().nodeFactory = nodeFactory;
     }
 }

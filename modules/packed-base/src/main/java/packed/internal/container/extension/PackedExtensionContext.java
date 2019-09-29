@@ -18,14 +18,11 @@ package packed.internal.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
-import java.util.function.Function;
 
 import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
-import app.packed.container.extension.OldExtensionNode;
-import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 
@@ -37,10 +34,6 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
-
-    /** Any extension node the extension might have. */
-    @Nullable
-    private OldExtensionNode<?> node;
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
@@ -90,15 +83,9 @@ public final class PackedExtensionContext implements ExtensionContext {
         return extension;
     }
 
-    @Nullable
-    public OldExtensionNode<?> extensionNode() {
-        return node;
-    }
-
     /**
      * 
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void initialize() {
         // Sets Extension.context = this
         SharedSecrets.extension().setExtensionContext(extension, this);
@@ -106,29 +93,6 @@ public final class PackedExtensionContext implements ExtensionContext {
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
         if (model.onAdd != null) {
             model.onAdd.accept(extension);
-        }
-
-        if (model.nodeFactory != null) {
-            node = (OldExtensionNode<?>) ((Function) model.nodeFactory).apply(extension);
-
-            // Need to do checks
-            // ExtensionNodeModel node = context.model.node();
-            // ExtensionNode<?> en = null;
-            // if (node != null) {
-            // en = ((ComposableExtension<?>) e).node();
-            // if (en == null) {
-            // throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must not return null");
-            // } else if (en.getClass() != node.type) {
-            // throw new ExtensionDeclarationException(StringFormatter.format(e.getClass()) + ".node() must return an (exact)
-            // instance of "
-            // + StringFormatter.format(node.type) + ", but returned an instance of " + StringFormatter.format(en.getClass()));
-            // }
-            // }
-        }
-        if (node == null) {
-            // Check that method definition _is not_ overridden but is ExtensionNode<?>
-        } else {
-            // Check that method definition _is overridden but is ExtensionNode<?>
         }
     }
 

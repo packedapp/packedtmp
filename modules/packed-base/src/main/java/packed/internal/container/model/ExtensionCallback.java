@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.OldExtensionNode;
 import app.packed.hook.HookGroupProcessor;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.HGBModel;
@@ -61,8 +60,6 @@ final class ExtensionCallback {
         }
         if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
             mh.invoke(e.extension(), component, hookGroup);
-        } else if (OldExtensionNode.class.isAssignableFrom(mh.type().parameterType(0))) {
-            mh.invoke(e.extensionNode(), component, hookGroup);
         }
     }
 }

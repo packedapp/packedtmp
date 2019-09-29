@@ -11,7 +11,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 
-/** This class contains information about {@link OnHookGroup} methods for an extension type. */
+/** This class contains information about on hook groups methods for an extension type. */
 public final class OnHookGroupModel {
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */

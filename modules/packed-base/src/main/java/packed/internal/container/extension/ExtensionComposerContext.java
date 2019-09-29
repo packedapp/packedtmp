@@ -27,7 +27,6 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.OldExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
@@ -42,10 +41,6 @@ public final class ExtensionComposerContext {
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
-
-    public Function<? extends Extension, ? extends OldExtensionNode<?>> nodeFactory;
-
-    public Class<? extends OldExtensionNode<?>> nodeType;
 
     /** An action that will be run immediately after an extension has been instantiated. */
     @Nullable

@@ -85,6 +85,14 @@ public final class ServiceProvidingManager {
         this.node = requireNonNull(node);
     }
 
+    /**
+     * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
+     * 
+     * @param cc
+     *            the configuration of the annotated component
+     * @param group
+     *            a provides group object
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void addProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
         // The parent node is not added until #provideFactory or #provideInstance
