@@ -15,12 +15,16 @@
  */
 package packed.internal.container.model;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
+import app.packed.hook.HookGroupProcessor;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.hook.HGBModel;
 
 /**
  *
@@ -41,10 +45,23 @@ final class ExtensionCallback {
         this.hookGroup = hookGroup;
     }
 
+    HGBModel m;
+
+    public ExtensionCallback(HGBModel m, Object hookGroup) {
+        this.mh = null;
+        this.m = requireNonNull(m);
+        this.hookGroup = hookGroup;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void invoke(PackedExtensionContext e, ComponentConfiguration component) throws Throwable {
+        if (m != null) {
+            ((HookGroupProcessor) m.groupProcessor).process(e.extension(), component, hookGroup);
+            return;
+        }
         if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
             mh.invoke(e.extension(), component, hookGroup);
-        } else if (ExtensionNode.class.isAssignableFrom(mh.type().parameterType(0))) {
+        } else if (OldExtensionNode.class.isAssignableFrom(mh.type().parameterType(0))) {
             mh.invoke(e.extensionNode(), component, hookGroup);
         }
     }

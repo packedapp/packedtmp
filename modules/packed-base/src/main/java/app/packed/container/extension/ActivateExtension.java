@@ -23,8 +23,11 @@ import java.lang.annotation.Target;
 /**
  * A meta-annotation that can be placed on annotations...
  */
-@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.MODULE })
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+// Vi havde en module some target, men det er bare accident waiting to happen
+// En der faar annoteret et modul og glemmer alt om det....
+
 // FeatureAnnotation
 
 // Unfprtunantely, you cannot register random annotations for use. As this would break encapsulation.

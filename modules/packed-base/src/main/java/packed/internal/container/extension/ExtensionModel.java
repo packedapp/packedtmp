@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -30,11 +31,12 @@ import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.ExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.OldExtensionNode;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
+import packed.internal.hook.HGBModel;
 import packed.internal.hook.HookClassBuilder;
 import packed.internal.hook.OnHookGroupModel;
 import packed.internal.reflect.ConstructorFinder;
@@ -73,7 +75,7 @@ public final class ExtensionModel<T extends Extension> {
 
     final OnHookGroupModel hooks;
 
-    final Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
+    final Function<? extends Extension, ? extends OldExtensionNode<?>> nodeFactory;
 
     /** If the extension has a corresponding extension node */
     @Nullable
@@ -95,6 +97,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
+    public final Set<HGBModel> groups;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -113,6 +117,7 @@ public final class ExtensionModel<T extends Extension> {
         this.onAdd = builder.epc.onAddAction;
         this.onConfigured = builder.epc.onConfiguredAction;
         this.onInstantiation = builder.epc.onInstantiation;
+        this.groups = Set.copyOf(builder.epc.hgbs);
     }
 
     public OnHookGroupModel hooks() {
@@ -195,6 +200,10 @@ public final class ExtensionModel<T extends Extension> {
                 SharedSecrets.extension().configureComposer(ep, epc);
                 if (epc.nodeType != null) {
                     node = new ExtensionNodeModel.Builder(this, epc.nodeType);
+                }
+
+                for (HGBModel g : epc.hgbs) {
+                    hooks.onHookGroup(g);
                 }
             }
         }

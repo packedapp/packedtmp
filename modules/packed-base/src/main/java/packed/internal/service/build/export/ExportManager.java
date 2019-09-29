@@ -24,8 +24,8 @@ import java.util.LinkedHashSet;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.ComponentServiceConfiguration;
-import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceConfiguration;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.service.ServiceEntry;
@@ -36,7 +36,7 @@ import packed.internal.service.build.service.PackedProvidedComponentConfiguratio
 import packed.internal.util.StringFormatter;
 
 /**
- * This class manages everything to do with exporting of entries for an {@link ServiceExtension}.
+ * This class manages everything to do with exporting of service entries.
  *
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)
@@ -163,8 +163,8 @@ public final class ExportManager implements Iterable<ExportedBuildEntry<?>> {
 
     /**
      * This method tries to find matching entries for exports added via {@link ServiceExtension#export(Class)}and
-     * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries
-     * at any point, even before the
+     * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
+     * any point, even before the
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void resolve() {

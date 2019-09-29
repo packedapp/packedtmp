@@ -15,7 +15,9 @@
  */
 package packed.internal.container.extension;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -25,29 +27,31 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
+import packed.internal.hook.HGBModel;
 
 /**
  *
  */
 public final class ExtensionComposerContext {
 
+    public Set<HGBModel> hgbs = new HashSet<>();
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
 
-    public Function<? extends Extension, ? extends ExtensionNode<?>> nodeFactory;
+    public Function<? extends Extension, ? extends OldExtensionNode<?>> nodeFactory;
 
-    public Class<? extends ExtensionNode<?>> nodeType;
+    public Class<? extends OldExtensionNode<?>> nodeType;
 
-    /** An action that should be run immediately after an extension has been instantiated. */
+    /** An action that will be run immediately after an extension has been instantiated. */
     @Nullable
     public Consumer<? super Extension> onAddAction;
 
-    /** An action that should be run immediately after an extension has been configured. */
+    /** An action that will be run immediately after an extension has been configured. */
     @Nullable
     public Consumer<? super Extension> onConfiguredAction;
 

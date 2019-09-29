@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  *
  */
-public @interface PackedModule {
+@interface PackedModule {
 
     // Boot with this module... for example, when used with "link"....
     // Sort of like jar.mainClass but for bundles...

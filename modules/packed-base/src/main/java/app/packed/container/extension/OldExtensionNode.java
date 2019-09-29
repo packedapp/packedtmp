@@ -21,7 +21,10 @@ import static java.util.Objects.requireNonNull;
  * Extension nodes enables communication across extension instances of the same. It also enables using wirelets if X
  * interface is implemented. Finally it allows host to guest communication.
  */
-public abstract class ExtensionNode<T extends Extension> {
+// Is the node dead....
+// After we got groups via functional interface.....
+// I Think so, but maybe as a new
+public abstract class OldExtensionNode<T extends Extension> {
 
     /** The extension the node is a part of */
     private final T extension;
@@ -32,7 +35,7 @@ public abstract class ExtensionNode<T extends Extension> {
      * @param extension
      *            the extension this node is a part of
      */
-    protected ExtensionNode(T extension) {
+    protected OldExtensionNode(T extension) {
         this.extension = requireNonNull(extension, "extension is null");
     }
 

@@ -59,7 +59,7 @@ public final class HookClassBuilder {
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
     public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
-    public final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<?>, HGBModel> groups = new IdentityHashMap<>();
 
     /** Components that are of a specific type. */
     public final IdentityHashMap<Class<?>, MethodHandle> instanceOfs = new IdentityHashMap<>();
@@ -84,10 +84,6 @@ public final class HookClassBuilder {
     }
 
     private void onHook(Method method) {
-        if (method.isAnnotationPresent(OnHookGroup.class)) {
-            throw new InvalidDeclarationException("Cannot use both @" + OnHookGroup.class.getSimpleName() + " and @" + OnHookGroup.class.getSimpleName()
-                    + "on a method, method = " + StringFormatter.format(method));
-        }
 
         Parameter[] parameters = method.getParameters();
         if (parameters.length == 1 || (parameters.length == 2 && !isHookGroupBuilder && parameters[1].getType() == ComponentConfiguration.class)) {
@@ -142,29 +138,12 @@ public final class HookClassBuilder {
         annotations.put(annotationType, mh);
     }
 
-    /**
-     * @param method
-     * @param oh
-     */
-    private void onHookGroup(Method method, OnHookGroup oh) {
-        if (isHookGroupBuilder) {
-            throw new InvalidDeclarationException(
-                    "Cannot use @" + OnHookGroup.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
-        }
+    @SuppressWarnings("unchecked")
+    public void onHookGroup(HGBModel model) {
 
-        Class<? extends HookGroupBuilder<?>> groupType = oh.value();
+        Class<? extends HookGroupBuilder<?>> groupType = (Class<? extends HookGroupBuilder<?>>) model.builderType;
 
-        MethodHandle mh;
-        try {
-            mh = lookup.unreflect(method);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(method.getDeclaringClass()) + ", the module '"
-                    + method.getDeclaringClass().getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-        }
-
-        NativeImage.registerMethod(method);
-
-        groups.put(groupType, mh);
+        groups.put(groupType, model);
         HookGroupBuilderModel oha = HookGroupBuilderModel.of(groupType);
 
         // TODO we should check that the type matches....
@@ -180,12 +159,6 @@ public final class HookClassBuilder {
     public void processMethod(Method method) {
         if (method.isAnnotationPresent(OnHook.class)) {
             onHook(method); // will fail if also annotated with OnHookGroup
-        } else {
-            // Let us see if it is annotated with @OnHookGroup
-            OnHookGroup g = method.getAnnotation(OnHookGroup.class);
-            if (g != null) {
-                onHookGroup(method, g);
-            }
         }
     }
 }

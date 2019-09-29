@@ -27,7 +27,7 @@ public final class OnHookGroupModel {
     private final Class<? extends Extension> extensionType;
 
     /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
-    public final IdentityHashMap<Class<?>, MethodHandle> groups;
+    public final IdentityHashMap<Class<?>, HGBModel> groups;
 
     /**
      * Creates a new group model.

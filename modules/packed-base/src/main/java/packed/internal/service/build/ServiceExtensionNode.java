@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
 import app.packed.service.Inject;
 import app.packed.service.InstantiationMode;
 import app.packed.service.Provide;
@@ -34,7 +34,6 @@ import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.hook.OnHookGroup;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
@@ -47,7 +46,7 @@ import packed.internal.service.util.AtInject;
 import packed.internal.service.util.AtInjectGroup;
 
 /** This class records all service related information for a single box. */
-public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> {
+public final class ServiceExtensionNode extends OldExtensionNode<ServiceExtension> {
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -57,11 +56,6 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
     private ExportManager exporter;
 
     private boolean hasFailed;
-
-    /** The configuration of the container to which this builder belongs to. */
-    public PackedContainerConfiguration pcc() {
-        return ((PackedExtensionContext) context()).pcc;
-    }
 
     /** A service exporter handles everything to do with exports. */
     @Nullable
@@ -110,18 +104,6 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
                 builder.addServiceDescriptor(((BuildEntry<?>) n).toDescriptor());
             }
         }
-    }
-
-    public ServiceContract newServiceContract(ExtensionIntrospectionContext context) {
-        // requireNonNull(context);
-        return ServiceContract.of(c -> {
-            if (exporter != null) {
-                for (ExportedBuildEntry<?> n : exporter) {
-                    c.addProvides(n.key());
-                }
-            }
-            dependencies().buildContract(c);
-        });
     }
 
     public void checkExportConfigurable() {
@@ -181,6 +163,18 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
         // }
     }
 
+    public ServiceContract newServiceContract(ExtensionIntrospectionContext context) {
+        // requireNonNull(context);
+        return ServiceContract.of(c -> {
+            if (exporter != null) {
+                for (ExportedBuildEntry<?> n : exporter) {
+                    c.addProvides(n.key());
+                }
+            }
+            dependencies().buildContract(c);
+        });
+    }
+
     /**
      * Invoked by the runtime when a component has members (fields or methods) that are annotated with {@link Provide}.
      * 
@@ -189,7 +183,6 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
      * @param group
      *            a provides group object
      */
-    @OnHookGroup(AtProvidesGroup.Builder.class)
     void onHookAtProvidesGroup(ComponentConfiguration cc, AtProvidesGroup group) {
         provider().addProvidesGroup(cc, group);
     }
@@ -202,7 +195,6 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
      * @param group
      *            a inject group object
      */
-    @OnHookGroup(AtInjectGroup.Builder.class)
     public void onInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
         // new Exception().printStackTrace();
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
@@ -219,6 +211,11 @@ public final class ServiceExtensionNode extends ExtensionNode<ServiceExtension> 
     public void onInstantiate(ExtensionInstantiationContext c) {
         instantiate();
         c.put(publicInjector);
+    }
+
+    /** The configuration of the container to which this builder belongs to. */
+    public PackedContainerConfiguration pcc() {
+        return ((PackedExtensionContext) context()).pcc;
     }
 
     public ServiceProvidingManager provider() {

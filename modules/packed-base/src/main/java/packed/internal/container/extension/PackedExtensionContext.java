@@ -24,7 +24,7 @@ import app.packed.artifact.ArtifactBuildContext;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
@@ -40,7 +40,7 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** Any extension node the extension might have. */
     @Nullable
-    private ExtensionNode<?> node;
+    private OldExtensionNode<?> node;
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
@@ -91,7 +91,7 @@ public final class PackedExtensionContext implements ExtensionContext {
     }
 
     @Nullable
-    public ExtensionNode<?> extensionNode() {
+    public OldExtensionNode<?> extensionNode() {
         return node;
     }
 
@@ -109,7 +109,7 @@ public final class PackedExtensionContext implements ExtensionContext {
         }
 
         if (model.nodeFactory != null) {
-            node = (ExtensionNode<?>) ((Function) model.nodeFactory).apply(extension);
+            node = (OldExtensionNode<?>) ((Function) model.nodeFactory).apply(extension);
 
             // Need to do checks
             // ExtensionNodeModel node = context.model.node();

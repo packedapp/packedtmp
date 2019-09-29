@@ -28,7 +28,6 @@ import app.packed.hook.OnHook;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
@@ -63,9 +62,6 @@ public final class HookGroupBuilderModel {
     /** The method handle used to create a new instances. */
     private final MethodHandle constructor;
 
-    /** The type of result the aggregator produces. */
-    private final Class<?> groupType;
-
     /**
      * Creates a new model from the specified builder.
      * 
@@ -75,19 +71,9 @@ public final class HookGroupBuilderModel {
     private HookGroupBuilderModel(Builder builder) {
         this.constructor = ConstructorFinder.find(builder.p.actualType);
         this.builderType = builder.p.actualType;
-        this.groupType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.p.annotatedMethods);
         this.annotatedFields = Map.copyOf(builder.p.annotatedFields);
         this.annotatedTypes = Map.copyOf(builder.p.annotatedTypes);
-    }
-
-    /**
-     * Returns the type of group the builder produces.
-     * 
-     * @return the type of group the builder produces
-     */
-    final Class<?> groupType() {
-        return groupType;
     }
 
     void invokeOnHook(HookGroupBuilder<?> groupBuilder, AnnotatedFieldHook<?> hook) {
@@ -165,12 +151,6 @@ public final class HookGroupBuilderModel {
     /** A builder object, that extract relevant methods from a hook group builder. */
     private static class Builder {
 
-        /** An type variable extractor to extract the type of hook group the builder produces. */
-        private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
-
-        /** The type of hook group the builder produces. */
-        private final Class<?> groupType;
-
         final HookClassBuilder p;
 
         /**
@@ -179,10 +159,8 @@ public final class HookGroupBuilderModel {
          * @param builderType
          *            the type of hook group builder
          */
-        @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
             p = new HookClassBuilder(builderType, true);
-            this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
             TypeUtil.checkClassIsInstantiable(builderType);
         }
 

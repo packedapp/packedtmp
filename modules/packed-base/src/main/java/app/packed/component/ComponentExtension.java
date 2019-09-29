@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
+import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
@@ -102,6 +103,7 @@ public final class ComponentExtension extends Extension {
     }
 
     // Scans this package...
+    // Se nederst i filen paa ComponentScan, som vi har droppet fordi der er rigeligt annoteringer....
     public void scan() {}
 
     public void scan(String... packages) {}
@@ -159,4 +161,101 @@ class ComponentRule {
         // ScannableType
         throw new UnsupportedOperationException();
     }
+}
+
+// I think the default should be only to scan the module you are in....
+// And the allow Regexp for modules() so that you can specify "*" for all modules
+// Maybe the same for packages....
+// So default is all classes in the same package+module as the bundle
+// @ClassScan < (
+
+// Think we do a ModuleClassScan +
+
+// 3 defaults
+// ScanAll, ScanAllSameModule, ScanAllSamePackage
+// ModulepathScan + ClasspathScan
+/// Grunden til vi ikke kalder dem f.eks. ComponentScan er vi gerne ville kunne bruge dem til f.eks. jpa.Entitities...
+// Eller andet, men hvor der er en context
+
+// Skal vi smide nogle exceptions, hvis den ikke er paa en bundle????
+
+// ScanModulePath
+// @ScanModulepath(packages = "*") vs @ScanModulepath(packages = ".")
+
+// @ComponentScan because @EntityScan is probably different....
+/// I don't think it is reusable
+
+// If the annotated bundle is on the modulepath -> ModulePath, if Bundle is on the classpath -> ClassPath
+
+//
+/// **
+// * Forces the runtime to scan the classpath, even if the annotated bundle is registered with modulepath. The default
+// * value is <code>false</code> indicating that only the modulepath should be scanned if the bundle is defined on the
+// * modulepath.
+// *
+// * @return whether or not to scan the classpath
+// */
+// boolean forceClasspathScan() default false;
+//
+/// **
+// * Returns whether or not to scan the modulepath when looking for classes. The default value is <code>true</code>.
+// *
+// * @return whether or not to scan the modulepath
+// */
+// boolean forceModulepathScan() default false;
+@Deprecated(since = "We don't want this as an annotation, but a method on ComponentExtension")
+// Saa kan man ogsaa bruge lookup objecter. og alt mulgit
+@interface ComponentScan {
+
+    /** Maybe we have special viral debug wirelets.... */
+    // What + Where (Components Scan at /wewe/qw/er34/23
+    public static final Wirelet DEBUG_INFO = null;
+
+    // Vil maaske gerne ogsaa have @ListenTo paa et tidspunkt...
+    // Problemet er hvad hvis
+
+    // All med Type Components????
+    // Tager kun Install
+    // Kan man vaelge???? annotations= {Entity.class} <- we should have some kind of
+    // repositor
+
+    // Severity[FAIL, WARN, INFO?, IGNORE] onIn
+    // Basically what happens when you encounter a module that is not open to packed...
+    // But explicitly included....
+    boolean accessInacessibleModules() default true;
+    // Debug.run(new MyBundle());
+
+    /**
+     * Returns the annotations that will result in the annotated type being installed as a component. The default
+     * implementation returns {@link Install}. Indicating that are all types annotated with {@link Install} will be
+     * installed as a component.
+     * 
+     * @return the annotations that will result in a type being installed as a component.
+     */
+    Class<?>[] annotations() default { Install.class };
+
+    /**
+     * Returns a list of module names that will be included in the component scanning. The default value is "." which
+     * indicates that only the module to which the annotated type or member belongs to is scanned. Module names are matched
+     * using regular expressions via {@link String#matches(String)} (or similar methods).
+     * <p>
+     * If the type that this annotation is placed on is on the class path. The value of this annotation is ignored.
+     * <p>
+     * Returning an empty array indicates that we should scan all modules that are readable .Module names starting with
+     * 'java.' or 'jdk.' are always ignored.
+     * 
+     * @return a list of module names that should be scanned
+     */
+    // RegExp are okay
+    // Module.canOpen???? We skal jo ikke kunne scanne module vi ikke har adgang til. Selvom, Packed maaske har adgang til
+    // dem....canRead er vel bare
+    String[] modules() default { "." };
+
+    /**
+     * Returns a list of package names that will be included in the scanning.
+     * 
+     * @return a list of package names that will be included in the scanning
+     */
+    // Special "*" <- All packages, "." <- current package only
+    String[] packages() default {};
 }

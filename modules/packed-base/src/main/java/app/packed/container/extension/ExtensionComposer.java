@@ -28,11 +28,15 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.extension.graph.ExtensionOracle;
+import app.packed.container.extension.graph.ExtensionPostProcessor;
 import app.packed.contract.Contract;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.HookGroupProcessor;
 import packed.internal.container.extension.ExtensionComposerContext;
+import packed.internal.hook.HGBModel;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.TypeUtil;
 
 /**
  * An extension composer
@@ -42,19 +46,25 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
 
-    // protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B>
-    // builderFactory,
-    // BiConsumer<E, HookGroupEntry<G>> consumer) {}
+    protected final void addPostProcessor(Supplier<? extends ExtensionPostProcessor<E>> factory) {
+
+    }
+
+    protected final void addPostProcessor(Consumer<? extends ExtensionOracle<E>> consumer) {
+
+    }
 
     protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
             HookGroupProcessor<E, G> groupProcessor) {
         requireNonNull(builderType, "builderType is null");
-        requireNonNull(builderFactory, "builderFactory is null");// ??? Or do we want it...
+        requireNonNull(builderFactory, "builderFactory is null");
+        requireNonNull(groupProcessor, "groupProcessor is null");
+        TypeUtil.checkClassIsInstantiable(builderType);
         if (!HookGroupBuilder.class.isAssignableFrom(builderType)) {
-            // CheckNotInter, CheckNotAbstractClass, ...
             throw new IllegalArgumentException("The specified builderType does not implement " + HookGroupBuilder.class.getSimpleName());
         }
-        // OnHookGroup
+        HGBModel m = new HGBModel(builderType, builderFactory, groupProcessor);
+        context.hgbs.add(m);
     }
 
     protected final <P extends ExtensionWireletPipeline<P, ?>> void addPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
@@ -146,21 +156,17 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     }
 
     /**
-     * Registers a (callback) action that is invoked (by the runtime) immediately after an extension has been instantiated
-     * and added to the configuration of the container, but before it is returned to the user. This method is typically
-     * invoked as the result of a user calling {@link ContainerConfiguration#use(Class)}.
+     * Registers a (callback) action that is invoked (by the runtime) immediately after an extension has been instantiated,
+     * but before the extension has been returned to the user. This method is typically invoked as the result of a user
+     * calling {@link ContainerConfiguration#use(Class)}.
      * <p>
-     * This method is useful in situations where ...
-     * <p>
-     * The newly instantiated extension is returned to the user immediately after the specified action completes.
-     * <p>
-     * Subsequent invocations of this method will schedule each action in order of invocation.
+     * If this method is invoked more than once, each action will be called in succession.
      * 
      * @param action
-     *            The action to be performed after the extension has been added
+     *            The action to be performed after the extension has been instantiated
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void onAdd(Consumer<? super E> action) {
+    protected final void onExtensionInstantiated(Consumer<? super E> action) {
         requireNonNull(action, "action is null");
         Consumer<? super E> a = context().onAddAction;
         context().onAddAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
@@ -193,7 +199,6 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     // Maa koeres efter trae ting??? Eller ogsaa skal det foregaa paa trae tingen...
     // Nope det skal ikke foregaa paa trae tingen. Fordi den skal kun bruges hvis man ikke
     // har extension communication
-
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected final void onInstantiation(BiConsumer<? super E, ? super ExtensionInstantiationContext> action) {
         requireNonNull(action, "action is null");
@@ -202,7 +207,9 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     }
 
     // addNode??
-    protected final <N extends ExtensionNode<E>> void useNode(Class<N> nodeType, Function<E, N> nodeFactory) {
+
+    // Tror vi draeber den, naar vi ikke har onHookGroup mere...
+    protected final <N extends OldExtensionNode<E>> void useNode(Class<N> nodeType, Function<E, N> nodeFactory) {
         requireNonNull(nodeType, "nodeType is null");
         requireNonNull(nodeFactory, "nodeFactory is null");
         if (!Modifier.isFinal(nodeType.getModifiers())) {

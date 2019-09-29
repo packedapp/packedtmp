@@ -19,18 +19,18 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.InaccessibleObjectException;
 
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import packed.internal.hook.HookClassBuilder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
 
 /**
- * A runtime model of an {@link ExtensionNode} implementation.
+ * A runtime model of an {@link OldExtensionNode} implementation.
  */
 public final class ExtensionNodeModel {
 
-    public final Class<? extends ExtensionNode<?>> type;
+    public final Class<? extends OldExtensionNode<?>> type;
 
     /**
      * Creates a new extension model.
@@ -53,12 +53,12 @@ public final class ExtensionNodeModel {
 
         final HookClassBuilder p;
 
-        final Class<? extends ExtensionNode<?>> type;
+        final Class<? extends OldExtensionNode<?>> type;
 
         /**
          * @param type
          */
-        Builder(ExtensionModel.Builder builder, Class<? extends ExtensionNode<?>> type) {
+        Builder(ExtensionModel.Builder builder, Class<? extends OldExtensionNode<?>> type) {
             p = new HookClassBuilder(type, false);
             this.type = type;
             this.builder = builder;
@@ -72,7 +72,7 @@ public final class ExtensionNodeModel {
         }
 
         ExtensionNodeModel build(ExtensionModel<?> extensionModel) {
-            MemberFinder.findMethods(ExtensionNode.class, type, method -> {
+            MemberFinder.findMethods(OldExtensionNode.class, type, method -> {
                 builder.hooks.processMethod(method);
             });
             return new ExtensionNodeModel(extensionModel, this);

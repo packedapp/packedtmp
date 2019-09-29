@@ -16,7 +16,7 @@
 package app.packed.container.extension;
 
 /**
- * An extension thrown to indicate that an a given extension has not been properly implemented according to the
+ * An extension thrown to indicate that some part of an an extension was not properly implemented according to the
  * extension requirements in packed. As a user of the extension there is normally nothing else you can do, but report
  * the error to the developer of the extension.
  */

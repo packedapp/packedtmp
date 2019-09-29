@@ -21,8 +21,8 @@ import java.util.List;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.ComponentServiceConfiguration;
-import app.packed.service.ServiceExtension;
 import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -35,7 +35,7 @@ import packed.internal.service.run.RSEDelegate;
 /** A build entry representing an exported service. */
 public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
-    /** The actual entry that is exported. Is initially null for keyed exports, until it has been resolved. */
+    /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
     ServiceEntry<T> exportedEntry;
 

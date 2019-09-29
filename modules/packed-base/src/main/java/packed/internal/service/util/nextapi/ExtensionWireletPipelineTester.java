@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
 
@@ -38,7 +38,7 @@ class MyExtension extends Extension {
 
 }
 
-class MyExtensionNode extends ExtensionNode<MyExtension> {
+class MyExtensionNode extends OldExtensionNode<MyExtension> {
 
     final MyExtension extension;
 

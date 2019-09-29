@@ -35,6 +35,7 @@ import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.hook.HGBModel;
 import packed.internal.hook.HookGroupBuilderModel;
 import packed.internal.hook.OnHookGroupModel;
 import packed.internal.util.ThrowableUtil;
@@ -92,7 +93,7 @@ final class ComponentModelHookGroup {
 
         ComponentModelHookGroup build() {
             for (Entry<Class<?>, HookGroupBuilder<?>> m : groupBuilders.entrySet()) {
-                MethodHandle mh = con.groups.get(m.getKey());
+                HGBModel mh = con.groups.get(m.getKey());
                 callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
             }
             return new ComponentModelHookGroup(this);

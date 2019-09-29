@@ -16,12 +16,12 @@
 package app.packed.lifecycle;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.ExtensionNode;
+import app.packed.container.extension.OldExtensionNode;
 
 /**
  *
  */
-public final class LifecycleExtensionNode extends ExtensionNode<LifecycleExtension> {
+public final class LifecycleExtensionNode extends OldExtensionNode<LifecycleExtension> {
 
     protected LifecycleExtensionNode(LifecycleExtension extension) {
         super(extension);

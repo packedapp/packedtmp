@@ -20,4 +20,17 @@ package app.packed.container.extension;
  */
 public abstract class ComposableExtension<T extends ExtensionComposer<?>> extends Extension {
 
+    // Alternative kraeve at man installere en ServiceLoader.... for extensionen composeren....
+
+    // List<ExtensionDescriptor> Extension.findAll(MethodHandle.Lookup caller)
+    // Only return those extensions that are readable from the caller
+    // Maybe drop caller and use StackWalker....
+
+    // Saa kan vi ogsaa kraeve en Extension::supplier
+
+    // Og tage en access(MethodHandler.lookup) object
+
+    // Eneste problem er classloading.... Vi bliver jo noedt til at loade hver en klasse...
+    // For at se hvilken extension den modsvarer... Det gaar ikke...
+    // Selvom det ville vaere niiiice.
 }

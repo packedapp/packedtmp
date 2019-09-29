@@ -286,6 +286,10 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             exposeContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
             buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
 
+            addPostProcessor(p -> {
+                p.root().use(ServiceExtension.class).provideInstance("fooo");
+            });
+
             // Runtime stuff
 
             // Vi kan faktisk have flere graph modeller nu....
