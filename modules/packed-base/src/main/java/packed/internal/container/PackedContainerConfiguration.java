@@ -399,6 +399,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         if (pec == null) {
             checkConfigurable(); // only allow installing new extensions if configurable
             extensions.put(extensionType, pec = PackedExtensionContext.create(this, extensionType));
+            initializeName(State.EXTENSION_USED, null);
             pec.initialize();
         }
         return pec;

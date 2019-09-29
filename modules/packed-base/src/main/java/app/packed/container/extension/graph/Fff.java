@@ -28,9 +28,9 @@ public class Fff extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        link(new OtherB());
         use(MyExtension.class);
-        setName("doo");
+        link(new OtherB());
+        System.out.println(path());
     }
 
     public static void main(String[] args) {
@@ -43,10 +43,11 @@ public class Fff extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
+            setName("fooobar");
             use(MyExtension.class);
+            System.out.println(path());
             System.out.println("------");
         }
-
     }
 
     public static class MyExtension extends ComposableExtension<MyExtension.Composer> {
@@ -56,7 +57,7 @@ public class Fff extends BaseBundle {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                onLinkage((p, c) -> System.out.println("Linked " + p.context().containerPath() + " to " + c.context().containerPath()));
+                onLinkage((p, c) -> System.out.println("Linking " + p.context().containerPath() + " to " + c.context().containerPath()));
             }
         }
     }

@@ -35,12 +35,6 @@ public interface ExtensionOracle<E extends Extension> {
 
     E root();
 
-    /**
-     * Returns a set of all extensions who is either the root, or whose parent container does not an extension of the same
-     * type.
-     * 
-     * @return
-     */
     Set<E> findParentLess();
 
     Set<E> childrenOf(E extension);

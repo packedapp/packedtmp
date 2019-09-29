@@ -243,6 +243,8 @@ public abstract class Bundle implements ContainerSource {
      * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
      * is case sensitive.
      * <p>
+     * This method should be called as the first thing when configuring a container.
+     * <p>
      * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
      * such a way that it will have a unique name among other sibling container.
      *
@@ -253,6 +255,8 @@ public abstract class Bundle implements ContainerSource {
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
+     * @throws IllegalStateException
+     *             if calling this method after
      */
     protected final void setName(String name) {
         configuration().setName(name);

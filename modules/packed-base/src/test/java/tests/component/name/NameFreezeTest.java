@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import java.util.function.Consumer;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.ComponentConfiguration;
@@ -116,6 +117,10 @@ public class NameFreezeTest extends AbstractArtifactTest {
      * simplicity reasons we just outlaw is always.
      */
     @Test
+    @Disabled
+    // Problemet er at install bruger ComponentExtension.
+    // Og det er maaske lidt skjult naar man bruger f.eks. Bundle...
+    // Saa lad os lige gennemtaenke det igen...
     public void container_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> c.use(ComponentExtension.class, e -> e.installInstance("Foo")).setName("Bar"),
                 "Cannot call this method after having installed components");

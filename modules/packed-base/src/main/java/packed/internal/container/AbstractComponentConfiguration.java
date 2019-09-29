@@ -267,6 +267,8 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
             checkConfigurable();
         case GET_NAME_INVOKED:
             throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #getName()");
+        case EXTENSION_USED:
+            throw new IllegalStateException("Cannot call #setName(String) after any extensions has has been installed");
         case PATH_INVOKED:
             throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #path()");
         case INSTALL_INVOKED:
@@ -287,6 +289,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
         /** {@link ComponentConfiguration#getName()} or {@link ContainerConfiguration#getName()} has been invoked. */
         GET_NAME_INVOKED,
+
+        /** The initial state. */
+        EXTENSION_USED,
 
         /** The initial state. */
         INITIAL,

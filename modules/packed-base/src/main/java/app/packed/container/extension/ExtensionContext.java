@@ -21,29 +21,35 @@ import app.packed.container.ContainerConfiguration;
 
 /**
  * A instance of this interface is available to an extension via {@link Extension#context()}. Since the extension itself
- * defines all methods in this interface via protected methods. This interface is typically used to be able to delegate.
- * For example, if the extension is to complex to be contained in a single class.
+ * defines most methods in this interface via protected final methods. This interface is typically used to be able to
+ * provide this methods to code that is not located on the extension implementation. This is typically the case if the
+ * extension is too complex to contain in a single class.
  */
 public interface ExtensionContext {
-
-    ComponentPath containerPath();
-
-    /**
-     * Returns the config site of the container in which the extension is registered in.
-     * 
-     * @return the config site of the container in which the extension is registered in
-     */
-    ConfigSite containerConfigSite();
 
     /**
      * Checks that the underlying extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after the extension's onconfigured method has been invoked by the runtime.
+     * An extension is no longer configurable after the extension's onConfigured method has been invoked by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     void checkConfigurable();
+
+    /**
+     * Returns the config site of the container to which the extension belongs.
+     * 
+     * @return the config site of the container to which the extension belongs
+     */
+    ConfigSite containerConfigSite();
+
+    /**
+     * Returns the path of the container to which the extension belongs.
+     * 
+     * @return the path of the container to which the extension belongs
+     */
+    ComponentPath containerPath();
 
     /**
      * Returns an extension of the specified type.

@@ -276,11 +276,12 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            dependOn(ComponentExtension.class);
+            dependsOn(ComponentExtension.class);
 
             onExtensionInstantiated(e -> e.node = new ServiceExtensionNode(e.context()));
             onConfigured(e -> e.node.build());
             onInstantiation((e, c) -> e.node.onInstantiate(c));
+            onLinkage((p, c) -> p.node.link(c.node));
 
             addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));

@@ -17,6 +17,7 @@ package packed.internal.service.build;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -42,6 +43,10 @@ import packed.internal.service.util.AtInjectGroup;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
+
+    public ServiceExtensionNode parent;
+
+    public ArrayList<ServiceExtensionNode> children;
 
     private final ExtensionContext context;
 
@@ -75,6 +80,14 @@ public final class ServiceExtensionNode {
 
     public void addErrorMessage() {
         hasFailed = true;
+    }
+
+    public void link(ServiceExtensionNode child) {
+        child.parent = this;
+        if (children == null) {
+            children = new ArrayList<>(5);
+        }
+        children.add(child);
     }
 
     public void build() {

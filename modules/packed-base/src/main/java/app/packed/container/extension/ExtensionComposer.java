@@ -38,6 +38,7 @@ import packed.internal.util.TypeUtil;
 /**
  * An extension composer is used for specifying how an extension works.
  */
+// Ville vaere rart at kunne gruppe metoderne efter et system og et prefix
 public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
@@ -96,11 +97,11 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
      */
     // dependOn????
     @SafeVarargs
-    protected final void dependOn(Class<? extends Extension>... extensionTypes) {
+    protected final void dependsOn(Class<? extends Extension>... extensionTypes) {
 
     }
 
-    final void dependOn(String... extensionTypes) {
+    final void dependsOn(String... extensionTypes) {
         // The names will be resolved when composer is created
 
         // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
@@ -128,9 +129,9 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     }
 
     /**
-     * Exposes a contract of the specified type for the extension.
+     * Exposes a contract of the specified type.
      * <p>
-     * If the specified contract factory does not return a non-null object of the specified contract type when invoked. The
+     * If the specified contract factory does not return a non-null object of the specified contract type when invoked, the
      * runtime will will throw a {@link ExtensionDeclarationException}.
      * 
      * @param <C>
@@ -173,12 +174,6 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         context().onConfiguredAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected final void onLinkage(BiConsumer<? super E, ? super E> linkage) {
-        requireNonNull(linkage);
-        context().onLinkage = (BiConsumer) linkage;
-    }
-
     /**
      * Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
      * but before the extension has been returned to the user. Typically because a user invoked
@@ -211,5 +206,20 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         requireNonNull(action, "action is null");
         BiConsumer<? super E, ? super ExtensionInstantiationContext> a = context().onInstantiation;
         context().onInstantiation = a == null ? (BiConsumer) action : a.andThen((BiConsumer) action);
+    }
+
+    /**
+     * A callback method that is invoked, by the runtime, whenever an extension is present in both a parent container and in
+     * a child container.
+     * <p>
+     * {@link #onExtensionInstantiated(Consumer)} is always invoked for the extension before this method.
+     * 
+     * @param action
+     *            the action to perform
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
+        requireNonNull(action, "action is null");
+        context().onLinkage = (BiConsumer) action;
     }
 }
