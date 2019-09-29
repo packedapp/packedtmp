@@ -101,14 +101,14 @@ public final class ExtensionModel<T extends Extension> {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
         this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
-        this.pipelines = Map.copyOf(builder.epc.pipelines);
-        this.bundleBuilder = builder.epc.builder;
-        this.contracts = Map.copyOf(builder.epc.contracts);
-        this.onAdd = builder.epc.onExtensionInstantiatedAction;
-        this.onConfigured = builder.epc.onConfiguredAction;
-        this.onInstantiation = builder.epc.onInstantiation;
-        this.groups = Set.copyOf(builder.epc.hgbs);
-        this.onLinkage = builder.epc.onLinkage;
+        this.pipelines = Map.copyOf(builder.pipelines);
+        this.bundleBuilder = builder.builder;
+        this.contracts = Map.copyOf(builder.contracts);
+        this.onAdd = builder.onExtensionInstantiatedAction;
+        this.onConfigured = builder.onConfiguredAction;
+        this.onInstantiation = builder.onInstantiation;
+        this.groups = Set.copyOf(builder.hgbs);
+        this.onLinkage = builder.onLinkage;
     }
 
     public OnHookGroupModel hooks() {
@@ -145,8 +145,8 @@ public final class ExtensionModel<T extends Extension> {
         return (ExtensionModel<T>) CACHE.get(extensionType);
     }
 
-    /** A builder for {@link ExtensionModel}. */
-    static final class Builder {
+    /** A builder for {@link ExtensionModel}. This class is public in order to called from {@link ExtensionComposer}. */
+    static final class Builder extends ExtensionComposerContext {
 
         /** An type extractor to find the extension type the node belongs to. */
         private static final TypeVariableExtractor COMPOSABLE_EXTENSION_TV_EXTRACTOR = TypeVariableExtractor.of(ComposableExtension.class);
@@ -157,8 +157,6 @@ public final class ExtensionModel<T extends Extension> {
         final Class<? extends Extension> extensionType;
 
         final HookClassBuilder hooks;
-
-        ExtensionComposerContext epc = new ExtensionComposerContext();
 
         @SuppressWarnings("unchecked")
         private Builder(Class<? extends Extension> extensionType) {
@@ -186,9 +184,9 @@ public final class ExtensionModel<T extends Extension> {
                     ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new UndeclaredThrowableException(e);
                 }
-                SharedSecrets.extension().configureComposer(ep, epc);
+                SharedSecrets.extension().configureComposer(ep, this);
 
-                for (HGBModel g : epc.hgbs) {
+                for (HGBModel g : hgbs) {
                     hooks.onHookGroup(g);
                 }
             }

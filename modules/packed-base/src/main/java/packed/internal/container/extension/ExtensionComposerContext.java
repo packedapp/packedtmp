@@ -35,9 +35,10 @@ import packed.internal.hook.HGBModel;
 /**
  *
  */
-public final class ExtensionComposerContext {
+public class ExtensionComposerContext {
 
     public Set<HGBModel> hgbs = new HashSet<>();
+
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
     // Need to check that a contract never belongs to two extension.

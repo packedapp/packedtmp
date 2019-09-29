@@ -43,7 +43,7 @@ public final class SharedSecrets {
      * @return an access object that can access methods in app.packed.artifact
      */
     public static AppPackedArtifactAccess artifact() {
-        return ArtifactSingletonHolder.SINGLETON;
+        return ArtifactSingletonHolder.INSTANCE;
     }
 
     /**
@@ -52,7 +52,7 @@ public final class SharedSecrets {
      * @return an access object for app.packed.container
      */
     public static AppPackedContainerAccess container() {
-        return ContainerSingletonHolder.SINGLETON;
+        return ContainerSingletonHolder.INSTANCE;
     }
 
     /**
@@ -61,7 +61,7 @@ public final class SharedSecrets {
      * @return an access object for app.packed.container
      */
     public static AppPackedHookAccess hook() {
-        return HookSingletonHolder.SINGLETON;
+        return HookSingletonHolder.INSTANCE;
     }
 
     /**
@@ -70,7 +70,7 @@ public final class SharedSecrets {
      * @return an access object for app.packed.container.extension
      */
     public static AppPackedExtensionAccess extension() {
-        return ExtensionSingletonHolder.SINGLETON;
+        return ExtensionSingletonHolder.INSTANCE;
     }
 
     /**
@@ -95,7 +95,7 @@ public final class SharedSecrets {
      * @return an access object for app.packed.inject
      */
     public static AppPackedInjectAccess inject() {
-        return InjectSingletonHolder.SINGLETON;
+        return InjectSingletonHolder.INSTANCE;
     }
 
     /**
@@ -104,7 +104,7 @@ public final class SharedSecrets {
      * @return an access object for app.packed.lifecycle
      */
     public static AppPackedLifecycleAccess lifecycle() {
-        return LifecycleSingletonHolder.SINGLETON;
+        return LifecycleSingletonHolder.INSTANCE;
     }
 
     private static <T extends SecretAccess> T singleton(Class<T> accessType, Class<?> initalizeClass) {
@@ -128,55 +128,55 @@ public final class SharedSecrets {
      * @return an access object for app.packed.util
      */
     public static AppPackedUtilAccess util() {
-        return UtilSingletonHolder.SINGLETON;
+        return UtilSingletonHolder.INSTANCE;
     }
 
     /** Singleton holder for {@link AppPackedArtifactAccess}. */
     private static class ArtifactSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedArtifactAccess SINGLETON = singleton(AppPackedArtifactAccess.class, ArtifactImage.class);
+        private static final AppPackedArtifactAccess INSTANCE = singleton(AppPackedArtifactAccess.class, ArtifactImage.class);
     }
 
     /** Holder of the {@link AppPackedContainerAccess} singleton. */
     private static class ContainerSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedContainerAccess SINGLETON = singleton(AppPackedContainerAccess.class, WireletList.class);
+        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, WireletList.class);
     }
 
     /** Holder of the {@link AppPackedHookAccess} singleton. */
     private static class HookSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedHookAccess SINGLETON = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
+        private static final AppPackedHookAccess INSTANCE = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
     }
 
     /** Holder of the {@link AppPackedExtensionAccess} singleton. */
     private static class ExtensionSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedExtensionAccess SINGLETON = singleton(AppPackedExtensionAccess.class, Extension.class);
+        private static final AppPackedExtensionAccess INSTANCE = singleton(AppPackedExtensionAccess.class, Extension.class);
     }
 
     /** Holder of the {@link AppPackedInjectAccess} singleton. */
     private static class InjectSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedInjectAccess SINGLETON = singleton(AppPackedInjectAccess.class, Factory.class);
+        private static final AppPackedInjectAccess INSTANCE = singleton(AppPackedInjectAccess.class, Factory.class);
     }
 
     /** Holder of the {@link AppPackedLifecycleAccess} singleton. */
     private static class LifecycleSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedLifecycleAccess SINGLETON = singleton(AppPackedLifecycleAccess.class, RunState.class);
+        private static final AppPackedLifecycleAccess INSTANCE = singleton(AppPackedLifecycleAccess.class, RunState.class);
     }
 
     /** Holder of the {@link AppPackedUtilAccess} singleton. */
     private static class UtilSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedUtilAccess SINGLETON = singleton(AppPackedUtilAccess.class, TypeLiteral.class);
+        private static final AppPackedUtilAccess INSTANCE = singleton(AppPackedUtilAccess.class, TypeLiteral.class);
     }
 }
