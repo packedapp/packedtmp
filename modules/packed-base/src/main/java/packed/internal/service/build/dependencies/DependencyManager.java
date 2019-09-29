@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -30,7 +29,6 @@ import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.service.InjectionException;
-import app.packed.service.Injector;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceDependency;
 import app.packed.service.ServiceExtension;
@@ -117,13 +115,7 @@ public final class DependencyManager {
         // Injector kan baade vaere en artifact.
         // Og en del af en artifact...
 
-        Map<Key<?>, ServiceEntry<?>> snm;
-        if (node.context().buildContext().artifactType() == Injector.class) {
-            snm = node.resolvedEntries;
-        } else {
-            // snm = exporter == null ? new LinkedHashMap<>() : exporter.resolvedServiceMap();
-            snm = new LinkedHashMap<>();
-        }
+        Map<Key<?>, ServiceEntry<?>> snm = node.resolvedEntries;
         node.publicInjector = new DefaultInjector(node.context().containerConfigSite(), "Internal Descriptor", snm);
 
         // If we do not export services into a bundle. We should be able to resolver much quicker..

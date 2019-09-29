@@ -28,7 +28,6 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.extension.graph.ExtensionOracle;
-import app.packed.container.extension.graph.ExtensionPostProcessor;
 import app.packed.contract.Contract;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.HookGroupProcessor;
@@ -37,20 +36,12 @@ import packed.internal.hook.HGBModel;
 import packed.internal.util.TypeUtil;
 
 /**
- * An extension composer
+ * An extension composer is used for specifying how an extension works.
  */
 public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
-
-    protected final void addPostProcessor(Supplier<? extends ExtensionPostProcessor<E>> factory) {
-
-    }
-
-    protected final void addPostProcessor(Consumer<? extends ExtensionOracle<E>> consumer) {
-
-    }
 
     protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
             HookGroupProcessor<E, G> groupProcessor) {
@@ -62,7 +53,7 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
             throw new IllegalArgumentException("The specified builderType does not implement " + HookGroupBuilder.class.getSimpleName());
         }
         HGBModel m = new HGBModel(builderType, builderFactory, groupProcessor);
-        context.hgbs.add(m);
+        context().hgbs.add(m);
     }
 
     protected final <P extends ExtensionWireletPipeline<P, ?>> void addPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
@@ -72,12 +63,11 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 
-    @SuppressWarnings("unchecked")
-    protected final void buildBundleDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
-        context().builder = (BiConsumer<? super Extension, ? super Builder>) requireNonNull(builder, "builder is null");
+    protected final void addPostProcessor(Consumer<? extends ExtensionOracle<E>> consumer) {
+
     }
 
-    /** Configures the composer. */
+    /** Configures the composer. This method is invoked exactly once for a given implementation. */
     protected abstract void configure();
 
     // /**
@@ -138,14 +128,20 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     }
 
     /**
+     * Exposes a contract of the specified type for the extension.
+     * <p>
+     * If the specified contract factory does not return a non-null object of the specified contract type when invoked. The
+     * runtime will will throw a {@link ExtensionDeclarationException}.
+     * 
      * @param <C>
-     *            the type of contract
+     *            the type of contract to expose
      * @param contractType
      *            the type of contract the factory creates
      * @param contractFactory
      *            a factory for creating the contract
+     * @throws ExtensionDeclarationException
+     *             if trying to register a contract type that has already been registered with another extension
      */
-    // exposeDescripitor, exposeFeature, ....
     protected final <C extends Contract> void exposeContract(Class<C> contractType,
             BiFunction<? super E, ? super ExtensionIntrospectionContext, C> contractFactory) {
         requireNonNull(contractType, "contractType is null");
@@ -153,22 +149,12 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         context().contracts.putIfAbsent(contractType, contractFactory);
     }
 
-    /**
-     * Registers a (callback) action that is invoked (by the runtime) immediately after an extension has been instantiated,
-     * but before the extension has been returned to the user. This method is typically invoked as the result of a user
-     * calling {@link ContainerConfiguration#use(Class)}.
-     * <p>
-     * If this method is invoked more than once, each action will be called in succession.
-     * 
-     * @param action
-     *            The action to be performed after the extension has been instantiated
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void onExtensionInstantiated(Consumer<? super E> action) {
-        requireNonNull(action, "action is null");
-        Consumer<? super E> a = context().onAddAction;
-        context().onAddAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
+    @SuppressWarnings("unchecked")
+    protected final void exposeDescriptor(BiConsumer<? super E, ? super BundleDescriptor.Builder> builder) {
+        context().builder = (BiConsumer<? super Extension, ? super Builder>) requireNonNull(builder, "builder is null");
     }
+
+    protected final void exposeFeature() {}
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically
@@ -185,6 +171,29 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         requireNonNull(action, "action is null");
         Consumer<? super E> a = context().onConfiguredAction;
         context().onConfiguredAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected final void onLinkage(BiConsumer<? super E, ? super E> linkage) {
+        requireNonNull(linkage);
+        context().onLinkage = (BiConsumer) linkage;
+    }
+
+    /**
+     * Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
+     * but before the extension has been returned to the user. Typically because a user invoked
+     * {@link ContainerConfiguration#use(Class)}.
+     * <p>
+     * If this method is invoked more than once, each action will be called in succession.
+     * 
+     * @param action
+     *            The action to be performed after the extension has been instantiated
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void onExtensionInstantiated(Consumer<? super E> action) {
+        requireNonNull(action, "action is null");
+        Consumer<? super E> a = context().onExtensionInstantiatedAction;
+        context().onExtensionInstantiatedAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
     }
 
     /**

@@ -17,9 +17,10 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 
-import app.packed.artifact.ArtifactBuildContext;
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
@@ -56,12 +57,6 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactBuildContext buildContext() {
-        return pcc.buildContext();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void checkConfigurable() {
         if (!isConfigurable) {
             throw new IllegalStateException("This extension (" + extension.getClass().getSimpleName() + ") is no longer configurable");
@@ -93,6 +88,29 @@ public final class PackedExtensionContext implements ExtensionContext {
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
         if (model.onAdd != null) {
             model.onAdd.accept(extension);
+        }
+
+        // Call any link callbacks
+        if (model.onLinkage != null) {
+            // First link any children
+            ArrayList<PackedContainerConfiguration> containers = pcc.containers;
+            if (containers != null) {
+                for (PackedContainerConfiguration child : containers) {
+                    PackedExtensionContext e = child.getExtension(model.extensionType);
+                    if (e != null) {
+                        model.onLinkage.accept(extension, e.extension);
+                    }
+                }
+            }
+
+            // Second link any parent
+            if (pcc.parent instanceof PackedContainerConfiguration) {
+                PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
+                PackedExtensionContext e = p.getExtension(model.extensionType);
+                if (e != null) {
+                    model.onLinkage.accept(e.extension, extension);
+                }
+            }
         }
     }
 
@@ -147,6 +165,12 @@ public final class PackedExtensionContext implements ExtensionContext {
             return null;
             // ideen er selvfolgelig
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath containerPath() {
+        return pcc.path();
     }
 
 }

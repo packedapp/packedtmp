@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.artifact;
+package packed.internal.container;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
@@ -32,13 +32,6 @@ import app.packed.errorhandling.ErrorMessage;
 public interface ArtifactBuildContext {
 
     void addError(ErrorMessage message);
-
-    /**
-     * Returns the type of artifact that is being built.
-     * 
-     * @return the type of artifact that is being built
-     */
-    Class<?> artifactType();
 
     /**
      * Returns the configuration site that initialized the build process.

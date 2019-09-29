@@ -25,6 +25,7 @@ import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
+import app.packed.util.Nullable;
 import app.packed.util.Qualifier;
 import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
@@ -61,7 +62,8 @@ import packed.internal.service.run.AbstractInjector;
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
 public final class ServiceExtension extends ComposableExtension<ServiceExtension.Composer> {
 
-    /** The extension node. */
+    /** The extension node, initialized in {@link ServiceExtension.Composer#configure()}. */
+    @Nullable
     private ServiceExtensionNode node;
 
     /** Should never be initialized by users. */
@@ -280,11 +282,12 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             onConfigured(e -> e.node.build());
             onInstantiation((e, c) -> e.node.onInstantiate(c));
 
+            addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
             addPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
 
             // Descriptors and contracts
             exposeContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
-            buildBundleDescriptor((e, b) -> e.node.buildDescriptor(b));
+            exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 
             addPostProcessor(p -> {
                 p.root().use(ServiceExtension.class).provideInstance("fooo");
@@ -299,7 +302,6 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             // WithPipelines to buildDescriptor()
             // o.s.v.
 
-            addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
         }
     }
 }

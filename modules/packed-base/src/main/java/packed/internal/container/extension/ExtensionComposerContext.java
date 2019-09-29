@@ -40,17 +40,22 @@ public final class ExtensionComposerContext {
     public Set<HGBModel> hgbs = new HashSet<>();
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
+    // Need to check that a contract never belongs to two extension.
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
 
     /** An action that will be run immediately after an extension has been instantiated. */
     @Nullable
-    public Consumer<? super Extension> onAddAction;
+    public Consumer<? super Extension> onExtensionInstantiatedAction;
 
     /** An action that will be run immediately after an extension has been configured. */
     @Nullable
     public Consumer<? super Extension> onConfiguredAction;
 
+    @Nullable
+    public BiConsumer<? super Extension, ? super Extension> onLinkage;
+
     public BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
     public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
+
 }

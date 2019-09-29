@@ -165,7 +165,7 @@ public final class HookGroupBuilderModel {
         }
 
         HookGroupBuilderModel build() {
-            MemberFinder.findMethods(HookGroupBuilder.class, p.actualType, m -> p.processMethod(m));
+            MemberFinder.findMethods(HookGroupBuilder.class, p.actualType, m -> p.onHook(m));
             if (p.annotatedFields.isEmpty() && p.annotatedMethods.isEmpty() && p.annotatedTypes.isEmpty()) {
                 throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(p.actualType)
                         + "' must define at least one method annotated with @" + OnHook.class.getSimpleName());

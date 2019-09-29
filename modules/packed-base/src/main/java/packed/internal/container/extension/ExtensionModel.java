@@ -16,7 +16,6 @@
 package packed.internal.container.extension;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +27,6 @@ import java.util.function.Function;
 import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
@@ -91,6 +89,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final Set<HGBModel> groups;
 
+    public final BiConsumer<? super Extension, ? super Extension> onLinkage;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -104,10 +104,11 @@ public final class ExtensionModel<T extends Extension> {
         this.pipelines = Map.copyOf(builder.epc.pipelines);
         this.bundleBuilder = builder.epc.builder;
         this.contracts = Map.copyOf(builder.epc.contracts);
-        this.onAdd = builder.epc.onAddAction;
+        this.onAdd = builder.epc.onExtensionInstantiatedAction;
         this.onConfigured = builder.epc.onConfiguredAction;
         this.onInstantiation = builder.epc.onInstantiation;
         this.groups = Set.copyOf(builder.epc.hgbs);
+        this.onLinkage = builder.epc.onLinkage;
     }
 
     public OnHookGroupModel hooks() {
@@ -162,9 +163,10 @@ public final class ExtensionModel<T extends Extension> {
         @SuppressWarnings("unchecked")
         private Builder(Class<? extends Extension> extensionType) {
             this.extensionType = extensionType;
-            if (!Modifier.isFinal(extensionType.getModifiers())) {
-                throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be declared final");
-            }
+            // if (!Modifier.isFinal(extensionType.getModifiers())) {
+            // throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be
+            // declared final");
+            // }
             constructor = ConstructorFinder.find(extensionType);
             this.hooks = new HookClassBuilder(extensionType, false);
 
@@ -193,7 +195,7 @@ public final class ExtensionModel<T extends Extension> {
         }
 
         private ExtensionModel<?> build() {
-            MemberFinder.findMethods(Extension.class, extensionType, method -> hooks.processMethod(method));
+            MemberFinder.findMethods(Extension.class, extensionType, method -> hooks.onHook(method));
             return new ExtensionModel<>(this);
         }
     }

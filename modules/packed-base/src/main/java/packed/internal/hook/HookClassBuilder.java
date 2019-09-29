@@ -83,34 +83,35 @@ public final class HookClassBuilder {
         }
     }
 
-    private void onHook(Method method) {
+    public void onHook(Method method) {
+        if (method.isAnnotationPresent(OnHook.class)) {
+            Parameter[] parameters = method.getParameters();
+            if (parameters.length == 1 || (parameters.length == 2 && !isHookGroupBuilder && parameters[1].getType() == ComponentConfiguration.class)) {
+                Parameter p1 = parameters[0];
+                Class<?> hookType = p1.getType();
+                Parameter p2 = parameters.length == 2 ? parameters[1] : null;
 
-        Parameter[] parameters = method.getParameters();
-        if (parameters.length == 1 || (parameters.length == 2 && !isHookGroupBuilder && parameters[1].getType() == ComponentConfiguration.class)) {
-            Parameter p1 = parameters[0];
-            Class<?> hookType = p1.getType();
-            Parameter p2 = parameters.length == 2 ? parameters[1] : null;
-
-            if (hookType == AnnotatedFieldHook.class) {
-                onHook(lookup, method, p1, p2, annotatedFields);
-                return;
-            } else if (hookType == AnnotatedMethodHook.class) {
-                onHook(lookup, method, p1, p2, annotatedMethods);
-                return;
-            } else if (hookType == AnnotatedTypeHook.class) {
-                onHook(lookup, method, p1, p2, annotatedTypes);
-                return;
-            } else if (hookType == InstanceOfHook.class) {
-                throw new UnsupportedOperationException();
+                if (hookType == AnnotatedFieldHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedFields);
+                    return;
+                } else if (hookType == AnnotatedMethodHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedMethods);
+                    return;
+                } else if (hookType == AnnotatedTypeHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedTypes);
+                    return;
+                } else if (hookType == InstanceOfHook.class) {
+                    throw new UnsupportedOperationException();
+                }
             }
-        }
 
-        if (isHookGroupBuilder) {
-            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must take exactly one parameter of type "
-                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or "
-                    + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-        } else {
-            throw new InvalidDeclarationException("stuff");
+            if (isHookGroupBuilder) {
+                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must take exactly one parameter of type "
+                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or "
+                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
+            } else {
+                throw new InvalidDeclarationException("stuff");
+            }
         }
     }
 
@@ -156,9 +157,4 @@ public final class HookClassBuilder {
         // Do something
     }
 
-    public void processMethod(Method method) {
-        if (method.isAnnotationPresent(OnHook.class)) {
-            onHook(method); // will fail if also annotated with OnHookGroup
-        }
-    }
 }

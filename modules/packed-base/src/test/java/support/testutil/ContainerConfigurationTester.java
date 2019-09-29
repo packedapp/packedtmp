@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.component.ComponentPath;
@@ -40,10 +39,6 @@ public class ContainerConfigurationTester {
 
     public ContainerConfigurationTester(ContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
-    }
-
-    public ArtifactBuildContext buildContext() {
-        return cc.buildContext();
     }
 
     public ConfigSite configSite() {

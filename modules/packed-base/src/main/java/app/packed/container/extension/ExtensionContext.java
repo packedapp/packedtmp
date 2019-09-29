@@ -15,7 +15,7 @@
  */
 package app.packed.container.extension;
 
-import app.packed.artifact.ArtifactBuildContext;
+import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 
@@ -26,7 +26,7 @@ import app.packed.container.ContainerConfiguration;
  */
 public interface ExtensionContext {
 
-    ArtifactBuildContext buildContext();
+    ComponentPath containerPath();
 
     /**
      * Returns the config site of the container in which the extension is registered in.

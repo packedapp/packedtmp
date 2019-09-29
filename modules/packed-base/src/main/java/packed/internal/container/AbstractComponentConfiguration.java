@@ -72,7 +72,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /** The parent of this component, or null if a root component. */
     @Nullable
-    final AbstractComponentConfiguration parent;
+    public final AbstractComponentConfiguration parent;
 
     /** The state of this configuration. */
     State state = State.INITIAL;
@@ -270,9 +270,9 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         case PATH_INVOKED:
             throw new IllegalStateException("Cannot call #setName(String) after name has been initialized via call to #path()");
         case INSTALL_INVOKED:
-            throw new IllegalStateException("Cannot call this method after installing new components in the container");
+            throw new IllegalStateException("Cannot call this method after having installed components");
         case LINK_INVOKED:
-            throw new IllegalStateException("Cannot call this method after containerConfiguration.link has been invoked");
+            throw new IllegalStateException("Cannot call this method after #link() has been invoked");
         case SET_NAME_INVOKED:
             throw new IllegalStateException("#setName(String) can only be called once");
         }

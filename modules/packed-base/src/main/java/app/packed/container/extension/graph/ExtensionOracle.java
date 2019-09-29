@@ -15,6 +15,8 @@
  */
 package app.packed.container.extension.graph;
 
+import java.util.Set;
+
 import app.packed.container.extension.Extension;
 
 /**
@@ -32,4 +34,14 @@ public interface ExtensionOracle<E extends Extension> {
     int count();
 
     E root();
+
+    /**
+     * Returns a set of all extensions who is either the root, or whose parent container does not an extension of the same
+     * type.
+     * 
+     * @return
+     */
+    Set<E> findParentLess();
+
+    Set<E> childrenOf(E extension);
 }

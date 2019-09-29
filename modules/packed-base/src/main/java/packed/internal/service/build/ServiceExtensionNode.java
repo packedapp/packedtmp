@@ -30,8 +30,6 @@ import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.dependencies.DependencyManager;
 import packed.internal.service.build.export.ExportManager;
@@ -44,6 +42,8 @@ import packed.internal.service.util.AtInjectGroup;
 
 /** This class records all service related information for a single box. */
 public final class ServiceExtensionNode {
+
+    private final ExtensionContext context;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public DependencyManager dependencies;
@@ -71,12 +71,6 @@ public final class ServiceExtensionNode {
      */
     public ServiceExtensionNode(ExtensionContext context) {
         this.context = requireNonNull(context, "context is null");
-    }
-
-    private final ExtensionContext context;
-
-    public final ExtensionContext context() {
-        return context;
     }
 
     public void addErrorMessage() {
@@ -112,6 +106,10 @@ public final class ServiceExtensionNode {
     public void checkExportConfigurable() {
         // when processing wirelets
         // We should make sure some stuff is no longer configurable...
+    }
+
+    public final ExtensionContext context() {
+        return context;
     }
 
     /**
@@ -202,11 +200,6 @@ public final class ServiceExtensionNode {
     public void onInstantiate(ExtensionInstantiationContext c) {
         instantiate();
         c.put(publicInjector);
-    }
-
-    /** The configuration of the container to which this builder belongs to. */
-    public PackedContainerConfiguration pcc() {
-        return ((PackedExtensionContext) context()).pcc;
     }
 
     public ServiceProvidingManager provider() {

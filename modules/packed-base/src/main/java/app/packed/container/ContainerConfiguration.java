@@ -18,7 +18,6 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
@@ -51,8 +50,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * 
      * @return the build context
      */
-    // Move to component? It boils down to adding actors at runtime. How would that work
-    ArtifactBuildContext buildContext();
+    // ArtifactBuildContext buildContext();
 
     /**
      * Returns an unmodifiable view of all of the extension types that are currently used by this configuration.

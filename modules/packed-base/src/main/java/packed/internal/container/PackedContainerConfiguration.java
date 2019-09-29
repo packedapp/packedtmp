@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,7 +28,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Install;
@@ -58,6 +58,10 @@ import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+
+    /** Any child containers of this component (lazily initialized), in order of insertion. */
+    @Nullable
+    public ArrayList<PackedContainerConfiguration> containers;
 
     /** All registered extensions, in order of registration. */
     private final LinkedHashMap<Class<? extends Extension>, PackedExtensionContext> extensions = new LinkedHashMap<>();
@@ -108,12 +112,6 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ArtifactBuildContext buildContext() {
-        return buildContext;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -210,13 +208,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 e.model.onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
 
                     @Override
-                    public <T> T use(Class<T> type) {
-                        return ic.use(PackedContainerConfiguration.this, type);
-                    }
-
-                    @Override
-                    public void put(Object obj) {
-                        ic.put(PackedContainerConfiguration.this, obj);
+                    public Class<?> artifactType() {
+                        return ic.artifactType();
                     }
 
                     @Override
@@ -225,8 +218,13 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                     }
 
                     @Override
-                    public Class<?> artifactType() {
-                        return ic.artifactType();
+                    public void put(Object obj) {
+                        ic.put(PackedContainerConfiguration.this, obj);
+                    }
+
+                    @Override
+                    public <T> T use(Class<T> type) {
+                        return ic.use(PackedContainerConfiguration.this, type);
                     }
                 });
             }
@@ -236,7 +234,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @Nullable
-    public PackedExtensionContext getContext(Class<?> extensionType) {
+    public PackedExtensionContext getExtension(Class<?> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -299,6 +297,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         PackedContainerConfiguration dcc = new PackedContainerConfiguration(this, bundle, wl);
         dcc.configure();
         addChild(dcc);
+
+        // in addition to addChild, we also keep track of just the containers.
+        if (containers == null) {
+            containers = new ArrayList<>(5);
+        }
+        containers.add(dcc);
 
         // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
         // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
@@ -383,10 +387,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
-        return (T) useContext(extensionType).extension();
+        return (T) useExtension(extensionType).extension();
     }
 
-    public PackedExtensionContext useContext(Class<? extends Extension> extensionType) {
+    public PackedExtensionContext useExtension(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
 

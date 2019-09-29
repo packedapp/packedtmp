@@ -17,7 +17,6 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.artifact.ArtifactBuildContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
@@ -43,12 +42,6 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     PackedArtifactBuildContext(PackedContainerConfiguration topContainerConfiguration, ArtifactDriver<?> driver) {
         this.topContainerConfiguration = requireNonNull(topContainerConfiguration);
         this.driver = requireNonNull(driver);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> artifactType() {
-        return driver.artifactType();
     }
 
     /** {@inheritDoc} */

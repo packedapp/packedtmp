@@ -60,7 +60,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
                 e.installInstance(1L);
                 ci.setName("foo");
             });
-        }, "Cannot call this method after installing new components in the container");
+        }, "Cannot call this method after having installed components");
 
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension
@@ -74,7 +74,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
                 c.link(EMPTY_BUNDLE);
                 ci.setName("foo");
             });
-        }, "Cannot call this method after containerConfiguration.link has been invoked");
+        }, "Cannot call this method after #link() has been invoked");
     }
 
     @Test
@@ -118,7 +118,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void container_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> c.use(ComponentExtension.class, e -> e.installInstance("Foo")).setName("Bar"),
-                "Cannot call this method after installing new components in the container");
+                "Cannot call this method after having installed components");
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension
     }
@@ -133,7 +133,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_link() {
-        checkThrowsISE(c -> c.link(EMPTY_BUNDLE).setName("Bar"), "Cannot call this method after containerConfiguration.link has been invoked");
+        checkThrowsISE(c -> c.link(EMPTY_BUNDLE).setName("Bar"), "Cannot call this method after #link() has been invoked");
     }
 
     /**

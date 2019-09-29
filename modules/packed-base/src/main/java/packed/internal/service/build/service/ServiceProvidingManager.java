@@ -41,6 +41,7 @@ import app.packed.util.Nullable;
 import packed.internal.container.CoreComponentConfiguration;
 import packed.internal.container.FactoryComponentConfiguration;
 import packed.internal.container.InstantiatedComponentConfiguration;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ErrorMessages;
@@ -102,7 +103,8 @@ public final class ServiceProvidingManager {
             parentNode = new ComponentBuildEntry(node, cc.configSite(), instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
-            MethodHandle mh = node.pcc().lookup.toMethodHandle(factory.handle());
+
+            MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(factory.handle());
             parentNode = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
 
@@ -135,7 +137,7 @@ public final class ServiceProvidingManager {
     public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
         ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
-            MethodHandle mh = node.pcc().lookup.toMethodHandle(function);
+            MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
             c = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());
         }
         c.as((Key) factory.key());

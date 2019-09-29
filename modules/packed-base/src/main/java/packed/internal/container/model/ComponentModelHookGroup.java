@@ -61,7 +61,7 @@ final class ComponentModelHookGroup {
         // There should probably be some order we call extensions in....
         /// Other first, packed lasts?
 
-        PackedExtensionContext context = container.useContext(extensionType); // should be ordered...s
+        PackedExtensionContext context = container.useExtension(extensionType); // should be ordered...s
         for (ExtensionCallback c : callbacks) {
             c.invoke(context, component);
         }
