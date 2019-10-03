@@ -229,7 +229,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
      */
     public <T> ComponentServiceConfiguration<T> provideInstance(T instance) {
         // configurability is checked by ComponentExtension
-        ComponentConfiguration cc = use(ComponentExtension.class).installInstance(instance);
+        ComponentConfiguration<T> cc = use(ComponentExtension.class).installInstance(instance);
         return node.provider().provideInstance(cc, instance);
     }
 
@@ -272,7 +272,7 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
         node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
     }
 
-    public <T> void inject(ComponentConfiguration cc, Key<T> key, BiConsumer<?, T> consumer) {
+    public <T, C> void inject(Key<T> key, ComponentConfiguration<C> into, BiConsumer<? super C, ? super T> action) {
 
     }
 

@@ -21,17 +21,17 @@ import app.packed.config.ConfigSite;
 import packed.internal.container.model.ComponentModel;
 
 /** A component configuration representing a future static component. */
-public final class StaticComponentConfiguration extends CoreComponentConfiguration {
+public final class StaticComponentConfiguration<T> extends CoreComponentConfiguration<T> {
 
     /** The static implementation. */
-    public final Class<?> implementation;
+    public final Class<T> implementation;
 
     /**
      * @param configSite
      * @param containerConfiguration
      * @param model
      */
-    StaticComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Class<?> implementation) {
+    StaticComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Class<T> implementation) {
         super(configSite, containerConfiguration, model);
         this.implementation = requireNonNull(implementation);
     }

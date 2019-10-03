@@ -34,7 +34,7 @@ import app.packed.reflect.VarOperator;
  */
 public class MyExtension extends Extension {
 
-    public void foo(ComponentConfiguration cc, AXA val) {
+    public void foo(ComponentConfiguration<?> cc, AXA val) {
         for (HookApplicator<Supplier<Object>> ra : val.rars) {
             ra.onReady(cc, MySidecar.class, (s, o) -> s.foo(o));
         }
@@ -45,7 +45,7 @@ public class MyExtension extends Extension {
         System.out.println("Saa godt da");
     }
 
-    public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyA> h) {
+    public void foo(ComponentConfiguration<?> cc, AnnotatedMethodHook<MyA> h) {
         // ignore
     }
 

@@ -23,17 +23,17 @@ import packed.internal.container.model.ComponentModel;
 /**
  *
  */
-public final class InstantiatedComponentConfiguration extends CoreComponentConfiguration {
+public final class InstantiatedComponentConfiguration<T> extends CoreComponentConfiguration<T> {
 
     /** The instance */
-    public final Object instance;
+    public final T instance;
 
     /**
      * @param site
      * @param containerConfiguration
      * @param ccd
      */
-    public InstantiatedComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, Object instance) {
+    public InstantiatedComponentConfiguration(ConfigSite site, PackedContainerConfiguration containerConfiguration, ComponentModel ccd, T instance) {
         super(site, containerConfiguration, ccd);
         this.instance = requireNonNull(instance);
     }

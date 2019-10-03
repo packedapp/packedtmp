@@ -23,7 +23,7 @@ import packed.internal.container.model.ComponentModel;
 /**
  *
  */
-public abstract class CoreComponentConfiguration extends AbstractComponentConfiguration {
+public abstract class CoreComponentConfiguration<T> extends AbstractComponentConfiguration<T> {
 
     final ComponentModel model;
 
@@ -40,14 +40,14 @@ public abstract class CoreComponentConfiguration extends AbstractComponentConfig
 
     /** {@inheritDoc} */
     @Override
-    public CoreComponentConfiguration setDescription(String description) {
+    public CoreComponentConfiguration<T> setDescription(String description) {
         super.setDescription(description);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public CoreComponentConfiguration setName(String name) {
+    public CoreComponentConfiguration<T> setName(String name) {
         super.setName(name);
         return this;
     }

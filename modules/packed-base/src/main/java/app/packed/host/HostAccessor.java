@@ -52,7 +52,7 @@ final class HostAccessor<T> {
         throw new UnsupportedOperationException();
     }
 
-    public void install(Host host, ComponentConfiguration cc) {
+    public void install(Host host, ComponentConfiguration<?> cc) {
         throw new UnsupportedOperationException();
     }
 }

@@ -45,10 +45,10 @@ public interface HookApplicator<T> {
     }
 
     // Den er jo ret useful fra en sidecar...
-    void onReady(ComponentConfiguration cc, Consumer<T> consumer);
+    void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer);
 
     // Sidecar kan ikke vaere i FieldAccessor, fordi den ikke giver mening for statiske felter
     // Vi skal hellere ikke have en version kun til extension
 
-    <S> void onReady(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
+    <S> void onReady(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer);
 }

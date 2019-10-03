@@ -61,8 +61,8 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public ComponentConfiguration installHelper(Class<?> implementation) {
-        ComponentConfiguration conf = cc.use(ComponentExtension.class).installStatic(implementation);
+    public <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
+        ComponentConfiguration<T> conf = cc.use(ComponentExtension.class).installStatic(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }

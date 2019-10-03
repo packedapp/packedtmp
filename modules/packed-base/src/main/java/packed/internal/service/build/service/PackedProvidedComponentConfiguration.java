@@ -36,7 +36,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     public final BuildEntry<T> buildEntry;
 
     /** The component we are exposing. */
-    private final ComponentConfiguration component;
+    private final ComponentConfiguration<T> component;
 
     /**
      * Creates a new configuration object
@@ -44,7 +44,7 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
      * @param buildEntry
      *            the build entry to wrap
      */
-    public PackedProvidedComponentConfiguration(ComponentConfiguration component, BuildEntry<T> buildEntry) {
+    public PackedProvidedComponentConfiguration(ComponentConfiguration<T> component, BuildEntry<T> buildEntry) {
         this.buildEntry = requireNonNull(buildEntry);
         this.component = component;
     }

@@ -20,6 +20,6 @@ package app.packed.component;
  */
 // Ideen er egentlig lidt... at vi kan f.eks kalde
 // ScheduleExtension.schedule(component, c->c.scheduleThisMethod());
-interface InstanceComponentConfiguration<T> extends ComponentConfiguration {
+interface InstanceComponentConfiguration<T> extends ComponentConfiguration<T> {
 
 }

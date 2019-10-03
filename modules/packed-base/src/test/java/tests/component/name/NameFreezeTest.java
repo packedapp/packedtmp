@@ -46,7 +46,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installInstance(1);
+                ComponentConfiguration<?> ci = e.installInstance(1);
                 ci.getName();
                 ci.setName("foo");
             });
@@ -57,7 +57,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installInstance(1);
+                ComponentConfiguration<?> ci = e.installInstance(1);
                 e.installInstance(1L);
                 ci.setName("foo");
             });
@@ -71,7 +71,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installInstance(1);
+                ComponentConfiguration<?> ci = e.installInstance(1);
                 c.link(EMPTY_BUNDLE);
                 ci.setName("foo");
             });
@@ -82,7 +82,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installInstance(1);
+                ComponentConfiguration<?> ci = e.installInstance(1);
                 ci.path();
                 ci.setName("foo");
             });
@@ -93,7 +93,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_setName() {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
-                ComponentConfiguration ci = e.installInstance(1);
+                ComponentConfiguration<?> ci = e.installInstance(1);
                 ci.setName("foo");
                 ci.setName("foo");
             });

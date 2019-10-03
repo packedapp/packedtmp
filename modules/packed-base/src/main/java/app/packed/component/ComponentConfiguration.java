@@ -35,7 +35,7 @@ import app.packed.util.Nullable;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public interface ComponentConfiguration {
+public interface ComponentConfiguration<T> {
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
@@ -98,7 +98,7 @@ public interface ComponentConfiguration {
      * @see #getDescription()
      * @see Component#description()
      */
-    ComponentConfiguration setDescription(String description);
+    ComponentConfiguration<T> setDescription(String description);
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -116,14 +116,14 @@ public interface ComponentConfiguration {
      * @see #getName()
      * @see Component#name()
      */
-    ComponentConfiguration setName(String name);
+    ComponentConfiguration<T> setName(String name);
 
     default Class<?> type() {
         throw new UnsupportedOperationException();
     }
 }
 
-interface XCC2 {
+interface XCC2<T> {
 
     // TypeAnnotations are ignored for now...
     /**
@@ -137,7 +137,7 @@ interface XCC2 {
      * @see #addMixin(Factory)
      * @see #addMixin(Object)
      */
-    default ComponentConfiguration addMixin(Class<?> implementation) {
+    default ComponentConfiguration<T> addMixin(Class<?> implementation) {
         throw new UnsupportedOperationException();
     }
 
@@ -153,7 +153,7 @@ interface XCC2 {
      * @see #addMixin(Class)
      * @see #addMixin(Object)
      */
-    default ComponentConfiguration addMixin(Factory<?> factory) {
+    default ComponentConfiguration<T> addMixin(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 
@@ -170,11 +170,11 @@ interface XCC2 {
      * @see #addMixin(Class)
      * @see #addMixin(Factory)
      */
-    default ComponentConfiguration addMixin(Object instance) {
+    default ComponentConfiguration<T> addMixin(Object instance) {
         throw new UnsupportedOperationException();
     }
 
-    default ComponentConfiguration addMixinClass(Class<?> mixin) {
+    default ComponentConfiguration<T> addMixinClass(Class<?> mixin) {
         // Hvordan opfoere de sig med de forskellige typer... f.eks. prototype services...
         // Prototypeservice er en type!
 

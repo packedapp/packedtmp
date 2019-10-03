@@ -105,7 +105,7 @@ public class FromImage {
 
     public static class MyExtension extends ComposableExtension<MyExtension.Composer> {
 
-        public void foo(ComponentConfiguration cc, String s) {}
+        public void foo(ComponentConfiguration<?> cc, String s) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 

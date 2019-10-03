@@ -65,7 +65,7 @@ interface Host {
     //// Alle de der hooks... De kan jo lige pludselig komme og gaa....
     //// Eller ogsaa skal vi eksplicit sige hvilke vi tillader....
 
-    public static HostConfiguration installHost(ContainerConfiguration cc) {
+    public static HostConfiguration<?> installHost(ContainerConfiguration cc) {
         throw new UnsupportedOperationException();
     }
 

@@ -197,7 +197,7 @@ public final class ServiceExtensionNode {
      * @param group
      *            a inject group object
      */
-    public void onInjectGroup(ComponentConfiguration cc, AtInjectGroup group) {
+    public void onInjectGroup(ComponentConfiguration<?> cc, AtInjectGroup group) {
         // new Exception().printStackTrace();
         // Hvis den er instans, Singlton Factory -> Saa skal det vel med i en liste
         // Hvis det er en ManyProvide-> Saa skal vi jo egentlig bare gemme den til den bliver instantieret.

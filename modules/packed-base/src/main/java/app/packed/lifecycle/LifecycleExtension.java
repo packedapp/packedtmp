@@ -91,7 +91,7 @@ public final class LifecycleExtension extends ComposableExtension<LifecycleExten
      * 
      * @param mh
      */
-    void addMain(ComponentConfiguration cc, LifecycleHookAggregator mh) {
+    void addMain(ComponentConfiguration<?> cc, LifecycleHookAggregator mh) {
         mh.applyDelayed.onReady(cc, LifecycleSidecar.class, (s, r) -> r.run());
         // TODO check that we do not have multiple @Main methods
     }

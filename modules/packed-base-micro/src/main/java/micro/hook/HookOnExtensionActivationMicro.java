@@ -124,9 +124,9 @@ public class HookOnExtensionActivationMicro {
 
     public static class HookActivateExtension extends Extension {
 
-        public void process(ComponentConfiguration cc, AnnotatedFieldHook<HookActivateAnnotation> hook) {}
+        public void process(ComponentConfiguration<?> cc, AnnotatedFieldHook<HookActivateAnnotation> hook) {}
 
-        public void process(ComponentConfiguration cc, AnnotatedMethodHook<HookActivateAnnotation> hook) {}
+        public void process(ComponentConfiguration<?> cc, AnnotatedMethodHook<HookActivateAnnotation> hook) {}
     }
 
 }

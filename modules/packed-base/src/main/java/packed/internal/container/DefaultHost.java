@@ -31,7 +31,7 @@ public class DefaultHost extends AbstractComponent implements ComponentHolder {
     /**
      * @param configuration
      */
-    DefaultHost(AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    DefaultHost(AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
         super(null, configuration, ic);
     }
 }

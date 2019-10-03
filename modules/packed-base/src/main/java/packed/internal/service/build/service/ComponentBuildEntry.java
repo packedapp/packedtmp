@@ -71,7 +71,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         this.description = atProvides.description;
     }
 
-    public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration cc, InstantiationMode instantionMode, MethodHandle mh,
+    public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
             List<ServiceDependency> dependencies) {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.parent = null;

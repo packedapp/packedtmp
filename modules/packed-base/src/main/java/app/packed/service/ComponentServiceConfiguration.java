@@ -40,7 +40,7 @@ import app.packed.util.Nullable;
  * @see BaseBundle#provide(Factory)
  * @see BaseBundle#provideInstance(Object)
  */
-public interface ComponentServiceConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {
+public interface ComponentServiceConfiguration<T> extends ComponentConfiguration<T>, ServiceConfiguration<T> {
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is

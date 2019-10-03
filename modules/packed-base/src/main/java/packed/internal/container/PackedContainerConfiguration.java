@@ -58,7 +58,7 @@ import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAcces
 import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
-public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Object> implements ContainerConfiguration {
 
     /** Any child containers of this component (lazily initialized), in order of insertion. */
     @Nullable
@@ -194,7 +194,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         wc.apply(this, wirelets.toArray());
 
         if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
+            for (AbstractComponentConfiguration<?> acc : children.values()) {
                 if (acc instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) acc).extensionsContainerConfigured();
                 }
@@ -240,16 +240,20 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return extensions.get(extensionType);
     }
 
-    public ComponentConfiguration install(Factory<?> factory, ConfigSite configSite) {
+    public <T> ComponentConfiguration<T> install(Factory<T> factory, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(factory.rawType());
         installPrepare(State.INSTALL_INVOKED);
-        return model.addExtensionsToContainer(this, currentComponent = new FactoryComponentConfiguration(configSite, this, model, factory));
+        FactoryComponentConfiguration<T> cc = new FactoryComponentConfiguration<T>(configSite, this, model, factory);
+        currentComponent = cc;
+        return model.addExtensionsToContainer(this, cc);
     }
 
-    public ComponentConfiguration installInstance(Object instance, ConfigSite configSite) {
+    public <T> ComponentConfiguration<T> installInstance(T instance, ConfigSite configSite) {
         ComponentModel model = lookup.componentModelOf(instance.getClass());
         installPrepare(State.INSTALL_INVOKED);
-        return model.addExtensionsToContainer(this, currentComponent = new InstantiatedComponentConfiguration(configSite, this, model, instance));
+        InstantiatedComponentConfiguration<T> cc = new InstantiatedComponentConfiguration<T>(configSite, this, model, instance);
+        currentComponent = cc;
+        return model.addExtensionsToContainer(this, cc);
     }
 
     private void installPrepare(State state) {
@@ -263,10 +267,12 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
     }
 
-    public ComponentConfiguration installStatic(Class<?> implementation, ConfigSite configSite) {
+    public <T> ComponentConfiguration<T> installStatic(Class<T> implementation, ConfigSite configSite) {
         ComponentModel descriptor = lookup.componentModelOf(implementation);
         installPrepare(State.INSTALL_INVOKED);
-        return descriptor.addExtensionsToContainer(this, currentComponent = new StaticComponentConfiguration(configSite, this, descriptor, implementation));
+        StaticComponentConfiguration<T> cc = new StaticComponentConfiguration<T>(configSite, this, descriptor, implementation);
+        currentComponent = cc;
+        return descriptor.addExtensionsToContainer(this, cc);
     }
 
     /** {@inheritDoc} */
@@ -323,7 +329,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void methodHandlePassing0(AbstractComponent ac, PackedArtifactInstantiationContext ic) {
         if (children != null) {
-            for (AbstractComponentConfiguration cc : children.values()) {
+            for (AbstractComponentConfiguration<?> cc : children.values()) {
                 AbstractComponent child = ac.children.get(cc.name);
                 if (cc instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) cc).methodHandlePassing0(child, ic);

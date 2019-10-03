@@ -56,7 +56,7 @@ public final class ComponentExtension extends Extension {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    public ComponentConfiguration install(Class<?> implementation) {
+    public <T> ComponentConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return pcc().install(Factory.findInjectable(implementation), captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
@@ -70,12 +70,12 @@ public final class ComponentExtension extends Extension {
      *            the factory to install
      * @return the configuration of the component
      */
-    public ComponentConfiguration install(Factory<?> factory) {
+    public <T> ComponentConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         return pcc().install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
-    public ComponentConfiguration installInstance(Object instance) {
+    public <T> ComponentConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         return pcc().installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
@@ -89,7 +89,7 @@ public final class ComponentExtension extends Extension {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    public ComponentConfiguration installStatic(Class<?> implementation) {
+    public <T> ComponentConfiguration<T> installStatic(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         return pcc().installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }

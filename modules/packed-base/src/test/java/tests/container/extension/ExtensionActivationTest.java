@@ -138,7 +138,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     public static final class MyExtension extends ComposableExtension<MyExtension.Composer> {
 
-        protected void set(ComponentConfiguration a, String s) {}
+        protected void set(ComponentConfiguration<?> a, String s) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 

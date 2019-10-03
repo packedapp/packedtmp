@@ -54,7 +54,8 @@ public final class ComponentModel {
         this.hookGroups = builder.extensionBuilders.values().stream().map(e -> e.build()).toArray(i -> new ComponentModelHookGroup[i]);
     }
 
-    public ComponentConfiguration addExtensionsToContainer(PackedContainerConfiguration containerConfiguration, ComponentConfiguration componentConfiguration) {
+    public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
+            ComponentConfiguration<T> componentConfiguration) {
         try {
             for (ComponentModelHookGroup group : hookGroups) {
                 group.addTo(containerConfiguration, componentConfiguration);

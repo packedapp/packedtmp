@@ -34,7 +34,7 @@ public class HookOnAggregatorActivationMicro {
 
     public static class HookActivateExtension extends ComposableExtension<HookActivateExtension.Composer> {
 
-        public void process(ComponentConfiguration cc, String s) {}
+        public void process(ComponentConfiguration<?> cc, String s) {}
 
         static class Composer extends ExtensionComposer<HookActivateExtension> {
 

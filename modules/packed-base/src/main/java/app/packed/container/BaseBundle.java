@@ -138,11 +138,11 @@ public abstract class BaseBundle extends Bundle {
         service().exportAll();
     }
 
-    protected final ComponentConfiguration install(Class<?> implementation) {
+    protected final <T> ComponentConfiguration<T> install(Class<T> implementation) {
         return component().install(implementation);
     }
 
-    protected final ComponentConfiguration installHelper(Class<?> implementation) {
+    protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
         return component().installStatic(implementation);
     }
 
@@ -158,7 +158,7 @@ public abstract class BaseBundle extends Bundle {
      *            the component instance to install
      * @return this configuration
      */
-    protected final ComponentConfiguration installInstance(Object instance) {
+    protected final <T> ComponentConfiguration<T> installInstance(T instance) {
         return component().installInstance(instance);
     }
 

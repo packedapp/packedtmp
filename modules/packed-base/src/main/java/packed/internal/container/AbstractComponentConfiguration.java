@@ -36,21 +36,21 @@ import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
-public abstract class AbstractComponentConfiguration implements ComponentHolder, ComponentConfiguration {
+public abstract class AbstractComponentConfiguration<T> implements ComponentHolder, ComponentConfiguration<T> {
 
     /** The build context of the artifact this configuration belongs to. */
     final PackedArtifactBuildContext buildContext;
 
     /** Any children of this component (lazily initialized), in order of insertion. */
     @Nullable
-    LinkedHashMap<String, AbstractComponentConfiguration> children;
+    LinkedHashMap<String, AbstractComponentConfiguration<?>> children;
 
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
     /** The component that was last installed. */
     @Nullable
-    CoreComponentConfiguration currentComponent;
+    CoreComponentConfiguration<?> currentComponent;
 
     public ArrayList<DelayedAccessor> del = new ArrayList<>();
 
@@ -72,7 +72,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     /** The parent of this component, or null if a root component. */
     @Nullable
-    public final AbstractComponentConfiguration parent;
+    public final AbstractComponentConfiguration<?> parent;
 
     /** The state of this configuration. */
     State state = State.INITIAL;
@@ -85,7 +85,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
      * @param parent
      *            the parent of the component
      */
-    AbstractComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration parent) {
+    AbstractComponentConfiguration(ConfigSite configSite, AbstractComponentConfiguration<?> parent) {
         this.configSite = requireNonNull(configSite);
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
@@ -107,7 +107,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
         this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
     }
 
-    void addChild(AbstractComponentConfiguration configuration) {
+    void addChild(AbstractComponentConfiguration<?> configuration) {
         if (children == null) {
             children = new LinkedHashMap<>();
         }
@@ -135,7 +135,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
 
     void extensionsPrepareInstantiation(PackedArtifactInstantiationContext ic) {
         if (children != null) {
-            for (AbstractComponentConfiguration acc : children.values()) {
+            for (AbstractComponentConfiguration<?> acc : children.values()) {
                 if (buildContext == acc.buildContext) {
                     acc.extensionsPrepareInstantiation(ic);
                 }
@@ -164,7 +164,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
             return null;
         }
         HashMap<String, AbstractComponent> result = new HashMap<>();
-        for (AbstractComponentConfiguration acc : children.values()) {
+        for (AbstractComponentConfiguration<?> acc : children.values()) {
             AbstractComponent ac = acc.instantiate(parent, ic);
             result.put(ac.name(), ac);
         }
@@ -229,7 +229,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
             // TODO think it should be named Artifact type, for example, app, injector, ...
             return "Unknown";
         } else {
-            return ((CoreComponentConfiguration) this).model.defaultPrefix();
+            return ((CoreComponentConfiguration<?>) this).model.defaultPrefix();
         }
 
     }
@@ -249,7 +249,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     }
 
     @Override
-    public AbstractComponentConfiguration setDescription(String description) {
+    public AbstractComponentConfiguration<T> setDescription(String description) {
         requireNonNull(description, "description is null");
         checkConfigurable();
         this.description = description;
@@ -257,7 +257,7 @@ public abstract class AbstractComponentConfiguration implements ComponentHolder,
     }
 
     @Override
-    public AbstractComponentConfiguration setName(String name) {
+    public AbstractComponentConfiguration<T> setName(String name) {
         ComponentNameWirelet.checkName(name);
         switch (state) {
         case INITIAL:

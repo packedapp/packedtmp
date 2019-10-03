@@ -23,5 +23,5 @@ import app.packed.component.ComponentConfiguration;
 @FunctionalInterface
 public interface HookGroupProcessor<P, G> {
 
-    void process(P processor, ComponentConfiguration cc, G group);
+    void process(P processor, ComponentConfiguration<?> cc, G group);
 }

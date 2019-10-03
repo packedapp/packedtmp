@@ -28,7 +28,7 @@ abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final <S> void onReady(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
+    public final <S> void onReady(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {
         // Must have an owner.... And then ComponentConfiguration must have the same owner....
         // And I guess access mode as well, owner, for example, bundle.getClass();
         // Maybe check against the same lookup object...
@@ -37,7 +37,7 @@ abstract class AbstractHookApplicator<T> implements HookApplicator<T> {
         /// I think we actually need to check this this way
 
         // TODO check instance component if instance field...
-        AbstractComponentConfiguration pcc = (AbstractComponentConfiguration) cc;
+        AbstractComponentConfiguration<?> pcc = (AbstractComponentConfiguration<?>) cc;
         pcc.checkConfigurable();
         pcc.del.add(newAccessor(sidecarType, consumer));
     }

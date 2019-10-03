@@ -22,7 +22,7 @@ import app.packed.component.Component;
  */
 final class DefaultComponent extends AbstractComponent implements Component {
 
-    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration configuration, PackedArtifactInstantiationContext ic) {
+    DefaultComponent(AbstractComponent container, AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
         super(container, configuration, ic);
     }
 

@@ -26,7 +26,7 @@ import app.packed.reflect.VarOperator;
  */
 public class RuntimeAccessorList<T> {
 
-    public <S> void readyAll(ComponentConfiguration cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
+    public <S> void readyAll(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
 
     public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, VarOperator<T> operator) {
         return this;

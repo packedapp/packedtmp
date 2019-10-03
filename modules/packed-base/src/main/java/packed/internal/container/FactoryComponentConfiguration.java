@@ -24,16 +24,16 @@ import packed.internal.container.model.ComponentModel;
 /**
  *
  */
-public final class FactoryComponentConfiguration extends CoreComponentConfiguration {
+public final class FactoryComponentConfiguration<T> extends CoreComponentConfiguration<T> {
 
-    public final Factory<?> factory;
+    public final Factory<T> factory;
 
     /**
      * @param configSite
      * @param containerConfiguration
      * @param model
      */
-    public FactoryComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<?> factory) {
+    public FactoryComponentConfiguration(ConfigSite configSite, PackedContainerConfiguration containerConfiguration, ComponentModel model, Factory<T> factory) {
         super(configSite, containerConfiguration, model);
         this.factory = requireNonNull(factory);
     }

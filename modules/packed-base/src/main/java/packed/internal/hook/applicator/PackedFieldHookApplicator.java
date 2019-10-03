@@ -49,7 +49,7 @@ public final class PackedFieldHookApplicator<T> extends AbstractHookApplicator<T
 
     /** {@inheritDoc} */
     @Override
-    public void onReady(ComponentConfiguration cc, Consumer<T> consumer) {
+    public void onReady(ComponentConfiguration<?> cc, Consumer<T> consumer) {
         throw new UnsupportedOperationException();
     }
 

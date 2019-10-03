@@ -31,17 +31,17 @@ import app.packed.reflect.VarOperator;
  */
 public class MyExtension2 extends Extension {
 
-    public void foo(ComponentConfiguration cc, AXA val) {
+    public void foo(ComponentConfiguration<?> cc, AXA val) {
         val.rars.readyAll(cc, MySidecar.class, (s, o) -> s.foo(o));
         System.out.println("Saa godt da");
     }
 
-    public void foo(ComponentConfiguration cc, AnnotatedMethodHook<MyA> h) {
+    public void foo(ComponentConfiguration<?> cc, AnnotatedMethodHook<MyA> h) {
         // ignore
     }
 
     // @OnHook
-    public void foo(ComponentConfiguration cc, AnnotatedFieldHook<MyA> h) throws Throwable {
+    public void foo(ComponentConfiguration<?> cc, AnnotatedFieldHook<MyA> h) throws Throwable {
         Supplier<?> ss = h.applyStatic(VarOperator.supplier());
         System.out.println(ss.get());
     }

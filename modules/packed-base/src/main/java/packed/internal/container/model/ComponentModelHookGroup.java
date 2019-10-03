@@ -57,7 +57,7 @@ final class ComponentModelHookGroup {
         this.callbacks = List.copyOf(builder.callbacks);
     }
 
-    void addTo(PackedContainerConfiguration container, ComponentConfiguration component) throws Throwable {
+    void addTo(PackedContainerConfiguration container, ComponentConfiguration<?> component) throws Throwable {
         // There should probably be some order we call extensions in....
         /// Other first, packed lasts?
 
