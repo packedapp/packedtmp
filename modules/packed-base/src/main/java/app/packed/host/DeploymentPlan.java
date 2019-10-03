@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package app.packed.host;
 
-import app.packed.service.Factory;
-import packed.internal.service.factoryhandle.FactoryHandle;
+/**
+ *
+ */
 
-/** A support class for calling package private methods in the app.packed.inject package. */
-public interface AppPackedInjectAccess extends SecretAccess {
+// Hvordan man deployer ting paa en host. Hvis det er virkelig kompliceret....
 
-    /**
-     * Extracts a handle from the specified factory
-     * 
-     * @param <T>
-     *            the type of elements the factory produces
-     * @param factory
-     *            the factory to extract from
-     * @return the handle
-     */
-    <T> FactoryHandle<T> toHandle(Factory<T> factory);
+// Service Proxies
+
+// Kan det vaere en ContainerSource????????
+/// Saa man kan sige App.run();
+// Nah tror heller man kan side det paa en host.
+// Gerne paa bygge tidspunktet, saa vi kan validere....
+abstract class DeploymentPlan {
+
+    // Forest den her service, saa den her service.
+    // Saa afvent at den er startet op,
+    // saa skriv "Alle services startede"
+
+    // Lyt paa det her direktorie for reload..
+    // Goer dit, goer dat
+
+    abstract void configure();
 }

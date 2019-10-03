@@ -33,7 +33,7 @@ public interface AppPackedExtensionAccess extends SecretAccess {
      */
     void setExtensionContext(Extension extension, ExtensionContext context);
 
-    void configureComposer(ExtensionComposer<?> props, ExtensionComposerContext context);
+    void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context);
 
     <T extends ExtensionWireletPipeline<T, ?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
 }

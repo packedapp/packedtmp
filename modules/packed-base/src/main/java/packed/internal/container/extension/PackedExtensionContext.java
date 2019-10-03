@@ -18,7 +18,6 @@ package packed.internal.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
@@ -36,10 +35,11 @@ public final class PackedExtensionContext implements ExtensionContext {
     /** Whether or not the extension is configurable. */
     private boolean isConfigurable = true;
 
+    /** The model of the extension. */
+    public final ExtensionModel<?> model;
+
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
-
-    public final ExtensionModel<?> model;
 
     /**
      * Creates a new extension context.
@@ -49,7 +49,7 @@ public final class PackedExtensionContext implements ExtensionContext {
      * @param model
      *            the extension model
      */
-    private PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> model) {
+    public PackedExtensionContext(PackedContainerConfiguration pcc, ExtensionModel<?> model) {
         this.pcc = requireNonNull(pcc);
         this.model = model;
         this.extension = requireNonNull(model.newInstance());
@@ -67,6 +67,12 @@ public final class PackedExtensionContext implements ExtensionContext {
     @Override
     public ConfigSite containerConfigSite() {
         return pcc.configSite();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentPath containerPath() {
+        return pcc.path();
     }
 
     /**
@@ -128,49 +134,43 @@ public final class PackedExtensionContext implements ExtensionContext {
         return pcc.use(extensionType);
     }
 
-    /**
-     * Creates a new context and instantiates the extension.
-     * 
-     * @param pcc
-     *            the container the extension will be registered in
-     * @param extensionType
-     *            the type of extension to instantiate
-     * @return the new extension context
-     */
-    public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension> extensionType) {
-        return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType));
-    }
-
-    static class DefCon {
-        // Det her med at finde ud af hvordan extensions er relateret....
-
-        static final Module m = DefCon.class.getModule();
-
-        // Eneste problem med Base Extensions er at vi skal predetermind en order
-        // Og denne order skal maaske ogsaa vise sig i cc.extension()
-        // Eftersom det er et view. Kraever det en lille smule extra kode...
-
-        IdentityHashMap<Class<?>, Extension> baseExtensions;
-
-        IdentityHashMap<Class<?>, Extension> externalExtensions;
-
-        public <T> T use(Class<T> t) {
-            if (t.getModule() == m) {
-                // get From baseExtensions
-            } else {
-                // getFrom External Dependencies..
-            }
-            // We can actually remove all modules that do not implement #configure()
-
-            return null;
-            // ideen er selvfolgelig
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentPath containerPath() {
-        return pcc.path();
-    }
-
+    // /**
+    // * Creates a new context and instantiates the extension.
+    // *
+    // * @param pcc
+    // * the container the extension will be registered in
+    // * @param extensionType
+    // * the type of extension to instantiate
+    // * @return the new extension context
+    // */
+    // public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension>
+    // extensionType) {
+    // return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType));
+    // }
 }
+
+// static class DefCon {
+// // Det her med at finde ud af hvordan extensions er relateret....
+//
+// static final Module m = DefCon.class.getModule();
+//
+// // Eneste problem med Base Extensions er at vi skal predetermind en order
+// // Og denne order skal maaske ogsaa vise sig i cc.extension()
+// // Eftersom det er et view. Kraever det en lille smule extra kode...
+//
+// IdentityHashMap<Class<?>, Extension> baseExtensions;
+//
+// IdentityHashMap<Class<?>, Extension> externalExtensions;
+//
+// public <T> T use(Class<T> t) {
+// if (t.getModule() == m) {
+// // get From baseExtensions
+// } else {
+// // getFrom External Dependencies..
+// }
+// // We can actually remove all modules that do not implement #configure()
+//
+// return null;
+// // ideen er selvfolgelig
+// }
+// }

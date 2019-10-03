@@ -83,7 +83,7 @@ public class Factory<T> {
 
             /** {@inheritDoc} */
             @Override
-            public <T> FactoryHandle<T> toInternalFunction(Factory<T> factory) {
+            public <T> FactoryHandle<T> toHandle(Factory<T> factory) {
                 return factory.factory.function;
             }
         });

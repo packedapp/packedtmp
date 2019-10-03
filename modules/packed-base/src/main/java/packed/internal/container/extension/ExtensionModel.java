@@ -109,6 +109,9 @@ public final class ExtensionModel<T extends Extension> {
         this.onInstantiation = builder.onInstantiation;
         this.groups = Set.copyOf(builder.hgbs);
         this.onLinkage = builder.onLinkage;
+
+        // this.optional = Optional.of(extensionType)
+        // Saa slipper vi for at lave en ny optional hver gang....
     }
 
     public OnHookGroupModel hooks() {

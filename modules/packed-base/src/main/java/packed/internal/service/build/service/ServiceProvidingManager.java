@@ -135,7 +135,7 @@ public final class ServiceProvidingManager {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <T> ComponentServiceConfiguration<T> provideFactory(ComponentConfiguration cc, Factory<T> factory, FactoryHandle<T> function) {
-        ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
+        ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);// remove??
         if (c == null) {
             MethodHandle mh = ((PackedExtensionContext) node.context()).pcc.lookup.toMethodHandle(function);
             c = new ComponentBuildEntry<>(node, cc, InstantiationMode.SINGLETON, mh, (List) factory.dependencies());

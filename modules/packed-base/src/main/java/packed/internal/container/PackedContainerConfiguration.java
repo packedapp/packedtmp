@@ -47,6 +47,7 @@ import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
 import packed.internal.access.SharedSecrets;
+import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentLookup;
 import packed.internal.container.model.ComponentModel;
@@ -398,7 +399,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
             checkConfigurable(); // only allow installing new extensions if configurable
-            extensions.put(extensionType, pec = PackedExtensionContext.create(this, extensionType));
+            extensions.put(extensionType, pec = new PackedExtensionContext(this, ExtensionModel.of(extensionType)));
             initializeName(State.EXTENSION_USED, null);
             pec.initialize();
         }

@@ -26,6 +26,13 @@ import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.service.ComponentBuildEntry;
 
 /** A utility class that can find cycles in a dependency graph. */
+
+// New algorithm
+
+// resolve + create id for each node
+
+// https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
+// https://www.youtube.com/watch?v=TyWtx7q2D7Y
 final class DependencyCycleDetector {
 
     /**

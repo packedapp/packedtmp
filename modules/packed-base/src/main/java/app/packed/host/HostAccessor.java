@@ -24,6 +24,18 @@ import app.packed.component.ComponentConfiguration;
 // ExtensionComposer.newHostAccessor(Class<T> type)
 
 // Og saa kan man kommunikere gennem den
+
+// Skal selvfoelgelig hedde noget andet hvis man ogsaa kan kommunikere med sieblings...
+// Eller maaske gaar kommunikationen med sieblings via en host....
+/// Dvs service udfra artifact, ind og vende paa en host, og saa tilgaengelig til nye deploys..
+/// Vi kan maaske endda lave noget proxy. Saa den kan forsvinde igen...........
+// Hmmmm
+// All Serializere lortet og maal alt trafik...
+
+// Tjah det giver jo bedre mening....
+// Saa har vi heller ikke 1 million services af den samme type
+// deploy (ddd, map(Service, @Foo("h1") Service)
+// deploy (ddd, map(Service, @Foo("h2") Service)
 final class HostAccessor<T> {
 
     public T get(Host host) {
@@ -54,3 +66,11 @@ abstract class UnlinkStrategy {
     // undeploy(UnlinkStrategy s);
 
 }
+//// Et stort problem med hosts/host accessors, er at vi foerst kan finde dem paa instantierings tidspunktet hvis vi er
+//// et image...
+/// Dvs. vi kan ikke installere en service fra en parent host.
+
+// Istedet for har vi f.eks. i en parent host.
+// Foo[RealFoo]
+
+// Vi installere saa en ny Foo i den nye artifact. Og saa finder vi RealFoo via HostAccessor

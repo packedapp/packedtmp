@@ -74,14 +74,14 @@ public final class ConcurrentWeakInternedSet<T> {
     public T tryIntern(T element) {
         requireNonNull(element, "element is null");
 
-        T res;
+        T result;
         InternedEntry<T> newEntry = new InternedEntry<>(element, stale);
         do {
             expungeStaleElements();
             InternedEntry<T> existing = elements.putIfAbsent(newEntry, newEntry);
-            res = existing == null ? element : existing.get();
-        } while (res == null);
-        return res;
+            result = existing == null ? element : existing.get();
+        } while (result == null);
+        return result;
     }
 
     /** The interned entry. */

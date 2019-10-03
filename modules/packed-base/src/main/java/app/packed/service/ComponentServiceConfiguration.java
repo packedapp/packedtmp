@@ -40,7 +40,6 @@ import app.packed.util.Nullable;
  * @see BaseBundle#provide(Factory)
  * @see BaseBundle#provideInstance(Object)
  */
-// or maybe just ComponentServiceConfgiuration
 public interface ComponentServiceConfiguration<T> extends ComponentConfiguration, ServiceConfiguration<T> {
 
     /**

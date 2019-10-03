@@ -17,6 +17,8 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.BiConsumer;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Wirelet;
@@ -268,6 +270,10 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
     public void requireOptionally(Key<?> key) {
         checkConfigurable();
         node.dependencies().require(ServiceDependency.ofOptional(key), captureStackFrame(InjectConfigSiteOperations.INJECTOR_REQUIRE_OPTIONAL));
+    }
+
+    public <T> void inject(ComponentConfiguration cc, Key<T> key, BiConsumer<?, T> consumer) {
+
     }
 
     /** The composer for the service extension. */

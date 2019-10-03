@@ -71,12 +71,13 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     /** Configures the composer. This method is invoked exactly once for a given implementation. */
     protected abstract void configure();
 
-    // /**
-    // * Returns the extension's extension node. This method will be invoked exactly once by the runtime and must return a
-    // * non-null value of the exact same type as the single type parameter to ComposableExtension.
-    // *
-    // * @return the extension's extension node
-    // */
+    /**
+     * Returns the context object that this composer wraps.
+     * 
+     * @return the context object that this composer wraps.
+     * @throws IllegalStateException
+     *             if called outside {@link #configure()}
+     */
     private ExtensionComposerContext context() {
         ExtensionComposerContext c = context;
         if (c == null) {
@@ -88,6 +89,8 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
 
     /**
      * Adds the specified extension types to the set of extensions that this extension depends on.
+     * <p>
+     * There are no need to add transitive dependencies. Only dependencies that requires a direct call to use
      * 
      * 
      * This is done in order
@@ -95,10 +98,9 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
      * @param extensionTypes
      *            the types of extension the extension uses.
      */
-    // dependOn????
     @SafeVarargs
     protected final void dependsOn(Class<? extends Extension>... extensionTypes) {
-
+        context().addDependencies(extensionTypes);
     }
 
     final void dependsOn(String... extensionTypes) {
@@ -179,16 +181,14 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
      * but before the extension has been returned to the user. Typically because a user invoked
      * {@link ContainerConfiguration#use(Class)}.
      * <p>
-     * If this method is invoked more than once, each action will be called in succession.
+     * If this method is invoked more than once, each action will be performed in order of registration.
      * 
      * @param action
      *            The action to be performed after the extension has been instantiated
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
     protected final void onExtensionInstantiated(Consumer<? super E> action) {
-        requireNonNull(action, "action is null");
-        Consumer<? super E> a = context().onExtensionInstantiatedAction;
-        context().onExtensionInstantiatedAction = a == null ? (Consumer) action : a.andThen((Consumer) action);
+        context().onExtensionInstantiated((Consumer<? super Extension>) action);
     }
 
     /**
@@ -213,13 +213,14 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
      * a child container.
      * <p>
      * {@link #onExtensionInstantiated(Consumer)} is always invoked for the extension before this method.
+     * <p>
+     * If this method is invoked more than once, each action will be performed in order of registration.
      * 
      * @param action
      *            the action to perform
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
     protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
-        requireNonNull(action, "action is null");
-        context().onLinkage = (BiConsumer) action;
+        context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
     }
 }
