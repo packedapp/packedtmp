@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package packed.internal.module;
 
 import app.packed.service.Factory;
 import packed.internal.service.factoryhandle.FactoryHandle;

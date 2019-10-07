@@ -41,7 +41,7 @@ import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import app.packed.util.TypeLiteral;
-import packed.internal.access.SharedSecrets;
+import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.service.util.QualifierHelper;
 import packed.internal.util.ErrorMessageBuilder;
@@ -308,7 +308,7 @@ public final class ServiceDependency {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new ServiceDependency(SharedSecrets.util().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new ServiceDependency(ModuleAccess.util().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<ServiceDependency> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -335,7 +335,7 @@ public final class ServiceDependency {
         } else if (rawType == Optional.class) {
             optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
-            tl = SharedSecrets.util().toTypeLiteral(cl);
+            tl = ModuleAccess.util().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("have multiple layers of optionals such as " + cl));
             }

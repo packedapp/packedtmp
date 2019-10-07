@@ -38,8 +38,8 @@ import app.packed.util.BaseSupport;
 import app.packed.util.InvalidDeclarationException;
 import app.packed.util.Key;
 import app.packed.util.TypeLiteral;
-import packed.internal.access.AppPackedInjectAccess;
-import packed.internal.access.SharedSecrets;
+import packed.internal.module.AppPackedInjectAccess;
+import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.service.factoryhandle.ExecutableFactoryHandle;
 import packed.internal.service.factoryhandle.FactoryHandle;
@@ -79,7 +79,7 @@ import packed.internal.util.TypeUtil;
 public class Factory<T> {
 
     static {
-        SharedSecrets.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
+        ModuleAccess.initialize(AppPackedInjectAccess.class, new AppPackedInjectAccess() {
 
             /** {@inheritDoc} */
             @Override
@@ -113,7 +113,7 @@ public class Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            return new Factory(FactoryFindInjectableExecutable.find(SharedSecrets.util().toTypeLiteral(t)));
+            return new Factory(FactoryFindInjectableExecutable.find(ModuleAccess.util().toTypeLiteral(t)));
         }
     };
 
@@ -373,7 +373,7 @@ public class Factory<T> {
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> findInjectable(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        if (!SharedSecrets.util().isCanonicalized(implementation)) {
+        if (!ModuleAccess.util().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) FIND_INJECTABLE_FROM_TYPE_LITERAL_CACHE.get(implementation.getClass());
         }

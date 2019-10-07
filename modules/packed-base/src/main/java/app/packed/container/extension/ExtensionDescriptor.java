@@ -26,7 +26,7 @@ import packed.internal.container.extension.ExtensionModel;
  * An extension descriptor.
  * <p>
  * A extension descriptor describes an extension and defines various methods to obtain information about the extension.
- * An instance is normally acquired by calling {@link #of(Class)}.
+ * An instance of this class is normally acquired by calling {@link #of(Class)}.
  */
 public final class ExtensionDescriptor {
 
@@ -43,17 +43,18 @@ public final class ExtensionDescriptor {
      * 
      * @return all the different types of contract types the extension provides
      */
-    public Set<Class<? extends Contract>> contractTypes() {
+    public Set<Class<? extends Contract>> contracts() {
         return model.contracts.keySet();
     }
 
     /**
-     * Returns any other extensions this extension depends on.
+     * Returns any other extensions this extension depends on. The returned set does not include any transitive
+     * dependencies.
      * 
      * @return any other extensions this extension depends on
      */
     public Set<Class<? extends Extension>> dependencies() {
-        return Set.of();
+        return model.dependencies;
     }
 
     /**

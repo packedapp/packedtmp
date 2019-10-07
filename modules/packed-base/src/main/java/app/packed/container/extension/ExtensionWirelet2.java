@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package app.packed.container.extension;
 
-/** Provides a mechanism for calling methods that are non-accessible in public packages without using reflection. */
-package packed.internal.access;
+/**
+ *
+ */
+public class ExtensionWirelet2 {
+    // void onImage();
+
+    // void onImage();
+}

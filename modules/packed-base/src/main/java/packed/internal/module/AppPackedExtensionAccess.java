@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package packed.internal.module;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
@@ -35,5 +35,5 @@ public interface AppPackedExtensionAccess extends SecretAccess {
 
     void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context);
 
-    <T extends ExtensionWireletPipeline<T, ?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet);
+    <T extends ExtensionWireletPipeline<T, ?>> void processWirelet(T pipeline, ExtensionWirelet<T> wirelet);
 }

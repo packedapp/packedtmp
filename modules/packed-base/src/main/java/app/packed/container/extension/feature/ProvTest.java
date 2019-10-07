@@ -37,6 +37,8 @@ class ProvTest extends BaseBundle {
         System.out.println("----");
         // run(new ProvTest());
 
+        App a = App.of(new ProvTest());
+        a.stream().feature(ProvideFeature.class).forEach(e -> System.out.println(e.key() + ": " + e.configSite()));
     }
 
     public void foo(App a) {

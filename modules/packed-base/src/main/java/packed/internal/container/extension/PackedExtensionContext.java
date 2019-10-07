@@ -23,8 +23,8 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.module.ModuleAccess;
 
 /** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
@@ -84,12 +84,10 @@ public final class PackedExtensionContext implements ExtensionContext {
         return extension;
     }
 
-    /**
-     * 
-     */
+    /** Initializes the extension. */
     public void initialize() {
         // Sets Extension.context = this
-        SharedSecrets.extension().setExtensionContext(extension, this);
+        ModuleAccess.extension().setExtensionContext(extension, this);
 
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
         if (model.onAdd != null) {
@@ -124,7 +122,6 @@ public final class PackedExtensionContext implements ExtensionContext {
         if (model.onConfigured != null) {
             model.onConfigured.accept(extension);
         }
-
         isConfigurable = false;
     }
 
@@ -133,22 +130,21 @@ public final class PackedExtensionContext implements ExtensionContext {
     public <T extends Extension> T use(Class<T> extensionType) {
         return pcc.use(extensionType);
     }
-
-    // /**
-    // * Creates a new context and instantiates the extension.
-    // *
-    // * @param pcc
-    // * the container the extension will be registered in
-    // * @param extensionType
-    // * the type of extension to instantiate
-    // * @return the new extension context
-    // */
-    // public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension>
-    // extensionType) {
-    // return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType));
-    // }
 }
 
+// /**
+// * Creates a new context and instantiates the extension.
+// *
+// * @param pcc
+// * the container the extension will be registered in
+// * @param extensionType
+// * the type of extension to instantiate
+// * @return the new extension context
+// */
+// public static PackedExtensionContext create(PackedContainerConfiguration pcc, Class<? extends Extension>
+// extensionType) {
+// return new PackedExtensionContext(pcc, ExtensionModel.of(extensionType));
+// }
 // static class DefCon {
 // // Det her med at finde ud af hvordan extensions er relateret....
 //

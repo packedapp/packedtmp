@@ -142,6 +142,10 @@ public abstract class BaseBundle extends Bundle {
         return component().install(implementation);
     }
 
+    protected final <T> ComponentConfiguration<T> install(Factory<T> factory) {
+        return component().install(factory);
+    }
+
     protected final <T> ComponentConfiguration<T> installHelper(Class<T> implementation) {
         return component().installStatic(implementation);
     }

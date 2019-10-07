@@ -31,13 +31,13 @@ import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.HookGroupBuilder;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.HGBModel;
 import packed.internal.hook.HookGroupBuilderModel;
 import packed.internal.hook.OnHookGroupModel;
+import packed.internal.module.ModuleAccess;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -100,12 +100,12 @@ final class ComponentModelHookGroup {
         }
 
         void onAnnotatedField(Field field, Annotation annotation) {
-            AnnotatedFieldHook<Annotation> hook = SharedSecrets.hook().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
+            AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
         void onAnnotatedMethod(Method method, Annotation annotation) {
-            AnnotatedMethodHook hook = SharedSecrets.hook().newAnnotatedMethodHook(componentModelBuilder, method, annotation);
+            AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
 

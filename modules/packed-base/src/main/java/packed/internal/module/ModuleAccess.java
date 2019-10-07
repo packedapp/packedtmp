@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package packed.internal.module;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,17 +25,15 @@ import app.packed.lifecycle.RunState;
 import app.packed.service.Factory;
 import app.packed.util.TypeLiteral;
 
-/**
- * A collection of "shared secrets", which are a mechanism for calling package private methods in public packages
- * without using reflection.
- */
-public final class SharedSecrets {
+/** A mechanism for calling package private methods in public packages without using reflection. */
+// Rename to ModuleAccess.
+public final class ModuleAccess {
 
     /** All secrets, we never remove them to make sure we never add anything twice. */
     private final static ConcurrentHashMap<Class<? extends SecretAccess>, SecretAccess> TMP = new ConcurrentHashMap<>();
 
     /** Never instantiate. */
-    private SharedSecrets() {}
+    private ModuleAccess() {}
 
     /**
      * Returns an access object that can access methods in app.packed.artifact.

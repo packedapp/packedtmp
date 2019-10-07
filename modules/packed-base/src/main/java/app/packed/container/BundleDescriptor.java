@@ -36,9 +36,9 @@ import app.packed.contract.ContractSet;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.module.ModuleAccess;
 
 /**
  * A bundle descriptor.
@@ -265,7 +265,7 @@ public class BundleDescriptor {
             ArtifactImage img = (ArtifactImage) source;
             bundleType = img.sourceType();
             isImage = true;
-            conf = SharedSecrets.artifact().getConfiguration(img);
+            conf = ModuleAccess.artifact().getConfiguration(img);
         } else {
             throw new IllegalArgumentException();
         }

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 
+import app.packed.container.BaseBundle;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.service.Factory;
@@ -34,7 +35,7 @@ import packed.internal.service.InjectConfigSiteOperations;
  */
 public final class ComponentExtension extends Extension {
 
-    /** The configuration of the container. */
+    /** The configuration of the container, should only be accessed via {@link #pcc()}. */
     @Nullable
     private PackedContainerConfiguration pcc;
 
@@ -50,8 +51,11 @@ public final class ComponentExtension extends Extension {
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * <p>
-     * This method uses the {@link ServiceExtension}.
+     * This method uses the {@link ServiceExtension} to instantiate the an instance of the component. (only if there are
+     * dependencies???)
      * 
+     * @param <T>
+     *            the type of the component
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
@@ -64,17 +68,28 @@ public final class ComponentExtension extends Extension {
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
-     * This method uses the {@link ServiceExtension}.
+     * This method uses the {@link ServiceExtension} to instantiate an component instance from the factory.
      * 
+     * @param <T>
+     *            the type of the component
      * @param factory
      *            the factory to install
      * @return the configuration of the component
+     * @see BaseBundle#install(Factory)
      */
     public <T> ComponentConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
         return pcc().install(factory, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
+    /**
+     * @param <T>
+     *            the type of the component
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see BaseBundle#installInstance(Object)
+     */
     public <T> ComponentConfiguration<T> installInstance(T instance) {
         requireNonNull(instance, "instance is null");
         return pcc().installInstance(instance, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
@@ -94,6 +109,13 @@ public final class ComponentExtension extends Extension {
         return pcc().installStatic(implementation, captureStackFrame(InjectConfigSiteOperations.COMPONENT_INSTALL));
     }
 
+    /**
+     * Returns the container configuration that this extension wraps.
+     * 
+     * @return the container configuration that this extension wraps
+     * @throws IllegalStateException
+     *             if thrown by {@link #context()}
+     */
     private PackedContainerConfiguration pcc() {
         PackedContainerConfiguration p = pcc;
         if (p == null) {
@@ -104,12 +126,12 @@ public final class ComponentExtension extends Extension {
 
     // Scans this package...
     // Se nederst i filen paa ComponentScan, som vi har droppet fordi der er rigeligt annoteringer....
-    public void scan() {}
+    void scan() {}
 
-    public void scan(String... packages) {}
+    void scan(String... packages) {}
 
     // Alternative to ComponentScan
-    public void scanForInstall(Class<?>... classesInPackages) {}
+    void scanForInstall(Class<?>... classesInPackages) {}
 }
 
 // install

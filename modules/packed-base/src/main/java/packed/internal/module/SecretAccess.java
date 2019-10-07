@@ -13,20 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package packed.internal.module;
 
-import app.packed.artifact.ArtifactImage;
-import packed.internal.container.PackedContainerConfiguration;
-
-/** An interface for calling non-accessible methods in the app.packed.artifact package. */
-public interface AppPackedArtifactAccess extends SecretAccess {
-
-    /**
-     * Extracts a container configuration from the specified image.
-     * 
-     * @param image
-     *            the image to return the configuration object for
-     * @return the configuration object
-     */
-    PackedContainerConfiguration getConfiguration(ArtifactImage image);
-}
+/** A marker interface for access. */
+interface SecretAccess {}

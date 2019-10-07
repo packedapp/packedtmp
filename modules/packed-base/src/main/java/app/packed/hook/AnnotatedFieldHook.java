@@ -29,11 +29,11 @@ import app.packed.reflect.FieldDescriptor;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.reflect.VarOperator;
 import app.packed.util.Nullable;
-import packed.internal.access.AppPackedHookAccess;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.model.ComponentModel;
 import packed.internal.container.model.ComponentModel.Builder;
 import packed.internal.hook.applicator.PackedFieldHookApplicator;
+import packed.internal.module.AppPackedHookAccess;
+import packed.internal.module.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -49,7 +49,7 @@ import packed.internal.util.StringFormatter;
 public final class AnnotatedFieldHook<T extends Annotation> {
 
     static {
-        SharedSecrets.initialize(AppPackedHookAccess.class, new AppPackedHookAccess() {
+        ModuleAccess.initialize(AppPackedHookAccess.class, new AppPackedHookAccess() {
 
             @Override
             public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {

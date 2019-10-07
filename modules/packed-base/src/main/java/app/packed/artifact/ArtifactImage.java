@@ -27,10 +27,10 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import packed.internal.access.AppPackedArtifactAccess;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.module.AppPackedArtifactAccess;
+import packed.internal.module.ModuleAccess;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
@@ -58,7 +58,7 @@ import packed.internal.container.WireletContext;
 public final class ArtifactImage implements ContainerSource {
 
     static {
-        SharedSecrets.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
+        ModuleAccess.initialize(AppPackedArtifactAccess.class, new AppPackedArtifactAccess() {
 
             /** {@inheritDoc} */
             @Override

@@ -36,18 +36,18 @@ import app.packed.util.Nullable;
 import packed.internal.hook.HGBModel;
 import packed.internal.util.StringFormatter;
 
-/**
- *
- */
+/** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionComposerContext {
-
-    /** Can only be overridden in this package. */
-    ExtensionComposerContext() {}
 
     public BiConsumer<? super Extension, ? super BundleDescriptor.Builder> builder;
 
     // Need to check that a contract never belongs to two extension.
+    // Also, I think we want to do this atomically, so that we do not have half an extension registered somewhere.
+    // This means we want to synchronize things.
+    // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
+
+    final HashSet<Class<? extends Extension>> dependencies = new HashSet<>();
 
     public Set<HGBModel> hgbs = new HashSet<>();
 
@@ -66,7 +66,8 @@ public abstract class ExtensionComposerContext {
 
     public final IdentityHashMap<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines = new IdentityHashMap<>();
 
-    final HashSet<Class<? extends Extension>> dependencies = new HashSet<>();
+    /** This class can only be overridden by another class in this package. */
+    ExtensionComposerContext() {}
 
     /**
      * Adds the specified classes to the list of dependencies.
@@ -76,7 +77,7 @@ public abstract class ExtensionComposerContext {
      */
     @SafeVarargs
     public final void addDependencies(Class<? extends Extension>... dependencies) {
-        requireNonNull(dependencies, "dependencies is null");
+        requireNonNull(dependencies, "dependencies are null");
         for (Class<? extends Extension> c : dependencies) {
             requireNonNull(c, "Dependencies contained a null element");
             if (!Extension.class.isAssignableFrom(c)) {

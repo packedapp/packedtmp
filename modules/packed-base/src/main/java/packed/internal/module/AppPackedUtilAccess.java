@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.access;
+package packed.internal.module;
 
-import app.packed.container.Bundle;
-import app.packed.container.ContainerConfiguration;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
-/** A support class for calling package private methods in the app.packed.container package. */
-public interface AppPackedContainerAccess extends SecretAccess {
+import app.packed.util.Key;
+import app.packed.util.TypeLiteral;
+
+/** A support class for calling package private methods in the app.packed.util package. */
+public interface AppPackedUtilAccess extends SecretAccess {
+
+    boolean isCanonicalized(TypeLiteral<?> typeLiteral);
+
+    Key<?> toKeyNullableQualifier(Type type, Annotation qualifier);
 
     /**
-     * Calls the doConfigure method in {@link Bundle}.
+     * Converts the type to a type literal.
      * 
-     * @param bundle
-     *            the bundle to configure
-     * @param configuration
-     *            the configuration of the container
+     * @param type
+     *            the type to convert
+     * @return the type literal
      */
-    void doConfigure(Bundle bundle, ContainerConfiguration configuration);
+    TypeLiteral<?> toTypeLiteral(Type type);
 }

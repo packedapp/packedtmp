@@ -20,9 +20,9 @@ import java.util.IdentityHashMap;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.module.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -62,7 +62,7 @@ public class WireletContext {
                     return pm.newPipeline(e.extension());
                 });
 
-                SharedSecrets.extension().wireletProcess(p, (ExtensionWirelet) w);
+                ModuleAccess.extension().processWirelet(p, (ExtensionWirelet) w);
             } else if (w instanceof ContainerWirelet) {
                 ((ContainerWirelet) w).process(this);
             } else {

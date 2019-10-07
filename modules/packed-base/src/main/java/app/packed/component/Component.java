@@ -43,6 +43,8 @@ public interface Component {
     // Maaske ikke extends Component.... Saa vi kan have
     // container aggregates
     // container().path()
+    // Vi vil gerne kunne give en component, uden at give adgang til dens container..
+    // same with artifact
     default ComponentPath containerPath() {
         // also on ComponentConfiguration
         throw new UnsupportedOperationException();

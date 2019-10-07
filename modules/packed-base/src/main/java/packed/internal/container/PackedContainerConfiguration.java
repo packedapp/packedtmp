@@ -46,7 +46,6 @@ import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
-import packed.internal.access.SharedSecrets;
 import packed.internal.container.extension.ExtensionModel;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.container.model.ComponentLookup;
@@ -55,6 +54,7 @@ import packed.internal.container.model.ContainerSourceModel;
 import packed.internal.hook.applicator.DelayedAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarFieldDelayerAccessor;
 import packed.internal.hook.applicator.DelayedAccessor.SidecarMethodDelayerAccessor;
+import packed.internal.module.ModuleAccess;
 import packed.internal.service.InjectConfigSiteOperations;
 
 /** The default implementation of {@link ContainerConfiguration}. */
@@ -150,7 +150,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 // Hmm don't know about that config site
                 installInstance(bundle, configSite());
             }
-            SharedSecrets.container().doConfigure(bundle, this);
+            ModuleAccess.container().doConfigure(bundle, this);
         }
         // Initializes the name of the container, and sets the state to State.FINAL
         initializeName(State.FINAL, null);

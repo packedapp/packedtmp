@@ -50,9 +50,9 @@ import java.lang.annotation.Target;
 public @interface ActivateExtension {
 
     /**
-     * Returns the extension hook group that knows how do handle the types, fields or methods that are annotated...
+     * Returns the extension that should be activated.
      * 
-     * @return the extension hook group that knows how do handle
+     * @return the extension that should be activated
      */
     Class<? extends Extension>[] value();
 }

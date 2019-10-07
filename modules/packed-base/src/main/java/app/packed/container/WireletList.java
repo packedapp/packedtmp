@@ -23,8 +23,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.util.Nullable;
-import packed.internal.access.AppPackedContainerAccess;
-import packed.internal.access.SharedSecrets;
+import packed.internal.module.AppPackedContainerAccess;
+import packed.internal.module.ModuleAccess;
 
 /** An immutable list of wirelets. */
 public final class WireletList extends Wirelet {
@@ -40,7 +40,7 @@ public final class WireletList extends Wirelet {
     }
 
     static {
-        SharedSecrets.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
+        ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
 
             /** {@inheritDoc} */
             @Override

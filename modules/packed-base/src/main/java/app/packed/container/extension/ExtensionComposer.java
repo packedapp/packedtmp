@@ -178,10 +178,10 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
 
     /**
      * Registers a (callback) action that is invoked, by the runtime, immediately after an extension has been instantiated,
-     * but before the extension has been returned to the user. Typically because a user invoked
+     * but before the extension is returned to the user. This is typically as the result of a user calling
      * {@link ContainerConfiguration#use(Class)}.
      * <p>
-     * If this method is invoked more than once, each action will be performed in order of registration.
+     * If this method is invoked more than once, each action will be performed in the order (FIFO) they where registered.
      * 
      * @param action
      *            The action to be performed after the extension has been instantiated
@@ -209,12 +209,12 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
     }
 
     /**
-     * A callback method that is invoked, by the runtime, whenever an extension is present in both a parent container and in
-     * a child container.
+     * Registers a (callback) action that is invoked, by the runtime, whenever this extension type has been registered in
+     * both a parent and child container.
      * <p>
      * {@link #onExtensionInstantiated(Consumer)} is always invoked for the extension before this method.
      * <p>
-     * If this method is invoked more than once, each action will be performed in order of registration.
+     * If this method is invoked more than once, each action will be performed in the order (FIFO) they where registered.
      * 
      * @param action
      *            the action to perform

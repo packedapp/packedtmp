@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.module;
 
-/**
- *
- */
-// Ideen er egentlig lidt... at vi kan f.eks kalde
-// ScheduleExtension.schedule(component, c->c.scheduleThisMethod());
-interface InstanceComponentConfiguration<T> extends ComponentConfiguration<T> {
+/** A support class for calling package private methods in the app.packed.lifecycle package. */
+public interface AppPackedLifecycleAccess extends SecretAccess {
 
 }

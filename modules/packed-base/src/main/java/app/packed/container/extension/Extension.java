@@ -23,10 +23,10 @@ import java.util.Optional;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
-import packed.internal.access.AppPackedExtensionAccess;
-import packed.internal.access.SharedSecrets;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.extension.ExtensionComposerContext;
+import packed.internal.module.AppPackedExtensionAccess;
+import packed.internal.module.ModuleAccess;
 
 /**
  * Container extensions allows you to extend the basic functionality of containers.
@@ -61,23 +61,24 @@ import packed.internal.container.extension.ExtensionComposerContext;
 // "InjectorExtension:" Activate
 //// Her er der noget vi gerne vil have viral.
 
-// Disallow registering extensions as a service??? Actually together with a lot of other types...
-// ContainerExtension vs ContainerPlugin
-
-// Think we need a @ExtensionProps(node = FooNode.class)
-// Alternative ComposableExtension<T extends ExtensionNode, TR extends ExtensionTree>
 public abstract class Extension {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     static {
-        SharedSecrets.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
+        ModuleAccess.initialize(AppPackedExtensionAccess.class, new AppPackedExtensionAccess() {
 
             /** {@inheritDoc} */
             @Override
-            public void configureComposer(ExtensionComposer<?> props, ExtensionComposerContext context) {
-                props.doConfigure(context);
+            public void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context) {
+                composer.doConfigure(context);
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public <T extends ExtensionWireletPipeline<T, ?>> void processWirelet(T pipeline, ExtensionWirelet<T> wirelet) {
+                wirelet.process(pipeline);
             }
 
             /** {@inheritDoc} */
@@ -85,36 +86,11 @@ public abstract class Extension {
             public void setExtensionContext(Extension extension, ExtensionContext context) {
                 extension.context = context;
             }
-
-            /** {@inheritDoc} */
-            @Override
-            public <T extends ExtensionWireletPipeline<T, ?>> void wireletProcess(T pipeline, ExtensionWirelet<T> wirelet) {
-                wirelet.process(pipeline);
-            }
         });
     }
 
     /** The extension context. This field should never be read directly, but only accessed via {@link #context()}. */
     private ExtensionContext context;
-    //
-    // /**
-    // * Returns the build context of the artifact which this extension is a part of.
-    // * <p>
-    // * Im thinking about throwing ISE on instantiation....
-    // *
-    // * @throws IllegalStateException
-    // * if invoked from constructor or {@link #onPrepareContainerInstantiation(ArtifactInstantiationContext)}.
-    // * @return the build context
-    // */
-    // protected final ArtifactBuildContext buildContext() {
-    // // The thing i'm worried about here is wirelets...
-    // // Because this should not be used on instantiation time because
-    // // Any wirelets specified when initializing an image is not included...
-    // // Or is this controllable from ContainerConfiguration????
-    // ArtifactBuildContext c = context().buildContext();
-    // checkConfigurable();
-    // return c;
-    // }
 
     /**
      * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
@@ -173,10 +149,9 @@ public abstract class Extension {
      * 
      * @throws IllegalArgumentException
      *             if invoked from the constructor of the extension
-     * @return the configuration of the container
+     * @return an extension context object
      */
     protected final ExtensionContext context() {
-        // When calling this method remember to add test to BasicExtensionTest
         ExtensionContext c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension."
@@ -198,37 +173,16 @@ public abstract class Extension {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the underlying container is no longer configurable and an extension of the specified type has not
-     *             already been installed
+     *             If invoked from the constructor of the extension. Or if the underlying container is no longer
+     *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
-     *             if the specified extension type is not among this extensions dependencies
+     *             if the specified extension type is not among this extensions dependencies specified via
+     *             {@link ExtensionComposer#dependsOn(Class...)}
      */
     protected final <E extends Extension> E use(Class<E> extensionType) {
         return context().use(extensionType);
     }
 }
-//
-/// **
-// * Returns a list of any wirelets that was used to configure the container.
-// * <p>
-// * Invoking this method is equivalent to invoking {@code configuration().wirelets()}.
-// *
-// * @return a list of any wirelets that was used to configure the container
-// */
-// protected final WireletList wirelets() {
-// return ((PackedExtensionContext) context()).wirelets();
-// }
-//
-//// Sidecards per extension???
-//// Det betyder jo ogsaa "endnu" mere magt til extensions..
-// protected final void installSidecar(Object instance) {
-// // These should work with images as well..
-//
-// // I virkeligheden er det jo paa ContainerConfiguration vi installere den....
-// class SidecarConfiguration {
-//
-// }
-// }
 
 //
 // final void runWithLookup(Lookup lookup, Runnable runnable) {

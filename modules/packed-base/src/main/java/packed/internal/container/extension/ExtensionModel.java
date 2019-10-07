@@ -31,10 +31,10 @@ import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
-import packed.internal.access.SharedSecrets;
 import packed.internal.hook.HGBModel;
 import packed.internal.hook.HookClassBuilder;
 import packed.internal.hook.OnHookGroupModel;
+import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
@@ -91,6 +91,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final BiConsumer<? super Extension, ? super Extension> onLinkage;
 
+    public final Set<Class<? extends Extension>> dependencies;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -109,7 +111,7 @@ public final class ExtensionModel<T extends Extension> {
         this.onInstantiation = builder.onInstantiation;
         this.groups = Set.copyOf(builder.hgbs);
         this.onLinkage = builder.onLinkage;
-
+        this.dependencies = Set.copyOf(builder.dependencies);
         // this.optional = Optional.of(extensionType)
         // Saa slipper vi for at lave en ny optional hver gang....
     }
@@ -187,7 +189,7 @@ public final class ExtensionModel<T extends Extension> {
                     ThrowableUtil.rethrowErrorOrRuntimeException(e);
                     throw new UndeclaredThrowableException(e);
                 }
-                SharedSecrets.extension().configureComposer(ep, this);
+                ModuleAccess.extension().configureComposer(ep, this);
 
                 for (HGBModel g : hgbs) {
                     hooks.onHookGroup(g);
@@ -204,3 +206,5 @@ public final class ExtensionModel<T extends Extension> {
 // Raekkefoelge af installeret extensions....
 // Maaske bliver vi noedt til at have @UsesExtension..
 // Saa vi kan sige X extension skal koeres foerend Y extension
+
+// Configure

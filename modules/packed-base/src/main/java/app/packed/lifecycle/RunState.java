@@ -15,8 +15,8 @@
  */
 package app.packed.lifecycle;
 
-import packed.internal.access.AppPackedLifecycleAccess;
-import packed.internal.access.SharedSecrets;
+import packed.internal.module.AppPackedLifecycleAccess;
+import packed.internal.module.ModuleAccess;
 
 /**
  * An enum containing all valid run states.
@@ -101,6 +101,6 @@ public enum RunState {
     }
 
     static {
-        SharedSecrets.initialize(AppPackedLifecycleAccess.class, new AppPackedLifecycleAccess() {});
+        ModuleAccess.initialize(AppPackedLifecycleAccess.class, new AppPackedLifecycleAccess() {});
     }
 }
