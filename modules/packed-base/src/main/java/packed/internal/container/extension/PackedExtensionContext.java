@@ -84,37 +84,48 @@ public final class PackedExtensionContext implements ExtensionContext {
         return extension;
     }
 
-    /** Initializes the extension. */
-    public void initialize() {
+    /**
+     * Initializes the extension.
+     * 
+     * @param pcc
+     */
+    public void initialize(PackedContainerConfiguration pcc) {
         // Sets Extension.context = this
         ModuleAccess.extension().setExtensionContext(extension, this);
 
         // Run any onAdd action that has set via ExtensionComposer#onAdd().
-        if (model.onAdd != null) {
-            model.onAdd.accept(extension);
-        }
+        PackedExtensionContext existing = pcc.activeExtension;
+        try {
+            pcc.activeExtension = this;
+            if (model.onAdd != null) {
+                model.onAdd.accept(extension);
+            }
 
-        // Call any link callbacks
-        if (model.onLinkage != null) {
-            // First link any children
-            ArrayList<PackedContainerConfiguration> containers = pcc.containers;
-            if (containers != null) {
-                for (PackedContainerConfiguration child : containers) {
-                    PackedExtensionContext e = child.getExtension(model.extensionType);
+            // Call any link callbacks
+            if (model.onLinkage != null) {
+                // First link any children
+                ArrayList<PackedContainerConfiguration> containers = pcc.containers;
+                if (containers != null) {
+                    for (PackedContainerConfiguration child : containers) {
+                        PackedExtensionContext e = child.getExtension(model.extensionType);
+                        if (e != null) {
+                            model.onLinkage.accept(extension, e.extension);
+                        }
+                    }
+                }
+
+                // Second link any parent
+                if (pcc.parent instanceof PackedContainerConfiguration) {
+                    PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
+                    PackedExtensionContext e = p.getExtension(model.extensionType);
+                    // set activate extension???
                     if (e != null) {
-                        model.onLinkage.accept(extension, e.extension);
+                        model.onLinkage.accept(e.extension, extension);
                     }
                 }
             }
-
-            // Second link any parent
-            if (pcc.parent instanceof PackedContainerConfiguration) {
-                PackedContainerConfiguration p = (PackedContainerConfiguration) pcc.parent;
-                PackedExtensionContext e = p.getExtension(model.extensionType);
-                if (e != null) {
-                    model.onLinkage.accept(e.extension, extension);
-                }
-            }
+        } finally {
+            pcc.activeExtension = existing;
         }
     }
 

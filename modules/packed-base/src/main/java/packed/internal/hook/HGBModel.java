@@ -23,8 +23,11 @@ import app.packed.hook.HookGroupProcessor;
  *
  */
 public class HGBModel {
+
     public final Supplier<?> builderFactory;
+
     public final Class<?> builderType;
+
     public final HookGroupProcessor<?, ?> groupProcessor;
 
     /**

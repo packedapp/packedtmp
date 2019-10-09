@@ -18,6 +18,7 @@ package app.packed.artifact;
 /**
  *
  */
+// ImageCreationException??? giver ikke mening at have forskellige...
 public class ArtifactCreationException {
 
 }

@@ -17,9 +17,12 @@ package packed.internal.service.build.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
+
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.service.ComponentServiceConfiguration;
 import app.packed.service.InstantiationMode;
@@ -139,5 +142,11 @@ public final class PackedProvidedComponentConfiguration<T> implements ComponentS
     public ComponentServiceConfiguration<T> setName(String name) {
         component.setName(name);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        return component.extension();
     }
 }

@@ -27,6 +27,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 
 /**
@@ -108,6 +109,12 @@ public class ComponentConfigurationToComponentAdaptor implements Component {
             return new PackedComponentStream(Stream.of(this));
         }
         return new PackedComponentStream(Stream.concat(Stream.of(this), c.stream().flatMap(ComponentConfigurationToComponentAdaptor::stream)));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        return componentConfiguration.extension();
     }
 
 }

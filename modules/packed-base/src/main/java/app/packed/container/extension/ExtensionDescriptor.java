@@ -58,6 +58,16 @@ public final class ExtensionDescriptor {
     }
 
     /**
+     * Returns the module that the extension belongs to.
+     * 
+     * @return the module that the extension belongs to
+     * @see Class#getModule()
+     */
+    public Module module() {
+        return type().getModule();
+    }
+
+    /**
      * Returns the extension type this descriptor describes.
      * 
      * @return the extension type this descriptor describes
@@ -79,6 +89,16 @@ public final class ExtensionDescriptor {
         return new ExtensionDescriptor(ExtensionModel.of(extensionType));
     }
 }
+// A method for transitive dependencies...
+
+// DirectedVertexGraph<T>
+// Or Just DependencyGraph<T>
+// DependencyGraph<Module>
+// DependencyGraph<ExtensionDescriptor>
+// DependencyGraph<ServiceDescriptor>...
+//// What about export... Change stuff
+
+//// Her vil vi maaske gerne have
 
 // Hook Annotations
 //// Field | Method | Activating (Although you can see that on the Annotation)

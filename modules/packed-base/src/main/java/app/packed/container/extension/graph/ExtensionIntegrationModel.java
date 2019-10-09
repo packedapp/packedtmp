@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container.extension.graph;
 
 /**
  *
  */
-public class ExtensionWirelet2 {
-    // void onImage();
+class ExtensionIntegrationModel {
 
-    // void onImage();
+    // None
+    // Pit (as in Service)
+    // Viral
 }

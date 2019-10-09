@@ -32,14 +32,17 @@ import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.run.RSE;
 import packed.internal.service.run.RSEDelegate;
 
-/** A build entry representing an exported service. */
+/**
+ * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
+ * exported.
+ */
 public final class ExportedBuildEntry<T> extends BuildEntry<T> {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
     ServiceEntry<T> exportedEntry;
 
-    /** The key under which to export the entry, is only non-null for keyed exports. */
+    /** The key under which to export the entry, is null for entry exports. */
     @Nullable
     final Key<?> keyToExport;
 

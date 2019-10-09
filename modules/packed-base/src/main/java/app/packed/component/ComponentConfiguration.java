@@ -15,9 +15,12 @@
  */
 package app.packed.component;
 
+import java.util.Optional;
+
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
@@ -53,6 +56,13 @@ public interface ComponentConfiguration<T> {
      * @return the configuration site that created this configuration
      */
     ConfigSite configSite();
+
+    /**
+     * If this component belongs to an extension
+     * 
+     * @return any extension this component belongs to
+     */
+    Optional<Class<? extends Extension>> extension();
 
     FeatureMap features();
 

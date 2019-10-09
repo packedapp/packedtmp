@@ -29,10 +29,7 @@ import app.packed.container.extension.feature.FeatureMap;
  */
 public interface Component {
 
-    default Optional<Class<? extends Extension>> extension() {
-        // Ideen er lidt at vi kan kan se om en component tilhoere en given extension...
-        throw new UnsupportedOperationException();
-    }
+    Optional<Class<? extends Extension>> extension();
 
     default ComponentPath artifactPath() {
         // also on

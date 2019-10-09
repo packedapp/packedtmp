@@ -29,6 +29,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
 import app.packed.config.ConfigSite;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
@@ -49,6 +50,8 @@ abstract class AbstractComponent implements Component {
     /** The description of this component (optional). */
     @Nullable
     private final String description;
+
+    final Optional<Class<? extends Extension>> extension;
 
     final FeatureMap features = new FeatureMap();
 
@@ -79,6 +82,7 @@ abstract class AbstractComponent implements Component {
         this.description = configuration.getDescription();
         this.depth = configuration.depth();
         this.children = configuration.initializeChildren(this, ic);
+        this.extension = configuration.extension();
         if (parent == null) {
             String n = configuration.name;
             ComponentNameWirelet ol = ic.wirelets().findLastOrNull(ComponentNameWirelet.class);
@@ -123,6 +127,11 @@ abstract class AbstractComponent implements Component {
     @Override
     public final Optional<String> description() {
         return Optional.ofNullable(description);
+    }
+
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        return extension;
     }
 
     /** {@inheritDoc} */

@@ -18,6 +18,7 @@ package packed.internal.container.extension;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -93,6 +94,8 @@ public final class ExtensionModel<T extends Extension> {
 
     public final Set<Class<? extends Extension>> dependencies;
 
+    public final Optional<Class<? extends Extension>> optional;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -112,6 +115,7 @@ public final class ExtensionModel<T extends Extension> {
         this.groups = Set.copyOf(builder.hgbs);
         this.onLinkage = builder.onLinkage;
         this.dependencies = Set.copyOf(builder.dependencies);
+        this.optional = Optional.of(extensionType);
         // this.optional = Optional.of(extensionType)
         // Saa slipper vi for at lave en ny optional hver gang....
     }

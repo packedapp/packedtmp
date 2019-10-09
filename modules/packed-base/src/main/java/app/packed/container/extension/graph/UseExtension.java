@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container.extension.graph;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 
-import app.packed.container.extension.UseExtension.Multiple;
+import app.packed.container.extension.Extension;
+import app.packed.container.extension.graph.UseExtension.Multiple;
 import app.packed.lifecycle.LifecycleExtension;
 import app.packed.lifecycle.OnStart;
-import app.packed.service.ServiceExtension;
 import app.packed.service.Provide;
+import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -37,7 +38,6 @@ import app.packed.service.Provide;
     Class<? extends Extension>[] value();
 
     @interface Multiple {
-        @SuppressWarnings("exports")
         UseExtension[] value();
     }
 }

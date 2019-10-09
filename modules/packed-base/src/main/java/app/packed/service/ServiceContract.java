@@ -201,6 +201,7 @@ public final class ServiceContract extends Contract {
     // Or an optional.. Technically the constract does not exist.
     // Implications for other extension
     // ofElseEmpty();
+    // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     public static ServiceContract of(ArtifactImage image) {
         return BundleDescriptor.of(image).contracts().use(ServiceContract.class);
     }

@@ -18,7 +18,6 @@ package app.packed.artifact;
 import java.util.function.Function;
 
 import app.packed.app.App;
-import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -29,7 +28,7 @@ import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
  * This class can be extended to create custom artifact types if the built-in artifact types such as {@link App} and
- * {@link Injector} are not sufficient. In fact both {@link App} and {@link Injector} are both just a thin facade that
+ * {@link Injector} are not sufficient. In fact both {@link App} and {@link Injector} are just a thin facade that
  * delegates all calls to {@link ArtifactContext}.
  * 
  * An artifact driver is used to create artifact instances such as {@link App} and {@link Injector}. Taking care of
@@ -106,13 +105,6 @@ public abstract class ArtifactDriver<T> {
      * @return the new artifact
      */
     protected abstract T instantiate(ArtifactContext context);
-
-    public boolean isInstantiating() {
-        return !(artifactType() == ArtifactImage.class || artifactType() == BundleDescriptor.class);
-    }
-
-    // Descriptors... Er bedoevende ligeglade
-    // protected abstract T newDescriptor(PackedConfiguration container);
 
     /**
      * Creates a new artifact using the specified source.

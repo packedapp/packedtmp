@@ -46,6 +46,8 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
 
     protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
             HookGroupProcessor<E, G> groupProcessor) {
+        // Sgu lidt noget moej paa runtime... Vi bliver maaske noedt til at tilfoeje den igen.
+        // Dough...
         requireNonNull(builderType, "builderType is null");
         requireNonNull(builderFactory, "builderFactory is null");
         requireNonNull(groupProcessor, "groupProcessor is null");
@@ -57,7 +59,7 @@ public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
         context().hgbs.add(m);
     }
 
-    protected final <P extends ExtensionWireletPipeline<P, ?>> void addPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
+    protected final <P extends ExtensionWireletPipeline<P, ?>> void setPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...

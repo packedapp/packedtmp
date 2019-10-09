@@ -21,6 +21,8 @@ import app.packed.util.Nullable;
 /**
  *
  */
+// Den boer doe, og erstattes af ServiceExtension...
+// Maa ogsaa have Pipeline
 public interface ExtensionInstantiationContext {
 
     /**

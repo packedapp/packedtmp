@@ -30,9 +30,11 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Bundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.FeatureMap;
 import app.packed.util.Nullable;
 import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.applicator.DelayedAccessor;
 
 /** A common superclass for all component configuration classes. */
@@ -77,6 +79,13 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
     /** The state of this configuration. */
     State state = State.INITIAL;
 
+    public final PackedExtensionContext installedBy;
+
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        return installedBy == null ? Optional.empty() : installedBy.model.optional;
+    }
+
     /**
      * Creates a new abstract component configuration
      * 
@@ -90,6 +99,13 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.parent = requireNonNull(parent);
         this.depth = parent.depth() + 1;
         this.buildContext = parent.buildContext;
+
+        AbstractComponentConfiguration<?> p = parent;
+        while (!(p instanceof PackedContainerConfiguration)) {
+            p = p.parent;
+        }
+        PackedExtensionContext pec = ((PackedContainerConfiguration) p).activeExtension;
+        this.installedBy = pec == null ? null : pec;
     }
 
     /**
@@ -105,6 +121,7 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         this.parent = null;
         this.depth = 0;
         this.buildContext = new PackedArtifactBuildContext((PackedContainerConfiguration) this, artifactDriver);
+        this.installedBy = null;
     }
 
     void addChild(AbstractComponentConfiguration<?> configuration) {

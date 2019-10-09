@@ -24,26 +24,18 @@ import app.packed.service.ServiceExtension;
 /**
  *
  */
-public class Fff extends BaseBundle {
+public class Fff2 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
         use(MyExtension.class);
-
+        link(new OtherB());
         System.out.println(path());
     }
 
     public static void main(String[] args) {
-        App a = App.of(new Fff());
-
-        a.stream().forEach(e -> {
-            System.out.println(e.extension() + " " + e.path());
-        });
-        System.out.println();
-        a.stream().filter(e -> e.extension().isEmpty()).forEach(e -> {
-            System.out.println(e.extension() + " " + e.path());
-        });
+        App.of(new Fff2());
         System.out.println("Bye");
     }
 
@@ -67,6 +59,7 @@ public class Fff extends BaseBundle {
             @Override
             protected void configure() {
                 onExtensionInstantiated(e -> e.use(ServiceExtension.class).provideInstance(123L));
+                onLinkage((p, c) -> System.out.println("Linking " + p.context().containerPath() + " to " + c.context().containerPath()));
             }
         }
     }

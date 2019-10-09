@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
-import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactDriver;
 
 /**
  *
@@ -25,14 +25,7 @@ public class NonInstantiatingArtifactDriver<T> extends ArtifactDriver<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isInstantiating() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     protected void configure() {
-        // TODO Auto-generated method stub
         super.configure();
     }
 

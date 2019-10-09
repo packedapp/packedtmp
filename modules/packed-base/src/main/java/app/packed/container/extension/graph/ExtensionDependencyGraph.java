@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container.extension.graph;
 
 /**
  *
  */
+// Maybe a generic DAG<V, E>
+// DAG<ExtensionDescriptor, Void>
+// DAG<ServiceDescriptor, ?>
+// Arghh tror det er bedst med specifikke.
 class ExtensionDependencyGraph {
 
     // Ideen var lidt at kunne visualisere eller lignende relationerne mellem forskellige extensions..
@@ -29,4 +33,8 @@ class ExtensionDependencyGraph {
     // se hvordan de enkelte extension relatere.
     // F.eks. soerger for at koere shutdown paa WebExtension, foerend LoggingExtension.
     // Men samtidig tillade at nogle bliver koert parallelt....
+
+    // Tror det giver mening bare at bruge ExtensionDescriptor...
+    // Den her graph ville jo ogsaa bare skulle laves fra en single Extension Type...
+    // Som man saa tog udgangspunkt i
 }

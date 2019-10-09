@@ -60,6 +60,9 @@ import packed.internal.service.InjectConfigSiteOperations;
 /** The default implementation of {@link ContainerConfiguration}. */
 public final class PackedContainerConfiguration extends AbstractComponentConfiguration<Object> implements ContainerConfiguration {
 
+    @Nullable
+    public PackedExtensionContext activeExtension;
+
     /** Any child containers of this component (lazily initialized), in order of insertion. */
     @Nullable
     public ArrayList<PackedContainerConfiguration> containers;
@@ -99,7 +102,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     /**
-     * Creates a new container configuration via {@link #link(Bundle, Wirelet...)}.
+     * Creates a new container configuration when {@link #link(Bundle, Wirelet...) linking a bundle}.
      * 
      * @param parent
      *            the parent container configuration
@@ -116,12 +119,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void buildDescriptor(BundleDescriptor.Builder builder, boolean isImage) {
-        // If we are an image we have already been built.
-        if (!isImage) {
-            doBuild();
-        }
-
+    public void buildDescriptor(BundleDescriptor.Builder builder) {
         builder.setBundleDescription(getDescription());
         builder.setName(getName());
         for (PackedExtensionContext e : extensions.values()) {
@@ -187,8 +185,10 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
 
         installPrepare(State.GET_NAME_INVOKED);
         for (PackedExtensionContext e : extensions.values()) {
+            activeExtension = e;
             e.onConfigured();
         }
+        activeExtension = null;
 
         WireletContext wc = new WireletContext();
         wc.apply(this, wirelets.toArray());
@@ -234,6 +234,15 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super.extensionsPrepareInstantiation(ic);
     }
 
+    /**
+     * Returns the context for the specified extension type. Or null if no extension of the specified type is installed.
+     * 
+     * @param extensionType
+     *            the type of extension to return a context for
+     * @return an extension's context, iff on of the specified type is already installed
+     * @see #use(Class)
+     * @see #useExtension(Class)
+     */
     @Nullable
     public PackedExtensionContext getExtension(Class<?> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
@@ -397,17 +406,27 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return (T) useExtension(extensionType).extension();
     }
 
+    /**
+     * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
+     * 
+     * @param extensionType
+     *            the type of extension
+     * @return the extension's context
+     * @throws IllegalStateException
+     *             if an extension of the specified type has not already been installed and the container is no longer
+     *             configurable
+     */
     public PackedExtensionContext useExtension(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         PackedExtensionContext pec = extensions.get(extensionType);
 
-        // We do not use the computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
+        // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (pec == null) {
             checkConfigurable(); // only allow installing new extensions if configurable
             extensions.put(extensionType, pec = new PackedExtensionContext(this, ExtensionModel.of(extensionType)));
-            initializeName(State.EXTENSION_USED, null);
-            pec.initialize();
+            initializeName(State.EXTENSION_USED, null); // initializes name of container, if not already set
+            pec.initialize(this); // initializes the extension
         }
         return pec;
     }

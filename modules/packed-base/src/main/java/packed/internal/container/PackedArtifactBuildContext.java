@@ -26,7 +26,7 @@ import app.packed.errorhandling.ErrorMessage;
 final class PackedArtifactBuildContext implements ArtifactBuildContext {
 
     /** The artifact's driver. */
-    private final ArtifactDriver<?> driver;
+    final ArtifactDriver<?> driver;
 
     /** The configuration of the artifacts top container. */
     private final PackedContainerConfiguration topContainerConfiguration;
@@ -53,7 +53,7 @@ final class PackedArtifactBuildContext implements ArtifactBuildContext {
     /** {@inheritDoc} */
     @Override
     public boolean isInstantiating() {
-        return driver.isInstantiating();
+        return false;
     }
 
     /** {@inheritDoc} */

@@ -235,7 +235,11 @@ public class BundleDescriptor {
 
     // Or just have a descriptor() on ContainerImage();
     public static BundleDescriptor of(ArtifactImage image) {
-        return of((ContainerSource) image);
+        requireNonNull(image, "image is null");
+        PackedContainerConfiguration conf = ModuleAccess.artifact().getConfiguration(image);
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(image.sourceType());
+        conf.buildDescriptor(builder);
+        return builder.build();
     }
 
     /**
@@ -248,29 +252,11 @@ public class BundleDescriptor {
     // ContainerSource????
     // For example, we should be able to take an image...
     public static BundleDescriptor of(Bundle bundle) {
-        return of((ContainerSource) bundle);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static BundleDescriptor of(ContainerSource source) {
-        requireNonNull(source, "source is null");
-        PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, source);
-        Class<? extends Bundle> bundleType;
-        boolean isImage;
-        if (source instanceof Bundle) {
-            bundleType = (Class<? extends Bundle>) source.getClass();
-            isImage = false;
-            conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, source);
-        } else if (source instanceof ArtifactImage) {
-            ArtifactImage img = (ArtifactImage) source;
-            bundleType = img.sourceType();
-            isImage = true;
-            conf = ModuleAccess.artifact().getConfiguration(img);
-        } else {
-            throw new IllegalArgumentException();
-        }
-        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundleType);
-        conf.buildDescriptor(builder, isImage);
+        requireNonNull(bundle, "bundle is null");
+        PackedContainerConfiguration conf = new PackedContainerConfiguration(BundleDescriptorArtifactDriver.INSTANCE, bundle);
+        conf.doBuild();
+        BundleDescriptor.Builder builder = new BundleDescriptor.Builder(bundle.getClass());
+        conf.buildDescriptor(builder);
         return builder.build();
     }
     // /**
