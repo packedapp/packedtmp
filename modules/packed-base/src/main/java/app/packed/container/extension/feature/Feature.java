@@ -19,8 +19,21 @@ import java.util.Optional;
 
 import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
+import app.packed.container.extension.Extension;
 import app.packed.lifecycle.RunState;
 import app.packed.util.Key;
+
+interface CliFeature extends Feature {}
+
+// Would also like to have an overview of resolved items...
+// How everything fits together???
+interface DependantFeature extends /* ConfiguritonTimeFeature */ Feature {
+    // Map<Key, List<ConfigSite>> <--- dependency = Parameter....
+
+    //// Throws ISE exception... if wrong time??
+    // Map<Key, ProvideFeature> resolved();
+    // Set<Key> unresolved();
+}
 
 /**
  *
@@ -34,19 +47,11 @@ public interface Feature {
 
     ConfigSite configSite();
 
+    // If there is no direct link to the component.
+    Class<? extends Extension> extension();
+
     ComponentPath path();
 }
-
-interface ProvideFeature extends Feature {
-    Key<?> key();
-
-    // Provide could also be a transformed service....
-    Optional<Key<?>> exportedAs();
-}
-
-interface MainFeature extends Feature {}
-
-interface CliFeature extends Feature {}
 
 interface LifecycleFeature extends Feature {
     RunState state();
@@ -54,16 +59,15 @@ interface LifecycleFeature extends Feature {
 }
 //// Component vs Container vs Artifact???
 
+interface MainFeature extends Feature {}
+
 // Bundle...
 
-// Would also like to have an overview of resolved items...
-// How everything fits together???
-interface DependantFeature extends /* ConfiguritonTimeFeature */ Feature {
-    // Map<Key, List<ConfigSite>> <--- dependency = Parameter....
+interface ProvideFeature extends Feature {
+    // Provide could also be a transformed service....
+    Optional<Key<?>> exportedAs();
 
-    //// Throws ISE exception... if wrong time??
-    // Map<Key, ProvideFeature> resolved();
-    // Set<Key> unresolved();
+    Key<?> key();
 }
 
 // Features vs Contract....

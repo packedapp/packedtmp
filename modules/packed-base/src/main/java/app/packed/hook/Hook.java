@@ -15,18 +15,11 @@
  */
 package app.packed.hook;
 
-import app.packed.component.ComponentConfiguration;
-
 /**
- *
+ * A marker interface
  */
-@FunctionalInterface
 
-// Problem den virker ikke paa runtime!!! dough dumme
-// Eller paa bundles...
+// Relations to AOP???
+public interface Hook {
 
-// Ved ikke lige hvad jeg taenkte....
-public interface HookGroupProcessor<P, G> {
-
-    void process(P processor, ComponentConfiguration<?> cc, G group);
 }

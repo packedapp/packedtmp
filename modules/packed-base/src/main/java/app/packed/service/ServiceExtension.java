@@ -23,7 +23,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
-import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
@@ -62,7 +62,7 @@ import packed.internal.service.run.AbstractInjector;
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
-public final class ServiceExtension extends ComposableExtension<ServiceExtension.Composer> {
+public final class ServiceExtension extends Extension {
 
     /** The extension node, initialized in {@link ServiceExtension.Composer#configure()}. */
     @Nullable
@@ -290,10 +290,10 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             onInstantiation((e, c) -> e.node.onInstantiate(c));
             onLinkage((p, c) -> p.node.link(c.node));
 
-            addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
             setPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
 
             // Descriptors and contracts
+            // What about runtime????
             exposeContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
 
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
@@ -301,6 +301,9 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             addPostProcessor(p -> {
                 p.root().use(ServiceExtension.class).provideInstance("fooo");
             });
+
+            // Dies
+            addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
 
             // Needing wirelet
             // contract, bundle, features?
@@ -313,7 +316,6 @@ public final class ServiceExtension extends ComposableExtension<ServiceExtension
             // f.eks. InstantionContext til instantiate
             // WithPipelines to buildDescriptor()
             // o.s.v.
-
         }
     }
 }

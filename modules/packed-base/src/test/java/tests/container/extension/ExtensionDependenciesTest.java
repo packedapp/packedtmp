@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import support.testutil.AbstractArtifactTest;
@@ -47,7 +46,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    static final class Ex1 extends ComposableExtension<Ex1.Composer> {
+    static final class Ex1 extends Extension {
 
         static class Composer extends ExtensionComposer<Ex1> {
 
@@ -59,7 +58,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
     }
 
-    static final class Ex2 extends ComposableExtension<Ex2.Composer> {
+    static final class Ex2 extends Extension {
 
         static class Composer extends ExtensionComposer<Ex2> {
 
@@ -75,7 +74,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     }
 
-    static final class ExRecursive1 extends ComposableExtension<ExRecursive1.Composer> {
+    static final class ExRecursive1 extends Extension {
 
         static class Composer extends ExtensionComposer<ExRecursive1> {
 
@@ -87,7 +86,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
     }
 
-    static final class ExRecursive2 extends ComposableExtension<ExRecursive2.Composer> {
+    static final class ExRecursive2 extends Extension {
         static class Composer extends ExtensionComposer<ExRecursive2> {
 
             /** {@inheritDoc} */

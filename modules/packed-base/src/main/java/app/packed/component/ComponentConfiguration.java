@@ -58,7 +58,7 @@ public interface ComponentConfiguration<T> {
     ConfigSite configSite();
 
     /**
-     * If this component belongs to an extension
+     * If this component is a part of extension, returns the extension. Otherwise returns empty.
      * 
      * @return any extension this component belongs to
      */

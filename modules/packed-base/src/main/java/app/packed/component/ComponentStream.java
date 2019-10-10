@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.feature.AFeature;
 
 /**
@@ -185,22 +186,57 @@ public interface ComponentStream extends Stream<Component> {
     ComponentStream sorted(Comparator<? super Component> comparator);
 
     /** {@inheritDoc} */
-    @Override // Only available from Java 9
+    @Override
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 
+    /**
+     * Skal kun indeholde ting vi ikke kan have i streamen.
+     */
+    /// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
+    /// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
+    // a.la. components.mapToVirtual....
+
+    public static final class Option {
+
+        /**
+         * Eclude
+         * 
+         * @return an option that includes all components that are owned by extensions
+         */
+        public static ComponentStream.Option includeExtensions() {
+            throw new UnsupportedOperationException();
+        }
+
+        @SafeVarargs
+        public static ComponentStream.Option includeExtensions(Class<? extends Extension>... extensionTypes) {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * Excludes the component from which the stream is created for being included in the stream. But still processes
+         * descendents of the component.
+         * 
+         * @return an option that excludes the component from which the stream is created
+         */
+        public static ComponentStream.Option excludeSelf() {
+            throw new UnsupportedOperationException();
+        }
+
+        public static ComponentStream.Option inSameContainer() {
+            throw new UnsupportedOperationException();
+        }
+
+        public static ComponentStream.Option inSameArtifact() {
+            throw new UnsupportedOperationException();
+        }
+
+        // maxDepth, maxRelativeDepth
+        // maxDepth, maxAbsoluteDepth <---- Taenker man oftest vil bruge relative, saa denne er nok bedst
+        // Omvendt skal maxDepth jo helst passe til component.depth som jo er absolute....
+
+        // processChildren, pro
+    }
 }
-// Alt det her kan vi vel saette paa streamen....
-//// Det var maaske taenkt som en boot ting...
-/// Ideen er lidt at hvis vi har en masse virtuelle komponenter. Saa gider vi ikke have dem med i default viewet....
-/// Men eftersom vi kun kan goere en stream mindre... Altsaa med mindre vi laver nogle flatmap tricks.
-// a.la. components.mapToVirtual....
-
-final class ComponentStreamOption {
-
-    // order
-}
-
-//
 // default <T> ComponentStream filterOnInstance(Class<T> type, Predicate<T> predicate) {
 // throw new UnsupportedOperationException();
 // }

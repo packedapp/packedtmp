@@ -36,9 +36,10 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
-import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 
@@ -103,16 +104,16 @@ public class FromImage {
         public void foo() {}
     }
 
-    public static class MyExtension extends ComposableExtension<MyExtension.Composer> {
+    public static class MyExtension extends Extension {
 
-        public void foo(ComponentConfiguration<?> cc, String s) {}
+        public void foo(ComponentConfiguration<?> cc, Foo s) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                addHookGroup(MyExtensionHookAggregator.class, MyExtensionHookAggregator::new, (e, cc, g) -> e.foo(cc, g));
+                addHookGroup(Foo.Builder.class, Foo.Builder::new, (e, cc, g) -> e.foo(cc, g));
             }
         }
     }
@@ -124,18 +125,27 @@ public class FromImage {
         String value();
     }
 
-    static class MyExtensionHookAggregator implements HookGroupBuilder<String> {
-        ActivateMyExtension e;
+    static class Foo implements Hook {
+        final String s;
 
-        @OnHook
-        public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
-            e = h.annotation();
+        Foo(String s) {
+            this.s = s;
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public String build() {
-            return e.toString();
+        static class Builder implements HookGroupBuilder<Foo> {
+            ActivateMyExtension e;
+
+            @OnHook
+            public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
+                e = h.annotation();
+            }
+
+            /** {@inheritDoc} */
+            @Override
+            public Foo build() {
+                return new Foo(e.toString());
+            }
         }
+
     }
 }

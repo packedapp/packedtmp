@@ -20,6 +20,7 @@ import java.util.List;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.FieldDescriptor;
@@ -30,7 +31,7 @@ import app.packed.service.ServiceDependency;
 /**
  *
  */
-public final class AtInjectGroup {
+public final class AtInjectGroup implements Hook {
 
     /** An immutable map of all providing members. */
     public final List<AtInject> members;

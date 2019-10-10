@@ -23,6 +23,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookApplicator;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
@@ -93,7 +94,7 @@ public class MyExtension extends Extension {
         }
     }
 
-    static class AXA {
+    static class AXA implements Hook {
         final int val;
         final List<HookApplicator<Supplier<Object>>> rars;
         final List<HookApplicator<Object>> methods;

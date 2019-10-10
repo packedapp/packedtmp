@@ -29,10 +29,11 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
-import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import support.testutil.AbstractArtifactTest;
@@ -99,53 +100,61 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         String value();
     }
 
-    static class Builder implements HookGroupBuilder<String> {
+    static class Foo implements Hook {
+        final String s;
 
-        /** {@inheritDoc} */
-        @Override
-        public String build() {
-            return "ffooo";
+        Foo(String s) {
+            this.s = s;
         }
 
-        @OnHook
-        public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
-            assertThat(h.annotation().value()).isEqualTo("Foo");
-            assertThat(h.field().getName()).isEqualTo("foo");
-            assertThat(h.varHandle()).isNotNull();
-            if (h.field().isStatic()) {
-                assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldStatic.class);
-                assertThat(h.varHandle().get()).isEqualTo("ABC");
-            } else {
-                assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldInstance.class);
-                assertThat(h.varHandle().get(new WithFieldInstance())).isEqualTo("ABC");
+        static class Builder implements HookGroupBuilder<Foo> {
+
+            /** {@inheritDoc} */
+            @Override
+            public Foo build() {
+                return new Foo("ffooo");
             }
-        }
 
-        @OnHook
-        public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
-            assertThat(h.annotation().value()).isEqualTo("Foo");
-            assertThat(h.method().getName()).isEqualTo("foo");
-            assertThat(h.methodHandle()).isNotNull();
-            if (h.method().isStatic()) {
-                assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodStatic.class);
-                assertThat(h.methodHandle().invoke()).isEqualTo("ABC");
-            } else {
-                assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodInstance.class);
-                assertThat(h.methodHandle().invoke(new WithMethodInstance())).isEqualTo("ABC");
+            @OnHook
+            public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
+                assertThat(h.annotation().value()).isEqualTo("Foo");
+                assertThat(h.field().getName()).isEqualTo("foo");
+                assertThat(h.varHandle()).isNotNull();
+                if (h.field().isStatic()) {
+                    assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldStatic.class);
+                    assertThat(h.varHandle().get()).isEqualTo("ABC");
+                } else {
+                    assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldInstance.class);
+                    assertThat(h.varHandle().get(new WithFieldInstance())).isEqualTo("ABC");
+                }
+            }
+
+            @OnHook
+            public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
+                assertThat(h.annotation().value()).isEqualTo("Foo");
+                assertThat(h.method().getName()).isEqualTo("foo");
+                assertThat(h.methodHandle()).isNotNull();
+                if (h.method().isStatic()) {
+                    assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodStatic.class);
+                    assertThat(h.methodHandle().invoke()).isEqualTo("ABC");
+                } else {
+                    assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodInstance.class);
+                    assertThat(h.methodHandle().invoke(new WithMethodInstance())).isEqualTo("ABC");
+                }
             }
         }
     }
 
-    public static final class MyExtension extends ComposableExtension<MyExtension.Composer> {
+    public static final class MyExtension extends Extension {
 
-        protected void set(ComponentConfiguration<?> a, String s) {}
+        protected void set(ComponentConfiguration<?> a, Foo s) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                addHookGroup(Builder.class, Builder::new, (e, cc, g) -> e.set(cc, g));
+                addHookGroup(Foo.Builder.class, Foo.Builder::new, (e, cc, g) -> e.set(cc, g));
             }
         }
     }
@@ -182,4 +191,5 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
             return "ABC";
         }
     }
+
 }

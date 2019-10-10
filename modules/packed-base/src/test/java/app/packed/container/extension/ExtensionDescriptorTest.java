@@ -49,7 +49,7 @@ public class ExtensionDescriptorTest {
         assertThatThrownBy(() -> ed.dependencies().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
-    static class VariousExtension extends ComposableExtension<VariousExtension.Composer> {
+    static class VariousExtension extends Extension {
         static class Composer extends ExtensionComposer<VariousExtension> {
 
             /** {@inheritDoc} */
@@ -82,7 +82,7 @@ public class ExtensionDescriptorTest {
         }
     }
 
-    static class EmptyExtension extends ComposableExtension<EmptyExtension.Composer> {
+    static class EmptyExtension extends Extension {
 
         static class Composer extends ExtensionComposer<EmptyExtension> {
 

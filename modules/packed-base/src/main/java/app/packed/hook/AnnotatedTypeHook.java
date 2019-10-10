@@ -24,7 +24,7 @@ import packed.internal.container.model.ComponentModel;
 /** A hook representing a instance whose type is annotated with a specific annotation type. */
 // Kan f.eks. bruges til @Provide, hvor vi i saa fald skal have adgang til en instans.......
 // Hvilket foerst kan ske paa runtime.... Ligesom AnnotatedMethods + Annotated Fields...
-public final class AnnotatedTypeHook<T extends Annotation> {
+public final class AnnotatedTypeHook<T extends Annotation> implements Hook {
 
     /** The annotation value. */
     private final T annotation;

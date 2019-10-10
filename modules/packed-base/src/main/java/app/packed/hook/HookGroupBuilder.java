@@ -19,13 +19,21 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 // TODO Skal vi have en abstract klasse med hjaelpe metoder istedet for?????
+// Maybe just call it builder....
 /**
  *
  * Must have at least one method annotated with {@link OnHook}.
  */
-public interface HookGroupBuilder<G> {
 
-    /** Builds and returns a hook group. */
+// Should we have <G extends Hook>????
+// CustomHookBuilder
+public interface HookGroupBuilder<G extends Hook> {
+
+    /**
+     * Invoked by the runtime when all relevant hook methods has been called.
+     * 
+     * @return the hook group that should be every time a component instance of the relevant type is encountered.
+     */
     G build();
 
     /**
@@ -47,7 +55,11 @@ public interface HookGroupBuilder<G> {
      *            be specified
      * @return a new group
      */
-    static <G, B extends HookGroupBuilder<G>> G generate(Lookup caller, Class<B> builderType, Class<?> target, Lookup... targetAccessor) {
+    static <G extends Hook, B extends HookGroupBuilder<G>> G generate(Lookup caller, Class<B> builderType, Class<?> target, Lookup... targetAccessor) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <G> G generate2(Lookup caller, Class<G> groupType, Class<?> target, Lookup... targetAccessor) {
         throw new UnsupportedOperationException();
     }
 
@@ -72,7 +84,7 @@ class MyBuilder implements HookGroupBuilder<Ob> {
     }
 }
 
-class Ob {
+class Ob implements Hook {
 
 }
 //// Will not cache generate value. You can put a ClassValue in front

@@ -46,7 +46,7 @@ import packed.internal.util.StringFormatter;
  * @param <T>
  *            the type of annotation this hook matches
  **/
-public final class AnnotatedFieldHook<T extends Annotation> {
+public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
     static {
         ModuleAccess.initialize(AppPackedHookAccess.class, new AppPackedHookAccess() {
@@ -208,6 +208,16 @@ public final class AnnotatedFieldHook<T extends Annotation> {
         return this;
     }
 
+    /**
+     * Checks that the wrapped field is declared as a static field. Throwing an {@link IllegalStateException} if the field
+     * is not static.
+     * 
+     * @return this hook
+     * @throws IllegalStateException
+     *             if the wrapped field is not a static field
+     * 
+     * @see Modifier#isStatic(int)
+     */
     public AnnotatedFieldHook<T> checkStatic() {
         if (!Modifier.isStatic(field.getModifiers())) {
             throw new IllegalStateException(

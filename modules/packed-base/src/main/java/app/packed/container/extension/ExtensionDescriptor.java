@@ -76,6 +76,9 @@ public final class ExtensionDescriptor {
         return model.extensionType;
     }
 
+    // public Hook
+    // Map<Class<? extends Hook>, List<Object>>
+
     /**
      * Returns an extension descriptor for the specified extension type.
      * 
@@ -88,6 +91,12 @@ public final class ExtensionDescriptor {
         requireNonNull(extensionType, "extensionType is null");
         return new ExtensionDescriptor(ExtensionModel.of(extensionType));
     }
+
+    public static void main(String[] args) {
+        for (var e : System.getProperties().entrySet()) {
+            System.out.println(e);
+        }
+    }
 }
 // A method for transitive dependencies...
 
@@ -99,10 +108,7 @@ public final class ExtensionDescriptor {
 //// What about export... Change stuff
 
 //// Her vil vi maaske gerne have
-
 // Hook Annotations
 //// Field | Method | Activating (Although you can see that on the Annotation)
-
 //// Other Extension
-
 //// Sidecars

@@ -13,20 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package app.packed.container.extension.feature;
 
-import app.packed.component.ComponentConfiguration;
+import app.packed.container.extension.Extension;
 
 /**
  *
  */
-@FunctionalInterface
 
-// Problem den virker ikke paa runtime!!! dough dumme
-// Eller paa bundles...
+// Description
+// Annotation(s)
 
-// Ved ikke lige hvad jeg taenkte....
-public interface HookGroupProcessor<P, G> {
+public final class FeatureDescriptor {
 
-    void process(P processor, ComponentConfiguration<?> cc, G group);
+    Class<? extends Extension> extension;
+
+    /**
+     * Returns the extension this feature belongs to.
+     * 
+     * @return the extension this feature belongs to
+     */
+    public Class<? extends Extension> extension() {
+        return extension;
+    }
 }

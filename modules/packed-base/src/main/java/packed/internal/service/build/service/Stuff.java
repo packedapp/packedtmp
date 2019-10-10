@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
-
-import app.packed.component.ComponentConfiguration;
+package packed.internal.service.build.service;
 
 /**
  *
  */
-@FunctionalInterface
+public class Stuff {
 
-// Problem den virker ikke paa runtime!!! dough dumme
-// Eller paa bundles...
-
-// Ved ikke lige hvad jeg taenkte....
-public interface HookGroupProcessor<P, G> {
-
-    void process(P processor, ComponentConfiguration<?> cc, G group);
+    public static void main(String[] args) {
+        for (var v : AtProvidesGroup.class.getDeclaredClasses()) {
+            System.out.println(v.getSimpleName());
+        }
+    }
 }

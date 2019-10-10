@@ -29,21 +29,8 @@ import app.packed.container.extension.feature.FeatureMap;
  */
 public interface Component {
 
-    Optional<Class<? extends Extension>> extension();
-
     default ComponentPath artifactPath() {
         // also on
-        throw new UnsupportedOperationException();
-    }
-
-    // Alternative have en Container extends Component....
-    // Maaske ikke extends Component.... Saa vi kan have
-    // container aggregates
-    // container().path()
-    // Vi vil gerne kunne give en component, uden at give adgang til dens container..
-    // same with artifact
-    default ComponentPath containerPath() {
-        // also on ComponentConfiguration
         throw new UnsupportedOperationException();
     }
 
@@ -60,6 +47,17 @@ public interface Component {
      * @return the configuration site of this component
      */
     ConfigSite configSite();
+
+    // Alternative have en Container extends Component....
+    // Maaske ikke extends Component.... Saa vi kan have
+    // container aggregates
+    // container().path()
+    // Vi vil gerne kunne give en component, uden at give adgang til dens container..
+    // same with artifact
+    default ComponentPath containerPath() {
+        // also on ComponentConfiguration
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the depth of the component in a tree of components.
@@ -79,25 +77,14 @@ public interface Component {
      */
     Optional<String> description();
 
+    /**
+     * If this component is a part of extension, returns the extension. Otherwise returns empty.
+     * 
+     * @return any extension this component belongs to
+     */
+    Optional<Class<? extends Extension>> extension();
+
     FeatureMap features();
-
-    // {
-    // Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
-    // F.eks. All dependencies for a component... Is this really a feature??
-    // Dependencies for a component is the once only the component uses. For a container it is all
-    // required dependencies for the module
-    // Features vs en selvstaendig komponent....
-    //// Altsaa det ser jo dumt ud hvis vi har
-    //// /Foo
-    //// /Foo/Service<String>
-    //// /Foo/AnotherComponent
-
-    ///// Dvs ogsaa scheduled jobs bliver lagt paa som meta data, som en feature
-
-    // Ideen er f.eks. at kunne returnere alle services en component exposer, men ikke give adgang til det...
-    // How does it relate to AttributeMap?
-    // throw new UnsupportedOperationException();
-    // }
 
     /**
      * Returns the name of this component.
@@ -127,6 +114,10 @@ public interface Component {
     // So we renamed it to stream();
     ComponentStream stream();
 
+    default ComponentStream stream(ComponentStream.Option... options) {
+        return stream();
+    }
+
     // Naah feature er vel readonly...
     // use kan komme paa ComponentContext og maaske ComponentConfiguration?
 
@@ -145,3 +136,21 @@ public interface Component {
         throw new UnsupportedOperationException();
     }
 }
+
+// {
+// Problemet med features er at vi har nogle vi gerne vil list som vaere der. Og andre ikke.
+// F.eks. All dependencies for a component... Is this really a feature??
+// Dependencies for a component is the once only the component uses. For a container it is all
+// required dependencies for the module
+// Features vs en selvstaendig komponent....
+//// Altsaa det ser jo dumt ud hvis vi har
+//// /Foo
+//// /Foo/Service<String>
+//// /Foo/AnotherComponent
+
+///// Dvs ogsaa scheduled jobs bliver lagt paa som meta data, som en feature
+
+// Ideen er f.eks. at kunne returnere alle services en component exposer, men ikke give adgang til det...
+// How does it relate to AttributeMap?
+// throw new UnsupportedOperationException();
+// }

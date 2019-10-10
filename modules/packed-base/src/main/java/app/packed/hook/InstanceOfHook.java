@@ -17,12 +17,14 @@ package app.packed.hook;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import packed.internal.container.model.ComponentModel;
 
 /**
  * Represent an annotated field on a component instance.
+ * 
+ * 
+ * This hook does not distinguish between different generic types.
+ * 
  */
 // Det skal bruges som plugin arkitektur.
 // Hvordan virker det paa kryds af containere???
@@ -32,8 +34,14 @@ import packed.internal.container.model.ComponentModel;
 
 // Hvordan virker det med generiske typer, f.eks. med List<String>
 //// Tror ikke vi supportere generiske typer....
+// Matchingen er sgu lidt compliceret. Men vi kunne jo godt have en TypeLiteral
+// returneret, og saa kan folk selv processere det
+// Eller hvad, vi skal vel bare impl
 
-public final class InstanceOfHook<T> {
+// InstanceOfHook<List<? extends String>
+
+// Does not currently support generic types...
+public final class InstanceOfHook<T> implements Hook {
 
     /** The builder for the component type. */
     final ComponentModel.Builder builder;
@@ -88,12 +96,5 @@ public final class InstanceOfHook<T> {
     // Check den virker generics, f.eks. med List
     Class<? extends T> type() {
         return actualType;
-    }
-}
-
-class MyHook {
-    public void foo(InstanceOfHook<List<?>> h) {
-
-        h.hookType();
     }
 }

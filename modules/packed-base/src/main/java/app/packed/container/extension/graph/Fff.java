@@ -16,8 +16,9 @@
 package app.packed.container.extension.graph;
 
 import app.packed.app.App;
+import app.packed.component.ComponentStream.Option;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.service.ServiceExtension;
 
@@ -45,6 +46,8 @@ public class Fff extends BaseBundle {
             System.out.println(e.extension() + " " + e.path());
         });
         System.out.println("Bye");
+
+        a.stream(Option.excludeSelf());
     }
 
     public static class OtherB extends BaseBundle {
@@ -59,7 +62,7 @@ public class Fff extends BaseBundle {
         }
     }
 
-    public static class MyExtension extends ComposableExtension<MyExtension.Composer> {
+    public static class MyExtension extends Extension {
 
         static final class Composer extends ExtensionComposer<MyExtension> {
 

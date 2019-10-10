@@ -102,12 +102,12 @@ public class BundleDescriptor {
     @Nullable
     private final String description;
 
+    private final LinkedHashSet<Class<? extends Extension>> extensions;
+
     @Nullable
     private String mainEntryPoint;// <--- CanonicalName#MethodName(without args)
 
     private final String name;
-
-    private final LinkedHashSet<Class<? extends Extension>> extensions;
 
     /**
      * Creates a new descriptor from the specified builder.
@@ -176,6 +176,15 @@ public class BundleDescriptor {
     }
 
     /**
+     * Returns an unmodifiable set of all the extensions the bundle uses.
+     * 
+     * @return an unmodifiable set of all the extensions the bundle uses
+     */
+    public Set<Class<? extends Extension>> extensions() {
+        return extensions; // Do we want some kind of order??? Topologically, name sorted?
+    }
+
+    /**
      * Returns the name of the bundle.
      * 
      * @return the name of the bundle
@@ -226,11 +235,6 @@ public class BundleDescriptor {
 
     public static ContractSet constractOf(BaseBundle bundle) {
         return BundleDescriptor.of(bundle).contracts();
-    }
-
-    public Set<Class<? extends Extension>> extensionsUsed() {
-        // Do we want some kind of order???
-        return extensions;
     }
 
     // Or just have a descriptor() on ContainerImage();
@@ -297,11 +301,11 @@ public class BundleDescriptor {
 
         private IdentityHashMap<Class<? extends Contract>, Contract> contracts = new IdentityHashMap<>();
 
+        public final LinkedHashSet<Class<? extends Extension>> extensions = new LinkedHashSet<>();
+
         private String name;
 
         private Map<Key<?>, ServiceDescriptor> services;
-
-        public final LinkedHashSet<Class<? extends Extension>> extensions = new LinkedHashSet<>();
 
         public Builder(Class<? extends Bundle> bundleType) {
             this.bundleType = requireNonNull(bundleType, "bundleType is null");

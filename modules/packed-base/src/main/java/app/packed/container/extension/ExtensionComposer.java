@@ -29,6 +29,7 @@ import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.extension.graph.ExtensionOracle;
 import app.packed.contract.Contract;
+import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.HookGroupProcessor;
 import packed.internal.container.extension.ExtensionComposerContext;
@@ -39,12 +40,12 @@ import packed.internal.util.TypeUtil;
  * An extension composer is used for specifying how an extension works.
  */
 // Ville vaere rart at kunne gruppe metoderne efter et system og et prefix
-public abstract class ExtensionComposer<E extends ComposableExtension<?>> {
+public abstract class ExtensionComposer<E extends Extension> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
 
-    protected final <B extends HookGroupBuilder<G>, G> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
+    protected final <B extends HookGroupBuilder<G>, G extends Hook> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
             HookGroupProcessor<E, G> groupProcessor) {
         // Sgu lidt noget moej paa runtime... Vi bliver maaske noedt til at tilfoeje den igen.
         // Dough...

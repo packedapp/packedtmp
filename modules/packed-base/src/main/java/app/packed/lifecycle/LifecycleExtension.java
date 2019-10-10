@@ -21,9 +21,10 @@ import java.util.function.Consumer;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.ComposableExtension;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookApplicator;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
@@ -58,7 +59,7 @@ import packed.internal.util.StringFormatter;
 
 // Smide denne ind under LifecycleExtension
 
-public final class LifecycleExtension extends ComposableExtension<LifecycleExtension.Composer> {
+public final class LifecycleExtension extends Extension {
 
     public <T> void main(Class<T> serviceKey, Consumer<? super T> consumer) {
         main(Key.of(serviceKey), consumer);
@@ -111,7 +112,7 @@ class LifecycleSidecar {
 
 }
 
-final class LifecycleHookAggregator implements HookGroupBuilder<LifecycleHookAggregator> {
+final class LifecycleHookAggregator implements HookGroupBuilder<LifecycleHookAggregator>, Hook {
 
     private final ArrayList<AnnotatedMethodHook<Main>> hooks = new ArrayList<>(1);
     HookApplicator<Runnable> applyDelayed;

@@ -25,9 +25,9 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.container.extension.ComposableExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
+import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
@@ -38,7 +38,6 @@ import packed.internal.hook.OnHookGroupModel;
 import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
@@ -157,9 +156,6 @@ public final class ExtensionModel<T extends Extension> {
     /** A builder for {@link ExtensionModel}. This class is public in order to called from {@link ExtensionComposer}. */
     static final class Builder extends ExtensionComposerContext {
 
-        /** An type extractor to find the extension type the node belongs to. */
-        private static final TypeVariableExtractor COMPOSABLE_EXTENSION_TV_EXTRACTOR = TypeVariableExtractor.of(ComposableExtension.class);
-
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
 
@@ -177,9 +173,19 @@ public final class ExtensionModel<T extends Extension> {
             constructor = ConstructorFinder.find(extensionType);
             this.hooks = new HookClassBuilder(extensionType, false);
 
-            if (ComposableExtension.class.isAssignableFrom(extensionType)) {
-                Class<? extends ExtensionComposer<?>> composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR
-                        .extract(extensionType);
+            Class<? extends ExtensionComposer<?>> composerType = null;
+
+            for (Class<?> c : extensionType.getDeclaredClasses()) {
+                if (c.getSimpleName().equals("Composer")) {
+                    if (!ExtensionComposer.class.isAssignableFrom(c)) {
+                        throw new ExtensionDeclarationException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
+                    }
+                    composerType = (Class<? extends ExtensionComposer<?>>) c;
+                }
+            }
+
+            if (composerType != null) {
+                // composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
                 // if (!Modifier.isFinal(nodeType.getModifiers())) {
                 // throw new ExtensionDeclarationException(
                 // "The extension node returned by onAdded(), must be declareda final, node type = " +

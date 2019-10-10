@@ -23,6 +23,11 @@ import java.util.Set;
 /**
  *
  */
+
+// Multimap
+// Feature -> Collection
+
+// ProvidedServices... getAll(ProvidedServices.class)
 public final class FeatureMap {
 
     private final IdentityHashMap<FeatureKey<?>, Object> features = new IdentityHashMap<>();

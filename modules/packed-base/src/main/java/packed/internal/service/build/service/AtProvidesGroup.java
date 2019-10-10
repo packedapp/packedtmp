@@ -22,6 +22,7 @@ import java.util.List;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.FieldDescriptor;
@@ -33,7 +34,7 @@ import app.packed.util.Key;
 import packed.internal.util.ErrorMessageBuilder;
 
 /** Information about fields and methods annotated with {@link Provide}. */
-public final class AtProvidesGroup {
+public final class AtProvidesGroup implements Hook {
 
     /** Whether or not there are any non-static providing fields or methods. */
     final boolean hasInstanceMembers;

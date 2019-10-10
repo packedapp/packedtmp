@@ -31,7 +31,7 @@ import packed.internal.container.model.ComponentModel;
 import packed.internal.hook.applicator.PackedMethodHookApplicator;
 
 /** A hook representing a method annotated with a specific type. */
-public final class AnnotatedMethodHook<T extends Annotation> {
+public final class AnnotatedMethodHook<T extends Annotation> implements Hook {
 
     /** The annotation value. */
     private final T annotation;

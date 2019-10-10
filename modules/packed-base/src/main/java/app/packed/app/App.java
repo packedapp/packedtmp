@@ -21,13 +21,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactImage;
-import app.packed.artifact.ArtifactContext;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
 import app.packed.component.ComponentStream;
+import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
@@ -179,6 +180,8 @@ public interface App extends AutoCloseable {
      * @return a component stream
      */
     ComponentStream stream();
+
+    ComponentStream stream(ComponentStream.Option... options);
 
     /**
      * @param <T>
@@ -398,5 +401,11 @@ final class PackedApp implements App {
     @Override
     public Component useComponent(CharSequence path) {
         return context.useComponent(path);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream stream(Option... options) {
+        return context.stream(options);
     }
 }

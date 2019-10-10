@@ -21,6 +21,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.reflect.MethodOperator;
@@ -83,7 +84,7 @@ public class MyExtension2 extends Extension {
         }
     }
 
-    static class AXA {
+    static class AXA implements Hook {
         final int val;
         final RuntimeAccessorList<Supplier<Object>> rars;
 
