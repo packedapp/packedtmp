@@ -32,10 +32,9 @@ import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
-import packed.internal.hook.HGBModel;
-import packed.internal.hook.HookClassBuilder;
-import packed.internal.hook.OnHookGroupModel;
 import packed.internal.module.ModuleAccess;
+import packed.internal.oldhook.HookClassBuilder;
+import packed.internal.oldhook.OnHookGroupModel;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.util.StringFormatter;
@@ -87,8 +86,6 @@ public final class ExtensionModel<T extends Extension> {
 
     public final BiConsumer<? super Extension, ? super ExtensionInstantiationContext> onInstantiation;
 
-    public final Set<HGBModel> groups;
-
     public final BiConsumer<? super Extension, ? super Extension> onLinkage;
 
     public final Set<Class<? extends Extension>> dependencies;
@@ -104,14 +101,13 @@ public final class ExtensionModel<T extends Extension> {
     private ExtensionModel(Builder builder) {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
-        this.hooks = new OnHookGroupModel(builder.hooks, extensionType);
+        this.hooks = new OnHookGroupModel(builder.hooks, builder.extensionType);
         this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilder = builder.builder;
         this.contracts = Map.copyOf(builder.contracts);
         this.onAdd = builder.onExtensionInstantiatedAction;
         this.onConfigured = builder.onConfiguredAction;
         this.onInstantiation = builder.onInstantiation;
-        this.groups = Set.copyOf(builder.hgbs);
         this.onLinkage = builder.onLinkage;
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType);
@@ -201,14 +197,11 @@ public final class ExtensionModel<T extends Extension> {
                 }
                 ModuleAccess.extension().configureComposer(ep, this);
 
-                for (HGBModel g : hgbs) {
-                    hooks.onHookGroup(g);
-                }
             }
         }
 
         private ExtensionModel<?> build() {
-            MemberFinder.findMethods(Extension.class, extensionType, method -> hooks.onHook(method));
+            MemberFinder.findMethods(Extension.class, extensionType, method -> hooks.processMethod(method));
             return new ExtensionModel<>(this);
         }
     }

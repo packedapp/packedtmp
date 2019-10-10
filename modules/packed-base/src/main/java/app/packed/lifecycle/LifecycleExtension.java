@@ -103,7 +103,6 @@ public final class LifecycleExtension extends Extension {
         @Override
         protected void configure() {
             onInstantiation((e, c) -> c.put(new LifecycleSidecar()));
-            addHookGroup(LifecycleHookAggregator.class, LifecycleHookAggregator::new, (e, cc, g) -> e.addMain(cc, g));
         }
     }
 }

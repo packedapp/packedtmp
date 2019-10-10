@@ -22,6 +22,7 @@ import app.packed.container.extension.graph.HookGroupProcessor;
 /**
  *
  */
+@Deprecated
 public class HGBModel {
 
     public final Supplier<?> builderFactory;

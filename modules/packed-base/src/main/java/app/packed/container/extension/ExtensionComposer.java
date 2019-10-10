@@ -21,20 +21,14 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.extension.graph.ExtensionOracle;
-import app.packed.container.extension.graph.HookGroupProcessor;
 import app.packed.contract.Contract;
-import app.packed.hook.Hook;
-import app.packed.hook.HookGroupBuilder;
 import packed.internal.container.extension.ExtensionComposerContext;
-import packed.internal.hook.HGBModel;
-import packed.internal.util.TypeUtil;
 
 /**
  * An extension composer is used for specifying how an extension works.
@@ -44,21 +38,6 @@ public abstract class ExtensionComposer<E extends Extension> {
 
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
-
-    protected final <B extends HookGroupBuilder<G>, G extends Hook> void addHookGroup(Class<B> builderType, Supplier<B> builderFactory,
-            HookGroupProcessor<E, G> groupProcessor) {
-        // Sgu lidt noget moej paa runtime... Vi bliver maaske noedt til at tilfoeje den igen.
-        // Dough...
-        requireNonNull(builderType, "builderType is null");
-        requireNonNull(builderFactory, "builderFactory is null");
-        requireNonNull(groupProcessor, "groupProcessor is null");
-        TypeUtil.checkClassIsInstantiable(builderType);
-        if (!HookGroupBuilder.class.isAssignableFrom(builderType)) {
-            throw new IllegalArgumentException("The specified builderType does not implement " + HookGroupBuilder.class.getSimpleName());
-        }
-        HGBModel m = new HGBModel(builderType, builderFactory, groupProcessor);
-        context().hgbs.add(m);
-    }
 
     protected final <P extends ExtensionWireletPipeline<P, ?>> void setPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");

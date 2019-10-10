@@ -58,7 +58,7 @@ final class HookCallback {
             return;
         }
         if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
-            mh.invoke(e, component, hookGroup);
+            mh.invoke(e, hookGroup, component);
         }
     }
 }

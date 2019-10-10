@@ -147,15 +147,14 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     public static final class MyExtension extends Extension {
 
-        protected void set(ComponentConfiguration<?> a, Foo s) {}
+        @OnHook
+        protected void set(Foo s, ComponentConfiguration<?> a) {}
 
         static class Composer extends ExtensionComposer<MyExtension> {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
-                addHookGroup(Foo.Builder.class, Foo.Builder::new, (e, cc, g) -> e.set(cc, g));
-            }
+            protected void configure() {}
         }
     }
 

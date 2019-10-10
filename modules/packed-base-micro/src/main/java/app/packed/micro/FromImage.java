@@ -112,9 +112,7 @@ public class FromImage {
 
             /** {@inheritDoc} */
             @Override
-            protected void configure() {
-                addHookGroup(Foo.Builder.class, Foo.Builder::new, (e, cc, g) -> e.foo(cc, g));
-            }
+            protected void configure() {}
         }
     }
 

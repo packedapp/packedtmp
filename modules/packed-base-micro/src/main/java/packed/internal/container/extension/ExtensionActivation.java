@@ -36,7 +36,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
 import app.packed.hook.HookGroupBuilder;
@@ -116,15 +115,6 @@ public class ExtensionActivation {
     public static class MyExtension extends Extension {
 
         public void foo(ComponentConfiguration<?> cc, Foo s) {}
-
-        static class Composer extends ExtensionComposer<MyExtension> {
-
-            /** {@inheritDoc} */
-            @Override
-            protected void configure() {
-                addHookGroup(Foo.Builder.class, Foo.Builder::new, (e, cc, g) -> e.foo(cc, g));
-            }
-        }
 
     }
 

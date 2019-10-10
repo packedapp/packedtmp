@@ -25,6 +25,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
+import app.packed.hook.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
@@ -276,6 +277,11 @@ public final class ServiceExtension extends Extension {
 
     }
 
+    @OnHook
+    void foo(AtProvidesGroup g, ComponentConfiguration<?> cc) {
+        node.provider().addProvidesGroup(cc, g);
+    }
+
     /** The composer for the service extension. */
     static final class Composer extends ExtensionComposer<ServiceExtension> {
 
@@ -303,7 +309,6 @@ public final class ServiceExtension extends Extension {
             });
 
             // Dies
-            addHookGroup(AtProvidesGroup.Builder.class, AtProvidesGroup.Builder::new, (e, cc, g) -> e.node.provider().addProvidesGroup(cc, g));
 
             // Needing wirelet
             // contract, bundle, features?
