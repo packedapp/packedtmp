@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -33,7 +32,6 @@ import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
-import packed.internal.hook.HGBModel;
 import packed.internal.util.StringFormatter;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
@@ -48,8 +46,6 @@ public abstract class ExtensionComposerContext {
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
 
     final HashSet<Class<? extends Extension>> dependencies = new HashSet<>();
-
-    public Set<HGBModel> hgbs = new HashSet<>();
 
     /** An action that will be run immediately after an extension has been configured. */
     @Nullable

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.oldhook;
+package packed.internal.crappyhook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,8 +29,6 @@ import java.util.IdentityHashMap;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.ExtensionComposer;
-import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
@@ -61,7 +59,7 @@ public final class HookClassBuilder {
     /** Fields annotated with {@link OnHook} taking a single {@link AnnotatedTypeHook} as parameter. */
     public final IdentityHashMap<Class<? extends Annotation>, MethodHandle> annotatedTypes = new IdentityHashMap<>();
 
-    public final IdentityHashMap<Class<?>, MethodHandle> groups = new IdentityHashMap<>();
+    public final IdentityHashMap<Class<?>, HGBModel> groups = new IdentityHashMap<>();
 
     /** Components that are of a specific type. */
     public final IdentityHashMap<Class<?>, MethodHandle> instanceOfs = new IdentityHashMap<>();
@@ -85,36 +83,35 @@ public final class HookClassBuilder {
         }
     }
 
-    private void onHook(Method method) {
-        Parameter[] parameters = method.getParameters();
-        if (parameters.length == 1 || (parameters.length == 2 && !isHookGroupBuilder && parameters[1].getType() == ComponentConfiguration.class)) {
-            Parameter p1 = parameters[0];
-            Class<?> hookType = p1.getType();
-            Parameter p2 = parameters.length == 2 ? parameters[1] : null;
+    public void onHook(Method method) {
+        if (method.isAnnotationPresent(OnHook.class)) {
+            Parameter[] parameters = method.getParameters();
+            if (parameters.length == 1 || (parameters.length == 2 && !isHookGroupBuilder && parameters[1].getType() == ComponentConfiguration.class)) {
+                Parameter p1 = parameters[0];
+                Class<?> hookType = p1.getType();
+                Parameter p2 = parameters.length == 2 ? parameters[1] : null;
 
-            if (hookType == AnnotatedFieldHook.class) {
-                onHook(lookup, method, p1, p2, annotatedFields);
-                return;
-            } else if (hookType == AnnotatedMethodHook.class) {
-                onHook(lookup, method, p1, p2, annotatedMethods);
-                return;
-            } else if (hookType == AnnotatedTypeHook.class) {
-                onHook(lookup, method, p1, p2, annotatedTypes);
-                return;
-            } else if (hookType == InstanceOfHook.class) {
-                throw new UnsupportedOperationException();
-            } else {
-                onHookGroupx(method, hookType);
-                return;
+                if (hookType == AnnotatedFieldHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedFields);
+                    return;
+                } else if (hookType == AnnotatedMethodHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedMethods);
+                    return;
+                } else if (hookType == AnnotatedTypeHook.class) {
+                    onHook(lookup, method, p1, p2, annotatedTypes);
+                    return;
+                } else if (hookType == InstanceOfHook.class) {
+                    throw new UnsupportedOperationException();
+                }
             }
-        }
 
-        if (isHookGroupBuilder) {
-            throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must take exactly one parameter of type "
-                    + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or "
-                    + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
-        } else {
-            throw new InvalidDeclarationException("stuff");
+            if (isHookGroupBuilder) {
+                throw new InvalidDeclarationException("Methods annotated with @OnHook on hook group builders must take exactly one parameter of type "
+                        + AnnotatedFieldHook.class.getSimpleName() + ", " + AnnotatedMethodHook.class.getSimpleName() + ", or "
+                        + AnnotatedTypeHook.class.getSimpleName() + ", " + " for method = " + StringFormatter.format(method));
+            } else {
+                throw new InvalidDeclarationException("stuff");
+            }
         }
     }
 
@@ -143,34 +140,11 @@ public final class HookClassBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private void onHookGroupx(Method method, Class<?> extensionType) {
-        if (isHookGroupBuilder) {
-            throw new InvalidDeclarationException(
-                    "Cannot use @" + OnHook.class.getSimpleName() + " on a hook group builder, method = " + StringFormatter.format(method));
-        }
+    public void onHookGroup(HGBModel model) {
 
-        Class<? extends HookGroupBuilder<?>> groupType = null;
+        Class<? extends HookGroupBuilder<?>> groupType = (Class<? extends HookGroupBuilder<?>>) model.builderType;
 
-        for (Class<?> c : extensionType.getDeclaredClasses()) {
-            if (c.getSimpleName().equals("Builder")) {
-                if (!HookGroupBuilder.class.isAssignableFrom(c)) {
-                    throw new ExtensionDeclarationException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
-                }
-                groupType = (Class<? extends HookGroupBuilder<?>>) c;
-            }
-        }
-
-        MethodHandle mh;
-        try {
-            mh = lookup.unreflect(method);
-        } catch (IllegalAccessException | InaccessibleObjectException e) {
-            throw new UncheckedIllegalAccessException("In order to use the extension " + StringFormatter.format(method.getDeclaringClass()) + ", the module '"
-                    + method.getDeclaringClass().getModule().getName() + "' in which the extension is located must be 'open' to 'app.packed.base'", e);
-        }
-
-        NativeImage.registerMethod(method);
-
-        groups.put(groupType, mh);
+        groups.put(groupType, model);
         HookGroupBuilderModel oha = HookGroupBuilderModel.of(groupType);
 
         // TODO we should check that the type matches....
@@ -178,11 +152,9 @@ public final class HookClassBuilder {
         annotatedFields.putAll(oha.annotatedFields);
         annotatedMethods.putAll(oha.annotatedMethods);
         annotatedTypes.putAll(oha.annotatedTypes);
+        // aggregators.p
+
+        // Do something
     }
 
-    public void processMethod(Method method) {
-        if (method.isAnnotationPresent(OnHook.class)) {
-            onHook(method); // will fail if also annotated with OnHookGroup
-        }
-    }
 }

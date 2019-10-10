@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.oldhook;
+package packed.internal.crappyhook;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -22,13 +22,11 @@ import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.HookGroupBuilder;
 import app.packed.hook.OnHook;
 import app.packed.util.InvalidDeclarationException;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
-import packed.internal.reflect.typevariable.TypeVariableExtractor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
@@ -57,14 +55,8 @@ public final class HookGroupBuilderModel {
     /** A map of all methods that takes a {@link AnnotatedMethodHook}. */
     final Map<Class<? extends Annotation>, MethodHandle> annotatedTypes;
 
-    /** The type of aggregator. */
-    private final Class<?> builderType;
-
     /** The method handle used to create a new instances. */
     private final MethodHandle constructor;
-
-    /** The type of result the aggregator produces. */
-    private final Class<?> groupType;
 
     /**
      * Creates a new model from the specified builder.
@@ -74,66 +66,9 @@ public final class HookGroupBuilderModel {
      */
     private HookGroupBuilderModel(Builder builder) {
         this.constructor = ConstructorFinder.find(builder.p.actualType);
-        this.builderType = builder.p.actualType;
-        this.groupType = builder.groupType;
         this.annotatedMethods = Map.copyOf(builder.p.annotatedMethods);
         this.annotatedFields = Map.copyOf(builder.p.annotatedFields);
         this.annotatedTypes = Map.copyOf(builder.p.annotatedTypes);
-    }
-
-    /**
-     * Returns the type of group the builder produces.
-     * 
-     * @return the type of group the builder produces
-     */
-    final Class<?> groupType() {
-        return groupType;
-    }
-
-    void invokeOnHook(HookGroupBuilder<?> groupBuilder, AnnotatedFieldHook<?> hook) {
-        if (groupBuilder.getClass() != builderType) {
-            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + groupBuilder.getClass());
-        }
-        Class<? extends Annotation> an = hook.annotation().annotationType();
-
-        MethodHandle om = annotatedFields.get(an);
-        if (om == null) {
-            // We will normally have checked for this previously
-            throw new IllegalStateException("" + an);
-        }
-
-        try {
-            om.invoke(groupBuilder, hook);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    void invokeOnHook(HookGroupBuilder<?> hgb, AnnotatedMethodHook<?> hook) {
-        if (hgb.getClass() != builderType) {
-            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + hgb.getClass());
-        }
-        Class<? extends Annotation> an = hook.annotation().annotationType();
-
-        MethodHandle om = annotatedMethods.get(an);
-        if (om == null) {
-            throw new IllegalStateException("" + an);
-        }
-
-        try {
-            om.invoke(hgb, hook);
-        } catch (Throwable e) {
-            ThrowableUtil.rethrowErrorOrRuntimeException(e);
-            throw new UndeclaredThrowableException(e);
-        }
-    }
-
-    void invokeOnHook(HookGroupBuilder<?> aggregator, AnnotatedTypeHook<?> hook) {
-        if (aggregator.getClass() != builderType) {
-            throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " + aggregator.getClass());
-        }
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -158,18 +93,12 @@ public final class HookGroupBuilderModel {
      *            the type of hook group builder
      * @return a model for the specified group builder type
      */
-    public static HookGroupBuilderModel of(Class<? extends HookGroupBuilder<?>> type) {
+    static HookGroupBuilderModel of(Class<? extends HookGroupBuilder<?>> type) {
         return MODEL_CACHE.get(type);
     }
 
     /** A builder object, that extract relevant methods from a hook group builder. */
     private static class Builder {
-
-        /** An type variable extractor to extract the type of hook group the builder produces. */
-        private static final TypeVariableExtractor AGGREGATE_BUILDER_TV_EXTRACTOR = TypeVariableExtractor.of(HookGroupBuilder.class);
-
-        /** The type of hook group the builder produces. */
-        private final Class<?> groupType;
 
         final HookClassBuilder p;
 
@@ -179,21 +108,66 @@ public final class HookGroupBuilderModel {
          * @param builderType
          *            the type of hook group builder
          */
-        @SuppressWarnings({ "rawtypes" })
         private Builder(Class<? extends HookGroupBuilder<?>> builderType) {
             p = new HookClassBuilder(builderType, true);
-            this.groupType = (Class) AGGREGATE_BUILDER_TV_EXTRACTOR.extract(builderType);
             TypeUtil.checkClassIsInstantiable(builderType);
         }
 
         HookGroupBuilderModel build() {
-            MemberFinder.findMethods(HookGroupBuilder.class, p.actualType, m -> p.processMethod(m));
+            MemberFinder.findMethods(HookGroupBuilder.class, p.actualType, m -> p.onHook(m));
             if (p.annotatedFields.isEmpty() && p.annotatedMethods.isEmpty() && p.annotatedTypes.isEmpty()) {
                 throw new InvalidDeclarationException("Hook aggregator builder '" + StringFormatter.format(p.actualType)
                         + "' must define at least one method annotated with @" + OnHook.class.getSimpleName());
             }
             return new HookGroupBuilderModel(this);
         }
-
     }
 }
+// void invokeOnHook(HookGroupBuilder<?> groupBuilder, AnnotatedFieldHook<?> hook) {
+// if (groupBuilder.getClass() != builderType) {
+// throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " +
+// groupBuilder.getClass());
+// }
+// Class<? extends Annotation> an = hook.annotation().annotationType();
+//
+// MethodHandle om = annotatedFields.get(an);
+// if (om == null) {
+// // We will normally have checked for this previously
+// throw new IllegalStateException("" + an);
+// }
+//
+// try {
+// om.invoke(groupBuilder, hook);
+// } catch (Throwable e) {
+// ThrowableUtil.rethrowErrorOrRuntimeException(e);
+// throw new UndeclaredThrowableException(e);
+// }
+// }
+//
+// void invokeOnHook(HookGroupBuilder<?> hgb, AnnotatedMethodHook<?> hook) {
+// if (hgb.getClass() != builderType) {
+// throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " +
+// hgb.getClass());
+// }
+// Class<? extends Annotation> an = hook.annotation().annotationType();
+//
+// MethodHandle om = annotatedMethods.get(an);
+// if (om == null) {
+// throw new IllegalStateException("" + an);
+// }
+//
+// try {
+// om.invoke(hgb, hook);
+// } catch (Throwable e) {
+// ThrowableUtil.rethrowErrorOrRuntimeException(e);
+// throw new UndeclaredThrowableException(e);
+// }
+// }
+//
+// void invokeOnHook(HookGroupBuilder<?> aggregator, AnnotatedTypeHook<?> hook) {
+// if (aggregator.getClass() != builderType) {
+// throw new IllegalArgumentException("Must be specify an aggregator of type " + builderType + ", but was " +
+// aggregator.getClass());
+// }
+// throw new UnsupportedOperationException();
+// }

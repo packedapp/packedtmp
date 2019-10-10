@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.crappyhook;
 
 import java.util.function.Supplier;
 
@@ -22,8 +22,7 @@ import app.packed.container.extension.graph.HookGroupProcessor;
 /**
  *
  */
-@Deprecated
-public class HGBModel {
+class HGBModel {
 
     public final Supplier<?> builderFactory;
 

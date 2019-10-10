@@ -1,4 +1,4 @@
-package packed.internal.oldhook;
+package packed.internal.crappyhook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -11,7 +11,7 @@ import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 
-/** This class contains information about hook group methods for an extension type. */
+/** This class contains information about on hook groups methods for an extension type. */
 public final class OnHookGroupModel {
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
@@ -27,7 +27,7 @@ public final class OnHookGroupModel {
     private final Class<? extends Extension> extensionType;
 
     /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
-    public final IdentityHashMap<Class<?>, MethodHandle> groups;
+    public final IdentityHashMap<Class<?>, HGBModel> groups;
 
     /**
      * Creates a new group model.

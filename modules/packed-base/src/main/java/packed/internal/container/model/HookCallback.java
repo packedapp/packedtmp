@@ -15,14 +15,10 @@
  */
 package packed.internal.container.model;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
-import app.packed.container.extension.graph.HookGroupProcessor;
-import packed.internal.hook.HGBModel;
 
 /**
  *
@@ -32,15 +28,7 @@ final class HookCallback {
 
     private final Object hookGroup;
 
-    HGBModel m;
-
     private final MethodHandle mh;
-
-    public HookCallback(HGBModel m, Object hookGroup) {
-        this.mh = null;
-        this.m = requireNonNull(m);
-        this.hookGroup = hookGroup;
-    }
 
     /**
      * @param mh
@@ -51,12 +39,8 @@ final class HookCallback {
         this.hookGroup = hookGroup;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes" })
     public void invoke(Extension e, ComponentConfiguration component) throws Throwable {
-        if (m != null) {
-            ((HookGroupProcessor) m.groupProcessor).process(e, component, hookGroup);
-            return;
-        }
         if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
             mh.invoke(e, hookGroup, component);
         }
