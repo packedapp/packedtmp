@@ -32,17 +32,21 @@ public final class MemberFinder {
     /** We never process any classes that are located in java.base. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
+    /** Never instantiate. */
+    private MemberFinder() {}
+
     private static void find(Class<?> baseType, Class<?> actualType, Consumer<? super Method> methodConsumer, Consumer<? super Field> fieldConsumer) {
-        HashSet<Package> PKG = new HashSet<>();
+        HashSet<Package> packages = new HashSet<>();
+        HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
+
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
-        HashMap<MethodEntry, HashSet<Package>> types = new HashMap<>();
         for (Method m : actualType.getMethods()) {
             // Filter methods whose declaring class is in java.base and bridge methods
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                 // Should we also ignore methods on base class????
                 methodConsumer.accept(m);// move this to step 2???
-                types.put(new MethodEntry(m), PKG);
+                types.put(new MethodEntry(m), packages);
             }
         }
 
@@ -63,7 +67,7 @@ public final class MemberFinder {
                         // We do this, because it would be strange to include
                         // static methods on any interfaces this class implements.
                         // But it would also be strange to include static methods on sub classes
-                        // if we do not include static methods on interfaces.
+                        // but not include static methods on interfaces.
                         methodConsumer.accept(m);
                     }
                 } else if (!m.isBridge()) {
@@ -72,13 +76,13 @@ public final class MemberFinder {
                         continue; // we have already added the method in the first step
                     default: // default access
                         HashSet<Package> pkg = types.computeIfAbsent(new MethodEntry(m), key -> new HashSet<>());
-                        if (pkg != PKG && pkg.add(c.getPackage())) {
+                        if (pkg != packages && pkg.add(c.getPackage())) {
                             break;
                         } else {
                             continue;
                         }
                     case Modifier.PROTECTED:
-                        if (types.putIfAbsent(new MethodEntry(m), PKG) != null) {
+                        if (types.putIfAbsent(new MethodEntry(m), packages) != null) {
                             continue;
                         }
                         // otherwise fall-through
@@ -102,7 +106,7 @@ public final class MemberFinder {
 
     private static final class MethodEntry {
 
-        /** A pre calculated hash. */
+        /** A pre-calculated hash. */
         private final int hash;
 
         /** The name of the method */

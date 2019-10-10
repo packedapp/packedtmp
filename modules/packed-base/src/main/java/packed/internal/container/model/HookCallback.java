@@ -22,44 +22,43 @@ import java.lang.invoke.MethodHandle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.graph.HookGroupProcessor;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.HGBModel;
 
 /**
  *
  */
 // Bruges til at kalde tilbage paa extensions
-final class ExtensionCallback {
-
-    private final MethodHandle mh;
+final class HookCallback {
 
     private final Object hookGroup;
 
-    /**
-     * @param mh
-     * @param hookGroup
-     */
-    public ExtensionCallback(MethodHandle mh, Object hookGroup) {
-        this.mh = mh;
-        this.hookGroup = hookGroup;
-    }
-
     HGBModel m;
 
-    public ExtensionCallback(HGBModel m, Object hookGroup) {
+    private final MethodHandle mh;
+
+    public HookCallback(HGBModel m, Object hookGroup) {
         this.mh = null;
         this.m = requireNonNull(m);
         this.hookGroup = hookGroup;
     }
 
+    /**
+     * @param mh
+     * @param hookGroup
+     */
+    public HookCallback(MethodHandle mh, Object hookGroup) {
+        this.mh = mh;
+        this.hookGroup = hookGroup;
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void invoke(PackedExtensionContext e, ComponentConfiguration component) throws Throwable {
+    public void invoke(Extension e, ComponentConfiguration component) throws Throwable {
         if (m != null) {
-            ((HookGroupProcessor) m.groupProcessor).process(e.extension(), component, hookGroup);
+            ((HookGroupProcessor) m.groupProcessor).process(e, component, hookGroup);
             return;
         }
         if (Extension.class.isAssignableFrom(mh.type().parameterType(0))) {
-            mh.invoke(e.extension(), component, hookGroup);
+            mh.invoke(e, component, hookGroup);
         }
     }
 }

@@ -82,6 +82,7 @@ public final class ModuleAccess {
      *            the access object
      */
     public static <T extends SecretAccess> void initialize(Class<T> accessType, T access) {
+        // access.getInterface()
         if (TMP.putIfAbsent(accessType, access) != null) {
             throw new ExceptionInInitializerError("An instance of " + accessType + " has already been set ");
         }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.container.model;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.util.Nullable;
-import packed.internal.container.model.ComponentLookup;
 
 /**
  *

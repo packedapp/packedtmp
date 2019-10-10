@@ -24,13 +24,37 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.AnnotatedTypeHook;
 import packed.internal.container.model.ComponentModel;
 
-/**
- *
- */
+/** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess extends SecretAccess {
 
+    /**
+     * Creates a new instance of {@link AnnotatedFieldHook}.
+     * 
+     * @param <T>
+     *            the type of annotation
+     * @param builder
+     *            the component model builder
+     * @param field
+     *            the annotated field
+     * @param annotation
+     *            the annotation value
+     * @return the new annotated field hook
+     */
     <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation);
 
+    /**
+     * Creates a new instance of {@link AnnotatedMethodHook}.
+     * 
+     * @param <T>
+     *            the type of annotation
+     * @param builder
+     *            the component model builder
+     * @param method
+     *            the annotated method
+     * @param annotation
+     *            the annotation value
+     * @return the new annotated field hook
+     */
     <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(ComponentModel.Builder builder, Method method, T annotation);
 
     /**

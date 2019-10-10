@@ -74,9 +74,9 @@ public final class ConstructorFinder {
         if (!onType.getModule().isOpen(pckName, THIS_MODULE)) {
             String otherModule = onType.getModule().getName();
             String m = THIS_MODULE.getName();
-            throw new ExtensionDeclarationException(
-                    "In order for Packed to instantiate '" + StringFormatter.format(onType) + "', the module '" + otherModule + "' must be open to '" + m
-                            + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info of " + otherModule);
+            throw new ExtensionDeclarationException("In order to instantiate '" + StringFormatter.format(onType) + "', the module '" + otherModule
+                    + "' must be open to '" + m + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m
+                    + ";' to the module-info.java file of " + otherModule);
         }
 
         // Make sure we can read the module where the extension is located.

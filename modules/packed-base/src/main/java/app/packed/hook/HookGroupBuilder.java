@@ -17,12 +17,12 @@ package app.packed.hook;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-// TODO Skal vi have en abstract klasse med hjaelpe metoder istedet for?????
 /**
  *
  * Must have at least one method annotated with {@link OnHook}.
  */
 
+// TODO Skal vi have en abstract klasse med hjaelpe metoder istedet for?????
 // CustomHookBuilder
 public interface HookGroupBuilder<T extends Hook> {
 

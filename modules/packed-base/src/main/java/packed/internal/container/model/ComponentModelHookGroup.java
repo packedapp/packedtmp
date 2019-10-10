@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -33,7 +34,6 @@ import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.HookGroupBuilder;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.HGBModel;
 import packed.internal.hook.HookGroupBuilderModel;
 import packed.internal.hook.OnHookGroupModel;
@@ -47,7 +47,7 @@ import packed.internal.util.ThrowableUtil;
 final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
-    private final List<ExtensionCallback> callbacks;
+    private final List<HookCallback> callbacks;
 
     /** The type of extension that will be activated. */
     private final Class<? extends Extension> extensionType;
@@ -57,20 +57,17 @@ final class ComponentModelHookGroup {
         this.callbacks = List.copyOf(builder.callbacks);
     }
 
-    void addTo(PackedContainerConfiguration container, ComponentConfiguration<?> component) throws Throwable {
-        // There should probably be some order we call extensions in....
-        /// Other first, packed lasts?
-
-        PackedExtensionContext context = container.useExtension(extensionType); // should be ordered...s
-        for (ExtensionCallback c : callbacks) {
-            c.invoke(context, component);
+    void addTo(PackedContainerConfiguration container, ComponentConfiguration<?> cc) throws Throwable {
+        Extension e = container.use(extensionType); // should be ordered...s
+        for (HookCallback c : callbacks) {
+            c.invoke(e, cc);
         }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static final class Builder {
 
-        private final ArrayList<ExtensionCallback> callbacks = new ArrayList<>();
+        private final ArrayList<HookCallback> callbacks = new ArrayList<>();
 
         /** The component model builder that is creating this group. */
         private final ComponentModel.Builder componentModelBuilder;
@@ -94,7 +91,7 @@ final class ComponentModelHookGroup {
         ComponentModelHookGroup build() {
             for (Entry<Class<?>, HookGroupBuilder<?>> m : groupBuilders.entrySet()) {
                 HGBModel mh = con.groups.get(m.getKey());
-                callbacks.add(new ExtensionCallback(mh, m.getValue().build()));
+                callbacks.add(new HookCallback(mh, m.getValue().build()));
             }
             return new ComponentModelHookGroup(this);
         }
@@ -112,7 +109,7 @@ final class ComponentModelHookGroup {
         private void process(MethodHandle mh, Object hook) {
             Class<?> owner = mh.type().parameterType(0);
             if (owner == extensionType) {
-                callbacks.add(new ExtensionCallback(mh, hook));
+                callbacks.add(new HookCallback(mh, hook));
                 throw new Error();
             } else {
                 processBuilder(mh, (Class<? extends HookGroupBuilder<?>>) owner, hook);
@@ -125,7 +122,7 @@ final class ComponentModelHookGroup {
                 mh.invoke(b, hook);
             } catch (Throwable e) {
                 ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                throw new RuntimeException(e);
+                throw new UndeclaredThrowableException(e);
             }
         }
     }

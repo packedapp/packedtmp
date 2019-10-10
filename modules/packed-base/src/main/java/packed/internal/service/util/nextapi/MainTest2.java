@@ -16,14 +16,13 @@
 package packed.internal.service.util.nextapi;
 
 import app.packed.app.App;
-import app.packed.app.AppBundle;
 import app.packed.container.BaseBundle;
 import app.packed.lifecycle.Main;
 
 /**
  *
  */
-public class MainTest2 extends AppBundle {
+public class MainTest2 extends BaseBundle {
 
     @Override
     protected void configure() {

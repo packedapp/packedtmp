@@ -51,17 +51,20 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
     static {
         ModuleAccess.initialize(AppPackedHookAccess.class, new AppPackedHookAccess() {
 
+            /** {@inheritDoc} */
             @Override
             public <T extends Annotation> AnnotatedFieldHook<T> newAnnotatedFieldHook(ComponentModel.Builder builder, Field field, T annotation) {
                 return new AnnotatedFieldHook<>(builder, field, annotation);
             }
 
+            /** {@inheritDoc} */
             @Override
             public <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(packed.internal.container.model.ComponentModel.Builder builder,
                     Method method, T annotation) {
                 return new AnnotatedMethodHook<>(builder, method, annotation);
             }
 
+            /** {@inheritDoc} */
             @Override
             public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(Builder builder, Class<?> type, T annotation) {
                 return new AnnotatedTypeHook<>(builder, type, annotation);

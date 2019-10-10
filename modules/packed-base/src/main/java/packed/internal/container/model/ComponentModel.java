@@ -57,6 +57,9 @@ public final class ComponentModel {
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
             ComponentConfiguration<T> componentConfiguration) {
         try {
+            // There should probably be some order we call extensions in....
+            /// Other first, packed lasts?
+            /// Think they need an order id....
             for (ComponentModelHookGroup group : hookGroups) {
                 group.addTo(containerConfiguration, componentConfiguration);
             }

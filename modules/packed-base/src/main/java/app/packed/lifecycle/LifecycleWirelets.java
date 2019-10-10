@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import app.packed.app.App;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
+import app.packed.container.extension.Extension;
 import app.packed.service.ServiceWirelets;
 
 /**
@@ -81,4 +82,11 @@ public final class LifecycleWirelets {
         throw new UnsupportedOperationException();
     }
 
+    public static Wirelet shutdownOnCTRL_C() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet shutdownOnCTRL_C(Supplier<? extends Extension> withException) {
+        throw new UnsupportedOperationException();
+    }
 }
