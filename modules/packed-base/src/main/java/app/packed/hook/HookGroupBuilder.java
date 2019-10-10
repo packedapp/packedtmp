@@ -15,78 +15,86 @@
  */
 package app.packed.hook;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 // TODO Skal vi have en abstract klasse med hjaelpe metoder istedet for?????
-// Maybe just call it builder....
 /**
  *
  * Must have at least one method annotated with {@link OnHook}.
  */
 
-// Should we have <G extends Hook>????
 // CustomHookBuilder
-public interface HookGroupBuilder<G extends Hook> {
+public interface HookGroupBuilder<T extends Hook> {
 
     /**
      * Invoked by the runtime when all relevant hook methods has been called.
      * 
      * @return the hook group that should be every time a component instance of the relevant type is encountered.
      */
-    G build();
+    T build();
 
     /**
      * A class that. Mainly used for testing. Instead of needing to spin up a container.
      * 
-     * @param <G>
+     * @param <T>
      *            the type of hook group to generate
-     * @param <B>
-     *            the type of builder
+     * @param groupType
+     *            the builder type to instantiate
      * @param caller
      *            a lookup object that has permissions to instantiate the builder and access its and the targets hookable
      *            methods.
-     * @param builderType
-     *            the builder type to instantiate
      * @param target
-     *            the target class that should be processed
-     * @param targetAccessor
-     *            if the specified caller does not have open rights to the specified target. Additional lookup objects can
-     *            be specified
+     *            the target class that should be processed be specified
      * @return a new group
      */
-    static <G extends Hook, B extends HookGroupBuilder<G>> G generate(Lookup caller, Class<B> builderType, Class<?> target, Lookup... targetAccessor) {
+    static <T extends Hook> T generate(Class<T> groupType, Lookup caller, Class<?> target) {
         throw new UnsupportedOperationException();
     }
 
-    static <G> G generate2(Lookup caller, Class<G> groupType, Class<?> target, Lookup... targetAccessor) {
+    static <T extends Hook> T generate(Class<T> groupType, Class<?> target) {
         throw new UnsupportedOperationException();
     }
 
     public static void main(String[] args) {
-        Ob o = generate(MethodHandles.lookup(), MyBuilder.class, String.class);
+        Ob o = generate(Ob.class, String.class);
         System.out.println(o);
-    }
-}
 
-class MyBuilder implements HookGroupBuilder<Ob> {
-
-    /** {@inheritDoc} */
-    @Override
-    public Ob build() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @OnHook
-    public void onHook(AnnotatedFieldHook<Deprecated> f) {
-
+        // Function<Class<?>, Ob> ff = s -> generate(Ob.class, s);
     }
 }
 
 class Ob implements Hook {
 
+    static class Builder implements HookGroupBuilder<Ob> {
+
+        /** {@inheritDoc} */
+        @Override
+        public Ob build() {
+            return new Ob();
+        }
+
+        @OnHook
+        public void onHook(AnnotatedFieldHook<Deprecated> f) {}
+    }
 }
+
+/// **
+// * A class that. Mainly used for testing. Instead of needing to spin up a container.
+// *
+// * @param <G>
+// * the type of hook group to generate
+// * @param caller
+// * a lookup object that has permissions to instantiate the builder and access its and the targets hookable
+// * methods.
+// * @param groupType
+// * the builder type to instantiate
+// * @param target
+// * the target class that should be processed
+// * @param targetAccessor
+// * if the specified caller does not have open rights to the specified target. Additional lookup objects can
+// * be specified
+// * @return a new group
+// */
 //// Will not cache generate value. You can put a ClassValue in front
 //// Tror vi dropper denne...
 // static <G, B extends HookGroupBuilder<G>> Function<Class<?>, G> generate(Lookup caller, Class<B> builderType) {

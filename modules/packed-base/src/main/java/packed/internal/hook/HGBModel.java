@@ -17,7 +17,7 @@ package packed.internal.hook;
 
 import java.util.function.Supplier;
 
-import app.packed.hook.HookGroupProcessor;
+import app.packed.container.extension.graph.HookGroupProcessor;
 
 /**
  *

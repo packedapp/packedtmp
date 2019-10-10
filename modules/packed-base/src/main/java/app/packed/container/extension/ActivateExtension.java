@@ -47,6 +47,8 @@ import java.lang.annotation.Target;
 // Hook Annotations
 // Other Extensions... Or just use Extension#use
 // Hook Class/Interface, for example, @ActivateExtension(LoggingExtension.class) Logger
+
+// RequireExtension, UseExtension, ActivateExtension
 public @interface ActivateExtension {
 
     /**

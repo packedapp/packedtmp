@@ -15,7 +15,11 @@
  */
 package app.packed.host;
 
+import java.util.function.Consumer;
+
 import app.packed.component.ComponentConfiguration;
+import app.packed.container.extension.Extension;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 
 /**
@@ -23,8 +27,18 @@ import app.packed.util.Key;
  */
 interface HostConfiguration<T> extends ComponentConfiguration<T> {
 
+    // Ideen er at man kan sige hvem skal ligesom skinne igennem
+
+    // Skal sgu maaske vaere specifikt...
+    HostConfiguration<T> add(Extension e);
+
+    <S extends HostConfigurator<?>> HostConfiguration<T> add(Class<S> cl, Consumer<S> c);
+
+    HostConfiguration<T> add(Extension e, Object hostConfigurator);
+
     HostConfiguration<T> as(Key<? extends Host> key);
 }
+
 // Component
 // -> Container
 // -> Noneton
@@ -40,3 +54,22 @@ interface HostConfiguration<T> extends ComponentConfiguration<T> {
 
 // ComponentInstanceMultiplicity
 /// NONE, SINGLE, MANY
+
+class Usage {
+    void foo(HostConfiguration<?> hc) {
+        hc.add(ServiceHostConfigurator.class, e -> e.export(Key.of(String.class)));
+    }
+}
+
+class ServiceHostConfigurator implements HostConfigurator<ServiceExtension> {
+
+    // Maybe just specify a contract
+
+    public void export(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+}
+
+interface HostConfigurator<E extends Extension> {
+
+}

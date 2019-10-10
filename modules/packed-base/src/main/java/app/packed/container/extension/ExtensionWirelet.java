@@ -39,8 +39,6 @@ public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<T, ?>>
 // Dvs f.eks. Wirelet.println("fooooBar").. Eller ting der skal saettes i andre extensions... f.eks.
 // disableStackCapturing(), Service.provide(Stuff), enabledStackCapturing()...
 
-//
-
 // Vi bliver noedt til at lave noget sen-validering af en evt. parent extension
 
 // Alternativt, skulle vi forbyde installering af extension, efter link()

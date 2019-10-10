@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
-import app.packed.hook.HookGroupProcessor;
+import app.packed.container.extension.graph.HookGroupProcessor;
 import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.hook.HGBModel;
 
