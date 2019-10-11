@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xpacked.internal.container.extension.hook.test;
+package tests;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.function.BiConsumer;
 
-import app.packed.container.extension.ActivateExtension;
+import app.packed.component.ComponentConfiguration;
+import app.packed.hook.AnnotatedFieldHook;
+import app.packed.reflect.VarOperator;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD })
 /**
  *
  */
-@ActivateExtension(MyExtension.class)
-public @interface MyA {
-    int value();
+public class RuntimeAccessorList<T> {
+
+    public <S> void readyAll(ComponentConfiguration<?> cc, Class<S> sidecarType, BiConsumer<S, T> consumer) {}
+
+    public RuntimeAccessorList<T> add(AnnotatedFieldHook<?> hook, VarOperator<T> operator) {
+        return this;
+    }
 }

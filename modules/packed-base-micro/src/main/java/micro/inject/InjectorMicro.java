@@ -28,8 +28,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.service.Injector;
+import app.packed.service.ServiceExtension;
 
 /**
  *
@@ -75,11 +76,12 @@ public class InjectorMicro {
         NeedsString(String s) {}
     }
 
-    static class SimpleInjector extends BaseBundle {
+    static class SimpleInjector extends Bundle {
 
         @Override
         public void configure() {
-            export(provideInstance("Hey"));
+            ServiceExtension e = use(ServiceExtension.class);
+            e.export(e.provideInstance("Hey"));
         }
     }
 }

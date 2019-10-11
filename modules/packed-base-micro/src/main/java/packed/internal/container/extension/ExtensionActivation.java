@@ -33,7 +33,8 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.BaseBundle;
+import app.packed.component.ComponentExtension;
+import app.packed.container.Bundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedMethodHook;
@@ -54,7 +55,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage empty() {
-        BaseBundle b = new BaseBundle() {
+        Bundle b = new Bundle() {
             @Override
             protected void configure() {}
         };
@@ -63,7 +64,7 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage useExtension() {
-        BaseBundle b = new BaseBundle() {
+        Bundle b = new Bundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
@@ -74,10 +75,10 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage install() {
-        BaseBundle b = new BaseBundle() {
+        Bundle b = new Bundle() {
             @Override
             public void configure() {
-                installInstance("foo");
+                use(ComponentExtension.class).installInstance("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -85,11 +86,11 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage newExtensionUseInstall() {
-        BaseBundle b = new BaseBundle() {
+        Bundle b = new Bundle() {
             @Override
             public void configure() {
                 use(MyExtension.class);
-                installInstance("foo");
+                use(ComponentExtension.class).installInstance("foo");
             }
         };
         return ArtifactImage.of(b);
@@ -97,10 +98,10 @@ public class ExtensionActivation {
 
     @Benchmark
     public ArtifactImage newExtensionAutoActivate() {
-        BaseBundle b = new BaseBundle() {
+        Bundle b = new Bundle() {
             @Override
             public void configure() {
-                installInstance(new MyStuff());
+                use(ComponentExtension.class).installInstance(new MyStuff());
             }
         };
         return ArtifactImage.of(b);

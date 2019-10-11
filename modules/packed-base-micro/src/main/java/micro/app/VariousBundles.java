@@ -16,7 +16,7 @@
 package micro.app;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.BaseBundle;
+import app.packed.component.ComponentExtension;
 import app.packed.container.Bundle;
 
 /**
@@ -30,42 +30,42 @@ public class VariousBundles {
     public static final ArtifactImage ONE_CONTAINER_IMAGE = ArtifactImage.of(oneContainer());
 
     public static Bundle empty() {
-        return new BaseBundle() {
+        return new Bundle() {
             @Override
             protected void configure() {}
         };
     }
 
     public static Bundle oneComponent() {
-        return new BaseBundle() {
+        return new Bundle() {
 
             @Override
             public void configure() {
-                installInstance("foo");
+                use(ComponentExtension.class).installInstance("foo");
             }
         };
     }
 
     public static Bundle fiveComponents() {
-        return new BaseBundle() {
+        return new Bundle() {
 
             @Override
             public void configure() {
-                installInstance("foo").setName("1");
-                installInstance("foo").setName("2");
-                installInstance("foo").setName("3");
-                installInstance("foo").setName("4");
-                installInstance("foo").setName("5");
+                use(ComponentExtension.class).installInstance("foo").setName("1");
+                use(ComponentExtension.class).installInstance("foo").setName("2");
+                use(ComponentExtension.class).installInstance("foo").setName("3");
+                use(ComponentExtension.class).installInstance("foo").setName("4");
+                use(ComponentExtension.class).installInstance("foo").setName("5");
             }
         };
     }
 
     public static Bundle oneContainer() {
-        return new BaseBundle() {
+        return new Bundle() {
 
             @Override
             public void configure() {
-                link(new BaseBundle() {
+                link(new Bundle() {
                     @Override
                     protected void configure() {}
                 });

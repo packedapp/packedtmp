@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package tests;
 
+import app.packed.app.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.Bundle;
@@ -36,7 +37,7 @@ import app.packed.service.ServiceWirelets;
  */
 // Det der taeller imod den, er hvis folk gerne vil provide deres egne firma bundle..
 // Det fungere ikke skide godt med nedarvning
-public abstract class AppBundle extends BaseBundle {
+abstract class AppBundle extends BaseBundle {
 
     /**
      * Creates a new artifact image from the specified source. Is typically used like this: <pre>

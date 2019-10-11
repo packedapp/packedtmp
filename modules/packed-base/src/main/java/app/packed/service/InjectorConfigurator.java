@@ -149,7 +149,7 @@ public final class InjectorConfigurator {
      * @param implementation
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
-     * @see BaseBundle#provide(Class)
+     * @see ServiceExtension#provide(Class)
      */
     public <T> ComponentServiceConfiguration<T> provide(Class<T> implementation) {
         return extension().provide(implementation);

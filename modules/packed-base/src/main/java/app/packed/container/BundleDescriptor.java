@@ -125,19 +125,6 @@ public class BundleDescriptor {
     }
 
     /**
-     * Returns the module that this bundle is a member of. This is always the module in which the bundle type is located in.
-     * <p>
-     * If the bundle is in an unnamed module then the {@linkplain ClassLoader#getUnnamedModule() unnamed} {@code Module} of
-     * the class loader for the bundle implementation is returned.
-     *
-     * @return the module that the bundle is a member of
-     * @see Class#getModule()
-     */
-    public final Module bundleModule() {
-        return bundleType.getModule();
-    }
-
-    /**
      * Returns the type of the bundle.
      *
      * @return the type of the bundle
@@ -146,12 +133,6 @@ public class BundleDescriptor {
         return bundleType;
     }
 
-    // Kan ikke rigtig se hvordan det skulle fungere.... med mindre vi har
-
-    // <T extends AnyBundleDescriptor> List<T> children(Class<T> descriptorType) {
-    // Men hvem bestemmer hvilken descriptor type vi laver????
-    // Hvis det er en tom skal, der tager en Builder???
-
     // De er vel named.... Saa Map<String, Descriptor...
     public List<BundleDescriptor> children() {
         // Saa skal vi vel ogsaa have navne...
@@ -159,17 +140,23 @@ public class BundleDescriptor {
         throw new UnsupportedOperationException();
     }
 
+    // Kan ikke rigtig se hvordan det skulle fungere.... med mindre vi har
+
+    // <T extends AnyBundleDescriptor> List<T> children(Class<T> descriptorType) {
+    // Men hvem bestemmer hvilken descriptor type vi laver????
+    // Hvis det er en tom skal, der tager en Builder???
+
     public ContractSet contracts() {
         return contracts;
 
     }
 
     /**
-     * Returns any description that has been set for the bundle via {@link BaseBundle#setDescription(String)}.
+     * Returns any description that has been set for the bundle via {@link Bundle#setDescription(String)}.
      * 
      * @return a optional description of the bundle
      * 
-     * @see BaseBundle#setDescription(String)
+     * @see Bundle#setDescription(String)
      */
     public final Optional<String> description() {
         return Optional.ofNullable(description);
@@ -180,8 +167,21 @@ public class BundleDescriptor {
      * 
      * @return an unmodifiable set of all the extensions the bundle uses
      */
-    public Set<Class<? extends Extension>> extensions() {
-        return extensions; // Do we want some kind of order??? Topologically, name sorted?
+    public final Set<Class<? extends Extension>> extensions() {
+        return extensions; // Do we want some kind of order??? Topologically, name sorted? by ID
+    }
+
+    /**
+     * Returns the module that this bundle is a member of. This is always the module in which the bundle type is located in.
+     * <p>
+     * If the bundle is in an unnamed module then the {@linkplain ClassLoader#getUnnamedModule() unnamed} {@code Module} of
+     * the class loader for the bundle implementation is returned.
+     *
+     * @return the module that the bundle is a member of
+     * @see Class#getModule()
+     */
+    public final Module module() {
+        return bundleType.getModule();
     }
 
     /**
@@ -211,8 +211,8 @@ public class BundleDescriptor {
 
         sb.append("bundle { name: ").append(name);
         sb.append(", type: ").append(format(bundleType));
-        if (bundleModule().isNamed()) {
-            sb.append(", module: ").append(bundleModule().getName());
+        if (module().isNamed()) {
+            sb.append(", module: ").append(module().getName());
         }
 
         sb.append(" }");
@@ -229,11 +229,11 @@ public class BundleDescriptor {
      */
     public final Optional<Version> version() {
         // To keep things simple we do not currently allow people override the version.
-        ModuleDescriptor descriptor = bundleModule().getDescriptor();
+        ModuleDescriptor descriptor = module().getDescriptor();
         return descriptor == null ? Optional.empty() : descriptor.version();
     }
 
-    public static ContractSet constractOf(BaseBundle bundle) {
+    public static ContractSet constractOf(Bundle bundle) {
         return BundleDescriptor.of(bundle).contracts();
     }
 

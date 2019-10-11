@@ -18,7 +18,7 @@ package app.packed.util;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 
 /**
  * Provides an environment per module
@@ -125,7 +125,7 @@ public abstract class BaseSupport {
     // Registers the bundle, it will always be included in the native image generation....
     // Primary reflection will be activated...
     // Basically we need to register all the bundle roots
-    protected final void scanBundle(BaseBundle bundle) {
+    protected final void scanBundle(Bundle bundle) {
         // primodial, boot, image, static
         // asNativeBundle()
     }

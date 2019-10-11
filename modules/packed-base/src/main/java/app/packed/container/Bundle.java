@@ -50,6 +50,10 @@ import app.packed.util.Nullable;
 // Maybe introduce ContainerBundle()... Det jeg taenker er at introduce noget der f.eks. kan bruges i kotlin
 // saa man kan noget der minder om https://ktor.io
 // Altsaa en helt barebones bundle
+
+// Kunne godt have nogle lifecycle metoder man kunne overskrive.
+// F.eks. at man vil validere noget
+
 public abstract class Bundle implements ContainerSource {
 
     /** The configuration of the container. */

@@ -34,7 +34,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.app.App;
 import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.BaseBundle;
+import app.packed.component.ComponentExtension;
+import app.packed.container.Bundle;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
@@ -54,27 +55,27 @@ import app.packed.hook.OnHook;
 @State(Scope.Benchmark)
 public class FromImage {
 
-    static final ArtifactImage EMPTY = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage EMPTY = ArtifactImage.of(new Bundle() {
         @Override
         protected void configure() {}
     });
 
-    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage USE_EXTENSION = ArtifactImage.of(new Bundle() {
         @Override
         public void configure() {
             use(MyExtension.class);
         }
     });
-    static final ArtifactImage INSTALL = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage INSTALL = ArtifactImage.of(new Bundle() {
         @Override
         public void configure() {
-            installInstance("foo");
+            use(ComponentExtension.class).installInstance("foo");
         }
     });
-    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new BaseBundle() {
+    static final ArtifactImage INSTALL_AUTO_ACTIVATE = ArtifactImage.of(new Bundle() {
         @Override
         public void configure() {
-            installInstance(new MyStuff());
+            use(ComponentExtension.class).installInstance(new MyStuff());
         }
     });
 

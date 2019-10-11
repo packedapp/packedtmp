@@ -17,7 +17,7 @@ package packed.internal.util;
 
 import java.util.ServiceLoader;
 
-import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.util.BaseSupport;
 
 /**
@@ -38,7 +38,7 @@ class DefaultBS extends BaseSupport {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        this.scanBundle(new BaseBundle() {
+        this.scanBundle(new Bundle() {
 
             @Override
             protected void configure() {}

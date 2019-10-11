@@ -17,7 +17,7 @@ package app.packed.container.extension.graph;
 
 import app.packed.app.App;
 import app.packed.component.ComponentStream.Option;
-import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.service.ServiceExtension;
@@ -25,7 +25,7 @@ import app.packed.service.ServiceExtension;
 /**
  *
  */
-public class Fff extends BaseBundle {
+public class Fff extends Bundle {
 
     /** {@inheritDoc} */
     @Override
@@ -50,7 +50,7 @@ public class Fff extends BaseBundle {
         a.stream(Option.excludeSelf());
     }
 
-    public static class OtherB extends BaseBundle {
+    public static class OtherB extends Bundle {
 
         /** {@inheritDoc} */
         @Override

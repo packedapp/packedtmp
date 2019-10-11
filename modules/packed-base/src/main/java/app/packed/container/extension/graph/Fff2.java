@@ -16,7 +16,7 @@
 package app.packed.container.extension.graph;
 
 import app.packed.app.App;
-import app.packed.container.BaseBundle;
+import app.packed.container.Bundle;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.service.ServiceExtension;
@@ -24,7 +24,7 @@ import app.packed.service.ServiceExtension;
 /**
  *
  */
-public class Fff2 extends BaseBundle {
+public class Fff2 extends Bundle {
 
     /** {@inheritDoc} */
     @Override
@@ -39,7 +39,7 @@ public class Fff2 extends BaseBundle {
         System.out.println("Bye");
     }
 
-    public static class OtherB extends BaseBundle {
+    public static class OtherB extends Bundle {
 
         /** {@inheritDoc} */
         @Override

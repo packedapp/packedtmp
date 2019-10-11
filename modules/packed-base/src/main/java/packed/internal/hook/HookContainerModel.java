@@ -14,7 +14,7 @@ import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.OnHook;
 import packed.internal.util.StringFormatter;
 
-/** A model for class contains information about hook group methods for an extension type. */
+/** A model for classes that may contain methods annotated with {@link OnHook}. */
 public final class HookContainerModel {
 
     /** A map of all methods that takes a {@link AnnotatedFieldHook}. */
@@ -27,30 +27,30 @@ public final class HookContainerModel {
     private final Map<Class<? extends Annotation>, MethodHandle> annotatedTypes;
 
     /** The extension type we manage information for. */
-    private final Class<?> extensionType;
+    private final Class<?> containerType;
 
     /** A map of all methods that take a aggregator result object. Is always located on the actual extension. */
     final Map<Class<?>, MethodHandle> groups;
 
     /**
-     * Creates a new group model.
+     * Creates a new model.
      * 
      * @param builder
      *            the builder to create the model from
      */
-    private HookContainerModel(HookClassBuilder builder, Class<?> extensionType) {
-        this.extensionType = requireNonNull(extensionType);
-        this.groups = Map.copyOf(builder.groups);
-        this.annotatedFields = Map.copyOf(builder.annotatedFields);
-        this.annotatedMethods = Map.copyOf(builder.annotatedMethods);
-        this.annotatedTypes = Map.copyOf(builder.annotatedTypes);
+    private HookContainerModel(Builder builder) {
+        this.containerType = requireNonNull(builder.containerType);
+        this.groups = Map.copyOf(builder.hooks.groups);
+        this.annotatedFields = Map.copyOf(builder.hooks.annotatedFields);
+        this.annotatedMethods = Map.copyOf(builder.hooks.annotatedMethods);
+        this.annotatedTypes = Map.copyOf(builder.hooks.annotatedTypes);
     }
 
     MethodHandle findMethodHandleForAnnotatedField(AnnotatedFieldHook<?> hook) {
         MethodHandle mh = annotatedFields.get(hook.annotation().annotationType());
         if (mh == null) {
             throw new UnsupportedOperationException(
-                    StringFormatter.format(extensionType) + " does not know how to process fields annotated with " + hook.annotation().annotationType());
+                    StringFormatter.format(containerType) + " does not know how to process fields annotated with " + hook.annotation().annotationType());
         }
         return mh;
     }
@@ -76,11 +76,11 @@ public final class HookContainerModel {
         /** The class that may contain methods annotated with {@link OnHook}. */
         private final Class<?> containerType;
 
-        private HookClassBuilder hooks;
+        private final HookClassBuilder hooks;
 
         public Builder(Class<?> containerType) {
             this.containerType = requireNonNull(containerType);
-            hooks = new HookClassBuilder(containerType, false);
+            this.hooks = new HookClassBuilder(containerType, false);
         }
 
         /** {@inheritDoc} */
@@ -90,7 +90,7 @@ public final class HookContainerModel {
         }
 
         public HookContainerModel build() {
-            return new HookContainerModel(hooks, containerType);
+            return new HookContainerModel(this);
         }
     }
 }

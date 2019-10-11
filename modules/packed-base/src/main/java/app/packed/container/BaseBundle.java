@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import app.packed.app.App;
+import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.lifecycle.LifecycleExtension;
@@ -247,15 +249,28 @@ public abstract class BaseBundle extends Bundle {
      * @param bundle
      *            the bundle to print the contract for
      */
-    protected static void printContract(BaseBundle bundle) {
+    protected static void printContract(Bundle bundle) {
         // BaseBundleContract.of(bundle).print();
     }
 
-    protected static void printDescriptor(BaseBundle bundle) {
+    protected static void printDescriptor(Bundle bundle) {
         BundleDescriptor.of(bundle).print();
     }
 }
 
+class MyBundle2 extends BaseBundle {
+
+    private static final ArtifactImage IMAGE = ArtifactImage.of(new MyBundle2());
+
+    @Override
+    protected void configure() {
+        lifecycle().main(() -> System.out.println("HelloWorld"));
+    }
+
+    public static void main(String[] args) {
+        App.run(IMAGE);
+    }
+}
 /// **
 // * @param builder
 // * the injector configuration to delagate to
