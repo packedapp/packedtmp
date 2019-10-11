@@ -25,6 +25,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
+import app.packed.container.extension.UseExtension;
 import app.packed.hook.OnHook;
 import app.packed.lifecycle.OnStart;
 import app.packed.util.Key;
@@ -63,6 +64,8 @@ import packed.internal.service.run.AbstractInjector;
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
 // Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
 // Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
+
+@UseExtension(ComponentExtension.class)
 public final class ServiceExtension extends Extension {
 
     /** The extension node, initialized in {@link ServiceExtension.Composer#configure()}. */
@@ -288,8 +291,6 @@ public final class ServiceExtension extends Extension {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            dependsOn(ComponentExtension.class);
-
             onExtensionInstantiated(e -> e.node = new ServiceExtensionNode(e.context()));
 
             onConfigured(e -> e.node.build());
@@ -304,7 +305,7 @@ public final class ServiceExtension extends Extension {
 
             exposeDescriptor((e, b) -> e.node.buildDescriptor(b));
 
-            addPostProcessor(p -> {
+            onAddPostProcessor(p -> {
                 p.root().use(ServiceExtension.class).provideInstance("fooo");
             });
 

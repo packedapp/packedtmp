@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.UseExtension;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -46,5 +46,5 @@ import app.packed.container.extension.ActivateExtension;
 
 // It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
 // invoked during the injection phase
-@ActivateExtension(ServiceExtension.class)
+@UseExtension(ServiceExtension.class)
 public @interface Inject {}

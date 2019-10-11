@@ -39,17 +39,6 @@ public abstract class ExtensionComposer<E extends Extension> {
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
 
-    protected final <P extends ExtensionWireletPipeline<P, ?>> void setPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
-        requireNonNull(pipelineType, "pipelineType is null");
-        requireNonNull(pipelineFactory, "pipelineFactory is null");
-        // Validation??? Pipeline model...
-        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
-    }
-
-    protected final void addPostProcessor(Consumer<? extends ExtensionOracle<E>> consumer) {
-
-    }
-
     /** Configures the composer. This method is invoked exactly once for a given implementation. */
     protected abstract void configure();
 
@@ -67,30 +56,6 @@ public abstract class ExtensionComposer<E extends Extension> {
                     "This method can only be called from within the #configure() method. Maybe you tried to call #configure() directly");
         }
         return c;
-    }
-
-    /**
-     * Adds the specified extension types to the set of extensions that this extension depends on.
-     * <p>
-     * There are no need to add transitive dependencies. Only dependencies that requires a direct call to use
-     * 
-     * 
-     * This is done in order
-     * 
-     * @param extensionTypes
-     *            the types of extension the extension uses.
-     */
-    @SafeVarargs
-    protected final void dependsOn(Class<? extends Extension>... extensionTypes) {
-        context().addDependencies(extensionTypes);
-    }
-
-    final void dependsOn(String... extensionTypes) {
-        // The names will be resolved when composer is created
-
-        // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
-        // Hvis den givne extension var der.
-        // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
     }
 
     /**
@@ -140,6 +105,10 @@ public abstract class ExtensionComposer<E extends Extension> {
     }
 
     protected final void exposeFeature() {}
+
+    protected final void onAddPostProcessor(Consumer<? extends ExtensionOracle<E>> consumer) {
+
+    }
 
     /**
      * A callback method that is invoked immediately after a container has been successfully configured. This is typically
@@ -204,5 +173,20 @@ public abstract class ExtensionComposer<E extends Extension> {
     @SuppressWarnings("unchecked")
     protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
+    }
+
+    protected final <P extends ExtensionWireletPipeline<P, ?>> void setPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
+        requireNonNull(pipelineType, "pipelineType is null");
+        requireNonNull(pipelineFactory, "pipelineFactory is null");
+        // Validation??? Pipeline model...
+        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+    }
+
+    final void uses(String... extensionTypes) {
+        // The names will be resolved when composer is created
+
+        // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
+        // Hvis den givne extension var der.
+        // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
     }
 }

@@ -17,7 +17,6 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -32,7 +31,6 @@ import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
 import app.packed.util.Nullable;
-import packed.internal.util.StringFormatter;
 
 /** A context object used for all registration for an {@link ExtensionComposer}. */
 public abstract class ExtensionComposerContext {
@@ -44,8 +42,6 @@ public abstract class ExtensionComposerContext {
     // This means we want to synchronize things.
     // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
     public final IdentityHashMap<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts = new IdentityHashMap<>();
-
-    final HashSet<Class<? extends Extension>> dependencies = new HashSet<>();
 
     /** An action that will be run immediately after an extension has been configured. */
     @Nullable
@@ -64,24 +60,6 @@ public abstract class ExtensionComposerContext {
 
     /** This class can only be overridden by another class in this package. */
     ExtensionComposerContext() {}
-
-    /**
-     * Adds the specified classes to the list of dependencies.
-     * 
-     * @param dependencies
-     *            the dependencies to add
-     */
-    @SafeVarargs
-    public final void addDependencies(Class<? extends Extension>... dependencies) {
-        requireNonNull(dependencies, "dependencies are null");
-        for (Class<? extends Extension> c : dependencies) {
-            requireNonNull(c, "Dependencies contained a null element");
-            if (!Extension.class.isAssignableFrom(c)) {
-                throw new IllegalArgumentException("Dependencies contained an invalid class, type " + StringFormatter.format(c));
-            }
-            this.dependencies.add(c);
-        }
-    }
 
     /**
      * Registers an action that is invoked when the extension has first been instantiated

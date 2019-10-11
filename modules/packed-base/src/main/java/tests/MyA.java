@@ -20,14 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.UseExtension;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD })
 /**
  *
  */
-@ActivateExtension(MyExtension.class)
+@UseExtension(MyExtension.class)
 public @interface MyA {
     int value();
 }

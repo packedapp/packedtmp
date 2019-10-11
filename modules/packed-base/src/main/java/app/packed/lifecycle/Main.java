@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.UseExtension;
 
 /**
  * A application can have a single main entry point which is the first instructions in a program that is executed, Must
@@ -50,7 +50,7 @@ import app.packed.container.extension.ActivateExtension;
 // Ogsaa selvom vi ikke har shutdown metoder...
 
 // Det samme kan man sige om CLI
-@ActivateExtension(LifecycleExtension.class)
+@UseExtension(LifecycleExtension.class)
 public @interface Main {
 
     /**

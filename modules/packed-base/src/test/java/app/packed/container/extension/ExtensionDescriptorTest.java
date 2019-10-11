@@ -49,6 +49,7 @@ public class ExtensionDescriptorTest {
         assertThatThrownBy(() -> ed.dependencies().clear()).isExactlyInstanceOf(UnsupportedOperationException.class);
     }
 
+    @UseExtension(EmptyExtension.class)
     static class VariousExtension extends Extension {
         static class Composer extends ExtensionComposer<VariousExtension> {
 
@@ -56,7 +57,6 @@ public class ExtensionDescriptorTest {
             @Override
             protected void configure() {
                 exposeContract(SomeContract.class, (e, c) -> new SomeContract());
-                dependsOn(EmptyExtension.class);
             }
         }
 

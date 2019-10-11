@@ -167,6 +167,8 @@ public final class ExtensionModel<T extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private final HookContainerModel.Builder hooks;
 
+        private final Set<Class<? extends Extension>> dependencies;
+
         /**
          * Creates a new builder.
          * 
@@ -175,6 +177,7 @@ public final class ExtensionModel<T extends Extension> {
          */
         private Builder(Class<? extends Extension> extensionType) {
             this.extensionType = extensionType;
+            this.dependencies = ExtensionDependencyValidator.dependenciesOf(extensionType);
             this.constructor = ConstructorFinder.find(extensionType);
             this.hooks = new HookContainerModel.Builder(extensionType);
         }

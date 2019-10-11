@@ -22,7 +22,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.UseExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.hook.ComponentModelHookGroup;
@@ -93,7 +93,7 @@ public final class ComponentModel {
 
             @Override
             protected Class<? extends Extension>[] computeValue(Class<?> type) {
-                ActivateExtension ae = type.getAnnotation(ActivateExtension.class);
+                UseExtension ae = type.getAnnotation(UseExtension.class);
                 return ae == null ? null : ae.value();
             }
         };

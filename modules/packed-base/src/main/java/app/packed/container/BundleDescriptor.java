@@ -168,6 +168,7 @@ public class BundleDescriptor {
      * @return an unmodifiable set of all the extensions the bundle uses
      */
     public final Set<Class<? extends Extension>> extensions() {
+        // We return it their order...
         return extensions; // Do we want some kind of order??? Topologically, name sorted? by ID
     }
 

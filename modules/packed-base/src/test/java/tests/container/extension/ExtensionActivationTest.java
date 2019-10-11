@@ -28,7 +28,7 @@ import app.packed.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BaseBundle;
-import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.UseExtension;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.hook.AnnotatedFieldHook;
@@ -95,7 +95,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.FIELD })
-    @ActivateExtension(MyExtension.class)
+    @UseExtension(MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
     }

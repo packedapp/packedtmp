@@ -35,7 +35,7 @@ import app.packed.artifact.ArtifactImage;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.Bundle;
-import app.packed.container.extension.ActivateExtension;
+import app.packed.container.extension.UseExtension;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedMethodHook;
 import app.packed.hook.Hook;
@@ -121,7 +121,7 @@ public class ExtensionActivation {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    @ActivateExtension(MyExtension.class)
+    @UseExtension(MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
     }

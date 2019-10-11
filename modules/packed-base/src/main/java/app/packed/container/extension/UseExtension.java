@@ -15,6 +15,7 @@
  */
 package app.packed.container.extension;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,6 +26,7 @@ import java.lang.annotation.Target;
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 // Vi havde en module some target, men det er bare accident waiting to happen
 // En der faar annoteret et modul og glemmer alt om det....
 
@@ -32,10 +34,6 @@ import java.lang.annotation.Target;
 
 // Unfprtunantely, you cannot register random annotations for use. As this would break encapsulation.
 // ActivateExtension
-
-// Stort problem. Nu har vi lige pludselig Runtime komponenter der bliver registeret naar en container allerede koerer.
-/// F.eks. Actors faar lige pludselig en lifecycle annoterering...
-/// De fejler simpelthen...
 
 // Vi har vel i virkeligheden 3 interesante ting...
 // Extension
@@ -49,7 +47,10 @@ import java.lang.annotation.Target;
 // Hook Class/Interface, for example, @ActivateExtension(LoggingExtension.class) Logger
 
 // RequireExtension, UseExtension, ActivateExtension
-public @interface ActivateExtension {
+public @interface UseExtension {
+
+    // Think we need to make value optional then.
+    // String[] optional() default {};
 
     /**
      * Returns the extension that should be activated.
