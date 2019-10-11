@@ -45,7 +45,7 @@ import packed.internal.util.StringFormatter;
 /**
  *
  */
-public final class HookClassBuilder {
+final class HookClassBuilder {
 
     /** The different types of hooks we allow. */
     static final Set<Class<?>> HOOK_TYPES = Set.of(AnnotatedFieldHook.class, AnnotatedMethodHook.class, AnnotatedTypeHook.class, InstanceOfHook.class);

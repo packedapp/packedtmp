@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.model;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -31,19 +31,19 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
+import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.HookGroupBuilder;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.extension.ExtensionModel;
-import packed.internal.hook.HookGroupBuilderModel;
-import packed.internal.hook.OnHookGroupModel;
+import packed.internal.container.model.ComponentModel;
 import packed.internal.module.ModuleAccess;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * We have a group for a collection of hooks/annotations. A component can have multiple groups.
  */
-// One of these suckers is creates once for each component...
-final class ComponentModelHookGroup {
+// One of these suckers is creates once for each component+Extension combination...
+public final class ComponentModelHookGroup {
 
     /** A list of callbacks for the particular extension. */
     private final List<HookCallback> callbacks;
@@ -56,38 +56,40 @@ final class ComponentModelHookGroup {
         this.callbacks = List.copyOf(builder.callbacks);
     }
 
-    void addTo(PackedContainerConfiguration container, ComponentConfiguration<?> cc) throws Throwable {
-        Extension e = container.use(extensionType); // should be ordered...s
+    public void addTo(PackedContainerConfiguration container, ComponentConfiguration<?> cc) throws Throwable {
+
+        // First make sure the extension is activated
+        Extension e = container.use(extensionType);
+
+        // Calling the actual methods on Extension
         for (HookCallback c : callbacks) {
-            c.invoke(e, cc);
+            c.mh.invoke(e, c.hookGroup, cc);
         }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static final class Builder {
+    public static final class Builder {
 
         private final ArrayList<HookCallback> callbacks = new ArrayList<>();
 
         /** The component model builder that is creating this group. */
         private final ComponentModel.Builder componentModelBuilder;
 
-        final OnHookGroupModel con;
+        final HookContainerModel con;
 
         /** The type of extension that will be activated. */
         private final Class<? extends Extension> extensionType;
 
         final IdentityHashMap<Class<?>, HookGroupBuilder<?>> groupBuilders = new IdentityHashMap<>();
 
-        final ExtensionModel<?> extensionModel;
-
-        Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
+        public Builder(ComponentModel.Builder componentModelBuilder, Class<? extends Extension> extensionType) {
             this.componentModelBuilder = requireNonNull(componentModelBuilder);
             this.extensionType = requireNonNull(extensionType);
-            this.extensionModel = ExtensionModel.of(extensionType);
-            this.con = extensionModel.hooks();
+            this.con = ExtensionModel.of(extensionType).hooks();
         }
 
-        ComponentModelHookGroup build() {
+        public ComponentModelHookGroup build() {
+
             for (Entry<Class<?>, HookGroupBuilder<?>> m : groupBuilders.entrySet()) {
                 MethodHandle mh = con.groups.get(m.getKey());
                 callbacks.add(new HookCallback(mh, m.getValue().build()));
@@ -95,12 +97,17 @@ final class ComponentModelHookGroup {
             return new ComponentModelHookGroup(this);
         }
 
-        void onAnnotatedField(Field field, Annotation annotation) {
+        public void onAnnotatedType(Class<?> clazz, Annotation annotation) {
+            AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(componentModelBuilder, clazz, annotation);
+            process(con.findMethodHandleForAnnotatedType(hook), hook);
+        }
+
+        public void onAnnotatedField(Field field, Annotation annotation) {
             AnnotatedFieldHook<Annotation> hook = ModuleAccess.hook().newAnnotatedFieldHook(componentModelBuilder, field, annotation);
             process(con.findMethodHandleForAnnotatedField(hook), hook);
         }
 
-        void onAnnotatedMethod(Method method, Annotation annotation) {
+        public void onAnnotatedMethod(Method method, Annotation annotation) {
             AnnotatedMethodHook hook = ModuleAccess.hook().newAnnotatedMethodHook(componentModelBuilder, method, annotation);
             process(con.findMethodHandleForAnnotatedMethod(hook), hook);
         }
@@ -125,5 +132,4 @@ final class ComponentModelHookGroup {
             }
         }
     }
-
 }

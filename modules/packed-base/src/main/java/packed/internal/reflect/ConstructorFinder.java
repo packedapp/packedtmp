@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +28,7 @@ import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.reflect.UncheckedIllegalAccessException;
 import app.packed.util.NativeImage;
 import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -38,6 +40,16 @@ public final class ConstructorFinder {
 
     /** The app.packed.base module. */
     private static final Module THIS_MODULE = ConstructorFinder.class.getModule();
+
+    public static <T> T invoke(Class<T> onType, Class<?>... parameterTypes) {
+        MethodHandle mh = ConstructorFinder.find(onType, parameterTypes);
+        try {
+            return (T) mh.invoke();
+        } catch (Throwable e) {
+            ThrowableUtil.rethrowErrorOrRuntimeException(e);
+            throw new UndeclaredThrowableException(e);
+        }
+    }
 
     /**
      * Finds a constructor (method handle).

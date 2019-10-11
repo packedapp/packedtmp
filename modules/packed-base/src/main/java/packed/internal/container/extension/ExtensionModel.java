@@ -25,6 +25,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.component.Component;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionDeclarationException;
@@ -32,8 +33,8 @@ import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.contract.Contract;
-import packed.internal.hook.HookClassBuilder;
-import packed.internal.hook.OnHookGroupModel;
+import app.packed.hook.OnHook;
+import packed.internal.hook.HookContainerModel;
 import packed.internal.module.ModuleAccess;
 import packed.internal.reflect.ConstructorFinder;
 import packed.internal.reflect.MemberFinder;
@@ -62,15 +63,10 @@ public final class ExtensionModel<T extends Extension> {
         }
     };
 
+    public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
+
     /** The method handle used to create a new extension instance. */
     private final MethodHandle constructor;
-
-    /** The type of the extension this model describes. */
-    public final Class<? extends Extension> extensionType;
-
-    final OnHookGroupModel hooks;
-
-    final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
     /** It is important this map is immutable as the key set is exposed via ExtensionDescriptor. */
     // Can 2 extensions define the same contract???? Don't think so
@@ -78,7 +74,12 @@ public final class ExtensionModel<T extends Extension> {
     // Contract>);
     public final Map<Class<? extends Contract>, BiFunction<?, ? super ExtensionIntrospectionContext, ?>> contracts;
 
-    public final BiConsumer<? super Extension, ? super app.packed.container.BundleDescriptor.Builder> bundleBuilder;
+    public final Set<Class<? extends Extension>> dependencies;
+
+    /** The type of the extension this model describes. */
+    public final Class<? extends Extension> extensionType;
+
+    private final HookContainerModel hooks;
 
     public final Consumer<? super Extension> onAdd;
 
@@ -88,9 +89,10 @@ public final class ExtensionModel<T extends Extension> {
 
     public final BiConsumer<? super Extension, ? super Extension> onLinkage;
 
-    public final Set<Class<? extends Extension>> dependencies;
-
+    /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
+
+    final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.
@@ -101,7 +103,7 @@ public final class ExtensionModel<T extends Extension> {
     private ExtensionModel(Builder builder) {
         this.constructor = builder.constructor;
         this.extensionType = builder.extensionType;
-        this.hooks = new OnHookGroupModel(builder.hooks, builder.extensionType);
+        this.hooks = builder.hooks.build();
         this.pipelines = Map.copyOf(builder.pipelines);
         this.bundleBuilder = builder.builder;
         this.contracts = Map.copyOf(builder.contracts);
@@ -111,11 +113,15 @@ public final class ExtensionModel<T extends Extension> {
         this.onLinkage = builder.onLinkage;
         this.dependencies = Set.copyOf(builder.dependencies);
         this.optional = Optional.of(extensionType);
-        // this.optional = Optional.of(extensionType)
         // Saa slipper vi for at lave en ny optional hver gang....
     }
 
-    public OnHookGroupModel hooks() {
+    /**
+     * Returns a model of all the methods annotated with {@link OnHook} on the extension.
+     * 
+     * @return a hook model
+     */
+    public HookContainerModel hooks() {
         return hooks;
     }
 
@@ -149,65 +155,60 @@ public final class ExtensionModel<T extends Extension> {
         return (ExtensionModel<T>) CACHE.get(extensionType);
     }
 
-    /** A builder for {@link ExtensionModel}. This class is public in order to called from {@link ExtensionComposer}. */
-    static final class Builder extends ExtensionComposerContext {
+    /** A builder for {@link ExtensionModel}. */
+    private static final class Builder extends ExtensionComposerContext {
 
         /** The constructor used to create a new extension instance. */
         private final MethodHandle constructor;
 
-        final Class<? extends Extension> extensionType;
+        /** The type of extension we are building a model for. */
+        private final Class<? extends Extension> extensionType;
 
-        final HookClassBuilder hooks;
+        /** A builder for all methods annotated with {@link OnHook} on the extension. */
+        private final HookContainerModel.Builder hooks;
 
-        @SuppressWarnings("unchecked")
+        /**
+         * Creates a new builder.
+         * 
+         * @param extensionType
+         *            the type of extension we are building a model for
+         */
         private Builder(Class<? extends Extension> extensionType) {
             this.extensionType = extensionType;
-            // if (!Modifier.isFinal(extensionType.getModifiers())) {
-            // throw new ExtensionDeclarationException("The extension '" + StringFormatter.format(extensionType) + "' must be
-            // declared final");
-            // }
-            constructor = ConstructorFinder.find(extensionType);
-            this.hooks = new HookClassBuilder(extensionType, false);
+            this.constructor = ConstructorFinder.find(extensionType);
+            this.hooks = new HookContainerModel.Builder(extensionType);
+        }
 
+        /**
+         * Builds and returns an extension model.
+         * 
+         * @return the extension model
+         */
+        @SuppressWarnings("unchecked")
+        private ExtensionModel<?> build() {
             Class<? extends ExtensionComposer<?>> composerType = null;
-
             for (Class<?> c : extensionType.getDeclaredClasses()) {
                 if (c.getSimpleName().equals("Composer")) {
                     if (!ExtensionComposer.class.isAssignableFrom(c)) {
                         throw new ExtensionDeclarationException(c.getCanonicalName() + " must extend " + StringFormatter.format(ExtensionComposer.class));
                     }
                     composerType = (Class<? extends ExtensionComposer<?>>) c;
+                    // composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
+                    // if (!Modifier.isFinal(nodeType.getModifiers())) {
+                    // throw new ExtensionDeclarationException(
+                    // "The extension node returned by onAdded(), must be declareda final, node type = " +
+                    // StringFormatter.format(nodeType));
+                    // }
                 }
             }
 
             if (composerType != null) {
-                // composerType = (Class<? extends ExtensionComposer<?>>) COMPOSABLE_EXTENSION_TV_EXTRACTOR.extract(extensionType);
-                // if (!Modifier.isFinal(nodeType.getModifiers())) {
-                // throw new ExtensionDeclarationException(
-                // "The extension node returned by onAdded(), must be declareda final, node type = " +
-                // StringFormatter.format(nodeType));
-                // }
-                ExtensionComposer<?> ep = null;
-                MethodHandle mh = ConstructorFinder.find(composerType);
-                try {
-                    ep = (ExtensionComposer<?>) mh.invoke();
-                } catch (Throwable e) {
-                    ThrowableUtil.rethrowErrorOrRuntimeException(e);
-                    throw new UndeclaredThrowableException(e);
-                }
-                ModuleAccess.extension().configureComposer(ep, this);
-
+                ExtensionComposer<?> composer = ConstructorFinder.invoke(composerType);
+                ModuleAccess.extension().configureComposer(composer, this);
             }
-        }
-
-        private ExtensionModel<?> build() {
-            MemberFinder.findMethods(Extension.class, extensionType, method -> hooks.processMethod(method));
+            // Find all methods annotated with @OnHook on the extension
+            MemberFinder.findMethods(Extension.class, extensionType, hooks);
             return new ExtensionModel<>(this);
         }
     }
 }
-// Raekkefoelge af installeret extensions....
-// Maaske bliver vi noedt til at have @UsesExtension..
-// Saa vi kan sige X extension skal koeres foerend Y extension
-
-// Configure

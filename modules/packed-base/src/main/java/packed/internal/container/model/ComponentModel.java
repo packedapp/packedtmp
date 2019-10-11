@@ -25,6 +25,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.container.extension.ActivateExtension;
 import app.packed.container.extension.Extension;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.hook.ComponentModelHookGroup;
 import packed.internal.reflect.MemberFinder;
 import packed.internal.util.ThrowableUtil;
 
@@ -56,10 +57,11 @@ public final class ComponentModel {
 
     public <T> ComponentConfiguration<T> addExtensionsToContainer(PackedContainerConfiguration containerConfiguration,
             ComponentConfiguration<T> componentConfiguration) {
+        // There should probably be some order we call extensions in....
+        /// Other first, packed lasts?
+        /// Think they need an order id....
+        // Preferable deterministic
         try {
-            // There should probably be some order we call extensions in....
-            /// Other first, packed lasts?
-            /// Think they need an order id....
             for (ComponentModelHookGroup group : hookGroups) {
                 group.addTo(containerConfiguration, componentConfiguration);
             }
@@ -126,22 +128,33 @@ public final class ComponentModel {
          * @return a new model
          */
         ComponentModel build() {
-            // Runs through every interesting field and method.
+            // Look for type annotations
+            for (Annotation a : componentType.getAnnotations()) {
+                Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                if (extensionTypes != null) {
+                    for (Class<? extends Extension> eType : extensionTypes) {
+                        extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(this, etype)).onAnnotatedType(componentType, a);
+                    }
+                }
+            }
+
             MemberFinder.findMethodsAndFields(Object.class, componentType, method -> {
                 for (Annotation a : method.getAnnotations()) {
                     Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                    // See if the component method has any annotations that activates extensions
                     if (extensionTypes != null) {
                         for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelHookGroup.Builder(this, k)).onAnnotatedMethod(method, a);
+                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(this, etype)).onAnnotatedMethod(method, a);
                         }
                     }
                 }
             }, field -> {
                 for (Annotation a : field.getAnnotations()) {
                     Class<? extends Extension>[] extensionTypes = EXTENSION_ACTIVATORS.get(a.annotationType());
+                    // See if the component method has any annotations that activates extensions
                     if (extensionTypes != null) {
                         for (Class<? extends Extension> eType : extensionTypes) {
-                            extensionBuilders.computeIfAbsent(eType, k -> new ComponentModelHookGroup.Builder(this, k)).onAnnotatedField(field, a);
+                            extensionBuilders.computeIfAbsent(eType, etype -> new ComponentModelHookGroup.Builder(this, etype)).onAnnotatedField(field, a);
                         }
                     }
                 }

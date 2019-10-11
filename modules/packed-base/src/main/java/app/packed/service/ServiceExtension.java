@@ -278,7 +278,7 @@ public final class ServiceExtension extends Extension {
     }
 
     @OnHook
-    void foo(AtProvidesGroup g, ComponentConfiguration<?> cc) {
+    void onHook(AtProvidesGroup g, ComponentConfiguration<?> cc) {
         node.provider().addProvidesGroup(cc, g);
     }
 

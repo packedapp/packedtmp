@@ -13,31 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.crappyhook;
+package packed.internal.hook;
 
-import java.util.function.Supplier;
+import static java.util.Objects.requireNonNull;
 
-import app.packed.container.extension.graph.HookGroupProcessor;
+import java.lang.invoke.MethodHandle;
+
+import app.packed.component.ComponentConfiguration;
 
 /**
  *
  */
-class HGBModel {
+// Bruges til at kalde tilbage paa extensions
+final class HookCallback {
 
-    public final Supplier<?> builderFactory;
+    final Object hookGroup;
 
-    public final Class<?> builderType;
-
-    public final HookGroupProcessor<?, ?> groupProcessor;
+    final MethodHandle mh;
 
     /**
-     * @param builderType
-     * @param builderFactory
-     * @param groupProcessor
+     * @param mh
+     * @param hookGroup
      */
-    public HGBModel(Class<?> builderType, Supplier<?> builderFactory, HookGroupProcessor<?, ?> groupProcessor) {
-        this.builderType = builderType;
-        this.builderFactory = builderFactory;
-        this.groupProcessor = groupProcessor;
+    HookCallback(MethodHandle mh, Object hookGroup) {
+        this.mh = requireNonNull(mh);
+        this.hookGroup = hookGroup;
+    }
+
+    @SuppressWarnings({ "rawtypes" })
+    void invoke(Object e, ComponentConfiguration component) throws Throwable {
+        mh.invoke(e, hookGroup, component);
     }
 }

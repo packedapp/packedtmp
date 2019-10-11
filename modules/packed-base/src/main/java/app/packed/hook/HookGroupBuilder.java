@@ -33,6 +33,10 @@ public interface HookGroupBuilder<T extends Hook> {
      */
     T build();
 
+    static <T extends Hook> T generate(Class<T> groupType, Class<?> target) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * A class that. Mainly used for testing. Instead of needing to spin up a container.
      * 
@@ -48,10 +52,6 @@ public interface HookGroupBuilder<T extends Hook> {
      * @return a new group
      */
     static <T extends Hook> T generate(Class<T> groupType, Lookup caller, Class<?> target) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T extends Hook> T generate(Class<T> groupType, Class<?> target) {
         throw new UnsupportedOperationException();
     }
 
