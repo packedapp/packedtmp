@@ -101,6 +101,10 @@ public final class PackedExtensionContext implements ExtensionContext {
                 model.onAdd.accept(extension);
             }
 
+            if (pcc.wc != null) {
+                pcc.wc.initialize(this);
+            }
+
             // Call any link callbacks
             if (model.onLinkage != null) {
                 // First link any children
@@ -124,6 +128,7 @@ public final class PackedExtensionContext implements ExtensionContext {
                     }
                 }
             }
+
         } finally {
             pcc.activeExtension = existing;
         }
