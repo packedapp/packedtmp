@@ -35,7 +35,6 @@ import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.service.AtProvidesGroup;
-import packed.internal.service.build.wirelets.ServicePipeline;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -298,8 +297,6 @@ public final class ServiceExtension extends Extension {
             onInstantiation((e, c) -> e.node.onInstantiate(c));
             onLinkage((p, c) -> p.node.link(c.node));
 
-            setPipeline(ServiceWireletPipeline.class, e -> new ServiceWireletPipeline(e.node));
-
             // Descriptors and contracts
             // What about runtime????
             exposeContract(ServiceContract.class, (e, c) -> e.node.newServiceContract(c));
@@ -310,7 +307,7 @@ public final class ServiceExtension extends Extension {
                 p.root().use(ServiceExtension.class).provideInstance("fooo");
             });
 
-            useWirelets(ServicePipeline.class, (e, w) -> new ServicePipeline(e, w, e.node));
+            useWirelets(ServiceWireletPipeline.class, (e, w) -> new ServiceWireletPipeline(e, w, e.node));
             // Dies
 
             // Needing wirelet

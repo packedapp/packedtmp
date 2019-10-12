@@ -35,5 +35,5 @@ public interface AppPackedExtensionAccess extends SecretAccess {
 
     void configureComposer(ExtensionComposer<?> composer, ExtensionComposerContext context);
 
-    <T extends ExtensionWireletPipeline<T, ?>> void processWirelet(T pipeline, ExtensionWirelet<T> wirelet);
+    <T extends ExtensionWireletPipeline<?, T, ?>> void processWirelet(T pipeline, ExtensionWirelet<T> wirelet);
 }

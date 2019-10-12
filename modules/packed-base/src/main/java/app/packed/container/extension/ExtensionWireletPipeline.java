@@ -15,7 +15,9 @@
  */
 package app.packed.container.extension;
 
-import app.packed.util.Nullable;
+import static java.util.Objects.requireNonNull;
+
+import java.util.Optional;
 
 /**
  * Extension wirelet pipelines
@@ -38,52 +40,54 @@ import app.packed.util.Nullable;
 // Vi bliver noedt til at have en tilknyttning til en extension....
 // Fordi vi skal vide hvilken extension vi skal kigge i for at finde
 // en WireletPipelineFactory....
-public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, E>, E extends Extension> {
+public abstract class ExtensionWireletPipeline<E extends Extension, P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>> {
 
-    public void buildArtifact() {
-        // extension.buildBundle(null);
+    private final E extension;
+
+    private final Optional<P> previous;
+
+    private final WireletListNew<W> wirelets;
+
+    protected ExtensionWireletPipeline(E extension, WireletListNew<W> wirelets) {
+        this.extension = requireNonNull(extension, "extension is null");
+        this.wirelets = requireNonNull(wirelets, "wirelets is null");
+        this.previous = Optional.empty();
     }
 
-    public void buildBundle() {}
-
-    boolean isDetailedStackCapturingEnable() {
-        return false;
-    }
-
-    boolean isStackCapturingEnable() {
-        return false;
-    }
-
-    // Kunne godt tage en boolean der sagde noget om hvordan den koerer...
-
-    // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
-    // Det betyder at man godt kan have en slags context... Idet vi kan have et index
-    // til den nuvaerende wirelet der bliver processeret....
-    // F.eks.
-    boolean logAll() {
-        return false;
+    protected ExtensionWireletPipeline(P from, WireletListNew<W> wirelets) {
+        this.extension = from.extension();
+        this.wirelets = requireNonNull(wirelets, "wirelets is null");
+        this.previous = Optional.of(from);
     }
 
     /**
-     * This is invoked by the runtime when all wirelets have been successfully processed.
+     * Returns the extension this pipeline belongs to.
      * 
-     * 
-     * No more wirelets are being processed.... Split
+     * @return the extension this pipeline belongs to
      */
-    protected void onFinishedProcessing() {
-
-    }
-
-    public void onParentConfigured(@Nullable Object extension) {
-
+    public final E extension() {
+        return extension;
     }
 
     /**
-     * Splits this pipeline into a new pipeline. This method is used by the runtime when a user uses wirelets to instantiate
-     * an artifact image. Or tries to create a new artifact image from an existing image.
+     * Returns any previous pipeline this pipeline is a part of. This is empty unless we are generating from an image.
+     * 
+     * @return any previous pipeline this pipeline is a part of
      */
-    // Pipelines maa vaere registreret i et Map.... Som man saa kan traekke paaa..
-    // F.eks. i forbindelse med BuildContract...
+    public final Optional<P> previous() {
+        return previous;
+    }
+
+    protected abstract P spawn(WireletListNew<W> wirelets);
+
+    /**
+     * Returns a list of wirelets this pipeline contains.
+     * 
+     * @return a list of wirelets this pipeline contains
+     */
+    public final WireletListNew<W> wirelets() {
+        return wirelets;
+    }
 
 }
 // Two strategies. Either clone all the contents.

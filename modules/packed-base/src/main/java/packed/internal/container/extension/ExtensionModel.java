@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.component.Component;
 import app.packed.container.extension.Extension;
@@ -93,7 +92,7 @@ public final class ExtensionModel<T extends Extension> {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends ExtensionWireletPipeline<?, ?>>, Function<?, ?>> pipelines;
+    final Map<Class<? extends ExtensionWireletPipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.

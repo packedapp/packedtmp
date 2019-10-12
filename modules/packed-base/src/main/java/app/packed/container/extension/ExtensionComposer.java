@@ -20,18 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.Wirelet;
 import app.packed.container.extension.graph.ExtensionOracle;
 import app.packed.contract.Contract;
 import packed.internal.container.extension.ExtensionComposerContext;
-import packed.internal.container.extension.w2.WireletListNew;
-import packed.internal.container.extension.w2.XtensionPipeline;
 
 /**
  * An extension composer is used for specifying how an extension works.
@@ -178,15 +174,11 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
     }
 
-    protected final <P extends ExtensionWireletPipeline<P, ?>> void setPipeline(Class<P> pipelineType, Function<E, P> pipelineFactory) {
+    protected final <P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>> void useWirelets(Class<P> pipelineType,
+            BiFunction<E, WireletListNew<W>, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
-    }
-
-    protected final <P extends XtensionPipeline<E, P, W>, W extends Wirelet> void useWirelets(Class<P> pipelineType,
-            BiFunction<E, WireletListNew<W>, P> pipelineFactory) {
-
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container.extension.w2;
+package app.packed.container.extension;
 
 import java.util.ArrayDeque;
 import java.util.function.Consumer;

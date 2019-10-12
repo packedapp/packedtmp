@@ -22,5 +22,5 @@ public interface ExtensionIntrospectionContext {
 
     boolean hasPipelines();
 
-    <T extends ExtensionWireletPipeline<?, ?>> T get(Class<T> pipelineType);
+    <T extends ExtensionWireletPipeline<?, ?, ?>> T get(Class<T> pipelineType);
 }

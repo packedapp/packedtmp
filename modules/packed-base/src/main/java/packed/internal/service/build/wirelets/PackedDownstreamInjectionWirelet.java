@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.config.ConfigSite;
-import app.packed.container.extension.ExtensionWirelet;
 import app.packed.service.ServiceDescriptor;
 import app.packed.service.ServiceWirelets;
 import app.packed.util.Key;
@@ -33,7 +32,7 @@ import packed.internal.service.run.RSE;
 import packed.internal.service.run.RSESingleton;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedDownstreamInjectionWirelet extends ExtensionWirelet<ServiceWireletPipeline> {
+public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
     public static class FilterOnKey extends PackedDownstreamInjectionWirelet {
 

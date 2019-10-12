@@ -17,6 +17,7 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import app.packed.container.extension.Extension;
@@ -36,7 +37,7 @@ public final class ExtensionWireletPipelineModel {
         @SuppressWarnings({ "unchecked" })
         @Override
         protected ExtensionWireletPipelineModel computeValue(Class<?> type) {
-            return new ExtensionWireletPipelineModel.Builder((Class<? extends ExtensionWireletPipeline<?, ?>>) type).build();
+            return new ExtensionWireletPipelineModel.Builder((Class<? extends ExtensionWireletPipeline<?, ?, ?>>) type).build();
         }
     };
 
@@ -50,9 +51,9 @@ public final class ExtensionWireletPipelineModel {
 
     public final ExtensionModel<?> extension;
 
-    final Class<? extends ExtensionWireletPipeline<?, ?>> pipelineClass;
+    final Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineClass;
 
-    final Function<?, ?> factory;
+    final BiFunction<?, ?, ?> factory;
 
     /**
      * @param builder
@@ -71,8 +72,8 @@ public final class ExtensionWireletPipelineModel {
      * @return a new instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWireletPipeline<?, ?> newPipeline(Extension node) {
-        return (ExtensionWireletPipeline<?, ?>) ((Function) factory).apply(node);
+    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node) {
+        return (ExtensionWireletPipeline<?, ?, ?>) ((Function) factory).apply(node);
     }
 
     private static ExtensionWireletPipelineModel of(Class<?> type) {
@@ -85,12 +86,12 @@ public final class ExtensionWireletPipelineModel {
 
     private static class Builder {
 
-        private final Class<? extends ExtensionWireletPipeline<?, ?>> actualType;
+        private final Class<? extends ExtensionWireletPipeline<?, ?, ?>> actualType;
 
         /**
          * @param type
          */
-        private Builder(Class<? extends ExtensionWireletPipeline<?, ?>> type) {
+        private Builder(Class<? extends ExtensionWireletPipeline<?, ?, ?>> type) {
             actualType = requireNonNull(type);
         }
 
@@ -129,7 +130,7 @@ public final class ExtensionWireletPipelineModel {
          */
         @SuppressWarnings("unchecked")
         private ExtensionWireletModel(Class<? extends ExtensionWirelet<?>> type) {
-            Class<? extends ExtensionWireletPipeline<?, ?>> extensionType = (Class<? extends ExtensionWireletPipeline<?, ?>>) EXTENSION_TYPE_EXTRACTOR
+            Class<? extends ExtensionWireletPipeline<?, ?, ?>> extensionType = (Class<? extends ExtensionWireletPipeline<?, ?, ?>>) EXTENSION_TYPE_EXTRACTOR
                     .extract(type);
             this.pipeline = ExtensionWireletPipelineModel.of(extensionType);
         }

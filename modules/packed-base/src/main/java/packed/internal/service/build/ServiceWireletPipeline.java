@@ -18,21 +18,37 @@ package packed.internal.service.build;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.WireletListNew;
 import app.packed.service.ServiceExtension;
+import packed.internal.service.build.wirelets.ServiceWirelet;
 
 /** The default wirelet pipeline for */
-public final class ServiceWireletPipeline extends ExtensionWireletPipeline<ServiceWireletPipeline, ServiceExtension> {
+public final class ServiceWireletPipeline extends ExtensionWireletPipeline<ServiceExtension, ServiceWireletPipeline, ServiceWirelet> {
 
     public final ServiceExtensionNode node;
 
     /**
-     * Creates a new pipeline.
-     * 
-     * @param node
-     *            the node to create the pipeline from
+     * @param extension
+     * @param wirelets
      */
-    public ServiceWireletPipeline(ServiceExtensionNode node) {
+    public ServiceWireletPipeline(ServiceExtension extension, WireletListNew<ServiceWirelet> wirelets, ServiceExtensionNode node) {
+        super(extension, wirelets);
         this.node = requireNonNull(node);
+    }
+
+    /**
+     * @param from
+     * @param wirelets
+     */
+    private ServiceWireletPipeline(ServiceWireletPipeline from, WireletListNew<ServiceWirelet> wirelets) {
+        super(from, wirelets);
+        this.node = from.node;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ServiceWireletPipeline spawn(WireletListNew<ServiceWirelet> wirelets) {
+        return new ServiceWireletPipeline(this, wirelets);
     }
 
     // /** {@inheritDoc} */
