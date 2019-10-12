@@ -37,9 +37,10 @@ import java.lang.annotation.Target;
 
 // Vi har vel i virkeligheden 3 interesante ting...
 // Extension
-// Online-Component
 // Hook
-// Online-Hook
+// Bundle (ContainerSource??)
+
+// Components???? HMMMMM.... HMMMM
 
 // Can be used on
 // Hook Annotations

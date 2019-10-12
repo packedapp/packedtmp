@@ -16,7 +16,12 @@
 package app.packed.container.extension.graph;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.graph.UseExtension.Multiple;
@@ -28,26 +33,49 @@ import app.packed.service.ServiceExtension;
 /**
  *
  */
+@Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 @Repeatable(Multiple.class)
+// ComponentActivateExtension...
 @interface UseExtension {
 
     Class<? extends Annotation>[] annotatedFields() default {};
 
+    Class<? extends Annotation>[] annotatedMethods() default {};
+
+    Class<? extends Annotation>[] annotatedTypes() default {};
+
     Class<?>[] instanceOfs() default {};
 
-    Class<? extends Extension>[] value();
+    Class<? extends Extension>[] extension();
 
+    // String[] extensionOptional(); <- kan ikke lige finde ud af om vi skal bruge den
+
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
     @interface Multiple {
         UseExtension[] value();
     }
 }
+// Prop dem paa useExtension...
+// Taeller imod.. Det giver kun mening paa bundle
+// Taeller for.. Det er okay, Paa hooks og extensions er det alligevel kun powerbrugere....
+//
 
-@UseExtension(annotatedFields = Provide.class, value = ServiceExtension.class)
-@UseExtension(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, value = LifecycleExtension.class)
+@UseExtension(annotatedFields = Provide.class, extension = ServiceExtension.class)
+@UseExtension(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, extension = LifecycleExtension.class)
 class MyBundle {}
 
 interface Lifecycle {
     void onStart();
+}
+
+@UseExtension(annotatedFields = Provide.class, extension = ServiceExtension.class)
+@UseExtension(annotatedFields = OnStart.class, instanceOfs = Lifecycle.class, extension = LifecycleExtension.class)
+@interface Foo {
+
 }
 
 // UseExtension <- calls use()....

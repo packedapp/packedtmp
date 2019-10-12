@@ -23,11 +23,10 @@ import app.packed.container.Wirelet;
  * Extension wirelets that uses the same extension pipeline type are processed in the order they are specified in. No
  * guarantees are made for extension wirelets that define for different extension pipeline types.
  */
-
-// We need this class so we can see which extension the wirelet belongs to...
-// Otherwise, we would not be able to output any exceptions if the extension was not present..
 public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<?, T, ?>> extends Wirelet {
-
+    // We need this class so we can see which extension the wirelet belongs to...
+    // Otherwise, we would not be able to tell the user which extension was missing.
+    // When throwing an exception if the wirelet was specified, but the extension was not used
 }
 
 // Grunden til vi gerne lave callback paa denne maade.

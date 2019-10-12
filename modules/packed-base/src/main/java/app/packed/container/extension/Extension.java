@@ -80,6 +80,11 @@ public abstract class Extension {
             public void setExtensionContext(Extension extension, ExtensionContext context) {
                 extension.context = context;
             }
+
+            @Override
+            public void pipelineInitialize(ExtensionWireletPipeline<?, ?, ?> pipeline) {
+                pipeline.onInitialize();
+            }
         });
     }
 

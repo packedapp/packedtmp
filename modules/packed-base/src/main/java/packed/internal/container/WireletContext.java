@@ -26,6 +26,7 @@ import app.packed.container.extension.ExtensionWireletList;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
+import packed.internal.module.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -75,7 +76,7 @@ public class WireletContext {
                         "The wirelets " + entry.getValue() + " requires the extension " + pm.extension.extensionType.getSimpleName() + " to be installed.");
             }
             var pip = pm.newPipeline(e.extension(), new ExtensionWireletList<>(entry.getValue()));
-            pip.onInitialize();
+            ModuleAccess.extension().pipelineInitialize(pip);
             pipelines.put(pm, pip);
         }
     }
@@ -108,6 +109,6 @@ public class WireletContext {
         List<ExtensionWirelet<?>> ewp = pipelines2.remove(pec.extension().getClass());
         ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
         ExtensionWireletPipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new ExtensionWireletList<>(ewp));
-        pip.onInitialize();
+        ModuleAccess.extension().pipelineInitialize(pip);
     }
 }

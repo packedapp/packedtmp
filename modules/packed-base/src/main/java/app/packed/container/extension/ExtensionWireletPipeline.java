@@ -24,22 +24,8 @@ import java.util.Optional;
  * 
  * If a given extension allows specific wirelets to late configure it after. You need to use a pipeline.
  */
-// Kan sagtens lave alle metoder public....
-
-// Er en pipeline mere end en pipeline!!!
-// Er den ogsaa noden...???
-
-// Drop <T> + split()...
-
-// Vi skal mirror alle metoder paa node....
-
-// Kan only define one pipeline per extension...
-// Fordi, vi kalder build paa den...
-// ExtensionOrExtensionNode for T
-
-// Vi bliver noedt til at have en tilknyttning til en extension....
-// Fordi vi skal vide hvilken extension vi skal kigge i for at finde
-// en WireletPipelineFactory....
+// Kan only define one pipeline per extension... Maybe...
+// Kunne jo godt have @Nullable GreenPipeline, @Nullable BlackPipeline
 public abstract class ExtensionWireletPipeline<E extends Extension, P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>> {
 
     private final E extension;
@@ -47,6 +33,7 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
     /** Any previous pipeline. */
     private final Optional<P> previous;
 
+    /** A list initially containing the wirelets that was used to create this pipeline. */
     private final ExtensionWireletList<W> wirelets;
 
     protected ExtensionWireletPipeline(E extension, ExtensionWireletList<W> wirelets) {
@@ -62,11 +49,6 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
     }
 
     /**
-     * Invoked by the pipeline immediately after the pipeline has been constructed.
-     */
-    public void onInitialize() {}
-
-    /**
      * Returns the extension this pipeline belongs to.
      * 
      * @return the extension this pipeline belongs to
@@ -75,35 +57,37 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
         return extension;
     }
 
+    /** Invoked by the runtime immediately after the pipeline has been constructed. */
+    protected void onInitialize() {}
+
     /**
-     * Returns any previous pipeline this pipeline is a part of. This is empty unless we are generating from an image.
+     * If this pipeline was {@link #spawn(ExtensionWireletList) spawned} from an existing pipeline, returns the pipeline,
+     * otherwise returns empty.
      * 
-     * @return any previous pipeline this pipeline is a part of
+     * @return any pipeline this pipeline was spawned from
      */
     public final Optional<P> previous() {
         return previous;
     }
 
+    /**
+     * Spawns a new pipeline from this pipeline. This method is invoked by the runtime whenever
+     * 
+     * @param wirelets
+     *            the wirelets that was used
+     * @return the new pipeline
+     */
     protected abstract P spawn(ExtensionWireletList<W> wirelets);
 
     /**
-     * Returns a list of wirelets this pipeline contains.
+     * Returns a list of the wirelets this pipeline contains.
      * 
-     * @return a list of wirelets this pipeline contains
+     * @return a list of the wirelets this pipeline contains
      */
     public final ExtensionWireletList<W> wirelets() {
         return wirelets;
     }
-
 }
 // Two strategies. Either clone all the contents.
 // Or recursively call back into parent pipeline
 // protected abstract T split();
-
-// Ideen er lidt at tage en props.addPipeline(MyPipeline.class, e-> new MyPip(e.mode), Order.SECOND);
-// Vi skal ihvertfald draenes af alle annoteringer. Kun paa selve wireletten...
-// Alternativet, hvis vi kun har 2-3 vaerdier bare at have 3 metoder i props
-// addPipelineLast, addPipelineFirst, ...
-// public enum Order {
-// FIRST, SECOND, LAST;
-// }
