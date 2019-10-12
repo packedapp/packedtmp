@@ -30,5 +30,4 @@ interface LinkedBundle {
     String name();
 
     Optional<String> description();
-
 }

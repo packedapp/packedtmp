@@ -21,9 +21,9 @@ import app.packed.app.App;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletList;
 import app.packed.service.Injector;
 import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.WireletList;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**

@@ -27,12 +27,12 @@ import java.util.stream.Stream;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletList;
 import app.packed.service.Injector;
 import app.packed.service.ServiceDescriptor;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 import packed.internal.config.ConfigSiteSupport;
+import packed.internal.container.WireletList;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.wirelets.PackedDownstreamInjectionWirelet;

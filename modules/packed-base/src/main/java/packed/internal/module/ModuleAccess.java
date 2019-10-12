@@ -18,7 +18,7 @@ package packed.internal.module;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.artifact.ArtifactImage;
-import app.packed.container.WireletList;
+import app.packed.container.Bundle;
 import app.packed.container.extension.Extension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.lifecycle.RunState;
@@ -141,7 +141,7 @@ public final class ModuleAccess {
     private static class ContainerSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, WireletList.class);
+        private static final AppPackedContainerAccess INSTANCE = singleton(AppPackedContainerAccess.class, Bundle.class);
     }
 
     /** Holder of the {@link AppPackedHookAccess} singleton. */

@@ -22,7 +22,7 @@ import java.util.function.BiFunction;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
-import app.packed.container.extension.WireletListNew;
+import app.packed.container.extension.ExtensionWireletList;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
@@ -51,7 +51,7 @@ public final class ExtensionWireletPipelineModel {
 
     public final ExtensionModel<?> extension;
 
-    final Class<? extends ExtensionWireletPipeline<?, ?, ?>> pipelineClass;
+    final Class<? extends ExtensionWireletPipeline<?, ?, ?>> type;
 
     final BiFunction<?, ?, ?> factory;
 
@@ -61,9 +61,9 @@ public final class ExtensionWireletPipelineModel {
     @SuppressWarnings("unchecked")
     private ExtensionWireletPipelineModel(Builder builder) {
         Class<? extends Extension> extensionType = (Class<? extends Extension>) EXTENSION_NODE_TV_EXTRACTOR.extract(builder.actualType);
-        this.pipelineClass = builder.actualType;
+        this.type = builder.actualType;
         this.extension = ExtensionModel.of(extensionType);
-        factory = requireNonNull(extension.pipelines.get(pipelineClass));
+        factory = requireNonNull(extension.pipelines.get(type));
     }
 
     /**
@@ -72,12 +72,8 @@ public final class ExtensionWireletPipelineModel {
      * @return a new instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node, WireletListNew<?> wirelets) {
+    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node, ExtensionWireletList<?> wirelets) {
         return (ExtensionWireletPipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
-    }
-
-    public Class<? extends ExtensionWireletPipeline<?, ?, ?>> type() {
-        return pipelineClass;
     }
 
     private static ExtensionWireletPipelineModel of(Class<?> type) {

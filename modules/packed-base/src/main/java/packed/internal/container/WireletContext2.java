@@ -15,16 +15,16 @@
  */
 package packed.internal.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 
 import app.packed.container.Wirelet;
+import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletList;
-import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
-import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -40,44 +40,40 @@ import packed.internal.util.StringFormatter;
 //// Alternativ. Keep a list of wirelets that was eva
 
 // Should we copy info into new context.. Or check recursively
-public class WireletContext {
+public class WireletContext2 {
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
 
+    final PackedContainerConfiguration pcc;
+
+    WireletContext2(PackedContainerConfiguration pcc) {
+        this.pcc = requireNonNull(pcc);
+    }
+
     ContainerWirelet.ComponentNameWirelet newName;
 
-    final IdentityHashMap<ExtensionWireletPipelineModel, ExtensionWireletPipeline<?, ?, ?>> pipelines = new IdentityHashMap<>();
+    final IdentityHashMap<Class<? extends Extension>, List<ExtensionWirelet<?>>> pipelines = new IdentityHashMap<>();
 
     @SuppressWarnings("unchecked")
-    public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
-        IdentityHashMap<ExtensionWireletPipelineModel, List<ExtensionWirelet<?>>> ews = new IdentityHashMap<>();
-
+    public void apply(Wirelet... wirelets) {
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) w.getClass());
-                ews.computeIfAbsent(pm, k -> new ArrayList<>()).add((ExtensionWirelet<?>) w);
+                pipelines.computeIfAbsent(pm.extension.extensionType, k -> new ArrayList<>()).add((ExtensionWirelet<?>) w);
             } else if (w instanceof ContainerWirelet) {
-                ((ContainerWirelet) w).process(this);
+                // ((ContainerWirelet) w).process(this);
             } else {
                 throw new IllegalArgumentException("Wirelets of type " + StringFormatter.format(w.getClass()) + " are not supported");
             }
         }
-
-        for (var entry : ews.entrySet()) {
-            var pm = entry.getKey();
-            PackedExtensionContext e = pcc.getExtension(pm.extension.extensionType);
-            if (e == null) {
-                throw new IllegalStateException(
-                        "The wirelets " + entry.getValue() + " requires the extension " + pm.extension.extensionType.getSimpleName() + " to be installed.");
-            }
-            var pip = pm.newPipeline(e.extension(), new ExtensionWireletList<>(entry.getValue()));
-            pip.onInitialize();
-            pipelines.put(pm, pip);
-        }
     }
 
-    public static WireletContext create(PackedContainerConfiguration pcc, Wirelet... wirelets) {
-        return null;
+    public void spawn(Wirelet... wirelets) {
+
+    }
+
+    public static WireletContext2 create(PackedContainerConfiguration pcc, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -26,11 +26,11 @@ import app.packed.container.Wirelet;
  *
  */
 // Maaske det her skal vaere en WireletList istedet for.....
-public class WireletListNew<W extends Wirelet> implements Iterable<W> {
+public final class ExtensionWireletList<W extends Wirelet> implements Iterable<W> {
 
     private List<W> list;
 
-    public WireletListNew(List<W> list) {
+    public ExtensionWireletList(List<W> list) {
         this.list = requireNonNull(list);
     }
 

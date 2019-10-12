@@ -44,23 +44,27 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
 
     private final E extension;
 
+    /** Any previous pipeline. */
     private final Optional<P> previous;
 
-    private final WireletListNew<W> wirelets;
+    private final ExtensionWireletList<W> wirelets;
 
-    protected ExtensionWireletPipeline(E extension, WireletListNew<W> wirelets) {
+    protected ExtensionWireletPipeline(E extension, ExtensionWireletList<W> wirelets) {
         this.extension = requireNonNull(extension, "extension is null");
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
         this.previous = Optional.empty();
     }
 
-    protected ExtensionWireletPipeline(P from, WireletListNew<W> wirelets) {
+    protected ExtensionWireletPipeline(P from, ExtensionWireletList<W> wirelets) {
         this.extension = from.extension();
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
         this.previous = Optional.of(from);
     }
 
-    public void initialized() {}
+    /**
+     * Invoked by the pipeline immediately after the pipeline has been constructed.
+     */
+    public void onInitialize() {}
 
     /**
      * Returns the extension this pipeline belongs to.
@@ -80,14 +84,14 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
         return previous;
     }
 
-    protected abstract P spawn(WireletListNew<W> wirelets);
+    protected abstract P spawn(ExtensionWireletList<W> wirelets);
 
     /**
      * Returns a list of wirelets this pipeline contains.
      * 
      * @return a list of wirelets this pipeline contains
      */
-    public final WireletListNew<W> wirelets() {
+    public final ExtensionWireletList<W> wirelets() {
         return wirelets;
     }
 

@@ -23,6 +23,7 @@ import java.util.List;
 import app.packed.artifact.ArtifactImage;
 import app.packed.service.Injector;
 import app.packed.service.InjectorConfigurator;
+import packed.internal.container.WireletList;
 
 // Wire vs link....
 
@@ -110,7 +111,7 @@ public abstract class Wirelet {
         return andThen(new Wirelet[] { after });
     }
 
-    public final WireletList andThen(Wirelet... wirelets) {
+    public final Wirelet andThen(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
         if (this instanceof WireletList) {

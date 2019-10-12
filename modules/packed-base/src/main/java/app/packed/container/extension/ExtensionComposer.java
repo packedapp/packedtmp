@@ -175,7 +175,7 @@ public abstract class ExtensionComposer<E extends Extension> {
     }
 
     protected final <P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>> void useWirelets(Class<P> pipelineType,
-            BiFunction<E, WireletListNew<W>, P> pipelineFactory) {
+            BiFunction<E, ExtensionWireletList<W>, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...

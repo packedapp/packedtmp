@@ -39,7 +39,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
-import app.packed.container.WireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
@@ -84,6 +83,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     /** Any wirelets that was given by the user when creating this configuration. */
     final WireletList wirelets;
 
+    final WireletContext wc;
+
     /**
      * Creates a new container configuration.
      * 
@@ -99,6 +100,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
+        this.wc = WireletContext.create(this, wirelets);
     }
 
     /**
@@ -116,6 +118,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
+        this.wc = WireletContext.create(this, wirelets);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -191,6 +194,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         activeExtension = null;
 
         WireletContext wc = new WireletContext();
+
         wc.apply(this, wirelets.toArray());
 
         if (children != null) {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,9 +22,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.container.Wirelet;
 import app.packed.util.Nullable;
-import packed.internal.module.AppPackedContainerAccess;
-import packed.internal.module.ModuleAccess;
 
 /** An immutable list of wirelets. */
 public final class WireletList extends Wirelet {
@@ -33,22 +32,7 @@ public final class WireletList extends Wirelet {
     static final WireletList EMPTY = new WireletList();
 
     /** The wirelets we are wrapping. */
-    final Wirelet[] wirelets;
-
-    public Wirelet[] toArray() {
-        return Arrays.copyOf(wirelets, wirelets.length);
-    }
-
-    static {
-        ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
-                bundle.doConfigure(configuration);
-            }
-        });
-    }
+    public final Wirelet[] wirelets;
 
     private WireletList(Wirelet... wirelets) {
         int size = wirelets.length;
@@ -165,7 +149,7 @@ public final class WireletList extends Wirelet {
     // }
 
     public WireletList plus(Wirelet... wirelets) {
-        return andThen(wirelets);
+        return (WireletList) andThen(wirelets);
     }
     //
     // /**
@@ -201,6 +185,10 @@ public final class WireletList extends Wirelet {
     // }
     // return List.of();
     // }
+
+    public Wirelet[] toArray() {
+        return Arrays.copyOf(wirelets, wirelets.length);
+    }
 
     /** {@inheritDoc} */
     @Override

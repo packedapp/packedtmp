@@ -26,6 +26,8 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.util.Nullable;
+import packed.internal.module.AppPackedContainerAccess;
+import packed.internal.module.ModuleAccess;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
@@ -68,6 +70,17 @@ public abstract class Bundle implements ContainerSource {
     // protected final ArtifactBuildContext buildContext() {
     // return configuration.buildContext();
     // }
+
+    static {
+        ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
+
+            /** {@inheritDoc} */
+            @Override
+            public void doConfigure(Bundle bundle, ContainerConfiguration configuration) {
+                bundle.doConfigure(configuration);
+            }
+        });
+    }
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
