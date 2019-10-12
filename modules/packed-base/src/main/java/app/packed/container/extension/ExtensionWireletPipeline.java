@@ -38,7 +38,7 @@ import app.packed.util.Nullable;
 // Vi bliver noedt til at have en tilknyttning til en extension....
 // Fordi vi skal vide hvilken extension vi skal kigge i for at finde
 // en WireletPipelineFactory....
-public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, N>, N extends Extension> {
+public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipeline<T, E>, E extends Extension> {
 
     public void buildArtifact() {
         // extension.buildBundle(null);
@@ -54,7 +54,6 @@ public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipelin
         return false;
     }
 
-    public abstract T spawn();
     // Kunne godt tage en boolean der sagde noget om hvordan den koerer...
 
     // ExtensionPipeline er per instance. De bliver vel naermest smeder sammen.
@@ -86,15 +85,15 @@ public abstract class ExtensionWireletPipeline<T extends ExtensionWireletPipelin
     // Pipelines maa vaere registreret i et Map.... Som man saa kan traekke paaa..
     // F.eks. i forbindelse med BuildContract...
 
-    // Two strategies. Either clone all the contents.
-    // Or recursively call back into parent pipeline
-    // protected abstract T split();
-
-    // Ideen er lidt at tage en props.addPipeline(MyPipeline.class, e-> new MyPip(e.mode), Order.SECOND);
-    // Vi skal ihvertfald draenes af alle annoteringer. Kun paa selve wireletten...
-    // Alternativet, hvis vi kun har 2-3 vaerdier bare at have 3 metoder i props
-    // addPipelineLast, addPipelineFirst, ...
-    public enum Order {
-        FIRST, SECOND, LAST;
-    }
 }
+// Two strategies. Either clone all the contents.
+// Or recursively call back into parent pipeline
+// protected abstract T split();
+
+// Ideen er lidt at tage en props.addPipeline(MyPipeline.class, e-> new MyPip(e.mode), Order.SECOND);
+// Vi skal ihvertfald draenes af alle annoteringer. Kun paa selve wireletten...
+// Alternativet, hvis vi kun har 2-3 vaerdier bare at have 3 metoder i props
+// addPipelineLast, addPipelineFirst, ...
+// public enum Order {
+// FIRST, SECOND, LAST;
+// }

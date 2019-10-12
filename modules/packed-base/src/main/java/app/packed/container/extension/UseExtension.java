@@ -49,13 +49,26 @@ import java.lang.annotation.Target;
 // RequireExtension, UseExtension, ActivateExtension
 public @interface UseExtension {
 
-    // Think we need to make value optional then.
-    // String[] optional() default {};
+    // H
+    String[] optional() default {};
 
     /**
-     * Returns the extension that should be activated.
+     * Returns the extensions that are used.
      * 
-     * @return the extension that should be activated
+     * @return the extensions that are used
      */
-    Class<? extends Extension>[] value();
+    Class<? extends Extension>[] value() default {};
+}
+
+// final void uses(String... extensionTypes) {
+// // The names will be resolved when composer is created
+//
+// // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
+// // Hvis den givne extension var der.
+// // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
+// }
+
+@UseExtension(optional = D.sss)
+class D {
+    static final String sss = "SDSD";
 }

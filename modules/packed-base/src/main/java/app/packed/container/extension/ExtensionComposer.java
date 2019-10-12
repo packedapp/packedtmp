@@ -26,9 +26,12 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import app.packed.container.extension.graph.ExtensionOracle;
 import app.packed.contract.Contract;
 import packed.internal.container.extension.ExtensionComposerContext;
+import packed.internal.container.extension.w2.WireletListNew;
+import packed.internal.container.extension.w2.XtensionPipeline;
 
 /**
  * An extension composer is used for specifying how an extension works.
@@ -182,11 +185,8 @@ public abstract class ExtensionComposer<E extends Extension> {
         context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 
-    final void uses(String... extensionTypes) {
-        // The names will be resolved when composer is created
+    protected final <P extends XtensionPipeline<E, P, W>, W extends Wirelet> void useWirelets(Class<P> pipelineType,
+            BiFunction<E, WireletListNew<W>, P> pipelineFactory) {
 
-        // Det ideeele ville vaere hvis man kunne specificere en eller callback/klasse der skulle koeres.
-        // Hvis den givne extension var der.
-        // Maaske noget a.la. dependOn(String, String instantiateThisClassAndInvokXX)
     }
 }

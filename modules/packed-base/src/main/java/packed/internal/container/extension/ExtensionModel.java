@@ -17,6 +17,7 @@ package packed.internal.container.extension;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -167,7 +168,7 @@ public final class ExtensionModel<T extends Extension> {
         /** A builder for all methods annotated with {@link OnHook} on the extension. */
         private final HookContainerModel.Builder hooks;
 
-        private final Set<Class<? extends Extension>> dependencies;
+        private final List<Class<? extends Extension>> dependencies;
 
         /**
          * Creates a new builder.

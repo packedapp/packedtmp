@@ -21,15 +21,12 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionDeclarationException;
-import app.packed.container.extension.UseExtension;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -40,28 +37,28 @@ import packed.internal.util.StringFormatter;
  */
 final class ExtensionDependencyValidator {
 
-    private static final Map<Class<? extends Extension>, Set<Class<? extends Extension>>> VALIDATED = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Class<? extends Extension>, List<Class<? extends Extension>>> VALIDATED = Collections.synchronizedMap(new WeakHashMap<>());
 
     private static Node collect(Class<? extends Extension> extensionType, IdentityHashMap<Class<? extends Extension>, Node> nodes) {
         Node n = nodes.get(extensionType);
         if (n == null) {
             nodes.put(extensionType, n = new Node(extensionType));
             for (int i = 0; i < n.nodes.length; i++) {
-                n.nodes[i] = collect(n.dependencies[i], nodes);
+                n.nodes[i] = collect(n.dependencies.get(i), nodes);
             }
         }
         return n;
     }
 
-    static Set<Class<? extends Extension>> dependenciesOf(Class<? extends Extension> extensionType) {
-        Set<Class<? extends Extension>> result = VALIDATED.get(extensionType);
+    static List<Class<? extends Extension>> dependenciesOf(Class<? extends Extension> extensionType) {
+        List<Class<? extends Extension>> result = VALIDATED.get(extensionType);
         if (result != null) {
             return result;
         }
         return dependenciesOf0(extensionType);
     }
 
-    static Set<Class<? extends Extension>> dependenciesOf0(Class<? extends Extension> extensionType) {
+    static List<Class<? extends Extension>> dependenciesOf0(Class<? extends Extension> extensionType) {
         // Create nodes and resolve edges
         IdentityHashMap<Class<? extends Extension>, Node> nodes = new IdentityHashMap<>();
         collect(extensionType, nodes);
@@ -78,14 +75,14 @@ final class ExtensionDependencyValidator {
         // No circles was found, add all extensions to validated.
         for (Node n : nodes.values()) {
             // We add an unmodifiable linked set too m
-            VALIDATED.putIfAbsent(n.extensionType, Collections.unmodifiableSet(new LinkedHashSet<>(List.of(n.dependencies))));
+            VALIDATED.putIfAbsent(n.extensionType, n.dependencies);
         }
 
         return VALIDATED.get(extensionType);
     }
 
     private static class Node {
-        private final Class<? extends Extension>[] dependencies;
+        private final List<Class<? extends Extension>> dependencies;
         final Class<? extends Extension> extensionType;
         private int index;
 
@@ -93,17 +90,15 @@ final class ExtensionDependencyValidator {
         private final Node[] nodes;
         private boolean onStack;
 
-        @SuppressWarnings("unchecked")
         Node(Class<? extends Extension> extensionType) {
             this.extensionType = requireNonNull(extensionType);
-            UseExtension ue = extensionType.getAnnotation(UseExtension.class);
-            this.dependencies = ue == null ? new Class[0] : ue.value();
+            this.dependencies = ExtensionUtil.fromUseExtension(extensionType);
             for (Class<? extends Extension> c : dependencies) {
                 if (c == extensionType) {
-                    throw new ExtensionDeclarationException("Extension " + StringFormatter.format(extensionType) + " cannot depend on itself via " + ue);
+                    throw new ExtensionDeclarationException("Extension " + StringFormatter.format(extensionType) + " cannot depend on itself via " + c);
                 }
             }
-            this.nodes = new Node[dependencies.length];
+            this.nodes = new Node[dependencies.size()];
         }
 
         @Override

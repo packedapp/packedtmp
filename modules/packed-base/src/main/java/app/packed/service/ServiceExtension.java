@@ -35,6 +35,7 @@ import packed.internal.service.InjectConfigSiteOperations;
 import packed.internal.service.build.ServiceExtensionNode;
 import packed.internal.service.build.ServiceWireletPipeline;
 import packed.internal.service.build.service.AtProvidesGroup;
+import packed.internal.service.build.wirelets.ServicePipeline;
 import packed.internal.service.run.AbstractInjector;
 
 /**
@@ -309,6 +310,7 @@ public final class ServiceExtension extends Extension {
                 p.root().use(ServiceExtension.class).provideInstance("fooo");
             });
 
+            useWirelets(ServicePipeline.class, (e, w) -> new ServicePipeline(e, w, e.node));
             // Dies
 
             // Needing wirelet

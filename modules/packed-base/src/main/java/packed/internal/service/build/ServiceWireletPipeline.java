@@ -35,9 +35,9 @@ public final class ServiceWireletPipeline extends ExtensionWireletPipeline<Servi
         this.node = requireNonNull(node);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ServiceWireletPipeline spawn() {
-        return new ServiceWireletPipeline(node);
-    }
+    // /** {@inheritDoc} */
+    // @Override
+    // public ServiceWireletPipeline spawn() {
+    // return new ServiceWireletPipeline(node);
+    // }
 }
