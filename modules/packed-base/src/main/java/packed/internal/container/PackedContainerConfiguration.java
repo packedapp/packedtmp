@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -42,6 +43,7 @@ import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionIntrospectionContext;
+import app.packed.container.extension.ExtensionWirelet;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.util.Nullable;
@@ -187,6 +189,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         // before they can be used. For example, downstream service wirelets
 
         installPrepare(State.GET_NAME_INVOKED);
+        // We could actually end of installing new extensions...
         for (PackedExtensionContext e : extensions.values()) {
             activeExtension = e;
             e.onConfigured();
@@ -198,6 +201,14 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 if (acc instanceof PackedContainerConfiguration) {
                     ((PackedContainerConfiguration) acc).extensionsContainerConfigured();
                 }
+            }
+        }
+
+        if (wc != null) {
+            for (Class<? extends Extension> c : wc.pipelines2.keySet()) {
+                List<ExtensionWirelet<?>> l = wc.pipelines2.get(c);
+                throw new IllegalStateException("The wirelets " + l + " requires the extension " + c.getSimpleName() + " to be installed.");
+
             }
         }
     }

@@ -21,8 +21,8 @@ import java.util.function.BiFunction;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletPipeline;
 import app.packed.container.extension.ExtensionWireletList;
+import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
@@ -42,7 +42,7 @@ public final class ExtensionWireletPipelineModel {
     };
 
     /** An extractor to find the extension the node is build upon. */
-    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWireletPipeline.class, 1);
+    private static final TypeVariableExtractor EXTENSION_NODE_TV_EXTRACTOR = TypeVariableExtractor.of(ExtensionWireletPipeline.class, 0);
 
     // /** The method handle used to create a new instance of the extension. */
     // private final MethodHandle constructorNode;
