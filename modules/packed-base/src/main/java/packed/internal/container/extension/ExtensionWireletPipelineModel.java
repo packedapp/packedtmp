@@ -18,11 +18,11 @@ package packed.internal.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.WireletListNew;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
 /**
@@ -72,8 +72,12 @@ public final class ExtensionWireletPipelineModel {
      * @return a new instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node) {
-        return (ExtensionWireletPipeline<?, ?, ?>) ((Function) factory).apply(node);
+    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node, WireletListNew<?> wirelets) {
+        return (ExtensionWireletPipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
+    }
+
+    public Class<? extends ExtensionWireletPipeline<?, ?, ?>> type() {
+        return pipelineClass;
     }
 
     private static ExtensionWireletPipelineModel of(Class<?> type) {

@@ -60,6 +60,8 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
         this.previous = Optional.of(from);
     }
 
+    public void initialized() {}
+
     /**
      * Returns the extension this pipeline belongs to.
      * 

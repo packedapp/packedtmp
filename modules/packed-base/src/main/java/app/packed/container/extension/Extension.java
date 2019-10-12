@@ -77,12 +77,6 @@ public abstract class Extension {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends ExtensionWireletPipeline<?, T, ?>> void processWirelet(T pipeline, ExtensionWirelet<T> wirelet) {
-                wirelet.process(pipeline);
-            }
-
-            /** {@inheritDoc} */
-            @Override
             public void setExtensionContext(Extension extension, ExtensionContext context) {
                 extension.context = context;
             }

@@ -15,14 +15,17 @@
  */
 package packed.internal.container;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 
 import app.packed.container.Wirelet;
 import app.packed.container.extension.ExtensionWirelet;
 import app.packed.container.extension.ExtensionWireletPipeline;
+import app.packed.container.extension.WireletListNew;
 import packed.internal.container.extension.ExtensionWireletPipelineModel;
 import packed.internal.container.extension.PackedExtensionContext;
-import packed.internal.module.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -47,27 +50,30 @@ public class WireletContext {
 
     final IdentityHashMap<ExtensionWireletPipelineModel, ExtensionWireletPipeline<?, ?, ?>> pipelines = new IdentityHashMap<>();
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("unchecked")
     public void apply(PackedContainerConfiguration pcc, Wirelet... wirelets) {
+        HashMap<ExtensionWireletPipelineModel, List<ExtensionWirelet<?>>> ews = new HashMap<>();
+
         for (Wirelet w : wirelets) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) w.getClass());
-
-                ExtensionWireletPipeline p = pipelines.computeIfAbsent(pm, k -> {
-                    PackedExtensionContext e = pcc.getExtension(pm.extension.extensionType);
-                    if (e == null) {
-                        throw new IllegalStateException(
-                                "The wirelet " + w + " requires the extension " + pm.extension.extensionType.getSimpleName() + " to be installed.");
-                    }
-                    return pm.newPipeline(e.extension());
-                });
-
-                ModuleAccess.extension().processWirelet(p, (ExtensionWirelet) w);
+                ews.computeIfAbsent(pm, k -> new ArrayList<>()).add((ExtensionWirelet<?>) w);
             } else if (w instanceof ContainerWirelet) {
                 ((ContainerWirelet) w).process(this);
             } else {
                 throw new IllegalArgumentException("Wirelets of type " + StringFormatter.format(w.getClass()) + " are not supported");
             }
+        }
+        for (var entry : ews.entrySet()) {
+            var pm = entry.getKey();
+            PackedExtensionContext e = pcc.getExtension(pm.extension.extensionType);
+            if (e == null) {
+                throw new IllegalStateException(
+                        "The wirelets " + entry.getValue() + " requires the extension " + pm.extension.extensionType.getSimpleName() + " to be installed.");
+            }
+            var pip = pm.newPipeline(e.extension(), new WireletListNew<>(entry.getValue()));
+            pip.initialized();
+            pipelines.put(pm, pip);
         }
     }
 

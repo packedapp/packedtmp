@@ -15,16 +15,28 @@
  */
 package app.packed.container.extension;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Iterator;
+import java.util.List;
+
 import app.packed.container.Wirelet;
-import app.packed.container.WireletList;
 
 /**
  *
  */
 // Maaske det her skal vaere en WireletList istedet for.....
-public class WireletListNew<W extends Wirelet> {
+public class WireletListNew<W extends Wirelet> implements Iterable<W> {
 
-    WireletListNew(WireletList list) {
+    private List<W> list;
 
+    public WireletListNew(List<W> list) {
+        this.list = requireNonNull(list);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Iterator<W> iterator() {
+        return list.iterator();
     }
 }

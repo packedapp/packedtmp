@@ -28,13 +28,6 @@ import app.packed.container.Wirelet;
 // Otherwise, we would not be able to output any exceptions if the extension was not present..
 public abstract class ExtensionWirelet<T extends ExtensionWireletPipeline<?, T, ?>> extends Wirelet {
 
-    /**
-     * Process this wirelet.
-     * 
-     * @param pipeline
-     *            the extensions pipeline
-     */
-    protected abstract void process(T pipeline);
 }
 
 // Grunden til vi gerne lave callback paa denne maade.

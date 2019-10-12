@@ -23,4 +23,11 @@ import packed.internal.service.build.ServiceWireletPipeline;
  */
 public abstract class ServiceWirelet extends ExtensionWirelet<ServiceWireletPipeline> {
 
+    /**
+     * Process this wirelet.
+     * 
+     * @param pipeline
+     *            the extensions pipeline
+     */
+    protected abstract void process(ServiceWireletPipeline pipeline);
 }
