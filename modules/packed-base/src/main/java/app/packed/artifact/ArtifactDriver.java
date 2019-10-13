@@ -120,7 +120,7 @@ public abstract class ArtifactDriver<T> {
      */
     public final T newArtifact(ContainerSource source, Wirelet... wirelets) {
         if (source instanceof ArtifactImage) {
-            return ((ArtifactImage) source).newArtifact(this, wirelets);
+            return ((ArtifactImage) source).instantiateArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(this, source, wirelets);
         return instantiate(pcc.doBuild().doInstantiate(pcc.wc));

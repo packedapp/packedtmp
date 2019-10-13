@@ -87,10 +87,6 @@ public class WireletContext {
         return pcc.name;
     }
 
-    public void apply(Wirelet... wirelets) {
-        apply(WireletList.of(wirelets));
-    }
-
     @SuppressWarnings("unchecked")
     public void apply(WireletList wirelets) {
         for (Wirelet w : wirelets.toArray()) {

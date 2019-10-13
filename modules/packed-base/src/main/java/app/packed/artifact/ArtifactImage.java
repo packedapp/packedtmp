@@ -106,6 +106,20 @@ public final class ArtifactImage implements ContainerSource {
     }
 
     /**
+     * @param <T>
+     *            the type of artifact to instantiate
+     * @param driver
+     *            the artifact driver
+     * @param wirelets
+     *            any wirelets used for instantiation
+     * @return the instantiated artifact
+     */
+    <T> T instantiateArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
+        WireletContext wc = WireletContext.spawn(pcc, wireletContext, wirelets);
+        return driver.instantiate(pcc.doInstantiate(wc));
+    }
+
+    /**
      * Returns the name of this artifact.
      * <p>
      * The returned name is always identical to the name of the artifact's root container.
@@ -119,11 +133,6 @@ public final class ArtifactImage implements ContainerSource {
         } else {
             return wireletContext.name();
         }
-    }
-
-    <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        WireletContext wc = WireletContext.spawn(pcc, this.wireletContext, wirelets);
-        return driver.instantiate(pcc.doInstantiate(wc));
     }
 
     /**
@@ -140,6 +149,7 @@ public final class ArtifactImage implements ContainerSource {
         return (Class<? extends Bundle>) pcc.source.getClass();
     }
 
+    // What about wirelets??? Hmmm
     public ComponentStream stream() {
         return new ComponentConfigurationToComponentAdaptor(pcc).stream();
     }
