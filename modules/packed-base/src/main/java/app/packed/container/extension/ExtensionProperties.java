@@ -27,7 +27,7 @@ package app.packed.container.extension;
 // And we have no idea what other extensions they use until we run
 // onConfigured on them,
 
-public @interface ExtensionMeta {
+public @interface ExtensionProperties {
     Class<? extends Extension>[] extensions() default {};
 
     String[] extensionsOptional() default {};

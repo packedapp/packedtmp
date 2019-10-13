@@ -24,8 +24,15 @@ import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
 import app.packed.container.extension.ExtensionDeclarationException;
+import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceRequest;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
+import packed.internal.service.ServiceEntry;
+import packed.internal.service.build.BuildEntry;
+import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.run.RSE;
+import packed.internal.service.run.RSESingleton;
 
 /** The default implementation of {@link ExtensionContext} with addition data only available from inside this module. */
 public final class PackedExtensionContext implements ExtensionContext {
@@ -41,6 +48,8 @@ public final class PackedExtensionContext implements ExtensionContext {
 
     /** The configuration of the container the extension is registered in. */
     public final PackedContainerConfiguration pcc;
+
+    private ServiceEntry<? extends Extension> serviceEntry;
 
     /**
      * Creates a new extension context.
@@ -62,6 +71,39 @@ public final class PackedExtensionContext implements ExtensionContext {
         if (!isConfigurable) {
             throw new IllegalStateException("This extension (" + extension.getClass().getSimpleName() + ") is no longer configurable");
         }
+    }
+
+    public ServiceEntry<? extends Extension> serviceEntry(ServiceExtensionNode sen) {
+        ServiceEntry<? extends Extension> e = serviceEntry;
+        if (e == null) {
+            e = serviceEntry = new BuildEntry<>(sen, ConfigSite.UNKNOWN) {
+                @Override
+                public InstantiationMode instantiationMode() {
+                    return InstantiationMode.SINGLETON;
+                }
+
+                @Override
+                public Extension getInstance(ServiceRequest site) {
+                    return extension;
+                }
+
+                @Override
+                public boolean needsInjectionSite() {
+                    return false;
+                }
+
+                @Override
+                public boolean needsResolving() {
+                    return false;
+                }
+
+                @Override
+                protected RSE<Extension> newRuntimeNode() {
+                    return new RSESingleton<>(this, extension);
+                }
+            };
+        }
+        return e;
     }
 
     /** {@inheritDoc} */
