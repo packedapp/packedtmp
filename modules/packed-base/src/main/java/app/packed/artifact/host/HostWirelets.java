@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.artifact.host;
 
-import org.junit.jupiter.api.Test;
+import app.packed.container.Wirelet;
+import app.packed.util.Key;
 
 /**
  *
  */
-public class AppRunTest {
+class HostWirelets {
 
-    @Test
-    public void it() {
-        //
+    public static Wirelet key(Key<? extends Host> key) {
+        throw new UnsupportedOperationException();
     }
 }

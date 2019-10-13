@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package app.packed.artifact.app;
 
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;

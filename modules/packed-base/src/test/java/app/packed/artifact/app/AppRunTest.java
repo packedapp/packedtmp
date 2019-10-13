@@ -13,25 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package app.packed.artifact.app;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import app.packed.artifact.app.App;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class DefaultHost extends AbstractComponent implements ComponentHolder {
+public class AppRunTest {
 
-    // App is not a component, so can't really use children. Unless, we attach the artifact
-    // to the component, which we probably should
-    final ConcurrentHashMap<String, App> apps = new ConcurrentHashMap<>();
-
-    /**
-     * @param configuration
-     */
-    DefaultHost(AbstractComponentConfiguration<?> configuration, PackedArtifactInstantiationContext ic) {
-        super(null, configuration, ic);
+    @Test
+    public void it() {
+        //
     }
 }

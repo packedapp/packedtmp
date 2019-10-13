@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.app.App;
 import app.packed.artifact.ArtifactConfigurator;
 import app.packed.artifact.ArtifactContext;
 import app.packed.artifact.ArtifactDriver;
+import app.packed.artifact.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;

@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.host;
+package app.packed.artifact.app;
 
-import app.packed.container.Wirelet;
-import app.packed.util.Key;
+import app.packed.container.ContainerSource;
 
 /**
  *
  */
-class HostWirelets {
+// IDeen er at lave noget der baade er App og Host...
+// Men den kan jo ogsaa misforstaa en Host der holder apps.
 
-    public static Wirelet key(Key<? extends Host> key) {
+// Ideet kan en host hold alle slags named containers....
+
+interface AppHost extends App {
+
+    static AppHost of(ContainerSource source) {
         throw new UnsupportedOperationException();
     }
 }

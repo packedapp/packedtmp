@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
-
-import app.packed.container.ContainerSource;
+package app.packed.artifact.app;
 
 /**
  *
  */
-// IDeen er at lave noget der baade er App og Host...
-// Men den kan jo ogsaa misforstaa en Host der holder apps.
+// IDeen er egentlig at vi kan have tusindvis af apps.
+// Der er connected paa maa og faa...
 
-// Ideet kan en host hold alle slags named containers....
+// Maaske via proxy interfaces....
 
-interface AppHost extends App {
+// Transactional updates.... With Rollback... Installing an app. Failing and the rollback...
 
-    static AppHost of(ContainerSource source) {
-        throw new UnsupportedOperationException();
-    }
+// Maaske de ikke behoever vaere lokale....????
+//// Maaske vi kan lave noget der kan vaere distribueret...
+//// Ahh sikkert en anden klasse
+// app.packed.base, app.packed.web, app.packed.cluster, app.packed.json
+interface AppMesh {
+
 }

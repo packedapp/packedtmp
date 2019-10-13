@@ -8,4 +8,4 @@
 /**
  * Provides support for executing applications.
  */
-package app.packed.app;
+package app.packed.artifact.app;

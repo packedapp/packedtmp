@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.host;
+package app.packed.artifact.host;
 
 import java.util.function.Consumer;
 

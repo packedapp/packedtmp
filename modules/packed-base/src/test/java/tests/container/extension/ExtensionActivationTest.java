@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.app.App;
+import app.packed.artifact.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.container.BaseBundle;

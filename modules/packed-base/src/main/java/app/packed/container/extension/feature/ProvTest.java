@@ -15,7 +15,7 @@
  */
 package app.packed.container.extension.feature;
 
-import app.packed.app.App;
+import app.packed.artifact.app.App;
 import app.packed.container.BaseBundle;
 import app.packed.service.Injector;
 import app.packed.service.Provide;

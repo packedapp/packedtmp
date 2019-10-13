@@ -13,22 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.app;
+package packed.internal.container.extension;
 
 /**
  *
  */
-// IDeen er egentlig at vi kan have tusindvis af apps.
-// Der er connected paa maa og faa...
+public class ExtensionIds {
+    public static final int APP_PACKED_COMPONENT_COMPONENT_EXTENSION = 1;
+    public static final int APP_PACKED_SERVICE_SERVICE_EXTENSION = 2;
 
-// Maaske via proxy interfaces....
+    // Men okay, ingen grund til at implementere det nu her...
+    // Vores overordnede loesning skal jo kunne klare det...
+    // Det er udelukkende optimeringer....
 
-// Transactional updates.... With Rollback... Installing an app. Failing and the rollback...
-
-// Maaske de ikke behoever vaere lokale....????
-//// Maaske vi kan lave noget der kan vaere distribueret...
-//// Ahh sikkert en anden klasse
-// app.packed.base, app.packed.web, app.packed.cluster, app.packed.json
-interface AppMesh {
-
+    // OKay vi mapper alle de normale extensions ->
+    // Til en unik et eller andet... som er deterministisk...
 }

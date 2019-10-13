@@ -17,8 +17,8 @@ package packed.internal.container.extension;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.app.App;
 import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.app.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;

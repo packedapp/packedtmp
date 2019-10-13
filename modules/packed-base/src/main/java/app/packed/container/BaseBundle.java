@@ -15,8 +15,8 @@
  */
 package app.packed.container;
 
-import app.packed.app.App;
 import app.packed.artifact.ArtifactImage;
+import app.packed.artifact.app.App;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentExtension;
 import app.packed.lifecycle.LifecycleExtension;
