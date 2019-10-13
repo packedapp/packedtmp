@@ -65,6 +65,10 @@ public final class ExtensionWireletPipelineModel {
         factory = requireNonNull(extension.pipelines.get(type));
     }
 
+    public Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type() {
+        return type;
+    }
+
     /**
      * Creates a new instance.
      * 
@@ -75,7 +79,7 @@ public final class ExtensionWireletPipelineModel {
         return (ExtensionWirelet.Pipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
     }
 
-    private static ExtensionWireletPipelineModel of(Class<?> type) {
+    public static ExtensionWireletPipelineModel of(Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>> type) {
         return CACHE.get(type);
     }
 

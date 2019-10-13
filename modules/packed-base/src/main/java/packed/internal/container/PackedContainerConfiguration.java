@@ -220,7 +220,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
 
         if (wireletContext != null) {
-            for (Class<? extends Extension> cc : wireletContext.pipelines.keySet()) {
+            for (Class<? extends Pipeline<?, ?, ?>> cc : wireletContext.pipelines.keySet()) {
                 List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
                 // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to be
                 // installed.");
