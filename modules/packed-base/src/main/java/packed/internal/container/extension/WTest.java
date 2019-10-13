@@ -41,9 +41,10 @@ public class WTest extends BaseBundle {
 
     public static void main(String[] args) {
         ArtifactImage ai = ArtifactImage.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
-        // ArtifactImage ai = ArtifactImage.of(new WTest());
-        App.of(ai, new MyWirelet("A1"));
+        App.of(ai);
+        App.of(ai, new MyWirelet("A1"), new MyWirelet("A4"));
         App.of(ai, new MyWirelet("A2"));
+        App.of(ai, new MyWirelet("A4"));
     }
 
     @UseExtension(ServiceExtension.class)
@@ -100,7 +101,6 @@ public class WTest extends BaseBundle {
 
         @Override
         public void onInitialize() {
-            System.out.println("ONINIT");
             for (MyWirelet w : wirelets()) {
                 this.val = w.msg;
             }

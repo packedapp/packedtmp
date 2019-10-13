@@ -53,7 +53,12 @@ public final class WireletContext {
     ComponentNameWirelet newName;
 
     /** Pipelines for the various extensions. */
+
+    // Alternativt er at gemme noget per extension..... I 99% af tilfaeldene har vi en pipeline
+
     final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, List<ExtensionWirelet<?>>> pipelines = new IdentityHashMap<>();
+
+    final IdentityHashMap<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, ExtensionWirelet.Pipeline<?, ?, ?>> actualpipelines = new IdentityHashMap<>();
 
     @Nullable
     final WireletContext parent;
@@ -91,7 +96,7 @@ public final class WireletContext {
         WireletContext wc = this;
         while (wc != null) {
             @SuppressWarnings("unchecked")
-            T pip = (T) pipelines.get(pipelineType);
+            T pip = (T) actualpipelines.get(pipelineType);
             if (pip != null) {
                 return pip;
             }
@@ -122,7 +127,6 @@ public final class WireletContext {
                 throw new IllegalArgumentException(
                         "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
             }
-            System.out.println(e);
             initializex(c, e.getKey());
         }
     }
@@ -134,6 +138,8 @@ public final class WireletContext {
             ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
             ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
             ModuleAccess.extension().pipelineInitialize(pip);
+            actualpipelines.put(etype, pip);
+
         }
     }
 
@@ -146,6 +152,7 @@ public final class WireletContext {
                         .ofWirelet((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
                 ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));
                 ModuleAccess.extension().pipelineInitialize(pip);
+                actualpipelines.put(p, pip);
             }
         }
     }
