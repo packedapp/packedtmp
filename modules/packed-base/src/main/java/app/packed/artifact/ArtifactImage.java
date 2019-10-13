@@ -26,6 +26,7 @@ import app.packed.container.BundleDescriptor;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
+import app.packed.util.Nullable;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
@@ -69,7 +70,9 @@ public final class ArtifactImage implements ContainerSource {
     /** The configuration of the root container of the artifact. */
     private final PackedContainerConfiguration pcc;
 
-    final WireletContext wireletContext;
+    /** A wirelet context. */
+    @Nullable
+    private final WireletContext wireletContext;
 
     /**
      * Creates a new image from the specified configuration and wirelets.
@@ -79,7 +82,7 @@ public final class ArtifactImage implements ContainerSource {
      * @param wireletContext
      *            any wirelets for the image configuration or artifact instantiation
      */
-    private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletContext wireletContext) {
+    private ArtifactImage(PackedContainerConfiguration containerConfiguration, @Nullable WireletContext wireletContext) {
         this.pcc = requireNonNull(containerConfiguration);
         this.wireletContext = wireletContext;
     }

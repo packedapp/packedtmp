@@ -88,7 +88,7 @@ public class WireletContext {
     }
 
     @SuppressWarnings("unchecked")
-    public void apply(WireletList wirelets) {
+    private void apply(WireletList wirelets) {
         for (Wirelet w : wirelets.toArray()) {
             if (w instanceof ExtensionWirelet) {
                 ExtensionWireletPipelineModel pm = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) w.getClass());
@@ -111,6 +111,9 @@ public class WireletContext {
 
     public static WireletContext spawn(PackedContainerConfiguration pcc, WireletContext existing, Wirelet... wirelets) {
         WireletList wl = WireletList.of(wirelets);
+        if (wirelets.length == 0) {
+            return existing;
+        }
         if (existing == null) {
             return create(pcc, wl);
         }
@@ -119,7 +122,7 @@ public class WireletContext {
         return wc;
     }
 
-    public static WireletContext create(PackedContainerConfiguration pcc, WireletList wirelets) {
+    private static WireletContext create(PackedContainerConfiguration pcc, WireletList wirelets) {
         if (wirelets.toArray().length > 0) {
             WireletContext wc = new WireletContext(pcc, null);
             wc.apply(wirelets);
