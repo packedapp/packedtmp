@@ -27,10 +27,12 @@ import app.packed.container.Wirelet;
 public abstract class AbstractArtifactTest {
 
     /** A bundle with no operations. */
-    public static final Bundle EMPTY_BUNDLE = new Bundle() {
-        @Override
-        protected void configure() {}
-    };
+    public static Bundle emptyBundle() {
+        return new Bundle() {
+            @Override
+            protected void configure() {}
+        };
+    }
 
     public static AppTester appOf(ContainerSource source, Wirelet... wirelets) {
         return new AppTester(source, wirelets);

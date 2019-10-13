@@ -69,9 +69,6 @@ import packed.internal.util.TypeUtil;
 // Then we can disable it on a case to case basis
 // You can actually use factories without injection
 //
-//
-//
-//
 // -------------------------
 // ServiceDescriptor
 // Refereres fra InjectorDescriptor....
@@ -274,7 +271,6 @@ public class Factory<T> {
 
     public Factory<T> useExactType(Class<? extends T> type) {
         // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
-
         // Ideen er lidt tænkt at man kan specifiere det på static factory methods, der ikke giver den.
         // fulde info om implementation
         // @Inject
@@ -282,9 +278,6 @@ public class Factory<T> {
         // istedet for
         // @Inject
         // SomeServiceImpl create();
-
-        // H
-
         throw new UnsupportedOperationException();
     }
 

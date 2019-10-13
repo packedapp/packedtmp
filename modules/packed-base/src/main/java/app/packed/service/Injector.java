@@ -22,8 +22,8 @@ import java.util.stream.Stream;
 
 import app.packed.app.App;
 import app.packed.artifact.ArtifactConfigurator;
-import app.packed.artifact.ArtifactDriver;
 import app.packed.artifact.ArtifactContext;
+import app.packed.artifact.ArtifactDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerSource;
@@ -182,7 +182,6 @@ public interface Injector {
     }
 
     default <T> Optional<ServiceDescriptor> getDescriptor(Key<T> key) {
-
         requireNonNull(key, "key is null");
         return services().filter(d -> d.key().equals(key)).findFirst();
     }
@@ -216,6 +215,8 @@ public interface Injector {
 
     /**
      * Creates a new injector by specifying the downstream wirelets. Transform
+     * <p>
+     * Returns <code>this</code> if no wirelets are specified.
      * 
      * @param wirelets
      * @return the new injector

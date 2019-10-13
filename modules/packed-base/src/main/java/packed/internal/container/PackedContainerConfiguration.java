@@ -83,9 +83,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
     public final ContainerSource source;
 
     /** Any wirelets that was given by the user when creating this configuration. */
-    final WireletList wirelets;
-
-    public final WireletContext wc;
+    public final WireletContext wireletContext;
 
     /**
      * Creates a new container configuration.
@@ -101,8 +99,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(ConfigSite.captureStack(InjectConfigSiteOperations.INJECTOR_OF), artifactDriver);
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
-        this.wirelets = WireletList.of(wirelets);
-        this.wc = WireletContext.create(this, null, this.wirelets);
+        this.wireletContext = WireletContext.create(this, null, wirelets);
     }
 
     /**
@@ -119,8 +116,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         super(parent.configSite().thenCaptureStackFrame(InjectConfigSiteOperations.INJECTOR_OF), parent);
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
-        this.wirelets = requireNonNull(wirelets);
-        this.wc = WireletContext.create(this, null, this.wirelets);
+        this.wireletContext = WireletContext.create(this, null, wirelets);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -204,9 +200,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             }
         }
 
-        if (wc != null) {
-            for (Class<? extends Extension> c : wc.pipelines.keySet()) {
-                List<ExtensionWirelet<?>> l = wc.pipelines.get(c);
+        if (wireletContext != null) {
+            for (Class<? extends Extension> c : wireletContext.pipelines.keySet()) {
+                List<ExtensionWirelet<?>> l = wireletContext.pipelines.get(c);
                 throw new IllegalStateException("The wirelets " + l + " requires the extension " + c.getSimpleName() + " to be installed.");
 
             }

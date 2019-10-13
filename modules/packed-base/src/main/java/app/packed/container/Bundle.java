@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentPath;
@@ -42,34 +43,13 @@ import packed.internal.module.ModuleAccess;
 // Repeatable, men ikke concurrently <--- Nej
 // Concurrent
 
-// A bundle can be used by one thread at a time...
-// However, once configured once. It cannot be changed...
-// Saa dette burde virke
-// Bundle b = new SomeBundle();
-// wire(b, setName("f1"));
-// wire(b, setName("f2"));
-
 // Maybe introduce ContainerBundle()... Det jeg taenker er at introduce noget der f.eks. kan bruges i kotlin
 // saa man kan noget der minder om https://ktor.io
 // Altsaa en helt barebones bundle
 
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
-
 public abstract class Bundle implements ContainerSource {
-
-    /** The configuration of the container. */
-    private ContainerConfiguration configuration;
-
-    // /**
-    // * Returns the build context. A single build context object is shared among all containers for the same artifact.
-    // *
-    // * @return the build context
-    // * @see ContainerConfiguration#buildContext()
-    // */
-    // protected final ArtifactBuildContext buildContext() {
-    // return configuration.buildContext();
-    // }
 
     static {
         ModuleAccess.initialize(AppPackedContainerAccess.class, new AppPackedContainerAccess() {
@@ -81,6 +61,22 @@ public abstract class Bundle implements ContainerSource {
             }
         });
     }
+
+    // /**
+    // * Returns the build context. A single build context object is shared among all containers for the same artifact.
+    // *
+    // * @return the build context
+    // * @see ContainerConfiguration#buildContext()
+    // */
+    // protected final ArtifactBuildContext buildContext() {
+    // return configuration.buildContext();
+    // }
+
+    /** The configuration of the container. */
+    private ContainerConfiguration configuration;
+
+    /** The state of the bundle. 0 not-initialized, 1 in-progress, 2 completed. */
+    private final AtomicInteger state = new AtomicInteger();
 
     /**
      * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
@@ -141,18 +137,33 @@ public abstract class Bundle implements ContainerSource {
      * 
      * @param configuration
      *            the configuration to wrap
+     * @throws IllegalStateException
+     *             if the bundle is in use, or has previously been used
      */
-    final void doConfigure(ContainerConfiguration configuration) {
+    private void doConfigure(ContainerConfiguration configuration) {
+        int s = state.compareAndExchange(0, 1);
+        if (s == 1) {
+            throw new IllegalStateException("This bundle is being used elsewhere.");
+        } else if (s == 2) {
+            throw new IllegalStateException("This bundle cannot be reused.");
+        }
+
         this.configuration = configuration;
+        try {
+            configure();
+        } finally {
+            state.set(2);
+            this.configuration = null;
+        }
+
+        // Do we want to cache exceptions?
+        // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
+        // Do we want to store the calling thread in case of recursive linking..
+
         // Im not sure we want to null it out...
         // We should have some way to mark it failed????
         // If configure() fails. The ContainerConfiguration still works...
         /// Well we should probably catch the exception from where ever we call his method
-        try {
-            configure();
-        } finally {
-            this.configuration = null;
-        }
     }
 
     /**

@@ -123,13 +123,13 @@ public abstract class ArtifactDriver<T> {
             return ((ArtifactImage) source).instantiateArtifact(this, wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(this, source, wirelets);
-        return instantiate(pcc.doBuild().doInstantiate(pcc.wc));
+        return instantiate(pcc.doBuild().doInstantiate(pcc.wireletContext));
     }
 
     public final <C> T newArtifact(Function<ContainerConfiguration, C> factory, ArtifactConfigurator<C> configurator, Wirelet... wirelets) {
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(this, configurator, wirelets);
         C c = factory.apply(pcc);
         configurator.configure(c);
-        return instantiate(pcc.doBuild().doInstantiate(pcc.wc));
+        return instantiate(pcc.doBuild().doInstantiate(pcc.wireletContext));
     }
 }

@@ -101,8 +101,8 @@ public final class PackedExtensionContext implements ExtensionContext {
                 model.onAdd.accept(extension);
             }
 
-            if (pcc.wc != null) {
-                pcc.wc.initialize(this);
+            if (pcc.wireletContext != null) {
+                pcc.wireletContext.initialize(this);
             }
 
             // Call any link callbacks

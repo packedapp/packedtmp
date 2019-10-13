@@ -72,7 +72,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
         checkThrowsISE(c -> {
             c.use(ComponentExtension.class, e -> {
                 ComponentConfiguration<?> ci = e.installInstance(1);
-                c.link(EMPTY_BUNDLE);
+                c.link(emptyBundle());
                 ci.setName("foo");
             });
         }, "Cannot call this method after #link() has been invoked");
@@ -138,7 +138,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
      */
     @Test
     public void container_setName_cannotBeCalledAfter_link() {
-        checkThrowsISE(c -> c.link(EMPTY_BUNDLE).setName("Bar"), "Cannot call this method after #link() has been invoked");
+        checkThrowsISE(c -> c.link(emptyBundle()).setName("Bar"), "Cannot call this method after #link() has been invoked");
     }
 
     /**

@@ -31,6 +31,7 @@ import app.packed.util.Key;
 // Maybe VarOperator.Builder
 
 // ServiceMemberOperators, hvis det er det eneste denne klasse laver....
+// Ja ikke ServiceExtensionSupport naar vi ogsaa har ServiceExtension
 class ServiceExtensionSupport {
 
     public static final VarOperator<?> INJECT_FIELD = null;

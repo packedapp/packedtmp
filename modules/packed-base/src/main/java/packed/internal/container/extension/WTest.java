@@ -18,6 +18,7 @@ package packed.internal.container.extension;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.app.App;
+import app.packed.artifact.ArtifactImage;
 import app.packed.container.BaseBundle;
 import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
@@ -37,11 +38,11 @@ public class WTest extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        App.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
+        ArtifactImage ai = ArtifactImage.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
+        App.of(ai, new MyWirelet("XXX"));
     }
 
     public static class MyExtension extends Extension {
-
         static final class Composer extends ExtensionComposer<MyExtension> {
 
             /** {@inheritDoc} */
@@ -49,7 +50,6 @@ public class WTest extends BaseBundle {
             protected void configure() {
                 useWirelets(MyPipeline.class, (e, w) -> new MyPipeline(e, w));
             }
-
         }
     }
 
@@ -83,10 +83,10 @@ public class WTest extends BaseBundle {
                 System.out.println(w.msg);
             }
         }
-
     }
 
     static final class MyWirelet extends ExtensionWirelet<MyPipeline> {
+
         final String msg;
 
         /**

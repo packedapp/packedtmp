@@ -195,9 +195,9 @@ public abstract class AbstractComponentConfiguration<T> implements ComponentHold
         }
         n = setName;
         if (this instanceof PackedContainerConfiguration) {
-            Optional<ComponentNameWirelet> o = ((PackedContainerConfiguration) this).wirelets.findLast(ComponentNameWirelet.class);
-            if (o.isPresent()) {
-                n = o.get().name;
+            PackedContainerConfiguration pcc = (PackedContainerConfiguration) this;
+            if (pcc.wireletContext != null) {
+                n = pcc.wireletContext.name();
             }
         }
 

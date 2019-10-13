@@ -188,7 +188,7 @@ public final class ArtifactImage implements ContainerSource {
             return ((ArtifactImage) source).with(wirelets);
         }
         PackedContainerConfiguration pcc = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
-        return new ArtifactImage(pcc.doBuild(), pcc.wc);
+        return new ArtifactImage(pcc.doBuild(), pcc.wireletContext);
     }
 }
 

@@ -46,7 +46,7 @@ import packed.internal.util.StringFormatter;
 //// Alternativ. Keep a list of wirelets that was eva
 
 // Should we copy info into new context.. Or check recursively
-public class WireletContext {
+public final class WireletContext {
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
@@ -110,15 +110,10 @@ public class WireletContext {
         ModuleAccess.extension().pipelineInitialize(pip);
     }
 
-    public static WireletContext create(PackedContainerConfiguration pcc, WireletContext existing, Wirelet... wirelets) {
+    public static WireletContext create(PackedContainerConfiguration pcc, @Nullable WireletContext existing, Wirelet... wirelets) {
         WireletList wl = WireletList.of(wirelets);
         if (wl.toArray().length == 0) {
             return existing;
-        }
-        if (existing == null) {
-            WireletContext wc = new WireletContext(pcc, null);
-            wc.apply(wl);
-            return wc;
         }
         WireletContext wc = new WireletContext(pcc, existing);
         wc.apply(wl);

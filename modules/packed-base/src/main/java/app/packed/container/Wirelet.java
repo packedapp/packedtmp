@@ -83,9 +83,6 @@ import packed.internal.container.WireletList;
 //// OutputTargetType == App, Injector, Analyze, Image
 public abstract class Wirelet {
 
-    /** Invoked by subclasses. */
-    protected Wirelet() {}
-
     // For bedre error messages. This operation can only be used if the parent or child bundle
     // has installed the XXX extension (As an alternative, annotated the key with
     // @RequiresExtension(JMXExtension.class)....)

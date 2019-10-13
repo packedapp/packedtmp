@@ -34,7 +34,7 @@ import app.packed.container.extension.feature.FeatureMap;
  *
  */
 // Tvivler paa vi beholder ArtifactImage.stream()
-public class ComponentConfigurationToComponentAdaptor implements Component {
+public final class ComponentConfigurationToComponentAdaptor implements Component {
 
     private volatile List<ComponentConfigurationToComponentAdaptor> children;
 
