@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -219,14 +218,16 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
             }
         }
 
-        if (wireletContext != null) {
-            for (Class<? extends Pipeline<?, ?, ?>> cc : wireletContext.pipelines.keySet()) {
-                List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
-                // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to be
-                // installed.");
-
-            }
-        }
+        // TODO, fix for unused wirelet, it was removed to fix other stuff..
+        // if (wireletContext != null) {
+        // for (Class<? extends Pipeline<?, ?, ?>> cc : wireletContext.pipelines.keySet()) {
+        // // List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
+        // // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to
+        // be
+        // // installed.");
+        //
+        // }
+        // }
     }
 
     @Override

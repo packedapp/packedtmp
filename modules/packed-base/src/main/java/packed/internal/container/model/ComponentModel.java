@@ -22,8 +22,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.IdentityHashMap;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.UseExtension;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.UseExtension;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.hook.ComponentModelHookGroup;
 import packed.internal.reflect.MemberFinder;

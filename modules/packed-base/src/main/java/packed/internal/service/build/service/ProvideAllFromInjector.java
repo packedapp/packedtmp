@@ -21,8 +21,8 @@ import java.util.LinkedHashMap;
 
 import app.packed.config.ConfigSite;
 import app.packed.container.Wirelet;
-import app.packed.service.ServiceExtension;
 import app.packed.service.Injector;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import packed.internal.container.WireletList;
 import packed.internal.service.build.BuildEntry;

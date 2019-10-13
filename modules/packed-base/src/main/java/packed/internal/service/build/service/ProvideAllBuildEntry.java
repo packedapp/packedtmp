@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 
 import app.packed.container.Wirelet;
-import app.packed.service.ServiceExtension;
 import app.packed.service.Injector;
 import app.packed.service.InstantiationMode;
+import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;

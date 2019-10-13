@@ -32,8 +32,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.extension.UseExtension;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.UseExtension;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
 

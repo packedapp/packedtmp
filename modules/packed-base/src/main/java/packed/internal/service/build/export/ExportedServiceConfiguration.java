@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.config.ConfigSite;
 import app.packed.service.ComponentServiceConfiguration;
-import app.packed.service.ServiceExtension;
 import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceConfiguration;
+import app.packed.service.ServiceExtension;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests;
+package packed.internal.ztests;
 
 import java.util.ArrayList;
 import java.util.List;

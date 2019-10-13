@@ -13,21 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests;
+package packed.internal.ztests;
+
+import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.extension.UseExtension;
+import app.packed.container.Bundle;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.FIELD })
+@Retention(CLASS)
+@Target(ElementType.MODULE)
+
 /**
  *
  */
-@UseExtension(MyExtension.class)
-public @interface MyA {
-    int value();
+public @interface PackedModule {
+
+    // Boot with this module... for example, when used with "link"....
+    // Sort of like jar.mainClass but for bundles...
+
+    // Okay I think we need to allow link to take any container source....
+    // And just throw an IllegalArgumentException if using an image.
+
+    // Giver ikke rigtig nogen mening...
+    // Hvordan skal det koeres??? Som En, Som en injector?
+    // vent til slut?, restart, ect.
+    Class<? extends Bundle> bundle();
 }
