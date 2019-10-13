@@ -58,6 +58,7 @@ public class WireletContext {
 
     @Nullable
     final WireletContext parent;
+
     final PackedContainerConfiguration pcc;
 
     WireletContext(PackedContainerConfiguration pcc, @Nullable WireletContext parent) {
@@ -109,25 +110,18 @@ public class WireletContext {
         ModuleAccess.extension().pipelineInitialize(pip);
     }
 
-    public static WireletContext spawn(PackedContainerConfiguration pcc, WireletContext existing, Wirelet... wirelets) {
+    public static WireletContext create(PackedContainerConfiguration pcc, WireletContext existing, Wirelet... wirelets) {
         WireletList wl = WireletList.of(wirelets);
-        if (wirelets.length == 0) {
+        if (wl.toArray().length == 0) {
             return existing;
         }
         if (existing == null) {
-            return create(pcc, wl);
+            WireletContext wc = new WireletContext(pcc, null);
+            wc.apply(wl);
+            return wc;
         }
         WireletContext wc = new WireletContext(pcc, existing);
         wc.apply(wl);
         return wc;
-    }
-
-    private static WireletContext create(PackedContainerConfiguration pcc, WireletList wirelets) {
-        if (wirelets.toArray().length > 0) {
-            WireletContext wc = new WireletContext(pcc, null);
-            wc.apply(wirelets);
-            return wc;
-        }
-        return null;
     }
 }

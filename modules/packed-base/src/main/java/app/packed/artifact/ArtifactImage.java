@@ -118,7 +118,7 @@ public final class ArtifactImage implements ContainerSource {
      * @return the instantiated artifact
      */
     <T> T instantiateArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        WireletContext wc = WireletContext.spawn(pcc, wireletContext, wirelets);
+        WireletContext wc = WireletContext.create(pcc, wireletContext, wirelets);
         return driver.instantiate(pcc.doInstantiate(wc));
     }
 
@@ -168,7 +168,7 @@ public final class ArtifactImage implements ContainerSource {
      */
     public ArtifactImage with(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        return wirelets.length == 0 ? this : new ArtifactImage(pcc, WireletContext.spawn(pcc, wireletContext, wirelets));
+        return wirelets.length == 0 ? this : new ArtifactImage(pcc, WireletContext.create(pcc, wireletContext, wirelets));
     }
 
     /**

@@ -102,7 +102,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(source);
         this.lookup = this.model = ContainerSourceModel.of(source.getClass());
         this.wirelets = WireletList.of(wirelets);
-        this.wc = WireletContext.spawn(this, null, this.wirelets);
+        this.wc = WireletContext.create(this, null, this.wirelets);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         this.source = requireNonNull(bundle);
         this.lookup = this.model = ContainerSourceModel.of(bundle.getClass());
         this.wirelets = requireNonNull(wirelets);
-        this.wc = WireletContext.spawn(this, null, this.wirelets);
+        this.wc = WireletContext.create(this, null, this.wirelets);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
