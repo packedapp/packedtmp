@@ -25,7 +25,7 @@ import app.packed.util.Nullable;
 // Ikke saa let at teste. Men vi kan hive informationer ud om containeren..
 // Alternativt, en special version af WireletListNew... som embedder ting...
 
-public abstract class XtensionPipeline<E extends Extension, P extends XtensionPipeline<E, P, W>, W extends Wirelet> {
+abstract class XtensionPipeline<E extends Extension, P extends XtensionPipeline<E, P, W>, W extends Wirelet> {
 
     public void buildArtifact() {
         // extension.buildBundle(null);

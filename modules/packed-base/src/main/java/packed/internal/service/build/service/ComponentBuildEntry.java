@@ -63,12 +63,15 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
     /** The parent, if this node is the result of a member annotated with {@link Provide}. */
     private final ComponentBuildEntry<?> parent;
 
+    public final ComponentConfiguration<?> componentConfiguration;
+
     public ComponentBuildEntry(ConfigSite configSite, AtProvides atProvides, MethodHandle mh, ComponentBuildEntry<?> parent) {
         super(parent.injectorBuilder, configSite, atProvides.dependencies);
         this.mha = requireNonNull(mh);
         this.parent = parent;
         this.instantionMode = atProvides.instantionMode;
         this.description = atProvides.description;
+        this.componentConfiguration = parent.componentConfiguration;
     }
 
     public ComponentBuildEntry(ServiceExtensionNode injectorBuilder, ComponentConfiguration<T> cc, InstantiationMode instantionMode, MethodHandle mh,
@@ -76,7 +79,7 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
         super(injectorBuilder, cc.configSite(), dependencies);
         this.parent = null;
         this.instantionMode = requireNonNull(instantionMode);
-
+        this.componentConfiguration = cc;
         // Maaske skal vi bare smide UnsupportedOperationException istedet for???
         // Vi faar jo problemet ved f.eks. CACHE_PER_APP.....
         // her giver det ikke meningen at faa componenten...
@@ -97,12 +100,13 @@ public final class ComponentBuildEntry<T> extends BuildEntry<T> {
      * @param instance
      *            the instance
      */
-    public ComponentBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, T instance) {
+    public ComponentBuildEntry(ServiceExtensionNode ib, ConfigSite configSite, ComponentConfiguration<T> cc, T instance) {
         super(ib, configSite, List.of());
         this.instance = requireNonNull(instance, "instance is null");
         this.parent = null;
         this.instantionMode = InstantiationMode.SINGLETON;
         this.mha = null;
+        this.componentConfiguration = requireNonNull(cc);
     }
 
     @Override

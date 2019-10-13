@@ -25,7 +25,7 @@ import app.packed.util.Nullable;
 /**
  *
  */
-public class WireletLotsOfMethods<W extends Wirelet> {
+class WireletLotsOfMethods<W extends Wirelet> {
     public final int FROM_HEAD = 1;
     public final int FROM_TAIL = 2;
     public final int REMOVE_PROCESSED = 4;

@@ -100,7 +100,7 @@ public final class ServiceProvidingManager {
         ComponentBuildEntry parentNode;
         if (cc instanceof InstantiatedComponentConfiguration) {
             Object instance = ((InstantiatedComponentConfiguration) cc).instance;
-            parentNode = new ComponentBuildEntry(node, cc.configSite(), instance);
+            parentNode = new ComponentBuildEntry(node, cc.configSite(), cc, instance);
         } else {
             Factory<?> factory = ((FactoryComponentConfiguration) cc).factory;
 
@@ -152,7 +152,7 @@ public final class ServiceProvidingManager {
         ComponentBuildEntry<?> c = componentConfigurationCache.get(cc);
         if (c == null) {
             // No node found, components has no @Provides method, create a new node
-            c = new ComponentBuildEntry<T>(node, cc.configSite(), instance);
+            c = new ComponentBuildEntry<T>(node, cc.configSite(), cc, instance);
         }
 
         c.as((Key) Key.of(instance.getClass()));

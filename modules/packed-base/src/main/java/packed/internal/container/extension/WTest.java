@@ -36,7 +36,7 @@ public class WTest extends BaseBundle {
     @Override
     protected void configure() {
         use(ServiceExtension.class);
-        use(MyExtension.class);
+        use(MyExtension.class).setIt(123);
     }
 
     public static void main(String[] args) {
@@ -50,6 +50,11 @@ public class WTest extends BaseBundle {
 
     @UseExtension(ServiceExtension.class)
     public static class MyExtension extends Extension {
+        int i;
+
+        public void setIt(int i) {
+            this.i = i;
+        }
 
         static final class Composer extends ExtensionComposer<MyExtension> {
 
@@ -63,9 +68,8 @@ public class WTest extends BaseBundle {
     }
 
     public static class RuntimeService {
-        public RuntimeService() {
-            new Exception().printStackTrace();
-            System.out.println("new RuntimeService");
+        public RuntimeService(MyExtension e) {
+            System.out.println("new RuntimeService " + e.i);
         }
     }
 

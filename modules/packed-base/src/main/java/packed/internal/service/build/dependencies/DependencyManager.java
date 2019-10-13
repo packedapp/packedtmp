@@ -22,22 +22,30 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 import app.packed.config.ConfigSite;
+import app.packed.container.extension.Extension;
 import app.packed.reflect.ExecutableDescriptor;
 import app.packed.reflect.MethodDescriptor;
 import app.packed.reflect.ParameterDescriptor;
 import app.packed.service.InjectionException;
+import app.packed.service.InstantiationMode;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceDependency;
 import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceRequest;
 import app.packed.util.Key;
 import app.packed.util.Nullable;
+import packed.internal.container.extension.PackedExtensionContext;
 import packed.internal.service.ServiceEntry;
 import packed.internal.service.build.BuildEntry;
 import packed.internal.service.build.ServiceExtensionNode;
+import packed.internal.service.build.service.ComponentBuildEntry;
 import packed.internal.service.run.DefaultInjector;
+import packed.internal.service.run.RSE;
+import packed.internal.service.run.RSESingleton;
 
 /**
  * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
@@ -123,6 +131,7 @@ public final class DependencyManager {
         DependencyCycleDetector.dependencyCyclesDetect(detectCyclesFor);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void resolveAllDependencies() {
         detectCyclesFor = new ArrayList<>();
 
@@ -134,6 +143,47 @@ public final class DependencyManager {
                 for (int i = 0; i < dependencies.size(); i++) {
                     ServiceDependency dependency = dependencies.get(i);
                     ServiceEntry<?> resolveTo = node.resolvedEntries.get(dependency.key());
+                    if (resolveTo == null) {
+                        Key<?> k = dependency.key();
+                        if (!k.hasQualifier() && Extension.class.isAssignableFrom(k.typeLiteral().rawType())) {
+                            if (entry instanceof ComponentBuildEntry) {
+
+                                Optional<Class<? extends Extension>> op = ((ComponentBuildEntry) entry).componentConfiguration.extension();
+                                if (op.isPresent()) {
+                                    Class<? extends Extension> cc = op.get();
+                                    if (cc == k.typeLiteral().type()) {
+                                        Extension e = ((PackedExtensionContext) node.context()).pcc.getExtension(cc).extension();
+                                        resolveTo = new BuildEntry(node, ConfigSite.UNKNOWN) {
+                                            @Override
+                                            public InstantiationMode instantiationMode() {
+                                                return InstantiationMode.SINGLETON;
+                                            }
+
+                                            @Override
+                                            public Object getInstance(ServiceRequest site) {
+                                                return e;
+                                            }
+
+                                            @Override
+                                            public boolean needsInjectionSite() {
+                                                return false;
+                                            }
+
+                                            @Override
+                                            public boolean needsResolving() {
+                                                return false;
+                                            }
+
+                                            @Override
+                                            protected RSE newRuntimeNode() {
+                                                return new RSESingleton(this, e);
+                                            }
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
                     recordResolvedDependency(entry, dependency, resolveTo, false);
                     entry.resolvedDependencies[i] = resolveTo;
                 }
