@@ -41,11 +41,9 @@ public class WTest extends BaseBundle {
 
     public static void main(String[] args) {
         ArtifactImage ai = ArtifactImage.of(new WTest(), new MyWirelet("hejhej"), new MyWirelet("hejhej3"));
-        App.of(ai);
-
-        // Vi instantitere kun en gang.... Fordi, ServiceConfiguration kun kan holde en instans......
-        App.of(ai);
-        // App.of(new WTest());
+        // ArtifactImage ai = ArtifactImage.of(new WTest());
+        App.of(ai, new MyWirelet("A1"));
+        App.of(ai, new MyWirelet("A2"));
     }
 
     @UseExtension(ServiceExtension.class)
@@ -61,8 +59,9 @@ public class WTest extends BaseBundle {
             /** {@inheritDoc} */
             @Override
             protected void configure() {
-                useWirelets(MyPipeline.class, (e, w) -> new MyPipeline(e, w));
+                addPipeline(MyPipeline.class, (e, w) -> new MyPipeline(e, w));
                 onConfigured(e -> e.use(ServiceExtension.class).provide(RuntimeService.class));
+                onInstantiation((e, c) -> System.out.println("Inst " + c.getPipelin(MyPipeline.class)));
             }
         }
     }
@@ -74,6 +73,8 @@ public class WTest extends BaseBundle {
     }
 
     static final class MyPipeline extends ExtensionWirelet.Pipeline<MyExtension, MyPipeline, MyWirelet> {
+
+        String val;
 
         /**
          * @param extension
@@ -99,8 +100,9 @@ public class WTest extends BaseBundle {
 
         @Override
         public void onInitialize() {
+            System.out.println("ONINIT");
             for (MyWirelet w : wirelets()) {
-                System.out.println(w.msg);
+                this.val = w.msg;
             }
         }
     }

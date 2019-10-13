@@ -23,6 +23,7 @@ import app.packed.component.ComponentPath;
 import app.packed.config.ConfigSite;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionContext;
+import app.packed.container.extension.ExtensionDeclarationException;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.module.ModuleAccess;
 
@@ -82,6 +83,10 @@ public final class PackedExtensionContext implements ExtensionContext {
      */
     public Extension extension() {
         return extension;
+    }
+
+    public Class<? extends Extension> type() {
+        return model.extensionType;
     }
 
     /**
@@ -145,6 +150,18 @@ public final class PackedExtensionContext implements ExtensionContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+
+        // Unfortunately, we need to check this every time.
+        // An alternative would be to cache it in a map for each extension.
+        // However this would incur extra memory usage. And if we only request an extension once
+        // There would be significant overhead to instantiating a new map and caching the extension.
+        // A better solution is that each extension caches the extensions if they want to.
+        // This saves a check + map lookup for each additional request.
+        if (!model.dependencies.contains(extensionType)) {
+            throw new ExtensionDeclarationException("The specified extension type is not among " + model.extensionType.getSimpleName()
+                    + " dependencies, extensionType = " + extensionType + ", valid dependencies = " + model.dependencies);
+        }
         // TODO check extensionType is in valid types...
         // We actually need to make this check every time...
         // Otherwise it could use extensions that someone else has installed.

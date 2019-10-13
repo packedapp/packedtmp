@@ -39,6 +39,14 @@ public abstract class ExtensionComposer<E extends Extension> {
     /** The context that all calls are delegated to, must only be accessed via {@link #context}. */
     private ExtensionComposerContext context;
 
+    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void addPipeline(Class<P> pipelineType,
+            BiFunction<E, MutableWireletList<W>, P> pipelineFactory) {
+        requireNonNull(pipelineType, "pipelineType is null");
+        requireNonNull(pipelineFactory, "pipelineFactory is null");
+        // Validation??? Pipeline model...
+        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
+    }
+
     /** Configures the composer. This method is invoked exactly once for a given implementation. */
     protected abstract void configure();
 
@@ -173,13 +181,5 @@ public abstract class ExtensionComposer<E extends Extension> {
     @SuppressWarnings("unchecked")
     protected final void onLinkage(BiConsumer<? super E, ? super E> action) {
         context().onLinkage((BiConsumer<? super Extension, ? super Extension>) action);
-    }
-
-    protected final <P extends ExtensionWirelet.Pipeline<E, P, W>, W extends ExtensionWirelet<P>> void useWirelets(Class<P> pipelineType,
-            BiFunction<E, MutableWireletList<W>, P> pipelineFactory) {
-        requireNonNull(pipelineType, "pipelineType is null");
-        requireNonNull(pipelineFactory, "pipelineFactory is null");
-        // Validation??? Pipeline model...
-        context().pipelines.putIfAbsent(pipelineType, pipelineFactory);
     }
 }

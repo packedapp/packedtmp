@@ -48,7 +48,7 @@ final class PackedArtifactInstantiationContext {
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
-    private final WireletContext wirelets;
+    public final WireletContext wirelets;
 
     PackedArtifactInstantiationContext(WireletContext wirelets) {
         this.wirelets = wirelets;

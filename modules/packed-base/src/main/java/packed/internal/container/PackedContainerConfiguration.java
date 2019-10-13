@@ -43,8 +43,10 @@ import app.packed.container.ContainerLayer;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import app.packed.container.extension.Extension;
+import app.packed.container.extension.ExtensionDeclarationException;
 import app.packed.container.extension.ExtensionInstantiationContext;
 import app.packed.container.extension.ExtensionWirelet;
+import app.packed.container.extension.ExtensionWirelet.Pipeline;
 import app.packed.contract.Contract;
 import app.packed.service.Factory;
 import app.packed.service.ServiceExtension;
@@ -220,7 +222,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         if (wireletContext != null) {
             for (Class<? extends Extension> cc : wireletContext.pipelines.keySet()) {
                 List<ExtensionWirelet<?>> ll = wireletContext.pipelines.get(cc);
-                throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to be installed.");
+                // throw new IllegalArgumentException("The wirelets " + ll + " requires the extension " + cc.getSimpleName() + " to be
+                // installed.");
 
             }
         }
@@ -233,12 +236,23 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
                 e.model.onInstantiation.accept(e.extension(), new ExtensionInstantiationContext() {
 
                     @Override
+                    public <T extends Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
+                        // We need to check that someone does not request another extensions pipeline type.
+                        if (!e.model.pipelines.containsKey(pipelineType)) {
+                            throw new ExtensionDeclarationException("The specified pipeline type is not amongst " + e.type().getSimpleName()
+                                    + " pipeline types, pipelineType = " + pipelineType);
+                        }
+                        return ic.wirelets.getPipelin(pipelineType);
+                    }
+
+                    @Override
                     public Class<?> artifactType() {
                         return ic.artifactType();
                     }
 
+                    @Nullable
                     @Override
-                    public <T> @Nullable T get(Class<T> type) {
+                    public <T> T get(Class<T> type) {
                         return ic.get(PackedContainerConfiguration.this, type);
                     }
 

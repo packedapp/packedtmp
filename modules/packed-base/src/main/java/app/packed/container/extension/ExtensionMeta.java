@@ -22,6 +22,11 @@ package app.packed.container.extension;
 // UseExtension -> mandatory....
 // Problemet er at UseExtension betyder noget andet paa extension ends
 
+// Why do need to declare extensions..
+// Because we can reference extension from onConfigured();
+// And we have no idea what other extensions they use until we run
+// onConfigured on them,
+
 public @interface ExtensionMeta {
     Class<? extends Extension>[] extensions() default {};
 

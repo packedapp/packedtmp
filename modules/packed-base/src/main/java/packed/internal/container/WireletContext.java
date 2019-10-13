@@ -87,6 +87,19 @@ public final class WireletContext {
         return pcc.name;
     }
 
+    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType) {
+        WireletContext wc = this;
+        while (wc != null) {
+            @SuppressWarnings("unchecked")
+            T pip = (T) pipelines.get(pipelineType);
+            if (pip != null) {
+                return pip;
+            }
+            wc = wc.parent;
+        }
+        return null;
+    }
+
     @SuppressWarnings("unchecked")
     private void apply(WireletList wirelets) {
         for (Wirelet w : wirelets.toArray()) {
@@ -109,13 +122,14 @@ public final class WireletContext {
                 throw new IllegalArgumentException(
                         "In order to use the wirelet(s) " + e.getValue() + ", " + etype.getSimpleName() + " is required to be installed.");
             }
+            System.out.println(e);
             initialize(c);
         }
     }
 
     @SuppressWarnings("unchecked")
     public void initialize(PackedExtensionContext pec) {
-        List<ExtensionWirelet<?>> ewp = pipelines.remove(pec.extension().getClass());
+        List<ExtensionWirelet<?>> ewp = pipelines.get(pec.extension().getClass());
         if (ewp != null) {
             ExtensionWireletPipelineModel m = ExtensionWireletPipelineModel.ofWirelet((Class<? extends ExtensionWirelet<?>>) ewp.iterator().next().getClass());
             ExtensionWirelet.Pipeline<?, ?, ?> pip = m.newPipeline(pec.extension(), new MutableWireletList<>(ewp));

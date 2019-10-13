@@ -91,7 +91,7 @@ public final class ExtensionModel<T extends Extension> {
     /** An optional containing the extension type. To avoid excessive creation of them for {@link Component#extension()}. */
     public final Optional<Class<? extends Extension>> optional;
 
-    final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
+    public final Map<Class<? extends ExtensionWirelet.Pipeline<?, ?, ?>>, BiFunction<?, ?, ?>> pipelines;
 
     /**
      * Creates a new extension model from the specified builder.

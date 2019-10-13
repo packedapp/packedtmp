@@ -47,4 +47,10 @@ public interface ExtensionInstantiationContext {
     void put(Object obj);
 
     <T> T use(Class<T> type);
+
+    default boolean hasPipelines() {
+        throw new UnsupportedOperationException();
+    }
+
+    <T extends ExtensionWirelet.Pipeline<?, ?, ?>> T getPipelin(Class<T> pipelineType);
 }
