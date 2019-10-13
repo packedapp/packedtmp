@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package tests;
 
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
@@ -21,13 +21,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import app.packed.container.Bundle;
+
 @Retention(CLASS)
 @Target(ElementType.MODULE)
 
 /**
  *
  */
-@interface PackedModule {
+public @interface PackedModule {
 
     // Boot with this module... for example, when used with "link"....
     // Sort of like jar.mainClass but for bundles...

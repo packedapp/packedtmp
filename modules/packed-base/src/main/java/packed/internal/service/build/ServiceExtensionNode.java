@@ -179,7 +179,7 @@ public final class ServiceExtensionNode {
 
     public ServiceContract newServiceContract(ExtensionIntrospectionContext context) {
         // requireNonNull(context);
-        return ServiceContract.of(c -> {
+        return ServiceContract.newContract(c -> {
             if (exporter != null) {
                 for (ExportedBuildEntry<?> n : exporter) {
                     c.addProvides(n.key());

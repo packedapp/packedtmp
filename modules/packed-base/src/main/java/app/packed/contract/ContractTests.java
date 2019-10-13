@@ -24,7 +24,7 @@ import app.packed.service.ServiceWirelets;
  */
 public class ContractTests {
     public static void main(String[] args) {
-        ServiceContract ic = ServiceContract.of(c -> {
+        ServiceContract ic = ServiceContract.newContract(c -> {
             c.addProvides(String.class);
             c.addProvides(Long.class);
         });

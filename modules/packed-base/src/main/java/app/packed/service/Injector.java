@@ -113,7 +113,7 @@ public interface Injector {
      * @return the service contract of this injector
      */
     default ServiceContract contract() {
-        return ServiceContract.of(c -> services().forEach(s -> c.addProvides(s.key())));
+        return ServiceContract.newContract(c -> services().forEach(s -> c.addProvides(s.key())));
     }
 
     /**

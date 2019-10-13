@@ -48,10 +48,10 @@ final class PackedArtifactInstantiationContext {
     /** All context objects. */
     private final IdentityHashMap<ContainerConfiguration, IdentityHashMap<Class<?>, Object>> map = new IdentityHashMap<>();
 
-    private final WireletList wirelets;
+    private final WireletContext wirelets;
 
-    PackedArtifactInstantiationContext(WireletList wirelets) {
-        this.wirelets = requireNonNull(wirelets);
+    PackedArtifactInstantiationContext(WireletContext wirelets) {
+        this.wirelets = wirelets;
     }
 
     /**
@@ -99,7 +99,7 @@ final class PackedArtifactInstantiationContext {
      * 
      * @return a list of wirelets that used to instantiate
      */
-    public WireletList wirelets() {
+    public WireletContext wirelets() {
         return wirelets;
     }
 

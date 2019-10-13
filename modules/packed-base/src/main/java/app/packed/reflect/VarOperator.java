@@ -253,6 +253,12 @@ public abstract class VarOperator<T> {
     public boolean writes() {
         return false;
     }
+
+    VarOperator<T> validateValue(Consumer<T> validator) {
+        // Idea is to be able to validate values that people set....
+        // For example, > 10 ... VarOperator.consumer().validate(Validator.greatherThen(10))
+        throw new UnsupportedOperationException();
+    }
 }
 /**
  * <p>

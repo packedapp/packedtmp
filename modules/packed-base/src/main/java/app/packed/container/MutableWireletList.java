@@ -13,24 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.extension;
+package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
 import java.util.List;
-
-import app.packed.container.Wirelet;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  *
  */
 // Maaske det her skal vaere en WireletList istedet for.....
-public final class ExtensionWireletList<W extends Wirelet> implements Iterable<W> {
+
+// Det case for mutable... Vi sharer ikke laengere en liste... Saa folk kan ikke aendre
+
+// Kunne ogsaa starte med at WireletList -> WireletList<W>
+public final class MutableWireletList<W extends Wirelet> implements Iterable<W> {
 
     private List<W> list;
 
-    public ExtensionWireletList(List<W> list) {
+    public MutableWireletList(List<W> list) {
         this.list = requireNonNull(list);
     }
 
@@ -38,5 +42,16 @@ public final class ExtensionWireletList<W extends Wirelet> implements Iterable<W
     @Override
     public Iterator<W> iterator() {
         return list.iterator();
+    }
+
+    /**
+     * @param filter
+     *            a predicate which returns {@code true} for wirelets to be removed
+     * @param action
+     *            an action to be performed on each removed element
+     * @return whether or not any wirelets was removed
+     */
+    public boolean removeIf(Predicate<? super W> filter, Consumer<? super W> action) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -166,9 +166,9 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         return this;
     }
 
-    public PackedArtifactContext doInstantiate(WireletList additionalWirelets) {
+    public PackedArtifactContext doInstantiate(WireletContext wirelets) {
         // TODO support instantiation wirelets for images
-        PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets.plus(additionalWirelets));
+        PackedArtifactInstantiationContext pic = new PackedArtifactInstantiationContext(wirelets);
         extensionsPrepareInstantiation(pic);
 
         // Will instantiate the whole container hierachy
@@ -205,8 +205,8 @@ public final class PackedContainerConfiguration extends AbstractComponentConfigu
         }
 
         if (wc != null) {
-            for (Class<? extends Extension> c : wc.pipelines2.keySet()) {
-                List<ExtensionWirelet<?>> l = wc.pipelines2.get(c);
+            for (Class<? extends Extension> c : wc.pipelines.keySet()) {
+                List<ExtensionWirelet<?>> l = wc.pipelines.get(c);
                 throw new IllegalStateException("The wirelets " + l + " requires the extension " + c.getSimpleName() + " to be installed.");
 
             }

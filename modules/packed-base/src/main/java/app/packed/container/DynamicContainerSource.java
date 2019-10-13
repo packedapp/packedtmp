@@ -30,6 +30,7 @@ import packed.internal.thirdparty.asm.ClassReader;
 import packed.internal.thirdparty.asm.ClassVisitor;
 import packed.internal.thirdparty.asm.Opcodes;
 import packed.internal.thirdparty.asm.Type;
+import tests.PackedModule;
 
 //A ContainerSource that can change.... But you cannot link a dynamic Container Source.
 // Except if you change a container -> The whole artifact needs to be reloaded

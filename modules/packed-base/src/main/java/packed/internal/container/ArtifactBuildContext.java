@@ -64,7 +64,11 @@ public interface ArtifactBuildContext {
  * handles)
  */
 enum Action {
-    IMAGE_GENERATE, INTROSPECT, INSTANTIATE_ARTIFACT;
+    GENERATE_IMAGE,
+    /** Performs an introspection of some kind. */
+    INTROSPECT,
+    /** Instantiates a new artifact. */
+    INSTANTIATE;
 }
 
 /// **

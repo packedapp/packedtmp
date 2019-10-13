@@ -27,13 +27,12 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerSource;
 import app.packed.container.Wirelet;
 import packed.internal.container.ComponentConfigurationToComponentAdaptor;
-import packed.internal.container.ContainerWirelet.ComponentNameWirelet;
-import packed.internal.module.AppPackedArtifactAccess;
-import packed.internal.module.ModuleAccess;
 import packed.internal.container.NonInstantiatingArtifactDriver;
 import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.container.WireletContext;
 import packed.internal.container.WireletList;
+import packed.internal.module.AppPackedArtifactAccess;
+import packed.internal.module.ModuleAccess;
 
 /**
  * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
@@ -71,23 +70,10 @@ public final class ArtifactImage implements ContainerSource {
     /** The configuration of the root container of the artifact. */
     private final PackedContainerConfiguration containerConfiguration;
 
+    /** The source type of this image. */
     private final Class<? extends ContainerSource> sourceType;
 
-    /** Additional wirelets. */
-    // Vi evaluere them naar
-    private final WireletList wirelets;
-
-    WireletContext wl;
-
-    /**
-     * Creates a new image from the specified configuration.
-     * 
-     * @param containerConfiguration
-     *            the configuration this image will wrap
-     */
-    private ArtifactImage(PackedContainerConfiguration containerConfiguration, Class<? extends ContainerSource> containerSource) {
-        this(containerConfiguration, WireletList.of(), containerSource);
-    }
+    final WireletContext wirelets;
 
     /**
      * Creates a new image from the specified configuration and wirelets.
@@ -97,9 +83,9 @@ public final class ArtifactImage implements ContainerSource {
      * @param wirelets
      *            any wirelets for the image configuration or artifact instantiation
      */
-    private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletList wirelets, Class<? extends ContainerSource> containerSource) {
+    private ArtifactImage(PackedContainerConfiguration containerConfiguration, WireletContext wirelets, Class<? extends ContainerSource> containerSource) {
         this.containerConfiguration = requireNonNull(containerConfiguration);
-        this.wirelets = requireNonNull(wirelets);
+        this.wirelets = wirelets;
         this.sourceType = requireNonNull(containerSource);
     }
 
@@ -133,16 +119,16 @@ public final class ArtifactImage implements ContainerSource {
      * unique among any of the artifact'ssiblings.**@return the name of this artifact
      */
     public String name() {
-        return wirelets.findLast(ComponentNameWirelet.class).map(e -> e.name).orElse(containerConfiguration.getName());
-    }
-
-    public String name2() {
-        ComponentNameWirelet nw = wirelets.findLastOrNull(ComponentNameWirelet.class);
-        return nw == null ? containerConfiguration.getName() : nw.name;
+        if (wirelets == null) {
+            return containerConfiguration.getName();
+        } else {
+            return wirelets.name();
+        }
     }
 
     <T> T newArtifact(ArtifactDriver<T> driver, Wirelet... wirelets) {
-        return driver.instantiate(containerConfiguration.doInstantiate(this.wirelets.plus(wirelets)));
+        WireletContext wc = WireletContext.spawn(containerConfiguration, this.wirelets, WireletList.of(wirelets));
+        return driver.instantiate(containerConfiguration.doInstantiate(wc));
     }
 
     /**
@@ -174,8 +160,9 @@ public final class ArtifactImage implements ContainerSource {
      */
     // If we use pipeline, the wirelets will be evaluated
     public ArtifactImage with(Wirelet... wirelets) {
-        WireletList wl = this.wirelets.plus(wirelets);
-        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, wl, sourceType);
+        WireletList wl = WireletList.of(wirelets);
+        WireletContext sp = WireletContext.spawn(containerConfiguration, this.wirelets, wl);
+        return wirelets.length == 0 ? this : new ArtifactImage(containerConfiguration, sp, sourceType);
     }
 
     /**
@@ -197,7 +184,7 @@ public final class ArtifactImage implements ContainerSource {
         }
         // Wirelet are added to the container configuration, and not the image
         PackedContainerConfiguration c = new PackedContainerConfiguration(ArtifactImageArtifactDriver.INSTANCE, source, wirelets);
-        return new ArtifactImage(c.doBuild(), source.getClass());
+        return new ArtifactImage(c.doBuild(), c.wc, source.getClass());
     }
 }
 

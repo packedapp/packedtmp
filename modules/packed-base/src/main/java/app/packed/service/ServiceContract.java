@@ -186,8 +186,29 @@ public final class ServiceContract extends Contract {
      * 
      * @return a new service contract builder
      */
-    public static ServiceContract.Builder builder() {
+    public static ServiceContract.Builder newContract() {
         return new ServiceContract.Builder();
+    }
+
+    /**
+     * Creates a new service contract by performing the specified action on a new {@link ServiceContract.Builder } instance.
+     * Usage:
+     * 
+     * which is equivalent to:
+     * 
+     * @param action
+     *            the build action to perform
+     * @return the new contract
+     */
+    public static ServiceContract newContract(Consumer<? super ServiceContract.Builder> action) {
+        requireNonNull(action, "action is null");
+        ServiceContract.Builder b = new ServiceContract.Builder();
+        action.accept(b);
+        return b.build();
+    }
+
+    public static ServiceContract.Builder newContract(ServiceContract existing) {
+        return new ServiceContract.Builder(existing);
     }
 
     /**
@@ -202,6 +223,7 @@ public final class ServiceContract extends Contract {
     // Implications for other extension
     // ofElseEmpty();
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
+    // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
     public static ServiceContract of(ArtifactImage image) {
         return BundleDescriptor.of(image).contracts().use(ServiceContract.class);
     }
@@ -212,43 +234,28 @@ public final class ServiceContract extends Contract {
     }
 
     /**
-     * Creates a new service contract by performing the specified action on a new {@link ServiceContract.Builder } instance.
-     * Usage:
-     * 
-     * which is equivalent to:
-     * 
-     * @param action
-     *            the build action to perform
-     * @return the new contract
-     */
-    public static ServiceContract of(Consumer<? super ServiceContract.Builder> action) {
-        requireNonNull(action, "action is null");
-        ServiceContract.Builder b = new ServiceContract.Builder();
-        action.accept(b);
-        return b.build();
-    }
-
-    /**
      * Since an injector has already been initialized it always has no requirements.
      * 
      * @param injector
      *            the injector to return a contract for
      * @return the service contract for an injector
      */
-    public static ServiceContract ofInjector(Injector injector) {
-        return of(c -> injector.services().forEach(s -> c.addProvides(s.key())));
+    public static ServiceContract of(Injector injector) {
+        return newContract(c -> injector.services().forEach(s -> c.addProvides(s.key())));
     }
 
     public static ServiceContract ofRequired(Class<?>... keys) {
-        return of(b -> List.of(keys).forEach(k -> b.addRequires(k)));
+        return newContract(b -> List.of(keys).forEach(k -> b.addRequires(k)));
     }
 
     public static ServiceContract ofRequired(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }
 
+    // Maaske from og of...
+    // Det er en lille smule forskel syntes jeg...
     public static ServiceContract ofServices(Class<?>... keys) {
-        Builder b = builder();
+        Builder b = newContract();
         List.of(keys).forEach(k -> b.addProvides(k));
         return b.build();
     }
@@ -267,7 +274,8 @@ public final class ServiceContract extends Contract {
      * <strong>Note that this builder is not synchronized.</strong> If multiple threads access a builder concurrently, and
      * at least one of the threads modifies the builder structurally, it <i>must</i> be synchronized externally.
      */
-    public static class Builder {
+    // TODO I think we should have varargs.... for all methods....
+    public static final class Builder {
 
         /** The provided services. */
         private HashSet<Key<?>> optional;
@@ -284,12 +292,20 @@ public final class ServiceContract extends Contract {
         /**
          * Creates a new contract builder builder from an existing service contract.
          * 
-         * @param contract
+         * @param existing
          *            the contract to create a contract builder builder from
          */
-        public Builder(ServiceContract contract) {
-            requireNonNull(contract, "contract is null");
-            requires = new HashSet<>(contract.requires);
+        private Builder(ServiceContract existing) {
+            requireNonNull(existing, "contract is null");
+            if (!existing.optional.isEmpty()) {
+                optional = new HashSet<>(existing.optional);
+            }
+            if (!existing.provides.isEmpty()) {
+                provides = new HashSet<>(existing.provides);
+            }
+            if (!existing.requires.isEmpty()) {
+                requires = new HashSet<>(existing.requires);
+            }
         }
 
         /**

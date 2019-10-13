@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.container.MutableWireletList;
+
 /**
  * Extension wirelet pipelines
  * 
@@ -34,15 +36,15 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
     private final Optional<P> previous;
 
     /** A list initially containing the wirelets that was used to create this pipeline. */
-    private final ExtensionWireletList<W> wirelets;
+    private final MutableWireletList<W> wirelets;
 
-    protected ExtensionWireletPipeline(E extension, ExtensionWireletList<W> wirelets) {
+    protected ExtensionWireletPipeline(E extension, MutableWireletList<W> wirelets) {
         this.extension = requireNonNull(extension, "extension is null");
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
         this.previous = Optional.empty();
     }
 
-    protected ExtensionWireletPipeline(P from, ExtensionWireletList<W> wirelets) {
+    protected ExtensionWireletPipeline(P from, MutableWireletList<W> wirelets) {
         this.extension = from.extension();
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
         this.previous = Optional.of(from);
@@ -61,7 +63,7 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
     protected void onInitialize() {}
 
     /**
-     * If this pipeline was {@link #spawn(ExtensionWireletList) spawned} from an existing pipeline, returns the pipeline,
+     * If this pipeline was {@link #spawn(MutableWireletList) spawned} from an existing pipeline, returns the pipeline,
      * otherwise returns empty.
      * 
      * @return any pipeline this pipeline was spawned from
@@ -77,14 +79,14 @@ public abstract class ExtensionWireletPipeline<E extends Extension, P extends Ex
      *            the wirelets that was used
      * @return the new pipeline
      */
-    protected abstract P spawn(ExtensionWireletList<W> wirelets);
+    protected abstract P spawn(MutableWireletList<W> wirelets);
 
     /**
      * Returns a list of the wirelets this pipeline contains.
      * 
      * @return a list of the wirelets this pipeline contains
      */
-    public final ExtensionWireletList<W> wirelets() {
+    public final MutableWireletList<W> wirelets() {
         return wirelets;
     }
 }

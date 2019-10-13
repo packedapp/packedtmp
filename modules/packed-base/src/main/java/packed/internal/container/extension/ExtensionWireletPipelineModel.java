@@ -19,9 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiFunction;
 
+import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletList;
 import app.packed.container.extension.ExtensionWireletPipeline;
 import packed.internal.reflect.typevariable.TypeVariableExtractor;
 
@@ -72,7 +72,7 @@ public final class ExtensionWireletPipelineModel {
      * @return a new instance
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node, ExtensionWireletList<?> wirelets) {
+    public ExtensionWireletPipeline<?, ?, ?> newPipeline(Extension node, MutableWireletList<?> wirelets) {
         return (ExtensionWireletPipeline<?, ?, ?>) ((BiFunction) factory).apply(node, wirelets);
     }
 

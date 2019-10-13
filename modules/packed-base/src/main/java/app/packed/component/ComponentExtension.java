@@ -132,6 +132,30 @@ public final class ComponentExtension extends Extension {
 
     // Alternative to ComponentScan
     void scanForInstall(Class<?>... classesInPackages) {}
+
+    public void useParent() {
+
+    }
+
+    public <T> ComponentConfiguration<T> useParent(ComponentConfiguration<T> cc) {
+        // Ideen er at alle nye componenter bruger den som parent, incl linked containers...
+
+        // may useAsParent is better
+
+        // useAsParent(install("Fucker"))
+        // include extensions???
+        return cc;
+    }
+
+    public ComponentConfiguration<Void> useParent(String folder) {
+
+        // LazyAdd Folder... if extensions do not install anything we shouldnt give a fck
+        // useAsParent("Extensions")
+
+        // FOlder -> component type = Void.class
+
+        throw new UnsupportedOperationException();
+    }
 }
 
 // install
@@ -244,7 +268,9 @@ class ComponentRule {
     // Severity[FAIL, WARN, INFO?, IGNORE] onIn
     // Basically what happens when you encounter a module that is not open to packed...
     // But explicitly included....
-    boolean accessInacessibleModules() default true;
+    boolean accessInacessibleModules()
+
+    default true;
     // Debug.run(new MyBundle());
 
     /**

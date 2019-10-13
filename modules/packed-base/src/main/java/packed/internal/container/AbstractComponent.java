@@ -85,7 +85,7 @@ abstract class AbstractComponent implements Component {
         this.extension = configuration.extension();
         if (parent == null) {
             String n = configuration.name;
-            ComponentNameWirelet ol = ic.wirelets().findLastOrNull(ComponentNameWirelet.class);
+            ComponentNameWirelet ol = ic.wirelets() == null ? null : ic.wirelets().nameWirelet();
             if (ol != null) {
                 n = ol.name;
                 if (n.endsWith("?")) {

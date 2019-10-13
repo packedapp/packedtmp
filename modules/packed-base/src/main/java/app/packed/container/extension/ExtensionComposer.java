@@ -25,6 +25,7 @@ import app.packed.container.Bundle;
 import app.packed.container.BundleDescriptor;
 import app.packed.container.BundleDescriptor.Builder;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.MutableWireletList;
 import app.packed.container.extension.graph.ExtensionOracle;
 import app.packed.contract.Contract;
 import packed.internal.container.extension.ExtensionComposerContext;
@@ -175,7 +176,7 @@ public abstract class ExtensionComposer<E extends Extension> {
     }
 
     protected final <P extends ExtensionWireletPipeline<E, P, W>, W extends ExtensionWirelet<P>> void useWirelets(Class<P> pipelineType,
-            BiFunction<E, ExtensionWireletList<W>, P> pipelineFactory) {
+            BiFunction<E, MutableWireletList<W>, P> pipelineFactory) {
         requireNonNull(pipelineType, "pipelineType is null");
         requireNonNull(pipelineFactory, "pipelineFactory is null");
         // Validation??? Pipeline model...

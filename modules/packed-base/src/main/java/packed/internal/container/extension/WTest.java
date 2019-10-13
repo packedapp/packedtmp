@@ -19,10 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.app.App;
 import app.packed.container.BaseBundle;
+import app.packed.container.MutableWireletList;
 import app.packed.container.extension.Extension;
 import app.packed.container.extension.ExtensionComposer;
 import app.packed.container.extension.ExtensionWirelet;
-import app.packed.container.extension.ExtensionWireletList;
 import app.packed.container.extension.ExtensionWireletPipeline;
 
 /**
@@ -59,7 +59,7 @@ public class WTest extends BaseBundle {
          * @param extension
          * @param wirelets
          */
-        protected MyPipeline(MyExtension extension, ExtensionWireletList<MyWirelet> wirelets) {
+        protected MyPipeline(MyExtension extension, MutableWireletList<MyWirelet> wirelets) {
             super(extension, wirelets);
         }
 
@@ -67,13 +67,13 @@ public class WTest extends BaseBundle {
          * @param myPipeline
          * @param wirelets
          */
-        public MyPipeline(MyPipeline myPipeline, ExtensionWireletList<MyWirelet> wirelets) {
+        public MyPipeline(MyPipeline myPipeline, MutableWireletList<MyWirelet> wirelets) {
             super(myPipeline, wirelets);
         }
 
         /** {@inheritDoc} */
         @Override
-        protected MyPipeline spawn(ExtensionWireletList<MyWirelet> wirelets) {
+        protected MyPipeline spawn(MutableWireletList<MyWirelet> wirelets) {
             return new MyPipeline(this, wirelets);
         }
 
