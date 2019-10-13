@@ -113,12 +113,13 @@ public class WireletContext {
         ModuleAccess.extension().pipelineInitialize(pip);
     }
 
-    public static WireletContext spawn(PackedContainerConfiguration pcc, WireletContext existing, WireletList wirelets) {
+    public static WireletContext spawn(PackedContainerConfiguration pcc, WireletContext existing, Wirelet... wirelets) {
+        WireletList wl = WireletList.of(wirelets);
         if (existing == null) {
-            return create(pcc, wirelets);
+            return create(pcc, wl);
         }
         WireletContext wc = new WireletContext(pcc, existing);
-        wc.apply(wirelets);
+        wc.apply(wl);
         return wc;
     }
 
